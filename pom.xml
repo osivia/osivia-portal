@@ -404,11 +404,11 @@
 
  <distributionManagement>
      <repository>
-          <id>toutatice-releases</id>
+          <id>osivia-releases</id>
           <url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
      </repository>
      <snapshotRepository>
-          <id>toutatice-snapshots</id>
+          <id>osivia-snapshots</id>
           <url>http:///www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
      </snapshotRepository>
  </distributionManagement>
