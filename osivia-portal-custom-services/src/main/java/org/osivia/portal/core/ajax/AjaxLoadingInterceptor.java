@@ -147,7 +147,7 @@ public class AjaxLoadingInterceptor extends PortletInvokerInterceptor {
 
 			pw.println("<p align=\"center\">");
 			pw.println("	<a id=\"" + ajaxId + "\" href=\"" + url.toString() + "\">");
-			pw.println("			<img src=\"/toutatice-portail-custom-web-assets/images/ajax_loading.gif\" border=\"0\">");
+			pw.println("			<img src=\"/osivia-portal-custom-web-assets/images/ajax_loading.gif\" border=\"0\">");
 			pw.println("	</a>");
 			pw.println("</p>");
 

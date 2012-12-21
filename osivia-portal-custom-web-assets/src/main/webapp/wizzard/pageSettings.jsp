@@ -68,7 +68,7 @@
 <%@page import="org.jboss.portal.core.portlet.info.PortletIconInfo"%>
 <%@page import="org.jboss.portal.core.model.portal.Page"%>
 
-<script type="text/javascript" src="/toutatice-portail-custom-web-assets/js/modal-message.js"></script>
+<script type="text/javascript" src="/osivia-portal-custom-web-assets/js/modal-message.js"></script>
 
 
 <%

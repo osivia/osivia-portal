@@ -97,7 +97,7 @@
 		xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 			<xmbean/>
-			<attribute name="TargetContextPath">/toutatice-portail-custom-web-assets</attribute>
+			<attribute name="TargetContextPath">/osivia-portal-custom-web-assets</attribute>
   			<attribute name="PageSettingPath">/wizzard/pageSettings.jsp</attribute>
 			<depends optional-attribute-name="ServiceLayout" proxy-type="attribute">portal:service=LayoutService</depends>
 			<depends optional-attribute-name="ServiceTheme" proxy-type="attribute">portal:service=ThemeService</depends>

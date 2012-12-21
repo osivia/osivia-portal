@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" 
              version="1.0">
-   <persistence-unit name="toutatice-portail-administration-Database">
+   <persistence-unit name="osivia-portal-administration-Database">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
       <jta-data-source>java:/DefaultDS</jta-data-source>
       <properties>
@@ -13,7 +13,7 @@
          <property name="hibernate.cache.provider_class" value="org.hibernate.cache.HashtableCacheProvider"/>
          <property name="hibernate.transaction.manager_lookup_class" value="org.hibernate.transaction.JBossTransactionManagerLookup"/>
 
-         <property name="jboss.entity.manager.factory.jndi.name" value="java:/toutatice-portail-administration-portletEntityManagerFactory"/>
+         <property name="jboss.entity.manager.factory.jndi.name" value="java:/osivia-portal-administration-portletEntityManagerFactory"/>
 
       </properties>
    </persistence-unit>

@@ -2,11 +2,11 @@
 <deployments>
    <deployment>
        <instance>
-			   <display-name xml:lang="en">Toutatice - Administration</display-name>
-			   <display-name xml:lang="fr">Toutatice - Administration </display-name>
+			   <display-name xml:lang="en">Osivia - Administration</display-name>
+			   <display-name xml:lang="fr">Osivia - Administration </display-name>
        
-         <instance-id>toutatice-portail-administration-portletInstance</instance-id>
-         <portlet-ref>toutatice-portail-administration-portlet</portlet-ref>
+         <instance-id>osivia-portal-administration-portletInstance</instance-id>
+         <portlet-ref>osivia-portal-administration-portlet</portlet-ref>
       </instance>
    </deployment>
 </deployments>

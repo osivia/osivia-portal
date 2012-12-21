@@ -18,7 +18,7 @@
                  http://jboss.com/products/seam/components http://jboss.com/products/seam/components-2.0.xsd">
 
 
-    <core:init jndi-pattern="toutatice-portail-administration/#ejbName/local" debug="false" transaction-management-enabled="false"/>
+    <core:init jndi-pattern="osivia-portal-administration/#ejbName/local" debug="false" transaction-management-enabled="false"/>
     
 
     <core:manager conversation-timeout="120000"
@@ -28,7 +28,7 @@
 
     <persistence:managed-persistence-context name="entityManager"
                                              auto-create="true"
-                                             persistence-unit-jndi-name="java:/toutatice-portail-administration-EntityManagerFactory"/>
+                                             persistence-unit-jndi-name="java:/osivia-portal-administration-EntityManagerFactory"/>
 
     <security:identity authenticate-method="#{authenticator.authenticate}"/>
 

@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/portlet"
   xmlns="http://java.sun.com/xml/ns/portlet">
   <portlet>
-    <portlet-name>toutatice-portail-administration-portlet</portlet-name>
+    <portlet-name>osivia-portal-administration-portlet</portlet-name>
     <portlet-class>
       javax.portlet.faces.GenericFacesPortlet
     </portlet-class>
@@ -17,7 +17,7 @@
     </init-param>
     <expiration-cache>-0</expiration-cache>
     <portlet-info>
-       <title>toutatice-portail-administration-portlet</title>
+       <title>osivia-portal-administration-portlet</title>
     </portlet-info>
     <supports>
       <mime-type>text/html</mime-type>

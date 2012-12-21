@@ -109,26 +109,26 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       out.print("<div class=\"pia-window-settings-border\">");
       out.print("<div class=\"pia-window-settings\">");
 
-      out.print("<a href=\""+wrc.getProperty("pia.upUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/arrow_up.png\" alt=\"Vers le haut\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("pia.upUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_up.png\" alt=\"Vers le haut\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.downUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/arrow_down.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("pia.downUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_down.png\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.previousRegionUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/arrow_left.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("pia.previousRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_left.png\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.nextRegionUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/arrow_right.png\" border=0/></a>");
-      out.print("&nbsp;<img src=\"/toutatice-portail-custom-web-assets/images/shading.png\" border=0/>&nbsp;");      
-      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.settingUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/application_edit.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("pia.nextRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_right.png\" border=0/></a>");
+      out.print("&nbsp;<img src=\"/osivia-portal-custom-web-assets/images/shading.png\" border=0/>&nbsp;");      
+      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.settingUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/></a>");
       out.print("&nbsp;");
       Collection modesOrStates = wrc.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
       for (Iterator i = modesOrStates.iterator(); i.hasNext();)	{
     	  ActionRendererContext action = (ActionRendererContext)i.next();
     	  if( "admin".equals(action.getName()) && action.isEnabled())	{
-    		     out.print("<a href=\""+action.getURL()+"\"><img src=\"/toutatice-portail-custom-web-assets/images/application_form.png\" border=0/></a>");
+    		     out.print("<a href=\""+action.getURL()+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_form.png\" border=0/></a>");
     		       		  
     	  }
          }      
-      out.print("&nbsp;<img src=\"/toutatice-portail-custom-web-assets/images/shading.png\" border=0/>&nbsp;");       
-      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.destroyUrl")+"\"><img src=\"/toutatice-portail-custom-web-assets/images/cross.png\" border=0/></a>");
+      out.print("&nbsp;<img src=\"/osivia-portal-custom-web-assets/images/shading.png\" border=0/>&nbsp;");       
+      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.destroyUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/></a>");
 
       out.print("</div>");
       out.print("</div>");
@@ -178,7 +178,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
 
 
     	      
-    	    out.print("<div id=\"admin-mode-title\" onclick=\"location.href='"+viewURL+"';\"><img src=\"/toutatice-portail-custom-web-assets/images/blank.png\"/><span class=\"title-settings\">Administration "+title+"</span></div>");
+    	    out.print("<div id=\"admin-mode-title\" onclick=\"location.href='"+viewURL+"';\"><img src=\"/osivia-portal-custom-web-assets/images/blank.png\"/><span class=\"title-settings\">Administration "+title+"</span></div>");
     	    out.print("<div id=\"admin-mode-content\">");
        }
       

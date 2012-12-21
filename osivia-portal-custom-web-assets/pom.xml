@@ -4,7 +4,7 @@
 
 
 	<parent>
-		<groupId>osivia-portal</groupId>
+		<groupId>osivia-portal.core</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>

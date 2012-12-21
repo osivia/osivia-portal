@@ -54,7 +54,7 @@ public abstract class PortalObjectCommand extends ControllerCommand
    /**
     * Enforce the security on this command using the provided portal authorization manager.
     * 
-    * Modification toutatice sur les templates
+    * Modification osivia sur les templates
     *
     * @param pam the portal authorization manager
     * @throws org.jboss.portal.core.controller.SecurityException

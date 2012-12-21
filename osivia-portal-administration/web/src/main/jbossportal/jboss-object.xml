@@ -3,8 +3,8 @@
       <parent-ref>admin</parent-ref>
       <if-exists>overwrite</if-exists>
       <page>
-         <page-name>toutatice2</page-name>
-         <display-name xml:lang="en">toutatice admin</display-name>
+         <page-name>osivia-admin</page-name>
+         <display-name xml:lang="en">osivia portal</display-name>
 
          <supported-locale>fr</supported-locale>
          <supported-locale>en</supported-locale>
@@ -12,8 +12,8 @@
          <supported-locale>pt_BR</supported-locale>
 
         <window>
-            <window-name>toutatice-portail-administration-windows</window-name>
-            <instance-ref>toutatice-portail-administration-portletInstance</instance-ref>
+            <window-name>osivia-portal-administration-windows</window-name>
+            <instance-ref>osivia-portal-administration-portletInstance</instance-ref>
             <region>center</region>
             <height>0</height>
             <properties>

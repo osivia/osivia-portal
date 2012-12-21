@@ -5,7 +5,7 @@
 <jboss-web>  
     <class-loading java2ClassLoadingCompliance="false">
         <loader-repository>
-            seam.jboss.org:loader=toutatice-portail-administration
+            seam.jboss.org:loader=osivia-portal-administration
             <loader-repository-config>java2ParentDelegation=false</loader-repository-config>
         </loader-repository>
     </class-loading>

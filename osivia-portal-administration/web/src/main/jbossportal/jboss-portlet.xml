@@ -5,7 +5,7 @@
 
    <portlet-app>
     <portlet>
-         <portlet-name>toutatice-portail-administration-portlet</portlet-name>
+         <portlet-name>osivia-portal-administration-portlet</portlet-name>
          <transaction>
             <trans-attribute>Required</trans-attribute>            
         </transaction>
