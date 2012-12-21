@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<deployments>
+   <deployment>
+       <instance>
+			   <display-name xml:lang="en">Toutatice - Administration</display-name>
+			   <display-name xml:lang="fr">Toutatice - Administration </display-name>
+       
+         <instance-id>toutatice-portail-administration-portletInstance</instance-id>
+         <portlet-ref>toutatice-portail-administration-portlet</portlet-ref>
+      </instance>
+   </deployment>
+</deployments>

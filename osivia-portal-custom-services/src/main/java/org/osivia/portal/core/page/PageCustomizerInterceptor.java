@@ -1,0 +1,1822 @@
+package org.osivia.portal.core.page;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
+import org.jboss.portal.api.PortalRuntimeContext;
+import org.jboss.portal.api.PortalURL;
+import org.jboss.portal.api.node.PortalNode;
+import org.jboss.portal.common.i18n.LocalizedString;
+import org.jboss.portal.common.invocation.Scope;
+
+import org.jboss.portal.core.aspects.controller.node.Navigation;
+import org.jboss.portal.core.aspects.server.UserInterceptor;
+import org.jboss.portal.core.cms.ui.CMSPortlet;
+import org.jboss.portal.core.controller.AccessDeniedException;
+import org.jboss.portal.core.controller.Controller;
+import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerInterceptor;
+import org.jboss.portal.core.controller.ControllerRequestDispatcher;
+import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.SignOutCommand;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.portlet.ControllerPageNavigationalState;
+import org.jboss.portal.core.impl.api.node.PortalNodeImpl;
+import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
+import org.jboss.portal.core.model.CustomizationManager;
+import org.jboss.portal.core.model.instance.command.action.InvokePortletInstanceRenderCommand;
+import org.jboss.portal.core.model.instance.command.render.RenderPortletInstanceCommand;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPermission;
+import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.PageCommand;
+import org.jboss.portal.core.model.portal.command.PortalCommand;
+import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.jboss.portal.core.model.portal.command.action.ImportPageToDashboardCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewContextCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateChange;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
+import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.identity.User;
+import org.jboss.portal.portlet.ParametersStateString;
+import org.jboss.portal.portlet.invocation.response.FragmentResponse;
+import org.jboss.portal.security.PortalSecurityException;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
+import org.jboss.portal.server.config.ServerConfig;
+import org.jboss.portal.server.request.URLContext;
+import org.jboss.portal.server.request.URLFormat;
+import org.jboss.portal.theme.PageService;
+import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.ThemeService;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
+import org.jboss.portal.theme.page.Region;
+import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
+import org.jboss.portal.theme.render.renderer.RegionRenderer;
+import org.jboss.portal.theme.render.renderer.RegionRendererContext;
+import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.osivia.portal.api.charte.Breadcrumb;
+import org.osivia.portal.api.charte.BreadcrumbItem;
+import org.osivia.portal.api.charte.UserPage;
+import org.osivia.portal.api.charte.UserPortal;
+import org.osivia.portal.api.contexte.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.path.PortletPathItem;
+import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.assistantpage.ChangeModeCommand;
+import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSObjectPath;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
+import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.pagemarker.PageMarkerInfo;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.portalobjects.CMSTemplatePage;
+import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
+import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.profils.ProfilBean;
+import org.osivia.portal.core.profils.ProfilManager;
+
+
+
+public class PageCustomizerInterceptor extends ControllerInterceptor {
+
+	protected static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
+	
+	/** .  */
+	protected static final Log logger = LogFactory.getLog(PageCustomizerInterceptor.class);
+
+	/** . */
+	private static final PortalObjectId defaultPortalId = PortalObjectId.parse("/", PortalObjectPath.CANONICAL_FORMAT);
+
+	/** . */
+	private static PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
+
+	/** . */
+	private String toolbarPath;
+
+
+	private String footerPath;
+
+	
+	private String breadcrumbPath;
+
+	private String searchPath;
+
+
+
+	/** . */
+	private String loginNamespace;
+
+	/** . */
+	private ServerConfig config;
+
+	/** . */
+	private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+
+	/** . */
+	private PortalObjectContainer portalObjectContainer;
+	
+	protected IPortalUrlFactory urlFactory;
+	
+	private ICacheService cacheService;
+	
+	private org.osivia.portal.api.cache.services.ICacheService servicesCacheService;
+	
+	private transient IProfilerService profiler;
+	
+	private IProfilManager profilManager;
+	
+	public static boolean isImportRunning = false;
+	
+	
+	public IProfilerService getProfiler() {
+		return profiler;
+	}
+
+	public void setProfiler(IProfilerService profiler) {
+		this.profiler = profiler;
+	}
+
+	
+	public org.osivia.portal.api.cache.services.ICacheService getServicesCacheService() {
+		return servicesCacheService;
+	}
+
+	public void setServicesCacheService(org.osivia.portal.api.cache.services.ICacheService cacheService) {
+		this.servicesCacheService = cacheService;
+	}
+
+	public ICacheService getCacheService() {
+		return cacheService;
+	}
+
+	public void setCacheService(ICacheService cacheService) {
+		this.cacheService = cacheService;
+	}
+
+	public IPortalUrlFactory getUrlFactory() {
+		return urlFactory;
+	}
+
+	public void setUrlFactory(IPortalUrlFactory urlFactory) {
+		this.urlFactory = urlFactory;
+	}
+
+	public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
+		return portalAuthorizationManagerFactory;
+	}
+
+	public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
+		this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
+	}
+
+	public PortalObjectContainer getPortalObjectContainer() {
+		return portalObjectContainer;
+	}
+
+	public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+		this.portalObjectContainer = portalObjectContainer;
+	}
+	
+	public IProfilManager getProfilManager() {
+		return profilManager;
+	}
+
+	public void setProfilManager(IProfilManager profilManager) {
+		this.profilManager = profilManager;
+	}
+	
+	
+	public static boolean isAdministrator(ControllerContext controllerCtx) {
+
+		// On teste si l'utilisateur est un administrateur
+		// (ie. autorisé à voir le portal d'administration)
+		
+		Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "pia.isAdmin");
+		if( isAdmin == null){
+			PortalObjectPermission perm = new PortalObjectPermission(adminPortalId,	PortalObjectPermission.VIEW_MASK);			
+			if (controllerCtx.getController().getPortalAuthorizationManagerFactory().getManager().checkPermission(perm)) 
+				isAdmin = new Boolean(true);
+			else
+				isAdmin = new Boolean(false);		
+			controllerCtx.setAttribute(Scope.PRINCIPAL_SCOPE, "pia.isAdmin", isAdmin);
+		}
+		return isAdmin;
+	}
+	
+	
+	
+	public static boolean initShowMenuBarItem(ControllerContext controllerCtx, Portal portal) {
+
+		// Uniquement en mode wizzard
+		
+		Boolean showMenuBar = (Boolean) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "pia.showMenuBarItem");
+		if( showMenuBar == null){
+			
+			String menuBarPolicy = portal.getProperty("pia.menuBarPolicy");
+			showMenuBar = new Boolean(true);
+			if( "wizzardOnly".equals(menuBarPolicy))	{
+				if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+				"pia.windowSettingMode")))
+					showMenuBar = new Boolean(false);
+							
+			}
+	
+			controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "pia.showMenuBarItem", showMenuBar);
+		}
+		return showMenuBar;
+	}
+	
+	
+	ICMSService cmsService ;
+	
+	
+
+	public ICMSService getCMSService () throws Exception	{
+		if( cmsService == null)
+			cmsService  = Locator.findMBean(ICMSService.class,"pia:service=NuxeoService");
+		
+		return cmsService;
+	}
+	
+
+	
+	
+	
+	
+	public static void initPageState(Page page, ControllerContext controllerCtx)	{
+		
+		
+		/* Init page parameters */
+
+       NavigationalStateContext nsContext = (NavigationalStateContext)controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+       //
+       String pageId = page.getId().toString();
+
+       PageNavigationalState previousPNS = nsContext.getPageNavigationalState(pageId);
+       Map<QName, String[]> state = new HashMap<QName, String[]>();
+    
+       
+          if (previousPNS != null)
+          {
+             state.putAll(previousPNS.getParameters());
+          }
+
+          
+       // init cms Path
+       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"));
+       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.pageScope"));
+
+       nsContext.setPageNavigationalState(pageId, new PageNavigationalState(state));
+       
+		/* Init window states */
+       
+       unsetMaxMode( page.getChildren(PortalObject.WINDOW_MASK), controllerCtx);
+	}
+	
+	
+	public static void unsetMaxMode(Collection windows, ControllerContext controllerCtx)	{
+		
+		// Maj du breadcrumb
+		controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
+		
+		// Reinitialtion du path CMS
+		
+		
+
+		Iterator i = windows.iterator();
+		
+		while (i.hasNext()) {
+
+			Window window = (Window) i.next();
+
+			NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+
+			WindowNavigationalState windowNavState = (WindowNavigationalState) controllerCtx.getAttribute(
+					ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+			// On regarde si la fenêtre est en vue MAXIMIZED
+			
+
+			if (windowNavState != null && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+
+				// On la force en vue NORMAL
+				WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState,
+						WindowState.NORMAL, windowNavState.getMode(), windowNavState.getContentState());
+				controllerCtx.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+				
+				if( windowlogger.isDebugEnabled())
+					windowlogger.debug("initPageState " + window.getId()+": maximized -> normal");
+
+
+				// On force le rafrachissement de la page (requete Ajax)
+				controllerCtx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.refreshPage", "true");
+
+			}
+		}
+		
+		
+	}
+
+	
+	
+	
+	
+	/**
+	 * détermine si les caches globaux de la page d'accueil peuvent être utilisés
+	 * 
+	 * @param portalObjectContainer
+	 * @param cmd
+	 * @param controllerCtx
+	 * @return
+	 */
+	public static boolean controlDefaultPageCache (PortalObjectContainer portalObjectContainer, ControllerCommand cmd, ControllerContext controllerCtx)	{
+
+		boolean isDefaultPageCache = false;
+
+		if (cmd instanceof RenderPageCommand) {
+
+			RenderPageCommand rpc = (RenderPageCommand) cmd;
+
+			// Mode anonyme
+			HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+
+			String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
+
+			// Premier acces seulement (pour l'instant)
+			if ("1".equals(pageMarker)) {
+
+				if (request.getUserPrincipal() == null) {
+					// Page d'accueil
+					if (rpc.getPage().getId()
+							.equals(portalObjectContainer.getContext().getDefaultPortal().getDefaultPage().getId())) {
+
+						controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "pia.useGlobalWindowCaches", "1");
+						
+						isDefaultPageCache = true;
+					}
+				}
+			}
+
+		}
+		return (isDefaultPageCache);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
+		
+		// v1.0.16 : lock during import
+		if( isImportRunning == true){
+			while (isImportRunning == true) 
+				Thread.sleep(1000L);
+		}
+		
+
+		long    begin = 0;
+		boolean error = false;
+
+		
+		if( logger.isDebugEnabled())
+			logger.debug("PageCustomizerInterceptor test2 commande "+cmd.getClass().getName());
+		
+		if (cmd instanceof RenderPageCommand )
+		 begin = System.currentTimeMillis();
+
+		
+		if (cmd instanceof RenderPageCommand) {
+			
+			// v1.0.10 : réinitialisation des propriétes des windows
+			//PageProperties.getProperties().init();
+			
+			
+
+			RenderPageCommand rpc = (RenderPageCommand) cmd;
+			ControllerContext controllerCtx = cmd.getControllerContext();
+			HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+			
+			controlDefaultPageCache(portalObjectContainer, cmd, controllerCtx);
+			
+
+			if( rpc.getPage().getName().startsWith("exception"))
+				throw new RuntimeException("erreur de test");
+
+			
+			/*
+			 *  Affichage en mode CMS des templates 
+			 */
+			
+			// Accès depuis le menu ou initialisation
+			// On redirige en mode CMS
+			
+			// La page d'accueil (url /portal doit également réinitialiser la page (init-state)
+			// pour initialiser le CMS
+			
+			boolean defaultPage = false;
+			
+			String portalPath =  controllerCtx.getServerInvocation().getServerContext().getPortalRequestPath();
+			String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
+
+			// Appel de la page par défaut (/portal) ou déconnexion (pagemarker=1)
+			if( portalPath.equals("") || portalPath.equals("/") || ("1".equals(pageMarker))){
+				defaultPage = true;;
+			
+			}
+
+			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
+				
+					
+				if(( rpc.getPage().getDeclaredProperty("pia.cms.basePath") != null && "1".equals(rpc.getPage().getDeclaredProperty("pia.cms.pageContextualizationSupport")))	
+						
+						|| ("1".equals(rpc.getPage().getDeclaredProperty("pia.cms.directContentPublisher") ))){
+				
+					if (!"true".equals(request.getParameter("edit-template-mode"))) {
+					// Redirection en mode CMS
+					
+						String url = getUrlFactory().getCMSUrl( new PortalControllerContext(controllerCtx),
+								rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), rpc.getPage().getDeclaredProperty("pia.cms.basePath"), null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE,
+								null, null, null, null, null);
+						
+						if (request.getParameter("firstTab") != null) {
+							url += "&firstTab=" + request.getParameter("firstTab");
+						}
+						return new RedirectionResponse(url.toString());
+					}
+				}
+			}
+
+			
+			
+			if ("true".equals(request.getParameter("unsetMaxMode"))) {	
+				unsetMaxMode( rpc.getPage().getChildren(PortalObject.WINDOW_MASK), controllerCtx);
+			}
+				
+			
+
+			if ("true".equals(request.getParameter("init-state"))) {
+
+				//logger.debug("init page");
+				// Récupération des fenêtres de la page
+				initPageState(rpc.getPage(), controllerCtx);
+			}
+			
+			if (request.getParameter("firstTab") != null) {
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.firstTab", new Integer(request.getParameter("firstTab")) );
+			}
+			
+			if ("true".equals(request.getParameter("init-cache"))) {
+				if( "wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "pia.windowSettingMode")))
+						getServicesCacheService().initCache();
+			}
+			
+			
+			controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.currentPageId", rpc.getPage().getId() );
+			
+			
+			// Force la valorisation dans le contexte
+			isAdministrator( controllerCtx) ;
+			
+			
+			
+
+		}
+		
+		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
+			initShowMenuBarItem( cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());
+		}
+
+		
+		
+		ControllerResponse resp;
+		
+		try	{
+		
+		 resp = (ControllerResponse) cmd.invokeNext();
+		
+		} catch( Exception e){
+			error = true;
+			throw e;
+		}
+		finally	{
+			// Profiler
+			
+			if (cmd instanceof RenderPageCommand )	{		
+				long end = System.currentTimeMillis();
+				long elapsedTime = end - begin;
+				
+				Page page = ((PageCommand)cmd).getPage();
+
+				profiler.logEvent("PAGE", page.getId().toString(), elapsedTime, error);
+
+			}
+		}
+		
+		
+	
+		if (cmd instanceof InvokePortletWindowActionCommand || cmd instanceof InvokePortletWindowRenderCommand) {
+			
+			ControllerContext controllerCtx = cmd.getControllerContext();
+
+			if( "true".equals( controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.unsetMaxMode")))	{
+				
+				Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
+				
+				Collection windows = new ArrayList<PortalObject>(window.getPage().getChildren(PortalObject.WINDOW_MASK));
+
+				unsetMaxMode(windows, controllerCtx);
+			}
+		}
+
+		
+		/*************************************************************************/
+		/* Pour éviter que 2 fenetres soient en mode MAXIMIZE suite à une action */
+		/*************************************************************************/
+
+
+		if (cmd instanceof InvokePortletWindowActionCommand || cmd instanceof InvokePortletWindowRenderCommand) {
+
+			Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
+
+			// On regarde les changements de navigation
+			NavigationalStateContext stateCtx = (NavigationalStateContext) cmd.getControllerContext()
+					.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+			if (stateCtx.getChanges() != null) {
+				
+				List<Window> windowsToUpdate = new ArrayList<Window>();
+
+				for (Iterator i = stateCtx.getChanges(); i.hasNext();) {
+					NavigationalStateChange change = (NavigationalStateChange) i.next();
+
+					NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
+
+					// Get the state key
+					NavigationalStateKey key = update.getKey();
+
+					// We consider only portal object types
+					Class type = key.getType();
+					if (type == WindowNavigationalState.class) {
+						// Get old window state
+						WindowNavigationalState oldNS = (WindowNavigationalState) update.getOldValue();
+						WindowState oldWindowState = oldNS != null ? oldNS.getWindowState() : null;
+
+						// Get new window state
+						WindowNavigationalState newNS = (WindowNavigationalState) update.getNewValue();
+						WindowState newWindowState = newNS != null ? newNS.getWindowState() : null;
+
+						// est-ce que la fenetre est devenue MAXIMISEE
+						if (!WindowState.MAXIMIZED.equals(oldWindowState)) {
+
+							if (WindowState.MAXIMIZED.equals(newWindowState)) {
+								// Mettre toutes les fenetres MAXI en mode normal
+
+								for (PortalObject po : window.getParent().getChildren(PortalObjectImpl.WINDOW_MASK)) {
+									
+									if (!po.getId().equals(key.getId())) {
+										
+										NavigationalStateKey nsKey2 = new NavigationalStateKey(
+												WindowNavigationalState.class, po.getId());
+
+										WindowNavigationalState windowNavState2 = (WindowNavigationalState) cmd
+												.getControllerContext().getAttribute(
+														ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2);
+										// On regarde si la fenêtre est en vue MAXIMIZED
+
+										if (windowNavState2 != null
+												&& WindowState.MAXIMIZED.equals(windowNavState2.getWindowState())) {
+											
+											windowsToUpdate.add( (Window) po);
+										}
+									}
+								}
+
+							}
+						}
+					}
+				}
+				
+				
+				//Forcage en mode normal 
+				
+				for( Window windowToUpdate: windowsToUpdate)	{
+				
+						
+					if( windowlogger.isDebugEnabled())
+						windowlogger.debug("autoresize due to double MAXIMISATION " + windowToUpdate.getId());
+						
+					
+					NavigationalStateKey nsKey2 = new NavigationalStateKey(
+							WindowNavigationalState.class, windowToUpdate.getId());
+
+					WindowNavigationalState windowNavState2 = (WindowNavigationalState) cmd
+					.getControllerContext().getAttribute(
+							ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2);
+
+					// On la force en vue NORMAL
+					WindowNavigationalState newNS2 = WindowNavigationalState.bilto(
+							windowNavState2, WindowState.NORMAL, windowNavState2.getMode(),
+							windowNavState2.getContentState());
+					cmd.getControllerContext().setAttribute(
+							ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2, newNS2);
+				
+				}
+			}
+		}
+
+		
+		// Ajout PIA : permet de mettre à jour les contextes de windows 
+
+		if (cmd instanceof RenderWindowCommand) {
+
+			RenderWindowCommand rwc = (RenderWindowCommand) cmd;
+			
+			ControllerContext controllerCtx = cmd.getControllerContext();
+			
+			//logger.debug("render window apres"+ rwc.getWindow().getName());
+
+			PageProperties properties = PageProperties.getProperties();
+			
+			String windowId = rwc.getWindow().getId().toString(PortalObjectPath.SAFEST_FORMAT);
+			
+
+			// Should we hide the portlet (empty response + hideEmptyPortlet positionned)
+			String emptyResponse = (String)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.emptyResponse."+windowId);
+			if( "1".equals(emptyResponse))	{
+				
+				if( "1".equals(rwc.getWindow().getDeclaredProperty("pia.hideEmptyPortlet")))	{
+					
+					// En mode normal (non édition de la page)
+					if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+					"pia.windowSettingMode")) || ((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject)
+						properties.setWindowProperty(windowId, 	"pia.hidePortlet", "1");
+				}
+				
+			}
+			
+			
+
+			properties.setWindowProperty(windowId,
+					"pia.displayTitle", "1".equals(rwc.getWindow().getDeclaredProperty("pia.hideTitle")) ? null : "1");
+			
+			String title = rwc.getWindow().getDeclaredProperty("pia.title");
+			
+			properties.setWindowProperty(windowId,
+					"pia.title", title);
+			
+ 
+			properties.setWindowProperty(windowId, "pia.style",
+					rwc.getWindow().getDeclaredProperty("pia.style"));
+			
+			properties.setWindowProperty(windowId, "pia.ajaxLink",
+					rwc.getWindow().getDeclaredProperty("pia.ajaxLink"));			
+
+			properties.setWindowProperty(windowId,
+					"pia.displayDecorators",
+					"1".equals(rwc.getWindow().getDeclaredProperty("pia.hideDecorators")) ? null : "1");
+			
+			
+			
+			
+			if( ((RenderWindowCommand) cmd).getTarget() instanceof DynamicWindow){
+				
+				DynamicWindow dynaWIndow = (DynamicWindow) ((RenderWindowCommand) cmd).getTarget();
+				if( dynaWIndow.isSessionWindow())	{
+					if( ! "1".equals( rwc.getWindow().getDeclaredProperty("pia.dynamic.unclosable" )))
+					properties.setWindowProperty(windowId,
+						"pia.closeUrl",
+						getUrlFactory().getDestroyProcUrl(new PortalControllerContext(controllerCtx), rwc.getWindow().getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
+				}
+					
+			}
+			
+
+		}
+
+		// Insert navigation portlet in the page
+		if (resp instanceof PageRendition) {
+			
+			if (cmd instanceof RenderPageCommand) {	
+				RenderPageCommand rpc = (RenderPageCommand) cmd;
+			
+			PageRendition rendition = (PageRendition) resp;
+			
+			boolean admin = false;
+			if (cmd instanceof RenderPageCommand) {
+				
+				PortalObject portalObject = rpc.getPage().getPortal();
+				admin = "admin".equalsIgnoreCase(portalObject.getName());
+			}
+	
+			//
+
+			if( admin)	{
+				injectAdminHeaders(rpc,  rendition);
+			}	else	{
+				injectStandadrHeaders(rpc,  rendition);
+			}
+
+			}
+		}
+
+		//
+		return resp;
+	}
+	
+	
+	
+	void injectStandadrHeaders(PageCommand rpc, PageRendition rendition) throws Exception	{
+		
+
+		
+	
+
+		String breadcrumb = injectBreadcrumb(rpc, rendition);
+		if (breadcrumb != null) {
+			Map windowProps = new HashMap();
+			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+			WindowResult res = new WindowResult("", breadcrumb, Collections.EMPTY_MAP, windowProps, null,
+					WindowState.NORMAL, Mode.VIEW);
+			WindowContext bloh = new WindowContext("BLEH", "breadcrumb", "0", res);
+			rendition.getPageResult().addWindowContext(bloh);
+
+			//
+			Region region = rendition.getPageResult().getRegion2("breadcrumb");
+			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+		}						
+		
+		
+
+		//
+		String toolbar = injectToolbar(rpc);
+		if (toolbar != null) {
+			Map windowProps = new HashMap();
+			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+			WindowResult res = new WindowResult("", toolbar, Collections.EMPTY_MAP, windowProps, null,
+					WindowState.NORMAL, Mode.VIEW);
+			WindowContext bluh = new WindowContext("BLIH", "toolbar", "0", res);
+			rendition.getPageResult().addWindowContext(bluh);
+
+			//
+			Region region = rendition.getPageResult().getRegion2("toolbar");
+			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+		}
+		
+
+		String search = injectSearch(rpc);
+		if (search != null) {
+			Map windowProps = new HashMap();
+			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+			WindowResult res = new WindowResult("", search, Collections.EMPTY_MAP, windowProps, null,
+					WindowState.NORMAL, Mode.VIEW);
+			WindowContext bluh = new WindowContext("BLOH", "search", "0", res);
+			rendition.getPageResult().addWindowContext(bluh);
+
+			//
+			Region region = rendition.getPageResult().getRegion2("search");
+			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+		}		
+		
+		
+
+		String footerNav = injectFooter(rpc);
+		if (footerNav != null) {
+			Map windowProps = new HashMap();
+			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+			WindowResult res = new WindowResult("", footerNav, Collections.EMPTY_MAP, windowProps, null,
+					WindowState.NORMAL, Mode.VIEW);
+			WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
+			rendition.getPageResult().addWindowContext(bloh);
+
+			//
+			Region region = rendition.getPageResult().getRegion2("footer");
+			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+		}	
+		
+			
+		
+	}
+	
+	
+	
+void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
+		
+
+     
+    //
+    String dashboardNav = injectAdminDashboardNav(rpc);
+    if (dashboardNav != null)
+    {
+       Map windowProps = new HashMap();
+       windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+       windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+       windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+       WindowResult res = new WindowResult("", dashboardNav, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+       WindowContext bluh = new WindowContext("BLUH", "dashboardnav", "0", res);
+       rendition.getPageResult().addWindowContext(bluh);
+
+       //
+       Region region = rendition.getPageResult().getRegion2("dashboardnav");
+       DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+    }
+ 
+		
+}
+	
+
+	public String injectToolbar(PageCommand cc) {
+		
+		ControllerContext controllerCtx = cc.getControllerContext();
+		ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(cc), toolbarPath);
+
+		//
+		if (rd != null) {
+			// Get user
+			Controller controller = controllerCtx.getController();
+			User user = controllerCtx.getUser();
+			rd.setAttribute("org.jboss.portal.header.USER", user);
+			
+	
+			Principal principal = controllerCtx.getServerInvocation().getServerContext().getClientRequest()
+					.getUserPrincipal();
+			rd.setAttribute("org.jboss.portal.header.PRINCIPAL", principal);
+
+			if (principal == null) {
+				PortalURL portalURL = null;
+
+				// Redirection vers mon espace
+				MonEspaceCommand cmd = new MonEspaceCommand();
+				portalURL = new PortalURLImpl(cmd, controllerCtx, Boolean.TRUE, null);
+				rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
+			}
+
+	
+			//
+			boolean admin = false;
+			if (cc instanceof RenderPageCommand) {
+				RenderPageCommand rpc = (RenderPageCommand) cc;
+				PortalObject portalObject = rpc.getPage().getPortal();
+				admin = "admin".equalsIgnoreCase(portalObject.getName());
+			}
+
+			//
+			if (!admin) {
+				try {
+					if( isAdministrator(controllerCtx)) {
+						ViewPageCommand showadmin = new ViewPageCommand(adminPortalId);
+						rd.setAttribute("org.jboss.portal.header.ADMIN_PORTAL_URL", new PortalURLImpl(showadmin,
+								controllerCtx, null, null));
+					}
+				} catch (PortalSecurityException e) {
+					logger.error("", e);
+				}
+			}
+
+
+			// PIA : passage en mode édition
+			if (!admin ) {
+
+				try {
+					
+					if( isAdministrator(controllerCtx))  {
+						String mode = "wizzard";
+
+						if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+								"pia.windowSettingMode")))
+							mode = "normal";
+
+						if (cc instanceof PageCommand) {
+							Page page = ((PageCommand) cc).getPage();
+
+							ChangeModeCommand cmd = new ChangeModeCommand(page.getId().toString(
+									PortalObjectPath.SAFEST_FORMAT), mode);
+
+							rd.setAttribute("pia.WIZZARD_URL", new PortalURLImpl(cmd, controllerCtx, null, null));
+							rd.setAttribute("pia.WIZZARD_MODE", mode);
+						}
+
+					}
+				} catch (PortalSecurityException e) {
+					logger.error("", e);
+				}
+
+			}
+
+			//
+			SignOutCommand cmd = new SignOutCommand();
+			rd.setAttribute("org.jboss.portal.header.SIGN_OUT_URL", new PortalURLImpl(cmd, controllerCtx,
+					Boolean.FALSE, null));
+			
+			if (principal != null) 
+			{
+				/* Redirection vers mon espace */
+				PortalURL portalURL2 = null;
+				MonEspaceCommand monEspaceCmd = new MonEspaceCommand();
+				portalURL2 = new PortalURLImpl(monEspaceCmd, controllerCtx, Boolean.TRUE, null);
+				rd.setAttribute("pia.MON_ESPACE_URL", portalURL2);
+				
+			}
+
+			rd.setAttribute("pia.urlfactory", getUrlFactory());
+			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			
+			// v1.0.17
+			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+			"pia.windowSettingMode")))
+				rd.setAttribute("pia.editionMode", "1");
+
+			
+			//
+			rd.include();
+			return rd.getMarkup();
+		}
+
+		//
+		return null;
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx,Page page, String basePath, String path, List<UserPage> pageList)	{
+		
+		try {
+			CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
+			
+			UserPage userPage = new UserPage();
+			pageList.add(userPage);
+			userPage.setName(cmsItem.getProperties().get("displayName"));
+			userPage.setId( path);
+			Map<String, String> pageParams = new HashMap<String, String>();
+			String url = urlFactory.getCMSUrl(portalCtx,
+					page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), cmsItem.getPath(), pageParams, null, null, null, null, null, null);
+			userPage.setUrl( url);
+			
+			List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, path);
+			
+			List<UserPage> subPages = new ArrayList<UserPage>(10);
+			userPage.setChildren(subPages);		
+			
+			if( navItems.size() > 0){
+			
+				for (CMSItem navItem : navItems)
+					if(  "1".equals(navItem.getProperties().get("menuItem")))
+						addSubpagesToSiteMap( cmsCtx,   urlFactory,  portalCtx,  page, basePath, navItem.getPath(), subPages);
+
+				
+			}
+		} catch (Exception e) {
+			// May be a security issue, don't block footer
+			logger.error(e.getMessage());
+		} 
+	}
+	
+	
+				
+	
+	
+	
+	public UserPortal getPageSiteMap(PageCommand cc)	{
+		ControllerContext controllerCtx = cc.getControllerContext();
+		
+		PortalAuthorizationManager pam = portalAuthorizationManagerFactory.getManager();
+		Portal portal = cc.getPortal();
+		PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
+		
+		Locale locale = Locale.FRENCH;
+
+		CMSServiceCtx cmxCtx = new CMSServiceCtx();
+		cmxCtx.setControllerContext(controllerCtx);
+		cmxCtx.setScope("anonymous");
+
+		UserPortal siteMap = new UserPortal();
+		siteMap.setName(portal.getName());
+		List<UserPage> mainPages = new ArrayList<UserPage>(10);
+		siteMap.setUserPages(mainPages);
+
+		SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+		for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
+			sortedPages.add((Page) po);
+		}
+
+		// Add anonymous portal pages
+		
+		for (Page page : sortedPages) {
+			PortalObjectPermission perm = new PortalObjectPermission(page.getId(),
+					PortalObjectPermission.VIEW_MASK);
+			if (pam.checkPermission(null, perm)) {
+				
+				UserPage userPage = new UserPage();
+				mainPages.add(userPage);
+				
+				
+				ViewPageCommand showSubPage = new ViewPageCommand(page.getId());
+				
+				userPage.setId( page.getId());
+				String subName = page.getDisplayName().getString(locale, true);
+				if (subName == null)
+					subName = page.getName();
+				userPage.setName(subName);
+				
+				List<UserPage> childrens = new ArrayList<UserPage>(10);
+				userPage.setChildren(childrens);
+
+
+				String url = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
+				userPage.setUrl(url + "?init-state=true");
+
+
+				// CMS sub pages
+				
+				if (("1".equals(page.getDeclaredProperty("pia.cms.pageContextualizationSupport")) && (page
+						.getDeclaredProperty("pia.cms.basePath") != null))) {
+					
+					try	{
+						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page
+							.getDeclaredProperty("pia.cms.basePath"), page
+							.getDeclaredProperty("pia.cms.basePath"));
+						
+
+							for (CMSItem navItem : navItems)
+								if(  "1".equals(navItem.getProperties().get("menuItem")))
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("pia.cms.basePath"), navItem.getPath(), childrens);
+
+					
+					} catch (Exception e) {
+						// May be a security issue, don't block footer
+						logger.error(e.getMessage());
+					} 
+				}
+			}
+		}
+		
+		return siteMap;
+	}
+	
+	
+	
+	
+	public UserPortal getCMSSiteMap(PageCommand cc) throws Exception	{
+		ControllerContext controllerCtx = cc.getControllerContext();
+		
+		PortalAuthorizationManager pam = portalAuthorizationManagerFactory.getManager();
+		Portal portal = cc.getPortal();
+		PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
+		
+		
+		
+		Page cmsPage = cc.getPortal().getDefaultPage();
+		String navigationScope = cmsPage.getProperty("pia.cms.navigationScope");
+		
+		Locale locale = Locale.FRENCH;
+
+		CMSServiceCtx cmxCtx = new CMSServiceCtx();
+		cmxCtx.setControllerContext(controllerCtx);
+		cmxCtx.setScope(navigationScope);
+		
+
+
+		UserPortal siteMap = new UserPortal();
+		siteMap.setName(portal.getName());
+		List<UserPage> mainPages = new ArrayList<UserPage>(10);
+		siteMap.setUserPages(mainPages);
+
+
+			// CMS sub pages
+				
+				if (("1".equals(cmsPage.getDeclaredProperty("pia.cms.pageContextualizationSupport")) && (cmsPage
+						.getDeclaredProperty("pia.cms.basePath") != null))) {
+					
+					try	{
+						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage
+							.getDeclaredProperty("pia.cms.basePath"), cmsPage
+							.getDeclaredProperty("pia.cms.basePath"));
+						
+
+							for (CMSItem navItem : navItems)
+								if(  "1".equals(navItem.getProperties().get("menuItem")))
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("pia.cms.basePath"), navItem.getPath(), mainPages);
+
+					
+					} catch (Exception e) {
+						// May be a security issue, don't block footer
+						logger.error(e.getMessage());
+					} 
+				}
+		
+		return siteMap;
+	}
+	
+	
+	
+	
+	
+	
+	
+	public UserPortal getSiteMap(PageCommand cc)  throws Exception	{
+		
+		UserPortal userPortal;
+		
+		String navigationMode = cc.getPortal().getProperty("pia.navigationMode");
+		
+		if( "cms".equals(navigationMode))
+			userPortal = getCMSSiteMap(cc);
+		else
+			userPortal = getPageSiteMap(cc);
+		
+		return userPortal;
+	}
+	
+	
+	public String injectFooter(PageCommand cc)   throws Exception{
+		
+		ControllerContext controllerCtx = cc.getControllerContext();
+		ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(cc), footerPath);
+
+		//
+		if (rd != null) {
+
+			UserPortal siteMap = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+					"pia.siteMap."+cc.getPortal().getName());
+
+			if (siteMap == null) {
+				siteMap = getSiteMap(cc);
+
+		
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.siteMap."+cc.getPortal().getName(), siteMap);
+
+			}
+
+			rd.setAttribute("pia.siteMap", siteMap);
+			rd.setAttribute("pia.urlfactory", getUrlFactory());
+			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			
+			//
+			rd.include();
+			return rd.getMarkup();
+		}
+
+		//
+		return null;
+	}
+
+	  
+	  
+	  public String injectAdminDashboardNav(PageCommand cc)
+	   {
+	      ControllerContext controllerCtx = cc.getControllerContext();
+	      ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath( cc), "/WEB-INF/jsp/header/header.jsp");
+
+
+	      //
+	      if (rd != null)
+	      {
+	         // Get user
+	         Controller controller = controllerCtx.getController();
+	         User user = controllerCtx.getUser();
+	         rd.setAttribute("org.jboss.portal.header.USER", user);
+
+	         Principal principal = controllerCtx.getServerInvocation().getServerContext().getClientRequest().getUserPrincipal();
+	         rd.setAttribute("org.jboss.portal.header.PRINCIPAL", principal);
+
+	         if (principal == null)
+	         {
+	            PortalURL portalURL;
+
+	            String configNamespace = config.getProperty("core.login.namespace");
+	            if (loginNamespace == null)
+	            {
+	               loginNamespace = configNamespace;
+	            }
+
+	            if (loginNamespace != null && !loginNamespace.toLowerCase().trim().equals("default"))
+	            {
+	               ViewContextCommand vcc = new ViewContextCommand(new PortalObjectId(loginNamespace, new PortalObjectPath()));
+	               portalURL = new PortalURLImpl(vcc, controllerCtx, Boolean.TRUE, null);
+	            }
+	            else
+	            {
+	               portalURL = new PortalURLImpl(cc, controllerCtx, Boolean.TRUE, null);
+	            }
+	            String securedLogin = config.getProperty("core.login.secured");
+	            if (securedLogin != null && "true".equals(securedLogin.toLowerCase()))
+	            {
+	               portalURL.setSecure(Boolean.TRUE);
+	            }
+	            rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
+	         }
+
+       
+
+	         //
+	         boolean admin = false;
+	         if (cc instanceof RenderPageCommand)
+	         {
+	            RenderPageCommand rpc = (RenderPageCommand)cc;
+	            PortalObject portalObject = rpc.getPage().getPortal();
+	            admin = "admin".equalsIgnoreCase(portalObject.getName());
+	         }
+
+	            // Link to default page of default portal
+	            // Cannot use defaultPortalId in 2.6.x because the default context doesn't have the view right.
+	            // Upgrading from 2.6.1 to 2.6.2 would break.
+	            ViewPageCommand vpc = new ViewPageCommand(portalObjectContainer.getContext().getDefaultPortal().getId());
+	            rd.setAttribute("org.jboss.portal.header.DEFAULT_PORTAL_URL", new PortalURLImpl(vpc, controllerCtx, null, null));
+
+
+	         //
+	         SignOutCommand cmd = new SignOutCommand();
+	         rd.setAttribute("org.jboss.portal.header.SIGN_OUT_URL", new PortalURLImpl(cmd, controllerCtx, Boolean.FALSE, null));
+
+	         //
+	         rd.include();
+	         return rd.getMarkup();
+	      }
+
+	      //
+	      return null;
+	   }	  
+	
+	  
+	  
+	  
+	
+	
+	public String injectSearch(PageCommand rpc) throws Exception {
+		
+		ControllerContext controllerCtx = rpc.getControllerContext();
+		ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath( rpc), searchPath);
+		
+		//if( true)
+		//	return  "test";
+
+		//
+		if (rd != null) {
+		// Pour déterminer la page courante (premier niveau)
+			
+	
+			/* Lien de recherche */
+			
+			Map<String, String> props = new HashMap<String, String>();
+			props.put("pia.nuxeoPath", "/");
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("pia.keywords", "__REPLACE_KEYWORDS__");
+			
+			// v1.0.13 : on ouvre tout le temp la meme page
+			
+			String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search", "/default/templates/search", props, params);
+			//String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search" +  System.currentTimeMillis(), "/default/templates/search", props, params);
+			rd.setAttribute("pia.searchUrl", searchUrl);
+			
+				
+			rd.setAttribute("pia.urlfactory", getUrlFactory());
+			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 			
+			
+						
+			rd.include();
+			
+			
+			return rd.getMarkup();
+			
+			}
+
+		//
+		return null;
+	}
+	
+	
+	
+	public String injectBreadcrumb(PageCommand rpc, PageRendition rendition) throws Exception {
+		
+		ControllerContext controllerCtx = rpc.getControllerContext();
+		ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath( rpc), breadcrumbPath);
+		
+
+		if (rd != null) {
+	
+
+			
+			/******************************/
+			/* Maj du  breadcrumb         */
+			/******************************/
+			
+
+			Map winsCtx = rendition.getPageResult().getWindowContextMap();
+			
+			Breadcrumb breadcrumbMemo  = (Breadcrumb) rpc.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
+			if( breadcrumbMemo == null)	{
+				breadcrumbMemo = new Breadcrumb();
+				rpc.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumbMemo);
+			}
+			
+			Breadcrumb breadcrumbDisplay = new Breadcrumb();
+			
+				
+			//Ajout de la page courante en premier élément
+				
+			Page page = ((RenderPageCommand) rpc).getPage();
+			
+			
+			// On determine le path de navigation cms
+			
+			NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+			.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+	
+
+			PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());			
+			
+			String sPath[] = null;
+			if( pageState != null)
+				sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"));
+			
+			String pathPublication = null;
+			if( sPath != null && sPath.length > 0)
+				pathPublication = sPath[ 0];
+			
+			
+			// Dnas le cas d'une publication correcte, on n'affiche pas les pages filles
+			boolean publication = false;
+			if( pathPublication != null )	{
+				String basePath = page.getProperty("pia.cms.basePath");
+				if( basePath != null && pathPublication.startsWith(basePath))
+					publication = true;
+			}
+
+			
+			
+			
+			do	{
+				boolean displayPage = true;
+				
+				// TODO JSSCMS1: on ne devrait pas avoir à faire ce test ....
+				// le pia.cms.basePath devrait etre renseigné dans ce cas (mode puublication)
+				// Mais ce n'est pas le cas quand on est dans la page de tete
+				// Cas : blog   : mode editon > le breadcrum compren la page dynamiqeu
+				
+				// Pas d'affichage des pages cms dynamiques  en mode édition
+				if( "wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+				"pia.windowSettingMode")) &&(page instanceof CMSTemplatePage))	{
+					displayPage = false; 
+				}
+				
+			
+				if( publication){
+					String basePath = page.getProperty("pia.cms.basePath");
+					//String basePath = page.getProperty("pia.cms.basePath");
+					if( basePath != null)
+						displayPage = false;
+					else	{
+						if( "1".equals(page.getProperty("pia.cms.directContentPublisher"))){
+							displayPage = false;
+						}
+					}
+					
+				}
+				
+				if( displayPage){
+					ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
+					String name = page.getDisplayName().getString(Locale.FRENCH, true);
+					if (name == null)
+						name = page.getName();
+
+					String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString()
+							+ "?init-state=true";
+					BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), page.getId(), false);
+					breadcrumbDisplay.getChilds().add(0, item);
+				
+				}
+				
+				PortalObject parent = page.getParent();
+
+				// Récupération du parent
+				if (parent instanceof Page)
+					page = (Page) parent;
+				else
+					page = null;
+			} while ( page != null);
+			
+			
+			
+			/*
+			 Ajout du path CMS
+			*/ 
+			 
+
+	
+
+			page = ((RenderPageCommand) rpc).getPage();
+			
+			if(!"1".equals(page.getProperty("pia.cms.directContentPublisher"))){
+			
+			//On identifie la page de tete de publication
+			
+			PortalObject po = page;
+			while (po instanceof Page && po.getDeclaredProperty("pia.cms.basePath") == null)
+				po = po.getParent();			
+
+			if( pageState != null){
+
+				String basePath = page.getProperty("pia.cms.basePath");
+				String navigationScope = page.getProperty("pia.cms.navigationScope");
+						
+				if (pathPublication != null && basePath != null && pathPublication.startsWith(basePath)) {
+					
+					
+					CMSServiceCtx cmxCtx = new CMSServiceCtx();
+					cmxCtx.setControllerContext(controllerCtx);
+					cmxCtx.setScope(navigationScope);
+					
+	
+					while (pathPublication.contains(basePath)) {
+
+								Map<String, String> pageParams = new HashMap<String, String>();
+						
+								
+								String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx), po.getId()
+										.toString(PortalObjectPath.CANONICAL_FORMAT), pathPublication,  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
+
+
+								
+								CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
+								
+								
+								BreadcrumbItem item = new BreadcrumbItem(navItem.getProperties().get("displayName"), url, null, false);
+								breadcrumbDisplay.getChilds().add(0,item);
+								
+								// Get the navigation parent
+								
+								CMSObjectPath parent = CMSObjectPath.parse(pathPublication).getParent();
+								pathPublication = parent.toString();
+
+
+						}
+
+					
+
+					/*
+					String categoryPath = pathPublication.substring(basePath.length());
+					String categoryItems[] = categoryPath.split("/");
+
+					String itemPath = basePath;
+
+					for (int i = 1; i < categoryItems.length; i++) {
+
+						itemPath += "/" + categoryItems[i];
+						
+						
+
+						
+						Map<String, String> pageParams = new HashMap<String, String>();
+						
+
+					
+	
+						String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx), po.getId()
+								.toString(PortalObjectPath.CANONICAL_FORMAT), itemPath,  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
+
+
+						
+						CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, itemPath);
+
+						//CMSItem cmsItem = getCMSService().getContent(cmxCtx, itemPath);
+
+						
+						
+						BreadcrumbItem item = new BreadcrumbItem(navItem.getProperties().get("displayName"), url, null, false);
+						breadcrumbDisplay.getChilds().add(item);
+					}
+					*/
+				}
+			}
+			
+
+			}
+			
+			/* Synchronisation du breadcrum avec l'état de la page 
+			 * (un item est crée automatiquement en vue max)
+			 */
+			
+			
+			if( breadcrumbMemo.getChilds().size() == 0)	{
+				// Si la page courante devient MAXIMIZED, on l'ajoute au breadcrumb
+				for (Object winCtx : winsCtx.values())	{
+					WindowContext wctx = (WindowContext)winCtx;
+					if( WindowState.MAXIMIZED.equals(wctx.getWindowState()))	{
+						String title = wctx.getProperty("pia.title");
+						if( title == null)
+							title = wctx.getResult().getTitle();						
+						page = ((PageCommand) rpc).getPage(); 
+						ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
+						String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
+						BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
+						breadcrumbMemo.getChilds().add(newItem);
+					}
+				}
+			} else if (breadcrumbMemo.getChilds().size() == 1)	{
+				// Si le premier item était lié à une maximisattion et qu'on repasse
+				// en mode NORMAL, il faut le supprimer
+				BreadcrumbItem firstItem =  breadcrumbMemo.getChilds().get(0);
+				if( firstItem.isUserMaximized()){
+				boolean isWindowMaximized = false;
+			
+				for (Object winCtx : winsCtx.values())	{
+					WindowContext wctx = (WindowContext)winCtx;
+					if( WindowState.MAXIMIZED.equals(wctx.getWindowState()))	{
+						
+						isWindowMaximized = true;
+					}
+					
+					
+				}
+				if( ! isWindowMaximized)
+					breadcrumbMemo.getChilds().clear();
+				}
+			}
+			
+		
+			
+			
+			
+			
+			// Mise à jour et mémorisation de l'item courant
+			// (titre, url, path, ...)
+			
+			
+			if( breadcrumbMemo != null && breadcrumbMemo.getChilds().size() > 0){
+			
+				for (Object winCtx : winsCtx.values())	{
+
+				WindowContext wctx = (WindowContext) winCtx;
+
+				if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
+
+					BreadcrumbItem last = breadcrumbMemo.getChilds().get(breadcrumbMemo.getChilds().size() - 1);
+					
+					// Maj du path
+					List<PortletPathItem> portletPath = (List<PortletPathItem>)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.portletPath");
+					if( portletPath == null)	{
+						
+
+
+					// Maj du titre
+					// Dans l'ordre, titre de la window, titre du path, titre du portlet
+					String title = wctx.getProperty("pia.title");
+					if (title == null)
+						title = wctx.getResult().getTitle();
+
+					// Maj de l'url
+					page = ((PageCommand) rpc).getPage();
+					ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
+					String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
+
+					last.setName(title);
+					last.setUrl(url);
+					}	else	{
+						
+						// Valorise les labels et les urls liés au path
+						
+						int indicePathItem = 0;
+						
+						for( PortletPathItem pathItem :portletPath )	{
+							
+			                  // Set the content as a render parameter
+			                  ParametersStateString parameters = ParametersStateString.create();
+			                  
+			                  for( Entry<String, String> name: pathItem.getRenderParams().entrySet())	{
+			                	  parameters.setValue( name.getKey(), name.getValue());
+			                  }
+			                  
+
+			                  // Add public parameters
+			                  Map<QName, String[]> ps = pageState.getParameters();
+			                  for( Entry<QName, String[]> pageEntry :  ps.entrySet())	{
+			                	  if( parameters.getValue(  pageEntry.getKey().toString()) == null)
+			                		  if(  pageEntry.getValue().length > 0)
+			                			  parameters.setValue(  pageEntry.getKey().toString(), pageEntry.getValue()[0]);
+			                  }
+
+			                  
+			                  
+			                  PortalObjectId targetWindowId = PortalObjectId.parse( wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
+			                  
+			                  ControllerCommand renderCmd =  new InvokePortletWindowRenderCommand(targetWindowId, Mode.VIEW, null, parameters);	
+
+			                  // Perform a render URL on the target window
+			                  String url = new PortalURLImpl(renderCmd, rpc.getControllerContext(), null, null).toString();
+			                  pathItem.setUrl(url);
+			                  						
+			                  String label = pathItem.getLabel();
+			                  if( indicePathItem == 0 && wctx.getProperty("pia.title") != null)
+			                	  label = wctx.getProperty("pia.title");
+			                  pathItem.setLabel(label);
+
+			                  last.setPortletPath(portletPath);
+			                  
+			                  indicePathItem++;
+						}						
+						
+					}
+					
+					
+					}
+				}
+			}
+			
+			// Ajout des éléments mémorisés
+			if( breadcrumbMemo != null){
+				for (BreadcrumbItem itemMemo : breadcrumbMemo.getChilds())	{
+					
+					if( !itemMemo.isNavigationPlayer()){
+						if( itemMemo.getPortletPath() != null)	{
+							
+							// Ajout des items correspondant au path du portlet
+							
+							int indicePathItem = 0;
+							for( PortletPathItem pathItem :itemMemo.getPortletPath() )	{
+				                 			                  
+				                  BreadcrumbItem pathDisplayItem = new BreadcrumbItem(pathItem.getLabel(), pathItem.getUrl(), itemMemo.getId(), true);
+				                  breadcrumbDisplay.getChilds().add( pathDisplayItem);
+				                  
+				                  
+				                  indicePathItem++;
+							}
+							
+						}	else	{
+							// Pas de path
+							// Ajout de l'item correspondant au titre du portlet
+						
+							breadcrumbDisplay.getChilds().add( itemMemo);
+						}
+					}
+				}
+			}
+
+	
+			
+			
+			
+			rd.setAttribute("pia.breadcrumb", breadcrumbDisplay);
+			
+			rd.setAttribute("pia.urlfactory", getUrlFactory());
+			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 		
+			
+			// v1.0.17
+			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+			"pia.windowSettingMode")))
+				rd.setAttribute("pia.editionMode", "1");
+
+			
+						
+			rd.include();
+			
+			
+			return rd.getMarkup();
+			
+			}
+
+		//
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	public String getFooterPath() {
+		return footerPath;
+	}
+
+	public void setFooterPath(String footerPath) {
+		this.footerPath = footerPath;
+	}
+
+	public static String getTargetContextPath(PageCommand pc) {
+	    //String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+		// TODO : NE FAIRE QU'UNE FOIS PAR REQUETE !!!
+
+		String themeId = pc.getPage().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+        PageService pageService = pc.getControllerContext().getController().getPageService();
+        ThemeService themeService = pageService.getThemeService();
+        PortalTheme theme = themeService.getThemeById(themeId);
+        return theme.getThemeInfo().getContextPath();
+	}
+
+
+
+
+
+	public String getLoginNamespace() {
+		return loginNamespace;
+	}
+
+	public void setLoginNamespace(String loginNamespace) {
+		this.loginNamespace = loginNamespace;
+	}
+
+	public ServerConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(ServerConfig config) {
+		this.config = config;
+	}
+	
+	public String getBreadcrumbPath() {
+		return breadcrumbPath;
+	}
+
+	public void setBreadcrumbPath(String breadcrumbPath) {
+		this.breadcrumbPath = breadcrumbPath;
+	}
+	
+	public String getSearchPath() {
+		return searchPath;
+	}
+
+	public void setSearchPath(String searchPath) {
+		this.searchPath = searchPath;
+	}
+	
+	
+	public String getToolbarPath() {
+		return toolbarPath;
+	}
+
+	public void setToolbarPath(String toolbarPath) {
+		this.toolbarPath = toolbarPath;
+	}
+}

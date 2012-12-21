@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<a4j:outputPanel ajaxRendered="true">
+<rich:modalPanel id="popUpEditProfil" height="250" width="300">
+	<f:facet name="header">
+		<h:outputText value="#{fileUploadBean.titrePopup}" />
+	</f:facet>
+	<f:facet name="controls">
+		<span style="cursor: pointer" onclick="javascript:Richfaces.hideModalPanel('popUpEditProfil'); return false;">X</span>
+	</f:facet>
+	<rich:panel id="detailProfil" style="border:0;height:100px">
+		<h:form id="form_popUp_modif">
+		<div class="ligne">
+			<div class="libelle"><h:outputLabel value="Identifiant du profil"/></div>
+			<div class="contenu">
+				<h:outputText value="#{fileUploadBean.profilSelectionne.settolist[0].nom}" rendered="#{fileUploadBean.action=='EDIT'}"/>
+				<h:inputText value="#{fileUploadBean.profilNom}" rendered="#{fileUploadBean.action=='ADD'}"/>
+			</div>
+		</div>
+			
+		<div class="ligne">
+			<div class="libelle"><h:outputLabel value="Rôle"/></div>
+			<div class="contenu">
+				<h:inputText value="#{fileUploadBean.profilSelectionne.settolist[0].role}" rendered="#{fileUploadBean.action=='EDIT'}"/>
+				<h:inputText value="#{fileUploadBean.profilRole}" rendered="#{fileUploadBean.action=='ADD'}"/>
+			</div>
+		</div>
+		
+		<div class="ligne">
+			<div class="libelle"><h:outputLabel value="Url"/></div>
+			<div class="contenu">
+				<h:inputText value="#{fileUploadBean.profilSelectionne.settolist[0].url}" rendered="#{fileUploadBean.action=='EDIT'}"/>
+				<h:inputText value="#{fileUploadBean.profilUrl}" rendered="#{fileUploadBean.action=='ADD'}"/>
+			</div>
+		</div>	
+		
+		<div class="ligne">
+			<div class="libelle"><h:outputLabel value="Nuxeo virtual user"/></div>
+			<div class="contenu">
+				<h:inputText value="#{fileUploadBean.profilSelectionne.settolist[0].nuxeoVirtualUser}" rendered="#{fileUploadBean.action=='EDIT'}"/>
+				<h:inputText value="#{fileUploadBean.profilNuxeoVirtualUser}" rendered="#{fileUploadBean.action=='ADD'}"/>
+			</div>
+		</div>	
+		
+	
+		<div class="piedPage">
+			<a4j:commandButton align="center" id="Ajouter" type="submit" reRender="orderingList" value="Ajouter" 
+				action="#{fileUploadBean.storeProfil}" oncomplete="javascript:Richfaces.hideModalPanel('popUpEditProfil'); return false;" rendered="#{fileUploadBean.action=='ADD'}">
+			</a4j:commandButton>
+			<a4j:commandButton align="center" id="Enregistrer" type="submit" reRender="orderingList" value="Enregistrer" 
+				action="#{fileUploadBean.updateProfil}" oncomplete="javascript:Richfaces.hideModalPanel('popUpEditProfil'); return false;" rendered="#{fileUploadBean.action=='EDIT'}">
+			</a4j:commandButton>
+			<a4j:commandButton align="center" id="Annuler" type="submit" value="Annuler" onclick="javascript:Richfaces.hideModalPanel('popUpEditProfil'); return false;"></a4j:commandButton>
+		</div>
+		</h:form>
+	</rich:panel>
+</rich:modalPanel>
+</a4j:outputPanel>
+</div>
