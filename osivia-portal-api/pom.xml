@@ -5,13 +5,13 @@
 	
 
 	<parent>
-		<groupId>osivia-portal.core</groupId>
+		<groupId>org.osivia.portal.core</groupId>
 		<artifactId>parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	
 
-	<groupId>osivia-portal</groupId>
+	<groupId>org.osivia.portal</groupId>
 	<artifactId>osivia-portal-api</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>

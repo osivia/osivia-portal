@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>osivia-portal.core</groupId>
+	<groupId>org.osivia.portal.core</groupId>
 	<artifactId>parent</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -406,10 +406,9 @@
 					<version>2.2.1</version>
 				 	<configuration>
 						<tagBase>http://www.osivia.org/repos/osivia-portal/tags</tagBase>
-						<useReleaseProfile>false</useReleaseProfile>
+						<releaseProfiles>unpack,pack</releaseProfiles>
 						<preparationGoals>clean install</preparationGoals>
 						<goals>deploy</goals>
-						<arguments>-Prelease</arguments>
 				      	</configuration>
 				</plugin>
 				

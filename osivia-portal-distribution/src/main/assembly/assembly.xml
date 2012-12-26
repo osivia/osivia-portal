@@ -13,9 +13,9 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-  		<include>osivia-portal.core:osivia-portal-custom-services:sar:${project.version}</include>
-		<include>osivia-portal.core:osivia-portal-custom-web-assets:war:${project.version}</include>
-		<include>osivia-portal.core.admin:osivia-portal-administration:ear:${project.version}</include>
+  		<include>org.osivia.portal.core:osivia-portal-custom-services:jboss-sar:${project.version}</include>
+		<include>org.osivia.portal.core:osivia-portal-custom-web-assets:war:${project.version}</include>
+		<include>org.osivia.portal.core.admin:osivia-portal-administration:ear:${project.version}</include>
    	</includes>
   </dependencySet>
 
@@ -24,7 +24,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-         	<include>osivia-portal.core:osivia-portal-jbp-core-lib:jar:${project.version}</include>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-core-lib:jar:${project.version}</include>
        	</includes>
 	<outputFileNameMapping>
 		portal-core-lib.jar
@@ -37,7 +37,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-         	<include>osivia-portal.core:osivia-portal-jbp-portlet-lib:jar:${project.version}</include>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-portlet-lib:jar:${project.version}</include>
        	</includes>
 	<outputFileNameMapping>
 		portal-portlet-lib.jar
@@ -50,7 +50,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-         	<include>osivia-portal.core:osivia-portal-jbp-server-lib:jar:${project.version}</include>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-server-lib:jar:${project.version}</include>
        	</includes>
 	<outputFileNameMapping>
 		portal-server-lib.jar
@@ -62,7 +62,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-         	<include>osivia-portal.core:osivia-portal-jbossas-jbossweb-lib:jar:${project.version}</include>
+         	<include>org.osivia.portal.core:osivia-portal-jbossas-jbossweb-lib:jar:${project.version}</include>
        	</includes>
 	<outputFileNameMapping>
 		jbossweb.jar
@@ -75,8 +75,8 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
 	<includes>
-        	<include>osivia-portal:osivia-portal-api:jar:${project.version}</include>
-		<include>osivia-portal.core:osivia-portal-custom-lib-utils:jar:${project.version}</include>
+        	<include>org.osivia.portal:osivia-portal-api:jar:${project.version}</include>
+		<include>org.osivia.portal.core:osivia-portal-custom-lib-utils:jar:${project.version}</include>
        	</includes>
      </dependencySet>
     </dependencySets>
