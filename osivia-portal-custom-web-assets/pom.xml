@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.osivia.portal.core</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0-RC1</version>
 	</parent>
 
 	<groupId>org.osivia.portal.core</groupId>
 	<artifactId>osivia-portal-custom-web-assets</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-RC1</version>
 	<packaging>war</packaging>
 	<name>Portal Custom Web Application</name>
 	
@@ -19,14 +19,14 @@
 	 	<dependency>
 			<groupId>org.osivia.portal</groupId>
 	     		<artifactId>osivia-portal-api</artifactId>
-	     		<version>1.0-SNAPSHOT</version>
+	     		<version>1.0-RC1</version>
 	     		<scope>provided</scope>
 		</dependency>
 
   	 	<dependency>
 			<groupId>org.osivia.portal.core</groupId>
 	     		<artifactId>osivia-portal-custom-lib-utils</artifactId>
-	     		<version>1.0-SNAPSHOT</version>
+	     		<version>1.0-RC1</version>
 	     		<scope>provided</scope>
 		</dependency>
 		
