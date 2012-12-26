@@ -359,6 +359,8 @@
 
 	   <module>osivia-portal-jbossas-jbossweb-lib</module>
 
+	   <module>osivia-portal-distribution</module>
+
 
 	</modules>
 
