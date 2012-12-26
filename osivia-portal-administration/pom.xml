@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.osivia.portal.core</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0-RC1</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.osivia.portal.core.admin</groupId>
 	<artifactId>osivia-portal-administration-parent</artifactId>
-	<version>1.0-RC1</version>
+	<version>1.0-SNAPSHOT</version>
     
     <packaging>pom</packaging>
     <name>JBoss Portlet Bridge - Seam Portlet</name>
@@ -45,9 +45,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/1.0-RC1/1.0</connection>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/1.0-RC1/osivia-portal-administration-parent</developerConnection>
-        <url>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/1.0-RC1/1.0</url>
+        <connection>/branches/1.0</connection>
+        <developerConnection>scm:svn:http://projet.toutatice.fr/repos/osivia-portal/core/branches/1.0/osivia-portal-administration-parent</developerConnection>
+        <url>/branches/1.0</url>
     </scm>
 
     <issueManagement>
@@ -319,14 +319,14 @@
  	 	<dependency>
 			<groupId>org.osivia.portal.core</groupId>
 	     		<artifactId>osivia-portal-custom-lib-utils</artifactId>
-	     		<version>1.0-RC1</version>
+	     		<version>1.0-SNAPSHOT</version>
 	     		<scope>provided</scope>
 		</dependency>
 
 	 	<dependency>
 			<groupId>org.osivia.portal</groupId>
 	     		<artifactId>osivia-portal-api</artifactId>
-	     		<version>1.0-RC1</version>
+	     		<version>1.0-SNAPSHOT</version>
 	     		<scope>provided</scope>
 		</dependency>
 
