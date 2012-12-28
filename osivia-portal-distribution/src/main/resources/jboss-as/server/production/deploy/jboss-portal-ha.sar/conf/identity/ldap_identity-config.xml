@@ -61,7 +61,7 @@
          <type>User</type>
          <implementation>LDAP</implementation>
          <class>
-            fr.toutatice.portail.core.identity.LdapFilteredUserModule
+            org.osivia.portal.core.identity.LdapFilteredUserModule
          </class>
          <config/>
       </module>
@@ -69,7 +69,7 @@
          <type>Role</type>
          <implementation>LDAP</implementation>
        <class>
-            fr.toutatice.portail.core.identity.LdapFilteredRoleModule
+            org.osivia.portal.core.identity.LdapFilteredRoleModule
          </class>
          <config/>
       </module>

@@ -82,7 +82,7 @@
            >
            
 
-           <Valve className="fr.toutatice.portail.core.error.ErrorValve" />
+           <Valve className="org.osivia.portal.core.error.ErrorValve" />
 
             
 

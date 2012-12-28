@@ -43,7 +43,7 @@
 
    <!--   CMS listener to kill all CMS sessions -->
    <listener>
-      <listener-class>fr.toutatice.portail.core.cms.SessionListener</listener-class>
+      <listener-class>org.osivia.portal.core.cms.SessionListener</listener-class>
    </listener>
 
    <!-- The portal servlet is the main entrance point -->

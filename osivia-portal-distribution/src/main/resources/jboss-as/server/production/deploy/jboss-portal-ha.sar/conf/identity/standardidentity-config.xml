@@ -37,7 +37,7 @@
          <service-name>portal:service=Module,type=LDAPConnectionContext</service-name>
          <!-- <class>org.jboss.portal.identity.ldap.LDAPConnectionContext</class> -->
          <!-- PIA : Pour variabiliser -->
-         <class>fr.toutatice.portail.core.identity.PropertiesConnectionContext</class>
+         <class>org.osivia.portal.core.identity.PropertiesConnectionContext</class>
          <config>
             <option>
                <name>host</name>

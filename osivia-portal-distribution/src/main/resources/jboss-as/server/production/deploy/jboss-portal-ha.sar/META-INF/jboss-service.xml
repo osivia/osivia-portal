@@ -825,7 +825,7 @@
 
 
 	<mbean
-		code="fr.toutatice.portail.core.page.PortalObjectContainer"
+		code="org.osivia.portal.core.page.PortalObjectContainer"
 		name="portal:container=PortalObject" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
@@ -943,7 +943,7 @@
    </mbean>
     -->
    
-  <mbean code="fr.toutatice.portail.core.portalobjects.DynamicPortalObjectPathMapper"
+  <mbean code="org.osivia.portal.core.portalobjects.DynamicPortalObjectPathMapper"
           name="portal:service=PortalObjectPathMapper,type=Default" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
@@ -1323,7 +1323,7 @@
       <xmbean/>
 -->
 
-   <mbean code="fr.toutatice.portail.core.deploiement.PortletApplicationDeploymentFactory"
+   <mbean code="org.osivia.portal.core.deploiement.PortletApplicationDeploymentFactory"
           name="portal:deploymentFactory=PortletApp" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
