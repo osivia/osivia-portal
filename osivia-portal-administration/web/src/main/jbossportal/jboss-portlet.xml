@@ -43,7 +43,7 @@
 	
 	<service>
 	   	<service-name>PiaProfilManager</service-name>
-	   	<service-class>org.osivia.portal.profils.IProfilManager</service-class>
+	   	<service-class>org.osivia.portal.core.profils.IProfilManager</service-class>
 	   	<service-ref>pia:service=ProfilManager</service-ref>
 	</service>
 	

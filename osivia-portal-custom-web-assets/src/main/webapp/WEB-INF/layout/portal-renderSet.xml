@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <portal-renderSet>
-	<renderSet name="OsiviaDefaultRender">
+	<renderSet name="OsiviaDefaultRenderer">
    		<set content-type="text/html">
    			<ajax-enabled>true</ajax-enabled>
    			<decoration-renderer>org.osivia.portal.core.renderers.DivDecorationRenderer</decoration-renderer>
