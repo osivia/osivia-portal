@@ -200,7 +200,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 			// Le test est dupliqué pour éviter n rechargements
 			if (cacheFlux == null
-					|| System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration()) {
+					|| System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration() || cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) {
 
 				// Appel
 				Object response = infos.getInvoker().invoke();
