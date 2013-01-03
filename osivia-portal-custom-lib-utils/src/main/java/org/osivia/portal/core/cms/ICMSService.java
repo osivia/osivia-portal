@@ -18,5 +18,7 @@ public interface ICMSService {
 	public List<CMSItem> getPortalNavigationSubitems( CMSServiceCtx ctx, String publishSpacePath, String path)  throws CMSException;	
 	
 	public CMSHandlerProperties getItemHandler( CMSServiceCtx ctx)  throws CMSException;	
+	
+	public CMSBinaryContent getBinaryContent(CMSServiceCtx cmsCtx, String type, String path, String parameter) throws CMSException;
 
 }

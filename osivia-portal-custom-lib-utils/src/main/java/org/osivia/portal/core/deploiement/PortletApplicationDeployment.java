@@ -12,6 +12,10 @@ import org.jboss.portal.core.deployment.jboss.PortletAppDeploymentFactory;
 
 import org.jboss.portal.portlet.container.managed.ManagedObjectRegistryEventListener;
 import org.jboss.portal.server.deployment.PortalWebApp;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.migration.IMigrationManager;
+
+
 
 public class PortletApplicationDeployment extends PortletAppDeployment  {
 	
@@ -32,6 +36,8 @@ public class PortletApplicationDeployment extends PortletAppDeployment  {
 
 	      //
 	      super.start();
+	      
+
 	   }
 	   
 	   protected void injectStandardService( String serviceName, String serviceClass,  String serviceRef)
