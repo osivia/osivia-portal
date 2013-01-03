@@ -427,5 +427,14 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
+   
+   	  <mbean code="org.osivia.portal.core.migration.MigrationService"
+          name="pia:service=MigrationService" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject
+      </depends>
+   </mbean>
+	
 </server>
    
