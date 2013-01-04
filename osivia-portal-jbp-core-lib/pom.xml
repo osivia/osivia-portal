@@ -29,11 +29,11 @@
 	     		<version>2.0-SNAPSHOT</version>
 	     		<scope>provided</scope>
 		</dependency>
+
 	</dependencies>
 
- 
- 
- 	<build>   		
+
+<build>   		
    
     <plugins>
        
@@ -49,7 +49,8 @@
           </goals>        
           <configuration>
             <tasks>
-                  <unzip src="${basedir}/original-file/portal-core-lib.jar.jbp" dest="${basedir}/target/classes" overwrite="true" />            
+                  <unzip src="${basedir}/original-file/portal-core-lib.jar.jbp" dest="${basedir}/target/classes" overwrite="true" />
+ 
              </tasks>
           </configuration>
           <phase>generate-resources</phase>
