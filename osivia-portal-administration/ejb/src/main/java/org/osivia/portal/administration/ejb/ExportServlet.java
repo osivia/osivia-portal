@@ -51,7 +51,7 @@ public class ExportServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static String EXPORT_PORTALNAME_SESSION = "pia.export.config";
+	public static String EXPORT_PORTALNAME_SESSION = "osivia.export.config";
 
 	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException {
@@ -279,7 +279,7 @@ public class ExportServlet extends HttpServlet {
 		portalElement.appendChild(propertiesElement);
 
 		for (PortalObject portalObject : portal.getChildren()) {
-			if (portalObject instanceof Page && ( (! "true".equals(filter)) || ! "1".equals( ((Page) portalObject).getProperty("pia.draftPage")) ))
+			if (portalObject instanceof Page && ( (! "true".equals(filter)) || ! "1".equals( ((Page) portalObject).getProperty("osivia.draftPage")) ))
 				portalElement.appendChild(creerPage(document, (Page) portalObject, filter));
 
 		}
@@ -365,7 +365,7 @@ public class ExportServlet extends HttpServlet {
 		// Création des sous-pages
 
 		for (PortalObject child : page.getChildren()) {
-			if (child instanceof Page   && ((! "true".equals(filter)) || ( ! "1".equals( ((Page) child).getProperty("pia.draftPage")))  )) {
+			if (child instanceof Page   && ((! "true".equals(filter)) || ( ! "1".equals( ((Page) child).getProperty("osivia.draftPage")))  )) {
 				
 				pageElement.appendChild(creerPage(document, (Page) child, filter));
 			}

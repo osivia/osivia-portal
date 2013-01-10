@@ -1,0 +1,18 @@
+La classe PortletAppDeployment a été modifiée (pour l'instant, c'est un exemple)
+
+Comme on ne sait pas générer de l'aop en maven (plugin maven-aop non compatible avec aop 1.5.6 de jboss portal), elle
+doit etre recompilée dans les sources jboss portal.
+
+copie
+cp PortletAppDeployment /home/jeanseb/doc-externes/toutatice-jbp/jboss-portal-2.7.2-src/core/src/main/org/jboss/portal/core/deployment
+
+supprimer les libs
+rm /home/jeanseb/doc-externes/toutatice-jbp/jboss-portal-2.7.2-src/core/lib
+
+recompiler
+cd /home/jeanseb/doc-externes/toutatice-jbp/jboss-portal-2.7.2-src/core
+./build.sh
+
+
+recopier le portal-core-lib.jar dans /osivia-portal-jbp-core-lib/original-file/portal-core-lib.jar.jbp
+

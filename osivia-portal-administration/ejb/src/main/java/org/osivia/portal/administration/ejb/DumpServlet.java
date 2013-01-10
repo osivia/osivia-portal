@@ -53,7 +53,7 @@ public class DumpServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static String EXPORT_PORTALNAME_SESSION = "pia.export.config";
+	public static String EXPORT_PORTALNAME_SESSION = "osivia.export.config";
 
 	@SuppressWarnings("unchecked")
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException,

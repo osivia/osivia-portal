@@ -108,7 +108,7 @@ public class FileUploadBean {
 		Object request = FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		
 		if( request instanceof PortletRequest){
-			String isAdmin = (String) ((PortletRequest) request).getAttribute("pia.isAdministrator");
+			String isAdmin = (String) ((PortletRequest) request).getAttribute("osivia.isAdministrator");
 			if( "true".equals(isAdmin))	{
 				PortletSession session = ((PortletRequest) request).getPortletSession();
 				session.setAttribute("isAdmin", "true", PortletSession.APPLICATION_SCOPE);
@@ -324,7 +324,7 @@ public class FileUploadBean {
 		PortalObjectContainer portalObjectContainer = (PortalObjectContainer) ctx.getAttribute("PortalObjectContainer");
 
 		PortalObject portal = portalObjectContainer.getContext().getPortal("default");
-		portal.setDeclaredProperty("pia.liste_styles", style);
+		portal.setDeclaredProperty("osivia.liste_styles", style);
 		System.out.println("updateStyle : " + portal.getDeclaredProperty("pia.liste_styles"));
 		this.setMessage("Style enregistré avec succès.");
 
