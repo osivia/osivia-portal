@@ -392,7 +392,7 @@ public class PortletAppDeployment extends org.jboss.portal.portlet.deployment.jb
 
 			Class migrationClass = Class.forName("org.osivia.portal.core.migration.IMigrationManager");
 			MBeanServer mbeanServer = MBeanServerLocator.locateJBoss();
-			Object mbean = MBeanProxy.get(migrationClass,	new ObjectName("pia:service=MigrationService"),	mbeanServer);
+			Object mbean = MBeanProxy.get(migrationClass,	new ObjectName("osivia:service=MigrationService"),	mbeanServer);
 
 			String aMethod = "migrate";
       			// we assume that called methods have no argument

@@ -157,7 +157,7 @@ public class PortalPagesBean   {
 
 		// As we are in servlet, cache must explicitly initialized
 		IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class,
-				"pia:service=DynamicPortalObjectContainer");
+				"osivia:service=DynamicPortalObjectContainer");
 
 		try {
 			dynamicObjectContainer.startPersistentIteration();

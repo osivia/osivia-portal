@@ -225,12 +225,12 @@ public class ServicesInvoker {
               RenderWindowCommand renderCmd = new RenderWindowCommand(pageNavigationalState, window.getId());
               
               
-     			//logger.debug("cms.uri" + window.getDeclaredProperty("pia.cms.uri"));
+     			//logger.debug("cms.uri" + window.getDeclaredProperty("osivia.cms.uri"));
 
               
    			// Pour test
  //             Window windowTest = (Window) context.getController().getPortalObjectContainer().getObject(window.getId());
-  //            String title = windowTest.getDeclaredProperty("pia.title");
+  //            String title = windowTest.getDeclaredProperty("osivia.title");
                  
               //
 
@@ -377,12 +377,12 @@ public class ServicesInvoker {
        		  
             		  
             		  // Affichage du message utilisateur
-            		  context.setAttribute(Scope.REQUEST_SCOPE, "pia.timeout", "1");
+            		  context.setAttribute(Scope.REQUEST_SCOPE, "osivia.timeout", "1");
             		  WindowRendition rendition = renderCmd.render(context);    
             		  ajouterRequete(timeOutWindow, rendition );
             		  
             	  } finally	{
-            		  context.setAttribute(Scope.REQUEST_SCOPE, "pia.timeout", null);
+            		  context.setAttribute(Scope.REQUEST_SCOPE, "osivia.timeout", null);
             	  }
               }
                		

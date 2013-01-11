@@ -37,8 +37,8 @@ import org.osivia.portal.core.tracker.ITracker;
 
 public class ProfilManager implements IProfilManager {
 
-	public static final String ATTRIBUTE_PROFILE_NAME = "pia.profil";
-	public static final String DEFAULT_PROFIL_NAME = "pia.default_profil";
+	public static final String ATTRIBUTE_PROFILE_NAME = "osivia.profil";
+	public static final String DEFAULT_PROFIL_NAME = "osivia.default_profil";
 
 	private ITracker tracker;
 	private IdentityServiceController identityServiceController;
@@ -101,7 +101,7 @@ public class ProfilManager implements IProfilManager {
 
 		XMLSerializer serializer = new XMLSerializer();
 
-		String encodedList = portal.getDeclaredProperty("pia.profils");
+		String encodedList = portal.getDeclaredProperty("osivia.profils");
 		List<ProfilBean> profils = serializer.decodeAll(encodedList);
 		if( profils == null)
 			profils = new ArrayList<ProfilBean>();
@@ -196,7 +196,7 @@ public class ProfilManager implements IProfilManager {
 		XMLSerializer serializer = new XMLSerializer();
 
 		String encodedList = serializer.encodeAll(profils);
-		portal.setDeclaredProperty("pia.profils", encodedList);
+		portal.setDeclaredProperty("osivia.profils", encodedList);
 		
 		
 
@@ -240,7 +240,7 @@ public class ProfilManager implements IProfilManager {
 
 		/* Aucun profil trouve, création d'un profil par défaut */
 
-		String pageAccueilConnecte = portal.getDeclaredProperty("pia.unprofiled_home_page");
+		String pageAccueilConnecte = portal.getDeclaredProperty("osivia.unprofiled_home_page");
 		if (pageAccueilConnecte == null)
 			pageAccueilConnecte = portal.getDefaultPage().getName();
 

@@ -275,7 +275,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 			// Le rafraichissment de la page doit etre explicitement demandé par le portlet
 	         if( reloadAjaxWindows ){	         
 				if ( !"true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
-						"pia.refreshPage"))) {
+						"osivia.refreshPage"))) {
 
 					Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 

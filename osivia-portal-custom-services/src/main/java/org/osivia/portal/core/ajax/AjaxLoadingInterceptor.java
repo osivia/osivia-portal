@@ -60,7 +60,7 @@ public class AjaxLoadingInterceptor extends PortletInvokerInterceptor {
 			
 			
 			Map<String, Object> attributes = invocation.getRequestAttributes();
-			Window window = (Window) attributes.get("pia.window");
+			Window window = (Window) attributes.get("osivia.window");
 			
 			//System.out.println("render portlet AJAX" + window.getName());
 			
@@ -82,16 +82,16 @@ public class AjaxLoadingInterceptor extends PortletInvokerInterceptor {
 			return super.invoke(invocation);
 		
 		// Pas d'ajax en mode wizzard
-		if( "true".equals(attributes.get(("pia.window.wizzard"))))
+		if( "true".equals(attributes.get(("osivia.window.wizzard"))))
 				return super.invoke(invocation);
 				
 		
-		Window window = (Window) attributes.get("pia.window");
+		Window window = (Window) attributes.get("osivia.window");
 		if (window == null)
 			return super.invoke(invocation);
 
 		// Ajax activé dans propriétés
-		if (!"1".equals(window.getProperties().get("pia.ajaxLoading")))
+		if (!"1".equals(window.getProperties().get("osivia.ajaxLoading")))
 			return super.invoke(invocation);
 
 		// Rafraichissement partiel activé

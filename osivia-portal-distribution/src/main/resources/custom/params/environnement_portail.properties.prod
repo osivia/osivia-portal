@@ -1,22 +1,15 @@
 #page d'erreur par défaut
 error.default_page_uri=/toutatice-portail-demo-charte/error/errorPage.jsp
 
-#schemas additionnels de navigation (separés par une virgule)
-nuxeo.navigationSchemas=wcm_navigation
 
 #temps maxi d'exécution par portlet, au dela de ce temps, le traitement
 #est interrompu (en secondes)
 portlets.maxExecutionDelay=5
 portlets.maxExecution.excludedPortlets=toutatice-portail-administration-portletInstance
 
-#timeout des caches en secondes
-nuxeo.cacheTimeout=60
-
-#permet de générer les traces des appels Nuxeo(en level DEBUG)
-#nuxeo.debugMode=1
 
 #active les gestionnaire de statut
 statut.actif=true
 
 #Delai en secondes au dela duquel les webservices (Nuxeo, RSS, ...) tombent en timeout
-toutatice.webServiceTimeOut=30
+ws.webServiceTimeOut=30

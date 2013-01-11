@@ -240,14 +240,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		// On teste si l'utilisateur est un administrateur
 		// (ie. autorisé à voir le portal d'administration)
 		
-		Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "pia.isAdmin");
+		Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
 		if( isAdmin == null){
 			PortalObjectPermission perm = new PortalObjectPermission(adminPortalId,	PortalObjectPermission.VIEW_MASK);			
 			if (controllerCtx.getController().getPortalAuthorizationManagerFactory().getManager().checkPermission(perm)) 
 				isAdmin = new Boolean(true);
 			else
 				isAdmin = new Boolean(false);		
-			controllerCtx.setAttribute(Scope.PRINCIPAL_SCOPE, "pia.isAdmin", isAdmin);
+			controllerCtx.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin", isAdmin);
 		}
 		return isAdmin;
 	}
@@ -258,19 +258,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 		// Uniquement en mode wizzard
 		
-		Boolean showMenuBar = (Boolean) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "pia.showMenuBarItem");
+		Boolean showMenuBar = (Boolean) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem");
 		if( showMenuBar == null){
 			
-			String menuBarPolicy = portal.getProperty("pia.menuBarPolicy");
+			String menuBarPolicy = portal.getProperty("osivia.menuBarPolicy");
 			showMenuBar = new Boolean(true);
 			if( "wizzardOnly".equals(menuBarPolicy))	{
 				if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-				"pia.windowSettingMode")))
+				"osivia.windowSettingMode")))
 					showMenuBar = new Boolean(false);
 							
 			}
 	
-			controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "pia.showMenuBarItem", showMenuBar);
+			controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem", showMenuBar);
 		}
 		return showMenuBar;
 	}
@@ -282,7 +282,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 	public ICMSService getCMSService () throws Exception	{
 		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"pia:service=NuxeoService");
+			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
 		
 		return cmsService;
 	}
@@ -313,8 +313,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
           
        // init cms Path
-       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"));
-       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.pageScope"));
+       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+       state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"));
 
        nsContext.setPageNavigationalState(pageId, new PageNavigationalState(state));
        
@@ -358,7 +358,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
 				// On force le rafrachissement de la page (requete Ajax)
-				controllerCtx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.refreshPage", "true");
+				controllerCtx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
 
 			}
 		}
@@ -399,7 +399,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 					if (rpc.getPage().getId()
 							.equals(portalObjectContainer.getContext().getDefaultPortal().getDefaultPage().getId())) {
 
-						controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "pia.useGlobalWindowCaches", "1");
+						controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
 						
 						isDefaultPageCache = true;
 					}
@@ -480,15 +480,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				
 					
-				if(( rpc.getPage().getDeclaredProperty("pia.cms.basePath") != null && "1".equals(rpc.getPage().getDeclaredProperty("pia.cms.pageContextualizationSupport")))	
+				if(( rpc.getPage().getDeclaredProperty("osivia.cms.basePath") != null && "1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.pageContextualizationSupport")))	
 						
-						|| ("1".equals(rpc.getPage().getDeclaredProperty("pia.cms.directContentPublisher") ))){
+						|| ("1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.directContentPublisher") ))){
 				
 					if (!"true".equals(request.getParameter("edit-template-mode"))) {
 					// Redirection en mode CMS
 					
 						String url = getUrlFactory().getCMSUrl( new PortalControllerContext(controllerCtx),
-								rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), rpc.getPage().getDeclaredProperty("pia.cms.basePath"), null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE,
+								rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), rpc.getPage().getDeclaredProperty("osivia.cms.basePath"), null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE,
 								null, null, null, null, null);
 						
 						if (request.getParameter("firstTab") != null) {
@@ -515,16 +515,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			}
 			
 			if (request.getParameter("firstTab") != null) {
-				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.firstTab", new Integer(request.getParameter("firstTab")) );
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", new Integer(request.getParameter("firstTab")) );
 			}
 			
 			if ("true".equals(request.getParameter("init-cache"))) {
-				if( "wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "pia.windowSettingMode")))
+				if( "wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode")))
 						getServicesCacheService().initCache();
 			}
 			
 			
-			controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.currentPageId", rpc.getPage().getId() );
+			controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", rpc.getPage().getId() );
 			
 			
 			// Force la valorisation dans le contexte
@@ -571,7 +571,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			ControllerContext controllerCtx = cmd.getControllerContext();
 
-			if( "true".equals( controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.unsetMaxMode")))	{
+			if( "true".equals( controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode")))	{
 				
 				Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
 				
@@ -694,15 +694,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 
 			// Should we hide the portlet (empty response + hideEmptyPortlet positionned)
-			String emptyResponse = (String)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.emptyResponse."+windowId);
+			String emptyResponse = (String)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse."+windowId);
 			if( "1".equals(emptyResponse))	{
 				
-				if( "1".equals(rwc.getWindow().getDeclaredProperty("pia.hideEmptyPortlet")))	{
+				if( "1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideEmptyPortlet")))	{
 					
 					// En mode normal (non édition de la page)
 					if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-					"pia.windowSettingMode")) || ((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject)
-						properties.setWindowProperty(windowId, 	"pia.hidePortlet", "1");
+					"osivia.windowSettingMode")) || ((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject)
+						properties.setWindowProperty(windowId, 	"osivia.hidePortlet", "1");
 				}
 				
 			}
@@ -710,23 +710,23 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 
 			properties.setWindowProperty(windowId,
-					"pia.displayTitle", "1".equals(rwc.getWindow().getDeclaredProperty("pia.hideTitle")) ? null : "1");
+					"osivia.displayTitle", "1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideTitle")) ? null : "1");
 			
-			String title = rwc.getWindow().getDeclaredProperty("pia.title");
+			String title = rwc.getWindow().getDeclaredProperty("osivia.title");
 			
 			properties.setWindowProperty(windowId,
-					"pia.title", title);
+					"osivia.title", title);
 			
  
-			properties.setWindowProperty(windowId, "pia.style",
-					rwc.getWindow().getDeclaredProperty("pia.style"));
+			properties.setWindowProperty(windowId, "osivia.style",
+					rwc.getWindow().getDeclaredProperty("osivia.style"));
 			
-			properties.setWindowProperty(windowId, "pia.ajaxLink",
-					rwc.getWindow().getDeclaredProperty("pia.ajaxLink"));			
+			properties.setWindowProperty(windowId, "osivia.ajaxLink",
+					rwc.getWindow().getDeclaredProperty("osivia.ajaxLink"));			
 
 			properties.setWindowProperty(windowId,
-					"pia.displayDecorators",
-					"1".equals(rwc.getWindow().getDeclaredProperty("pia.hideDecorators")) ? null : "1");
+					"osivia.displayDecorators",
+					"1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideDecorators")) ? null : "1");
 			
 			
 			
@@ -735,9 +735,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				
 				DynamicWindow dynaWIndow = (DynamicWindow) ((RenderWindowCommand) cmd).getTarget();
 				if( dynaWIndow.isSessionWindow())	{
-					if( ! "1".equals( rwc.getWindow().getDeclaredProperty("pia.dynamic.unclosable" )))
+					if( ! "1".equals( rwc.getWindow().getDeclaredProperty("osivia.dynamic.unclosable" )))
 					properties.setWindowProperty(windowId,
-						"pia.closeUrl",
+						"osivia.closeUrl",
 						getUrlFactory().getDestroyProcUrl(new PortalControllerContext(controllerCtx), rwc.getWindow().getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
 				}
 					
@@ -943,7 +943,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 						String mode = "wizzard";
 
 						if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-								"pia.windowSettingMode")))
+								"osivia.windowSettingMode")))
 							mode = "normal";
 
 						if (cc instanceof PageCommand) {
@@ -952,8 +952,8 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							ChangeModeCommand cmd = new ChangeModeCommand(page.getId().toString(
 									PortalObjectPath.SAFEST_FORMAT), mode);
 
-							rd.setAttribute("pia.WIZZARD_URL", new PortalURLImpl(cmd, controllerCtx, null, null));
-							rd.setAttribute("pia.WIZZARD_MODE", mode);
+							rd.setAttribute("osivia.WIZZARD_URL", new PortalURLImpl(cmd, controllerCtx, null, null));
+							rd.setAttribute("osivia.WIZZARD_MODE", mode);
 						}
 
 					}
@@ -974,17 +974,17 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				PortalURL portalURL2 = null;
 				MonEspaceCommand monEspaceCmd = new MonEspaceCommand();
 				portalURL2 = new PortalURLImpl(monEspaceCmd, controllerCtx, Boolean.TRUE, null);
-				rd.setAttribute("pia.MON_ESPACE_URL", portalURL2);
+				rd.setAttribute("osivia.MON_ESPACE_URL", portalURL2);
 				
 			}
 
-			rd.setAttribute("pia.urlfactory", getUrlFactory());
-			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			rd.setAttribute("osivia.urlfactory", getUrlFactory());
+			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-			"pia.windowSettingMode")))
-				rd.setAttribute("pia.editionMode", "1");
+			"osivia.windowSettingMode")))
+				rd.setAttribute("osivia.editionMode", "1");
 
 			
 			//
@@ -1101,18 +1101,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 				// CMS sub pages
 				
-				if (("1".equals(page.getDeclaredProperty("pia.cms.pageContextualizationSupport")) && (page
-						.getDeclaredProperty("pia.cms.basePath") != null))) {
+				if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
+						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page
-							.getDeclaredProperty("pia.cms.basePath"), page
-							.getDeclaredProperty("pia.cms.basePath"));
+							.getDeclaredProperty("osivia.cms.basePath"), page
+							.getDeclaredProperty("osivia.cms.basePath"));
 						
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
-									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("pia.cms.basePath"), navItem.getPath(), childrens);
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), childrens);
 
 					
 					} catch (Exception e) {
@@ -1139,7 +1139,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		
 		
 		Page cmsPage = cc.getPortal().getDefaultPage();
-		String navigationScope = cmsPage.getProperty("pia.cms.navigationScope");
+		String navigationScope = cmsPage.getProperty("osivia.cms.navigationScope");
 		
 		Locale locale = Locale.FRENCH;
 
@@ -1157,18 +1157,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 			// CMS sub pages
 				
-				if (("1".equals(cmsPage.getDeclaredProperty("pia.cms.pageContextualizationSupport")) && (cmsPage
-						.getDeclaredProperty("pia.cms.basePath") != null))) {
+				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
+						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage
-							.getDeclaredProperty("pia.cms.basePath"), cmsPage
-							.getDeclaredProperty("pia.cms.basePath"));
+							.getDeclaredProperty("osivia.cms.basePath"), cmsPage
+							.getDeclaredProperty("osivia.cms.basePath"));
 						
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
-									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("pia.cms.basePath"), navItem.getPath(), mainPages);
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), mainPages);
 
 					
 					} catch (Exception e) {
@@ -1190,7 +1190,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		
 		UserPortal userPortal;
 		
-		String navigationMode = cc.getPortal().getProperty("pia.navigationMode");
+		String navigationMode = cc.getPortal().getProperty("osivia.navigationMode");
 		
 		if( "cms".equals(navigationMode))
 			userPortal = getCMSSiteMap(cc);
@@ -1210,19 +1210,19 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		if (rd != null) {
 
 			UserPortal siteMap = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-					"pia.siteMap."+cc.getPortal().getName());
+					"osivia.siteMap."+cc.getPortal().getName());
 
 			if (siteMap == null) {
 				siteMap = getSiteMap(cc);
 
 		
-				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.siteMap."+cc.getPortal().getName(), siteMap);
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.siteMap."+cc.getPortal().getName(), siteMap);
 
 			}
 
-			rd.setAttribute("pia.siteMap", siteMap);
-			rd.setAttribute("pia.urlfactory", getUrlFactory());
-			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			rd.setAttribute("osivia.siteMap", siteMap);
+			rd.setAttribute("osivia.urlfactory", getUrlFactory());
+			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 
 			
 			//
 			rd.include();
@@ -1331,19 +1331,19 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			/* Lien de recherche */
 			
 			Map<String, String> props = new HashMap<String, String>();
-			props.put("pia.nuxeoPath", "/");
+			props.put("osivia.nuxeoPath", "/");
 			Map<String, String> params = new HashMap<String, String>();
-			params.put("pia.keywords", "__REPLACE_KEYWORDS__");
+			params.put("osivia.keywords", "__REPLACE_KEYWORDS__");
 			
 			// v1.0.13 : on ouvre tout le temp la meme page
 			
 			String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search", "/default/templates/search", props, params);
 			//String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search" +  System.currentTimeMillis(), "/default/templates/search", props, params);
-			rd.setAttribute("pia.searchUrl", searchUrl);
+			rd.setAttribute("osivia.searchUrl", searchUrl);
 			
 				
-			rd.setAttribute("pia.urlfactory", getUrlFactory());
-			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 			
+			rd.setAttribute("osivia.urlfactory", getUrlFactory());
+			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 			
 			
 						
 			rd.include();
@@ -1400,7 +1400,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			String sPath[] = null;
 			if( pageState != null)
-				sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"));
+				sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
 			
 			String pathPublication = null;
 			if( sPath != null && sPath.length > 0)
@@ -1410,7 +1410,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			// Dnas le cas d'une publication correcte, on n'affiche pas les pages filles
 			boolean publication = false;
 			if( pathPublication != null )	{
-				String basePath = page.getProperty("pia.cms.basePath");
+				String basePath = page.getProperty("osivia.cms.basePath");
 				if( basePath != null && pathPublication.startsWith(basePath))
 					publication = true;
 			}
@@ -1422,24 +1422,24 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				boolean displayPage = true;
 				
 				// TODO JSSCMS1: on ne devrait pas avoir à faire ce test ....
-				// le pia.cms.basePath devrait etre renseigné dans ce cas (mode puublication)
+				// le osivia.cms.basePath devrait etre renseigné dans ce cas (mode puublication)
 				// Mais ce n'est pas le cas quand on est dans la page de tete
 				// Cas : blog   : mode editon > le breadcrum compren la page dynamiqeu
 				
 				// Pas d'affichage des pages cms dynamiques  en mode édition
 				if( "wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-				"pia.windowSettingMode")) &&(page instanceof CMSTemplatePage))	{
+				"osivia.windowSettingMode")) &&(page instanceof CMSTemplatePage))	{
 					displayPage = false; 
 				}
 				
 			
 				if( publication){
-					String basePath = page.getProperty("pia.cms.basePath");
-					//String basePath = page.getProperty("pia.cms.basePath");
+					String basePath = page.getProperty("osivia.cms.basePath");
+					//String basePath = page.getProperty("osivia.cms.basePath");
 					if( basePath != null)
 						displayPage = false;
 					else	{
-						if( "1".equals(page.getProperty("pia.cms.directContentPublisher"))){
+						if( "1".equals(page.getProperty("osivia.cms.directContentPublisher"))){
 							displayPage = false;
 						}
 					}
@@ -1479,18 +1479,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 			page = ((RenderPageCommand) rpc).getPage();
 			
-			if(!"1".equals(page.getProperty("pia.cms.directContentPublisher"))){
+			if(!"1".equals(page.getProperty("osivia.cms.directContentPublisher"))){
 			
 			//On identifie la page de tete de publication
 			
 			PortalObject po = page;
-			while (po instanceof Page && po.getDeclaredProperty("pia.cms.basePath") == null)
+			while (po instanceof Page && po.getDeclaredProperty("osivia.cms.basePath") == null)
 				po = po.getParent();			
 
 			if( pageState != null){
 
-				String basePath = page.getProperty("pia.cms.basePath");
-				String navigationScope = page.getProperty("pia.cms.navigationScope");
+				String basePath = page.getProperty("osivia.cms.basePath");
+				String navigationScope = page.getProperty("osivia.cms.navigationScope");
 						
 				if (pathPublication != null && basePath != null && pathPublication.startsWith(basePath)) {
 					
@@ -1575,7 +1575,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				for (Object winCtx : winsCtx.values())	{
 					WindowContext wctx = (WindowContext)winCtx;
 					if( WindowState.MAXIMIZED.equals(wctx.getWindowState()))	{
-						String title = wctx.getProperty("pia.title");
+						String title = wctx.getProperty("osivia.title");
 						if( title == null)
 							title = wctx.getResult().getTitle();						
 						page = ((PageCommand) rpc).getPage(); 
@@ -1626,14 +1626,14 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					BreadcrumbItem last = breadcrumbMemo.getChilds().get(breadcrumbMemo.getChilds().size() - 1);
 					
 					// Maj du path
-					List<PortletPathItem> portletPath = (List<PortletPathItem>)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.portletPath");
+					List<PortletPathItem> portletPath = (List<PortletPathItem>)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath");
 					if( portletPath == null)	{
 						
 
 
 					// Maj du titre
 					// Dans l'ordre, titre de la window, titre du path, titre du portlet
-					String title = wctx.getProperty("pia.title");
+					String title = wctx.getProperty("osivia.title");
 					if (title == null)
 						title = wctx.getResult().getTitle();
 
@@ -1679,8 +1679,8 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			                  pathItem.setUrl(url);
 			                  						
 			                  String label = pathItem.getLabel();
-			                  if( indicePathItem == 0 && wctx.getProperty("pia.title") != null)
-			                	  label = wctx.getProperty("pia.title");
+			                  if( indicePathItem == 0 && wctx.getProperty("osivia.title") != null)
+			                	  label = wctx.getProperty("osivia.title");
 			                  pathItem.setLabel(label);
 
 			                  last.setPortletPath(portletPath);
@@ -1728,15 +1728,15 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			
 			
-			rd.setAttribute("pia.breadcrumb", breadcrumbDisplay);
+			rd.setAttribute("osivia.breadcrumb", breadcrumbDisplay);
 			
-			rd.setAttribute("pia.urlfactory", getUrlFactory());
-			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 		
+			rd.setAttribute("osivia.urlfactory", getUrlFactory());
+			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 		
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-			"pia.windowSettingMode")))
-				rd.setAttribute("pia.editionMode", "1");
+			"osivia.windowSettingMode")))
+				rd.setAttribute("osivia.editionMode", "1");
 
 			
 						

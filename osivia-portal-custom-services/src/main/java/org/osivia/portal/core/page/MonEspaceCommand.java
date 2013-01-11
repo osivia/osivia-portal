@@ -59,7 +59,7 @@ public class MonEspaceCommand extends ControllerCommand {
 				portal = getControllerContext().getController().getPortalObjectContainer().getContext()
 						.getDefaultPortal();
 
-			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "pia:service=ProfilManager");
+			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
 			/* Calcul de la page d'accueil personnalisée */
 

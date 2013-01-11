@@ -58,7 +58,7 @@ public class SystemDatasBean   {
 		
 		// As we are in servlet, cache must explicitly initialized
 		ICacheService cacheService  = Locator.findMBean(ICacheService.class,
-				"pia:service=CacheServices");
+				"osivia:service=CacheServices");
 		
 		cacheService.initPortalParameters();
 		

@@ -14,7 +14,7 @@ import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
-import org.osivia.portal.core.assistantpage.ChangePageCMSCommand;
+
 import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
 import org.osivia.portal.core.assistantpage.ChangePageLayoutCommand;
 import org.osivia.portal.core.assistantpage.ChangePagePropertiesCommand;
@@ -27,7 +27,7 @@ import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.RenamePageCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
-import org.osivia.portal.core.cms.DisplayContentCommand;
+
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -390,24 +390,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					}
 				}
 				
-				if ("displayContent".equals(action)) {
-
-					
-					String pageId = null;
-					String instanceId = null;
-					String uri = null;
-
-					if (parameterMap.get("pageId") != null && parameterMap.get("uri") != null
-							&& parameterMap.get("instanceId") != null && parameterMap.get("props") != null) {
-						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
-						uri = URLDecoder.decode(((String[]) parameterMap.get("uri"))[0], "UTF-8");
-						instanceId = URLDecoder.decode(((String[]) parameterMap.get("instanceId"))[0], "UTF-8");
-						String sProps = URLDecoder.decode(((String[]) parameterMap.get("props"))[0], "UTF-8");
-						String sParams = URLDecoder.decode(((String[]) parameterMap.get("props"))[0], "UTF-8");
-
-						return new DisplayContentCommand(pageId, instanceId, uri, WindowPropertiesEncoder.decodeProperties(sProps),  WindowPropertiesEncoder.decodeProperties(sParams));
-					}
-				}
+				
 				
 				if ("permLink".equals(action)) {
 					String permMlinkRef = null;

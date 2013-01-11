@@ -66,10 +66,10 @@ public class DivDecorationRenderer extends AbstractObjectRenderer
       
   
        
-      renderTitle(rendererContext, drc, properties.getWindowProperty(currentWindowId, "pia.title"));
+      renderTitle(rendererContext, drc, properties.getWindowProperty(currentWindowId, "osivia.title"));
       
      
-//      if(  "1".equals(properties.getWindowProperty(currentWindowId, "pia.displayDecorators")) )	{
+//      if(  "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators")) )	{
     	  
 
 
@@ -81,14 +81,14 @@ public class DivDecorationRenderer extends AbstractObjectRenderer
 	
        	
     	
-    	if( "1".equals(properties.getWindowProperty(currentWindowId, "pia.displayDecorators")) ){
+    	if( "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators")) ){
     		renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY);
     		renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY);
     	}
     	
   
     	
-        String closeUrl = properties.getWindowProperty(currentWindowId, "pia.closeUrl");
+        String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
         
       	
       	if (closeUrl != null)

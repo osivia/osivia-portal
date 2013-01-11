@@ -66,42 +66,42 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor{
 		
 		 window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
 		
-		attributes.put("pia.window", window);
+		attributes.put("osivia.window", window);
 	
 
 		logger.debug("windowId "+ windowId);
 
 		
 		
-		if( window.getDeclaredProperty("pia.cms.uri") != null)	{
-			logger.debug("pia.cms.uri "+ window.getDeclaredProperty("pia.cms.uri"));
+		if( window.getDeclaredProperty("osivia.cms.uri") != null)	{
+			logger.debug("osivia.cms.uri "+ window.getDeclaredProperty("osivia.cms.uri"));
 		}
-		if( window.getDeclaredProperty("pia.cms.scope") != null)	{
-			logger.debug("pia.cms.scope "+ window.getDeclaredProperty("pia.cms.scope"));
+		if( window.getDeclaredProperty("osivia.cms.scope") != null)	{
+			logger.debug("osivia.cms.scope "+ window.getDeclaredProperty("osivia.cms.scope"));
 		}
 	
 
 		}
 		
-		if(  "wizzard".equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "pia.windowSettingMode")))
-			attributes.put("pia.window.wizzard", "true");
+		if(  "wizzard".equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode")))
+			attributes.put("osivia.window.wizzard", "true");
 		
 		
 		// Ajout de l'identifiant CMS
-		String contentId = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.content.id");
+		String contentId = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.content.id");
 		if( contentId != null)
-			attributes.put("pia.content.id", contentId);
+			attributes.put("osivia.content.id", contentId);
 		
 		// Ajout du controleur
-		attributes.put("pia.controller", ctx);
+		attributes.put("osivia.controller", ctx);
 		
 		// Ajout du mode admin
 		if( PageCustomizerInterceptor.isAdministrator(ctx))
-			attributes.put("pia.isAdministrator", "true");
+			attributes.put("osivia.isAdministrator", "true");
 		
 		// Pour l'instant les pages markers ne sont pas gérés pour les ressources
 		if( ! (invocation instanceof ResourceInvocation))
-			attributes.put("pia.pageMarker", PageMarkerUtils.getCurrentPageMarker(ctx));		
+			attributes.put("osivia.pageMarker", PageMarkerUtils.getCurrentPageMarker(ctx));		
 		
 
 		// v 1.0.14 : gestion de la barre de menu
@@ -109,13 +109,13 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor{
 
 				List<MenubarItem> menuBar = new ArrayList<MenubarItem>();
 
-				attributes.put("pia.menuBar", menuBar);
+				attributes.put("osivia.menuBar", menuBar);
 		}		
 		
 		// v2.0 : user datas
-		Map<String, Object > userDatas = (Map<String, Object >) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "pia.userDatas");
+		Map<String, Object > userDatas = (Map<String, Object >) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
 		if(  userDatas != null)
-			attributes.put("pia.userDatas", userDatas);
+			attributes.put("osivia.userDatas", userDatas);
 
 		
 		
@@ -134,10 +134,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor{
 			/* breadcrumb path set by portlet */
 			
 
-			List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("pia.portletPath");	
+			List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("osivia.portletPath");	
 			if( portletPath != null)	{
 				if(invocation.getWindowState().equals(WindowState.MAXIMIZED))	{
-					ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.portletPath", portletPath);					
+					ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);					
 				}
 			}
 			
@@ -146,25 +146,25 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor{
 			
      		 /* v 1.0.14 : affichage d'une barre de menu */
 			
-			if( Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "pia.showMenuBarItem")))	{
+			if( Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem")))	{
 			
 			String windowId = invocation.getWindowContext().getId();
 			if( windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR)	{
 			
 				FragmentResponse fr = (FragmentResponse) response;
 
-				ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get("pia.menuBar");
+				ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get("osivia.menuBar");
 
 				if (menuBar != null) {
 
 					String updatedFragment = fr.getChars();
 
-					String title = window.getDeclaredProperty("pia.title");
+					String title = window.getDeclaredProperty("osivia.title");
 					if (title == null)
 						title = fr.getTitle();
 
 					// v1.0.14 : ajout impression
-					String printPortlet = window.getDeclaredProperty("pia.printPortlet");
+					String printPortlet = window.getDeclaredProperty("osivia.printPortlet");
 					if (printPortlet == null)
 						if (WindowState.MAXIMIZED.equals(invocation.getWindowState()))
 							printPortlet = "1";
@@ -256,13 +256,13 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor{
 		if( response instanceof UpdateNavigationalStateResponse)	{
 			
 			Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
-			String synchro = (String) attributes.get("pia.refreshPage");
+			String synchro = (String) attributes.get("osivia.refreshPage");
 			
 			if( "true".equals(synchro))
-				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.refreshPage", "true");
+				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
 			
-			if( "true".equals((String) attributes.get("pia.unsetMaxMode")))
-				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.unsetMaxMode", "true");
+			if( "true".equals((String) attributes.get("osivia.unsetMaxMode")))
+				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
 				
 					
 		}

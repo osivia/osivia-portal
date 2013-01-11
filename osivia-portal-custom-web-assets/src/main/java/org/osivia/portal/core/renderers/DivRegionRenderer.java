@@ -61,9 +61,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer
       }
  
       // Lien ajout portlet
-      if( "1".equals(rendererContext.getProperty("pia.wizzardMode")))	{
+      if( "1".equals(rendererContext.getProperty("osivia.wizzardMode")))	{
     	  markup.print("<div>");
-    	  markup.print("<a href=\"#\" onClick=\""+rendererContext.getProperty("pia.addPortletUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
+    	  markup.print("<a href=\"#\" onClick=\""+rendererContext.getProperty("osivia.addPortletUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
     	  markup.print("</div>");            
       }
     

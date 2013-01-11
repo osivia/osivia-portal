@@ -228,7 +228,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 			/* Héritage */
 			PortalObject parent = po.getParent();
-			String parentScope = (String) parent.getProperty("pia.cms.contextualization");
+			String parentScope = (String) parent.getProperty("osivia.cms.contextualization");
 			String inheritedLabel = null;
 			if( parentScope != null){
 				inheritedLabel = contextualization.get(parentScope);
@@ -281,7 +281,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		
 		scopes.put("anonymous", "Anonyme");
 		
-		String parentScope = (String) po.getParent().getProperty("pia.cms.scope");
+		String parentScope = (String) po.getParent().getProperty("osivia.cms.scope");
 		String inheritedLabel = null;
 		if( parentScope != null){
 			inheritedLabel = scopes.get(parentScope);
@@ -417,8 +417,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 				Map regionPorperties = renderCtx.getProperties();
 
-				regionPorperties.put("pia.wizzardMode", "1");
-				regionPorperties.put("pia.addPortletUrl", "displayAddPortlet('" + renderCtx.getId()
+				regionPorperties.put("osivia.wizzardMode", "1");
+				regionPorperties.put("osivia.addPortletUrl", "displayAddPortlet('" + renderCtx.getId()
 						+ "');return false;");
 
 				// Le mode Ajax est incompatble avec le mode "admin"
@@ -443,14 +443,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 						if (!((DynamicWindow) window).isSessionWindow()) {
 
-							windowPorperties.put("pia.windowSettingMode", "wizzard");
+							windowPorperties.put("osivia.windowSettingMode", "wizzard");
 
 							// Commande suppression
-							windowPorperties.put("pia.destroyUrl", "displayWindowDelete('" + windowId
+							windowPorperties.put("osivia.destroyUrl", "displayWindowDelete('" + windowId
 									+ "');return false;");
 
 							// Commande paramètres
-							windowPorperties.put("pia.settingUrl", "displayWindowSettings('" + windowId
+							windowPorperties.put("osivia.settingUrl", "displayWindowSettings('" + windowId
 									+ "');return false;");
 
 							windows.add(window);
@@ -460,22 +460,22 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 							MoveWindowCommand upC = new MoveWindowCommand(windowId, "up");
 							String upUrl = ctx.renderURL(upC, urlContext,
 									URLFormat.newInstance(true, true));
-							windowPorperties.put("pia.upUrl", upUrl);
+							windowPorperties.put("osivia.upUrl", upUrl);
 
 							MoveWindowCommand downC = new MoveWindowCommand(windowId, "down");
 							String downUrl = ctx.renderURL(downC, urlContext,
 									URLFormat.newInstance(true, true));
-							windowPorperties.put("pia.downUrl", downUrl);
+							windowPorperties.put("osivia.downUrl", downUrl);
 
 							MoveWindowCommand previousC = new MoveWindowCommand(windowId, "previousRegion");
 							String previousRegionUrl = ctx.renderURL(previousC, urlContext,
 									URLFormat.newInstance(true, true));
-							windowPorperties.put("pia.previousRegionUrl", previousRegionUrl);
+							windowPorperties.put("osivia.previousRegionUrl", previousRegionUrl);
 
 							MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, "nextRegion");
 							String nextRegionUrl = ctx.renderURL(nextRegionC, urlContext,
 									URLFormat.newInstance(true, true));
-							windowPorperties.put("pia.nextRegionUrl", nextRegionUrl);
+							windowPorperties.put("osivia.nextRegionUrl", nextRegionUrl);
 
 							/* Titre de la fenetre d'administration */
 
@@ -487,7 +487,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 										true);
 
 							if (instanceDisplayName != null)
-								windowPorperties.put("pia.instanceDisplayName", instanceDisplayName);
+								windowPorperties.put("osivia.instanceDisplayName", instanceDisplayName);
 
 						}
 
@@ -496,11 +496,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			}
 		}
 
-		rd.setAttribute("pia.setting.windows", windows);
+		rd.setAttribute("osivia.setting.windows", windows);
 
 		/* Insertion des styles */
 
-		String stylesProp = portal.getDeclaredProperty("pia.liste_styles");
+		String stylesProp = portal.getDeclaredProperty("osivia.liste_styles");
 
 		String[] styles = new String[0];
 		if (stylesProp != null)
@@ -511,7 +511,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		for (int i = 0; i < styles.length; i++)
 			portalStyles.add(styles[i]);
 
-		rd.setAttribute("pia.setting.windows.PORTAL_STYLES", portalStyles);
+		rd.setAttribute("osivia.setting.windows.PORTAL_STYLES", portalStyles);
 
 		/* Insertion des portlets */
 
@@ -519,7 +519,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		List<InstanceDefinition> listDefinitions = new ArrayList(definitions);
 		Collections.sort(listDefinitions, new InstanceComparator(request));
 
-		rd.setAttribute("pia.setting.portlets", listDefinitions);
+		rd.setAttribute("osivia.setting.portlets", listDefinitions);
 }
 		
 	
@@ -560,10 +560,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			});
 
 	
-	rd.setAttribute("pia.setting.LAYOUT_LIST", layouts);
+	rd.setAttribute("osivia.setting.LAYOUT_LIST", layouts);
 
 	if (page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT) != null) {
-		rd.setAttribute("pia.setting.layout.NAME", page.getDeclaredProperty(
+		rd.setAttribute("osivia.setting.layout.NAME", page.getDeclaredProperty(
 				ThemeConstants.PORTAL_PROP_LAYOUT));
 	}
 
@@ -577,7 +577,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	if (pageName == null)
 		pageName = page.getName();
 
-	rd.setAttribute("pia.setting.page.NAME", pageName);
+	rd.setAttribute("osivia.setting.page.NAME", pageName);
 
 	RenamePageCommand renamepc = new RenamePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
 			null);
@@ -585,31 +585,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	String renamePageUrl = ctx.renderURL(renamepc, urlContext,
 			URLFormat.newInstance(true, true));
 
-	rd.setAttribute("pia.setting.PAGE_ID",
+	rd.setAttribute("osivia.setting.PAGE_ID",
 			URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8"));
 
-	rd.setAttribute("pia.setting.URL", serverContext + "/commands");
+	rd.setAttribute("osivia.setting.URL", serverContext + "/commands");
 
 	/* Page par défaut */
 
 	if (page
 			.getName()
 			.equals(page.getPortal().getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME)))
-		rd.setAttribute("pia.setting.page.DEFAULT_PAGE", "1");
+		rd.setAttribute("osivia.setting.page.DEFAULT_PAGE", "1");
 	else
-		rd.setAttribute("pia.setting.page.DEFAULT_PAGE", "0");
+		rd.setAttribute("osivia.setting.page.DEFAULT_PAGE", "0");
 	
 	//v1.0.17
 	
-	if ("1".equals(page.getDeclaredProperty("pia.draftPage")))
-		rd.setAttribute("pia.setting.page.DRAFT_PAGE", "1");
+	if ("1".equals(page.getDeclaredProperty("osivia.draftPage")))
+		rd.setAttribute("osivia.setting.page.DRAFT_PAGE", "1");
 	else
-		rd.setAttribute("pia.setting.page.DRAFT_PAGE", "0");
+		rd.setAttribute("osivia.setting.page.DRAFT_PAGE", "0");
 	
 
 	/* Sécurité */
 
-	rd.setAttribute("pia.setting.ROLE_AVAIBLE", getProfilManager().getFilteredRoles());
+	rd.setAttribute("osivia.setting.ROLE_AVAIBLE", getProfilManager().getFilteredRoles());
 
 	DomainConfigurator dc = getAuthorizationDomainRegisrty().getDomain("portalobject").getConfigurator();
 	Set<RoleSecurityBinding> constraint = dc.getSecurityBindings(page.getId().toString(
@@ -618,14 +618,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	for (RoleSecurityBinding roleSecurityBinding : constraint) {
 		actionForRole.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
 	}
-	rd.setAttribute("pia.setting.ACTIONS_FOR_ROLE", actionForRole);
+	rd.setAttribute("osivia.setting.ACTIONS_FOR_ROLE", actionForRole);
 
 	/* Suppression */
 
 	DeletePageCommand dpc = new DeletePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
 	String deletePageUrl = ctx.renderURL(dpc, urlContext,
 			URLFormat.newInstance(true, true));
-	rd.setAttribute("pia.setting.DELETE_PAGE_URL", deletePageUrl);
+	rd.setAttribute("osivia.setting.DELETE_PAGE_URL", deletePageUrl);
 
 	/* ordre de la page */
 
@@ -639,7 +639,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		}
 
 	}
-	rd.setAttribute("pia.setting.page.order.sisters", sisters);
+	rd.setAttribute("osivia.setting.page.order.sisters", sisters);
 
 	/* modeles */
 
@@ -651,7 +651,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		}
 
 	}
-	rd.setAttribute("pia.setting.page.create.models", models);
+	rd.setAttribute("osivia.setting.page.create.models", models);
 
 
 	
@@ -660,31 +660,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	/* CMS */
 
 
-	String pageCmsBasePath = page.getDeclaredProperty("pia.cms.basePath");
+	String pageCmsBasePath = page.getDeclaredProperty("osivia.cms.basePath");
 
 	if (pageCmsBasePath == null)
 		pageCmsBasePath = "";
 
-	rd.setAttribute("pia.setting.page.CMS_BASE_PATH", pageCmsBasePath);
+	rd.setAttribute("osivia.setting.page.CMS_BASE_PATH", pageCmsBasePath);
 	
-	String scope = page.getDeclaredProperty("pia.cms.scope");
-	rd.setAttribute("pia.setting.page.CMS_SCOPE_SELECT", formatScopeList( page, "scope", scope));
+	String scope = page.getDeclaredProperty("osivia.cms.scope");
+	rd.setAttribute("osivia.setting.page.CMS_SCOPE_SELECT", formatScopeList( page, "scope", scope));
 	
-	String navigationScope = page.getDeclaredProperty("pia.cms.navigationScope");
-	rd.setAttribute("pia.setting.page.CMS_NAVIGATION_SCOPE_SELECT", formatScopeList( page, "navigationScope", navigationScope));
+	String navigationScope = page.getDeclaredProperty("osivia.cms.navigationScope");
+	rd.setAttribute("osivia.setting.page.CMS_NAVIGATION_SCOPE_SELECT", formatScopeList( page, "navigationScope", navigationScope));
 
-	String pageContextualizationSupport = page.getDeclaredProperty("pia.cms.pageContextualizationSupport");
-	rd.setAttribute("pia.setting.page.PAGE_CONTEXTUALIZATION_SUPPORT_SELECT", formatInheritedCheckVakue( page, "pageContextualizationSupport", "pia.cms.pageContextualizationSupport", pageContextualizationSupport));
+	String pageContextualizationSupport = page.getDeclaredProperty("osivia.cms.pageContextualizationSupport");
+	rd.setAttribute("osivia.setting.page.PAGE_CONTEXTUALIZATION_SUPPORT_SELECT", formatInheritedCheckVakue( page, "pageContextualizationSupport", "osivia.cms.pageContextualizationSupport", pageContextualizationSupport));
 
-	String outgoingRecontextualizationSupport = page.getDeclaredProperty("pia.cms.outgoingRecontextualizationSupport");
-	rd.setAttribute("pia.setting.page.OUTGOING_RECONTEXTUALIZATION_SUPPORT_SELECT", formatInheritedCheckVakue( page, "outgoingRecontextualizationSupport", "pia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport));
+	String outgoingRecontextualizationSupport = page.getDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport");
+	rd.setAttribute("osivia.setting.page.OUTGOING_RECONTEXTUALIZATION_SUPPORT_SELECT", formatInheritedCheckVakue( page, "outgoingRecontextualizationSupport", "osivia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport));
 	
-	String navigationMode = page.getDeclaredProperty("pia.navigationMode");
+	String navigationMode = page.getDeclaredProperty("osivia.navigationMode");
 	String cmsNavigationMode = "0";
 	if ("cms".equals(navigationMode))
 		cmsNavigationMode = "1";
 
-	rd.setAttribute("pia.setting.page.CMS_NAVIGATION_MODE", cmsNavigationMode);
+	rd.setAttribute("osivia.setting.page.CMS_NAVIGATION_MODE", cmsNavigationMode);
 	
 	}
 	
@@ -700,7 +700,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 			//test si mode assistant activé
 			if (!"wizzard".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-					"pia.windowSettingMode")))
+					"osivia.windowSettingMode")))
 				return resp;
 
 			PageRendition rendition = (PageRendition) resp;
@@ -725,10 +725,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			// url générique de commande
 			
 			
-			rd.setAttribute("pia.setting.COMMAND_URL", serverContext + "/commands");
+			rd.setAttribute("osivia.setting.COMMAND_URL", serverContext + "/commands");
 			
 			
-			rd.setAttribute("pia.setting.FORMATTER", this);
+			rd.setAttribute("osivia.setting.FORMATTER", this);
 			
 			
 			if( page instanceof ITemplatePortalObject)	{
@@ -749,7 +749,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 				String url = new PortalURLImpl(showPage, cmd.getControllerContext(), null, null).toString();
 				url = url + "?init-state=true&edit-template-mode=true";
 				
-				rd.setAttribute("pia.setting.page.CMS_TEMPLATE_URL", url);
+				rd.setAttribute("osivia.setting.page.CMS_TEMPLATE_URL", url);
 
 				
 				
@@ -771,7 +771,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			String url = new PortalURLImpl(initCacheCmd, ctx, null, null).toString();
 			url = url + "?init-cache=true";
 			
-			rd.setAttribute("pia.setting.initCachesUrl", url);
+			rd.setAttribute("osivia.setting.initCachesUrl", url);
 
 
 
@@ -781,7 +781,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			PrintWriter printWriter = new PrintWriter(stringWriter);
 
 			IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class,
-					"pia:service=DynamicPortalObjectContainer");
+					"osivia:service=DynamicPortalObjectContainer");
 
 			/* Navigation */
 
@@ -803,7 +803,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			printWriter.close();
 			String nav = stringWriter.toString();
 
-			rd.setAttribute("pia.setting.navigation", nav);
+			rd.setAttribute("osivia.etting.navigation", nav);
 			
 			
 			

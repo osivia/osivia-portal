@@ -98,7 +98,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			PortalObjectId potemplateid = PortalObjectId.parse(templateId, PortalObjectPath.SAFEST_FORMAT);
 			
 			IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-			"pia:service=DynamicPortalObjectContainer");
+			"osivia:service=DynamicPortalObjectContainer");
 			
 			dynamicCOntainer.addDynamicPage(new DynamicPageBean(parent, pageName, displayNames, potemplateid, props));
 			
@@ -125,7 +125,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
 				getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
 			
 			//Impact sur les caches du bandeau
-			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"pia:service=Cache");
+			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
 			cacheService.incrementHeaderCount();
 			
 			

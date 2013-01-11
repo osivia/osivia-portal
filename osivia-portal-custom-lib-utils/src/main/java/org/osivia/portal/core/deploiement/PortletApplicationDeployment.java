@@ -27,12 +27,12 @@ public class PortletApplicationDeployment extends PortletAppDeployment  {
 	   public void start() throws DeploymentException
 	   {
 	      // Inject services if needed
-	      injectStandardService("CacheService","org.osivia.portal.api.cache.services.ICacheService","pia:service=CacheServices");
-	      injectStandardService("StatutService","org.osivia.portal.api.statut.IStatutService","pia:service=StatutServices");
-	      injectStandardService("UrlService","org.osivia.portal.api.urls.IPortalUrlFactory","pia:service=UrlFactory");
-	      injectStandardService("ProfilService","org.osivia.portal.core.profils.IProfilManager","pia:service=ProfilManager");
-	      injectStandardService("NuxeoService","fr.toutatice.portail.core.nuxeo.INuxeoService","pia:service=NuxeoService");
-	      injectStandardService("FormatterService","org.osivia.portal.core.formatters.IFormatter","pia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+	      injectStandardService("CacheService","org.osivia.portal.api.cache.services.ICacheService","osivia:service=CacheServices");
+	      injectStandardService("StatutService","org.osivia.portal.api.statut.IStatutService","osivia:service=StatutServices");
+	      injectStandardService("UrlService","org.osivia.portal.api.urls.IPortalUrlFactory","osivia:service=UrlFactory");
+	      injectStandardService("ProfilService","org.osivia.portal.core.profils.IProfilManager","osivia:service=ProfilManager");
+	      injectStandardService("NuxeoService","fr.toutatice.portail.core.nuxeo.INuxeoService","osivia:service=NuxeoService");
+	      injectStandardService("FormatterService","org.osivia.portal.core.formatters.IFormatter","osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
 
 	      //
 	      super.start();

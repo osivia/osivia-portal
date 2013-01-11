@@ -80,7 +80,7 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 			
 			Window window = (Window) getControllerContext().getController().getPortalObjectContainer().getObject( PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT));
 			
-			String closeUrl = window.getProperty("pia.dynamic.close_url");
+			String closeUrl = window.getProperty("osivia.dynamic.close_url");
 			
 			if( closeUrl != null)	{
 				
@@ -122,7 +122,7 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 				// Par défaut, renvoi sur la rubrique 
 				
 
-				String cmsNav[] = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path") );
+				String cmsNav[] = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
 				
 				if( cmsNav != null && cmsNav.length > 0)	{
 				CmsCommand cmsCommand = new CmsCommand(pagePath, cmsNav[0], null, "0");

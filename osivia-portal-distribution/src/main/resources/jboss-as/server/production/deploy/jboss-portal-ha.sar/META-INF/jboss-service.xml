@@ -149,8 +149,8 @@
          <depends-list-element>portal:service=Interceptor,type=Server,name=PortalContextPath</depends-list-element>
 
 	<depends-list-element>portal:service=Interceptor,type=Server,name=ContentType</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Server,name=ServerTracker</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Server,name=ServerLogin</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Server,name=ServerTracker</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Server,name=ServerLogin</depends-list-element>
       </depends-list>
    </mbean>
 
@@ -243,28 +243,28 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <depends-list optional-attribute-name="InterceptorNames">
-          <depends-list-element>pia:service=Interceptor,type=Command,name=Error</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Command,name=CommandTracker</depends-list-element>
+          <depends-list-element>osivia:service=Interceptor,type=Command,name=Error</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Command,name=CommandTracker</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=ResourceAcquisition</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=Ajax</depends-list-element>
 
          <!-- depends-list-element>portal:service=Interceptor,type=Command,name=CleanNS</depends-list-element -->
          <depends-list-element>portal:service=Interceptor,type=Command,name=NavigationalState</depends-list-element>
- <!--        <depends-list-element>pia:service=Interceptor,type=Command,name=Logger</depends-list-element> -->
+ <!--        <depends-list-element>osivia:service=Interceptor,type=Command,name=Logger</depends-list-element> -->
          <depends-list-element>portal:service=Interceptor,type=Command,name=Control</depends-list-element>
- <!--        <depends-list-element>pia:service=Interceptor,type=Command,name=Logger</depends-list-element> -->
+ <!--        <depends-list-element>osivia:service=Interceptor,type=Command,name=Logger</depends-list-element> -->
          <depends-list-element>portal:service=Interceptor,type=Command,name=BackwardCompatibility</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=PortalNode</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=PolicyEnforcement</depends-list-element>
-	<depends-list-element>pia:service=Interceptor,type=Command,name=PageMarkerInterceptor</depends-list-element> 
+	<depends-list-element>osivia:service=Interceptor,type=Command,name=PageMarkerInterceptor</depends-list-element> 
 <!--         
          <depends-list-element>portal:service=Interceptor,type=Command,name=PageCustomizer</depends-list-element>
 -->       
 	   
-         <depends-list-element>pia:service=Interceptor,type=Command,name=PageCustomizer</depends-list-element> 
-	<depends-list-element>pia:service=Interceptor,type=Command,name=TabsCustomizer </depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Command,name=PageCustomizer</depends-list-element> 
+	<depends-list-element>osivia:service=Interceptor,type=Command,name=TabsCustomizer </depends-list-element>
 
-         <depends-list-element>pia:service=Interceptor,type=Command,name=AssistantPageCustomizer</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=EventBroadcaster</depends-list-element>
       </depends-list>
    </mbean>
@@ -302,12 +302,12 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <depends-list optional-attribute-name="InterceptorNames">
-	 <depends-list-element>pia:service=Interceptor,type=Portlet,name=PortletAttributesController</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Portlet,name=ConsumerCache</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor</depends-list-element>
+	 <depends-list-element>osivia:service=Interceptor,type=Portlet,name=PortletAttributesController</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ConsumerCache</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=InstanceSecurity</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization</depends-list-element>
-	 <depends-list-element>pia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor</depends-list-element>
+	 <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=InstanceInvoker</depends-list-element>
      </depends-list>
    </mbean>
@@ -409,17 +409,17 @@
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=Valve</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=SecureTransport</depends-list-element>
 	<depends-list-element>portal:service=Interceptor,type=Portlet,name=HttpHeader</depends-list-element>
-         <depends-list-element>pia:service=Interceptor,type=Portlet,name=ContextDispatcherWrapperInterceptor</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ContextDispatcherWrapperInterceptor</depends-list-element>
 <!--
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=ContextTracker</depends-list-element>
 -->
-	 <depends-list-element>pia:service=Interceptor,type=Portlet,name=ContextTracker</depends-list-element>
+	 <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ContextTracker</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=PortletSessionSynchronization</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=Bridge</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=BackwardCompatibility</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=Ajax</depends-list-element>
          <!--
-         <depends-list-element>pia:service=Interceptor,type=Portlet,name=AjaxLoadingInterceptor</depends-list-element>     
+         <depends-list-element>osivia:service=Interceptor,type=Portlet,name=AjaxLoadingInterceptor</depends-list-element>     
          -->
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=SignOut</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=ProducerCache</depends-list-element>
@@ -844,7 +844,7 @@
 		</attribute>
 		<attribute name="CacheNaturalId">true</attribute>
 
-  	<attribute name="DynamicObjectContainerBeanName">pia:service=DynamicPortalObjectContainer</attribute>
+  	<attribute name="DynamicObjectContainerBeanName">osivia:service=DynamicPortalObjectContainer</attribute>
 			
 	</mbean>
 
@@ -1173,7 +1173,7 @@
       </depends>
    </mbean>
 
-   <!--  REDEFINI POUR LE PIA
+   <!--  REDEFINI POUR OSIVIA
    <mbean code="org.jboss.portal.core.model.portal.control.page.DefaultPageControlPolicy"
           name="portal:service=ControlPolicy,type=Page" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
@@ -1383,10 +1383,10 @@
    </mbean>
    
    
-     <!--       cache portail PIA  -->
+     <!--       cache portail OSIVIA  -->
 
     <mbean code="org.jboss.cache.TreeCache"
-   	name="pia:service=TreeCache">
+   	name="osivia:service=TreeCache">
    	<depends>jboss:service=Naming</depends>
    	<depends>jboss:service=TransactionManager</depends>
 
@@ -1402,7 +1402,7 @@
    	<attribute name="CacheMode">REPL_SYNC</attribute>
 -->
    	<attribute name="ClusterName">
-   		pia
+   		osivia
    	</attribute>
 
    	<attribute name="InitialStateRetrievalTimeout">17500</attribute>

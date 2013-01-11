@@ -127,7 +127,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		newWindows.add( newWindow);
 
 		// Copie dans la session
-		getTracker().getHttpSession().setAttribute("pia.dynamic_windows", newWindows);
+		getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);
 		
 		// On vide le cache
 		getDatas().clear();
@@ -158,7 +158,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		newPages.add( newPage);
 
 		// Copie dans la session
-		getTracker().getHttpSession().setAttribute("pia.dynamic_pages", newPages);
+		getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
 		
 		// On vide le cache
 		getDatas().clear();
@@ -175,7 +175,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				newWindows.add(window);
 		}
 		// Copie dans la session
-		getTracker().getHttpSession().setAttribute("pia.dynamic_windows", newWindows);
+		getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);
 		
 
 		// On vide le cache
@@ -194,7 +194,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				newPages.add(page);
 		}
 		// Copie dans la session
-		getTracker().getHttpSession().setAttribute("pia.dynamic_pages", newPages);
+		getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
 		
 
 		// On vide le cache
@@ -207,7 +207,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		List<DynamicWindowBean> windows = null;
 		
 		if(  getTracker().getHttpSession() != null)
-			windows = (List<DynamicWindowBean>) getTracker().getHttpSession().getAttribute("pia.dynamic_windows");
+			windows = (List<DynamicWindowBean>) getTracker().getHttpSession().getAttribute("osivia.dynamic_windows");
 		
 		 if( windows == null)
 			 windows = new ArrayList<DynamicWindowBean>();
@@ -215,7 +215,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		 /*
 		 
 		 for( DynamicWindowBean window : windows)	{
-			 logger.debug("cms.uri" + window.getProperties().get("pia.cms.uri"));
+			 logger.debug("cms.uri" + window.getProperties().get("osivia.cms.uri"));
 		 }
 */
 		 
@@ -227,7 +227,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		List<DynamicPageBean> pages = null;
 		
 		if(  getTracker().getHttpSession() != null)
-			pages = (List<DynamicPageBean>) getTracker().getHttpSession().getAttribute("pia.dynamic_pages");
+			pages = (List<DynamicPageBean>) getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
 		
 		 if( pages == null)
 			 pages = new ArrayList<DynamicPageBean>();
@@ -235,7 +235,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		 /*
 		 
 		 for( DynamicWindowBean window : windows)	{
-			 logger.debug("cms.uri" + window.getProperties().get("pia.cms.uri"));
+			 logger.debug("cms.uri" + window.getProperties().get("osivia.cms.uri"));
 		 }
 */
 		 
@@ -245,7 +245,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 public void setDynamicWindows( List<DynamicWindowBean> dynaWindows)	{
 		
 	// Copie dans la session
-	getTracker().getHttpSession().setAttribute("pia.dynamic_windows", dynaWindows);
+	getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", dynaWindows);
 
 	// On vide le cache
 	getDatas().clear();
@@ -254,7 +254,7 @@ public void setDynamicWindows( List<DynamicWindowBean> dynaWindows)	{
 public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 	
 	// Copie dans la session
-	getTracker().getHttpSession().setAttribute("pia.dynamic_pages", dynaPages);
+	getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", dynaPages);
 
 	// On vide le cache
 	getDatas().clear();
@@ -360,7 +360,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 		
 
 		if (ns != null) {
-			String layoutPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.layout_path"));
+			String layoutPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"));
 			
 			if( layoutPath != null)	{
 
@@ -396,8 +396,8 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 			/*
 			if( cache instanceof Window){
 				Window window = (Window) cache;
-				if( window.getDeclaredProperty("pia.cms.uri") != null)	{
-					logger.debug("cache pia.cms.uri "+ window.getDeclaredProperty("pia.cms.uri"));
+				if( window.getDeclaredProperty("osivia.cms.uri") != null)	{
+					logger.debug("cache osivia.cms.uri "+ window.getDeclaredProperty("osivia.cms.uri"));
 				}
 
 			}

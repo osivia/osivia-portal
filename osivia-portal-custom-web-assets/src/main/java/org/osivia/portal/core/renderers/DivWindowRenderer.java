@@ -66,7 +66,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       properties.setCurrentWindowId(wrc.getId());
       
       
-      String hidePortlet = properties.getWindowProperty(wrc.getId(), "pia.hidePortlet");
+      String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
       
       if( "1".equals(hidePortlet))
     	  return;
@@ -74,13 +74,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer
 
       
       // Activation des liens Ajax
-      String ajaxLink = properties.getWindowProperty(wrc.getId(), "pia.ajaxLink");
-      if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("pia.windowSettingMode")))
+      String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
+      if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))
     	  out.print("<div class=\"no-ajax-link\">");   	
       
       
       
-      String style = properties.getWindowProperty(wrc.getId(), "pia.style");
+      String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
       
       if( style != null)	
     	  style = style.replaceAll(",", " ");
@@ -102,22 +102,22 @@ public class DivWindowRenderer extends AbstractObjectRenderer
 
       
       
-      //if( "wizzard".equals(  properties.getWindowProperty(wrc.getId(), "pia.windowSettingMode")))	{     
-      if( "wizzard".equals(wrc.getProperty("pia.windowSettingMode")))	{
+      //if( "wizzard".equals(  properties.getWindowProperty(wrc.getId(), "osivia.windowSettingMode")))	{     
+      if( "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))	{
        
 
       out.print("<div class=\"pia-window-settings-border\">");
       out.print("<div class=\"pia-window-settings\">");
 
-      out.print("<a href=\""+wrc.getProperty("pia.upUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_up.png\" alt=\"Vers le haut\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("osivia.upUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_up.png\" alt=\"Vers le haut\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.downUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_down.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("osivia.downUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_down.png\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.previousRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_left.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("osivia.previousRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_left.png\" border=0/></a>");
       out.print("&nbsp;");
-      out.print("<a href=\""+wrc.getProperty("pia.nextRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_right.png\" border=0/></a>");
+      out.print("<a href=\""+wrc.getProperty("osivia.nextRegionUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/arrow_right.png\" border=0/></a>");
       out.print("&nbsp;<img src=\"/osivia-portal-custom-web-assets/images/shading.png\" border=0/>&nbsp;");      
-      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.settingUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/></a>");
+      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("osivia.settingUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/></a>");
       out.print("&nbsp;");
       Collection modesOrStates = wrc.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
       for (Iterator i = modesOrStates.iterator(); i.hasNext();)	{
@@ -128,7 +128,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
     	  }
          }      
       out.print("&nbsp;<img src=\"/osivia-portal-custom-web-assets/images/shading.png\" border=0/>&nbsp;");       
-      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("pia.destroyUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/></a>");
+      out.print("<a href=\"#\" onClick=\""+wrc.getProperty("osivia.destroyUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/></a>");
 
       out.print("</div>");
       out.print("</div>");
@@ -138,7 +138,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
 
      
 
-      if(  "1".equals(properties.getWindowProperty(wrc.getId(), "pia.displayTitle")))	{
+      if(  "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle")))	{
       
  	  
     	  out.print("<tr><td class=\"portlet-titlebar-left\"></td>");
@@ -169,11 +169,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer
     	         }      
 
     	    
-    	      String title = properties.getWindowProperty(wrc.getId(), "pia.title");
+    	      String title = properties.getWindowProperty(wrc.getId(), "osivia.title");
     	      if( title == null)
     	    	  title = "";
     	      
-    	      String instanceName = wrc.getProperty("pia.instanceDisplayName");
+    	      String instanceName = wrc.getProperty("osivia.instanceDisplayName");
     	      title += "   ["+instanceName+"]";
 
 
@@ -209,7 +209,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       */
       
       // Activation des liens Ajax
-      if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("pia.windowSettingMode")))
+      if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))
     	     	  out.print("</div>"); 	  
 
 

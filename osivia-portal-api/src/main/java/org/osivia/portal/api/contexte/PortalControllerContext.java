@@ -16,7 +16,7 @@ public class PortalControllerContext {
 
 	public PortalControllerContext(PortletContext portletCtx, PortletRequest request, PortletResponse response) {
 		super();
-		this.controllerCtx = (ControllerContext) request.getAttribute("pia.controller");
+		this.controllerCtx = (ControllerContext) request.getAttribute("osivia.controller");
 		this.request = request;
 		this.response = response;
 		this.portletCtx = portletCtx;

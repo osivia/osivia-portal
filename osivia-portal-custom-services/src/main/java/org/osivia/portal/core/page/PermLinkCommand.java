@@ -124,10 +124,10 @@ public CommandInfo getInfo()
 	   Collection<PortalObject> childs = parent.getChildren(PortalObject.PAGE_MASK | PortalObject.WINDOW_MASK);
 	   
 	   for (PortalObject child : childs)	{
-		   String windowPermLinkName = "pia.permaLinkRef";
+		   String windowPermLinkName = "osivia.permaLinkRef";
 		   
 		   if(  IPortalUrlFactory.PERM_LINK_TYPE_RSS.equals(permLinkType) || IPortalUrlFactory.PERM_LINK_TYPE_RSS_PICTURE.equals(permLinkType))
-			   windowPermLinkName =  "pia.rssLinkRef";
+			   windowPermLinkName =  "osivia.rssLinkRef";
 		   
 		   if( permLinkRef.equals(child.getDeclaredProperty(windowPermLinkName)))	{
 			   if( child instanceof Page)

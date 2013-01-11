@@ -405,11 +405,12 @@
 
 
   <!-- Pour faire du debug sur le portail -->
-  <category name="fr.toutatice.portail">
+  <category name="org.osivia.portal">
       <priority value="DEBUG"/>
       <appender-ref ref="PORTAL"/>
    </category>
 
+ 
   
   <category name="PORTAL_USER_ERROR"  additivity="false">
       <priority value="ERROR"/>

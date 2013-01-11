@@ -50,41 +50,41 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
 		if (cmsBasePath != null && cmsBasePath.length() != 0) {
-			page.setDeclaredProperty("pia.cms.basePath", cmsBasePath);
+			page.setDeclaredProperty("osivia.cms.basePath", cmsBasePath);
 		} else {
-			page.setDeclaredProperty("pia.cms.basePath", null);
+			page.setDeclaredProperty("osivia.cms.basePath", null);
 		}
 		
 		if (navigationScope != null && navigationScope.length() != 0) {
-			page.setDeclaredProperty("pia.cms.navigationScope", navigationScope);
+			page.setDeclaredProperty("osivia.cms.navigationScope", navigationScope);
 		} else {
-			page.setDeclaredProperty("pia.cms.navigationScope", null);
+			page.setDeclaredProperty("osivia.cms.navigationScope", null);
 		}
 		
 		if ("1".equals(cmsNavigationMode)) {
-			page.setDeclaredProperty("pia.navigationMode", "cms");
+			page.setDeclaredProperty("osivia.navigationMode", "cms");
 		} else {
-			page.setDeclaredProperty("pia.navigationMode", null);
+			page.setDeclaredProperty("osivia.navigationMode", null);
 		}
 
 		
 		if (scope != null && scope.length() != 0) {
-			page.setDeclaredProperty("pia.cms.scope", scope);
+			page.setDeclaredProperty("osivia.cms.scope", scope);
 		} else {
-			page.setDeclaredProperty("pia.cms.scope", null);
+			page.setDeclaredProperty("osivia.cms.scope", null);
 		}
 
 		
 		if (pageContextualizationSupport != null && pageContextualizationSupport.length() != 0) {
-			page.setDeclaredProperty("pia.cms.pageContextualizationSupport", pageContextualizationSupport);
+			page.setDeclaredProperty("osivia.cms.pageContextualizationSupport", pageContextualizationSupport);
 		} else {
-			page.setDeclaredProperty("pia.cms.pageContextualizationSupport", null);
+			page.setDeclaredProperty("osivia.cms.pageContextualizationSupport", null);
 		}
 		
 		if (outgoingRecontextualizationSupport != null && outgoingRecontextualizationSupport.length() != 0) {
-			page.setDeclaredProperty("pia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport);
+			page.setDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport);
 		} else {
-			page.setDeclaredProperty("pia.cms.outgoingRecontextualizationSupport", null);
+			page.setDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport", null);
 		}
 		
 

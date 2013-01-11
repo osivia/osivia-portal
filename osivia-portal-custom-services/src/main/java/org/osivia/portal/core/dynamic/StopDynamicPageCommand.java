@@ -79,12 +79,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				PortalObject parent = page.getParent();
 
 				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-						"pia:service=DynamicPortalObjectContainer");
+						"osivia:service=DynamicPortalObjectContainer");
 
 				dynamicCOntainer.removeDynamicPage(pageId);
 
 				PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
-						ControllerCommand.PRINCIPAL_SCOPE, "pia.currentPageId");
+						ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
 				
 				if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))	{
 
@@ -93,7 +93,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 					// Redirection vers l'item précédent ou suivant dans le menu
 
 					UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
-							ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavUserPortal");
+							ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
 
 					if (tabbedNavUserPortal != null) {
 
@@ -146,7 +146,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
 			
 			// Impact sur les caches du bandeau
-			ICacheService cacheService = Locator.findMBean(ICacheService.class, "pia:service=Cache");
+			ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
 			cacheService.incrementHeaderCount();
 			
 			

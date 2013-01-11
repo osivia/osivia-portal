@@ -69,7 +69,7 @@ public class ExportServlet extends HttpServlet {
 		try {
 
 			dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class,
-					"pia:service=DynamicPortalObjectContainer");
+					"osivia:service=DynamicPortalObjectContainer");
 
 			// ignore dynamic windows
 

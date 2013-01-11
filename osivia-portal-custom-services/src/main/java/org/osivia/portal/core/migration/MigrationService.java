@@ -19,6 +19,8 @@ import org.osivia.portal.core.page.PageUtils;
 /**
  * Migration manager
  * 
+ * Doit etre lance en mode singleton !!!
+ * 
  * @author jeanseb
  * 
  */
@@ -30,7 +32,7 @@ public class MigrationService implements IMigrationManager {
   	  // Migrations modules are deployed by administration layer
   	  // (also benefits from the cluster singleton thanks to Deployer )
   	  
-		IMigrationManager migrationMgr =  Locator.findMBean(IMigrationManager.class, "pia:service=MigrationService");
+		IMigrationManager migrationMgr =  Locator.findMBean(IMigrationManager.class, "osivia:service=MigrationService");
 		if( migrationMgr != null)
 			migrationMgr.migrate();
   	  
@@ -38,7 +40,7 @@ public class MigrationService implements IMigrationManager {
     
     */
 
-	public static String LAST_MODULE_ID_PROP = "pia.migration.lastModuleId"; 
+	public static String LAST_MODULE_ID_PROP = "osivia.migration.lastModuleId"; 
 	private static Log logger = LogFactory.getLog(MigrationService.class);
 	public PortalObjectContainer portalObjectContainer;
 
@@ -64,6 +66,7 @@ public class MigrationService implements IMigrationManager {
 		 List<MigrationModule> modules = new ArrayList<MigrationModule>();
 		 
 		 modules.add(new MigrationModule2060());
+		 modules.add(new MigrationModule2061());
 		 
 		 Collections.sort(modules, orderComparator);
 		 

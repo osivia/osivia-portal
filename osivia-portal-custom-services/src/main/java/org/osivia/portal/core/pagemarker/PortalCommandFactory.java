@@ -52,7 +52,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 		if (dynamicCOntainer == null)
 			dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-					"pia:service=DynamicPortalObjectContainer");
+					"osivia:service=DynamicPortalObjectContainer");
 
 		return dynamicCOntainer;
 	}
@@ -95,16 +95,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 					+ (new CMSObjectPath(publishSpace.getPath(), CMSObjectPath.CANONICAL_FORMAT))
 							.toString(CMSObjectPath.SAFEST_FORMAT);
 
-			props.put("pia.cms.basePath", publishSpace.getPath());
+			props.put("osivia.cms.basePath", publishSpace.getPath());
 
 			if ("1".equals(publishSpace.getProperties().get("contextualizeInternalContents")))
-				props.put("pia.cms.pageContextualizationSupport", "1");
+				props.put("osivia.cms.pageContextualizationSupport", "1");
 
 			if ("1".equals(publishSpace.getProperties().get("contextualizeExternalContents")))
-				props.put("pia.cms.outgoingRecontextualizationSupport", "1");
+				props.put("osivia.cms.outgoingRecontextualizationSupport", "1");
 
-			props.put("pia.cms.layoutType", "1");
-			props.put("pia.cms.layoutRules", "return ECMPageTemplate;");
+			props.put("osivia.cms.layoutType", "1");
+			props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
 			DynamicPageBean dynaPage = new DynamicPageBean(parent, pageName, displayNames, PortalObjectId.parse(
 					"/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT), props);
@@ -146,7 +146,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		 */
 
 		List<CMSPage> preloadedPages = (List<CMSPage>) invocation.getAttribute(Scope.REQUEST_SCOPE,
-				"pia.userPreloadedPages");
+				"osivia.userPreloadedPages");
 
 		if (preloadedPages != null) {
 			createPages(preloadedPages);

@@ -63,7 +63,7 @@ public class PIACustomizationManagerService extends CustomizationManagerService 
 	    			//logger.debug("PIACustomizationManagerService int : " + (inter -debut));
 	    		            	
 	            	
-	            	String personnalisationId =  window.getProperty("pia.idPerso");
+	            	String personnalisationId =  window.getProperty("osivia.idPerso");
 	            	
 	            	if( personnalisationId != null)
 	            		instance = instance.getCustomization(personnalisationId + ":" +userId);	  

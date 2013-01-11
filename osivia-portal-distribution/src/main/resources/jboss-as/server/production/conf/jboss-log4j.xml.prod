@@ -379,7 +379,7 @@
 
   <!-- Pour faire du debug sur le portail -->
 <!--
-  <category name="fr.toutatice.portail">
+  <category name="org.osivia.portal">
       <priority value="DEBUG"/>
       <appender-ref ref="PORTAL"/>
    </category>

@@ -38,13 +38,13 @@
 	<service>
 	   	<service-name>PiaConfigDeployer</service-name>
 	   	<service-class>org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager</service-class>
-	   	<service-ref>pia:service=ConfigDeployer</service-ref>
+	   	<service-ref>osivia:service=ConfigDeployer</service-ref>
 	</service>
 	
 	<service>
 	   	<service-name>PiaProfilManager</service-name>
 	   	<service-class>org.osivia.portal.core.profils.IProfilManager</service-class>
-	   	<service-ref>pia:service=ProfilManager</service-ref>
+	   	<service-ref>osivia:service=ProfilManager</service-ref>
 	</service>
 	
 	<!-- 

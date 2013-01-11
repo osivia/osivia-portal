@@ -67,26 +67,26 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 					sStyle += ",";
 				sStyle += itemStyle;
 			}
-			window.setDeclaredProperty("pia.style", sStyle);
+			window.setDeclaredProperty("osivia.style", sStyle);
 		}
-		else if (window.getDeclaredProperty("pia.style") != null)
-			window.setDeclaredProperty("pia.style", null);
+		else if (window.getDeclaredProperty("osivia.style") != null)
+			window.setDeclaredProperty("osivia.style", null);
 
 		if ("0".equals(displayTitle))
-			window.setDeclaredProperty("pia.hideTitle", "1");
-		else if (window.getDeclaredProperty("pia.hideTitle") != null)
-			window.setDeclaredProperty("pia.hideTitle", null);
+			window.setDeclaredProperty("osivia.hideTitle", "1");
+		else if (window.getDeclaredProperty("osivia.hideTitle") != null)
+			window.setDeclaredProperty("osivia.hideTitle", null);
 		
 		if (title.length() > 0)
-			window.setDeclaredProperty("pia.title", title);
-		else if (window.getDeclaredProperty("pia.title") != null)
-			window.setDeclaredProperty("pia.title", null);
+			window.setDeclaredProperty("osivia.title", title);
+		else if (window.getDeclaredProperty("osivia.title") != null)
+			window.setDeclaredProperty("osivia.title", null);
 		
 
 		if ("0".equals(displayDecorators))
-			window.setDeclaredProperty("pia.hideDecorators", "1");
-		else if (window.getDeclaredProperty("pia.hideDecorators") != null)
-			window.setDeclaredProperty("pia.hideDecorators", null);
+			window.setDeclaredProperty("osivia.hideDecorators", "1");
+		else if (window.getDeclaredProperty("osivia.hideDecorators") != null)
+			window.setDeclaredProperty("osivia.hideDecorators", null);
 		
 		if ("1".equals(partialRefresh))	
 			window.setDeclaredProperty("theme.dyna.partial_refresh_enabled", "true");
@@ -100,26 +100,26 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		
 	
 		if (idPerso.length() > 0)
-			window.setDeclaredProperty("pia.idPerso", idPerso);
-		else if (window.getDeclaredProperty("pia.idPerso") != null)
-			window.setDeclaredProperty("pia.idPerso", null);
+			window.setDeclaredProperty("osivia.idPerso", idPerso);
+		else if (window.getDeclaredProperty("osivia.idPerso") != null)
+			window.setDeclaredProperty("osivia.idPerso", null);
 
 		if ("1".equals(ajaxLink))
-			window.setDeclaredProperty("pia.ajaxLink", "1");
-		else if (window.getDeclaredProperty("pia.ajaxLink") != null)
-			window.setDeclaredProperty("pia.ajaxLink", null);
+			window.setDeclaredProperty("osivia.ajaxLink", "1");
+		else if (window.getDeclaredProperty("osivia.ajaxLink") != null)
+			window.setDeclaredProperty("osivia.ajaxLink", null);
 		
 		if( "1".equals(hideEmptyPortlet))
-			window.setDeclaredProperty("pia.hideEmptyPortlet", "1");
-		else if (window.getDeclaredProperty("pia.hideEmptyPortlet") != null)
-			window.setDeclaredProperty("pia.hideEmptyPortlet", null);	
+			window.setDeclaredProperty("osivia.hideEmptyPortlet", "1");
+		else if (window.getDeclaredProperty("osivia.hideEmptyPortlet") != null)
+			window.setDeclaredProperty("osivia.hideEmptyPortlet", null);	
 		
 		// v1.0.14 : ajout print
 		
 		if ("1".equals(printPortlet))
-			window.setDeclaredProperty("pia.printPortlet", "1");
-		else if (window.getDeclaredProperty("pia.printPortlet") != null)
-			window.setDeclaredProperty("pia.printPortlet", null);
+			window.setDeclaredProperty("osivia.printPortlet", "1");
+		else if (window.getDeclaredProperty("osivia.printPortlet") != null)
+			window.setDeclaredProperty("osivia.printPortlet", null);
 		
 		
 		// Pour rafraichissement barre de menu portlet (item print)
@@ -129,9 +129,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		
 		//v1.0.25 : affichage conditionnel portlet
 		if (conditionalScope!= null && conditionalScope.length() > 1)
-			window.setDeclaredProperty("pia.conditionalScope",conditionalScope);
-		else if (window.getDeclaredProperty("pia.conditionalScope") != null)
-			window.setDeclaredProperty("pia.conditionalScope", null);		
+			window.setDeclaredProperty("osivia.conditionalScope",conditionalScope);
+		else if (window.getDeclaredProperty("osivia.conditionalScope") != null)
+			window.setDeclaredProperty("osivia.conditionalScope", null);		
 
 
 	

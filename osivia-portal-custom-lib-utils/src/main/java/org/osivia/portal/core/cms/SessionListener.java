@@ -36,7 +36,7 @@ public class SessionListener implements HttpSessionListener {
 
 		ICMSIntegration nuxeoService;
 		try {
-			nuxeoService = Locator.findMBean(ICMSIntegration.class, "pia:service=NuxeoService");
+			nuxeoService = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -59,7 +59,7 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 		       
 		       String entrycmsPath = null;
 		       if( entryNavigationalState != null)	{
-		    	   String[] state =  entryNavigationalState.get("pia.cms.path");
+		    	   String[] state =  entryNavigationalState.get("osivia.cms.path");
 		    	   if( state != null && state.length == 1)
 		    		   entrycmsPath = state [0];
 		       }
@@ -67,7 +67,7 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 		       
 		       String pagecmsPath = null;
 		       if( pageNavigationalState != null)	{
-		    	    String[] state =  pageNavigationalState.get("pia.cms.path");
+		    	    String[] state =  pageNavigationalState.get("osivia.cms.path");
 		    	    if( state != null && state.length == 1)
 		    	    	pagecmsPath = state [0];
 				}
@@ -98,7 +98,7 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 		}
 
 		// Accès anonyme à la page d'accueil
-		if ("1".equals(context.getAttribute(Scope.REQUEST_SCOPE, "pia.useGlobalWindowCaches"))) {
+		if ("1".equals(context.getAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches"))) {
 			CacheEntry globalCacheEntry = ConsumerCacheInterceptor.globalWindowCaches.get(window.getId());
 			if (globalCacheEntry != null)
 				if (globalCacheEntry.expirationTimeMillis > System.currentTimeMillis() + 10)

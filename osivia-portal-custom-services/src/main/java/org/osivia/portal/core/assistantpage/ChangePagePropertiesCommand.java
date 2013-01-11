@@ -38,9 +38,9 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
 		if ("1".equals(draftPage))
-			page.setDeclaredProperty("pia.draftPage", "1");
-		else if (page.getDeclaredProperty("pia.draftPage") != null)
-			page.setDeclaredProperty("pia.draftPage", null);
+			page.setDeclaredProperty("osivia.draftPage", "1");
+		else if (page.getDeclaredProperty("osivia.draftPage") != null)
+			page.setDeclaredProperty("osivia.draftPage", null);
 
 		return new UpdatePageResponse(page.getId());
 

@@ -18,39 +18,39 @@
 
 
 <%
-	String pageName = (String)request.getAttribute("pia.setting.page.NAME");
-	String pageCmsBasePath = (String)request.getAttribute("pia.setting.page.CMS_BASE_PATH");
-	String pageCmsScopeSelect = (String)request.getAttribute("pia.setting.page.CMS_SCOPE_SELECT");	
-	String pageCmsNavigationScopeSelect = (String)request.getAttribute("pia.setting.page.CMS_NAVIGATION_SCOPE_SELECT");	
+	String pageName = (String)request.getAttribute("osivia.setting.page.NAME");
+	String pageCmsBasePath = (String)request.getAttribute("osivia.setting.page.CMS_BASE_PATH");
+	String pageCmsScopeSelect = (String)request.getAttribute("osivia.setting.page.CMS_SCOPE_SELECT");	
+	String pageCmsNavigationScopeSelect = (String)request.getAttribute("osivia.setting.page.CMS_NAVIGATION_SCOPE_SELECT");	
 	
 	
-	String pageCMSNavigationMode = (String)request.getAttribute("pia.setting.page.CMS_NAVIGATION_MODE");	
-	String pageContextualizationSupport = (String)request.getAttribute("pia.setting.page.PAGE_CONTEXTUALIZATION_SUPPORT_SELECT");	
-	String outgoingRecontextualizationSupport = (String)request.getAttribute("pia.setting.page.OUTGOING_RECONTEXTUALIZATION_SUPPORT_SELECT");	
+	String pageCMSNavigationMode = (String)request.getAttribute("osivia.setting.page.CMS_NAVIGATION_MODE");	
+	String pageContextualizationSupport = (String)request.getAttribute("osivia.setting.page.PAGE_CONTEXTUALIZATION_SUPPORT_SELECT");	
+	String outgoingRecontextualizationSupport = (String)request.getAttribute("osivia.setting.page.OUTGOING_RECONTEXTUALIZATION_SUPPORT_SELECT");	
 
 
-	Collection<Page> sisters = (Collection<Page>) request.getAttribute("pia.setting.page.order.sisters");
-	Collection<Page> models = (Collection<Page>) request.getAttribute("pia.setting.page.create.models");
+	Collection<Page> sisters = (Collection<Page>) request.getAttribute("osivia.setting.page.order.sisters");
+	Collection<Page> models = (Collection<Page>) request.getAttribute("osivia.setting.page.create.models");
 	
-	String url = (String)request.getAttribute("pia.setting.URL");
-	String currentLayout = (String)request.getAttribute("pia.setting.layout.NAME");
-	String defaultPage = (String)request.getAttribute("pia.setting.page.DEFAULT_PAGE");
-	String draftPage = (String)request.getAttribute("pia.setting.page.DRAFT_PAGE");
-	Collection<PortalLayout> listLayout = (Collection<PortalLayout>)request.getAttribute("pia.setting.LAYOUT_LIST");
-	List<Role> roleAvaible = (List<Role>)request.getAttribute("pia.setting.ROLE_AVAIBLE");
-	Map<String,Set<String>> actionsForRole = (Map<String, Set<String>>)request.getAttribute("pia.setting.ACTIONS_FOR_ROLE");
+	String url = (String)request.getAttribute("osivia.setting.URL");
+	String currentLayout = (String)request.getAttribute("osivia.setting.layout.NAME");
+	String defaultPage = (String)request.getAttribute("osivia.setting.page.DEFAULT_PAGE");
+	String draftPage = (String)request.getAttribute("osivia.setting.page.DRAFT_PAGE");
+	Collection<PortalLayout> listLayout = (Collection<PortalLayout>)request.getAttribute("osivia.setting.LAYOUT_LIST");
+	List<Role> roleAvaible = (List<Role>)request.getAttribute("osivia.setting.ROLE_AVAIBLE");
+	Map<String,Set<String>> actionsForRole = (Map<String, Set<String>>)request.getAttribute("osivia.setting.ACTIONS_FOR_ROLE");
 	
-	String deletePageUrl = (String) request.getAttribute("pia.setting.DELETE_PAGE_URL");
-	String commandUrl = (String) request.getAttribute("pia.setting.COMMAND_URL");
-	String pageId = (String) request.getAttribute("pia.setting.PAGE_ID");
+	String deletePageUrl = (String) request.getAttribute("osivia.setting.DELETE_PAGE_URL");
+	String commandUrl = (String) request.getAttribute("osivia.setting.COMMAND_URL");
+	String pageId = (String) request.getAttribute("osivia.setting.PAGE_ID");
 	
-	List<Window> windows = (List<Window>) request.getAttribute("pia.setting.windows");
-	List<String> portalStyles  = (List<String>) request.getAttribute("pia.setting.windows.PORTAL_STYLES");
-	List<InstanceDefinition> portletDefinitions = (List<InstanceDefinition>) request.getAttribute("pia.setting.portlets");
+	List<Window> windows = (List<Window>) request.getAttribute("osivia.setting.windows");
+	List<String> portalStyles  = (List<String>) request.getAttribute("osivia.setting.windows.PORTAL_STYLES");
+	List<InstanceDefinition> portletDefinitions = (List<InstanceDefinition>) request.getAttribute("osivia.setting.portlets");
 	
-	String templateUrl = (String) request.getAttribute("pia.setting.page.CMS_TEMPLATE_URL");
+	String templateUrl = (String) request.getAttribute("osivia.setting.page.CMS_TEMPLATE_URL");
 	
-	IFormatter formatter = (IFormatter) request.getAttribute("pia.setting.FORMATTER");
+	IFormatter formatter = (IFormatter) request.getAttribute("osivia.setting.FORMATTER");
 	
 	
 	
@@ -601,7 +601,7 @@ function togglePublication() {
 			
 			/* Récupération des styles */
 			
-			String stylesProp = window.getDeclaredProperty("pia.style");
+			String stylesProp = window.getDeclaredProperty("osivia.style");
 			String[] styles = new String[0];
 			if (stylesProp != null)
 				styles = stylesProp.split(",");
@@ -614,14 +614,14 @@ function togglePublication() {
 			
 			
 			String checkTitle = "checked"; 
-			if( "1".equals(window.getDeclaredProperty("pia.hideTitle")))
+			if( "1".equals(window.getDeclaredProperty("osivia.hideTitle")))
 				checkTitle = "";	
 			String title = ""; 
-			if( window.getDeclaredProperty("pia.title") != null)
-				title = window.getDeclaredProperty("pia.title");		
+			if( window.getDeclaredProperty("osivia.title") != null)
+				title = window.getDeclaredProperty("osivia.title");		
 				
 			String checkDecorators = "checked";
-			if("1".equals(window.getDeclaredProperty("pia.hideDecorators")))
+			if("1".equals(window.getDeclaredProperty("osivia.hideDecorators")))
 				checkDecorators = "";
 			
 			
@@ -630,23 +630,23 @@ function togglePublication() {
 				partialRefresh = "";
 			
 			String ajaxLink = "";
-			if( "1".equals( window.getProperty("pia.ajaxLink")))
+			if( "1".equals( window.getProperty("osivia.ajaxLink")))
 				ajaxLink = "checked";
 
 			String printPortlet = "";
-			if( "1".equals( window.getProperty("pia.printPortlet")))
+			if( "1".equals( window.getProperty("osivia.printPortlet")))
 				printPortlet = "checked";
 
 			
 			String idPerso = ""; 
-			if( window.getDeclaredProperty("pia.idPerso") != null)
-				idPerso = window.getDeclaredProperty("pia.idPerso");		
+			if( window.getDeclaredProperty("osivia.idPerso") != null)
+				idPerso = window.getDeclaredProperty("osivia.idPerso");		
 			
 			String hideEmptyPortlet = "";
-			if( "1".equals( window.getProperty("pia.hideEmptyPortlet")))
+			if( "1".equals( window.getProperty("osivia.hideEmptyPortlet")))
 				hideEmptyPortlet = "checked";
 			
-			String conditionalScope = window.getProperty("pia.conditionalScope");
+			String conditionalScope = window.getProperty("osivia.conditionalScope");
 	
 
 			
@@ -660,8 +660,8 @@ function togglePublication() {
 <%
 			String windowTitle = "";
 		
-			if( window.getDeclaredProperty("pia.title") != null)
-				windowTitle = window.getDeclaredProperty("pia.title");		
+			if( window.getDeclaredProperty("osivia.title") != null)
+				windowTitle = window.getDeclaredProperty("osivia.title");		
 			
 			/* Ajout nom instance */
 
@@ -1029,7 +1029,7 @@ if( portletDefinitions != null)	{
 	}
 %>
 <%
-	String nav = (String)request.getAttribute("pia.setting.navigation");
+	String nav = (String)request.getAttribute("osivia.setting.navigation");
 %>
 
 <script type="text/javascript">
@@ -1060,7 +1060,7 @@ if( portletDefinitions != null)	{
 	
 	
 <%
-	String initCacheUrl = (String)request.getAttribute("pia.setting.initCachesUrl");
+	String initCacheUrl = (String)request.getAttribute("osivia.setting.initCachesUrl");
 %>
 	<div class="wizzardCacheInit clickable-element" ><a href="<%=initCacheUrl %>" >Initialisation des caches</a></div>
 

@@ -17,7 +17,6 @@ import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.RenamePageCommand;
-import org.osivia.portal.core.cms.DisplayContentCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -125,16 +124,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			return asu;
 		}	
 		
-		if (cmd instanceof DisplayContentCommand) {
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(path);
 
-				asu.setParameterValue("action", "displayContent");
-				return asu;
-
-
-		}	
 		
 		
 		if (cmd instanceof StartDynamicWindowCommand) {

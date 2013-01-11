@@ -8,11 +8,11 @@ public class WindowFactory {
 	
 	public static PortalWindow getWindow( PortletRequest request)	{
 		
-		PortalWindow portalWindow = (PortalWindow) request.getAttribute("pia.portal.window");
+		PortalWindow portalWindow = (PortalWindow) request.getAttribute("osivia.portal.window");
 		if( portalWindow == null){
-			Window window = (Window) request.getAttribute("pia.window");
+			Window window = (Window) request.getAttribute("osivia.window");
 			portalWindow = new InternalWindow( window);
-			request.setAttribute("pia.portal.window", portalWindow);
+			request.setAttribute("osivia.portal.window", portalWindow);
 		}
 		return portalWindow;
 	}

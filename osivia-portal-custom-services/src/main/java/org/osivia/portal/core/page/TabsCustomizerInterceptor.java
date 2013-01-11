@@ -231,7 +231,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
 	public ICMSService getCMSService () throws Exception	{
 		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"pia:service=NuxeoService");
+			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
 		
 		return cmsService;
 	}
@@ -386,7 +386,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 	public List<UserPage> getCMSHeaderTabs(ControllerContext controllerCtx, Page cmsPage) throws Exception	{
 		
 		
-		String navigationScope = cmsPage.getProperty("pia.cms.navigationScope");
+		String navigationScope = cmsPage.getProperty("osivia.cms.navigationScope");
 		
 		Locale locale = Locale.FRENCH;
 
@@ -402,18 +402,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 			// CMS sub pages
 				
-				if (("1".equals(cmsPage.getDeclaredProperty("pia.cms.pageContextualizationSupport")) && (cmsPage
-						.getDeclaredProperty("pia.cms.basePath") != null))) {
+				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
+						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage
-							.getDeclaredProperty("pia.cms.basePath"), cmsPage
-							.getDeclaredProperty("pia.cms.basePath"));
+							.getDeclaredProperty("osivia.cms.basePath"), cmsPage
+							.getDeclaredProperty("osivia.cms.basePath"));
 						
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))	{
-									addSubpagesToCMSHeaderTab( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("pia.cms.basePath"), navItem.getPath(), mainPages);
+									addSubpagesToCMSHeaderTab( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), mainPages);
 									
 
 									
@@ -490,11 +490,11 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			User user = (User) controllerCtx.getServerInvocation().getAttribute(Scope.PRINCIPAL_SCOPE, UserInterceptor.USER_KEY);
 
 			
-			UserPortal tabbedNavUserPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavUserPortal");
-			Long headerCount = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavHeaderCount");
-			String headerUsername = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavheaderUsername");
+			UserPortal tabbedNavUserPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
+			Long headerCount = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount");
+			String headerUsername = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername");
 			
-			Long cmsTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.cmsTimeStamp");
+			Long cmsTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.cmsTimeStamp");
 	
 				boolean refreshUserPortal = true;
 
@@ -528,17 +528,17 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 					tabbedNavUserPortal = getPageBean(rpc);
 
-					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavUserPortal",
+					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal",
 							tabbedNavUserPortal);
-					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavHeaderCount", new Long(
+					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount", new Long(
 							getCacheService().getHeaderCount()));
 
 					if (user != null)
-						controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavheaderUsername",
+						controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername",
 								user.getUserName());
 					
 					
-					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.cmsTimeStamp", System.currentTimeMillis());
+					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.cmsTimeStamp", System.currentTimeMillis());
 
 				}
 			
@@ -581,7 +581,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			}
 
 
-			rd.setAttribute("pia.userPortal", tabbedNavUserPortal);
+			rd.setAttribute("osivia.userPortal", tabbedNavUserPortal);
 			
 			
 			
@@ -590,7 +590,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			// Navigation CMS
 			
-			if( "cms".equals(rpc.getPage().getProperty("pia.navigationMode")))	{
+			if( "cms".equals(rpc.getPage().getProperty("osivia.navigationMode")))	{
 				
 				// On détermine le path CMS de la page
 				// Pour cela on remonte au 1er sous-niveau
@@ -601,11 +601,11 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());			
 				
 				if( pageState != null)	{
-					String sNavigationPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"));
+					String sNavigationPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
 					
 					if( sNavigationPath != null && sNavigationPath.length == 1)	{
 						String pagePath = sNavigationPath[ 0]; // Navigation couranted
-						String spacePath = rpc.getPage().getProperty("pia.cms.basePath");
+						String spacePath = rpc.getPage().getProperty("osivia.cms.basePath");
 						
 						if( pagePath != null && spacePath != null)	{
 							CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
@@ -629,20 +629,20 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			
 			if( pageCMSPath != null)
-				rd.setAttribute("pia.currentPageId", pageCMSPath); // path CMS
+				rd.setAttribute("osivia.currentPageId", pageCMSPath); // path CMS
 			else
-				rd.setAttribute("pia.currentPageId", mainPage.getId()); // Path page
+				rd.setAttribute("osivia.currentPageId", mainPage.getId()); // Path page
 			
-			rd.setAttribute( "pia.firstTab", controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.firstTab"));			
+			rd.setAttribute( "osivia.firstTab", controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab"));			
 			
 			
-			rd.setAttribute("pia.urlfactory", getUrlFactory());
-			rd.setAttribute("pia.ctrlctx", new PortalControllerContext(controllerCtx)); 	
+			rd.setAttribute("osivia.urlfactory", getUrlFactory());
+			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 	
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-			"pia.windowSettingMode")))
-				rd.setAttribute("pia.editionMode", "1");
+			"osivia.windowSettingMode")))
+				rd.setAttribute("osivia.editionMode", "1");
 
 			
 						
@@ -709,7 +709,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		if( profil != null && !ProfilManager.DEFAULT_PROFIL_NAME.equals(profil.getName()))	{
 			// Sauf pour les administrateurs ...
 			if( !PageCustomizerInterceptor.isAdministrator(controllerCtx))
-					pageToHide = portal.getDeclaredProperty("pia.unprofiled_home_page");
+					pageToHide = portal.getDeclaredProperty("osivia.unprofiled_home_page");
 		}
 				
 		
@@ -727,7 +727,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			if (pam.checkPermission(perm) && (pageToHide == null || (!child.getName().equals(pageToHide)))) {
 				
-				String navigationMode = child.getDeclaredProperty("pia.navigationMode") ;
+				String navigationMode = child.getDeclaredProperty("osivia.navigationMode") ;
 				
 				if( "cms".equals(navigationMode))	{
 					

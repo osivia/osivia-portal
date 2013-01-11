@@ -188,6 +188,8 @@ public class PortalObjectPath implements Comparable, Serializable
 	   if( to > 0)
 		   return names[to - 1];
 	   else return "";
+	   
+	 
     //  return names[names.length - 1];
    }
 

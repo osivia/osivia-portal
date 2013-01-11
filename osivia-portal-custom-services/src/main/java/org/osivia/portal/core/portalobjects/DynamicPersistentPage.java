@@ -161,7 +161,7 @@ public class DynamicPersistentPage extends DynamicPage {
 			
 			/*
 			 for( Window window : windows)	{
-				 logger.debug("cms.uri" + window.getProperties().get("pia.cms.uri"));
+				 logger.debug("cms.uri" + window.getProperties().get("osivia.cms.uri"));
 			 }
 */
 				

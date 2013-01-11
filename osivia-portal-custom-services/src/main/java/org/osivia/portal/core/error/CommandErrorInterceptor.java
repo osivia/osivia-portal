@@ -26,7 +26,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 			
 			// Les exceptions seront traitées dans la valve
 			
-			cmd.getControllerContext().getServerInvocation().setAttribute(Scope.REQUEST_SCOPE,"pia.error_exception", e);
+			cmd.getControllerContext().getServerInvocation().setAttribute(Scope.REQUEST_SCOPE,"osivia.error_exception", e);
 			
 			return new ErrorResponse("Portal exception", false);
 		}

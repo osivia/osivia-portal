@@ -77,7 +77,7 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 	   /** . */
 	   public static final String REQ_ATT_COMPONENT_INVOCATION = "org.jboss.portal.attribute.component_invocation";
 	   
-	   public static final String REQ_SYNCHRONIZER = "pia.attribute.synchronizer";
+	   public static final String REQ_SYNCHRONIZER = "osivia.attribute.synchronizer";
 	   
 	   
 

@@ -101,7 +101,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
     	  
     	     // Affichage timeout	
-    	     if( ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.timeout")))	{
+    	     if( ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.timeout")))	{
     	    	 
     	 		StringWriter sw = new StringWriter();
     			PrintWriter pw = new PrintWriter(sw);
@@ -164,7 +164,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          
          
          // v 1.0.13 : Cache anonyme sur la page d'accueil
-          if( cachedEntry == null && (ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.useGlobalWindowCaches"))))	{
+          if( cachedEntry == null && (ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches"))))	{
          	  cachedEntry = globalWindowCaches.get(invocation.getWindowContext().getId());
         	 globalCache = true;
         }
@@ -319,9 +319,9 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             		
             		// Filtre des atttributs devant etre persistés dans le cache
             		
-            		filterAttributes.put("pia.emptyResponse", orig.getAttributes().get("pia.emptyResponse"));
-            		filterAttributes.put("pia.menuBar", orig.getAttributes().get("pia.menuBar"));
-            		filterAttributes.put("pia.portletPath", orig.getAttributes().get("pia.portletPath"));
+            		filterAttributes.put("osivia.emptyResponse", orig.getAttributes().get("osivia.emptyResponse"));
+            		filterAttributes.put("osivia.menuBar", orig.getAttributes().get("osivia.menuBar"));
+            		filterAttributes.put("osivia.portletPath", orig.getAttributes().get("osivia.portletPath"));
             	
             	    cacheFragment = new FragmentResponse(orig.getProperties(),   filterAttributes, orig.getContentType(), orig.getBytes(), orig.getChars(), orig.getTitle(), orig.getCacheControl(), orig.getNextModes());
             	}
@@ -343,7 +343,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                
                
                // For other users
-               if(  "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "pia.useGlobalWindowCaches")))	{
+               if(  "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches")))	{
             	   
             	   HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();            	   
             	   

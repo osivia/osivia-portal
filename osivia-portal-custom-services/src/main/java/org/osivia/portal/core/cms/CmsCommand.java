@@ -183,7 +183,7 @@ public class CmsCommand extends DynamicCommand {
 
 		// TODO : paramétrage declaration service + mutualisation factory
 		if (cmsService == null)
-			cmsService = Locator.findMBean(ICMSService.class, "pia:service=NuxeoService");
+			cmsService = Locator.findMBean(ICMSService.class, "osivia:service=NuxeoService");
 
 		return cmsService;
 	}
@@ -191,7 +191,7 @@ public class CmsCommand extends DynamicCommand {
 	public IProfilManager getProfilManager() throws Exception {
 
 		if (profilManager == null)
-			profilManager = Locator.findMBean(IProfilManager.class, "pia:service=ProfilManager");
+			profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
 		return profilManager;
 	}
@@ -204,8 +204,8 @@ public class CmsCommand extends DynamicCommand {
 
 		public int compare(PortalObject e1, PortalObject e2) {
 
-			String p1 = e1.getDeclaredProperty("pia.cms.basePath");
-			String p2 = e1.getDeclaredProperty("pia.cms.basePath");
+			String p1 = e1.getDeclaredProperty("osivia.cms.basePath");
+			String p2 = e1.getDeclaredProperty("osivia.cms.basePath");
 			if (p1.length() == p2.length())
 				return 0;
 			if (p1.length() < p2.length())
@@ -236,10 +236,10 @@ public class CmsCommand extends DynamicCommand {
 
 	public static boolean isContentAlreadyContextualizedInPage(PortalObject currentPage, String cmsPath) {
 
-		String pageBasePath = currentPage.getProperty("pia.cms.basePath");
+		String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
 		if (pageBasePath != null && cmsPath != null && cmsPath.contains(pageBasePath))
-			if ("1".equals(currentPage.getProperty("pia.cms.pageContextualizationSupport")))
+			if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
 				return true;
 
 		return false;
@@ -255,11 +255,11 @@ public class CmsCommand extends DynamicCommand {
 	private static PortalObject searchPublicationPageForPub(CMSPublicationInfos pubInfos, PortalObject po, String searchPath, IProfilManager profilManager) {
 
 
-		if ("1".equals(po.getProperty("pia.cms.pageContextualizationSupport"))) {
+		if ("1".equals(po.getProperty("osivia.cms.pageContextualizationSupport"))) {
 
-			if (checkScope(po.getProperty("pia.cms.scope"), profilManager)) {
+			if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
 
-				String path = po.getDeclaredProperty("pia.cms.basePath");
+				String path = po.getDeclaredProperty("osivia.cms.basePath");
 				
 				if( path != null)	{
 					if(( path.equals( pubInfos.getPublishSpacePath()))
@@ -333,11 +333,11 @@ public class CmsCommand extends DynamicCommand {
 
 		Map<String, String> props = new HashMap<String, String>();
 
-		props.put("pia.cms.basePath", cmsItem.getPath());
-		props.put("pia.cms.directContentPublisher", "1");
-		props.put("pia.cms.pageContextualizationSupport", "0");
-		props.put("pia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
-		props.put("pia.cms.layoutRules", "return \"/default/templates/publish\"");
+		props.put("osivia.cms.basePath", cmsItem.getPath());
+		props.put("osivia.cms.directContentPublisher", "1");
+		props.put("osivia.cms.pageContextualizationSupport", "0");
+		props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
+		props.put("osivia.cms.layoutRules", "return \"/default/templates/publish\"");
 
 		StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(
 				PortalObjectPath.SAFEST_FORMAT), "publish", displayNames, PortalObjectId.parse(
@@ -383,17 +383,17 @@ public class CmsCommand extends DynamicCommand {
 		if (publishPage == null) {
 			Map<String, String> props = new HashMap<String, String>();
 
-			props.put("pia.cms.basePath", portalSite.getPath());
+			props.put("osivia.cms.basePath", portalSite.getPath());
 
 			// if(
 			// "true".equals(portalSite.getProperties().get("contextualizeInternalContents")))
-			props.put("pia.cms.pageContextualizationSupport", "1");
+			props.put("osivia.cms.pageContextualizationSupport", "1");
 
 			if ("1".equals(portalSite.getProperties().get("contextualizeExternalContents")))
-				props.put("pia.cms.outgoingRecontextualizationSupport", "1");
+				props.put("osivia.cms.outgoingRecontextualizationSupport", "1");
 
-			props.put("pia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
-			props.put("pia.cms.layoutRules", "return ECMPageTemplate;");
+			props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
+			props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
 			Map displayNames = new HashMap();
 			displayNames.put(Locale.FRENCH, portalSite.getProperties().get("displayName"));
@@ -552,12 +552,12 @@ public class CmsCommand extends DynamicCommand {
 
 			if (cmsPath != null && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(contextualization)) {
 
-				if (currentPage != null && currentPage.getProperty("pia.cms.basePath") != null) {
+				if (currentPage != null && currentPage.getProperty("osivia.cms.basePath") != null) {
 
 					if (IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(contextualization))
 						contextualizeinPage = true;
 
-					if ("1".equals(currentPage.getProperty("pia.cms.pageContextualizationSupport")))
+					if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
 						contextualizeinPage = true;
 
 				}
@@ -569,9 +569,9 @@ public class CmsCommand extends DynamicCommand {
 					Page searchPage = null;
 
 					PortalObject po = currentPage;
-					while (po instanceof Page && po.getDeclaredProperty("pia.cms.basePath") == null)
+					while (po instanceof Page && po.getDeclaredProperty("osivia.cms.basePath") == null)
 						po = po.getParent();
-					if (po.getDeclaredProperty("pia.cms.basePath") != null && po instanceof Page)
+					if (po.getDeclaredProperty("osivia.cms.basePath") != null && po instanceof Page)
 						searchPage = (Page) po;
 
 					if (searchPage != null) {
@@ -590,8 +590,8 @@ public class CmsCommand extends DynamicCommand {
 
 					if (currentPage != null) {
 
-						if ("1".equals(currentPage.getProperty("pia.cms.directContentPublisher"))) {
-							String pageBasePath = currentPage.getProperty("pia.cms.basePath");
+						if ("1".equals(currentPage.getProperty("osivia.cms.directContentPublisher"))) {
+							String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
 							if (pageBasePath != null && pageBasePath.equals(cmsPath)) {
 								contextualizationPage = currentPage;
@@ -612,7 +612,7 @@ public class CmsCommand extends DynamicCommand {
 						contextualizeinPortal = true;
 
 					if (currentPage != null) {
-						if ("1".equals(currentPage.getProperty("pia.cms.outgoingRecontextualizationSupport")))
+						if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
 							contextualizeinPortal = true;
 					}
 
@@ -700,7 +700,7 @@ public class CmsCommand extends DynamicCommand {
 				baseCMSPublicationPage = contextualizationPage;
 
 			if (baseCMSPublicationPage != null)
-				basePublishPath = baseCMSPublicationPage.getDeclaredProperty("pia.cms.basePath");
+				basePublishPath = baseCMSPublicationPage.getDeclaredProperty("osivia.cms.basePath");
 
 			/*
 			 * Calcul des éléments de navigation
@@ -720,7 +720,7 @@ public class CmsCommand extends DynamicCommand {
 			CMSServiceCtx cmsReadNavContext = new CMSServiceCtx();
 
 			if (baseCMSPublicationPage != null) {
-				portalSiteScope = baseCMSPublicationPage.getProperty("pia.cms.navigationScope");
+				portalSiteScope = baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
 				cmsReadNavContext.setControllerContext(getControllerContext());
 				cmsReadNavContext.setScope(portalSiteScope);
 			}
@@ -728,7 +728,7 @@ public class CmsCommand extends DynamicCommand {
 			if (baseCMSPublicationPage != null
 					&& !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(contextualization)) {
 
-				if ("1".equals(baseCMSPublicationPage.getProperty("pia.cms.directContentPublisher"))) {
+				if ("1".equals(baseCMSPublicationPage.getProperty("osivia.cms.directContentPublisher"))) {
 					/* publication directe d'un contenu sans le publishsite */
 					cmsNav = cmsItem;
 					// ECMPageTemplate =
@@ -788,7 +788,7 @@ public class CmsCommand extends DynamicCommand {
 								
 								/*
 								if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
-									if (!("cms".equals(baseCMSPublicationPage.getProperty("pia.navigationMode"))))
+									if (!("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))))
 										if (cmsItemNav.getPath().equals(basePublishPath))	{
 											computePageTemplate = false;
 										}
@@ -868,7 +868,7 @@ public class CmsCommand extends DynamicCommand {
 
 			if (baseCMSPublicationPage != null && cmsNav != null) {
 
-				layoutType = baseCMSPublicationPage.getProperty("pia.cms.layoutType");
+				layoutType = baseCMSPublicationPage.getProperty("osivia.cms.layoutType");
 
 				String layoutRules = null;
 
@@ -880,7 +880,7 @@ public class CmsCommand extends DynamicCommand {
 					if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
 						// En mde navigation cms, toutes les pages sont dynamiques, meme la page d'accueil statique
 						// Sinon  les Sous-pages des pages statiques sont également dynamiques
-						if (("cms".equals(baseCMSPublicationPage.getProperty("pia.navigationMode"))) || !cmsNav.getPath().equals(basePublishPath)) {
+						if (("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))) || !cmsNav.getPath().equals(basePublishPath)) {
 
 							layoutType = CmsCommand.LAYOUT_TYPE_SCRIPT;
 							layoutRules = "return ECMPageTemplate;";
@@ -891,7 +891,7 @@ public class CmsCommand extends DynamicCommand {
 					// Gestion des layouts standards
 
 					if (CmsCommand.LAYOUT_TYPE_SCRIPT.equals(layoutType)) {
-						layoutRules = baseCMSPublicationPage.getProperty("pia.cms.layoutRules");
+						layoutRules = baseCMSPublicationPage.getProperty("osivia.cms.layoutRules");
 					}
 				}
 
@@ -986,19 +986,19 @@ public class CmsCommand extends DynamicCommand {
 				// Mise à jour du path
 
 				if (cmsPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
-					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.itemRelPath"),
+					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"),
 							new String[] { computeNavPath(cmsPath.substring(basePublishPath.length())) });
 				}
 
-				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.path"), new String[] { cmsNav.getPath() });
+				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
 
 				if (layoutPath != null)
-					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.layout_path"),
+					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),
 							new String[] { layoutPath });
 
 				// Mise à jour du scope de la page
 				if (computedPageScope != null && computedPageScope.length() > 0)
-					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "pia.cms.pageScope"),
+					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"),
 							new String[] { computedPageScope });
 
 				nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(state));
@@ -1010,7 +1010,7 @@ public class CmsCommand extends DynamicCommand {
 
 				if (layoutPath != null) {
 					DynamicPortalObjectContainer.clearCache();
-					PageProperties.getProperties().getPagePropertiesMap().remove("pia.fetchedPortalProperties");
+					PageProperties.getProperties().getPagePropertiesMap().remove("osivia.fetchedPortalProperties");
 				}
 			}
 
@@ -1037,7 +1037,7 @@ public class CmsCommand extends DynamicCommand {
 				
 				// Pb sur la navigation, on affiche le contenu sauf si le contenu est la page
 				// auquel cas, on reste sur la page (cas d'une page mal définie pointant vers un path cms qui n'est pas un espace de publication)
-				if(cmsPath != null && cmsPath.equals(page.getProperty("pia.cms.basePath")))
+				if(cmsPath != null && cmsPath.equals(page.getProperty("osivia.cms.basePath")))
 					isPageToDisplayUncontextualized = true;
 			}
 			
@@ -1087,7 +1087,7 @@ public class CmsCommand extends DynamicCommand {
 
 					for (PortalObject child : childs) {
 
-						if (windowPermReference.equals(child.getDeclaredProperty("pia.rssLinkRef"))) {
+						if (windowPermReference.equals(child.getDeclaredProperty("osivia.rssLinkRef"))) {
 
 							if (child instanceof Window) {
 
@@ -1103,7 +1103,7 @@ public class CmsCommand extends DynamicCommand {
 								}
 
 								if (cmsNav != null)
-									parameters.put("pia.cms.path", new String[] { cmsNav.getPath() });
+									parameters.put("osivia.cms.path", new String[] { cmsNav.getPath() });
 
 								ParameterMap params = new ParameterMap(parameters);
 
@@ -1146,7 +1146,7 @@ public class CmsCommand extends DynamicCommand {
 					}
 				}
 
-				if ("1".equals(page.getProperty("pia.cms.directContentPublisher")))
+				if ("1".equals(page.getProperty("osivia.cms.directContentPublisher")))
 					displayContent = true;
 			}
 
@@ -1231,7 +1231,7 @@ public class CmsCommand extends DynamicCommand {
 				 * closeUrl =
 				 * closeUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"
 				 * +pageMarker+"/"); } windowProperties.put(
-				 * "pia.dynamic.close_url", closeUrl); }
+				 * "osivia.dynamic.close_url", closeUrl); }
 				 */
 
 				// No page params
@@ -1245,10 +1245,10 @@ public class CmsCommand extends DynamicCommand {
 					addPortletToBreadcrumb = "navigationPlayer";
 
 				if (cmsNav != null)
-					windowProperties.put("pia.dynamic.unclosable", "1");
+					windowProperties.put("osivia.dynamic.unclosable", "1");
 
 				if (contextualizationPage != null)
-					windowProperties.put("pia.portletContextualizedInPage", "1");
+					windowProperties.put("osivia.portletContextualizedInPage", "1");
 
 				StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(
 						PortalObjectPath.SAFEST_FORMAT), "virtual", contentProperties.getPortletInstance(),

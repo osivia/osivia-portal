@@ -134,7 +134,7 @@ public final class RenderPageCommand extends PageCommand
 
       /*
 		 for( PortalObject po : windows)	{
-			 logger.debug("cms.uri" + po.getProperties().get("pia.cms.uri"));
+			 logger.debug("cms.uri" + po.getProperties().get("osivia.cms.uri"));
 		 }
 */
 
@@ -148,7 +148,7 @@ public final class RenderPageCommand extends PageCommand
    protected IProfilManager getProfilManager() throws Exception	{ 
 	if( profilManager == null)
 		//TODO : optimisation recherc profil manager
-		profilManager = Locator.findMBean(IProfilManager.class,	"pia:service=ProfilManager");
+		profilManager = Locator.findMBean(IProfilManager.class,	"osivia:service=ProfilManager");
 	return profilManager;
    }
    
@@ -260,12 +260,12 @@ public final class RenderPageCommand extends PageCommand
 
         		 
         		 // TODO : Le getProperty ne marche pas sur les fenetres dynamiques
-        		 //String conditionalScope =  window.getProperty("pia.conditionalScope");
-        		 String conditionalScope =  window.getProperty("pia.conditionalScope");
+        		 //String conditionalScope =  window.getProperty("osivia.conditionalScope");
+        		 String conditionalScope =  window.getProperty("osivia.conditionalScope");
         		 if( conditionalScope != null)	{
         			 addWindow = false;
         			 ControllerContext controllerCtx = (ControllerContext)getContext();
-        			 Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "pia.isAdmin");
+        			 Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
         			 if( isAdmin != null ){
         				 if( isAdmin)
         					 addWindow = true;

@@ -40,7 +40,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 	public ICMSIntegration getCMSCustomizer() throws Exception {
 		if (cmsCustomizer == null) {
-			cmsCustomizer = Locator.findMBean(ICMSIntegration.class, "pia:service=NuxeoService");
+			cmsCustomizer = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
 		}
 		return cmsCustomizer;
 	}
@@ -61,7 +61,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 		if (user != null) {
 
-			String userPagesPreloaded = (String) invocation.getAttribute(Scope.SESSION_SCOPE, "pia.userLoginDone");
+			String userPagesPreloaded = (String) invocation.getAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone");
 
 			if (!"1".equals(userPagesPreloaded)) {
 
@@ -73,7 +73,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 					cmsContext.setServerInvocation(invocation);
 
-					invocation.setAttribute(Scope.REQUEST_SCOPE, "pia.userPreloadedPages", getCMSCustomizer()
+					invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", getCMSCustomizer()
 							.computeUserPreloadedPages(cmsContext));
 				} catch (Exception e) {
 					// Don't block login
@@ -88,11 +88,11 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 					module.getModule().computeUserDatas(invocation.getServerContext().getClientRequest(), userDatas);
 				}
 
-				invocation.setAttribute(Scope.SESSION_SCOPE, "pia.userDatas", userDatas);
+				invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
 
 				// Job is marked as done
 
-				invocation.setAttribute(Scope.SESSION_SCOPE, "pia.userLoginDone", "1");
+				invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
 			}
 
 		}

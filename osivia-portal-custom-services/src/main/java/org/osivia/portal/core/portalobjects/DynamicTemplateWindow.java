@@ -136,7 +136,7 @@ public class DynamicTemplateWindow extends DynamicWindow {
 			// Les propriétés de la page surchargent celles des templates
 			// TODO : surcharge + fine (attribut par attribut)
 
-			if( "1".equals(templateOrig.getDeclaredProperty("pia.propsOverload")))	{
+			if( "1".equals(templateOrig.getDeclaredProperty("osivia.propsOverload")))	{
 				value = ((DynamicTemplatePage) getPage()).getPageBean().getWindowProperties().get(name);
 				if( value != null)
 					return value;

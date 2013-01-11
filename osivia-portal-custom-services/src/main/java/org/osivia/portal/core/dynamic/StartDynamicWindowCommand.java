@@ -105,7 +105,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 			}
 
 			IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-					"pia:service=DynamicPortalObjectContainer");
+					"osivia:service=DynamicPortalObjectContainer");
 
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
@@ -139,7 +139,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
   	        			 String pageMarker = markerInfo.getPageMarker();
 	        			 backUrl =  backUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+pageMarker+"/");
 	        		 }
-	       		properties.put("pia.dynamic.close_url",backUrl);
+	       		properties.put("osivia.dynamic.close_url",backUrl);
 			}
 			
 				
@@ -251,7 +251,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
 			PageURL url = new PageURL(page.getId(), getControllerContext());
 
-			String name = properties.get("pia.title");
+			String name = properties.get("osivia.title");
 			if (name == null)
 				name = instance.getDisplayName().getDefaultString();
 			BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), vindowId, false);

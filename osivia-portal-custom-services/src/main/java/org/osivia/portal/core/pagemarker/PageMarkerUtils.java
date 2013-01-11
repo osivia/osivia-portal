@@ -217,22 +217,22 @@ if( true)
 		}
 		
 		//sauvegarde menu
-		UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavUserPortal");
+		UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
 		if( userPortal != null)	
 			markerInfo.setTabbedNavHeaderUserPortal(userPortal);
-		Long headerCount =  (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavHeaderCount");
+		Long headerCount =  (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount");
 		if( headerCount != null)
 			markerInfo.setTabbedNavheaderCount(headerCount);
-		String userName = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavheaderUsername");
+		String userName = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername");
 		if( userName != null)
 			markerInfo.setTabbedNavheaderUsername(userName);
 		
-		Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.firstTab");
+		Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab");
 		if( firstTab != null)
 			markerInfo.setFirstTab(firstTab);
 		
 
-		PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.currentPageId");
+		PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
 		if( currentPageId != null)
 			markerInfo.setCurrentPageId(currentPageId);
 
@@ -516,16 +516,16 @@ if( true)
 							//restauration menu
 							UserPortal userPortal = markerInfo.getTabbedNavHeaderUserPortal();
 							if( userPortal != null)	
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavUserPortal", userPortal);
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal", userPortal);
 							if(  markerInfo.getTabbedNavheaderCount() != null)
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavHeaderCount", markerInfo.getTabbedNavheaderCount());
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount", markerInfo.getTabbedNavheaderCount());
 							if( markerInfo.getTabbedNavheaderUsername() != null)
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.tabbedNavheaderUsername", markerInfo.getTabbedNavheaderUsername());
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername", markerInfo.getTabbedNavheaderUsername());
 							if( markerInfo.getFirstTab() != null)
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.firstTab", markerInfo.getFirstTab());
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", markerInfo.getFirstTab());
 							
 							if( markerInfo.getCurrentPageId() != null)
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "pia.currentPageId", markerInfo.getCurrentPageId());
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
 	
 							if( page != null)
 								dumpPageState(controllerContext, page, "APRES restorePageState "+ currentPageMarker);

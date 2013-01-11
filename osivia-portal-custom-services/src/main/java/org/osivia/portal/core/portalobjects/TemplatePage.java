@@ -127,7 +127,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 			}
 
 			// Indispensable ???
-			if (getDeclaredProperty("pia.cms.layoutRules") != null)
+			if (getDeclaredProperty("osivia.cms.layoutRules") != null)
 				children.add(CMSTemplatePage.createPage(container, parentId, template, dynamicContainer));
 		}
 
@@ -145,7 +145,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 			/*
 			 * for( Window window : windows) { logger.debug("cms.uri" +
-			 * window.getProperties().get("pia.cms.uri")); }
+			 * window.getProperties().get("osivia.cms.uri")); }
 			 */
 
 			return getWindows();
@@ -222,7 +222,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 			
 			String pageId = getId().toString();
 			
-			String fetchedProperties = sharedProperties.get("pia.fetchedPortalProperties");
+			String fetchedProperties = sharedProperties.get("osivia.fetchedPortalProperties");
 
 			if ( ! pageId.equals(fetchedProperties)) {
 
@@ -263,7 +263,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 				
 
-				properties.put("pia.fetchedPortalProperties", pageId);
+				properties.put("osivia.fetchedPortalProperties", pageId);
 
 				sharedProperties.putAll(properties);
 

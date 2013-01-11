@@ -61,7 +61,7 @@ public class SecurePageCommand extends AssistantCommand {
 		RoleModule roles = (RoleModule) identityService.getIdentityContext()
 				.getObject(IdentityContext.TYPE_ROLE_MODULE);
 		
-		IProfilManager profilManager = Locator.findMBean(IProfilManager.class,	"pia:service=ProfilManager");
+		IProfilManager profilManager = Locator.findMBean(IProfilManager.class,	"osivia:service=ProfilManager");
 		
 		// On remonte jusqu'au portail
 		PortalObject parent = page.getParent();
@@ -98,7 +98,7 @@ public class SecurePageCommand extends AssistantCommand {
 		dc.setSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newConstraints);
 
 		//Impact sur les caches du bandeau
-		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"pia:service=Cache");
+		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
 		cacheService.incrementHeaderCount();
 
 		

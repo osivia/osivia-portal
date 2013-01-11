@@ -1,6 +1,6 @@
 <server>
 
- <mbean code="org.osivia.portal.core.deploiement.ParametresPortailDeploymentManager" name="pia:service=ConfigDeployer"
+ <mbean code="org.osivia.portal.core.deploiement.ParametresPortailDeploymentManager" name="osivia:service=ConfigDeployer"
           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
 
@@ -31,7 +31,7 @@
 
 	
 	<mbean code="org.osivia.portal.core.portalcommands.DefaultCommandFactoryService"
-		name="pia:commandFactory=Default" xmbean-dd=""
+		name="osivia:commandFactory=Default" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
 	</mbean>
@@ -46,10 +46,10 @@
 			proxy-type="attribute">portal:commandFactory=Delegating
 		</depends>
 		<depends optional-attribute-name="DelegateFactory" proxy-type="attribute">
-			pia:commandFactory=Default</depends>
+			osivia:commandFactory=Default</depends>
 	</mbean>
 
-	<mbean code="org.osivia.portal.core.portalcommands.DefaultURLFactory" name="pia:urlFactory=Default"
+	<mbean code="org.osivia.portal.core.portalcommands.DefaultURLFactory" name="osivia:urlFactory=Default"
 		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
 		<attribute name="Path">/commands</attribute>
@@ -61,23 +61,23 @@
 	
 	
 	 <mbean code="org.osivia.portal.core.cms.CmsCommandFactoryService"
-          name="pia:commandFactory=Cms" xmbean-dd=""
+          name="osivia:commandFactory=Cms" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
    
    
    <mbean code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
-          name="pia:commandFactory=Delegate,path=cms" xmbean-dd=""
+          name="osivia:commandFactory=Delegate,path=cms" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <attribute name="Path">/cms</attribute>
       <depends optional-attribute-name="DelegatingFactory" proxy-type="attribute">portal:commandFactory=Delegating
       </depends>
-      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">pia:commandFactory=Cms</depends>
+      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">osivia:commandFactory=Cms</depends>
    </mbean>
    
-     <mbean code="org.osivia.portal.core.cms.CmsURLFactory" name="pia:urlFactory=Cms"
+     <mbean code="org.osivia.portal.core.cms.CmsURLFactory" name="osivia:urlFactory=Cms"
           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <attribute name="Path">/cms</attribute>
@@ -93,7 +93,7 @@
 	
 	<mbean
 		code="org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor"
-		name="pia:service=Interceptor,type=Command,name=AssistantPageCustomizer"
+		name="osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer"
 		xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 			<xmbean/>
@@ -105,13 +105,13 @@
 			<depends optional-attribute-name="IdentityServiceController" proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
 			<depends optional-attribute-name="InstanceContainer" proxy-type="attribute">portal:container=Instance</depends>
    	        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
- 			<depends optional-attribute-name="ProfilManager" proxy-type="attribute">pia:service=ProfilManager</depends>   
+ 			<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
       		<depends optional-attribute-name="PortalAuthorizationManagerFactory" proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends> 			
  	</mbean>
 
 
   <mbean code="org.osivia.portal.core.page.PageCustomizerInterceptor"
-          name="pia:service=Interceptor,type=Command,name=PageCustomizer" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Command,name=PageCustomizer" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <attribute name="ToolbarPath">/header/toolbar.jsp</attribute>
@@ -124,11 +124,11 @@
          portal:service=PortalAuthorizationManagerFactory
       </depends>
       <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
-      <depends optional-attribute-name="UrlFactory" proxy-type="attribute">pia:service=UrlFactory</depends>
-      <depends optional-attribute-name="CacheService" proxy-type="attribute">pia:service=Cache</depends>
- 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">pia:service=ProfilerService</depends>
-   	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">pia:service=ProfilManager</depends>   
- <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">pia:service=CacheServices</depends>   	
+      <depends optional-attribute-name="UrlFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
+      <depends optional-attribute-name="CacheService" proxy-type="attribute">osivia:service=Cache</depends>
+ 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
+   	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
+ <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">osivia:service=CacheServices</depends>   	
  
  				        
       
@@ -138,7 +138,7 @@
    
    
   <mbean code="org.osivia.portal.core.page.TabsCustomizerInterceptor"
-          name="pia:service=Interceptor,type=Command,name=TabsCustomizer" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Command,name=TabsCustomizer" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
        <attribute name="TabsPath">/header/tabs.jsp</attribute>
@@ -148,18 +148,18 @@
          portal:service=PortalAuthorizationManagerFactory
       </depends>
       <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
-      <depends optional-attribute-name="UrlFactory" proxy-type="attribute">pia:service=UrlFactory</depends>
-      <depends optional-attribute-name="CacheService" proxy-type="attribute">pia:service=Cache</depends>
- 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">pia:service=ProfilerService</depends>
-   	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">pia:service=ProfilManager</depends>   
- <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">pia:service=CacheServices</depends>   	
+      <depends optional-attribute-name="UrlFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
+      <depends optional-attribute-name="CacheService" proxy-type="attribute">osivia:service=Cache</depends>
+ 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
+   	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
+ <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">osivia:service=CacheServices</depends>   	
  
  				        
       
    </mbean>
 
   <mbean code="org.osivia.portal.core.pagemarker.PageMarkerInterceptor"
-          name="pia:service=Interceptor,type=Command,name=PageMarkerInterceptor" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Command,name=PageMarkerInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    				        
@@ -167,7 +167,7 @@
    </mbean>
    
      <mbean code="org.osivia.portal.core.security.AnonymousSecurityInterceptor"
-          name="pia:service=Interceptor,type=Command,name=AnonymousSecurityInterceptor" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Command,name=AnonymousSecurityInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    				        
@@ -176,53 +176,53 @@
 
   	
   	<mbean code="org.osivia.portal.core.portlets.interceptors.ParametresPortletInterceptor"
-          name="pia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
    
     <mbean code="org.osivia.portal.core.portlets.interceptors.ProfilerPortletInterceptor"
-          name="pia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
- 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">pia:service=ProfilerService</depends>
+ 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
    </mbean>
    
    
       <mbean code="org.osivia.portal.core.ajax.AjaxLoadingInterceptor"
-          name="pia:service=Interceptor,type=Portlet,name=AjaxLoadingInterceptor" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=AjaxLoadingInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
    
    
    	<mbean code="org.osivia.portal.core.tracker.CommandTrackerInterceptor"
-		name="pia:service=Interceptor,type=Command,name=CommandTracker"
+		name="osivia:service=Interceptor,type=Command,name=CommandTracker"
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean"
 		xmbean-dd="">
 		<xmbean />
-			<depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>		
+			<depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>		
 	</mbean>
 	
 	 <mbean code="org.osivia.portal.core.tracker.ServerTrackerInterceptor"
-		name="pia:service=Interceptor,type=Server,name=ServerTracker"
+		name="osivia:service=Interceptor,type=Server,name=ServerTracker"
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean"
 		xmbean-dd="">
 		<xmbean />
- 			<depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>		
+ 			<depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>		
 	</mbean>
 	
 	
 	
 	 <mbean code="org.osivia.portal.core.login.LoginInterceptor"
-		name="pia:service=Interceptor,type=Server,name=ServerLogin"
+		name="osivia:service=Interceptor,type=Server,name=ServerLogin"
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean"
 		xmbean-dd="">
 		<xmbean />	
 	</mbean>
 	
 
-	<mbean code="org.osivia.portal.core.tracker.TrackerService" name="pia:service=Tracker"
+	<mbean code="org.osivia.portal.core.tracker.TrackerService" name="osivia:service=Tracker"
 		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
 	</mbean>
@@ -230,29 +230,29 @@
 
 	<mbean
 		code="org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer"
-		name="pia:service=DynamicPortalObjectContainer" xmbean-dd=""
+		name="osivia:service=DynamicPortalObjectContainer" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
-			<depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>
+			<depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>
 	</mbean>
 	
 	
 		
-   <mbean code="org.osivia.portal.core.urls.PortalUrlFactory" name="pia:service=UrlFactory"
+   <mbean code="org.osivia.portal.core.urls.PortalUrlFactory" name="osivia:service=UrlFactory"
           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
-    <depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>
-  	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">pia:service=ProfilManager</depends>       
+    <depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>
+  	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>       
   </mbean>
 	
 	
-<mbean code="org.osivia.portal.core.profils.ProfilManager" name="pia:service=ProfilManager"
+<mbean code="org.osivia.portal.core.profils.ProfilManager" name="osivia:service=ProfilManager"
           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
   			<depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>  			
 			<depends optional-attribute-name="IdentityServiceController" proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
-			 <depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>
-    		<depends optional-attribute-name="CacheService" proxy-type="attribute">pia:service=Cache</depends>
+			 <depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>
+    		<depends optional-attribute-name="CacheService" proxy-type="attribute">osivia:service=Cache</depends>
 			 
   </mbean>
 	
@@ -260,7 +260,7 @@
 	
 	
    <mbean code="org.osivia.portal.core.page.MonEspaceCommandFactoryService"
-          name="pia:commandFactory=MonEspace" xmbean-dd=""
+          name="osivia:commandFactory=MonEspace" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
@@ -272,11 +272,11 @@
       <attribute name="Path">/MonEspace</attribute>
       <depends optional-attribute-name="DelegatingFactory" proxy-type="attribute">portal:commandFactory=Delegating
       </depends>
-      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">pia:commandFactory=MonEspace</depends>
+      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">osivia:commandFactory=MonEspace</depends>
    </mbean>
 	
 	
-  <mbean code="org.osivia.portal.core.page.MonEspaceURLFactory" name="pia:urlFactory=MonEspace"
+  <mbean code="org.osivia.portal.core.page.MonEspaceURLFactory" name="osivia:urlFactory=MonEspace"
           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <attribute name="Path">/MonEspace</attribute>
@@ -307,7 +307,7 @@
 	
 		<mbean
 		code="org.osivia.portal.core.error.CommandErrorInterceptor"
-		name="pia:service=Interceptor,type=Command,name=Error"
+		name="osivia:service=Interceptor,type=Command,name=Error"
 		xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 			<xmbean/>
@@ -316,18 +316,18 @@
   	
   	<mbean	
 		code="org.osivia.portal.core.mt.MultithreadService"
-		name="pia:service=MultithreadService">
+		name="osivia:service=MultithreadService">
 		
 		<xmbean/>
 		
-		<depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>			
-		<depends optional-attribute-name="Profiler" proxy-type="attribute">pia:service=ProfilerService</depends>			
+		<depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>			
+		<depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>			
 		
 	</mbean>
 	
 	
 	  <mbean code="org.osivia.portal.core.profiler.ProfilerService"
-          name="pia:service=ProfilerService" xmbean-dd=""
+          name="osivia:service=ProfilerService" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
@@ -335,19 +335,19 @@
    
   	<mbean
       code="org.osivia.portal.core.mt.ContextDispatcherWrapperInterceptor"
-      name="pia:service=Interceptor,type=Portlet,name=ContextDispatcherWrapperInterceptor"
+      name="osivia:service=Interceptor,type=Portlet,name=ContextDispatcherWrapperInterceptor"
       xmbean-dd=""
       xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
           <depends
          optional-attribute-name="ServletContainerFactory"
          proxy-type="attribute">portal:service=ServletContainerFactory</depends>
-         <depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>
+         <depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>
    </mbean>
    
    		<mbean
 		code="org.osivia.portal.core.mt.MTLoggerInterceptor"
-		name="pia:service=Interceptor,type=Command,name=Logger"
+		name="osivia:service=Interceptor,type=Command,name=Logger"
 		xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 			<xmbean/>
@@ -355,23 +355,23 @@
   	</mbean>
  
    <mbean code="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor"
-          name="pia:service=Interceptor,type=Portlet,name=ConsumerCache" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=ConsumerCache" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
-      <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">pia:service=CacheServices</depends>
+      <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">osivia:service=CacheServices</depends>
       
    </mbean>
    
    
       <mbean code="org.osivia.portal.core.portlets.interceptors.PortletAttributesController"
-          name="pia:service=Interceptor,type=Portlet,name=PortletAttributesController" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=PortletAttributesController" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
      
    </mbean>
    
       <mbean code="org.osivia.portal.core.sessions.ContextTrackerInterceptor"
-          name="pia:service=Interceptor,type=Portlet,name=ContextTracker" xmbean-dd=""
+          name="osivia:service=Interceptor,type=Portlet,name=ContextTracker" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
@@ -386,10 +386,10 @@
    </mbean>
    
        
-   <mbean code="org.osivia.portal.core.cache.CacheService" name="pia:service=Cache"
+   <mbean code="org.osivia.portal.core.cache.CacheService" name="osivia:service=Cache"
 		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
-    <depends optional-attribute-name="PiaTreeCache" proxy-type="attribute">pia:service=TreeCache</depends>
+    <depends optional-attribute-name="PiaTreeCache" proxy-type="attribute">osivia:service=TreeCache</depends>
     <depends optional-attribute-name="HibernateTreeCache" proxy-type="attribute">portal:service=TreeCache,type=hibernate</depends>
  		
  </mbean>
@@ -397,19 +397,19 @@
  	
   	<mbean
 		code="org.osivia.portal.core.cache.services.CacheService"
-		name="pia:service=CacheServices">
+		name="osivia:service=CacheServices">
 	</mbean>
 	
 	<mbean
 		code="org.osivia.portal.core.statut.StatutService"
-		name="pia:service=StatutServices">
+		name="osivia:service=StatutServices">
 	</mbean>
 	
 	
   	<mbean code="org.osivia.portal.core.pagemarker.PortalDelegatingURLFactoryService"
           name="portal:urlFactory=Delegating" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-			 <depends optional-attribute-name="Tracker" proxy-type="attribute">pia:service=Tracker</depends>
+			 <depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>
       <xmbean/>
    </mbean>
    
@@ -429,7 +429,7 @@
    </mbean>
    
    	  <mbean code="org.osivia.portal.core.migration.MigrationService"
-          name="pia:service=MigrationService" xmbean-dd=""
+          name="osivia:service=MigrationService" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
         <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject

@@ -79,7 +79,7 @@ public class RenamePageCommand extends AssistantCommand {
 		page.setDisplayName(newLocalizedString);
 		
 		//Impact sur les caches du bandeau
-		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"pia:service=Cache");
+		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
 		cacheService.incrementHeaderCount();
 
 

@@ -80,8 +80,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		
 		// On regarde si on est dans une window MAXIMIZED
 		
-		ControllerContext ctx = (ControllerContext) request.getAttribute("pia.controller");
-		Window window = (Window) request.getAttribute("pia.window");
+		ControllerContext ctx = (ControllerContext) request.getAttribute("osivia.controller");
+		Window window = (Window) request.getAttribute("osivia.window");
 			
 			String addToBreadcrumb = "0";
 
@@ -114,7 +114,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws Exception	{
 		
 		
-		Window window = (Window) ctx.getRequest().getAttribute("pia.window");
+		Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
 		if( window != null)	{
 			Page page = window.getPage();
 			// contenu deja contextualise dans la page courante
@@ -179,7 +179,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		String portalPersistentName = null;
 		
 		if(  ctx.getRequest() != null){
-			Window window = (Window) ctx.getRequest().getAttribute("pia.window");
+			Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
 			if (window != null) {
 				Page page = window.getPage();
 				if( !page.getPortal().getId().equals(ctx.getControllerCtx().getController().getPortalObjectContainer().getContext().getDefaultPortal().getId()))
@@ -213,8 +213,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		String region = "virtual";
 		String windowName = "dynamicPortlet";
 		
-		ControllerContext ctx = (ControllerContext) request.getAttribute("pia.controller");
-		Window window = (Window) request.getAttribute("pia.window");
+		ControllerContext ctx = (ControllerContext) request.getAttribute("osivia.controller");
+		Window window = (Window) request.getAttribute("osivia.window");
 		Page page = window.getPage();
 		String pageId = URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
 
@@ -223,8 +223,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		
 		// Valeurs par défaut
 		
-		if( windowProperties.get("pia.hideDecorators") == null)
-			windowProperties.put("pia.hideDecorators", "1");
+		if( windowProperties.get("osivia.hideDecorators") == null)
+			windowProperties.put("osivia.hideDecorators", "1");
 		if( windowProperties.get("theme.dyna.partial_refresh_enabled") == null)
 			windowProperties.put("theme.dyna.partial_refresh_enabled", "false");		
 		

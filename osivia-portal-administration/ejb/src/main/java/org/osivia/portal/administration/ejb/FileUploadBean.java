@@ -325,7 +325,7 @@ public class FileUploadBean {
 
 		PortalObject portal = portalObjectContainer.getContext().getPortal("default");
 		portal.setDeclaredProperty("osivia.liste_styles", style);
-		System.out.println("updateStyle : " + portal.getDeclaredProperty("pia.liste_styles"));
+		System.out.println("updateStyle : " + portal.getDeclaredProperty("osivia.liste_styles"));
 		this.setMessage("Style enregistré avec succès.");
 
 		/*
@@ -357,7 +357,7 @@ public class FileUploadBean {
 
 		/*----- Styles -----*/
 		PortalObject portal = portalObjectContainer.getContext().getPortal("default");
-		String propriete = portal.getDeclaredProperty("pia.liste_styles");
+		String propriete = portal.getDeclaredProperty("osivia.liste_styles");
 		style = propriete;
 
 		System.out.println("Style : " + style);

@@ -30,7 +30,7 @@ public class FilteredRoleModule extends HibernateRoleModuleImpl {
 		HashSet<Role> filteredRoles = new HashSet<Role>();
 
 		try {
-			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "pia:service=ProfilManager");
+			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
 			// Lrs rôles sont filtrés par rapport aux profils
 			for (ProfilBean profil : profilManager.getListeProfils()) {

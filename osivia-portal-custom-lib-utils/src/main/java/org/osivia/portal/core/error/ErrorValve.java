@@ -60,7 +60,7 @@ public class ErrorValve extends ValveBase {
 		if (httpErrorCode > 0) {
 			
 			// On récupère l'exception transmise par le portail
-			cause = (Exception) request.getAttribute("pia.error_exception");
+			cause = (Exception) request.getAttribute("osivia.error_exception");
 			
 			String userId = request.getRemoteUser();
 			

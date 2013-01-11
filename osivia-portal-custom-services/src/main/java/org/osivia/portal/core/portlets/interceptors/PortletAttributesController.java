@@ -50,7 +50,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 
 			/* Empty portlet */
 	    	
-	    	if( "1".equals(cr.getAttributes().get("pia.emptyResponse")))	{
+	    	if( "1".equals(cr.getAttributes().get("osivia.emptyResponse")))	{
 
 	    		
 	    		// Avoid JSF class cast
@@ -58,7 +58,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 
 	    	    	   String windowId = invocation.getWindowContext().getId();
 	    	    	   windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
-	    	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "pia.emptyResponse."+windowId, "1");
+	    	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse."+windowId, "1");
 	    	       }
 
 	    	}

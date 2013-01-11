@@ -36,7 +36,7 @@ public class ChangeModeCommand extends AssistantCommand {
 		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
 		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-		getControllerContext().setAttribute(SESSION_SCOPE, "pia.windowSettingMode", mode);
+		getControllerContext().setAttribute(SESSION_SCOPE, "osivia.windowSettingMode", mode);
 		
 
 		if( page instanceof CMSTemplatePage)	{
