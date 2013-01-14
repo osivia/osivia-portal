@@ -262,10 +262,7 @@ public class CmsCommand extends DynamicCommand {
 				String path = po.getDeclaredProperty("osivia.cms.basePath");
 				
 				if( path != null)	{
-					if(( path.equals( pubInfos.getPublishSpacePath()))
-							|| ((pubInfos.getPublishSpacePath() == null && path.equals( pubInfos.getWorkspacePath())) )
-						)
-				
+					if(( path.equals( pubInfos.getPublishSpacePath())))
 		
 					return po;
 				}
@@ -1191,7 +1188,7 @@ public class CmsCommand extends DynamicCommand {
 
 				if (contextualizationPage != null) {
 					handlerCtx.setContextualizationBasePath(basePublishPath);
-					if( pubInfos.getPublishSpacePath() == null && pubInfos.getWorkspacePath() != null)	
+					if( pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace())	
 						handlerCtx.setDisplayLiveVersion("1");
 				}
 
