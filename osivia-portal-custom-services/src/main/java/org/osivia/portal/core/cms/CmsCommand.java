@@ -255,6 +255,8 @@ public class CmsCommand extends DynamicCommand {
 	private static PortalObject searchPublicationPageForPub(CMSPublicationInfos pubInfos, PortalObject po, String searchPath, IProfilManager profilManager) {
 
 
+		// TODO : Faire d'abord le test sur le path
+		
 		if ("1".equals(po.getProperty("osivia.cms.pageContextualizationSupport"))) {
 
 			if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
