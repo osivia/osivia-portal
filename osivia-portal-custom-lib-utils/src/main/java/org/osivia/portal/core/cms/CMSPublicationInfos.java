@@ -21,31 +21,29 @@ public class CMSPublicationInfos {
 
 	private String documentPath = null;
 	private String liveId = null;
-	private String publishSpacePath = null;
-	private String publishSpaceDisplayName = null;
-	private boolean publishSpaceInContextualization = false;
-	private String publishSpaceType = null;
-
-
-	private String workspacePath = null;
-	private String workspaceDisplayName = null;
-	private boolean workspaceInContextualization = false;
 	private boolean editableByUser = false;
 	private boolean anonymouslyReadable = false;
 	private boolean published = false;
 
+	private String publishSpaceType = null;
+	private String publishSpacePath = null;
+	private String publishSpaceDisplayName = null;
+	private boolean publishSpaceInContextualization = false;
+
+	private boolean isLiveSpace = false;
+	
 	private List<Integer> errorCodes = new ArrayList<Integer>();
 
 	public CMSPublicationInfos() {
 		super();
 	}
 
-	public String getDocumentPath() {
-		return documentPath;
+	public boolean isLiveSpace() {
+		return isLiveSpace;
 	}
 
-	public void setDocumentPath(String documentPath) {
-		this.documentPath = documentPath;
+	public void setLiveSpace(boolean isLiveSpace) {
+		this.isLiveSpace = isLiveSpace;
 	}
 
 	public String getPublishSpacePath() {
@@ -56,14 +54,6 @@ public class CMSPublicationInfos {
 		this.publishSpacePath = publishSpacePath;
 	}
 
-	public String getPublishSpaceType() {
-		return publishSpaceType;
-	}
-
-	public void setPublishSpaceType(String publishSpaceType) {
-		this.publishSpaceType = publishSpaceType;
-	}
-	
 	public String getPublishSpaceDisplayName() {
 		return publishSpaceDisplayName;
 	}
@@ -72,20 +62,28 @@ public class CMSPublicationInfos {
 		this.publishSpaceDisplayName = publishSpaceDisplayName;
 	}
 
-	public String getWorkspacePath() {
-		return workspacePath;
+	public boolean isPublishSpaceInContextualization() {
+		return publishSpaceInContextualization;
 	}
 
-	public void setWorkspacePath(String workspacePath) {
-		this.workspacePath = workspacePath;
+	public void setPublishSpaceInContextualization(boolean publishSpaceInContextualization) {
+		this.publishSpaceInContextualization = publishSpaceInContextualization;
 	}
 
-	public String getWorkspaceDisplayName() {
-		return workspaceDisplayName;
+	public String getDocumentPath() {
+		return documentPath;
 	}
 
-	public void setWorkspaceDisplayName(String workspaceDisplayName) {
-		this.workspaceDisplayName = workspaceDisplayName;
+	public void setDocumentPath(String documentPath) {
+		this.documentPath = documentPath;
+	}
+
+	public String getPublishSpaceType() {
+		return publishSpaceType;
+	}
+
+	public void setPublishSpaceType(String publishSpaceType) {
+		this.publishSpaceType = publishSpaceType;
 	}
 
 	public boolean isEditableByUser() {
@@ -126,22 +124,6 @@ public class CMSPublicationInfos {
 
 	public void setLiveId(String liveId) {
 		this.liveId = liveId;
-	}
-
-	public boolean isPublishSpaceInContextualization() {
-		return publishSpaceInContextualization;
-	}
-
-	public void setPublishSpaceInContextualization(boolean publishSpaceInContextualization) {
-		this.publishSpaceInContextualization = publishSpaceInContextualization;
-	}
-
-	public boolean isWorkspaceInContextualization() {
-		return workspaceInContextualization;
-	}
-
-	public void setWorkspaceInContextualization(boolean workspaceInContextualization) {
-		this.workspaceInContextualization = workspaceInContextualization;
 	}
 
 }
