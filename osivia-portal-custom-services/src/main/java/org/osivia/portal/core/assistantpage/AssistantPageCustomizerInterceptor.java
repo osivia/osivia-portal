@@ -803,7 +803,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			printWriter.close();
 			String nav = stringWriter.toString();
 
-			rd.setAttribute("osivia.etting.navigation", nav);
+			rd.setAttribute("osivia.setting.navigation", nav);
 			
 			
 			
