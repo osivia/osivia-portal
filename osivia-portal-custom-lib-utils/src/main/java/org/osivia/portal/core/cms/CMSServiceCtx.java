@@ -1,9 +1,5 @@
 package org.osivia.portal.core.cms;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
@@ -30,6 +26,8 @@ public class CMSServiceCtx {
 	private RenderResponse response;
 	private String pageId;
 	private Object doc;
+	
+	private boolean forceScopeToAnonymous = false;
 	
 	
 	public ControllerContext getControllerContext() {
@@ -130,6 +128,13 @@ public class CMSServiceCtx {
 		this.scope = scope;
 	}
 
+	public boolean isForceScopeToAnonymous() {
+		return forceScopeToAnonymous;
+	}
+
+	public void setForceScopeToAnonymous(boolean forceScopeToAnonymous) {
+		this.forceScopeToAnonymous = forceScopeToAnonymous;
+	}
 
 
 }
