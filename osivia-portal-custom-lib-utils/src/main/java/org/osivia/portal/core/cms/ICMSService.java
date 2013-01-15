@@ -8,6 +8,13 @@ public interface ICMSService {
 	
 	public boolean checkContentAnonymousAccess(CMSServiceCtx cmsCtx, String path) throws CMSException;
 	
+	/**
+	 * Retourne un ensemble d'informations liées à l'espace de publication contenant le document dont le chemin est passé en paramètre.
+	 * @param ctx contexte du CMSService
+	 * @param path chemin d'un document
+	 * @return l' ensemble des informations liées à l'espace de publication dans un objet de type CMSPublicationInfos
+	 * @throws CMSException
+	 */
 	public CMSPublicationInfos getPublicationInfos( CMSServiceCtx ctx, String path) throws CMSException;
 	
 	public CMSItem getPublicationConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
