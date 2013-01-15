@@ -252,29 +252,31 @@ public class CmsCommand extends DynamicCommand {
 		return result;
 	}
 
-	private static PortalObject searchPublicationPageForPub(CMSPublicationInfos pubInfos, PortalObject po, String searchPath, IProfilManager profilManager) {
+	private static PortalObject searchPublicationPageForPub(CMSServiceCtx cmsCtx, CMSPublicationInfos pubInfos, PortalObject po,
+			String searchPath, IProfilManager profilManager) throws Exception {
 
+		String path = po.getDeclaredProperty("osivia.cms.basePath");
 
-		// TODO : Faire d'abord le test sur le path
-		
-		if ("1".equals(po.getProperty("osivia.cms.pageContextualizationSupport"))) {
+		if (path != null) {
+			
+			if ((path.equals(pubInfos.getPublishSpacePath()))) {
 
-			if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
+				if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
+					
+					CMSItem publishSpaceConfig = getCMSService().getPublicationConfig(cmsCtx, pubInfos.getPublishSpacePath());
 
-				String path = po.getDeclaredProperty("osivia.cms.basePath");
-				
-				if( path != null)	{
-					if(( path.equals( pubInfos.getPublishSpacePath())))
-		
-					return po;
+					if ("1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
+
+						return po;
+					}
 				}
 			}
 		}
 
 		// Children
 		for (PortalObject page : po.getChildren(PortalObject.PAGE_MASK)) {
-			PortalObject child =  searchPublicationPageForPub(pubInfos, page, searchPath, profilManager);
-			if( child != null)
+			PortalObject child = searchPublicationPageForPub(cmsCtx, pubInfos, page, searchPath, profilManager);
+			if (child != null)
 				return child;
 		}
 
@@ -290,7 +292,7 @@ public class CmsCommand extends DynamicCommand {
 		cmsReadItemContext.setControllerContext(ctx);
 
 		CMSPublicationInfos	pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, searchPath.toString());
-		PortalObject page =  searchPublicationPageForPub( pubInfos,  po,  searchPath,  profilManager) ;
+		PortalObject page =  searchPublicationPageForPub(cmsReadItemContext, pubInfos,  po,  searchPath,  profilManager) ;
 		
 		/*
 		// On regarde dans les autres portails
@@ -368,7 +370,7 @@ public class CmsCommand extends DynamicCommand {
 		if (portalSite.getProperties().get("pageTemplate") == null)
 			return null;
 
-		// No contextualization
+		// No contextualization		
 		if (!"1".equals(portalSite.getProperties().get("contextualizeInternalContents")))
 			return null;
 
