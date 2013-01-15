@@ -9,6 +9,8 @@ public interface ICMSService {
 	public boolean checkContentAnonymousAccess(CMSServiceCtx cmsCtx, String path) throws CMSException;
 	
 	public CMSPublicationInfos getPublicationInfos( CMSServiceCtx ctx, String path) throws CMSException;
+	
+	public CMSItem getPublicationConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
 
 	//A supprimer ??
 	public CMSItem getPortalPublishSpace( CMSServiceCtx ctx, String path) throws CMSException;
