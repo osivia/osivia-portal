@@ -109,7 +109,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	
 
 	/* 
-	 * renvoie la page instanciée qui contient le menu (si elle accepte la recontextualisation)
+	 * renvoie la page instanciée qui contient le contenu (si elle accepte la recontextualisation)
 	 */
 	public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws Exception	{
 		
@@ -118,7 +118,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		if( window != null)	{
 			Page page = window.getPage();
 			// contenu deja contextualise dans la page courante
-			if(  CmsCommand.isContentAlreadyContextualizedInPage(page, path))
+			if(  CmsCommand.isContentAlreadyContextualizedInPage(ctx.getControllerCtx() , page, path))
 				return page;
 		}
 		

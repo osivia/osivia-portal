@@ -97,11 +97,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 			props.put("osivia.cms.basePath", publishSpace.getPath());
 
-			if ("1".equals(publishSpace.getProperties().get("contextualizeInternalContents")))
-				props.put("osivia.cms.pageContextualizationSupport", "1");
-
-			if ("1".equals(publishSpace.getProperties().get("contextualizeExternalContents")))
-				props.put("osivia.cms.outgoingRecontextualizationSupport", "1");
+			// v2.0-rc7
+			
+//			if ("1".equals(publishSpace.getProperties().get("contextualizeInternalContents")))
+//				props.put("osivia.cms.pageContextualizationSupport", "1");
+//
+//			if ("1".equals(publishSpace.getProperties().get("contextualizeExternalContents")))
+//				props.put("osivia.cms.outgoingRecontextualizationSupport", "1");
 
 			props.put("osivia.cms.layoutType", "1");
 			props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");

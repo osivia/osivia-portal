@@ -12,7 +12,7 @@ public class MigrationModule2060 extends MigrationModule {
 
 	@Override
 	public int getModuleId() {
-		return 2061;
+		return 2060;
 	}
 
 	private void removeUnusedScope(PortalObject portalObject) {

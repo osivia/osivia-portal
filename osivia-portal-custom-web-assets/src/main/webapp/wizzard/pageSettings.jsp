@@ -476,7 +476,7 @@ function togglePublication() {
 							</tr>
 							
 
-
+<!-- 
 			
 							<tr>
 								<td>
@@ -486,7 +486,7 @@ function togglePublication() {
 										<%= pageCmsNavigationScopeSelect %><br/>
 								</td>
 							</tr>	
-							
+						
 														
 							<tr>
 								<td>
@@ -496,7 +496,7 @@ function togglePublication() {
 										<%= pageContextualizationSupport %><br/>
 								</td>
 							</tr>	
-							
+-->								
 							<tr>
 								<td>
 									Afficher directement les sous-rubriques dans la navigation :

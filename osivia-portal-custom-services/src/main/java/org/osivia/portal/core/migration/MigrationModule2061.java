@@ -25,7 +25,7 @@ public class MigrationModule2061 extends MigrationModule {
 			"printPortlet", "conditionalScope", "menuBarPolicy", "unprofiled_home_page", "profils", "cms.scope", "cms.basePath",
 			"cms.navigationScope", "cms.pageContextualizationSupport", "cms.incomingContextualizationSupport", "cms.outgoingRecontextualizationSupport", "navigationMode",
 			"cms.layoutRules", "rssLinkRef", "permaLinkRef", "cms.layoutRules", "nuxeoPath", "propertyName", "document.onlyDescription",
-			"cms.hideMetaDatas", "cms.displayLiveVersion", "fragmentTypeId", "nuxeoRequest", "requestInterpretor", "cms.contextualization", "cms.pageSize", "cms.maxItems", "page_accueil_mode_connecte",
+			"cms.hideMetaDatas", "cms.displayLiveVersion", "fragmentTypeId", "nuxeoRequest", "requestInterpretor", "cms.contextualization", "cms.pageSize", "cms.pageSizeMax", "cms.maxItems", "page_accueil_mode_connecte",
 			"cms.style", "rssTitle", "displayNuxeoRequest", "cms.openLevels", "cms.nbLevels", "cms.maxLevels", "selectorId", "libelle", "vocabId","vocabName1", 
 			"vocabName2", "vocabName3", "rss.flux", "rss.nbItems", "rss.nbItemsMax"
 

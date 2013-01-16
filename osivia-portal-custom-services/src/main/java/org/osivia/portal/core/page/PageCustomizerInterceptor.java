@@ -479,8 +479,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				
+				CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
+				
 					
-				if(( rpc.getPage().getDeclaredProperty("osivia.cms.basePath") != null && "1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.pageContextualizationSupport")))	
+				if((pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents") ))	
 						
 						|| ("1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.directContentPublisher") ))){
 				
@@ -1101,10 +1103,16 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 				// CMS sub pages
 				
-				if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
-						.getDeclaredProperty("osivia.cms.basePath") != null))) {
+				// v2.0-rc7
+				
+//				if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
+//						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
+						CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
+						
+						if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
+
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page
 							.getDeclaredProperty("osivia.cms.basePath"), page
 							.getDeclaredProperty("osivia.cms.basePath"));
@@ -1113,13 +1121,14 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
 									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), childrens);
+						}
 
 					
 					} catch (Exception e) {
 						// May be a security issue, don't block footer
 						logger.error(e.getMessage());
 					} 
-				}
+				//}
 			}
 		}
 		
@@ -1157,10 +1166,16 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 			// CMS sub pages
 				
-				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
-						.getDeclaredProperty("osivia.cms.basePath") != null))) {
+		// v2.0-rc7
+//				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
+//						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
+						CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, cmsPage);
+						
+						if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
+
+						
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage
 							.getDeclaredProperty("osivia.cms.basePath"), cmsPage
 							.getDeclaredProperty("osivia.cms.basePath"));
@@ -1169,13 +1184,14 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
 									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), mainPages);
+						}
 
 					
 					} catch (Exception e) {
 						// May be a security issue, don't block footer
 						logger.error(e.getMessage());
 					} 
-				}
+//				}
 		
 		return siteMap;
 	}

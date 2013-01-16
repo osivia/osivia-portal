@@ -43,6 +43,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
+import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -233,17 +234,51 @@ public class CmsCommand extends DynamicCommand {
 	}
 
 	private static PublicationComparator publicationComparator = new PublicationComparator();
+	
+	
+	
+	public static CMSItem getPagePublishSpaceConfig(ControllerContext ctx, PortalObject currentPage) throws Exception {
 
-	public static boolean isContentAlreadyContextualizedInPage(PortalObject currentPage, String cmsPath) {
+		CMSItem publishSpaceConfig = null;
+		
+		if( currentPage == null)
+			return null;
+		
+		String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
+
+		if (pageBasePath != null )	{
+			
+			CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
+			cmsReadItemContext.setControllerContext(ctx);
+				
+			publishSpaceConfig =  getCMSService().getPublicationConfig(cmsReadItemContext, currentPage.getProperty("osivia.cms.basePath"));
+			
+			}
+		return publishSpaceConfig;
+	}
+	
+
+	public static boolean isContentAlreadyContextualizedInPage(ControllerContext ctx, PortalObject currentPage, String cmsPath) throws Exception {
 
 		String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
-		if (pageBasePath != null && cmsPath != null && cmsPath.contains(pageBasePath))
-			if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
+		if (pageBasePath != null && cmsPath != null && cmsPath.contains(pageBasePath))	{
+			
+			
+			CMSItem publishSpaceConfig =  getPagePublishSpaceConfig(ctx,  currentPage);
+			
+			if( publishSpaceConfig != null && "1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
 				return true;
+			}
+		}
 
 		return false;
 	}
+	
+	
+	
+	
+	
 
 	public static String  computeNavPath(String path){
 		String result = path;
@@ -336,7 +371,9 @@ public class CmsCommand extends DynamicCommand {
 
 		props.put("osivia.cms.basePath", cmsItem.getPath());
 		props.put("osivia.cms.directContentPublisher", "1");
-		props.put("osivia.cms.pageContextualizationSupport", "0");
+		
+		//V2.0-rc7
+		//props.put("osivia.cms.pageContextualizationSupport", "0");
 		props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
 		props.put("osivia.cms.layoutRules", "return \"/default/templates/publish\"");
 
@@ -388,11 +425,16 @@ public class CmsCommand extends DynamicCommand {
 
 			// if(
 			// "true".equals(portalSite.getProperties().get("contextualizeInternalContents")))
-			props.put("osivia.cms.pageContextualizationSupport", "1");
+			
+			//  v 2.0.rc7
+			//props.put("osivia.cms.pageContextualizationSupport", "1");
 
+			
+			/*
+			 * v 2.0.rc7
 			if ("1".equals(portalSite.getProperties().get("contextualizeExternalContents")))
 				props.put("osivia.cms.outgoingRecontextualizationSupport", "1");
-
+*/
 			props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
 			props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
@@ -514,6 +556,12 @@ public class CmsCommand extends DynamicCommand {
 				}
 
 			}
+			
+			
+			// Lecture de la configuration de l'espace
+			
+			CMSItem pagePublishSpaceConfig = getPagePublishSpaceConfig(getControllerContext(), currentPage) ;
+			
 
 			/* Lecture de l'item */
 
@@ -558,7 +606,9 @@ public class CmsCommand extends DynamicCommand {
 					if (IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(contextualization))
 						contextualizeinPage = true;
 
-					if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
+					// v2.0-rc7
+					//if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
+					if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))
 						contextualizeinPage = true;
 
 				}
@@ -610,11 +660,25 @@ public class CmsCommand extends DynamicCommand {
 				if (contextualizationPage == null) {
 
 					if (IPortalUrlFactory.CONTEXTUALIZATION_PORTAL.equals(contextualization))
+						// contextualisation explicite dans le portail (lien de recontextualisation)
 						contextualizeinPortal = true;
+					
+					else	{
+						// contextualisation iumplicite dans le portail (lien inter-contenus)
+						if (currentPage != null) {
+							// v 2.0-rc7
+							contextualizeinPortal = false;
+							if (currentPage.getProperty("osivia.cms.basePath") != null) {
 
-					if (currentPage != null) {
-						if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
-							contextualizeinPortal = true;
+								if (pagePublishSpaceConfig != null
+										&& "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeExternalContents"))) {
+									contextualizeinPortal = true;
+								}
+							} else {
+								if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
+									contextualizeinPortal = true;
+							}
+						}
 					}
 
 				}
@@ -828,13 +892,13 @@ public class CmsCommand extends DynamicCommand {
 											ECMPageTemplate = cmsItemNav.getProperties().get("pageTemplate");
 
 									}
-
-									if (computedPageScope == null) {
-										if (cmsItemNav.getProperties().get("pageScope") != null)
-											computedPageScope = cmsItemNav.getProperties().get("pageScope");
-									}
-
 								}
+								
+								if (computedPageScope == null) {
+									if (cmsItemNav.getProperties().get("pageScope") != null)
+										computedPageScope = cmsItemNav.getProperties().get("pageScope");
+								}
+
 							}
 
 							// One level up
@@ -881,11 +945,14 @@ public class CmsCommand extends DynamicCommand {
 					if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
 						// En mde navigation cms, toutes les pages sont dynamiques, meme la page d'accueil statique
 						// Sinon  les Sous-pages des pages statiques sont également dynamiques
-						if (("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))) || !cmsNav.getPath().equals(basePublishPath)) {
+						
+						// v2.0-rc7
+//						if (("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))) || !cmsNav.getPath().equals(basePublishPath)) {
 
+						if( ECMPageTemplate != null)	{
 							layoutType = CmsCommand.LAYOUT_TYPE_SCRIPT;
 							layoutRules = "return ECMPageTemplate;";
-						}
+					}
 
 					}
 				} else {

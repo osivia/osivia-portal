@@ -401,11 +401,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 
 			// CMS sub pages
+		
+		
 				
-				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
-						.getDeclaredProperty("osivia.cms.basePath") != null))) {
+//				if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
+//						.getDeclaredProperty("osivia.cms.basePath") != null))) {
 					
 					try	{
+						
+						CMSItem publishSpaceConfig =  CmsCommand.getPagePublishSpaceConfig(controllerCtx,  cmsPage);
+						
+						if( publishSpaceConfig != null && "1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
+						
 						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage
 							.getDeclaredProperty("osivia.cms.basePath"), cmsPage
 							.getDeclaredProperty("osivia.cms.basePath"));
@@ -418,13 +425,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 									
 								}
+							
+
+						}
+							
+					
 
 					
 					} catch (Exception e) {
 						// May be a security issue, don't block footer
 						logger.error(e.getMessage());
 					} 
-				}
+				//}
 
 				
 				
