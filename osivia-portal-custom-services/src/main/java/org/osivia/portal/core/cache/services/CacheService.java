@@ -6,6 +6,8 @@ package org.osivia.portal.core.cache.services;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.naming.InitialContext;
 import javax.portlet.PortletContext;
@@ -156,25 +158,54 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			}
 		}
 		
+		// Cache inexistant
+		if (cacheFlux == null) {
 
-		// Cache inexistant ou expiré (20s)
-		if (cacheFlux == null
-				|| System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration() || cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) {
-			
-			if( infos.getInvoker() != null)	{
-				if( infos.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_SESSION)	{
-						// Pas de synchronisation en mode session
+			if (infos.getInvoker() != null) {
+				if (infos.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_SESSION) {
+					// Pas de synchronisation en mode session
 					// Appel
-					Object response = infos.getInvoker().invoke();
-					storeCache(infos, caches, response);
+					refreshCache(infos, caches);
+				}else{
+					rafraichirCacheSynchronise(infos, caches);
 				}
-				rafraichirCacheSynchronise(infos, caches);
+				return caches.get(infos.getCleItem()).getContenuCache();
+			} else
+				return null;
+		} else {
+
+			// Cache existant et expiré (20s)
+			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration()
+					|| cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) {
+				
+				if (infos.getInvoker() != null) {				
+					if (infos.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_SESSION) {
+						refreshCache(infos, caches);
+					}else{
+						rafraichirCacheSynchronise(infos, caches);
+					}
+					return caches.get(infos.getCleItem()).getContenuCache();
+				} else
+					return null;
 			}
-			else return null;
 		}
 
 		return caches.get(infos.getCleItem()).getContenuCache();
 
+	}
+
+	private void asyncRefreshCache(CacheFlux cacheFlux, CacheInfo infos, Map<String, CacheFlux> caches) throws Exception {
+		
+		AsyncRefreshCacheThread asyncThread = new  AsyncRefreshCacheThread(this, infos, caches);	
+		CacheThreadsPool.getInstance().execute(asyncThread);
+		
+	}
+	
+	void refreshCache(CacheInfo infos, Map<String, CacheFlux> caches) throws Exception {
+		
+		Object response = infos.getInvoker().invoke();
+		storeCache(infos, caches, response);
+		
 	}
 
 	public void stopService() throws Exception {
@@ -198,16 +229,60 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				cacheFlux = caches.get(infos.getCleItem());
 			}
 
-			// Le test est dupliqué pour éviter n rechargements
-			if (cacheFlux == null
-					|| System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration() || cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) {
+			// reinitialisation des caches
+			if (cacheFlux != null && (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()))
+				cacheFlux = null;
+			
 
-				// Appel
-				Object response = infos.getInvoker().invoke();
+			if (cacheFlux == null) {
+				
+				refreshCache(infos, caches);
+				
+			} else {
 
-				storeCache(infos, caches, response);
+				// Le test est dupliqué pour éviter n rechargements
+				if (infos.isAsyncCacheRefreshing()) {
+
+					boolean isReloading = isAsyncThreadRefreshingCache(cacheFlux);
+
+					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())
+							&& (!isReloading)) {
+
+						cacheFlux.setTsAskForReloading(System.currentTimeMillis());
+						asyncRefreshCache(cacheFlux, infos, caches);
+
+					}
+				} else {
+					
+					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())) {
+						
+						refreshCache(infos, caches);
+						
+					}
+
+				}
 			}
 		}
+	}
+	
+	/**
+	 * Méthode permattant de savoir si un thread asynchrone est en cours de mise à jour
+	 * du cache avec la donnée cacheFlux.
+	 * @param cacheFlux donnée à mettre à jour
+	 * @return vrai si l ethread est en cours d'exécution
+	 */
+	private boolean isAsyncThreadRefreshingCache(CacheFlux cacheFlux) {
+		boolean isReloading = false;
+		// Indique si une "demande d'exécution du thread a été effectuée.
+		if (cacheFlux.getTsAskForReloading() != 0L) {
+			long elapsedTime = System.currentTimeMillis() - cacheFlux.getTsAskForReloading();
+			// Si le thread a été lancé depuis plus de 20 secondes,
+			// on le considère en échec (il n'a pas été lancé)
+			if (elapsedTime < 20000) {
+				isReloading = true;
+			}
+		}
+		return isReloading;
 	}
 
 	private synchronized void storeCache(CacheInfo infos, Map<String, CacheFlux> caches, Object response)

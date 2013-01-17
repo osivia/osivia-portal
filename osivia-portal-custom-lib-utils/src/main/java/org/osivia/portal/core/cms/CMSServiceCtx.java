@@ -16,10 +16,17 @@ public class CMSServiceCtx {
 	private ControllerContext controllerContext;
 	private ServerInvocation serverInvocation;
 	private String scope;
+	/**
+	 * Variable indiquant si le résultat de la commande 
+	 * effectuée avec ce contexte doit être mise à jour
+	 * en cache de façon asynchrone.
+	 */
+	private boolean isAsyncCacheRefreshing = false;
 	private String displayLiveVersion;
 	private String hideMetaDatas;
 	private String displayContext;
 	private String contextualizationBasePath; 
+	 
 
 	private PortletRequest request;
 	private PortletContext portletCtx;	
@@ -27,7 +34,12 @@ public class CMSServiceCtx {
 	private String pageId;
 	private Object doc;
 	
-	private boolean forceScopeToAnonymous = false;
+	/**
+	 * Variable permettant de forcer le scope 
+	 * de mise en cache de l'objet de retour
+	 * de la méthode getPublicationInfos (dans CMSService)
+	 */
+	private String forcePublicationInfosScope;
 	
 	
 	public ControllerContext getControllerContext() {
@@ -128,13 +140,20 @@ public class CMSServiceCtx {
 		this.scope = scope;
 	}
 
-	public boolean isForceScopeToAnonymous() {
-		return forceScopeToAnonymous;
+	public String getForcePublicationInfosScope() {
+		return forcePublicationInfosScope;
 	}
 
-	public void setForceScopeToAnonymous(boolean forceScopeToAnonymous) {
-		this.forceScopeToAnonymous = forceScopeToAnonymous;
+	public void setForcePublicationInfosScope(String forcePublicationInfosScope) {
+		this.forcePublicationInfosScope = forcePublicationInfosScope;
 	}
 
+	public boolean isAsyncCacheRefreshing() {
+		return isAsyncCacheRefreshing;
+	}
+
+	public void setAsyncCacheRefreshing(boolean isAsyncCacheRefreshing) {
+		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
+	}
 
 }

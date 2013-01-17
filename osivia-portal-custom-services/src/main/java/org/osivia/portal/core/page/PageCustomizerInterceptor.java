@@ -1013,30 +1013,30 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 	
 	
-	public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx,Page page, String basePath, String path, List<UserPage> pageList)	{
+	public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx,Page page, String basePath, CMSItem navItem, List<UserPage> pageList)	{
 		
 		try {
-			CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
+			//CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
 			
 			UserPage userPage = new UserPage();
 			pageList.add(userPage);
-			userPage.setName(cmsItem.getProperties().get("displayName"));
-			userPage.setId( path);
+			userPage.setName(navItem.getProperties().get("displayName"));
+			userPage.setId( navItem.getPath());
 			Map<String, String> pageParams = new HashMap<String, String>();
 			String url = urlFactory.getCMSUrl(portalCtx,
-					page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), cmsItem.getPath(), pageParams, null, null, null, null, null, null);
+					page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), navItem.getPath(), pageParams, null, null, null, null, null, null);
 			userPage.setUrl( url);
 			
-			List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, path);
+			List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
 			
 			List<UserPage> subPages = new ArrayList<UserPage>(10);
 			userPage.setChildren(subPages);		
 			
 			if( navItems.size() > 0){
 			
-				for (CMSItem navItem : navItems)
+				for (CMSItem navSubItem : navItems)
 					if(  "1".equals(navItem.getProperties().get("menuItem")))
-						addSubpagesToSiteMap( cmsCtx,   urlFactory,  portalCtx,  page, basePath, navItem.getPath(), subPages);
+						addSubpagesToSiteMap( cmsCtx,   urlFactory,  portalCtx,  page, basePath, navSubItem, subPages);
 
 				
 			}
@@ -1117,16 +1117,23 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							.getDeclaredProperty("osivia.cms.basePath"), page
 							.getDeclaredProperty("osivia.cms.basePath"));
 						
+						
+						if(navItems != null){
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
-									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), childrens);
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem, childrens);
 						}
-
+						else	{
+							logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
+						}
+						}
+						
 					
 					} catch (Exception e) {
 						// May be a security issue, don't block footer
 						logger.error(e.getMessage());
+
 					} 
 				//}
 			}
@@ -1183,7 +1190,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))
-									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), mainPages);
+									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem, mainPages);
 						}
 
 					

@@ -1,12 +1,12 @@
 package org.osivia.portal.api.cache.services;
 
-import java.util.Map;
 
 
 public class CacheFlux {
 
 	private long tsEnregistrement;
 	private Object contenuCache;
+	private long tsAskForReloading;
 
 	public long getTsEnregistrement() {
 		return tsEnregistrement;
@@ -30,4 +30,12 @@ public class CacheFlux {
 		this.contenuCache = contenuCache;
 	}
 
+	public long getTsAskForReloading() {
+		return tsAskForReloading;
+	}
+
+	public void setTsAskForReloading(long tsAskForReloading) {
+		this.tsAskForReloading = tsAskForReloading;
+	}
+	
 }

@@ -344,32 +344,32 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 	
 	
 	
-	public void addSubpagesToCMSHeaderTab(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx, Page page, String basePath, String path, List<UserPage> pageList)	{
+	public void addSubpagesToCMSHeaderTab(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx, Page page, String basePath, CMSItem navItem, List<UserPage> pageList)	{
 		
 		try {
-			CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
+			//CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
 			
 			UserPage userPage = new UserPage();
 			pageList.add(userPage);
-			userPage.setName(cmsItem.getProperties().get("displayName"));
-			userPage.setId( path);
+			userPage.setName(navItem.getProperties().get("displayName"));
+			userPage.setId( navItem.getPath());
 
 			Map<String, String> pageParams = new HashMap<String, String>();
 			String url = urlFactory.getCMSUrl(portalCtx,
-				page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), cmsItem.getPath(), pageParams, null, null, null, null, null, null);
+				page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), navItem.getPath(), pageParams, null, null, null, null, null, null);
 
 			userPage.setUrl( url);
 			
-			List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, path);
+			List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
 			
 			List<UserPage> subPages = new ArrayList<UserPage>(10);
 			userPage.setChildren(subPages);		
 			
 			if( navItems.size() > 0){
 			
-				for (CMSItem navItem : navItems)
+				for (CMSItem subNavItem : navItems)
 					if(  "1".equals(navItem.getProperties().get("menuItem")))
-						addSubpagesToCMSHeaderTab( cmsCtx,   urlFactory,  portalCtx, page, basePath, navItem.getPath(), subPages);
+						addSubpagesToCMSHeaderTab( cmsCtx,   urlFactory,  portalCtx, page, basePath, subNavItem, subPages);
 
 				
 			}
@@ -420,7 +420,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 							for (CMSItem navItem : navItems)
 								if(  "1".equals(navItem.getProperties().get("menuItem")))	{
-									addSubpagesToCMSHeaderTab( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem.getPath(), mainPages);
+									addSubpagesToCMSHeaderTab( cmxCtx,   urlFactory,  portalCtx,  cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem, mainPages);
 									
 
 									

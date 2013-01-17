@@ -22,7 +22,13 @@ public class CacheInfo {
 	// cache must NOT be reloaded
 	private boolean forceNOTReload = false;
 	
-	
+	/**
+	 * Variable indiquant si le résultat de la commande 
+	 * effectuée avec ce contexte doit être mise à jour
+	 * en cache de façon asynchrone.
+	 */
+	private boolean isAsyncCacheRefreshing = false;
+		
 	public boolean isForceNOTReload() {
 		return forceNOTReload;
 	}
@@ -39,6 +45,14 @@ public class CacheInfo {
 		this.forceReload = forceReload;
 	}
 
+	public boolean isAsyncCacheRefreshing() {
+		return isAsyncCacheRefreshing;
+	}
+
+	public void setAsyncCacheRefreshing(boolean isAsyncCacheRefreshing) {
+		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
+	}
+
 	public Object getContext() {
 		return context;
 	}
@@ -51,13 +65,14 @@ public class CacheInfo {
 	
 	
 	
-	public CacheInfo(String cleItem, int scope, IServiceInvoker invoker, Object request, PortletContext context ) {
+	public CacheInfo(String cleItem, int scope, IServiceInvoker invoker, Object request, PortletContext context, boolean isAsyncCacheRefreshing) {
 		super();
 		this.scope = scope;
 		this.request = request;
 		this.cleItem = cleItem;
 		this.invoker = invoker;
 		this.context = context;
+		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
 	}
 	
 	
