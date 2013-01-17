@@ -22,6 +22,7 @@
 	String pageCmsBasePath = (String)request.getAttribute("osivia.setting.page.CMS_BASE_PATH");
 	String pageCmsScopeSelect = (String)request.getAttribute("osivia.setting.page.CMS_SCOPE_SELECT");	
 	String pageCmsNavigationScopeSelect = (String)request.getAttribute("osivia.setting.page.CMS_NAVIGATION_SCOPE_SELECT");	
+	String pageCmsDisplayLiveVersionSelect = (String)request.getAttribute("osivia.setting.page.CMS_DISPLAY_LIVE_VERSION_SELECT");	
 	
 	
 	String pageCMSNavigationMode = (String)request.getAttribute("osivia.setting.page.CMS_NAVIGATION_MODE");	
@@ -436,6 +437,15 @@ if( "1".equals(pageCMSNavigationMode))
 								</td>
 								<td>
 										<%= pageCmsScopeSelect %><br/>
+								</td>
+							</tr>	
+							
+							<tr>
+								<td width="300px">
+									versions de la page :
+								</td>
+								<td>
+										<%= pageCmsDisplayLiveVersionSelect %><br/>
 								</td>
 							</tr>	
 							

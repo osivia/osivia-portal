@@ -251,6 +251,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					String incomingContextualizationSupport = null;
 					String navigationScope = null;
 					String cmsNavigationMode = null;
+					String displayLiveVersion = null;
 
 					if (parameterMap.get("pageId") != null ) {
 						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
@@ -270,8 +271,10 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 							incomingContextualizationSupport = URLDecoder.decode(((String[]) parameterMap.get("incomingContextualizationSupport"))[0], "UTF-8");
 						if( parameterMap.get("cmsNavigationMode") != null)
 							cmsNavigationMode = URLDecoder.decode(((String[]) parameterMap.get("cmsNavigationMode"))[0], "UTF-8");
-										
-						return new ChangePageCMSPropertiesCommand(pageId, cmsBasePath, scope, pageContextualizationSupport, outgoingRecontextualizationSupport, navigationScope, cmsNavigationMode);
+						if( parameterMap.get("displayLiveVersion") != null)
+							displayLiveVersion = URLDecoder.decode(((String[]) parameterMap.get("displayLiveVersion"))[0], "UTF-8");
+
+						return new ChangePageCMSPropertiesCommand(pageId, cmsBasePath, scope, pageContextualizationSupport, outgoingRecontextualizationSupport, navigationScope, cmsNavigationMode, displayLiveVersion);
 					}
 				}						
 

@@ -24,6 +24,7 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 	private String outgoingRecontextualizationSupport;
 	private String navigationScope;
 	private String cmsNavigationMode;
+	private String displayLiveVersion;
 
 	public String getPageId() {
 		return pageId;
@@ -32,7 +33,7 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 	public ChangePageCMSPropertiesCommand() {
 	}
 
-	public ChangePageCMSPropertiesCommand(String pageId, String cmsBasePath, String scope, String pageContextualizationSupport, String outgoingRecontextualizationSupport, String navigationScope, String cmsNavigationMode) {
+	public ChangePageCMSPropertiesCommand(String pageId, String cmsBasePath, String scope, String pageContextualizationSupport, String outgoingRecontextualizationSupport, String navigationScope, String cmsNavigationMode, String displayLiveVersion) {
 		this.pageId = pageId;
 		this.cmsBasePath = cmsBasePath;
 		this.scope=scope;
@@ -40,6 +41,7 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 		this.outgoingRecontextualizationSupport = outgoingRecontextualizationSupport;
 		this.navigationScope = navigationScope;
 		this.cmsNavigationMode = cmsNavigationMode;
+		this.displayLiveVersion = displayLiveVersion;
 	
 	}
 
@@ -73,6 +75,14 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 		} else {
 			page.setDeclaredProperty("osivia.cms.scope", null);
 		}
+		
+		
+		if (displayLiveVersion != null && displayLiveVersion.length() != 0) {
+			page.setDeclaredProperty("osivia.cms.displayLiveVersion", displayLiveVersion);
+		} else {
+			page.setDeclaredProperty("osivia.cms.displayLiveVersion", null);
+		}
+
 
 		
 		if (pageContextualizationSupport != null && pageContextualizationSupport.length() != 0) {

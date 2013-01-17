@@ -77,9 +77,13 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
+import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageUtils;
@@ -115,6 +119,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	private IProfilManager profilManager;
 	
 	private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+	
+	ICMSService cmsService ;
+	
+	
+
+	public ICMSService getCMSService () throws Exception	{
+		if( cmsService == null)
+			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+		
+		return cmsService;
+	}
 
 	public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
 		return portalAuthorizationManagerFactory;
@@ -338,6 +353,100 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 	
 	
+	public String formatDisplayLiveVersionList(CMSServiceCtx cmxCtx, PortalObject po, String versionName, String selectedVersion ) throws Exception {
+
+		Map<String, String> versions = new LinkedHashMap<String, String>();
+		
+		versions.put("1", "Live");
+		
+
+		String inheritedLabel = null;
+		
+		/* Calcul du label hérité */
+		
+		
+		if( inheritedLabel == null)	{
+
+			
+			Page page = null;
+
+			if (po instanceof Page)
+				page = (Page) po;
+			if (po instanceof Window)
+				page = (Page) po.getParent();
+
+				String spacePath = page.getProperty("osivia.cms.basePath");
+
+				if (spacePath != null) {
+					// Publication par path
+
+					CMSItem publishSpaceConfig = getCMSService().getPublicationConfig(cmxCtx, spacePath);
+					if( publishSpaceConfig != null)	{
+						
+						String displayLiveVersion = publishSpaceConfig.getProperties().get("displayLiveVersion");
+						
+						if( displayLiveVersion != null)
+							inheritedLabel = versions.get(displayLiveVersion);
+
+					}
+					
+					
+				}	else	{
+					//Heriatge page parent
+					String parentVersion = (String) po.getParent().getProperty("osivia.cms.displayLiveVersion");		
+					if( parentVersion != null){
+						
+						inheritedLabel = versions.get(parentVersion);
+	
+					};
+					
+				}
+		
+		}
+		
+		if( inheritedLabel == null)
+			inheritedLabel =  "Publié";
+		
+		
+		inheritedLabel =  "Herité [" + inheritedLabel +"]";	
+		
+		versions.put("__inherited", inheritedLabel);
+
+			
+
+		StringBuffer select = new StringBuffer();
+		select.append("<select name=\""+versionName+"\">");
+
+		if (!versions.isEmpty()) {
+			
+			if (selectedVersion == null || selectedVersion.length() == 0) {
+
+				select.append("<option selected=\"selected\" value=\"\">Publiée</option>");
+
+			} else {
+
+				select.append("<option value=\"\">Publiée</option>");
+
+			}
+			for (String possibleVersion : versions.keySet()) {
+				if (selectedVersion != null && selectedVersion.length() != 0 && possibleVersion.equals(selectedVersion)) {
+
+					select.append("<option selected=\"selected\" value=\"" + possibleVersion + "\">"
+							+ versions.get(possibleVersion) + "</option>");
+
+				} else {
+
+					select.append("<option value=\"" + possibleVersion + "\">" + versions.get(possibleVersion) + "</option>");
+
+				}
+			}
+		}
+
+		select.append("</select>");
+
+		return select.toString();
+
+	}
 	
 
 	public String formatPortletFilterScopeList(String name, String selectedScope) throws Exception {
@@ -669,6 +778,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	
 	String scope = page.getDeclaredProperty("osivia.cms.scope");
 	rd.setAttribute("osivia.setting.page.CMS_SCOPE_SELECT", formatScopeList( page, "scope", scope));
+	
+	
+	CMSServiceCtx cmxCtx = new CMSServiceCtx();
+	cmxCtx.setControllerContext(ctx);
+	
+	String displayLiveVersion = page.getDeclaredProperty("osivia.cms.displayLiveVersion");
+	rd.setAttribute("osivia.setting.page.CMS_DISPLAY_LIVE_VERSION_SELECT", formatDisplayLiveVersionList( cmxCtx, page, "displayLiveVersion", displayLiveVersion));
 	
 	String navigationScope = page.getDeclaredProperty("osivia.cms.navigationScope");
 	rd.setAttribute("osivia.setting.page.CMS_NAVIGATION_SCOPE_SELECT", formatScopeList( page, "navigationScope", navigationScope));
