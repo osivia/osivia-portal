@@ -1,14 +1,11 @@
 package org.osivia.portal.core.page;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,16 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
-import org.jboss.portal.api.PortalRuntimeContext;
 import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.api.node.PortalNode;
-import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.invocation.Scope;
-
-import org.jboss.portal.core.aspects.controller.node.Navigation;
-import org.jboss.portal.core.aspects.server.UserInterceptor;
-import org.jboss.portal.core.cms.ui.CMSPortlet;
-import org.jboss.portal.core.controller.AccessDeniedException;
 import org.jboss.portal.core.controller.Controller;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -42,12 +31,7 @@ import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
-import org.jboss.portal.core.controller.portlet.ControllerPageNavigationalState;
-import org.jboss.portal.core.impl.api.node.PortalNodeImpl;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
-import org.jboss.portal.core.model.CustomizationManager;
-import org.jboss.portal.core.model.instance.command.action.InvokePortletInstanceRenderCommand;
-import org.jboss.portal.core.model.instance.command.render.RenderPortletInstanceCommand;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -58,8 +42,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
-import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
-import org.jboss.portal.core.model.portal.command.action.ImportPageToDashboardCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
@@ -67,7 +49,6 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewContextCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateChange;
@@ -77,13 +58,10 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.security.PortalSecurityException;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.server.config.ServerConfig;
-import org.jboss.portal.server.request.URLContext;
-import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
@@ -92,9 +70,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
-import org.jboss.portal.theme.render.renderer.RegionRenderer;
-import org.jboss.portal.theme.render.renderer.RegionRendererContext;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
 import org.osivia.portal.api.charte.UserPage;
@@ -106,23 +82,18 @@ import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
-import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
-import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.pagemarker.PageMarkerInfo;
-import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
-import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.profils.IProfilManager;
-import org.osivia.portal.core.profils.ProfilBean;
-import org.osivia.portal.core.profils.ProfilManager;
+
+import bsh.Interpreter;
+
 
 
 
@@ -479,6 +450,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				
+
+				
 				CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
 				
 					
@@ -517,7 +490,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			}
 			
 			if (request.getParameter("firstTab") != null) {
-				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", new Integer(request.getParameter("firstTab")) );
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB, new Integer(request.getParameter("firstTab")) );
 			}
 			
 			if ("true".equals(request.getParameter("init-cache"))) {
@@ -526,7 +499,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			}
 			
 			
-			controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", rpc.getPage().getId() );
+			controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, rpc.getPage().getId() );
 			
 			
 			// Force la valorisation dans le contexte
@@ -694,6 +667,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			String windowId = rwc.getWindow().getId().toString(PortalObjectPath.SAFEST_FORMAT);
 			
+			Map<String,String> windowAttributes = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowAttributes."+windowId);	
+			
 
 			// Should we hide the portlet (empty response + hideEmptyPortlet positionned)
 			String emptyResponse = (String)  controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse."+windowId);
@@ -709,7 +684,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				
 			}
 			
-			
 
 			properties.setWindowProperty(windowId,
 					"osivia.displayTitle", "1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideTitle")) ? null : "1");
@@ -719,9 +693,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			properties.setWindowProperty(windowId,
 					"osivia.title", title);
 			
+			
+			
+			// Static styles
+			String customStyle = rwc.getWindow().getDeclaredProperty("osivia.style");
+			
+			if( customStyle == null)
+				customStyle = "";
+			
+
  
-			properties.setWindowProperty(windowId, "osivia.style",
-					rwc.getWindow().getDeclaredProperty("osivia.style"));
+			// Dynamic styles
+
+			String dynamicStyles = (String) windowAttributes.get( "osivia.dynamicCSSClasses");
+				
+			if( dynamicStyles != null)
+				customStyle += " " + dynamicStyles;
+				
+			properties.setWindowProperty(windowId, "osivia.style",	customStyle);
+			
 			
 			properties.setWindowProperty(windowId, "osivia.ajaxLink",
 					rwc.getWindow().getDeclaredProperty("osivia.ajaxLink"));			
@@ -729,7 +719,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			properties.setWindowProperty(windowId,
 					"osivia.displayDecorators",
 					"1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideDecorators")) ? null : "1");
-			
 			
 			
 			
@@ -954,8 +943,8 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							ChangeModeCommand cmd = new ChangeModeCommand(page.getId().toString(
 									PortalObjectPath.SAFEST_FORMAT), mode);
 
-							rd.setAttribute("osivia.WIZZARD_URL", new PortalURLImpl(cmd, controllerCtx, null, null));
-							rd.setAttribute("osivia.WIZZARD_MODE", mode);
+							rd.setAttribute(Constants.ATTR_WIZZARD_URL, new PortalURLImpl(cmd, controllerCtx, null, null));
+							rd.setAttribute(Constants.ATTR_WIZZARD_MODE, mode);
 						}
 
 					}
@@ -976,12 +965,12 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				PortalURL portalURL2 = null;
 				MonEspaceCommand monEspaceCmd = new MonEspaceCommand();
 				portalURL2 = new PortalURLImpl(monEspaceCmd, controllerCtx, Boolean.TRUE, null);
-				rd.setAttribute("osivia.MON_ESPACE_URL", portalURL2);
+				rd.setAttribute(Constants.ATTR_MY_SPACE_URL, portalURL2);
 				
 			}
 
-			rd.setAttribute("osivia.urlfactory", getUrlFactory());
-			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
@@ -1233,19 +1222,19 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		if (rd != null) {
 
 			UserPortal siteMap = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-					"osivia.siteMap."+cc.getPortal().getName());
+					Constants.ATTR_SITE_MAP+"."+cc.getPortal().getName());
 
 			if (siteMap == null) {
 				siteMap = getSiteMap(cc);
 
 		
-				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.siteMap."+cc.getPortal().getName(), siteMap);
+				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_SITE_MAP+"."+cc.getPortal().getName(), siteMap);
 
 			}
 
-			rd.setAttribute("osivia.siteMap", siteMap);
-			rd.setAttribute("osivia.urlfactory", getUrlFactory());
-			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 
+			rd.setAttribute(Constants.ATTR_SITE_MAP, siteMap);
+			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 
 			
 			//
 			rd.include();
@@ -1362,11 +1351,11 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search", "/default/templates/search", props, params);
 			//String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search" +  System.currentTimeMillis(), "/default/templates/search", props, params);
-			rd.setAttribute("osivia.searchUrl", searchUrl);
+			rd.setAttribute(Constants.ATTR_SEARCH_URL, searchUrl);
 			
 				
-			rd.setAttribute("osivia.urlfactory", getUrlFactory());
-			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 			
+			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 			
 			
 						
 			rd.include();
@@ -1751,10 +1740,10 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			
 			
-			rd.setAttribute("osivia.breadcrumb", breadcrumbDisplay);
+			rd.setAttribute(Constants.ATTR_BREADCRUMB, breadcrumbDisplay);
 			
-			rd.setAttribute("osivia.urlfactory", getUrlFactory());
-			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 		
+			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 		
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,

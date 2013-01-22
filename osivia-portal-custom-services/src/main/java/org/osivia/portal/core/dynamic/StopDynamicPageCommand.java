@@ -32,6 +32,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.UserPage;
 import org.osivia.portal.api.charte.UserPortal;
 import org.osivia.portal.api.locator.Locator;
@@ -84,7 +85,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				dynamicCOntainer.removeDynamicPage(pageId);
 
 				PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
-						ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+						ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
 				
 				if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))	{
 

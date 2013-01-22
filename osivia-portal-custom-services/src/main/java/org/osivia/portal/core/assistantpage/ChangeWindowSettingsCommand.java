@@ -32,12 +32,14 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String hideEmptyPortlet;
 	private String printPortlet;
 	private String conditionalScope;
+	private String bshActivation;
+	private String bshScript;
 
 	public ChangeWindowSettingsCommand() {
 	}
 
 	public ChangeWindowSettingsCommand(String windowId, List<String> style, String displayTitle, String title, String displayDecorators,
-			String partialRefresh, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope) {
+			String partialRefresh, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope, String bshActivation, String bshScript) {
 		this.windowId = windowId;
 		this.style = style;
 		this.displayTitle = displayTitle;
@@ -49,6 +51,8 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		this.hideEmptyPortlet=hideEmptyPortlet;
 		this.printPortlet = printPortlet;
 		this.conditionalScope = conditionalScope;
+		this.bshActivation = bshActivation;
+		this.bshScript = bshScript;
 	}
 
 	public ControllerResponse executeAssistantCommand() throws Exception {
@@ -135,7 +139,18 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 
 
 	
-
+		if ("1".equals(bshActivation))
+			window.setDeclaredProperty("osivia.bshActivation", "1");
+		else if (window.getDeclaredProperty("osivia.bshActivation") != null)
+			window.setDeclaredProperty("osivia.bshActivation", null);
+		
+		
+		if (bshScript.length() > 0)
+			window.setDeclaredProperty("osivia.bshScript", bshScript);
+		else if (window.getDeclaredProperty("osivia.bshScript") != null)
+			window.setDeclaredProperty("osivia.bshScript", null);
+		
+		
 		return new UpdatePageResponse(page.getId());
 
 	}

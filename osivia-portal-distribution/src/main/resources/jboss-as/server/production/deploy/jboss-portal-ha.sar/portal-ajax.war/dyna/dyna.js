@@ -203,8 +203,12 @@ function directAjaxCall(container, options , url, eventToStop)
                         new Insertion.Bottom(srcContainer, markup);
 
                         // Copy the region content
-                        copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
-                        copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
+						
+			// v2 : pour modifier le style du portlet en ajax, on recopie directement dyna-window-content
+
+			copyInnerHTML(srcContainer, dstContainer, "dyna-window-content")
+                        //copyInnerHTML(srcContainer, dstContainer, "dyna-portlet")
+                        //copyInnerHTML(srcContainer, dstContainer, "dyna-decoration")
                      }
                      else
                      {
@@ -439,6 +443,7 @@ function copyInnerHTML(srcContainer, dstContainer, className)
             if (srcChild.nodeType != 2)
             {
                dst.appendChild(srcChild);
+
             }
             else
             {

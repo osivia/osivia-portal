@@ -1,5 +1,6 @@
 package org.osivia.portal.core.migration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -95,14 +96,20 @@ public class MigrationService implements IMigrationManager {
 			
 			if( module.getModuleId() > lastId)	{
 				
-				logger.info("migration module :" + module.getModuleId());
+				logger.info("migration module :" + module.getModuleId() + " starting ");
 				
+				
+				File backupFile = new MigrationBackup().backup( module.getModuleId());
+				
+				logger.info("Saving portal parameters " + module.getModuleId() + " to " + backupFile.getAbsolutePath()		);
 				nbMigration++;
 				
 				module.setPortalObjectContainer(portalObjectContainer);
 				module.execute( );
 				
 				context.setDeclaredProperty(LAST_MODULE_ID_PROP, Integer.toString(module.getModuleId()));
+				
+				logger.info("migration module :" + module.getModuleId() + " finished");
 			}
 		}
 		

@@ -95,6 +95,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
     	  out.print("<div id=\""+style+"\">");
     */	  
       
+      out.println("<div class=\"dyna-window-content\" >");
       
       out.print("<div class=\"portlet-container "+style+"\">");
       
@@ -207,6 +208,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       if( style != null)      
     	  out.print("</div>");
       */
+      out.print("</div>"); //dyna-window-content
       
       // Activation des liens Ajax
       if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))

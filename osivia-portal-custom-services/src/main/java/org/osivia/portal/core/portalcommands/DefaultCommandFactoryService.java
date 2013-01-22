@@ -70,6 +70,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					String hideEmptyPortlet = null;
 					String printPortlet = null;
 					String conditionalScope = null;
+					String bshActivation;
+					String bshScript;					
 
 
 					if (parameterMap.get("windowId") != null) {
@@ -85,7 +87,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 						if (parameterMap.get("displayTitle") != null)
 							displayTitle = URLDecoder.decode(((String[]) parameterMap.get("displayTitle"))[0], "UTF-8");
-
 						else
 							displayTitle = "0";
 						
@@ -132,9 +133,20 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 						//v1.0.25 : affichage conditionnel portlet
 						if (parameterMap.get("conditionalScope") != null)
 							conditionalScope = URLDecoder.decode(((String[]) parameterMap.get("conditionalScope"))[0], "UTF-8");
+						
+						if (parameterMap.get("bshActivation") != null)
+							bshActivation = URLDecoder.decode(((String[]) parameterMap.get("bshActivation"))[0], "UTF-8");
+						else
+							bshActivation = "0";
+						
+						if (parameterMap.get("bshScript") != null)
+							bshScript = URLDecoder.decode(((String[]) parameterMap.get("bshScript"))[0], "UTF-8");
+						else
+							bshScript = "";
+
 
 						return new ChangeWindowSettingsCommand(windowId, style, displayTitle,title, displayDecorators,
-								partialRefresh, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope);
+								partialRefresh, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript);
 					}
 				}
 

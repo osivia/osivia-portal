@@ -61,16 +61,28 @@ div#pageSettings .wizzardMenu .wizzardCacheInit a {
 }
 
 
-
-
-.wizzard-navigation-content	{
-	width: 200px;
+.wizzard-window-content	{
 	height: 400px;
 	overflow:scroll;
 }
 
+.wizzard-delete-content	{
+	
+		height: 100px;
+	}
+
+.wizzard-navigation-content	{
+	width: 200px;
+	height: 600px;
+	overflow:scroll;
+}
 
 
+.wizzard-label	{
+	width: 200px;
+	float:left;
+
+}
 
 
 
@@ -111,6 +123,7 @@ div#linkSettings{
 	background-color: #FFFFFF;
 	padding: 5px;	
 }
+
 
 
 
@@ -175,6 +188,9 @@ div#linkSettings{
     font-weight: bold;
 }
 
+div.toggleStyle	{
+background: none repeat scroll 0 0 #CCCCCC;
+}
 /*
 <div id="maximized_background" style="height: 1420px;"> &nbsp; </div>
 

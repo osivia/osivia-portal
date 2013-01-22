@@ -226,7 +226,7 @@ DHTML_modalMessage.prototype = {
 		this.divs_transparentDiv = document.createElement('DIV');
 		this.divs_transparentDiv.className='modalDialog_transparentDivs';
 		this.divs_transparentDiv.style.left = '0px';
-		this.divs_transparentDiv.style.top = '0px';
+		this.divs_transparentDiv.style.top = '100px';
 		
 		document.body.appendChild(this.divs_transparentDiv);
 		// Creating content div
@@ -309,8 +309,10 @@ DHTML_modalMessage.prototype = {
     	var st = Math.max(document.body.scrollTop,document.documentElement.scrollTop);
     	var sl = Math.max(document.body.scrollLeft,document.documentElement.scrollLeft);
     	
-    	window.scrollTo(sl,st);
-    	setTimeout('window.scrollTo(' + sl + ',' + st + ');',10);
+    	//window.scrollTo(sl,st);
+    	window.scrollTo(0,0);
+    	//setTimeout('window.scrollTo(' + sl + ',' + st + ');',10);
+    	setTimeout('window.scrollTo(0,0);',10);
 
     	this.__repositionTransparentDiv();
     	
@@ -330,7 +332,8 @@ DHTML_modalMessage.prototype = {
     	
     	// Setting width and height of left transparent div
     	this.divs_content.style.left = Math.ceil((bodyWidth - tmpWidth) / 2) + 'px';
-    	this.divs_content.style.top = (Math.ceil((bodyHeight - tmpHeight) / 2) +  topOffset) + 'px';
+    	//this.divs_content.style.top = (Math.ceil((bodyHeight - tmpHeight) / 2) +  topOffset) + 'px';
+    	this.divs_content.style.top = '100px';
     	
  		if(this.MSIE){
  			this.iframe.style.left = this.divs_content.style.left;
@@ -340,7 +343,10 @@ DHTML_modalMessage.prototype = {
  		}
  		
     	this.divs_shadow.style.left = (this.divs_content.style.left.replace('px','')/1 + this.shadowOffset) + 'px';
-    	this.divs_shadow.style.top = (this.divs_content.style.top.replace('px','')/1 + this.shadowOffset) + 'px';
+    	//this.divs_shadow.style.top = (this.divs_content.style.top.replace('px','')/1 + this.shadowOffset) + 'px';
+    	
+    	this.divs_shadow.style.top = '100px';
+    	
     	//this.divs_shadow.style.height = tmpHeight + 'px';
     	//this.divs_shadow.style.width = tmpWidth + 'px';
     	
@@ -361,7 +367,8 @@ DHTML_modalMessage.prototype = {
      */	    
     __repositionTransparentDiv : function()
     {
-    	this.divs_transparentDiv.style.top = Math.max(document.body.scrollTop,document.documentElement.scrollTop) + 'px';
+    	//this.divs_transparentDiv.style.top = Math.max(document.body.scrollTop,document.documentElement.scrollTop) + 'px';
+    	this.divs_transparentDiv.style.top ='0px';
     	this.divs_transparentDiv.style.left = Math.max(document.body.scrollLeft,document.documentElement.scrollLeft) + 'px';
 		//var brSize = this.__getBrowserSize();
 		//var bodyWidth = brSize[0];

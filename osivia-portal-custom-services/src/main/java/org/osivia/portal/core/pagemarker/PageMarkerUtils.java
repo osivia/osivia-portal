@@ -36,6 +36,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
 import org.osivia.portal.api.charte.UserPortal;
@@ -227,12 +228,12 @@ if( true)
 		if( userName != null)
 			markerInfo.setTabbedNavheaderUsername(userName);
 		
-		Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab");
+		Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB);
 		if( firstTab != null)
 			markerInfo.setFirstTab(firstTab);
 		
 
-		PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+		PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
 		if( currentPageId != null)
 			markerInfo.setCurrentPageId(currentPageId);
 

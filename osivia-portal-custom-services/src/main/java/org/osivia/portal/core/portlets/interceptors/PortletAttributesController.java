@@ -20,10 +20,14 @@ import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.response.ContentResponse;
+import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
 import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.core.page.EncodedParams;
+
+import bsh.Interpreter;
 
 
 
@@ -43,7 +47,13 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 		
 		PortletInvocationResponse response =  super.invoke(invocation);
 		
+		/* Empty response */
+		
+    	// Avoid JSF class cast
+	    if( invocation.getWindowContext() instanceof WindowContextImpl)	{
+		
 	    if (response instanceof ContentResponse){
+	    	
 	    	ContentResponse cr = (ContentResponse) response;
 	    	
 	    	ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
@@ -63,6 +73,84 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 
 	    	}
 	    }
+	    
+	    
+	    /* Dynamic properties */
+	    
+	    
+		if (response instanceof FragmentResponse && invocation instanceof RenderInvocation) {
+			
+			   ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+	    	
+	    	   
+ 	    	   
+ 	    	   String windowId = invocation.getWindowContext().getId();
+	    	   PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+
+			   Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+	    	   
+	    	   
+			   String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+			   
+			   
+ 	    	   Map<String,Object> windowAttributes = new HashMap<String, Object>();
+ 	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowAttributes."+safestWindowId, windowAttributes);	
+ 	    	   
+ 				/* Styles dynamiques */
+
+					RenderInvocation renderInvocation = (RenderInvocation) invocation;
+
+					// Dynamic styles
+					
+					if ("1".equals(window.getDeclaredProperty("osivia.bshActivation"))) {
+						
+						FragmentResponse fr = (FragmentResponse) response;
+						
+						String updatedFragment = fr.getChars();
+
+						try {
+							String script = window.getDeclaredProperty("osivia.bshScript");
+
+							// Evaluation beanshell
+							Interpreter i = new Interpreter();
+
+							Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
+
+							i.set("pageParamsEncoder", new EncodedParams(publicNavigationalState));
+							i.set("windowAttributes", windowAttributes);
+
+							i.eval(script);
+
+						} catch (bsh.EvalError e) {
+
+							updatedFragment = e.getMessage();
+
+
+						}
+						
+						
+						return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment,
+								fr.getTitle(), fr.getCacheControl(), fr.getNextModes());
+
+
+					}
+			    } // End of dynamic properties
+		
+	    }
+		
+		
+				
+				
+				 	    	   
+ 	    	   
+ 	    	  
+ 	       
+
+			
+			
+			
+	    	
+	    
 	    
 	    return response;
 	}

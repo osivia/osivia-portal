@@ -95,6 +95,7 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.nuxeo.ecm.automation.client.jaxrs.Session;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
 import org.osivia.portal.api.charte.UserPage;
@@ -593,7 +594,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			}
 
 
-			rd.setAttribute("osivia.userPortal", tabbedNavUserPortal);
+			rd.setAttribute(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
 			
 			
 			
@@ -641,15 +642,15 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			
 			if( pageCMSPath != null)
-				rd.setAttribute("osivia.currentPageId", pageCMSPath); // path CMS
+				rd.setAttribute(Constants.ATTR_PAGE_ID, pageCMSPath); // path CMS
 			else
-				rd.setAttribute("osivia.currentPageId", mainPage.getId()); // Path page
+				rd.setAttribute(Constants.ATTR_PAGE_ID, mainPage.getId()); // Path page
 			
-			rd.setAttribute( "osivia.firstTab", controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab"));			
+			rd.setAttribute( Constants.ATTR_FIRST_TAB, controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));			
 			
 			
-			rd.setAttribute("osivia.urlfactory", getUrlFactory());
-			rd.setAttribute("osivia.ctrlctx", new PortalControllerContext(controllerCtx)); 	
+			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 	
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,

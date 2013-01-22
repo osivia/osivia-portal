@@ -428,12 +428,14 @@ if( "1".equals(pageCMSNavigationMode))
 						<input type="hidden" name="action" value="changeCMSProperties"/>
 						<input type="hidden" name="pageId" value="<%= pageId %>"/>
 					
-						<table border="0">
+					
+
+							<table border="0">
 						
 
 							<tr>
 								<td width="300px">
-									scope de la page :
+									Scope de la page :
 								</td>
 								<td>
 										<%= pageCmsScopeSelect %><br/>
@@ -441,8 +443,8 @@ if( "1".equals(pageCMSNavigationMode))
 							</tr>	
 							
 							<tr>
-								<td width="300px">
-									versions de la page :
+								<td>
+									Versions des contenus de la page :
 								</td>
 								<td>
 										<%= pageCmsDisplayLiveVersionSelect %><br/>
@@ -458,10 +460,21 @@ if( "1".equals(pageCMSNavigationMode))
 								</td>
 							</tr>									
 
+
+
+							</table>
+
+							
+
+
+
+
 <script language="javascript"> 
+
+
 function togglePublication() {
-	var ele = document.getElementById("toggleText");
-	var text = document.getElementById("displayText");
+	var ele = document.getElementById("toggleDynamicCMS");
+	var text = document.getElementById("displayDynamicCMS");
 	if(ele.style.display == "block") {
     		ele.style.display = "none";
   	}
@@ -469,16 +482,25 @@ function togglePublication() {
 		ele.style.display = "block";
 	}
 } 
+
 </script>
+							
+							
+							<table>
 
-							<tr><td><a id="displayText" href="javascript:togglePublication();">Propriétés avancées de publication ></a></td></tr>
+							<tr><td><a id="displayDynamicCMS" href="javascript:togglePublication();">Publication dynamique</a></td></tr>
 
 
-<tr><td colspan="2"><div id="toggleText" style="display: none; border: 1px; border-style: solid"><table>
+							<tr><td colspan="2"><div id="toggleDynamicCMS" style="display: none; border: 1px; border-style: solid">
+							
+							<i>Dans le cas d'une publication dynamique, les paramètres ci-dessus (version, scope, contextualisation) seront ignorés et dynamiquement extraits de l'ECM</i><br/>
+							
+							<table>
 													
 							<tr>
 								<td width="300px">
-									Path de l'espace de publication :
+									Path de l'espace de publication : 
+									<br/> 
 								</td>
 								<td>
 									<input type="text" name="cmsBasePath" size="50" value="<%=pageCmsBasePath%>"/>
@@ -486,27 +508,7 @@ function togglePublication() {
 							</tr>
 							
 
-<!-- 
-			
-							<tr>
-								<td>
-									scope de navigation :
-								</td>
-								<td>
-										<%= pageCmsNavigationScopeSelect %><br/>
-								</td>
-							</tr>	
 						
-														
-							<tr>
-								<td>
-									Contextualiser les contenus internes à l'espace :
-								</td>
-								<td>
-										<%= pageContextualizationSupport %><br/>
-								</td>
-							</tr>	
--->								
 							<tr>
 								<td>
 									Afficher directement les sous-rubriques dans la navigation :
@@ -657,6 +659,15 @@ function togglePublication() {
 				hideEmptyPortlet = "checked";
 			
 			String conditionalScope = window.getProperty("osivia.conditionalScope");
+			
+
+			String bshActivation = ""; 
+			if( "1".equals(window.getDeclaredProperty("osivia.bshActivation")))
+				bshActivation = "checked";	
+			
+			String bshScript =  window.getProperty("osivia.bshScript");
+			if( bshScript == null)
+				bshScript = "";
 	
 
 			
@@ -665,7 +676,7 @@ function togglePublication() {
 %>
 
 
-	<div id="modal-window-<%= windowId %>-settings" style="display: none;">
+	<div id="modal-window-<%= windowId %>-settings" style="display: none;" 	>
 	
 <%
 			String windowTitle = "";
@@ -691,6 +702,7 @@ function togglePublication() {
 	
 			<div class="close-settings clickable-element" onclick="closeWindowSettings();"><span class="title-settings">Paramètres <%= windowTitle %></span><img src="<%= request.getContextPath() %>/images/blank.png"/></div>
 	
+	<div class="wizzard-window-content">
 
 		<form id="formSetting<%= windowId %>" method="get" action="<%= commandUrl %>">
 		
@@ -699,10 +711,8 @@ function togglePublication() {
 					
 						<table border="0">
 							<tr>
-								<td>
-									Style :
-								</td>
-								<td>
+								<td colspan = "2">
+	
 <%
 			Set<String> possibleStyles = new HashSet<String>( portalStyles);
 
@@ -710,16 +720,21 @@ function togglePublication() {
 			for( String windowStyle : windowStyles)	{
 				displayStyles += windowStyle + " ";
 			}
+			
+			if( "".equals(displayStyles))
+				displayStyles = "aucun";
 
 			possibleStyles.addAll( portalStyles);
 			possibleStyles.addAll( windowStyles);
 %>			
 
 
+						<span class="wizzard-label"> Styles </span>
+						 <span class="wizzard-value">
 
-							<div> <b><%= displayStyles %></b>	
+							  <b><%= displayStyles %></b>	
 							
-							(<a href="#" onclick="toggleStyle(this);">Modifier</a>)<br/>
+							(<a href="#" onclick="toggleStyle(this);">Modifier</a>)</span><br/>
 		
 							<div class="toggleStyle" style="display: none; border: 1px; border-style: solid">							
 									
@@ -730,7 +745,7 @@ function togglePublication() {
 			for(String possibleStyle : possibleStyles){
 %>				
 								<tr>
-									<td>
+									<td width="200px">
 										<%= possibleStyle %>
 									</td>
 									<td>
@@ -747,15 +762,22 @@ function togglePublication() {
 							</tbody>
 							</table>
 						</div>
-						</div>
+
 						
 						
 						
 									
 								</td>
 							</tr>
+							
+							
+		
+					
+							
+							
+							
 							<tr>
-								<td>
+								<td width="200px">
 									Affichage barre de titre :
 								</td>
 								<td>
@@ -836,6 +858,71 @@ function togglePublication() {
 							</tr>
 
 							
+		
+					<tr>
+						<td colspan="2">
+
+<%
+
+
+			String dynamicStyleLabel = "-";
+			if( "checked".equals( bshActivation))	
+				dynamicStyleLabel = "script shell";
+			
+%>			
+
+						
+						<div>
+						
+						<span class="wizzard-label"> Propriétés dynamiques </span>
+						 <span class="wizzard-value"> <b><%= dynamicStyleLabel %> </b>(<a href="#" onclick="toggleStyle(this);">Modifier</a>)<br/></span>
+						
+		
+							<div class="toggleStyle" style="display: none; border: 1px; border-style: solid; ">							
+							
+							<input type="checkbox" name="bshActivation" value="1" <%=bshActivation%>/> Activer le script beanshell 
+							<br/>
+							
+							<textarea rows="10" cols="75" name="bshScript" ><%= bshScript %></textarea><br/><br/>
+									
+							
+							<div>
+							Exemple
+							 <pre>
+/*
+implicits variables :
+   - pageParamsEncoder : parameters encoder (decoded to List&lt;String&gt;)
+   - windowAttributes : paramètres dynamique (Map)
+        > osivia.dynamicCSSClasses : css class names separated by a space (eq : "css1 css2")
+      
+*/	
+							 
+import java.util.List;
+
+List cssSelectorValues =  pageParamsEncoder.decode("selectors", "cssSelector");
+
+if( cssSelectorValues != null)	{
+   windowAttributes.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));   
+ }
+   
+
+
+							</pre>
+
+							</div>
+							
+						</div>	
+						</div>
+						
+						
+						
+									
+								</td>
+							</tr>
+							
+							
+									
+							
 							<tr>
 								<td colspan="2" align="center">
 									<input type="submit" value="Changer les paramètres"/>
@@ -844,14 +931,21 @@ function togglePublication() {
 						</table>
 						
 					</form>
+					
+			</div>
 
 	</div>
+	
+	
+	
 
 
 <div id="modal-window-<%= windowId %>-delete" style="display: none;">
 		<div class="close-settings clickable-element" onclick="closeWindowDelete();"><img src="<%= request.getContextPath() %>/images/blank.png"/></div>
 	
+		<div class="wizzard-delete-content">
 
+		<br/><br/>
 		<form id="formDelete<%= windowId %>" method="get" action="<%= commandUrl %>">
 		
 					<input type="hidden" name="action" value="deleteWindow"/>
@@ -863,6 +957,8 @@ function togglePublication() {
 
 						
 		</form>
+		
+		</div>
 
 	</div>
 <%				
