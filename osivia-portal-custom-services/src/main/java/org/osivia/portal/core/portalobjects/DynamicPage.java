@@ -63,24 +63,7 @@ public abstract class DynamicPage extends PageImpl {
 	}
 	
 	
-	protected Map<String, DynamicPage> getDynamicSubpages ()	{
-		
 
-		if( dynamicSubPages == null){
-
-			dynamicSubPages = new HashMap<String, DynamicPage>();
-		
-			for( DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages())	{
-				if(dynamicPage.getParentId().equals(getId()))	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), dynamicContainer, dynamicPage)	;
-
-					dynamicSubPages.put(child.getName(), child);
-				}
-			}
-		}
-		
-		return dynamicSubPages;
-	}
 	
 
 	

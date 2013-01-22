@@ -93,8 +93,8 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 			   String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 			   
 			   
- 	    	   Map<String,Object> windowAttributes = new HashMap<String, Object>();
- 	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowAttributes."+safestWindowId, windowAttributes);	
+ 	    	   Map<String,String> windowProperties = new HashMap<String, String>();
+ 	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowProperties."+safestWindowId, windowProperties);	
  	    	   
  				/* Styles dynamiques */
 
@@ -117,7 +117,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 							Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
 
 							i.set("pageParamsEncoder", new EncodedParams(publicNavigationalState));
-							i.set("windowAttributes", windowAttributes);
+							i.set("windowProperties", windowProperties);
 
 							i.eval(script);
 

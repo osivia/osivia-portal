@@ -64,9 +64,16 @@ public  class DynamicPortal extends PortalImpl {
 		
 			for( DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages())	{
 				if(dynamicPage.getParentId().equals(getId()))	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), dynamicContainer, dynamicPage)	;
+					
+					try	{
+					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
+					
 
 					dynamicChilds.put(child.getName(), child);
+					
+					} catch( Exception e){
+						throw new RuntimeException("Can't instantiate template " + dynamicPage.getTemplateId(), e);
+					}
 				}
 			}
 		}

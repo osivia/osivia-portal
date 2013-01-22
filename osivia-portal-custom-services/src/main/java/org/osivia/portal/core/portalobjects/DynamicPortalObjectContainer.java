@@ -309,7 +309,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 				
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getObject(templateId);
-				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean);
+				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean, templateId);
 
 				return dynamicPage;
 			}
@@ -485,7 +485,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 			if(dynamicPageBean.getPageId().equals(id))	{
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
-				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(),  dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean);
+				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(),  dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean, templateId);
 
 				return dynamicPage;
 			}
@@ -497,7 +497,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
 				
-				DynamicTemplatePage dynamicPage =DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean);
+				DynamicTemplatePage dynamicPage =DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean, templateId);
 				String windowName = id.getPath().getLastComponentName();
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
 				Window window = new DynamicTemplateWindow( dynamicPage, templateWindow, templateWindow.getName(),  ((PageImpl) template).getObjectNode().getContext(), this);
@@ -514,7 +514,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 			if(dynamicPageBean.getPageId().equals(id))	{
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
-				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean);
+				DynamicPage dynamicPage = DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean, templateId);
 
 				return dynamicPage;
 			}
@@ -526,7 +526,7 @@ public void setDynamicPages( List<DynamicPageBean> dynaPages)	{
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
 				
-				DynamicTemplatePage dynamicPage =DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean);
+				DynamicTemplatePage dynamicPage =DynamicTemplatePage.createPage( container, dynamicPageBean.getParentId(), dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean, templateId);
 				String windowName = id.getPath().getLastComponentName();
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
 				Window window = new DynamicTemplateWindow( dynamicPage, templateWindow, templateWindow.getName(),  ((PageImpl) template).getObjectNode().getContext(), this);

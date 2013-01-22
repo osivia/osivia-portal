@@ -892,7 +892,7 @@ function togglePublication() {
 /*
 implicits variables :
    - pageParamsEncoder : parameters encoder (decoded to List&lt;String&gt;)
-   - windowAttributes : paramètres dynamique (Map)
+   - windowsProperties : paramètres dynamique de la window (Map&lt;String,String&gt;)
         > osivia.dynamicCSSClasses : css class names separated by a space (eq : "css1 css2")
       
 */	
@@ -902,7 +902,7 @@ import java.util.List;
 List cssSelectorValues =  pageParamsEncoder.decode("selectors", "cssSelector");
 
 if( cssSelectorValues != null)	{
-   windowAttributes.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));   
+   windowProperties.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));   
  }
    
 

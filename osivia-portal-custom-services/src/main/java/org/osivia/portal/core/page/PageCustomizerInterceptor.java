@@ -667,7 +667,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			String windowId = rwc.getWindow().getId().toString(PortalObjectPath.SAFEST_FORMAT);
 			
-			Map<String,String> windowAttributes = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowAttributes."+windowId);	
+			Map<String,String> windowProperties = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowProperties."+windowId);	
 			
 
 			// Should we hide the portlet (empty response + hideEmptyPortlet positionned)
@@ -705,7 +705,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
  
 			// Dynamic styles
 
-			String dynamicStyles = (String) windowAttributes.get( "osivia.dynamicCSSClasses");
+			String dynamicStyles = (String) windowProperties.get( "osivia.dynamicCSSClasses");
 				
 			if( dynamicStyles != null)
 				customStyle += " " + dynamicStyles;

@@ -30,7 +30,7 @@ public class DynamicTemplatePage extends TemplatePage implements ITemplatePortal
 
  Map localDisplayName;
 	
-	public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name,  Map displayNames,PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean){
+	public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name,  Map displayNames,PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid){
 		DynamicTemplatePage page = null;
 		try	{
 			 page = new DynamicTemplatePage(container, parentId, name, displayNames, template, dynamicContainer, pageBean);
@@ -44,7 +44,7 @@ public class DynamicTemplatePage extends TemplatePage implements ITemplatePortal
 			
 			dynamicContainer.removeDynamicPage(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
 			
-			throw new RuntimeException("Page "+ pageId + " has not be created. Check the template");
+			throw new RuntimeException("Page "+ pageId + " has not be created. Exception = "+e.getMessage()+". Check the template " + poid.toString());
 
 		}
 		
