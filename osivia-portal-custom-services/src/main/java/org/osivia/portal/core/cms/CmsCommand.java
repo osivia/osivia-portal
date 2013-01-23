@@ -1258,9 +1258,14 @@ public class CmsCommand extends DynamicCommand {
 				handlerCtx.setDisplayContext(getDisplayContext());
 
 				if (contextualizationPage != null) {
-					handlerCtx.setContextualizationBasePath(basePublishPath);
+					// Ajout JSS 20130123 : les folders live affichés en mode direct
+					// plantent dans le DefaultCMSCustomier.createFolderRequest
+					if (!"1".equals(page.getProperty("osivia.cms.directContentPublisher")))	{
+						handlerCtx.setContextualizationBasePath(basePublishPath);
+					}
 					if( pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace())	
 						handlerCtx.setDisplayLiveVersion("1");
+
 				}
 
 				CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
