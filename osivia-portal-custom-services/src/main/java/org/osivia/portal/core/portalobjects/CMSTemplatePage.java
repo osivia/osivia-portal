@@ -26,6 +26,20 @@ public class CMSTemplatePage extends TemplatePage implements ITemplatePortalObje
 	
 	}
 	
+	protected boolean getTemplateDeclaredPropertyByDefault( String name)	{
+		
+		// JSS 20130124
+		// le basePath d'un template doit etre ignoré
+		// Corrige le bug dde contextualisation positionné par errueur sur un template
+		
+		if( "osivia.cms.basePath".equals(name))	{
+			return false;
+		}
+		
+		return true;
+	}
+
+	
 
 	
 	public Page getEditablePage() {

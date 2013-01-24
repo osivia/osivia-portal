@@ -296,6 +296,11 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 		 * else super.setDeclaredProperty(name, value);
 		 */
 	}
+	
+	protected boolean getTemplateDeclaredPropertyByDefault( String name)	{
+		
+		return true;
+	}
 
 	@Override
 	public String getDeclaredProperty(String name) {
@@ -304,8 +309,11 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 		value = localProperties.get(name);
 		
-		if (value == null)
-			return template.getDeclaredProperty(name);
+		if (value == null)	{
+			if( getTemplateDeclaredPropertyByDefault( name))
+				return template.getDeclaredProperty(name);
+			else return null;
+		}
 		else
 			return value;
 	}
