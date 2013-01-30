@@ -975,7 +975,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
 			"osivia.windowSettingMode")))
-				rd.setAttribute("osivia.editionMode", "1");
+				rd.setAttribute(Constants.ATTR_WIZZARD_MODE, "1");
 
 			
 			//
@@ -1748,7 +1748,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
 			"osivia.windowSettingMode")))
-				rd.setAttribute("osivia.editionMode", "1");
+				rd.setAttribute(Constants.ATTR_WIZZARD_MODE, "1");
 
 			
 						
