@@ -17,6 +17,10 @@ import java.util.Map;
 
 public class CmsCommandFactoryService extends AbstractCommandFactory implements CmsCommandFactory
 {
+	
+   public static final String PORTAL_NAME = "/_portal/"; 
+   public static final String PATH = "/_path"; 
+
 
    public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host,
                                       String contextPath, String requestPath)
@@ -26,7 +30,6 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
       Map<String, String> pageParams = null;
       String contextualization = null;
   	 String displayContext = null;
-	 String liveVersion  = null;
 	 String hideMetaDatas  = null;
 	 String scope  = null;
 	 String displayLiveVersion = null;
@@ -34,7 +37,16 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 String addToBreadcrumb = null;
 	 String portalPersistentName = null;
 	 
+	 String toAnalize = requestPath;
 	 
+	 if( toAnalize.startsWith(PORTAL_NAME))	{
+		 portalPersistentName = toAnalize.substring(PORTAL_NAME.length(), toAnalize.indexOf('/', PORTAL_NAME.length()));
+		 toAnalize = requestPath.substring(PORTAL_NAME.length() + portalPersistentName.length());
+	 } 
+	 
+
+	 cmsPath = toAnalize;
+
       ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
       if (parameterMap != null)
       {
@@ -179,17 +191,7 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          }      
          
     
-         try
-         {
-            if (parameterMap.get("portalPersistentName") != null)
-            {
-            	portalPersistentName = URLDecoder.decode(parameterMap.get("portalPersistentName")[0], "UTF-8");
-            }
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            // ignore
-         }      
+
   
          
             

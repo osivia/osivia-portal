@@ -197,18 +197,19 @@ public CommandInfo getInfo()
    public ControllerResponse execute() throws ControllerException	{
 	   try	{
    
-		   
+		   /*
 		   
 		   if( PortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType) ){
 
 
 			   CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null, null, null, portalPersistentName);
+
 			   
 			   ControllerResponse resp = context.execute(cmsCommand);
 
 			   return resp;
 		   }
-		   
+		*/   
 			   
 		   
 		   if( PortalUrlFactory.PERM_LINK_TYPE_RSS.equals(permLinkType) ){

@@ -3,6 +3,8 @@ package org.osivia.portal.api;
 public class Constants {
 	public static String ATTR_SITE_MAP = "osivia.siteMap";
 	public static String ATTR_BREADCRUMB = "osivia.breadcrumb";
+	// TEST V2 PERMALINK
+	//public static String ATTR_PERMLINK_URL = "osivia.permlinkUrl";
 	public static String ATTR_SEARCH_URL = "osivia.searchUrl";
 	public static String ATTR_URL_FACTORY = "osivia.urlfactory";
 	public static String ATTR_PORTAL_CTX = "osivia.ctrlctx";

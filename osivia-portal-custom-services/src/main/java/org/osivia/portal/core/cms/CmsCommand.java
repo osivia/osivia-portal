@@ -100,6 +100,15 @@ public class CmsCommand extends DynamicCommand {
 	private String windowPermReference;
 	private String addToBreadcrumb;
 	private String portalPersistentName;
+	private boolean insertPageMarker = true;
+
+	public boolean isInsertPageMarker() {
+		return insertPageMarker;
+	}
+
+	public void setInsertPageMarker(boolean insertPageMarker) {
+		this.insertPageMarker = insertPageMarker;
+	}
 
 	public String getPortalPersistentName() {
 		return portalPersistentName;
@@ -166,6 +175,14 @@ public class CmsCommand extends DynamicCommand {
 		this.windowPermReference = windowPermReference;
 		this.addToBreadcrumb = addToBreadcrumb;
 		this.portalPersistentName = portalPersistentName;
+	}
+
+	public String getItemScope() {
+		return itemScope;
+	}
+
+	public void setItemScope(String itemScope) {
+		this.itemScope = itemScope;
 	}
 
 	public String getScope() {
@@ -665,6 +682,7 @@ public class CmsCommand extends DynamicCommand {
 					
 					else	{
 						// contextualisation iumplicite dans le portail (lien inter-contenus)
+						// on regarde comment est gérée la contextualisation des contenus externes dans la page
 						if (currentPage != null) {
 							// v 2.0-rc7
 							contextualizeinPortal = false;
@@ -678,6 +696,10 @@ public class CmsCommand extends DynamicCommand {
 								if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
 									contextualizeinPortal = true;
 							}
+						}	else	{
+							// Pas de page, on contextualise dans le portail
+							// (exemple : permalink)
+							contextualizeinPortal = true;
 						}
 					}
 
@@ -1187,6 +1209,9 @@ public class CmsCommand extends DynamicCommand {
 					}
 				}
 			}
+			
+
+				
 
 			/* Affichage contenu */
 
@@ -1322,6 +1347,8 @@ public class CmsCommand extends DynamicCommand {
 
 				if (contextualizationPage != null)
 					windowProperties.put("osivia.portletContextualizedInPage", "1");
+				
+				windowProperties.put("osivia.cms.portletContentPath", cmsItemToDisplay.getPath());
 
 				StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(
 						PortalObjectPath.SAFEST_FORMAT), "virtual", contentProperties.getPortletInstance(),

@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -142,7 +144,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	public String getCMSUrl(PortalControllerContext ctx, String pagePath, String cmsPath,  Map<String, String> pageParams, String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
 		
 		
-		ControllerCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext,  hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb(ctx.getRequest()), null);
+		String portalPersistentName = null;
+		
+		if(  ctx.getControllerCtx() != null){
+			
+			String portalName = (String) ctx.getControllerCtx().getAttribute(Scope.REQUEST_SCOPE,  "osivia.currentPortalName");
+			
+			Portal defaultPortal = ctx.getControllerCtx().getController().getPortalObjectContainer().getContext().getDefaultPortal();
+			
+			if( ! defaultPortal.getName().equals(portalName))
+				portalPersistentName = portalName;
+			
+		}
+		
+		
+		ControllerCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext,  hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb(ctx.getRequest()), portalPersistentName);
 		PortalURL portalURL  = new PortalURLImpl(cmd, ctx.getControllerCtx(), null, null);
 		
 		String url = portalURL.toString();
@@ -178,21 +194,65 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		String templateInstanciationParentId = null;
 		String portalPersistentName = null;
 		
-		if(  ctx.getRequest() != null){
-			Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
-			if (window != null) {
-				Page page = window.getPage();
-				if( !page.getPortal().getId().equals(ctx.getControllerCtx().getController().getPortalObjectContainer().getContext().getDefaultPortal().getId()))
-				
-				 portalPersistentName = page.getPortal().getName();
-				
-				if (page instanceof ITemplatePortalObject) {
-					templateInstanciationParentId = URLEncoder.encode(
-							page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+		
+		// Extract current portal
+		
+		if(  ctx.getControllerCtx() != null){
+			
+			String portalName = (String) ctx.getControllerCtx().getAttribute(Scope.REQUEST_SCOPE,  "osivia.currentPortalName");
+			
+			Portal defaultPortal = ctx.getControllerCtx().getController().getPortalObjectContainer().getContext().getDefaultPortal();
+			
+			if( ! defaultPortal.getName().equals(portalName))
+				portalPersistentName = portalName;
+			
+		}
+		
+		
 
+		
+		/* Direct CMS Link : use CMSCommand */
+		
+		   if( PortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType) ){
+
+			  // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null, null, null, portalPersistentName);
+			   CmsCommand cmsCommand = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, portalPersistentName);
+			   
+			   // Remove default initialisation
+			   cmsCommand.setItemScope(null);
+			   
+			   cmsCommand.setInsertPageMarker(false);
+			   URLContext urlContext = ctx.getControllerCtx().getServerInvocation().getServerContext().getURLContext();
+				urlContext = urlContext.withAuthenticated(false);
+				String permLinkUrl = ctx.getControllerCtx().renderURL(cmsCommand, urlContext, URLFormat.newInstance(false, true));
+
+				return permLinkUrl;
+	   }
+		
+		   
+		
+	
+		
+		
+
+		/* Others permalink (Lists, RSS, ...) : use PermLinkCommand */
+		
+			if(  ctx.getRequest() != null) {		
+
+				Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
+				if (window != null) {
+					
+					Page page = window.getPage();
+					
+					if (page instanceof ITemplatePortalObject) {
+						templateInstanciationParentId = URLEncoder.encode(
+								page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+
+					}
 				}
 			}
-		}
+
+
 		
 		PermLinkCommand linkCmd = new PermLinkCommand(permLinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
 		URLContext urlContext = ctx.getControllerCtx().getServerInvocation().getServerContext().getURLContext();

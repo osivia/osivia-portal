@@ -26,7 +26,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String displayTitle;
 	private String title;
 	private String displayDecorators;
-	private String partialRefresh;
+
 	private String idPerso;
 	private String ajaxLink;
 	private String hideEmptyPortlet;
@@ -39,13 +39,13 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	}
 
 	public ChangeWindowSettingsCommand(String windowId, List<String> style, String displayTitle, String title, String displayDecorators,
-			String partialRefresh, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope, String bshActivation, String bshScript) {
+			String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope, String bshActivation, String bshScript) {
 		this.windowId = windowId;
 		this.style = style;
 		this.displayTitle = displayTitle;
 		this.title = title;
 		this.displayDecorators = displayDecorators;
-		this.partialRefresh = partialRefresh;
+
 		this.idPerso = idPerso;
 		this.ajaxLink = ajaxLink;
 		this.hideEmptyPortlet=hideEmptyPortlet;
@@ -92,15 +92,11 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		else if (window.getDeclaredProperty("osivia.hideDecorators") != null)
 			window.setDeclaredProperty("osivia.hideDecorators", null);
 		
-		if ("1".equals(partialRefresh))	
+
+		if( "1".equals(ajaxLink))
+			// la gestion des liens ajax oblige à utiliser le rafraichissement partiel
 			window.setDeclaredProperty("theme.dyna.partial_refresh_enabled", "true");
-		else	{
-			if( !"1".equals(ajaxLink))
-				// la gestion des liens ajax oblige à utiliser le rafraichissement partiel
-				window.setDeclaredProperty("theme.dyna.partial_refresh_enabled", "false");
-			else
-				window.setDeclaredProperty("theme.dyna.partial_refresh_enabled", "true");
-		}
+
 		
 	
 		if (idPerso.length() > 0)

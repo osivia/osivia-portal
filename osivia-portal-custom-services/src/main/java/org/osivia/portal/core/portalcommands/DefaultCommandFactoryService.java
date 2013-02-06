@@ -64,7 +64,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					String displayTitle = null;
 					String title = null;
 					String displayDecorators = null;
-					String partialRefresh = null;
 					String idPerso = null;
 					String ajaxLink = null;
 					String hideEmptyPortlet = null;
@@ -103,10 +102,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 							displayDecorators = "0";
 
 
-						if (parameterMap.get("partialRefresh") != null)
-							partialRefresh = URLDecoder.decode(((String[]) parameterMap.get("partialRefresh"))[0], "UTF-8");
-						else
-							partialRefresh = "";
 						
 						
 						if (parameterMap.get("idPerso") != null)
@@ -146,7 +141,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 
 						return new ChangeWindowSettingsCommand(windowId, style, displayTitle,title, displayDecorators,
-								partialRefresh, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript);
+								idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript);
 					}
 				}
 

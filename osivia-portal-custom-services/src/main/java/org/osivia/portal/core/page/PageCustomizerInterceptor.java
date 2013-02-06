@@ -42,6 +42,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
+import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
@@ -70,6 +71,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
+import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
@@ -336,8 +338,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		
 	}
-
 	
+
 	
 	
 	
@@ -441,12 +443,22 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			String portalPath =  controllerCtx.getServerInvocation().getServerContext().getPortalRequestPath();
 			String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
+			
+			/* On teste les 2 cas spécifiques ou le init-state n'est pas initialisé dans l'url */
 
-			// Appel de la page par défaut (/portal) ou déconnexion (pagemarker=1)
-			if( portalPath.equals("") || portalPath.equals("/") || ("1".equals(pageMarker))){
+			// Appel de la page par défaut (/portal) 
+			if( portalPath.equals("") || portalPath.equals("/") ){
 				defaultPage = true;;
 			
 			}
+			
+			// Déconnexion : page par défaut + pageMarker = 1
+			//TODO : test a améliorer ...
+			if(  rpc.getPage().equals(rpc.getPortal().getDefaultPage()) && ("1".equals(pageMarker)))	{
+				defaultPage = true;;
+			}
+			
+			
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				
@@ -504,17 +516,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			// Force la valorisation dans le contexte
 			isAdministrator( controllerCtx) ;
-			
-			
-			
 
 		}
 		
 		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
 			initShowMenuBarItem( cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());
 		}
-
 		
+		
+		
+		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
+			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
+		}
+	
 		
 		ControllerResponse resp;
 		
@@ -1408,7 +1422,9 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 	
 
-			PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());			
+			PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());	
+			
+			String basePath = page.getProperty("osivia.cms.basePath");
 			
 			String sPath[] = null;
 			if( pageState != null)
@@ -1422,7 +1438,6 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			// Dnas le cas d'une publication correcte, on n'affiche pas les pages filles
 			boolean publication = false;
 			if( pathPublication != null )	{
-				String basePath = page.getProperty("osivia.cms.basePath");
 				if( basePath != null && pathPublication.startsWith(basePath))
 					publication = true;
 			}
@@ -1446,7 +1461,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				
 			
 				if( publication){
-					String basePath = page.getProperty("osivia.cms.basePath");
+
 					//String basePath = page.getProperty("osivia.cms.basePath");
 					if( basePath != null)
 						displayPage = false;
@@ -1501,7 +1516,6 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 			if( pageState != null){
 
-				String basePath = page.getProperty("osivia.cms.basePath");
 				String navigationScope = page.getProperty("osivia.cms.navigationScope");
 						
 				if (pathPublication != null && basePath != null && pathPublication.startsWith(basePath)) {
@@ -1536,41 +1550,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 						}
 
-					
 
-					/*
-					String categoryPath = pathPublication.substring(basePath.length());
-					String categoryItems[] = categoryPath.split("/");
-
-					String itemPath = basePath;
-
-					for (int i = 1; i < categoryItems.length; i++) {
-
-						itemPath += "/" + categoryItems[i];
-						
-						
-
-						
-						Map<String, String> pageParams = new HashMap<String, String>();
-						
-
-					
-	
-						String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx), po.getId()
-								.toString(PortalObjectPath.CANONICAL_FORMAT), itemPath,  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
-
-
-						
-						CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, itemPath);
-
-						//CMSItem cmsItem = getCMSService().getContent(cmxCtx, itemPath);
-
-						
-						
-						BreadcrumbItem item = new BreadcrumbItem(navItem.getProperties().get("displayName"), url, null, false);
-						breadcrumbDisplay.getChilds().add(item);
-					}
-					*/
 				}
 			}
 			
@@ -1742,8 +1722,85 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			rd.setAttribute(Constants.ATTR_BREADCRUMB, breadcrumbDisplay);
 			
+			PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);			
+			
+			// TEST V2 PERMALINK : Permalink sur les contenus
+/*
+			
+
+			
+
+			// First :  Content defined to portlet
+			
+			String	docPath = (String) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, 	"osivia.cms.portletContentPath");
+			
+			if( docPath == null)	{
+				
+				// Secund :  Content associated to window
+				
+				for (Object winCtx : winsCtx.values())	{
+
+					WindowContext wctx = (WindowContext) winCtx;
+
+					if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
+			                  
+				        PortalObjectId targetWindowId = PortalObjectId.parse( wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
+				        
+				        Window window = (Window) portalObjectContainer.getObject(targetWindowId);
+				        
+				        if( window != null)	{
+				        	docPath = window.getProperty("osivia.cms.portletContentPath");
+				        }
+					}
+				}
+			}
+			
+				
+				
+			
+			if( docPath == null)	{			
+				
+				// Else, content from CMS navigation
+				if( pageState != null)	{
+					
+					String navPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+					
+					String pathNavigation = null;
+					if( navPath != null && navPath.length > 0)
+						pathNavigation = sPath[ 0];
+					
+					docPath = pathNavigation;
+
+					
+					
+				}
+				
+			}
+		
+			if( docPath != null)
+				rd.setAttribute(Constants.ATTR_PERMLINK_URL, getUrlFactory().getPermaLink(portalCtx, null, null, docPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS));
+*/			
+			
+/*
+ * 	A combiner avec breadcrumb.jsp
+ * 
+			<!-- 
+			<% if( permLinkUrl != null) { %>
+
+
+			<a class="permalink" title="Lien permanent" href="<%= permLinkUrl %>"><img src="/toutatice-portail-demo-charte/themes/atomo/images/permalink.png"> </a> 
+
+			<%
+
+			}
+			%>
+
+			-->
+*/			
+
+			
 			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
-			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 		
+			rd.setAttribute(Constants.ATTR_PORTAL_CTX, portalCtx); 		
 			
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,

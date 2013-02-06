@@ -28,6 +28,7 @@ import org.jboss.portal.portlet.invocation.response.ErrorResponse;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.TrackerBean;
@@ -61,7 +62,17 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 		
 		ServerURL url = super.doMapping(controllerContext, invocation, cmd);
 		
-		if( ! (cmd instanceof InvokePortletWindowResourceCommand) && ! (cmd instanceof PermLinkCommand))	{
+		boolean pageMarkerInsertion = true;
+		
+		if (cmd instanceof PermLinkCommand) 
+			pageMarkerInsertion = false;
+		
+		if (cmd instanceof CmsCommand) {
+			if( !((CmsCommand) cmd).isInsertPageMarker())
+				pageMarkerInsertion = false;
+		}
+		
+		if( ! (cmd instanceof InvokePortletWindowResourceCommand) && pageMarkerInsertion)	{
 		
 			String pageMarker =  PageMarkerUtils.getCurrentPageMarker(controllerContext);
 			

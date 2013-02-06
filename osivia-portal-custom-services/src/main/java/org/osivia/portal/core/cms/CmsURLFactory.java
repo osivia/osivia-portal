@@ -54,8 +54,23 @@ public class CmsURLFactory extends URLFactoryDelegate
 
          //
          AbstractServerURL asu = new AbstractServerURL();
-         asu.setPortalRequestPath(path);
+         //asu.setPortalRequestPath(path);
          String cmsPath = cmsCommand.getCmsPath();
+         
+         String portalRequestPath = path;
+         
+         String portalPersistentName = cmsCommand.getPortalPersistentName();
+         if (portalPersistentName != null)
+         {
+        	 portalRequestPath += CmsCommandFactoryService.PORTAL_NAME + portalPersistentName;
+         }   
+         
+         if( cmsPath != null)
+        	 portalRequestPath += cmsPath;
+         
+         asu.setPortalRequestPath(portalRequestPath);
+         
+         /*
          if (cmsPath != null)
          {
             try
@@ -67,6 +82,7 @@ public class CmsURLFactory extends URLFactoryDelegate
                // ignore
             }
          }
+         */
          
          String pagePath = cmsCommand.getPagePath();
          if (pagePath != null)
@@ -189,18 +205,7 @@ public class CmsURLFactory extends URLFactoryDelegate
          }     
          
    
-         String portalPersistentName = cmsCommand.getPortalPersistentName();
-         if (portalPersistentName != null)
-         {
-            try
-            {
-               asu.setParameterValue("portalPersistentName",  URLEncoder.encode(portalPersistentName, "UTF-8"));
-            }
-            catch (Exception e)
-            {
-               // ignore
-            }
-         }     
+  
  
          
          return asu;

@@ -636,11 +636,7 @@ function togglePublication() {
 			if("1".equals(window.getDeclaredProperty("osivia.hideDecorators")))
 				checkDecorators = "";
 			
-			
-			String partialRefresh = "checked";
-			if( "false".equals( window.getProperty("theme.dyna.partial_refresh_enabled")))
-				partialRefresh = "";
-			
+
 			String ajaxLink = "";
 			if( "1".equals( window.getProperty("osivia.ajaxLink")))
 				ajaxLink = "checked";
@@ -801,14 +797,7 @@ function togglePublication() {
 									<input type="checkbox" name="displayDecorators" value="1" <%=checkDecorators %>/>
 								</td>
 							</tr>
-							<tr>
-								<td>
-									Rafraichissement partiel :
-								</td>
-								<td>
-									<input type="checkbox" name="partialRefresh" value="1" <%=partialRefresh%>/>
-								</td>
-							</tr>
+
 							
 							<tr>
 								<td>
