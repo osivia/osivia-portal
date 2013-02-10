@@ -2,42 +2,36 @@ package org.osivia.portal.core.portlets.interceptors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Comparator;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
-import org.jboss.portal.identity.User;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
-import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
-import org.jboss.portal.portlet.invocation.response.ResponseProperties;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
+import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
-import org.osivia.portal.core.page.EncodedParams;
+
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-
-import bsh.Interpreter;
 
 /**
  * Ajout des attributs spécifiques au PIA dans les requêtes des portlets
@@ -45,6 +39,19 @@ import bsh.Interpreter;
 public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 	private static Log logger = LogFactory.getLog(ParametresPortletInterceptor.class);
+	
+	public ICustomizationService customizationService;
+	
+
+	public ICustomizationService getCustomizationService() {
+		return customizationService;
+	}
+
+
+	public void setCustomizationService(ICustomizationService customizationService) {
+		this.customizationService = customizationService;
+	}
+
 
 	public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
 
@@ -181,14 +188,18 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 						if ("1".equals(printPortlet)) {
 
-							// Ajout item impression
+							// Appel module custom PRINT
+							
+							Map<String, Object> customAttrMap = new HashMap<String, Object>();
+							customAttrMap.put("title", title);
+							customAttrMap.put("menuBar", menuBar);
+							customAttrMap.put("windowId", windowId);
+							
 
-							String jsTitle = StringEscapeUtils.escapeJavaScript(title);
-							jsTitle = jsTitle.replaceAll("\"", "'");
+							CustomizationContext customCtx = new CustomizationContext(customAttrMap);
+							customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
 
-							menuBar.add(new MenubarItem("Imprimer", 100, "#", "popup2print('" + jsTitle + "', '" + windowId + "_print');",
-									"portlet-menuitem-print", null));
-						}
+							}
 
 						if (menuBar.size() > 0) {
 

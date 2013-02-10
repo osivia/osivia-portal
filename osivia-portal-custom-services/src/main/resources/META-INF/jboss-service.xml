@@ -179,6 +179,7 @@
           name="osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
+      <depends optional-attribute-name="CustomizationService" proxy-type="attribute">osivia:service=CustomizationService</depends>
    </mbean>
    
     <mbean code="org.osivia.portal.core.portlets.interceptors.ProfilerPortletInterceptor"
@@ -435,6 +436,14 @@
         <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject
       </depends>
    </mbean>
+	
+	
+	<mbean code="org.osivia.portal.core.customization.CustomizationService"
+          name="osivia:service=CustomizationService" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+   </mbean>
+	
 	
 </server>
    
