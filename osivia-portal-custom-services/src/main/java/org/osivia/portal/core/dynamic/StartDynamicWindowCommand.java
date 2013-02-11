@@ -33,6 +33,7 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.response.PortletWindowActionResponse;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
@@ -43,7 +44,9 @@ import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
+import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -132,7 +135,35 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 					// On force les fenetres en mode normal
 					// Use case : menu > maximized puis a nouvean menu > maximized 
 					//            le close revient sur l'accueil
-					backUrl += "?unsetMaxMode=true";
+					
+					
+					
+					// Si contenu contextualisé, renvoi sur le cms
+					
+					String cmsNav[] = null;
+					
+					NavigationalStateContext nsContext = (NavigationalStateContext) context
+					.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+									
+					PageNavigationalState pns = nsContext.getPageNavigationalState( page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+					
+					if( pns != null )	{
+						cmsNav = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
+					}
+					
+					
+					
+					if( cmsNav != null && cmsNav.length > 0)	{
+						Map<String, String> pageParams = new HashMap<String, String>();
+						
+						IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+						
+						backUrl = urlFactory.getCMSUrl(new PortalControllerContext(getControllerContext()), page.getId()
+								.toString(PortalObjectPath.CANONICAL_FORMAT), cmsNav[0],  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
+
+					}
+					else
+						backUrl += "?unsetMaxMode=true";
 				}
 				
 	       		 if( backUrl.indexOf("/pagemarker/") != -1)	{

@@ -76,6 +76,11 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 			PortalObjectId pageid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
 			
 			
+			
+			
+			
+			
+			
 
 			
 			Window window = (Window) getControllerContext().getController().getPortalObjectContainer().getObject( PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT));
@@ -83,10 +88,6 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 			String closeUrl = window.getProperty("osivia.dynamic.close_url");
 			
 			if( closeUrl != null)	{
-				
-
-				
-				
 				return new RedirectionResponse(closeUrl);
 			}
 			
