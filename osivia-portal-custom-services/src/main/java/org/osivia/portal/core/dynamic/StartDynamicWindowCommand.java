@@ -148,7 +148,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 						cmsNav = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
 					}
 					
-					if( cmsNav == null || cmsNav.length > 0)	{
+					if( cmsNav == null || cmsNav.length == 0)	{
 						backUrl += "?unsetMaxMode=true";
 					}
 					
