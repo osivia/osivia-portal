@@ -29,7 +29,7 @@ public class MenubarItem {
 	 */
 	
 	
-	public MenubarItem(String title, int order, String url, String onClickEvent, String className, String target) {
+	public MenubarItem(String id, String title, int order, String url, String onClickEvent, String className, String target) {
 		super();
 		this.order = order;
 		this.url = url;

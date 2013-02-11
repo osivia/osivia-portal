@@ -186,20 +186,29 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 							if (WindowState.MAXIMIZED.equals(invocation.getWindowState()))
 								printPortlet = "1";
 
+						
 						if ("1".equals(printPortlet)) {
 
 							// Appel module custom PRINT
-							
 							Map<String, Object> customAttrMap = new HashMap<String, Object>();
 							customAttrMap.put("title", title);
 							customAttrMap.put("menuBar", menuBar);
 							customAttrMap.put("windowId", windowId);
-							
+							customAttrMap.put("themePath", ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
 							CustomizationContext customCtx = new CustomizationContext(customAttrMap);
 							customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
+							
+							MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
+							if( printItem == null){
+							String jsTitle = StringEscapeUtils.escapeJavaScript(title);
 
+							 printItem =  new MenubarItem("PRINT", "Imprimer", 100, "#", "popup2print('" + jsTitle + "', '" + windowId + "_print');",	"portlet-menuitem-print", null);
 							}
+							
+							menuBar.add(printItem);
+
+						}
 
 						if (menuBar.size() > 0) {
 

@@ -43,6 +43,7 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.jboss.portal.core.model.portal.command.WindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
@@ -521,13 +522,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
 			initShowMenuBarItem( cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());
-		}
-		
-		
-		
-		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
+			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath",  getTargetContextPath( (PortalCommand) cmd));
+
 		}
+		
+		
 	
 		
 		ControllerResponse resp;
@@ -1833,11 +1833,22 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		this.footerPath = footerPath;
 	}
 
-	public static String getTargetContextPath(PageCommand pc) {
+	public static String getTargetContextPath(PortalCommand pc) {
 	    //String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
 		// TODO : NE FAIRE QU'UNE FOIS PAR REQUETE !!!
+		Page page = null;
+		
+		if( pc instanceof PageCommand)
+			page = ((PageCommand) pc).getPage();
+		
+		if( pc instanceof WindowCommand)
+			page = ((WindowCommand) pc).getPage();
+			
 
-		String themeId = pc.getPage().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+		if( page == null)
+			throw new IllegalArgumentException("target path not accessible");
+		
+		String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
         PageService pageService = pc.getControllerContext().getController().getPageService();
         ThemeService themeService = pageService.getThemeService();
         PortalTheme theme = themeService.getThemeById(themeId);

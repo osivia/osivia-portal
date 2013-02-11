@@ -18,8 +18,7 @@ import java.util.Map;
 public class CmsCommandFactoryService extends AbstractCommandFactory implements CmsCommandFactory
 {
 	
-   public static final String PORTAL_NAME = "/_portal/"; 
-   public static final String PATH = "/_path"; 
+   public static final String PORTAL_NAME = "/_portal_/"; 
 
 
    public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host,
@@ -38,6 +37,11 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 String portalPersistentName = null;
 	 
 	 String toAnalize = requestPath;
+	 
+	 
+	 
+	 
+	 
 	 
 	 if( toAnalize.startsWith(PORTAL_NAME))	{
 		 portalPersistentName = toAnalize.substring(PORTAL_NAME.length(), toAnalize.indexOf('/', PORTAL_NAME.length()));
