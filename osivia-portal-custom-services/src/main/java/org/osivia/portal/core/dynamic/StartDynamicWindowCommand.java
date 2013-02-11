@@ -125,20 +125,17 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 			
 			if( markerInfo != null)	{
 			
+				
 				ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
-			
+				
 				PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
 				
-				String backUrl = url.toString();
+				String backUrl = url.toString();	
 				
-				if (! "1".equals(addTobreadcrumb)) 	{
-					// On force les fenetres en mode normal
-					// Use case : menu > maximized puis a nouvean menu > maximized 
-					//            le close revient sur l'accueil
+				if ( !"1".equals(addTobreadcrumb)) 	{
 					
 					
-					
-					// Si contenu contextualisé, renvoi sur le cms
+					/* On détermine si on est en mode contextualisé */
 					
 					String cmsNav[] = null;
 					
@@ -151,9 +148,16 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 						cmsNav = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
 					}
 					
+					if( cmsNav == null || cmsNav.length > 0)	{
+						backUrl += "?unsetMaxMode=true";
+					}
 					
+					
+					/*
 					
 					if( cmsNav != null && cmsNav.length > 0)	{
+						// Si contenu contextualisé, renvoi sur le cms
+						
 						Map<String, String> pageParams = new HashMap<String, String>();
 						
 						IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
@@ -162,8 +166,22 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 								.toString(PortalObjectPath.CANONICAL_FORMAT), cmsNav[0],  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
 
 					}
-					else
+					else	{
+						
+						// Mode non contextualisé
+						
+						// Use case : menu > maximized puis a nouvean menu > maximized 
+						//            le close revient sur l'accueil
+						
+						ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
+						
+						PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+						
+						backUrl = url.toString();	
+
 						backUrl += "?unsetMaxMode=true";
+					}
+					*/
 				}
 				
 	       		 if( backUrl.indexOf("/pagemarker/") != -1)	{
