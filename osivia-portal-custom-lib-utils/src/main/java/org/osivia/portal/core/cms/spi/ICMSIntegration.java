@@ -10,10 +10,13 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 
 
 
+/**
+ * Non-service (ie direct) integration with CMS
+ *
+ */
 public interface ICMSIntegration {
 
 	public void sessionDestroyed(HttpSessionEvent sessionEvent);
 
-	public List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx)  throws Exception ;
 
 }

@@ -1,6 +1,7 @@
 package org.osivia.portal.core.cms;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ICMSService {
 	
@@ -29,5 +30,9 @@ public interface ICMSService {
 	public CMSHandlerProperties getItemHandler( CMSServiceCtx ctx)  throws CMSException;	
 	
 	public CMSBinaryContent getBinaryContent(CMSServiceCtx cmsCtx, String type, String path, String parameter) throws CMSException;
+	
+	public Map<String, String> parseCMSURL(CMSServiceCtx cmsCtx, String requestPath, Map<String, String> requestParameters)  throws CMSException ;
+
+	public List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx)  throws CMSException ;
 
 }

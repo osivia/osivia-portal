@@ -18,6 +18,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.spi.ICMSIntegration;
 
 
@@ -28,7 +29,15 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 	Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
 	SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
 
-	ICMSIntegration cmsCustomizer;
+	ICMSService cmsService ;
+
+	public ICMSService getCMSService () throws Exception	{
+		if( cmsService == null)
+			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+		
+		return cmsService;
+	}
+	
 
 	public static final Comparator<UserDatasModuleMetadatas> moduleComparator = new Comparator<UserDatasModuleMetadatas>() {
 
@@ -38,12 +47,6 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 		}
 	};
 
-	public ICMSIntegration getCMSCustomizer() throws Exception {
-		if (cmsCustomizer == null) {
-			cmsCustomizer = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
-		}
-		return cmsCustomizer;
-	}
 
 	private void synchronizeSortedModules() {
 
@@ -73,7 +76,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 					cmsContext.setServerInvocation(invocation);
 
-					invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", getCMSCustomizer()
+					invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", getCMSService()
 							.computeUserPreloadedPages(cmsContext));
 				} catch (Exception e) {
 					// Don't block login

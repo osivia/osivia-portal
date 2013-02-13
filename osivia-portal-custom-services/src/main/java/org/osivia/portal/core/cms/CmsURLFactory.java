@@ -59,14 +59,25 @@ public class CmsURLFactory extends URLFactoryDelegate
          
          String portalRequestPath = path;
          
+
+         
          String portalPersistentName = cmsCommand.getPortalPersistentName();
          if (portalPersistentName != null)
          {
         	 portalRequestPath += CmsCommandFactoryService.PORTAL_NAME + portalPersistentName;
          }   
          
-         if( cmsPath != null)
+         
+         
+         
+        
+         if( cmsPath != null)	{
+       	 
+        	 if( !cmsPath.startsWith("/"))
+        		 portalRequestPath += "/";
+        		 
         	 portalRequestPath += cmsPath;
+         }
          
          asu.setPortalRequestPath(portalRequestPath);
          

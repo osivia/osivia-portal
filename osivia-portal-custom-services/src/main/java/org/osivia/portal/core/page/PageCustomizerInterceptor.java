@@ -410,6 +410,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		if (cmd instanceof RenderPageCommand )
 		 begin = System.currentTimeMillis();
+		
+		
+
+		
 
 		
 		if (cmd instanceof RenderPageCommand) {
@@ -1559,29 +1563,63 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			
 			/* Synchronisation du breadcrum avec l'état de la page 
 			 * (un item est crée automatiquement en vue max)
+			 * 
+			 * Il s'agit ici de traiter les portlets maximisés manuellement par l'utilisateur
+			 * 
 			 */
 			
 			
-			if( breadcrumbMemo.getChilds().size() == 0)	{
+			/*
+			// Find first non navigation portlet
+			
+			int firstPortlet = -1;
+			int iPortlet = 0;
+			 for ( BreadcrumbItem item : breadcrumbMemo.getChilds())	{
+				 
+				 if( !item.isNavigationPlayer())	{
+					 firstPortlet = iPortlet;
+				 }
+				 
+				 iPortlet++;
+			 }
+
+			
+//			if( breadcrumbMemo.getChilds().size() == 0)	{
+			if( firstPortlet == -1)	{
 				// Si la page courante devient MAXIMIZED, on l'ajoute au breadcrumb
 				for (Object winCtx : winsCtx.values())	{
 					WindowContext wctx = (WindowContext)winCtx;
 					if( WindowState.MAXIMIZED.equals(wctx.getWindowState()))	{
-						String title = wctx.getProperty("osivia.title");
-						if( title == null)
-							title = wctx.getResult().getTitle();						
-						page = ((PageCommand) rpc).getPage(); 
-						ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
-						String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
-						BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
-						breadcrumbMemo.getChilds().add(newItem);
+						
+						PortalObjectId targetWindowId = PortalObjectId.parse( wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
+						Window window = (Window) getPortalObjectContainer().getObject(targetWindowId);
+						
+						// Les portlets CMS sont dejà enregistrés dans le breadcrum
+						if( ! "1".equals(window.getDeclaredProperty("osivia.portletContextualizedInPage"))){
+							
+							// On supprimer les items courants
+							while( breadcrumbMemo.getChilds().size() > firstPortlet)
+								breadcrumbMemo.getChilds().remove(firstPortlet);
+							
+						
+							String title = wctx.getProperty("osivia.title");
+							if( title == null)
+								title = wctx.getResult().getTitle();						
+							page = ((PageCommand) rpc).getPage(); 
+							ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
+							String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
+							BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
+							breadcrumbMemo.getChilds().add(newItem);
+						}
 					}
 				}
-			} else if (breadcrumbMemo.getChilds().size() == 1)	{
+			} else 	{
+				//else if (breadcrumbMemo.getChilds().size() == 1)	{
 				// Si le premier item était lié à une maximisattion et qu'on repasse
 				// en mode NORMAL, il faut le supprimer
-				BreadcrumbItem firstItem =  breadcrumbMemo.getChilds().get(0);
-				if( firstItem.isUserMaximized()){
+				BreadcrumbItem firstItem =  breadcrumbMemo.getChilds().get(firstPortlet);
+				
+				//if( firstItem.isUserMaximized()){
 				boolean isWindowMaximized = false;
 			
 				for (Object winCtx : winsCtx.values())	{
@@ -1593,12 +1631,113 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					
 					
 				}
-				if( ! isWindowMaximized)
+				if( ! isWindowMaximized)	{
 					breadcrumbMemo.getChilds().clear();
+					
+					while( breadcrumbMemo.getChilds().size() > firstPortlet)
+						breadcrumbMemo.getChilds().remove(firstPortlet);
 				}
+				//}
 			}
 			
 		
+			*/
+			
+			
+			
+			
+			
+			/* Synchronisation du breadcrum avec l'état de la page 
+			 * (un item est crée automatiquement en vue max)
+			 * 
+			 * Il s'agit ici de traiter les portlets maximisés manuellement par l'utilisateur
+			 * 
+			 */
+			
+			// Find first non navigation portlet
+			
+			int firstPortlet = -1;
+			int iPortlet = 0;
+			 for ( BreadcrumbItem item : breadcrumbMemo.getChilds())	{
+				 
+				 if( !item.isNavigationPlayer())	{
+					 firstPortlet = iPortlet;
+					 break;
+				 }
+				 
+				 iPortlet++;
+			 }
+
+			
+
+			// Si la page courante devient MAXIMIZED, on l'ajoute au breadcrumb
+			 
+			for (Object winCtx : winsCtx.values()) {
+				WindowContext wctx = (WindowContext) winCtx;
+				if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
+
+					PortalObjectId targetWindowId = PortalObjectId.parse(wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
+					Window window = (Window) getPortalObjectContainer().getObject(targetWindowId);
+
+					// Le fenetres dynamiques sont déja ajoutés lors du startDynamicCommand
+					if (!"1".equals(window.getDeclaredProperty("osisia.dynamicStarted")))	{
+
+						// Les portlets CMS sont dejà enregistrés dans le
+						// breadcrumb
+						if (!"1".equals(window.getDeclaredProperty("osivia.portletContextualizedInPage"))) {
+
+							// On supprimer les items courants
+							if( firstPortlet != -1){
+							while (breadcrumbMemo.getChilds().size() > firstPortlet)
+								breadcrumbMemo.getChilds().remove(firstPortlet);
+							}
+
+							String title = wctx.getProperty("osivia.title");
+
+							if (title == null)
+								title = wctx.getResult().getTitle();
+							page = ((PageCommand) rpc).getPage();
+							ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
+							String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
+							BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
+							breadcrumbMemo.getChilds().add(newItem);
+						}
+					}
+				}
+			}
+
+			
+			
+
+				//else if (breadcrumbMemo.getChilds().size() == 1)	{
+				// Si le premier item était lié à une maximisattion et qu'on repasse
+				// en mode NORMAL, il faut le supprimer
+			
+			if( firstPortlet != -1 ){
+				
+				//if( firstItem.isUserMaximized()){
+				boolean isWindowMaximized = false;
+			
+				for (Object winCtx : winsCtx.values())	{
+					WindowContext wctx = (WindowContext)winCtx;
+					if( WindowState.MAXIMIZED.equals(wctx.getWindowState()))	{
+						
+						isWindowMaximized = true;
+					}
+					
+					
+				}
+				if( ! isWindowMaximized)	{
+
+					while( breadcrumbMemo.getChilds().size() > firstPortlet)
+						breadcrumbMemo.getChilds().remove(firstPortlet);
+
+				}
+			}
+
+			
+		
+			
 			
 			
 			

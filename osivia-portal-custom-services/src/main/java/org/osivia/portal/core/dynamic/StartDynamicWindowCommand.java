@@ -116,7 +116,10 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
 			for (String dynaKey : dynaProps.keySet()) {
 				properties.put(dynaKey, dynaProps.get(dynaKey));
+				
 			}
+			
+			properties.put("osisia.dynamicStarted", "1");
 			
 			// close url : lien vers la page dans son état avant le lancement
 			
@@ -172,9 +175,12 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 						
 						// Use case : menu > maximized puis a nouvean menu > maximized 
 						//            le close revient sur l'accueil
+						ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
 						
-
-						backUrl += "?unsetMaxMode=true";
+						PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+						
+						backUrl = url.toString();
+						backUrl +=  "?unsetMaxMode=true";
 					}
 				}
 				
