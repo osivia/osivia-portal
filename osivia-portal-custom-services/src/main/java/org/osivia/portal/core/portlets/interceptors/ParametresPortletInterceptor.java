@@ -74,6 +74,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 				window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
 
 				attributes.put("osivia.window", window);
+				
+				attributes.put("osivia.window.ID", window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
 
 				logger.debug("windowId " + windowId);
 
