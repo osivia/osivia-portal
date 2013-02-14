@@ -74,7 +74,7 @@ public class CmsURLFactory extends URLFactoryDelegate
          if( cmsPath != null)	{
        	 
         	 if( !cmsPath.startsWith("/"))
-        		 portalRequestPath += "/";
+        		 portalRequestPath += CmsCommandFactoryService.DOC_ID;
         		 
         	 portalRequestPath += cmsPath;
          }

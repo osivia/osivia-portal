@@ -4,8 +4,12 @@ package org.osivia.portal.core.cms;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.NoSuchResourceException;
+import org.jboss.portal.core.controller.SecurityException;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
+import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
@@ -15,6 +19,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.management.RuntimeErrorException;
 
 
 public class CmsCommandFactoryService extends AbstractCommandFactory implements CmsCommandFactory
@@ -82,8 +88,18 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 
 	 try {
 		 externalCMSCommandProperties = getCMSService().parseCMSURL(cmsContext, requestPath, requestParams);
-	} catch (Exception e) {
-		throw new RuntimeException(e);
+
+	 } 
+	 catch (CMSException e) {
+		 // TODO : code retour à affiner
+		 // Pour l'instant, on rentre dans le process d'url standard
+		 
+		 // Il faudrait afficher les erreurs adéquates
+		 // Notamment les erreurs du type FORBIDDEN (message ou redirection vers l'accueil, NOT FOUND ...)
+		 externalCMSCommandProperties = null;
+	}
+	 catch (Exception e) {
+		 throw new RuntimeException(e);
 	}
 	
 	

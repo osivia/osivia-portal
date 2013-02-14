@@ -70,7 +70,7 @@
   -->
 <tag>
       <name>headerContent</name>
-      <tag-class>org.osivia.portal.core.page.HeaderContentTagHandler</tag-class>
+      <tag-class>org.osivia.portal.core.tags.PortalHeader</tag-class>
       <body-content>empty</body-content>
    </tag>   
 
