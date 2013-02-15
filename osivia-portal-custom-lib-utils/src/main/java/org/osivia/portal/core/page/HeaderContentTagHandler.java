@@ -71,6 +71,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport
          return;
       }
 
+      // PIA :  jquery
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jquery.js\"></script>");
+
+      
       //
       Map results = page.getWindowContextMap();
       Set<String> insertedRefs = new HashSet<String>();
@@ -108,6 +112,19 @@ public class HeaderContentTagHandler extends SimpleTagSupport
             }            
          }
       }
+      
+      
+      
+     out.write("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
+      
+      
+      out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");	 
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
+      
+      
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
+
      // out.flush();
    }
 }
