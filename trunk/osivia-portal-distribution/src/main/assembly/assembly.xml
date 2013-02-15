@@ -1,0 +1,147 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <dependencySets>
+     <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/socle</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+  		<include>org.osivia.portal.core:osivia-portal-custom-services:jboss-sar:${project.version}</include>
+		<include>org.osivia.portal.core:osivia-portal-custom-web-assets:war:${project.version}</include>
+		<include>org.osivia.portal.core.admin:osivia-portal-administration:ear:${project.version}</include>
+   	</includes>
+  </dependencySet>
+
+   <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-core-lib:jar:${project.version}</include>
+       	</includes>
+	<outputFileNameMapping>
+		portal-core-lib.jar
+	</outputFileNameMapping>
+    </dependencySet>
+
+
+ <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-portlet-lib:jar:${project.version}</include>
+       	</includes>
+	<outputFileNameMapping>
+		portal-portlet-lib.jar
+	</outputFileNameMapping>
+    </dependencySet>
+
+
+   <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-server-lib:jar:${project.version}</include>
+       	</includes>
+	<outputFileNameMapping>
+		portal-server-lib.jar
+	</outputFileNameMapping>
+    </dependencySet>
+
+   <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/jboss-web.deployer</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+         	<include>org.osivia.portal.core:osivia-portal-jbossas-jbossweb-lib:jar:${project.version}</include>
+       	</includes>
+	<outputFileNameMapping>
+		jbossweb.jar
+	</outputFileNameMapping>
+    </dependencySet>
+
+
+    <dependencySet>
+      <outputDirectory>/jboss-as/server/production/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+        	<include>org.osivia.portal:osivia-portal-api:jar:${project.version}</include>
+		<include>org.osivia.portal.core:osivia-portal-custom-lib-utils:jar:${project.version}</include>
+       	</includes>
+     </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+	<fileSet>
+	  <outputDirectory>/</outputDirectory>
+          <directory>target/jboss-portal-2.7.2</directory>
+ 	    <includes>
+		<include>jboss-as/bin/**</include>
+		<include>jboss-as/lib/**</include>
+		<include>jboss-as/server/production/**</include>
+   	   </includes>
+	    <excludes>
+		<exclude>jboss-as/bin/run.sh</exclude>
+		<exclude>jboss-as/server/production/conf/jboss-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-web.deployer/jbossweb.jar</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-web.deployer/server.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-web.deployer/META-INF/jboss-service.xml</exclude>
+
+		<exclude>jboss-as/server/production/deploy/properties-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/cluster-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/ejb3-entity-cache-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/ejb3-clustered-sfsbcache-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-web-cluster.sar/META-INF/jboss-service.xml</exclude>
+
+		<exclude>jboss-as/server/production/deploy-hasingleton/jms/**</exclude>
+
+		<exclude>jboss-as/server/production/deploy/hsqldb-ds.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/portal-hsqldb-ds.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jms/**</exclude>
+		<exclude>jboss-as/server/production/deploy/jmx-console.war/**</exclude>
+
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/hsqldb.jar</exclude>
+
+               <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/samples/**</exclude>
+ 
+               <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-cms.sar/**</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-wsrp.sar/**</exclude>
+
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-core-lib.jar</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-portlet-lib.jar</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-server-lib.jar</exclude>
+
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/data/default-object.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/hibernate/portal/domain.hbm.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/identity/identity-config.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/identity/standardidentity-config.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/identity/ldap_identity-config.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/theme/portal-layout.tld</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/META-INF/jboss-service.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-identity.sar/portal-identity.war/WEB-INF/portlet-instances.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal.war/WEB-INF/portlet-instances.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-ajax.war/dyna/dyna.js</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/portlet-instances.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-server.war/WEB-INF/web.xml</exclude>
+     	   </excludes>
+        </fileSet>
+
+	<fileSet>
+	  <outputDirectory>/</outputDirectory>
+          <directory>src/main/resources</directory>
+        </fileSet>
+       </fileSets>
+
+
+
+</assembly>
