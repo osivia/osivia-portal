@@ -676,11 +676,19 @@ public class CmsCommand extends DynamicCommand {
 
 				if (contextualizationPage == null) {
 
+					
+					
 					if (IPortalUrlFactory.CONTEXTUALIZATION_PORTAL.equals(contextualization))
 						// contextualisation explicite dans le portail (lien de recontextualisation)
 						contextualizeinPortal = true;
 					
-					else	{
+					
+					if( getCMSService().supportsOnlyPortalContextualization(cmsReadItemContext, cmsItem))
+						contextualizeinPortal = true;
+	
+					if( ! contextualizeinPortal)
+					
+						{
 						// contextualisation iumplicite dans le portail (lien inter-contenus)
 						// on regarde comment est gérée la contextualisation des contenus externes dans la page
 						if (currentPage != null) {

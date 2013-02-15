@@ -47,3 +47,12 @@ function setCallbackParams( id, url)	{
 			}
 		});
 	});
+	
+	$JQry(document).ready(function() {
+		$JQry(".fancybox_inline").fancybox({
+			'titlePosition'     : 'inside',
+            'transitionIn'      : 'none',
+            'transitionOut'     : 'none'	 		
+		});
+	});
+
