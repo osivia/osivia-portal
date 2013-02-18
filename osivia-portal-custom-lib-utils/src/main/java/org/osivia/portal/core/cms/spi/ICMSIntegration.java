@@ -19,7 +19,6 @@ public interface ICMSIntegration {
 
 	public void sessionDestroyed(HttpSessionEvent sessionEvent);
 	
-	public ICMSService getCMSService() ;
 
 
 }

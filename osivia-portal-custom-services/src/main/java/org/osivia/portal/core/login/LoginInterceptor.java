@@ -19,6 +19,7 @@ import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.spi.ICMSIntegration;
 
 
@@ -29,18 +30,19 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 	Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
 	SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
 
-	ICMSService cmsService ;
-
-	public ICMSService getCMSService () throws Exception	{
-		//if( cmsService == null)	{
-			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
-			cmsService = cmsIntegration.getCMSService();
-
-		//}
-		
-		return cmsService;
-	}
 	
+	private static ICMSServiceLocator cmsServiceLocator ;
+
+	public static ICMSService getCMSService() throws Exception {
+		
+		if( cmsServiceLocator == null){
+			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+		}
+	
+		return cmsServiceLocator.getCMSService();
+
+	}
+
 
 	public static final Comparator<UserDatasModuleMetadatas> moduleComparator = new Comparator<UserDatasModuleMetadatas>() {
 

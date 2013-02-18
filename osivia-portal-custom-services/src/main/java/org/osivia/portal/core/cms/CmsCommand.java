@@ -194,19 +194,20 @@ public class CmsCommand extends DynamicCommand {
 		return displayLiveVersion;
 	}
 
-	private static ICMSService cmsService;
 
 	IProfilManager profilManager;
-
+	
+	
+	private static ICMSServiceLocator cmsServiceLocator ;
+	
 	public static ICMSService getCMSService() throws Exception {
+		
+		if( cmsServiceLocator == null){
+			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+		}
+	
+		return cmsServiceLocator.getCMSService();
 
-		// TODO : paramétrage declaration service + mutualisation factory
-//		if (cmsService == null)	{
-			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
-			cmsService = cmsIntegration.getCMSService();
-//		}
-
-		return cmsService;
 	}
 
 	public IProfilManager getProfilManager() throws Exception {

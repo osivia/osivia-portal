@@ -30,20 +30,19 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
    public static final String PORTAL_NAME = "/_PN_/"; 
    public static final String DOC_ID = "/_ID_/"; 
    
-	ICMSService cmsService ;
 	
-	
+	private static ICMSServiceLocator cmsServiceLocator ;
 
-	public ICMSService getCMSService () throws Exception	{
-		//if( cmsService == null)	{
-			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
-			cmsService = cmsIntegration.getCMSService();
-
-		//}
+	public static ICMSService getCMSService() throws Exception {
 		
-		return cmsService;
-	}
+		if( cmsServiceLocator == null){
+			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+		}
 	
+		return cmsServiceLocator.getCMSService();
+
+	}
+
 
 
    public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host,
