@@ -32,8 +32,11 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 	ICMSService cmsService ;
 
 	public ICMSService getCMSService () throws Exception	{
-		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+		//if( cmsService == null)	{
+			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+			cmsService = cmsIntegration.getCMSService();
+
+		//}
 		
 		return cmsService;
 	}

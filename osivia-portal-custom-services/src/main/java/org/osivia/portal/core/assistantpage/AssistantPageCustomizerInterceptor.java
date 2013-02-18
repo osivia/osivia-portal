@@ -84,6 +84,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageUtils;
@@ -125,8 +126,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	
 
 	public ICMSService getCMSService () throws Exception	{
-		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+//		if( cmsService == null)		{
+			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+			cmsService = cmsIntegration.getCMSService();
+
+//		}
 		
 		return cmsService;
 	}

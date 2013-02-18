@@ -12,6 +12,7 @@ import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -34,8 +35,11 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	
 
 	public ICMSService getCMSService () throws Exception	{
-		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+		//if( cmsService == null)	{
+			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+			cmsService = cmsIntegration.getCMSService();
+
+		//}
 		
 		return cmsService;
 	}

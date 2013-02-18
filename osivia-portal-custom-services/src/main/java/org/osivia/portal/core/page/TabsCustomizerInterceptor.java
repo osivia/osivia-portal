@@ -113,6 +113,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.page.PageProperties;
@@ -231,8 +232,11 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 	
 
 	public ICMSService getCMSService () throws Exception	{
-		if( cmsService == null)
-			cmsService  = Locator.findMBean(ICMSService.class,"osivia:service=NuxeoService");
+//		if( cmsService == null)	{
+			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+			cmsService = cmsIntegration.getCMSService();
+
+//		}
 		
 		return cmsService;
 	}

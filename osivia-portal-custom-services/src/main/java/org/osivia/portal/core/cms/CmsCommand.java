@@ -53,6 +53,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
@@ -200,8 +201,10 @@ public class CmsCommand extends DynamicCommand {
 	public static ICMSService getCMSService() throws Exception {
 
 		// TODO : paramétrage declaration service + mutualisation factory
-		if (cmsService == null)
-			cmsService = Locator.findMBean(ICMSService.class, "osivia:service=NuxeoService");
+//		if (cmsService == null)	{
+			ICMSIntegration cmsIntegration = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+			cmsService = cmsIntegration.getCMSService();
+//		}
 
 		return cmsService;
 	}
@@ -607,6 +610,10 @@ public class CmsCommand extends DynamicCommand {
 
 			}
 			// }
+			
+			if( "detailedView".equals(displayContext))	{
+					contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTLET;
+			}
 
 			/*
 			 * 
@@ -683,7 +690,7 @@ public class CmsCommand extends DynamicCommand {
 						contextualizeinPortal = true;
 					
 					
-					if( getCMSService().supportsOnlyPortalContextualization(cmsReadItemContext, cmsItem))
+					if( "1".equals(cmsItem.getProperties().get("supportsOnlyPortalContextualization")))
 						contextualizeinPortal = true;
 	
 					if( ! contextualizeinPortal)

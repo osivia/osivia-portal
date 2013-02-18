@@ -7,6 +7,8 @@ public interface ICMSService {
 	
 	public CMSItem getContent( CMSServiceCtx ctx, String path) throws CMSException;
 	
+
+	
 	public boolean checkContentAnonymousAccess(CMSServiceCtx cmsCtx, String path) throws CMSException;
 	
 	/**
@@ -35,6 +37,4 @@ public interface ICMSService {
 
 	public List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx)  throws CMSException ;
 	
-	public boolean supportsOnlyPortalContextualization(CMSServiceCtx cmsCtx, CMSItem fetchedDoc)  throws CMSException ;
-
 }
