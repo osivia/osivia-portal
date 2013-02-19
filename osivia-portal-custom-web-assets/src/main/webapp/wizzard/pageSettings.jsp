@@ -472,7 +472,7 @@ if( "1".equals(pageCMSNavigationMode))
 <script language="javascript"> 
 
 
-function togglePublication() {
+/*function togglePublication() {
 	var ele = document.getElementById("toggleDynamicCMS");
 	var text = document.getElementById("displayDynamicCMS");
 	if(ele.style.display == "block") {
@@ -481,19 +481,32 @@ function togglePublication() {
 	else {
 		ele.style.display = "block";
 	}
-} 
+}*/
+
+function disableOrNotPreviousFormValues(cmsPathInput){
+	var cmsForm = document.forms["formCMSProperties"];
+	if(cmsPathInput.value != ''){
+		cmsForm.elements["scope"].disabled = true;
+		cmsForm.elements["displayLiveVersion"].disabled = true;
+		cmsForm.elements["outgoingRecontextualizationSupport"].disabled = true;
+	} else {
+		cmsForm.elements["scope"].disabled = false;
+		cmsForm.elements["displayLiveVersion"].disabled = false;
+		cmsForm.elements["outgoingRecontextualizationSupport"].disabled = false;
+	}
+}
 
 </script>
 							
 							
-							<table>
+							<!-- <table>
 
 							<tr><td><a id="displayDynamicCMS" href="javascript:togglePublication();">Publication dynamique</a></td></tr>
 
-
 							<tr><td colspan="2"><div id="toggleDynamicCMS" style="display: none; border: 1px; border-style: solid">
+							<tr><td colspan="2"><div id="toggleDynamicCMS" border: 1px; border-style: solid">
 							
-							<i>Dans le cas d'une publication dynamique, les paramètres ci-dessus (version, scope, contextualisation) seront ignorés et dynamiquement extraits de l'ECM</i><br/>
+							<i>Dans le cas d'une publication dynamique, les paramètres ci-dessus (version, scope, contextualisation) seront ignorés et dynamiquement extraits de l'ECM</i><br/>-->
 							
 							<table>
 													
@@ -503,7 +516,9 @@ function togglePublication() {
 									<br/> 
 								</td>
 								<td>
-									<input type="text" name="cmsBasePath" size="50" value="<%=pageCmsBasePath%>"/>
+									<input type="text" name="cmsBasePath" size="50" value="<%=pageCmsBasePath%>" 
+																		onKeyup="javascript:disableOrNotPreviousFormValues(this);"
+																		onBlur="javascript:disableOrNotPreviousFormValues(this);"/>
 								</td>
 							</tr>
 							
@@ -520,12 +535,12 @@ function togglePublication() {
 							
 							
 				
-</table></div></td></tr>					
+							<!-- </table></div></td></tr>-->					
 													
 							
 							<tr>
 								<td colspan="2" align="center">
-									<input type="submit" value="Valider"/>
+									<input type="submit" value="Valider" onMouseOver="javascript:disableOrNotPreviousFormValues(this.form['cmsBasePath']);"/>
 								</td>
 							</tr>
 							
