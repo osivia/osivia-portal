@@ -17,27 +17,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.naming.InitialContext;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.JspWriter;
-import javax.transaction.UserTransaction;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.model.instance.Instance;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
@@ -48,10 +41,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
-import org.jboss.portal.core.model.portal.PortalObjectPath.LegacyFormat;
 import org.jboss.portal.core.model.portal.command.PageCommand;
-import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.IdentityContext;
@@ -59,7 +49,6 @@ import org.jboss.portal.identity.IdentityServiceController;
 import org.jboss.portal.identity.RoleModule;
 import org.jboss.portal.security.AuthorizationDomainRegistry;
 import org.jboss.portal.security.RoleSecurityBinding;
-import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
@@ -67,7 +56,6 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PortalLayout;
-import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
@@ -76,23 +64,18 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
-import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
-import org.osivia.portal.core.portalobjects.TemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
 
@@ -188,7 +171,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 
 		StringBuffer select = new StringBuffer();
-		select.append("<select name=\""+selectName+"\">");
+		
+		String disabled = "";
+		if(StringUtils.isNotEmpty((String) po.getDeclaredProperty("osivia.cms.basePath")))
+			disabled = "disabled='disabled'";
+		
+		select.append("<select name=\""+selectName+"\"" + disabled + ">");
 
 		if (!supportedValue.isEmpty()) {
 			
@@ -325,7 +313,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 
 		StringBuffer select = new StringBuffer();
-		select.append("<select name=\""+scopeName+"\">");
+		
+		String disabled = "";
+		if(StringUtils.isNotEmpty((String) po.getDeclaredProperty("osivia.cms.basePath"))){
+			disabled = "disabled='disabled'";
+		}
+		
+		select.append("<select name=\""+scopeName+"\"" + disabled + ">");
 
 		if (!scopes.isEmpty()) {
 			
@@ -423,7 +417,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 
 		StringBuffer select = new StringBuffer();
-		select.append("<select name=\""+versionName+"\">");
+		
+		String disabled = "";
+		if(StringUtils.isNotEmpty((String) po.getDeclaredProperty("osivia.cms.basePath"))){
+			disabled = "disabled='disabled'";
+		}
+		
+		select.append("<select name=\""+versionName+"\"" + disabled + ">");
 
 		if (!versions.isEmpty()) {
 			
