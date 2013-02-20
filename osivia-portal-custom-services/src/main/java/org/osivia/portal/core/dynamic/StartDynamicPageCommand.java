@@ -121,17 +121,8 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState( getControllerContext());
 			
 			if( markerInfo != null)	{
-				ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
-
-				PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
-				String backUrl = url.toString();
-				
-	       		 if( backUrl.indexOf("/pagemarker/") != -1)	{
-	        		String pageMarker = markerInfo.getPageMarker();
-         			backUrl =  backUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+pageMarker+"/");
-        		 }
-	       		 
-		       	properties.put("osivia.dynamic.close_url",backUrl);
+       		 
+		       	properties.put("osivia.dynamic.close_page_path",markerInfo.getPageId().toString());
 			}
 			
 				

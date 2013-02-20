@@ -91,10 +91,22 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				
 				/* On regarde si la page appelante est mémorisée */
 				
-				String closeUrl = page.getProperty("osivia.dynamic.close_url");
+				String closePagePath = page.getProperty("osivia.dynamic.close_page_path");
+
 				
-				if( closeUrl != null)	{
-					return new RedirectionResponse(closeUrl);
+				if( closePagePath != null)	{
+					
+					ViewPageCommand pageCmd = new ViewPageCommand(PortalObjectId.parse(closePagePath, PortalObjectPath.CANONICAL_FORMAT));
+					
+					PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+					
+					// Impact sur les caches du bandeau
+					ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+					cacheService.incrementHeaderCount();
+
+					//TODO : ajouter last pagemarker de la page
+					
+					return new RedirectionResponse(url.toString());
 				}
 
 				
