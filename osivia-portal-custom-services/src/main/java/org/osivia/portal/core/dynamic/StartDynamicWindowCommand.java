@@ -2,9 +2,14 @@ package org.osivia.portal.core.dynamic;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -109,6 +114,12 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
 			IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 					"osivia:service=DynamicPortalObjectContainer");
+			
+			
+			
+			
+			
+			
 
 			Map<String, String> properties = new HashMap<String, String>();
 			properties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
@@ -143,7 +154,8 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 									
 					
 					/* On détermine si on est en mode contextualisé */
-					
+	
+					/*	
 					String cmsNav[] = null;
 					
 					NavigationalStateContext nsContext = (NavigationalStateContext) context
@@ -156,7 +168,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 					}
 					
 					
-					
+				
 					if( cmsNav != null && cmsNav.length > 0)	{
 						// Si contenu contextualisé, renvoi sur le cms
 						// Pour réinitialiser la page
@@ -170,6 +182,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
 					}
 					else	{
+*/					
 						
 						// Mode non contextualisé
 						
@@ -181,7 +194,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 						
 						backUrl = url.toString();
 						backUrl +=  "?unsetMaxMode=true";
-					}
+//					}
 				}
 				
 	       		 if( backUrl.indexOf("/pagemarker/") != -1)	{
@@ -246,11 +259,23 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 					"controlledPageMarker");
 			
 			
-			/* Création de la nouvelle fenêtre */
-			dynamicCOntainer.addDynamicWindow(new DynamicWindowBean(page, windowName, instanceId, properties, controlledPageMarker));
+			
+			
 
 			PortalObjectId vindowId = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString()
 					.concat("/").concat(windowName), PortalObjectPath.CANONICAL_FORMAT));
+			
+			
+			
+			/* Création de la nouvelle fenêtre */
+			dynamicCOntainer.addDynamicWindow(new DynamicWindowBean(page, windowName, instanceId, properties, controlledPageMarker));
+			
+			
+			
+			
+			// TODO : SESSIONDYNA A reactiver pour synchroniser les sessions
+			//getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.session.refresh."+vindowId, "1");
+
 
 			// Pour forcer le rechargement de la page, on supprime l'ancien
 			// windowState
@@ -284,6 +309,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 			getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,
 					"cached_markup." + vindowId.toString());
 
+			
 			// Maj du breadcrumb
 			Breadcrumb breadcrumb = (Breadcrumb) getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
 					"breadcrumb");

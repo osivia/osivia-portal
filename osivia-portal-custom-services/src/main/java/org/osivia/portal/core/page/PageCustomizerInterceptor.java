@@ -467,8 +467,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				
-
-				
 				CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
 				
 					
@@ -491,6 +489,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				}
 			}
 
+			
+			
+			
+			
 			
 			
 			if ("true".equals(request.getParameter("unsetMaxMode"))) {	
@@ -523,6 +525,112 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			isAdministrator( controllerCtx) ;
 
 		}
+
+		
+		/* 
+		 * Synchronisation des pages de rubrique CMS quand leur affichage est en mode portlet MAX (et non en mode page)
+		 * Si tous les portlets sont en mode normal, ll faut forcer un appel CMS pour recharger la page
+		 * 
+		 * Cas d'un fenetre maximisee qui repasse en mode normal sur action utilisateur
+		 * Cas d'une fentre dynamique qui est fermée proquant le retour à la page de rubrique
+		 */
+		
+		if (cmd instanceof CmsCommand) 
+			// Permet de savoir si on est déjà dans le cas d'une CMSCommand qui appelle une RenderPageCommand
+			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "cmsCommand", "1");
+		
+		
+		if (cmd instanceof RenderPageCommand) {
+			
+			RenderPageCommand rpc = (RenderPageCommand) cmd;
+			ControllerContext controllerCtx = cmd.getControllerContext();
+			NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+					.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+			Page page = rpc.getPage();
+
+			// contexte de navigation CMS ?
+
+			PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
+
+			String sPath[] = null;
+			if (pageState != null)
+				sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+
+			String pathPublication = null;
+			if (sPath != null && sPath.length > 0)
+				pathPublication = sPath[0];
+
+			if (pathPublication != null) {
+
+				// On est déja dans une cmscommand, auquel cas l'affichage est bon
+
+				if (!"1".equals(cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "cmsCommand"))) {
+
+					String navigationScope = page.getProperty("osivia.cms.navigationScope");
+					String basePath = page.getProperty("osivia.cms.basePath");
+
+					CMSServiceCtx cmxCtx = new CMSServiceCtx();
+					cmxCtx.setControllerContext(controllerCtx);
+					cmxCtx.setScope(navigationScope);
+					CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
+					
+					// Affichage en mode page ?
+
+					if (!basePath.equals(pathPublication) && !"1".equals(navItem.getProperties().get("pageDisplayMode"))) {
+
+						CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
+
+						if (pagePublishSpaceConfig != null
+								&& "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
+
+							// On regarde l'état des fenetres
+
+							Iterator i = ((RenderPageCommand) cmd).getPage().getChildren(PortalObject.WINDOW_MASK).iterator();
+
+							boolean normalState = true;
+							while (i.hasNext()) {
+
+								Window window = (Window) i.next();
+
+								NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+
+								WindowNavigationalState windowNavState = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
+										ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+								// On regarde si la fenêtre est en vue MAXIMIZED
+								if (WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+									normalState = false;
+								}
+							}
+
+							if (normalState) {
+								// Redirection en mode CMS
+								HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+
+								String url = getUrlFactory().getCMSUrl(new PortalControllerContext(controllerCtx),
+										rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), pathPublication, null,
+										IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+
+								if (request.getParameter("firstTab") != null) {
+									url += "&firstTab=" + request.getParameter("firstTab");
+								}
+								
+								url += "&skipPortletCacheInitialization=1";
+								
+								return new RedirectionResponse(url.toString());
+							}
+						}
+					}
+				}
+
+			}
+		}
+		
+		
+		
+		
+		
+		
 		
 		if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))	{
 			initShowMenuBarItem( cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());

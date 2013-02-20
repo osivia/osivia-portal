@@ -37,6 +37,9 @@ public abstract class DynamicWindow extends WindowImpl {
 	
 	protected PortalObjectId id = null;
 	
+	
+	protected String uniqueID = null;
+	
 	private static Log logger = LogFactory.getLog(DynamicWindow.class);
 	
 	private DynamicWindowBean dynamicWindowBean = null;
@@ -49,6 +52,33 @@ public abstract class DynamicWindow extends WindowImpl {
 		this.dynamicWindowBean = dynamicWindowBean;
 	}
 
+	/**
+	 * Non unique au niveau dynamique
+	 * 
+	 */
+	public String getDynamicUniqueID() {
+		if( uniqueID == null)	{
+			uniqueID = "";
+			
+			if( page != null && page instanceof DynamicTemplatePage)	{
+				String pageUID = ((DynamicTemplatePage) page).getPageBean().getUniqueID();
+				if( pageUID != null)
+					uniqueID += pageUID;
+			}
+			
+			if( dynamicWindowBean != null)	{
+				String windowUID = dynamicWindowBean.getUniqueID();
+				if( windowUID != null)
+					uniqueID += windowUID;
+			}	else	{
+				if( name != null)
+					uniqueID += "_n" + name;
+			}
+		}
+
+		return uniqueID;
+	}
+	
 
 	protected boolean sessionWindow  = false;
 

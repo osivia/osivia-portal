@@ -32,6 +32,7 @@ import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.portalobjects.DynamicWindow;
 
 /**
  * Ajout des attributs spécifiques au PIA dans les requêtes des portlets
@@ -84,6 +85,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 				}
 				if (window.getDeclaredProperty("osivia.cms.scope") != null) {
 					logger.debug("osivia.cms.scope " + window.getDeclaredProperty("osivia.cms.scope"));
+				}
+				
+				
+				if( window instanceof DynamicWindow)	{
+					String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
+					if( uniqueID != null && uniqueID.length() > 1)	{
+						invocation.setAttribute("osivia.window.path", windowId);
+						invocation.setAttribute("osivia.window.uniqueID", uniqueID);
+					}
 				}
 
 			}

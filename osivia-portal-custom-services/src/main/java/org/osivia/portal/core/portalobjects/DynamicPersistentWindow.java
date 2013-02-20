@@ -37,6 +37,8 @@ public class DynamicPersistentWindow extends DynamicWindow {
 	private static Log logger = LogFactory.getLog(DynamicPersistentWindow.class);
 
 	
+
+	
 	@Override
 	public Page getPage() {
 		if( page != null)

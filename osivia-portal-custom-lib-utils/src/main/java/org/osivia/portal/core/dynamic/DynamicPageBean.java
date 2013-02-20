@@ -18,6 +18,8 @@ public class DynamicPageBean implements Serializable {
 	protected PortalObjectId parentId  = null;	
 	protected PortalObjectId templateId = null;
 	protected int order= -1;
+	public String uniqueID = null;
+
 	
 	protected Map displayNames;
 	   
@@ -39,6 +41,9 @@ public class DynamicPageBean implements Serializable {
 		this.displayNames = displayNames;
 	}
 
+	public String getUniqueID() {
+		return uniqueID;
+	}
 
 	public static final int DYNAMIC_PRELOADEDPAGES_FIRST_ORDER = 500;
 	
@@ -97,6 +102,7 @@ public class DynamicPageBean implements Serializable {
 		this.displayNames = displayName;
 		this.templateId = templateId;
 		this.pageProperties = pageProperties;
+		this.uniqueID = "p_" + System.currentTimeMillis();
 
 
 	}

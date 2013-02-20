@@ -33,6 +33,8 @@ public class DynamicTemplateWindow extends DynamicWindow {
 
 	private static Log logger = LogFactory.getLog(DynamicTemplateWindow.class);
 	
+
+	
 	
 	/* window dynamique */
 	public DynamicTemplateWindow( TemplatePage page,String path, Object context, DynamicPortalObjectContainer dynamicContainer, String uri, Map<String,String> localProperties, DynamicWindowBean dynaBean)	{

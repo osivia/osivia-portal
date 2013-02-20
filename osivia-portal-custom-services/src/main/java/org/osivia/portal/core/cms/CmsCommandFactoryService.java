@@ -276,19 +276,28 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          {
             // ignore
          }      
-         
-    
-
-  
-         
-            
-
-             
       }
 
 
-         return new CmsCommand( pagePath, cmsPath, pageParams, contextualization,  displayContext, hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb, portalPersistentName);
+         CmsCommand cmsCommand =  new CmsCommand( pagePath, cmsPath, pageParams, contextualization,  displayContext, hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb, portalPersistentName);
 
+
+         try
+         {
+         if (parameterMap.get("skipPortletCacheInitialization") != null)	
+        	 if ("1".equals( URLDecoder.decode(parameterMap.get("skipPortletCacheInitialization")[0], "UTF-8")))
+        			 cmsCommand.setSkipPortletInitialisation(true);
+         }
+	         
+	            
+         catch (UnsupportedEncodingException e)
+         {
+            // ignore
+         }   
+            return cmsCommand;
+     
+
+         
    }
 
 }

@@ -102,6 +102,11 @@ public class CmsCommand extends DynamicCommand {
 	private String addToBreadcrumb;
 	private String portalPersistentName;
 	private boolean insertPageMarker = true;
+	private boolean skipPortletInitialisation = false;
+
+	public void setSkipPortletInitialisation(boolean skipPortletInitialisation) {
+		this.skipPortletInitialisation = skipPortletInitialisation;
+	}
 
 	public boolean isInsertPageMarker() {
 		return insertPageMarker;
@@ -1149,7 +1154,7 @@ public class CmsCommand extends DynamicCommand {
 			
 			
 			
-			if (cmsNav != null || isPageToDisplayUncontextualized ) {
+			if ( ((cmsNav != null || isPageToDisplayUncontextualized )) && !skipPortletInitialisation ){
 
 				/* Reinitialisation des renders parameters et de l'état */
 
@@ -1260,33 +1265,16 @@ public class CmsCommand extends DynamicCommand {
 			}
 
 			if (displayContent) {
+				
+				
+				
+				
+				
+				
 
 				/* Affichage du contenu */
 
 				CMSItem cmsItemToDisplay = cmsItem;
-
-				/*
-				 * // On vérifie les droits d'accès
-				 * 
-				 * if( cmsItemToDisplay == null) {
-				 * 
-				 * try {
-				 * 
-				 * cmsItemToDisplay =
-				 * getCMSService().getContent(cmsReadItemContext,
-				 * cmsPath.toString());
-				 * 
-				 * } catch (CMSException e) {
-				 * 
-				 * if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN) return
-				 * new SecurityErrorResponse(e,
-				 * SecurityErrorResponse.NOT_AUTHORIZED, false);
-				 * 
-				 * if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) return
-				 * new UnavailableResourceResponse(cmsPath, false);
-				 * 
-				 * throw e; } }
-				 */
 
 				CMSServiceCtx handlerCtx = new CMSServiceCtx();
 
@@ -1316,37 +1304,7 @@ public class CmsCommand extends DynamicCommand {
 
 				Map<String, String> windowProperties = contentProperties.getWindowProperties();
 
-				/*
-				 * Gestion des retours sur un contenu (croix supérieure droite)
-				 * 
-				 * Retour à l'état précédent
-				 */
 
-				// Maintenant géré de manière directement dans
-				// startDynamicWindowCommand
-
-				/*
-				 * PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState(
-				 * getControllerContext());
-				 * 
-				 * if( markerInfo != null) {
-				 * 
-				 * ViewPageCommand pageCmd = new
-				 * ViewPageCommand(markerInfo.getPageId());
-				 * 
-				 * PortalURL url = new
-				 * PortalURLImpl(pageCmd,getControllerContext(), null, null);
-				 * 
-				 * String closeUrl = url.toString();
-				 * 
-				 * if( closeUrl.indexOf("/pagemarker/") != -1) { String
-				 * pageMarker = markerInfo.getPageMarker();
-				 * 
-				 * closeUrl =
-				 * closeUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"
-				 * +pageMarker+"/"); } windowProperties.put(
-				 * "osivia.dynamic.close_url", closeUrl); }
-				 */
 
 				// No page params
 
