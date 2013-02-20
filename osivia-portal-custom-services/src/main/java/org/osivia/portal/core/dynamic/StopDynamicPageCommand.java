@@ -87,6 +87,19 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
 						ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
 				
+				
+				
+				/* On regarde si la page appelante est mémorisée */
+				
+				String closeUrl = page.getProperty("osivia.dynamic.close_url");
+				
+				if( closeUrl != null)	{
+					return new RedirectionResponse(closeUrl);
+				}
+
+				
+				/* Sinon, on prend le dernier onglet */
+				
 				if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))	{
 
 

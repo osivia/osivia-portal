@@ -20,7 +20,7 @@ public class DynamicPageBean implements Serializable {
 	protected int order= -1;
 	public String uniqueID = null;
 
-	
+
 	protected Map displayNames;
 	   
 	protected boolean closable = true;

@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -31,6 +32,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.response.PortletWindowActionResponse;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -47,6 +49,9 @@ import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.pagemarker.PageMarkerInfo;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.WindowStateMarkerInfo;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
@@ -100,7 +105,46 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 			"osivia:service=DynamicPortalObjectContainer");
 			
-			dynamicCOntainer.addDynamicPage(new DynamicPageBean(parent, pageName, displayNames, potemplateid, props));
+			
+			
+			
+			
+			Map<String, String> properties = new HashMap<String, String>();
+
+			for (String dynaKey : props.keySet()) {
+				properties.put(dynaKey, props.get(dynaKey));
+				
+			}
+
+
+			// Mémorisation de la page avant l'appel
+			PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState( getControllerContext());
+			
+			if( markerInfo != null)	{
+				ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
+
+				PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+				String backUrl = url.toString();
+				
+	       		 if( backUrl.indexOf("/pagemarker/") != -1)	{
+	        		String pageMarker = markerInfo.getPageMarker();
+         			backUrl =  backUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+pageMarker+"/");
+        		 }
+	       		 
+		       	properties.put("osivia.dynamic.close_url",backUrl);
+			}
+			
+				
+			
+			DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, displayNames, potemplateid, properties);
+			
+			
+			
+			
+			
+			
+			
+			dynamicCOntainer.addDynamicPage(pageBean);
 			
 			PortalObject page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(pageId);	
 
