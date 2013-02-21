@@ -92,6 +92,9 @@ public class ProfilManager implements IProfilManager {
 		}
 
 		filteredRoles.add(new FilteredRole(SecurityConstants.UNCHECKED_ROLE_NAME, "Utilisateurs anonymes"));
+		
+		if( "1".equals(System.getProperty("sso.undeclared-user")))
+			filteredRoles.add(new FilteredRole("undeclared-user", "Utilisateurs non déclarés"));
 
 		return filteredRoles;
 

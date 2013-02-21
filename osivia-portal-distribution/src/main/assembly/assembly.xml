@@ -121,6 +121,7 @@
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-portlet-lib.jar</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-server-lib.jar</exclude>
 
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/login-config.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/data/default-object.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/hibernate/portal/domain.hbm.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/identity/identity-config.xml</exclude>
