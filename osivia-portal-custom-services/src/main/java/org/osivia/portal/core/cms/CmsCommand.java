@@ -911,20 +911,15 @@ public class CmsCommand extends DynamicCommand {
 								
 								/* TODO: check by jss! */
 								if (ECMPageTemplate == null) {
-									List<CMSItem> childrenCmsItemNav = getCMSService().getPortalNavigationSubitems(
-											cmsReadNavContext, basePublishPath, pathToCheck);
-									if (childrenCmsItemNav != null) {
-										boolean cmsItemNavHasChildren = childrenCmsItemNav.size() > 0;
 										boolean isChildPath = (cmsPath.contains(pathToCheck))
 												&& !(cmsPath.equalsIgnoreCase(pathToCheck));
-										if (isChildPath && cmsItemNavHasChildren) {
+										if (isChildPath) {
 											String childrenPageTemplate = cmsItemNav.getProperties().get(
 													"childrenPageTemplate");
 											if (StringUtils.isNotEmpty(childrenPageTemplate)) {
 												ECMPageTemplate = childrenPageTemplate;
 											}
 										}
-									}
 								}
 
 								if (computePageTemplate) {
