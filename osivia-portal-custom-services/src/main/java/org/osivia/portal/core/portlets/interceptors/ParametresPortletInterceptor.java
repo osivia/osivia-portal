@@ -7,19 +7,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.api.PortalURL;
+
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
@@ -31,6 +40,7 @@ import org.osivia.portal.api.path.PortletPathItem;
 
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 
@@ -92,7 +102,22 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 					String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
 					if( uniqueID != null && uniqueID.length() > 1)	{
 						invocation.setAttribute("osivia.window.path", windowId);
+						
+							
+						/* Le path CMS identifie de manière unique la session */
+						
+						NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+					   PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
+
+						String cmsUniqueID[] = null;
+						if (pageState != null)
+							cmsUniqueID = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"));
+						
+						
+						if( cmsUniqueID != null && cmsUniqueID.length == 1)
+							uniqueID += "_cms_" + cmsUniqueID[0];
 						invocation.setAttribute("osivia.window.uniqueID", uniqueID);
+
 					}
 				}
 
@@ -130,7 +155,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 			Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
 			if (userDatas != null)
 				attributes.put("osivia.userDatas", userDatas);
-
+			
 			invocation.setRequestAttributes(attributes);
 		}
 
@@ -282,6 +307,55 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 				}// if showbar
 				
+
+
+				
+				
+				if( attributes.get("osivia.asyncReloading.ajaxId") != null)	{
+
+
+					Map<String, String[]> newNS = new HashMap<String, String[]>();
+
+					StateString navState = invocation.getNavigationalState();
+
+					if (navState != null) {
+
+						Map<String, String[]> oldNS = StateString.decodeOpaqueValue(invocation.getNavigationalState().getStringValue());
+
+						for (String key : oldNS.keySet()) {
+							newNS.put(key, oldNS.get(key));
+						}
+					}
+
+					// Ajout ajaxId dans etat navigation
+
+					newNS.put("ajaxId", new String[] { (String) attributes.get("osivia.asyncReloading.ajaxId") });
+
+					// To pass cache
+					newNS.put("ajaxTs", new String[] { "" + System.currentTimeMillis() });
+
+					navState = StateString.create(StateString.encodeAsOpaqueValue(newNS));
+
+					ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
+							PortalObjectPath.CANONICAL_FORMAT), invocation.getMode(), invocation.getWindowState(), navState);
+
+					PortalURL portalURL = new PortalURLImpl(renderCmd, ctx, null, null);
+
+					StringBuffer reloadingCode = new StringBuffer();
+
+					reloadingCode.append("<script type=\"text/javascript\">");
+
+					String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(
+							PortalObjectPath.SAFEST_FORMAT);
+
+					reloadingCode.append("setTimeout( \"asyncUpdatePortlet('" + safestWindowId + "', '" + portalURL.toString()
+							+ "')\", 2000); \n");
+
+					reloadingCode.append("</script>");
+
+					updatedFragment = updatedFragment + reloadingCode.toString();
+
+				}
 
 				return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment,
 						fr.getTitle(), fr.getCacheControl(), fr.getNextModes());

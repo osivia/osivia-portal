@@ -1102,6 +1102,13 @@ public class CmsCommand extends DynamicCommand {
 				}
 
 				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
+				
+				/* Le path CMS identifie de manière unique la session
+				 * puisqu'il s'agit d'une nouvelle page
+				 *  
+				 *  */
+				
+				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"), new String[] { ""+System.currentTimeMillis() });
 
 				if (layoutPath != null)
 					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),

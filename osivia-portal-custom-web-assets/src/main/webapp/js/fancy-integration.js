@@ -24,6 +24,23 @@ function setCallbackParams( id, url)	{
 	callbackUrl = url;
  }
 
+
+
+function asyncUpdatePortlet( windowId, url)	{
+ 	var divElt = document.getElementById(windowId);
+
+	 if( divElt != null)
+			// reload portlet
+			updatePortletContent( divElt, url);
+		else
+			// reload full page
+			window.location.replace(url);
+ }
+
+
+
+
+
 	var $JQry = jQuery.noConflict();
 
 	$JQry(document).ready(function() {

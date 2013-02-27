@@ -13,8 +13,18 @@ public class NavigationItem {
 	private Object mainDoc;
 	private List<Object> children;
 	private CMSItem adaptedCMSItem;
+	private boolean unfetchedChildren =  false;
 	
-	
+	public boolean isUnfetchedChildren() {
+		return unfetchedChildren;
+	}
+
+
+	public void setUnfetchedChildren(boolean unfetchedChildren) {
+		this.unfetchedChildren = unfetchedChildren;
+	}
+
+
 	public Object getMainDoc() {
 		return mainDoc;
 	}

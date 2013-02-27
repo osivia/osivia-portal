@@ -637,6 +637,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath",  getTargetContextPath( (PortalCommand) cmd));
 
+
+
 		}
 		
 		
