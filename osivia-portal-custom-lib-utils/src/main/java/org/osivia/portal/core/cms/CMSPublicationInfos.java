@@ -28,7 +28,6 @@ public class CMSPublicationInfos {
 	private String publishSpaceType = null;
 	private String publishSpacePath = null;
 	private String publishSpaceDisplayName = null;
-	private boolean publishSpaceInContextualization = false;
 
 	private boolean isLiveSpace = false;
 	
@@ -60,14 +59,6 @@ public class CMSPublicationInfos {
 
 	public void setPublishSpaceDisplayName(String publishSpaceDisplayName) {
 		this.publishSpaceDisplayName = publishSpaceDisplayName;
-	}
-
-	public boolean isPublishSpaceInContextualization() {
-		return publishSpaceInContextualization;
-	}
-
-	public void setPublishSpaceInContextualization(boolean publishSpaceInContextualization) {
-		this.publishSpaceInContextualization = publishSpaceInContextualization;
 	}
 
 	public String getDocumentPath() {
