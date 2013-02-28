@@ -382,7 +382,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 				if (spacePath != null) {
 					// Publication par path
 
-					CMSItem publishSpaceConfig = getCMSService().getPublicationConfig(cmxCtx, spacePath);
+					CMSItem publishSpaceConfig = getCMSService().getSpaceConfig(cmxCtx, spacePath);
 					if( publishSpaceConfig != null)	{
 						
 						String displayLiveVersion = publishSpaceConfig.getProperties().get("displayLiveVersion");

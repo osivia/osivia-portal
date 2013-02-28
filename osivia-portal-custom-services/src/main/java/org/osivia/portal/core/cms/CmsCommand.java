@@ -277,7 +277,7 @@ public class CmsCommand extends DynamicCommand {
 			CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
 			cmsReadItemContext.setControllerContext(ctx);
 				
-			publishSpaceConfig =  getCMSService().getPublicationConfig(cmsReadItemContext, currentPage.getProperty("osivia.cms.basePath"));
+			publishSpaceConfig =  getCMSService().getSpaceConfig(cmsReadItemContext, currentPage.getProperty("osivia.cms.basePath"));
 			
 			}
 		return publishSpaceConfig;
@@ -324,7 +324,7 @@ public class CmsCommand extends DynamicCommand {
 
 				if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
 					
-					CMSItem publishSpaceConfig = getCMSService().getPublicationConfig(cmsCtx, pubInfos.getPublishSpacePath());
+					CMSItem publishSpaceConfig = getCMSService().getSpaceConfig(cmsCtx, pubInfos.getPublishSpacePath());
 
 					if ("1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
 
@@ -765,7 +765,10 @@ public class CmsCommand extends DynamicCommand {
 
 						CMSItem publishSpace = null;
 						try {
-							publishSpace = getCMSService().getPortalPublishSpace(userCtx, cmsPath.toString());
+							//publishSpace = getCMSService().getPortalPublishSpace(userCtx, cmsPath.toString());
+							if (pubInfos.getPublishSpacePath() != null) {
+								publishSpace =  getCMSService().getSpaceConfig(cmsReadItemContext, pubInfos.getPublishSpacePath());
+							}
 
 						} catch (CMSException e) {
 
@@ -1092,8 +1095,10 @@ public class CmsCommand extends DynamicCommand {
 				// Mise à jour du path
 
 				if (cmsPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
+					//String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
+					String relPath = cmsPath.substring(basePublishPath.length());
 					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"),
-							new String[] { computeNavPath(cmsPath.substring(basePublishPath.length())) });
+							new String[] { relPath });
 				}
 
 				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
@@ -1236,7 +1241,7 @@ public class CmsCommand extends DynamicCommand {
 
 				
 
-			/* Affichage contenu */
+			/* Doit-on afficher le contenu en mode MAXIMIZED ? */
 
 			boolean displayContent = false;
 			boolean navigationPlayer = false;

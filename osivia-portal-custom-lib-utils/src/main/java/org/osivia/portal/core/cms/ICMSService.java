@@ -20,10 +20,8 @@ public interface ICMSService {
 	 */
 	public CMSPublicationInfos getPublicationInfos( CMSServiceCtx ctx, String path) throws CMSException;
 	
-	public CMSItem getPublicationConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
+	public CMSItem getSpaceConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
 
-	//A supprimer ??
-	public CMSItem getPortalPublishSpace( CMSServiceCtx ctx, String path) throws CMSException;
 	
 	public CMSItem getPortalNavigationItem( CMSServiceCtx ctx, String publishSpacePath, String path) throws CMSException;
 
