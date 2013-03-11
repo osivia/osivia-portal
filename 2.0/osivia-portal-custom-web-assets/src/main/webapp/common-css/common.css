@@ -1,0 +1,283 @@
+
+
+
+.fixed{
+	background-color: #CCCCCC;	
+}
+
+
+
+
+div#pageSettings .wizzardMenu .wizzardSettings  {
+    color: #FFFFFF;
+    font-size: x-small;
+    font-weight: bold;
+    margin: 0 0 0 20px;
+    padding: 6px 12px 0 0;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+div#pageSettings .wizzardMenu .wizzardNav {
+	
+    color: #FFFFFF;
+    font-size: x-small;
+    font-weight: bold;
+    margin: 0 0 0 20px;
+    padding: 6px 12px 0 0;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+
+div#pageSettings .wizzardMenu .templateEdit {
+    margin: 0 0 0 20px;
+    padding: 6px 12px 0 0;
+
+}
+
+div#pageSettings .wizzardMenu .templateEdit a {
+
+    color: #FFFFFF;
+    font-size: x-small;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+
+div#pageSettings .wizzardMenu .wizzardCacheInit  {
+    margin: 0 0 0 20px;
+    padding: 6px 12px 0 0;
+}
+
+div#pageSettings .wizzardMenu .wizzardCacheInit a {
+
+    color: #FFFFFF;
+    font-size: x-small;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+
+.wizzard-window-content	{
+	height: 400px;
+	overflow:scroll;
+}
+
+.wizzard-delete-content	{
+	
+		height: 100px;
+	}
+
+.wizzard-navigation-content	{
+	width: 200px;
+	height: 600px;
+	overflow:scroll;
+}
+
+
+.wizzard-label	{
+	width: 200px;
+	float:left;
+
+}
+
+
+
+
+
+
+
+
+
+
+div#linkSettings{
+	padding: 2px;
+}
+
+
+#menu-options{
+	margin: 0px !important;
+	position: absolute;
+	z-index: 100;
+}
+
+
+
+.form-menu-option{
+	background-color: #CCCCCC;
+	margin-top: -3px;
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 0px;
+}
+
+.region-fieldset{
+	background-color: #eeeeee;
+	padding: 5px;	
+}
+
+.portlet-fieldset{
+	background-color: #FFFFFF;
+	padding: 5px;	
+}
+
+
+
+
+/* for the modal window for the page settings */
+.modalDialog_transparentDivs{	
+	filter:alpha(opacity=40);	/* Transparency */
+	opacity:0.4;	/* Transparency */
+	background-color: #AAA;
+	z-index: 10;
+	position:absolute; /* Always needed	*/
+}
+.modalDialog_contentDiv{
+	
+	border-top:1px solid #BBBBBB;
+	border-left:1px solid #BBBBBB;
+	border-right:2px solid #555555;
+	border-bottom:1px solid #555555;
+	
+	/*padding:2px;*/
+	z-index:100;/* Always needed	*/
+	position:absolute;	/* Always needed	*/
+	background-color:#FFF;	/* White background color for the message */
+}
+.modalDialog_contentDiv_shadow{
+	/*z-index:90*/;/* Always needed	- to make it appear below the message */
+	/*position:absolute;*/	/* Always needed	*/
+	/*background-color:#555;*/
+	/*filter:alpha(opacity=30);*/	/* Transparency */
+	/*opacity:0.3;*/	/* Transparency */	
+}
+
+.close-settings{
+	background-image: url(../images/cross.png);
+	background-position: right center;
+	background-repeat: no-repeat;
+	background-color: #555555;
+ 	height: 22px;		
+	
+}
+
+.pia-window-settings	{
+	background: #DDDDDD ;
+
+	border-top:1px solid #BBBBBB;
+	border-left:1px solid #BBBBBB;
+	border-right:2px solid #555555;
+	border-bottom:1px solid #555555;
+
+	font-size: 12px;
+	font-weight: bold;
+	padding: 4px 0 4px 18px;	
+	margin-bottom: 5px;
+}
+
+.clickable-element	{
+	cursor: pointer;
+	}
+
+.title-settings	{
+ 	color: #FFFFFF;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+div.toggleStyle	{
+background: none repeat scroll 0 0 #CCCCCC;
+}
+/*
+<div id="maximized_background" style="height: 1420px;"> &nbsp; </div>
+
+#maximized_background {
+background-attachment:scroll;
+background-color:white;
+background-image:none;
+background-position:0 50%;
+background-repeat:repeat;
+display:block;
+height:100%;
+left:0;
+opacity:0.4;
+position:absolute;
+width:100%;
+z-index:10;
+}
+
+#regionMaximized div.portlet-container	{
+	z-index:11;
+	position: relative;
+}
+
+*/
+
+
+
+
+
+
+
+/*
+#admin-mode {
+	background-color:white;
+	z-index:11;
+	position: absolute;
+	display:block;
+	left:150px;
+	top:150px;
+	height:300px;
+	width:550px;
+	border-top:1px solid #BBBBBB;
+	border-left:1px solid #BBBBBB;
+	border-right:2px solid #555555;
+	border-bottom:1px solid #555555;
+	padding-top:10px;
+	padding-left:10px;
+	padding-right:10px;
+	padding-bottom:10px;
+	
+	
+}*/
+
+
+#admin-mode-window {
+	z-index:200;
+	position: absolute;
+	display:block;
+	left:200px;
+	top:200px;
+	height:450px;
+	width:600px;
+	border-top:1px solid #BBBBBB;
+	border-left:1px solid #BBBBBB;
+	border-right:2px solid #555555;
+	border-bottom:1px solid #555555;
+}
+
+
+
+
+
+#admin-mode-title {
+	background-image: url(../images/cross.png);
+	background-position: right center;
+	background-repeat: no-repeat;
+	background-color: #555555;
+	cursor: pointer;
+ 	height: 22px;	
+}
+#admin-mode-content	{
+	background-color: white;
+    height: 407px;
+    margin: 0;
+    overflow: auto;
+    padding: 10px;
+}
+
+
+
