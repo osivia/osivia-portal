@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.osivia.portal.core</groupId>
 		<artifactId>parent</artifactId>
-		<version>2.0</version>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.osivia.portal.core</groupId>
 	<artifactId>osivia-portal-jbp-core-lib</artifactId>
-	<version>2.0</version>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Portal core lib library</name>
 	
@@ -20,13 +20,13 @@
 	 	<dependency>
 			<groupId>org.osivia.portal.core</groupId>
 	     		<artifactId>osivia-portal-custom-lib-utils</artifactId>
-	     		<version>2.0</version>
+	     		<version>2.0-SNAPSHOT</version>
 	     		<scope>provided</scope>
 		</dependency>
 	 	<dependency>
 			<groupId>org.osivia.portal</groupId>
 	     		<artifactId>osivia-portal-api</artifactId>
-	     		<version>2.0</version>
+	     		<version>2.0-SNAPSHOT</version>
 	     		<scope>provided</scope>
 		</dependency>
 
