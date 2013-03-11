@@ -418,7 +418,7 @@
 	</build>
 
   <scm>
-    <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/trunk</developerConnection>
+    <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/branches/2.0</developerConnection>
   </scm>
 
  <distributionManagement>
