@@ -679,6 +679,11 @@ function disableOrNotPreviousFormValues(cmsPathInput){
 			String bshScript =  window.getProperty("osivia.bshScript");
 			if( bshScript == null)
 				bshScript = "";
+			
+			
+			String cacheID =  window.getProperty("osivia.cacheID");
+			if( cacheID == null)
+				cacheID = "";
 	
 
 			
@@ -831,15 +836,6 @@ function disableOrNotPreviousFormValues(cmsPathInput){
 									<input type="checkbox" name="printPortlet" value="1" <%=printPortlet%>/>
 								</td>
 							</tr>
-	
-							<tr>
-								<td>
-									Id. personnalisation : 
-								</td>
-								<td>
-									<input name="idPerso" value="<%=idPerso%>" />
-								</td>
-							</tr>
 
 
 							<tr>
@@ -860,7 +856,27 @@ function disableOrNotPreviousFormValues(cmsPathInput){
 									<%= formatter.formatPortletFilterScopeList("conditionalScope", conditionalScope) %>
 								</td>
 							</tr>
+							
+							
+	
+							<tr>
+								<td>
+									Id. personnalisation : 
+								</td>
+								<td>
+									<input name="idPerso" value="<%=idPerso%>" />
+								</td>
+							</tr>
 
+
+							<tr>
+								<td>
+									Id. cache partagé : 
+								</td>
+								<td>
+									<input name="cacheID" value="<%=cacheID%>" />
+								</td>
+							</tr>
 							
 		
 					<tr>

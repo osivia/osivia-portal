@@ -70,7 +70,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					String printPortlet = null;
 					String conditionalScope = null;
 					String bshActivation;
-					String bshScript;					
+					String bshScript;	
+					String cacheID;
 
 
 					if (parameterMap.get("windowId") != null) {
@@ -139,9 +140,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 						else
 							bshScript = "";
 
+						if (parameterMap.get("cacheID") != null)
+							cacheID = URLDecoder.decode(((String[]) parameterMap.get("cacheID"))[0], "UTF-8");
+
+						else
+							cacheID = "";
+
 
 						return new ChangeWindowSettingsCommand(windowId, style, displayTitle,title, displayDecorators,
-								idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript);
+								idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID);
 					}
 				}
 
