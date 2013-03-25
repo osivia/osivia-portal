@@ -1,6 +1,7 @@
 
 package org.osivia.portal.core.portlets.interceptors;
 
+import org.jboss.portal.portlet.invocation.ActionInvocation;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.ResourceInvocation;
@@ -92,6 +93,12 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
       UserContext userContext = invocation.getUserContext();
       
       ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+      
+      
+      //v2.0-SP1 : cache init on action
+      if (invocation instanceof ActionInvocation)	{
+    	  userContext.setAttribute(scopeKey, null);
+      }
 
       //
       if (invocation instanceof RenderInvocation)
