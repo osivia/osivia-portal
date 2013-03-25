@@ -962,7 +962,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		/* Controle des droits  et tri des pages */
 		
 		PortalAuthorizationManager pam = portalAuthorizationManagerFactory.getManager();
-		SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+//		SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+		SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.nameComparator);
 		for (PortalObject po : parent.getChildren(PortalObject.PAGE_MASK)) {
 
 			PortalObjectPermission perm = new PortalObjectPermission(po.getId(), PortalObjectPermission.VIEW_MASK);

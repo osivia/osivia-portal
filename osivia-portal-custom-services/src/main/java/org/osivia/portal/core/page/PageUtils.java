@@ -1,19 +1,12 @@
 package org.osivia.portal.core.page;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Locale;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
-
-import com.arjuna.ats.internal.jdbc.drivers.modifiers.list;
 
 
 public class PageUtils {
@@ -68,6 +61,32 @@ public class PageUtils {
 			}
 
 		}
+	};
+	
+	public static final Locale FR_LOCALE = Locale.FRENCH;
+	
+	public static final Comparator nameComparator = new Comparator() {
+
+		public int compare(Object o1, Object o2) {
+			
+			Page page1 = ((Page) o1);
+			Page page2 = ((Page) o2);
+
+			String page1Name = page1.getDisplayName().getString(FR_LOCALE, true);
+			if(page1Name == null)
+				page1Name = page1.getName();
+			
+			String page2Name = page2.getDisplayName().getString(FR_LOCALE, true);
+			if(page2Name == null)
+				page2Name = page2.getName();
+			
+			int result = page1Name.compareToIgnoreCase(page2Name);
+			if(result == 0)
+				result = page1.getId().compareTo(page2.getId());
+			
+			return result;
+		}
+		
 	};
 
 }
