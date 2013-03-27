@@ -637,6 +637,28 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath",  getTargetContextPath( (PortalCommand) cmd));
 
+			
+			/* Inject cms Path */
+			
+			ControllerContext controllerCtx = cmd.getControllerContext();
+			NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+					.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+			Page page = null;
+			if (cmd instanceof RenderPageCommand)
+				page = ((RenderPageCommand) cmd).getPage();
+			else
+				page = ((RenderWindowCommand) cmd).getPage();
+			
+		
+			PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
+
+			String sPath[] = null;
+			if (pageState != null)
+				sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+
+			if (sPath != null && sPath.length > 0)
+				cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[ 0]);
 
 
 		}

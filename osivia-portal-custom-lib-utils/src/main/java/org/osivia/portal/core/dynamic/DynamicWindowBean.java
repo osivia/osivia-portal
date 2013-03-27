@@ -25,6 +25,10 @@ public class DynamicWindowBean implements Serializable{
 	protected String uri = null;
 	public String uniqueID = null;
 	
+	public void setUniqueID(String uniqueID) {
+		this.uniqueID = uniqueID;
+	}
+
 	private String initialPageMarker = null;
 
 	public String getInitialPageMarker() {
@@ -43,14 +47,14 @@ public class DynamicWindowBean implements Serializable{
 
 	Map<String, String> properties;
 	
-	public DynamicWindowBean(Page page, String name, String uri, Map<String, String> properties, String pageMarker) {
+	public DynamicWindowBean(PortalObjectId pageId, String name, String uri, Map<String, String> properties, String pageMarker) {
 		super();
 		
-		windowId = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString()
+		windowId = new PortalObjectId("", new PortalObjectPath(pageId.getPath().toString()
 				.concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 
 
-		this.pageId = page.getId();
+		this.pageId = pageId;
 		this.name = name;
 		this.uri = uri;
 		this.properties = properties;

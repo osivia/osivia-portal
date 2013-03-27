@@ -66,11 +66,17 @@ public abstract class DynamicWindow extends WindowImpl {
 					uniqueID += pageUID;
 			}
 			
+			String windowUID = null;
+			
 			if( dynamicWindowBean != null)	{
-				String windowUID = dynamicWindowBean.getUniqueID();
-				if( windowUID != null)
-					uniqueID += windowUID;
-			}	else	{
+				 windowUID = dynamicWindowBean.getUniqueID();
+
+			}	
+			
+			if( windowUID != null)
+				uniqueID += windowUID;
+			
+			else	{
 				if( name != null)
 					uniqueID += "_n" + name;
 			}
@@ -90,7 +96,8 @@ public abstract class DynamicWindow extends WindowImpl {
 	public void setSessionWindow(boolean sessionWindow) {
 		this.sessionWindow = sessionWindow;
 	}
-
+	
+	
 	@Override
 	public PortalObject getParent() {
 		 return getPage();

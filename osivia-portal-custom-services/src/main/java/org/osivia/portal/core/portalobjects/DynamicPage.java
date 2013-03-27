@@ -50,11 +50,9 @@ public abstract class DynamicPage extends PageImpl {
 
 			dynamicChilds = new HashMap<String, DynamicWindow>();
 		
-			for( DynamicWindowBean dynamicWindow : dynamicContainer.getDynamicWindows())	{
-			if(dynamicWindow.getPageId().equals(getId()))	{
+			for( DynamicWindowBean dynamicWindow : dynamicContainer.getPageWindows(getId()))	{
 				DynamicWindow child = createSessionWindow (dynamicWindow);
 				dynamicChilds.put(child.getName(), child);
-				}
 			}
 		}
 		

@@ -22,6 +22,7 @@ public interface IDynamicObjectContainer {
 	public void setDynamicWindows( List<DynamicWindowBean> windows);	
 	public void removeDynamicWindow( String dynamicWindowId );	
 	
+	public List<DynamicWindowBean> getPageWindows( PortalObjectId pageId);
 	
 	public void addDynamicPage( DynamicPageBean window );
 	public List<DynamicPageBean> getDynamicPages( );

@@ -268,7 +268,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 			
 			
 			/* Création de la nouvelle fenêtre */
-			dynamicCOntainer.addDynamicWindow(new DynamicWindowBean(page, windowName, instanceId, properties, controlledPageMarker));
+			dynamicCOntainer.addDynamicWindow(new DynamicWindowBean(page.getId(), windowName, instanceId, properties, controlledPageMarker));
 			
 			
 			

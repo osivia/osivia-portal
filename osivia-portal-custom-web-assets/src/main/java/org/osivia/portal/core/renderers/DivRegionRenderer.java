@@ -61,12 +61,19 @@ public class DivRegionRenderer extends AbstractObjectRenderer
       }
  
       // Lien ajout portlet
-      if( "1".equals(rendererContext.getProperty("osivia.wizzardMode")))	{
+      if( "pageTemplate".equals(rendererContext.getProperty("osivia.wizzardMode")))	{
     	  markup.print("<div>");
     	  markup.print("<a href=\"#\" onClick=\""+rendererContext.getProperty("osivia.addPortletUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
     	  markup.print("</div>");            
       }
     
+      if( "cmsEdition".equals(rendererContext.getProperty("osivia.wizzardMode")))	{
+    	  markup.print("<div>");
+    	  markup.print("<a class=\"fancyframe_refresh no-ajax-link\" href=\""+rendererContext.getProperty("osivia.addPortletUrl")+"\" <img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
+    	  markup.print("</div>");            
+      }
+
+      
       
    }
 
