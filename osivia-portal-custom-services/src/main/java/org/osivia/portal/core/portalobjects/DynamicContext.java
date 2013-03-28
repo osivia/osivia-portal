@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
@@ -15,30 +17,31 @@ import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.page.PortalObjectContainer;
 
 
 
 @SuppressWarnings("unchecked")
-public  class DynamicPortal extends PortalImpl {
+public  class DynamicContext extends ContextImpl {
 	
-	protected static final Log log = LogFactory.getLog(DynamicPortal.class);
+	protected static final Log log = LogFactory.getLog(DynamicContext.class);
 
 	protected AbstractPortalObjectContainer.ContainerContext containerContext;
 	protected DynamicPortalObjectContainer dynamicContainer;
 	
 	PortalObjectContainer container;
 	
-	PortalImpl orig;
-	List<Page> children;
-	Map<String, DynamicPage> dynamicChilds;
+	ContextImpl orig;
+	List<DynamicPortal> children;
 	
 	protected String name;
 	
-	public DynamicPortal(PortalObjectContainer container, PortalImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	public DynamicContext(PortalObjectContainer container, ContextImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
 		
 		this.dynamicContainer = dynamicContainer;
@@ -55,47 +58,50 @@ public  class DynamicPortal extends PortalImpl {
 	}
 	
 	
-	
-	protected Map<String, DynamicPage> getDynamicChilds ()	{
-		
+	  public Portal getDefaultPortal()
+	   {
+		  ServerInvocation invocation = dynamicContainer.getInvocation();
+		  
+		  /* Recherche parmi les hosts déclarés */
+		  
+		  if( invocation != null){
+			  HttpServletRequest request = invocation.getServerContext().getClientRequest();
+			  String host = request.getServerName();
+			  
+			  
+			  if( host != null)	{
+				  getChildren();
+				  for( DynamicPortal portal: children){
+					 if( host.equals( portal.getDeclaredProperty("osivia.site.hostName")))
+							 return portal;
+				 }
+			  }
+		  }
 
-		if( dynamicChilds == null){
-
-			dynamicChilds = new HashMap<String, DynamicPage>();
-		
-			for( DynamicPageBean dynamicPage : dynamicContainer.getDynamicPages())	{
-				if(dynamicPage.getParentId().equals(getId()))	{
-					
-					try	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
-					
-
-					dynamicChilds.put(child.getName(), child);
-					
-					} catch( Exception e){
-						throw new RuntimeException("Can't instantiate template " + dynamicPage.getTemplateId(), e);
-					}
-				}
-			}
-		}
-		
-		return dynamicChilds;
-	}
+		  
+	      PortalObject child = orig.getDefaultPortal();
+	      if (child instanceof Portal)
+	      {
+	         return (Portal)child;
+	      }
+	      if (child != null)
+	      {
+	         log.warn("Default child is not a portal " + child);
+	      }
+	      return null;
+	   }
 	
 	@Override
 	public Collection getChildren() {
 		
 		if( children == null)	{
 		
-			children = new ArrayList<Page>();
+			children = new ArrayList<DynamicPortal>();
 		
-		for( Object po: orig.getChildren())	{
+			for( Object po: orig.getChildren())	{
 
-				children.add( (Page) po);
-
+				children.add( new DynamicPortal(container, (PortalImpl) po, dynamicContainer));
 			}
-		
-		children.addAll(getDynamicChilds ().values());
 		}
 
 
@@ -105,7 +111,7 @@ public  class DynamicPortal extends PortalImpl {
 	
 	@Override
 	public Collection getChildren(int wantedMask) {
-		if( wantedMask != PortalObject.PAGE_MASK)
+		if( wantedMask != PortalObject.PORTAL_MASK)
 			return super.getChildren(wantedMask);
 		return getChildren();
 		
@@ -115,13 +121,15 @@ public  class DynamicPortal extends PortalImpl {
 	
 	@Override
 	public PortalObject getChild(String name) {
+
+		 getChildren();
+		 for( DynamicPortal portal: children){
+			 if( name.equals(portal.getName()))
+					 return portal;
+		 }
 		
-		Page child = getDynamicChilds().get(name);
+		 return null;
 		
-		if( child != null)
-			return child;
-		else 
-			return orig.getChild(name);
 	}
 
 	
@@ -168,7 +176,7 @@ public  class DynamicPortal extends PortalImpl {
 
 	@Override
 	public PortalObject getParent() {
-		return new DynamicContext(container, (ContextImpl) orig.getParent(), dynamicContainer);
+		return orig.getParent();
 	}
 	
 	@Override
@@ -187,15 +195,6 @@ public  class DynamicPortal extends PortalImpl {
 		return orig.getDeclaredProperties();
 	}
 
-	
-	 public Set getSupportedWindowStates()
-	   {
-	      return orig.getSupportedWindowStates();
-	   }
-	  public Set getSupportedModes()
-	   {
-	      return orig.getSupportedModes();
-	   }
 
 	
 

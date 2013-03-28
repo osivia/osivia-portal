@@ -2,9 +2,13 @@ package org.osivia.portal.core.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.core.impl.model.portal.ContextImpl;
+import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.impl.model.portal.PersistentPortalObjectContainer;
+import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
@@ -62,5 +66,16 @@ public class PortalObjectContainer extends PersistentPortalObjectContainer {
 
 
 	}
+	
+	
+	  public Context getContext(String namespace)
+	   {
+		  
+		  PortalObject object = getDynamicObjectContainer().getObject(this, new PortalObjectId("", PortalObjectPath.ROOT_PATH));
 
+		return (Context) object;
+
+	   }
+	
+	
 }

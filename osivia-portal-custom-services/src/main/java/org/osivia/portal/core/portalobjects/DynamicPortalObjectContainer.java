@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.AbstractInvocationContext;
 import org.jboss.portal.common.invocation.Invocation;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.impl.model.portal.ContextImpl;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
@@ -229,8 +230,49 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		return windows;
 	}
+	
+	// TODO : positionner en amont pour optimiser les perfs (stack Server)
+	
+	
+	public ServerInvocation getInvocation()	{
+		
+		ServerInvocation invocation = null;
+		
+		
+		Stack stack = getTracker().getStack();
+
+		// Inverse order
+		List commands = new ArrayList();
+		
+		for (Object cmd : stack)
+			commands.add(0, cmd);
+
+
+		for (Object cmd : commands) {
+			if (cmd instanceof ControllerCommand) {
+
+				invocation = ((ControllerCommand) cmd).getControllerContext().getServerInvocation();
+
+				break;
+
+			}
+			if (cmd instanceof ServerInvocation) {
+
+				invocation = ((ServerInvocation) cmd);
+
+				break;
+
+			}
+
+		}
+
+		return invocation;
+	}
+	
+	
 
 	public List<DynamicWindowBean> getEditableWindows(PortalObjectId pageId) {
+		
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
 		/* Appel des windows editable dans le CMS */
@@ -242,6 +284,12 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			if (pagePath == null || !pagePath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME))
 				return windows;
 
+			
+			
+			// TODO : positionner en amont pour optimiser les perfs (stack Server, stack Command)
+			
+			
+			
 			Stack stack = getTracker().getStack();
 
 			Invocation invocation = null;
@@ -532,8 +580,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		// Accès direct à une window dynamique (stockée dans la session)
 		PortalObjectPath pagePath = id.getPath().getParent();
+		
+		
+		if( pagePath != null)	{
+		
 		PortalObjectId pageId = new PortalObjectId("", pagePath);
 
+		
+		
 		for (DynamicWindowBean dynamicWindow : getPageWindows(pageId)) {
 			if (dynamicWindow.getWindowId().equals(id)) {
 
@@ -652,11 +706,13 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}
 
 		}
+	}
 
 		PortalObject object = container.getNonDynamicObject(id);
 
 		boolean dynamicPage = false;
 		boolean dynamicPortal = false;
+		boolean dynamicContext = false;
 
 		if ((cmd instanceof PageCommand || cmd instanceof PortalCommand || cmd instanceof DynamicCommand || cmd instanceof PermLinkCommand || cmd instanceof MonEspaceCommand)
 				&& object instanceof PageImpl) {
@@ -666,6 +722,11 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		if ((cmd instanceof PageCommand || cmd instanceof PortalCommand || cmd instanceof DynamicCommand || cmd instanceof PermLinkCommand || cmd instanceof MonEspaceCommand)
 				&& object instanceof PortalImpl) {
 			dynamicPortal = true;
+		}
+		
+		if ((cmd instanceof PageCommand || cmd instanceof PortalCommand || cmd instanceof DynamicCommand || cmd instanceof PermLinkCommand || cmd instanceof MonEspaceCommand)
+				&& object instanceof ContextImpl) {
+			dynamicContext = true;
 		}
 
 		if (cmd instanceof ServerInvocation && object instanceof PortalImpl) {
@@ -677,6 +738,12 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			// (indispensable pour le PortalObjectMapper)
 			dynamicPage = true;
 		}
+		
+		if (cmd instanceof ServerInvocation && object instanceof ContextImpl) {
+			// Par défaut les requêtes serveurs sont dynamiques
+			// (indispensable pour le PortalObjectMapper)
+			dynamicContext = true;
+		}
 
 		if (dynamicPage) {
 			return new DynamicPersistentPage(container, (PageImpl) object, this);
@@ -686,6 +753,10 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		if (dynamicPortal) {
 			return new DynamicPortal(container, (PortalImpl) object, this);
+		}
+		
+		if (dynamicContext) {
+			return new DynamicContext(container, (ContextImpl) object, this);
 		}
 
 		/*
