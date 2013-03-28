@@ -47,6 +47,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 		
 		DynamicPortalObjectContainer.clearCache();
+		
 
 			
 		getTracker().pushState(invocation);

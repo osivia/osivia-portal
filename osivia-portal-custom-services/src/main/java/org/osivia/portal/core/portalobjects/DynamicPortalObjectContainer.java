@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.AbstractInvocationContext;
 import org.jboss.portal.common.invocation.Invocation;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.impl.model.portal.ContextImpl;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
@@ -229,44 +230,55 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		return windows;
 	}
 	
-	// TODO : positionner en amont pour optimiser les perfs (stack Server)
+	
+	
 	
 	
 	public ServerInvocation getInvocation()	{
 		
-		ServerInvocation invocation = null;
+		ServerInvocation invocation = (ServerInvocation) getTracker().getStack().get(0);
 		
-		
-		Stack stack = getTracker().getStack();
-
-		// Inverse order
-		List commands = new ArrayList();
-		
-		for (Object cmd : stack)
-			commands.add(0, cmd);
-
-
-		for (Object cmd : commands) {
-			if (cmd instanceof ControllerCommand) {
-
-				invocation = ((ControllerCommand) cmd).getControllerContext().getServerInvocation();
-
-				break;
-
-			}
-			if (cmd instanceof ServerInvocation) {
-
-				invocation = ((ServerInvocation) cmd);
-
-				break;
-
-			}
-
-		}
-
 		return invocation;
 	}
 	
+	
+	
+	public ControllerContext getCommandContext()	{
+		
+		
+		HttpServletRequest request = getInvocation().getServerContext().getClientRequest();
+		
+		
+		// Le controller context est le meme pour tous les threads, on le stocke dans la requete
+		ControllerContext controllerContext = (ControllerContext) request.getAttribute("osivia.controllerContext");
+
+		if (controllerContext == null) {
+
+			Stack stack = getTracker().getStack();
+
+			List commands = new ArrayList();
+
+			// Inverse order
+			for (Object cmd : stack)
+				commands.add(0, cmd);
+
+			for (Object cmd : commands) {
+				if (cmd instanceof ControllerCommand) {
+
+					controllerContext = ((ControllerCommand) cmd).getControllerContext();
+					break;
+				}
+			}
+
+			if (controllerContext != null) {
+				request.setAttribute("osivia.controllerContext", controllerContext);
+			}
+		}
+
+		return controllerContext;
+		
+
+	}
 	
 
 	public List<DynamicWindowBean> getEditableWindows(PortalObjectId pageId) {
@@ -283,62 +295,41 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				return windows;
 
 			
-			
-			// TODO : positionner en amont pour optimiser les perfs (stack Server, stack Command)
-			
-			
-			
-			Stack stack = getTracker().getStack();
-
-			Invocation invocation = null;
-
-			List commands = new ArrayList();
-
-			// Inverse order
-			for (Object cmd : stack)
-				commands.add(0, cmd);
-
 			PageNavigationalState ns = null;
-
 			CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
 			HttpServletRequest request = null;
+			
+			ControllerContext controllerContext = getCommandContext();
+			if( controllerContext != null)	{
+				
+				NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(
+						ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+				ns = nsContext.getPageNavigationalState(pagePath.toString());
 
-			for (Object cmd : commands) {
-				if (cmd instanceof ControllerCommand) {
-					invocation = (Invocation) cmd;
+				cmsReadItemContext.setControllerContext(controllerContext);
 
-					NavigationalStateContext nsContext = (NavigationalStateContext) invocation.getContext().getAttributeResolver(
-							ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-					ns = nsContext.getPageNavigationalState(pagePath.toString());
+				request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+			}	else	{
+				ServerInvocation invocation = getInvocation();
+				
+				PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
+						.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
 
-					cmsReadItemContext.setControllerContext(((ControllerCommand) cmd).getControllerContext());
+				ns = pnsCtx.getPageNavigationalState(pagePath.toString());
 
-					request = ((ControllerCommand) cmd).getControllerContext().getServerInvocation().getServerContext().getClientRequest();
-
-					break;
-
-				}
-				if (cmd instanceof ServerInvocation) {
-
-					PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(((ServerInvocation) cmd)
-							.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
-
-					ns = pnsCtx.getPageNavigationalState(pagePath.toString());
-
-					cmsReadItemContext.setServerInvocation((ServerInvocation) cmd);
-					request = ((ServerInvocation) cmd).getServerContext().getClientRequest();
-
-					break;
-
-				}
-
+				cmsReadItemContext.setServerInvocation(invocation);
+				request = invocation.getServerContext().getClientRequest();
+				
 			}
+
+			
 
 			if (ns != null) {
 				String cmsPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
 
 				if (cmsPath != null) {
 
+					// Pour performances
 					windows = (List<DynamicWindowBean>) request.getAttribute("osivia.editableWindows." + cmsPath[0]);
 
 					if (windows == null) {
@@ -347,6 +338,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						List<CMSEditableWindow> editableWindows = getCMSService().getEditableWindows(cmsReadItemContext, cmsPath[0]);
 
 						for (CMSEditableWindow editableWindow : editableWindows) {
+							// Création des dynamicWindowBeans
 
 							Map<String, String> dynaProps = new HashMap<String, String>();
 							for (String key : editableWindow.getApplicationProperties().keySet()) {
@@ -493,41 +485,27 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 	private PortalObjectImpl getCMSTemplate(PortalObjectContainer container, PortalObjectPath cmsPagePath) {
 
-		Stack stack = getTracker().getStack();
-
-		Invocation invocation = null;
-
-		List commands = new ArrayList();
-
-		// Inverse order
-		for (Object cmd : stack)
-			commands.add(0, cmd);
-
+		
 		PageNavigationalState ns = null;
+		
+		ControllerContext controllerContext = getCommandContext();
+		if( controllerContext != null)	{
+			
+			NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(
+					ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+			ns = nsContext.getPageNavigationalState(cmsPagePath.toString());
 
-		for (Object cmd : commands) {
-			if (cmd instanceof ControllerCommand) {
-				invocation = (Invocation) cmd;
 
-				NavigationalStateContext nsContext = (NavigationalStateContext) invocation.getContext().getAttributeResolver(
-						ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-				ns = nsContext.getPageNavigationalState(cmsPagePath.toString());
+		}	else	{
+			ServerInvocation invocation = getInvocation();
+			PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
+					.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
 
-				break;
-
-			}
-			if (cmd instanceof ServerInvocation) {
-
-				PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(((ServerInvocation) cmd)
-						.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
-
-				ns = pnsCtx.getPageNavigationalState(cmsPagePath.toString());
-
-				break;
-
-			}
+			ns = pnsCtx.getPageNavigationalState(cmsPagePath.toString());
 
 		}
+
+		
 
 		if (ns != null) {
 			String layoutPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"));
