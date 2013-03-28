@@ -258,10 +258,10 @@ public class ServicesInvoker {
 						}
 					}
 
+				WindowNavigationalState windowState =	ctx.getWindowNavigationalState(window.getId().toString());
             	  
             	  
-            	  
-         	  if( ThreadCacheManager.isPresumedCached(context, pageNavigationalState, window))	{
+         	  if( ThreadCacheManager.isPresumedCached(context, pageNavigationalState, window, windowState))	{
 //            	  if( ThreadCacheManager.isPresumedCached(context, window) || (true)) {
             		  
             		  WindowRendition rendition = renderCmd.render(context);  

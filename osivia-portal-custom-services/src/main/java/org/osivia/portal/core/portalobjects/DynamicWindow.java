@@ -66,17 +66,11 @@ public abstract class DynamicWindow extends WindowImpl {
 					uniqueID += pageUID;
 			}
 			
-			String windowUID = null;
-			
 			if( dynamicWindowBean != null)	{
-				 windowUID = dynamicWindowBean.getUniqueID();
-
-			}	
-			
-			if( windowUID != null)
-				uniqueID += windowUID;
-			
-			else	{
+				String windowUID = dynamicWindowBean.getUniqueID();
+				if( windowUID != null)
+					uniqueID += windowUID;
+			}	else	{
 				if( name != null)
 					uniqueID += "_n" + name;
 			}

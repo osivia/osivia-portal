@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -13,9 +15,11 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.portlet.StateString;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
@@ -31,15 +35,54 @@ import org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor;
 public class ThreadCacheManager extends PortletInvokerInterceptor
 {
 
-	protected static boolean isPresumedCached( ControllerContext context,Map<String, String[]> pageNavigationalState, Window window)	{
+	protected static boolean isPresumedCached( ControllerContext context,Map<String, String[]> pageNavigationalState, Window window, WindowNavigationalState wsState)	{
 
 		// Desactivation du multi-thread
 //		if (true)
 //			return true;
 		
+		
+		
+		
+		// Caches portlets
+		
 		String scopeKey = "cached_markup." + window.getId();
 
 		AttributeResolver resolver = context.getAttributeResolver(Scope.PRINCIPAL_SCOPE);
+		
+		
+		
+		// JSS 20130319 : caches partages
+        // pour plus de cohérence, le cache partagé est priorisé par rapport au cache portlet
+         
+
+			String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
+
+			if (window != null && sharedCacheID != null) {
+
+				// On controle que l'état permet une lecture depuis le cache
+				// partagé : pas d'état
+
+				if (wsState == null || wsState.getContentState() == null || ((ParametersStateString) wsState.getContentState())
+						.getSize() == 0) {
+					sharedCacheID = ConsumerCacheInterceptor.computedCacheID(sharedCacheID, window, pageNavigationalState);
+					CacheEntry cachedEntry =  (CacheEntry) resolver.getAttribute("sharedcache." + sharedCacheID);
+					if( cachedEntry != null){
+						if (cachedEntry.expirationTimeMillis > System.currentTimeMillis() + 10)
+							return true;
+						
+					}
+				}
+			}
+
+
+
+		
+		
+		
+		
+		
+
 
 		CacheEntry cachedEntry = (CacheEntry) resolver.getAttribute(scopeKey);
 

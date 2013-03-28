@@ -216,8 +216,6 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		if (getTracker().getHttpSession() != null)
 			windows = (List<DynamicWindowBean>) getTracker().getHttpSession().getAttribute("osivia.dynamic_windows");
 
-		// new DynamicWindowBean(page, windowName, instanceId, properties,
-		// controlledPageMarker)
 
 		if (windows == null)
 			windows = new ArrayList<DynamicWindowBean>();

@@ -32,6 +32,7 @@ import org.jboss.portal.WindowState;
 import org.jboss.portal.Mode;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry.Fragment;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
@@ -79,6 +80,34 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
 	
    public static Map<String, CacheEntry> globalWindowCaches = new Hashtable<String, CacheEntry>();
+   
+   
+ 
+   
+   
+   public static String computedCacheID( String cacheID, Window window, Map<String, String[]> publicNavigationalState){
+	   
+		String computedPath = "";
+		
+	
+		// Si le cache est relatif, on préfixe par le path de l'espace de publication
+		// ce qui permet de partager au sein d'un espace
+		
+		if( ! (cacheID.charAt(0) == '/'))	{
+			
+			String spacePath = window.getPage().getProperty("osivia.cms.basePath");
+			
+			if( spacePath != null)
+				computedPath += spacePath + "/";
+		}
+		
+		computedPath += cacheID;
+		
+		return computedPath;
+
+	}
+   
+   
 	
    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException
    {
@@ -98,6 +127,24 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
       //v2.0-SP1 : cache init on action
       if (invocation instanceof ActionInvocation)	{
     	  userContext.setAttribute(scopeKey, null);
+    	  
+    	  
+    	  // JSS 20130319 : shared cache initialization
+    	  if( invocation.getWindowContext() instanceof WindowContextImpl)	{
+          	 String windowId = invocation.getWindowContext().getId();
+         	 PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+         	 Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+         	 String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
+
+			if (window != null && sharedCacheID != null) {
+			     Map<String, String[]> publicNavigationalState = invocation.getPublicNavigationalState();
+					sharedCacheID = computedCacheID(sharedCacheID, window,
+							publicNavigationalState);
+					userContext.setAttribute("sharedcache." + sharedCacheID, null);
+				}
+			}
+    	  
+    	  
       }
 
       //
@@ -166,18 +213,53 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          Mode mode = renderInvocation.getMode();
 
          //
-         CacheEntry cachedEntry = (CacheEntry)userContext.getAttribute(scopeKey);
+         CacheEntry cachedEntry = null;
+        	 
+        	 
+		// v2.0.2 -JSS20130318
+		// Shared user's cache
+        // pour plus de cohérence, le cache partagé est priorisé par rapport au cache portlet
+         
+        boolean skipNavigationCheck = false;
+
+        if (window != null)	{
+			String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
+
+			if ( sharedCacheID != null) {
+
+				// On controle que l'état permet une lecture depuis le cache
+				// partagé
+
+				if ((navigationalState == null || ((ParametersStateString) navigationalState)
+						.getSize() == 0)
+						&& (windowState == null || WindowState.NORMAL
+								.equals(windowState))
+						&& (mode == null || Mode.VIEW.equals(mode))) {
+					sharedCacheID = computedCacheID(sharedCacheID, window,
+							publicNavigationalState);
+					cachedEntry = (CacheEntry) userContext
+							.getAttribute("sharedcache." + sharedCacheID);
+					skipNavigationCheck = true;
+				}
+			}
+
+			if (cachedEntry == null)
+				cachedEntry = (CacheEntry) userContext.getAttribute(scopeKey);
+			
+        }	
+			
+        	 
          boolean globalCache = false;
          
          
          // v 1.0.13 : Cache anonyme sur la page d'accueil
-          if( cachedEntry == null && (ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches"))))	{
+         if( cachedEntry == null && (ctx != null && "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches"))))	{
          	  cachedEntry = globalWindowCaches.get(invocation.getWindowContext().getId());
         	 globalCache = true;
         }
 
          //
-         if (cachedEntry != null)
+         if (cachedEntry != null && skipNavigationCheck == false)
          {
             // Check time validity for fragment
             boolean useEntry = false;
@@ -352,6 +434,37 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                
                
                
+               
+    		   // v2.0.2 -JSS20130318 
+               // Shared user's cache
+               if (expirationTimeMillis > 0 && window != null && window.getDeclaredProperty("osivia.cacheID") != null)	{
+            	   
+            	   String sharedID = window.getDeclaredProperty("osivia.cacheID");
+       
+            	   // On controle que l'état permet une mise dans le cache global
+            	   
+            	   if(  ( navigationalState == null || ((ParametersStateString)navigationalState).getSize() == 0)
+              			   && (windowState == null || WindowState.NORMAL.equals(windowState))
+            			   && (mode == null || Mode.VIEW.equals(mode))
+            		)	{
+            		   sharedID = computedCacheID(sharedID
+            				   , window, publicNavigationalState);
+           		   
+            		   CacheEntry sharedCacheEntry = new CacheEntry(
+                           null,
+                           null,
+                           null,
+                           null,
+                           fragment,
+                           expirationTimeMillis,
+                           null,
+                           null);
+                         userContext.setAttribute("sharedcache." +sharedID, sharedCacheEntry);
+             	      }
+                }
+               
+               
+               
                // For other users
                if(  "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches")))	{
             	   
@@ -378,7 +491,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            System.currentTimeMillis() + 30 * 1000, // 10 sec.
                            null,
                            null);
-                         userContext.setAttribute(scopeKey, cacheEntry);
+            		   // v2.0.2 -JSS20130318 - déja fait !!! 
+                       //  userContext.setAttribute(scopeKey, cacheEntry);
                         
 
             	   

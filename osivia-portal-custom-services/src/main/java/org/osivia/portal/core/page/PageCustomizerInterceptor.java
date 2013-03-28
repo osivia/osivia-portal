@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpRequest;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -911,8 +913,23 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			}
 
 			}
+			
+			// A décommenter Juste pour inspecter les sessions dans le debugger
+/*			
+			if( true)	{
+				HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+				Enumeration enumAttrs = request.getSession().getAttributeNames();
+				while( enumAttrs.hasMoreElements()){
+					String attName = (String) enumAttrs.nextElement();
+					Object attrValue = request.getSession().getAttribute(attName);
+					logger.debug(attrValue);
+				}
+			}
+			*/
+			
 		}
 
+		
 		//
 		return resp;
 	}
