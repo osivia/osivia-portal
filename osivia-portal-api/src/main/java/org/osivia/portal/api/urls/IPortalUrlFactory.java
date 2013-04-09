@@ -40,5 +40,9 @@ public interface IPortalUrlFactory {
 	public String getDestroyPageUrl(PortalControllerContext ctx,String parentId, String pageId) 	;
 	
 	// Api simplifiée de lancement d'un portlet
-	public String getExecutePortletLink(RenderRequest request,  String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws Exception;	
+	public String getExecutePortletLink(RenderRequest request,  String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws Exception;
+	
+	// Ajout des elements de nvigation( pagemarker) a une url portail
+	public String adaptPortalUrlToNavigation( RenderRequest request, String orginalUrl)	throws Exception;
+	
 }

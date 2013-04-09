@@ -75,8 +75,20 @@ public class CmsURLFactory extends URLFactoryDelegate
        	 
         	 if( !cmsPath.startsWith("/"))
         		 portalRequestPath += CmsCommandFactoryService.DOC_ID;
-        		 
+        		
+        	 // v2.0.4
         	 portalRequestPath += cmsPath;
+        	 
+        	 /*
+        	 try
+             {
+        		 portalRequestPath += URLEncoder.encode(cmsPath, "UTF-8");
+             }
+        	 catch (UnsupportedEncodingException e)
+             {
+                // ignore
+             }
+             */
          }
          
          asu.setPortalRequestPath(portalRequestPath);

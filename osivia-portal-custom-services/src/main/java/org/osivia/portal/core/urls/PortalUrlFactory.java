@@ -3,12 +3,15 @@ package org.osivia.portal.core.urls;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
@@ -24,6 +27,7 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.impl.jsr168.api.ResourceRequestImpl;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.jboss.portal.theme.ThemeConstants;
@@ -43,6 +47,7 @@ import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -156,7 +161,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 				portalPersistentName = portalName;
 			
 		}
-		
 		
 		ControllerCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext,  hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb(ctx.getRequest()), portalPersistentName);
 		PortalURL portalURL  = new PortalURLImpl(cmd, ctx.getControllerCtx(), null, null);
@@ -336,6 +340,59 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		String url = portalURL.toString();		
 		url +="&parentId="+parentId+"&pageId="+pageId;
 		return url;
+	}
+	
+	
+	
+
+	/* Ajout du page marker
+	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
+	 */
+	
+	public String adaptPortalUrlToNavigation( RenderRequest request, String orginalUrl)	throws Exception	{
+		// Les urls portail sont toutes absolues
+
+		Pattern expOrginial = Pattern.compile("http://([^/:]*)(:[0-9]*)?/([^/]*)(/auth/|/)((pagemarker/[0-9]*/)?)(.*)");
+
+		try {
+
+			Matcher mResOriginal = expOrginial.matcher(orginalUrl);
+
+			if (mResOriginal.matches() && mResOriginal.groupCount() == 7) {
+				// Not the current host ?
+				ControllerContext ctx = (ControllerContext) request.getAttribute("osivia.controller");
+				
+				
+				String contextPath = ctx.getServerInvocation().getServerContext().getPortalContextPath();
+				
+				String serverName = ctx.getServerInvocation().getServerContext().getClientRequest().getServerName();
+				
+								
+				if (!serverName.equals(mResOriginal.group(1)) || !contextPath.substring(1).equals(mResOriginal.group(3)))
+					return orginalUrl;
+
+				StringBuffer transformedUrl = new StringBuffer();
+				transformedUrl.append("http://" + mResOriginal.group(1));
+
+				transformedUrl.append(mResOriginal.group(2));
+				// context
+				transformedUrl.append("/" + mResOriginal.group(3));
+				transformedUrl.append(mResOriginal.group(4));
+
+				// add pagemarker
+				transformedUrl.append("pagemarker/");
+				transformedUrl.append(PageMarkerUtils.getCurrentPageMarker(ctx) + '/');
+				transformedUrl.append(mResOriginal.group(7));
+
+				return transformedUrl.toString();
+
+			}
+
+		} catch (Exception e) {
+			// Do nothing
+		}
+
+		return orginalUrl;
 	}
 
 }
