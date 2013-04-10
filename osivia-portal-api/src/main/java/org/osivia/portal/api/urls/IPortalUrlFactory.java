@@ -2,6 +2,7 @@ package org.osivia.portal.api.urls;
 
 import java.util.Map;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 
 import org.jboss.portal.core.model.portal.Page;
@@ -43,6 +44,6 @@ public interface IPortalUrlFactory {
 	public String getExecutePortletLink(RenderRequest request,  String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws Exception;
 	
 	// Ajout des elements de nvigation( pagemarker) a une url portail
-	public String adaptPortalUrlToNavigation( RenderRequest request, String orginalUrl)	throws Exception;
+	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception;
 	
 }

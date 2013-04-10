@@ -349,7 +349,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
 	 */
 	
-	public String adaptPortalUrlToNavigation( RenderRequest request, String orginalUrl)	throws Exception	{
+	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception	{
 		// Les urls portail sont toutes absolues
 
 		Pattern expOrginial = Pattern.compile("http://([^/:]*)(:[0-9]*)?/([^/]*)(/auth/|/)((pagemarker/[0-9]*/)?)(.*)");
@@ -365,6 +365,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 				
 				String contextPath = ctx.getServerInvocation().getServerContext().getPortalContextPath();
 				
+				if( contextPath.endsWith("/auth"))
+						contextPath = contextPath.substring(0, contextPath.length() - 5);
+				
+				
 				String serverName = ctx.getServerInvocation().getServerContext().getClientRequest().getServerName();
 				
 								
@@ -373,8 +377,14 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
 				StringBuffer transformedUrl = new StringBuffer();
 				transformedUrl.append("http://" + mResOriginal.group(1));
-
-				transformedUrl.append(mResOriginal.group(2));
+				
+				int port = ctx.getServerInvocation().getServerContext().getClientRequest().getServerPort();
+				
+				if(port != 80)	{
+					transformedUrl.append(":"+port);
+				}
+				
+				
 				// context
 				transformedUrl.append("/" + mResOriginal.group(3));
 				transformedUrl.append(mResOriginal.group(4));
