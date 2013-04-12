@@ -15,6 +15,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 
+import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
 import org.osivia.portal.core.assistantpage.ChangePageLayoutCommand;
 import org.osivia.portal.core.assistantpage.ChangePagePropertiesCommand;
@@ -220,6 +221,18 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 						return new ChangeModeCommand(pageId, mode);
 					}
 				}
+				
+				if ("changeCMSEditionMode".equals(action)) {
+					String pageId = null;
+					String mode = null;
+
+					if (parameterMap.get("pageId") != null && parameterMap.get("mode") != null) {
+						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
+						mode = URLDecoder.decode(((String[]) parameterMap.get("mode"))[0], "UTF-8");
+						return new ChangeCMSEditionModeCommand(pageId, mode);
+					}
+				}
+
 				
 
 				if ("changeLayout".equals(action)) {

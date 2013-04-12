@@ -67,9 +67,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer
     	  markup.print("</div>");            
       }
     
-      if( "cmsEdition".equals(rendererContext.getProperty("osivia.wizzardMode")))	{
+      if( "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode")))	{
     	  markup.print("<div>");
-    	  markup.print("<a class=\"fancyframe_refresh no-ajax-link\" href=\""+rendererContext.getProperty("osivia.addPortletUrl")+"\"> <img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
+    	  markup.print("<a class=\"fancyframe_refresh no-ajax-link\" href=\""+rendererContext.getProperty("osivia.addCMSFragmentUrl")+"\"> <img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/></a>");
     	  markup.print("</div>");            
       }
 

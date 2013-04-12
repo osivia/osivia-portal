@@ -8,6 +8,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
@@ -30,8 +31,18 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 	
 	/** . */
 	protected static final Log logger = LogFactory.getLog(PageMarkerInterceptor.class);
+	
+	private PortalObjectContainer portalObjectContainer;
 
 	/** . */
+	
+	public PortalObjectContainer getPortalObjectContainer() {
+		return portalObjectContainer;
+	}
+
+	public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+		this.portalObjectContainer = portalObjectContainer;
+	}
 
 
 	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
@@ -61,13 +72,15 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 		}
 		
 		
-		// v2.MS Calcul du nom de portail
-		// TODO factoriser dans un portal manager
+		// Calcul du nom de portail
+		
+		String portalName = null;
 		if( cmd instanceof PortalCommand){
-			String portalName = ((PortalCommand) cmd).getPortal().getName();
-			PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
-			
+			portalName = ((PortalCommand) cmd).getPortal().getName();
+		}	else	{
+			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
 		}
+		PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
 		
 
 		 resp = (ControllerResponse) cmd.invokeNext();

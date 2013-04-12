@@ -12,6 +12,7 @@ import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
@@ -98,6 +99,29 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			}
 			return asu;
 		}	
+		
+		if (cmd instanceof ChangeCMSEditionModeCommand) {
+			ChangeCMSEditionModeCommand command = (ChangeCMSEditionModeCommand) cmd;
+
+			//
+			AbstractServerURL asu = new AbstractServerURL();
+			asu.setPortalRequestPath(path);
+			String pageId = command.getPageId();
+			String mode = command.getMode();
+
+			try {
+				asu.setParameterValue("action", "changeCMSEditionMode");
+				
+				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
+				asu.setParameterValue("mode", URLEncoder.encode(mode,"UTF-8"));
+
+			} catch (UnsupportedEncodingException e) {
+				// ignore
+			}
+			return asu;
+		}	
+		
+		
 		
 
 		if (cmd instanceof MoveWindowCommand) {

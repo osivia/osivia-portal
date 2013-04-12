@@ -14,6 +14,7 @@ import org.jboss.portal.common.http.HttpRequest;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.server.ServerInvocation;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -33,9 +34,8 @@ public class TrackerService extends ServiceMBeanSupport implements ITracker, Ser
 	
 	private Log log = LogFactory.getLog(TrackerService.class);
 	
-	private  ThreadLocal<TrackerBean> trackerBean = new ThreadLocal<TrackerBean>();
+	private static ThreadLocal<TrackerBean> trackerBean = new ThreadLocal<TrackerBean>();
 
-		
 	
 	public TrackerBean getTrackerBean(){
 		TrackerBean bean = trackerBean.get();
@@ -101,10 +101,12 @@ public class TrackerService extends ServiceMBeanSupport implements ITracker, Ser
 
 	public void startService() throws Exception {
 		log.info("start service TrackerService");
+		RequestContextUtil.currentTracker = this;
 	}
 
 	public void stopService() throws Exception {
 		log.info("stop service TrackerService");
+		RequestContextUtil.currentTracker = null;
 	}
 
 	public HttpSession getHttpSession() {

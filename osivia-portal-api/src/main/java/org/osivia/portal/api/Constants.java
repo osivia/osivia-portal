@@ -15,4 +15,6 @@ public class Constants {
 	public static String ATTR_WIZZARD_URL = "osivia.WIZZARD_URL";
 	public static String ATTR_WIZZARD_MODE = "osivia.WIZZARD_MODE";
 
+	public static String ATTR_CMS_EDITION_URL = "osivia.CMS_EDITION_URL";
+	public static String ATTR_CMS_EDITION_MODE = "osivia.CMS_EDITION_MODE";
 }

@@ -285,6 +285,59 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	}
 	
 	
+	public String formatRequestFilteringPolicyList(PortalObject po, String policyName, String selectedPolicy) throws Exception {
+
+
+		Map<String, String> policies = new LinkedHashMap<String, String>();
+		
+		policies.put("local", "Contenus du portail");
+		policies.put("global", "Tous les contenus");
+		
+		String parentPolicy = (String) po.getProperty("osivia.portal.requestFilteringPolicy");
+
+		String inheritedLabel = null;
+		if( "local".equals(parentPolicy)){
+			inheritedLabel = "Contenus du portail";
+		};
+		if( inheritedLabel == null)
+			inheritedLabel = "Tous les contenus";
+		inheritedLabel =  "Hérité du portail [" + inheritedLabel +"]";	
+		
+
+		StringBuffer select = new StringBuffer();
+		
+		
+		select.append("<select name=\""+policyName+"\">");
+
+		if (selectedPolicy == null || selectedPolicy.length() == 0) {
+
+			select.append("<option selected=\"selected\" value=\"\">"+inheritedLabel+"</option>");
+
+		} else {
+
+			select.append("<option value=\"\">"+inheritedLabel+"</option>");
+
+		}
+		for (String possiblePolicy : policies.keySet()) {
+			if (selectedPolicy != null && selectedPolicy.length() != 0 && possiblePolicy.equals(selectedPolicy)) {
+
+				select.append("<option selected=\"selected\" value=\"" + possiblePolicy + "\">"
+						+ policies.get(possiblePolicy) + "</option>");
+
+			} else {
+
+				select.append("<option value=\"" + possiblePolicy + "\">" + policies.get(possiblePolicy) + "</option>");
+
+			}
+		}
+
+		select.append("</select>");
+
+		return select.toString();
+
+	}
+	
+	
 	public String formatScopeList(PortalObject po, String scopeName, String selectedScope) throws Exception {
 
 		// On sélectionne les profils ayant un utilisateur Nuxeo
@@ -643,156 +696,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 		
 	
 	
-	private void injectCMSPortletSetting( ControllerRequestDispatcher rd, Portal portal, Page page, PageRendition rendition, ControllerContext ctx	) throws Exception	{
-		
-		HttpServletRequest request = ctx.getServerInvocation().getServerContext()
-		.getClientRequest();
-		
-		List<Window> windows = new ArrayList<Window>();
 
-		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-		PortalLayout pageLayout = getServiceLayout().getLayout(layoutId, true);
-
-		synchronizeRegionContexts(rendition, page);
-
-		for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
-
-			RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
-
-			// on vérifie que cette réion fait partie du layout
-			// (elle contient des portlets)
-			if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
-
-				String regionId = renderCtx.getId();
-
-				Map regionPorperties = renderCtx.getProperties();
-
-				regionPorperties.put("osivia.wizzardMode", "cmsEdition");
-				String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
-				
-				//TODO : externaliser Nuxeo
-				String nuxeoPublicHost = System.getProperty("nuxeo.publicHost");
-				String nuxeoPublicPort = System.getProperty("nuxeo.publicPort");
-				String nuxeoPrivateHost = System.getProperty("nuxeo.privateHost");
-				String nuxeoPrivatePort = System.getProperty("nuxeo.privatePort");
-				String nuxeoCtx = "/nuxeo";
-				
-
-				URI uri = null;
-
-					try {
-						uri = new URI("http://" + nuxeoPublicHost + ":" + nuxeoPublicPort + nuxeoCtx);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				
-				String	url = uri.toString() + "/nxpath/default"+ pagePath +"@view_documents?tabIds=%3AATAB_FOLDER_EDIT&conversationId=0NXMAIN";
-
-				regionPorperties.put("osivia.addPortletUrl", url);
-
-				// Le mode Ajax est incompatble avec le mode "admin"
-				// Le passage du mode admin en mode normal ,'est pas bien
-				// géré
-				// par le portail, quand il s'agit d'une requête Ajax
-				DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
-
-				for (Object windowCtx : renderCtx.getWindows()) {
-
-					WindowRendererContext wrc = (WindowRendererContext) windowCtx;
-					Map windowPorperties = wrc.getProperties();
-					String windowId = wrc.getId();
-
-					if (!windowId.endsWith("PIA_EMPTY")) {
-
-						URLContext urlContext = ctx.getServerInvocation().getServerContext()
-								.getURLContext();
-
-						PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-						Window window = (Window) getPortalObjectContainer().getObject(poid);
-
-						
-						if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
-
-							/* TODO 
-							windowPorperties.put("osivia.windowSettingMode", "wizzard");
-
-							// Commande suppression
-							windowPorperties.put("osivia.destroyUrl", "displayWindowDelete('" + windowId
-									+ "');return false;");
-
-							// Commande paramètres
-							windowPorperties.put("osivia.settingUrl", "displayWindowSettings('" + windowId
-									+ "');return false;");
-
-							windows.add(window);
-
-							// gestion des déplacements 
-
-							MoveWindowCommand upC = new MoveWindowCommand(windowId, "up");
-							String upUrl = ctx.renderURL(upC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.upUrl", upUrl);
-
-							MoveWindowCommand downC = new MoveWindowCommand(windowId, "down");
-							String downUrl = ctx.renderURL(downC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.downUrl", downUrl);
-
-							MoveWindowCommand previousC = new MoveWindowCommand(windowId, "previousRegion");
-							String previousRegionUrl = ctx.renderURL(previousC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.previousRegionUrl", previousRegionUrl);
-
-							MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, "nextRegion");
-							String nextRegionUrl = ctx.renderURL(nextRegionC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.nextRegionUrl", nextRegionUrl);
-
-							//
-
-							String instanceDisplayName = null;
-							InstanceDefinition defInstance = getInstanceContainer().getDefinition(
-									window.getContent().getURI());
-							if (defInstance != null)
-								instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(),
-										true);
-
-							if (instanceDisplayName != null)
-								windowPorperties.put("osivia.instanceDisplayName", instanceDisplayName);
-								*/
-
-						}
-
-					}
-				}
-			}
-		}
-
-		rd.setAttribute("osivia.setting.windows", windows);
-
-		/* Insertion des styles */
-
-		String stylesProp = portal.getDeclaredProperty("osivia.liste_styles");
-
-		String[] styles = new String[0];
-		if (stylesProp != null)
-			styles = stylesProp.split(",");
-
-		// Conversion en tableau
-		List<String> portalStyles = new ArrayList<String>();
-		for (int i = 0; i < styles.length; i++)
-			portalStyles.add(styles[i]);
-
-		rd.setAttribute("osivia.setting.windows.PORTAL_STYLES", portalStyles);
-
-		/* Insertion des portlets */
-
-		Collection<InstanceDefinition> definitions = getInstanceContainer().getDefinitions();
-		List<InstanceDefinition> listDefinitions = new ArrayList(definitions);
-		Collections.sort(listDefinitions, new InstanceComparator(request));
-
-		rd.setAttribute("osivia.setting.portlets", listDefinitions);
-}
 		
 	
 	
@@ -1027,8 +931,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 				
 				rd.setAttribute("osivia.setting.page.CMS_TEMPLATE_URL", url);
 				
-				injectCMSPortletSetting(rd, portal, page, rendition, ctx);
-				
+			
 				
 			}	else	{
 				

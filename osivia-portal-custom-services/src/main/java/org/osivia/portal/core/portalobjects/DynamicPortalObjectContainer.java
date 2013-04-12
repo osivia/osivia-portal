@@ -51,7 +51,9 @@ import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.tracker.ITracker;
+import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.osivia.portal.core.tracker.TrackerBean;
+import org.osivia.portal.core.tracker.TrackerService;
 
 /**
  * 
@@ -236,7 +238,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	
 	public ServerInvocation getInvocation()	{
 		
-		ServerInvocation invocation = (ServerInvocation) getTracker().getStack().get(0);
+		ServerInvocation invocation = RequestContextUtil.getServerInvocation();
 		
 		return invocation;
 	}
@@ -250,6 +252,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		
 		
 		// Le controller context est le meme pour tous les threads, on le stocke dans la requete
+		// TODO : mettre dans le scope invocation et déplacer dans requestContextUtil
 		ControllerContext controllerContext = (ControllerContext) request.getAttribute("osivia.controllerContext");
 
 		if (controllerContext == null) {

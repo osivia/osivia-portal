@@ -611,6 +611,8 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				// On détermine le path CMS de la page
 				// Pour cela on remonte au 1er sous-niveau
 				
+				
+				/*
 				NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
 				.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 				
@@ -638,8 +640,46 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							pageCMSPath =  pagePath;
 						}
 					}
-				}
+				}*/
+				
+	
+				
+				NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+				.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+				
+				PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());			
+				
+				if( pageState != null)	{
+					String sContentPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"));
+					
+					if( sContentPath != null && sContentPath.length == 1)	{
+						
+						 
+						
+						String spacePath = rpc.getPage().getProperty("osivia.cms.basePath");
+						
+						if(  spacePath != null)	{
+				
+							String contentPath = spacePath + sContentPath[ 0];
+							
+							CMSObjectPath parent = CMSObjectPath.parse(contentPath).getParent();
+							String parentPath = parent.toString();
+
+							while (parentPath.contains(spacePath) && !(parentPath.equals(spacePath))) {
+
+								contentPath = parentPath.toString();
+
+								parent = CMSObjectPath.parse(contentPath).getParent();
+								parentPath = parent.toString();
+
+							}
+							pageCMSPath =  contentPath;
+						}
+						
+					}
+					}
 			}
+				
 			
 			
 			

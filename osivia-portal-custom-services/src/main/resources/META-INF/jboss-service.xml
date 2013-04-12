@@ -109,6 +109,25 @@
       		<depends optional-attribute-name="PortalAuthorizationManagerFactory" proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends> 			
  	</mbean>
 
+	<mbean
+		code="org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor"
+		name="osivia:service=Interceptor,type=Command,name=CMSEditionPageCustomizer"
+		xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+			<xmbean/>
+			<attribute name="TargetContextPath">/osivia-portal-custom-web-assets</attribute>
+  			<attribute name="PageSettingPath">/wizzard/pageSettings.jsp</attribute>
+			<depends optional-attribute-name="ServiceLayout" proxy-type="attribute">portal:service=LayoutService</depends>
+			<depends optional-attribute-name="ServiceTheme" proxy-type="attribute">portal:service=ThemeService</depends>
+			<depends optional-attribute-name="AuthorizationDomainRegisrty" proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
+			<depends optional-attribute-name="IdentityServiceController" proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
+			<depends optional-attribute-name="InstanceContainer" proxy-type="attribute">portal:container=Instance</depends>
+   	        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
+ 			<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
+      		<depends optional-attribute-name="PortalAuthorizationManagerFactory" proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends> 			
+ 	</mbean>
+
+
 
   <mbean code="org.osivia.portal.core.page.PageCustomizerInterceptor"
           name="osivia:service=Interceptor,type=Command,name=PageCustomizer" xmbean-dd=""
@@ -162,7 +181,8 @@
           name="osivia:service=Interceptor,type=Command,name=PageMarkerInterceptor" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
-   				        
+   	        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
+  				        
       
    </mbean>
    

@@ -153,12 +153,12 @@ public class ProfilManager implements IProfilManager {
 		// TODO factoriser dans un portal manager
 		
 		String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
-		if (portalName == null)
-			portalName = "default";
+//		if (portalName == null)
+//			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
 		
 		 List<ProfilBean> profils = listeProfilsCache.get(portalName);
-		 if( profils == null || profils.size() == 0)
-			 profils = listeProfilsCache.get("default");
+//		 if( profils == null || profils.size() == 0)
+//			 profils = listeProfilsCache.get("default");
 		
 		return profils;
 	}

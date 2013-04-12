@@ -85,6 +85,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSItem;
@@ -423,6 +424,22 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			// v1.0.10 : réinitialisation des propriétes des windows
 			//PageProperties.getProperties().init();
 			
+			
+			/* Controle du host */
+			
+			Portal portal = ((RenderPageCommand) cmd).getPortal();
+			String host = portal.getDeclaredProperty("osivia.site.hostName");
+			String reqHost = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getServerName();
+
+			if( host != null && !reqHost.equals(host))	{
+					ViewPageCommand viewCmd = new ViewPageCommand(((RenderPageCommand) cmd).getPage().getId());
+					String url = new PortalURLImpl(viewCmd, cmd.getControllerContext(), null, null).toString();
+					url = url.replaceFirst(reqHost, host);
+					return new RedirectionResponse(url.toString());
+				}
+				
+				
+
 			
 
 			RenderPageCommand rpc = (RenderPageCommand) cmd;
@@ -1113,8 +1130,34 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 							rd.setAttribute(Constants.ATTR_WIZZARD_URL, new PortalURLImpl(cmd, controllerCtx, null, null));
 							rd.setAttribute(Constants.ATTR_WIZZARD_MODE, mode);
 						}
-
 					}
+					
+					/* Edition CMS */
+					// TODO : tester les droits sur la page
+					
+					if( isAdministrator(controllerCtx))  {
+						String currentMode = (String) controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+						"osivia.cmsEditionMode");
+						
+						String newMode = null;
+						if(  "preview".equals(currentMode))
+							newMode = "normal";
+						else
+							newMode = "preview";
+
+						if (cc instanceof PageCommand) {
+							Page page = ((PageCommand) cc).getPage();
+
+							ChangeCMSEditionModeCommand cmd = new ChangeCMSEditionModeCommand(page.getId().toString(
+									PortalObjectPath.SAFEST_FORMAT), newMode);
+
+							rd.setAttribute(Constants.ATTR_CMS_EDITION_URL, new PortalURLImpl(cmd, controllerCtx, null, null));
+							rd.setAttribute(Constants.ATTR_CMS_EDITION_MODE, currentMode);
+						}
+					}
+				
+					
+					
 				} catch (PortalSecurityException e) {
 					logger.error("", e);
 				}
@@ -1188,6 +1231,9 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			List<UserPage> subPages = new ArrayList<UserPage>(10);
 			userPage.setChildren(subPages);		
 			
+			
+			
+			
 			if( navItems.size() > 0){
 			
 				for (CMSItem navSubItem : navItems)
@@ -1237,6 +1283,59 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					PortalObjectPermission.VIEW_MASK);
 			if (pam.checkPermission(null, perm)) {
 				
+				
+				String navigationMode = page.getDeclaredProperty("osivia.navigationMode") ;
+				
+				if( "cms".equals(navigationMode))	{
+					
+					// CMS sub pages
+					
+					// v2.0-rc7
+					
+//					if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
+//							.getDeclaredProperty("osivia.cms.basePath") != null))) {
+						
+						try	{
+							
+							
+							
+							
+							CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
+							
+							
+							
+							if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
+
+							List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page
+								.getDeclaredProperty("osivia.cms.basePath"), page
+								.getDeclaredProperty("osivia.cms.basePath"));
+							
+							
+							if(navItems != null){
+
+								for (CMSItem navItem : navItems)
+									if(  "1".equals(navItem.getProperties().get("menuItem")))
+										addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem, mainPages);
+							}
+							else	{
+								logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
+							}
+							}
+							
+						
+						} catch (Exception e) {
+							// May be a security issue, don't block footer
+							logger.error(e.getMessage());
+
+						} 
+								
+					
+				}	else	{
+		
+				
+				
+				
+				
 				UserPage userPage = new UserPage();
 				mainPages.add(userPage);
 				
@@ -1257,40 +1356,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				userPage.setUrl(url + "?init-state=true");
 
 
-				// CMS sub pages
-				
-				// v2.0-rc7
-				
-//				if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
-//						.getDeclaredProperty("osivia.cms.basePath") != null))) {
-					
-					try	{
-						CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
-						
-						if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
-
-						List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page
-							.getDeclaredProperty("osivia.cms.basePath"), page
-							.getDeclaredProperty("osivia.cms.basePath"));
-						
-						
-						if(navItems != null){
-
-							for (CMSItem navItem : navItems)
-								if(  "1".equals(navItem.getProperties().get("menuItem")))
-									addSubpagesToSiteMap( cmxCtx,   urlFactory,  portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem, childrens);
-						}
-						else	{
-							logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
-						}
-						}
-						
-					
-					} catch (Exception e) {
-						// May be a security issue, don't block footer
-						logger.error(e.getMessage());
-
-					} 
+				}
 				//}
 			}
 		}
@@ -1369,12 +1435,12 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		
 		UserPortal userPortal;
 		
-		String navigationMode = cc.getPortal().getProperty("osivia.navigationMode");
+//		String navigationMode = cc.getPortal().getProperty("osivia.navigationMode");
 		
-		if( "cms".equals(navigationMode))
-			userPortal = getCMSSiteMap(cc);
-		else
-			userPortal = getPageSiteMap(cc);
+//		if( "cms".equals(navigationMode))
+//			userPortal = getCMSSiteMap(cc);
+//		else
+		userPortal = getPageSiteMap(cc);
 		
 		return userPortal;
 	}

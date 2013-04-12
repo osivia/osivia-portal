@@ -265,6 +265,7 @@
 	<depends-list-element>osivia:service=Interceptor,type=Command,name=TabsCustomizer </depends-list-element>
 
          <depends-list-element>osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Command,name=CMSEditionPageCustomizer</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Command,name=EventBroadcaster</depends-list-element>
       </depends-list>
    </mbean>

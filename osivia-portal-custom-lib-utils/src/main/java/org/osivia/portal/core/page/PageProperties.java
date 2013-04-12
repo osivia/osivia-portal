@@ -12,10 +12,11 @@ import org.jboss.portal.core.model.portal.Window;
 
 
 /**
- * 
- *  Les contextes de windows sont opaques (pas possibilité de les modifier avant le renderer)
+ * Gestion multi-threads des pages et des windows
  *  
- *  Cette classe permet d'enrichir les contextes d'affichage
+ *  Cette classe permet 
+ *   - d'optimiser l'acces aux propriétés de la page en mode multi-threads (en partageant les propriétés entre les threads)
+ *   - d'enrichir les contextes d'affichage car les contextes de windows sont opaque (pas possibilité de les modifier avant le renderer)
  *  
  * @author jeanseb
  *

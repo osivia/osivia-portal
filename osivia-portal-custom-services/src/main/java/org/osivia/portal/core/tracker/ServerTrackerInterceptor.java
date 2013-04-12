@@ -13,10 +13,13 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.server.ServerException;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
@@ -28,6 +31,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	protected static final Log logger = LogFactory.getLog(ServerTrackerInterceptor.class);
 
 	private ITracker tracker;
+	public PortalObjectContainer portalObjectContainer;
 
 	public ITracker getTracker() {
 		return tracker;
@@ -37,6 +41,15 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		this.tracker = tracker;
 	}
 
+	
+	public PortalObjectContainer getPortalObjectContainer() {
+
+		if (portalObjectContainer == null)
+			portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+
+		return portalObjectContainer;
+	}
+	
 	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 		
 		
@@ -48,6 +61,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		
 		DynamicPortalObjectContainer.clearCache();
 		
+		invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.portalObjectContainer", getPortalObjectContainer());
 
 			
 		getTracker().pushState(invocation);

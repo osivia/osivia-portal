@@ -314,7 +314,6 @@ public class FileUploadBean {
 
 		PortalObject portal = portalObjectContainer.getContext().getPortal(this.getPortail());
 		portal.setDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT, layout);
-		System.out.println("updateLayout : " + portal.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
 		this.setMessage("Layout enregistré avec succès.");
 	}
 
@@ -323,9 +322,8 @@ public class FileUploadBean {
 		PortletContext ctx = (PortletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
 		PortalObjectContainer portalObjectContainer = (PortalObjectContainer) ctx.getAttribute("PortalObjectContainer");
 
-		PortalObject portal = portalObjectContainer.getContext().getPortal("default");
+		PortalObject portal = portalObjectContainer.getContext().getPortal(this.getPortail());
 		portal.setDeclaredProperty("osivia.liste_styles", style);
-		System.out.println("updateStyle : " + portal.getDeclaredProperty("osivia.liste_styles"));
 		this.setMessage("Style enregistré avec succès.");
 
 		/*
@@ -344,8 +342,7 @@ public class FileUploadBean {
 		HtmlSelectOneListbox element = (HtmlSelectOneListbox) event.getComponent();
 		this.setPortail((String) element.getValue());
 		String portail = this.getPortail();
-		System.out.println("Portail : " + portail);
-		System.out.println("--------------------");
+
 
 		/* Stockage en session pour l'export */
 		PortletRequest req = (PortletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -356,12 +353,11 @@ public class FileUploadBean {
 		PortalObjectContainer portalObjectContainer = (PortalObjectContainer) ctx.getAttribute("PortalObjectContainer");
 
 		/*----- Styles -----*/
-		PortalObject portal = portalObjectContainer.getContext().getPortal("default");
+		PortalObject portal = portalObjectContainer.getContext().getPortal(this.getPortail());
+		
 		String propriete = portal.getDeclaredProperty("osivia.liste_styles");
 		style = propriete;
 
-		System.out.println("Style : " + style);
-		System.out.println("--------------------");
 
 		/*----- Themes -----*/
 		portal = portalObjectContainer.getContext().getPortal(portail);
@@ -410,6 +406,9 @@ public class FileUploadBean {
 		} else {
 			layouts.add(new SelectItem("Pb avec le service de layouts"));
 		}
+		
+		/*----- Profils -----*/
+		findProfils();
 
 		if( treePages != null)
 			treePages.initPages();

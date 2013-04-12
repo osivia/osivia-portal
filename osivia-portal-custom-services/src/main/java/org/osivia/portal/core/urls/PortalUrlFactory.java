@@ -319,8 +319,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 			Map<String, String> props, Map<String, String> params) throws Exception	{
 		
 		String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
-		if (portalName == null)
-			portalName = "default";
+//		if (portalName == null)
+//			portalName = "default";
 		
 		portalName = "/" + portalName;
 		
