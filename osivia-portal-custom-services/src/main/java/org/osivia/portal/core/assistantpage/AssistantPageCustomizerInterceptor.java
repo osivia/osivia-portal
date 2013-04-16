@@ -290,13 +290,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 		Map<String, String> policies = new LinkedHashMap<String, String>();
 		
-		policies.put("local", "Contenus du portail");
+		policies.put("local", "Contenus du portail courant");
 		policies.put("global", "Tous les contenus");
 		
-		String parentPolicy = (String) po.getProperty("osivia.portal.requestFilteringPolicy");
+		String sitePolicy = (String) po.getProperty("osivia.portal.publishingPolicy");
 
 		String inheritedLabel = null;
-		if( "local".equals(parentPolicy)){
+		if( "satellite".equals(sitePolicy)){
 			inheritedLabel = "Contenus du portail";
 		};
 		if( inheritedLabel == null)

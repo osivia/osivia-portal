@@ -435,6 +435,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 					ViewPageCommand viewCmd = new ViewPageCommand(((RenderPageCommand) cmd).getPage().getId());
 					String url = new PortalURLImpl(viewCmd, cmd.getControllerContext(), null, null).toString();
 					url = url.replaceFirst(reqHost, host);
+					url += "?init-state=true";
 					return new RedirectionResponse(url.toString());
 				}
 				

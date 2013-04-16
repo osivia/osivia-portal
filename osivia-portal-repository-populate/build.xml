@@ -38,13 +38,14 @@
 
 
 
-
+		<maven-deploy-file file="portal-faces-lib.jar" groupId="org.jboss.portal" artifactId="portal-faces-lib" version="${jboss-portal.version}"  />
 
 		<maven-deploy-file file="jboss-portlet-api-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-api-lib" version="${jboss-portal.version}"  />
 	
 		<maven-deploy-file file="portal-api-lib.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-common-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-common-portal-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-portal-lib" version="${jboss-portal.version}" />
+
 		<maven-deploy-file file="portal-core-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-portlet-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}"  />
 
@@ -57,6 +58,7 @@
 		<maven-deploy-file file="portal-theme-lib.jar" groupId="org.jboss.portal" artifactId="portal-theme-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-web-lib.jar" groupId="org.jboss.portal" artifactId="portal-web-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-identity-lib.jar" groupId="org.jboss.portal.identity" artifactId="identity-identity" version="${jboss-portal.identity.version}"  />
+		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-jems-lib.jar" groupId="org.jboss.portal" artifactId="portal-jems-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="cms-jackrabbit.jar" groupId="org.jboss.portal" artifactId="cms-jackrabbit" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-cms-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-cms-lib" version="${jboss-portal.version}"  />

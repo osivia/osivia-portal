@@ -34,7 +34,9 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -42,6 +44,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
+import org.jboss.portal.server.request.URLContext;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
@@ -59,6 +62,8 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.PermLinkCommand;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
@@ -205,6 +210,8 @@ public class CmsCommand extends DynamicCommand {
 	
 	private static ICMSServiceLocator cmsServiceLocator ;
 	
+	IPortalUrlFactory urlFactory;
+	
 	public static ICMSService getCMSService() throws Exception {
 		
 		if( cmsServiceLocator == null){
@@ -221,6 +228,14 @@ public class CmsCommand extends DynamicCommand {
 			profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
 		return profilManager;
+	}
+	
+	public IPortalUrlFactory getUrlFactory()throws Exception {
+		
+		if (urlFactory == null)
+			urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+
+		return urlFactory;
 	}
 
 	/**
@@ -355,18 +370,22 @@ public class CmsCommand extends DynamicCommand {
 		CMSPublicationInfos	pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, searchPath.toString());
 		PortalObject page =  searchPublicationPageForPub(cmsReadItemContext, pubInfos,  po,  searchPath,  profilManager) ;
 		
-		/*
+
 		// On regarde dans les autres portails
-		if( page == null && po instanceof PortalObject){
+		if( po instanceof Portal && page == null){
 			Collection<PortalObject> portals = ctx.getController().getPortalObjectContainer().getContext().getChildren(PortalObject.PORTAL_MASK);
 			for(PortalObject portal: portals){
+				// Uniquement si ils sont en mode publication satellite				
+
+//				if( "satellite".equals(portal.getProperty("osivia.portal.publishingPolicy")))	{
 				if( !portal.getId().equals(po.getId()))
-					page = searchPublicationPageForPub( pubInfos,  portal,  searchPath,  profilManager) ;
+					page = searchPublicationPageForPub( cmsReadItemContext, pubInfos,  portal,  searchPath,  profilManager) ;
 				if( page != null)
 					break;
+//				}
 			}
 		}
-		*/
+
 		return page;
 
 	}
@@ -747,6 +766,37 @@ public class CmsCommand extends DynamicCommand {
 					}
 
 					PortalObject publicationPage = searchPublicationPage(getControllerContext(), portal, cmsPath, getProfilManager());
+					
+					
+					
+					/* Controle du host
+					 * 
+					 *  si le host est différent du host courant, on redirige sur le nouveau host
+					 */
+					
+					if( publicationPage != null){
+					Portal pubPortal = ((Page) publicationPage).getPortal();
+					String host = pubPortal.getDeclaredProperty("osivia.site.hostName");
+					String reqHost = getControllerContext().getServerInvocation().getServerContext().getClientRequest().getServerName();
+
+					if( host != null && !reqHost.equals(host))	{
+						PortalControllerContext portalCtx = new PortalControllerContext( getControllerContext());
+
+						String url = getUrlFactory().getPermaLink(
+								portalCtx, null,
+								null, cmsPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+						url = url.replaceFirst(reqHost, host);
+						return new RedirectionResponse(url.toString());
+					}
+					}
+
+					
+					
+					
+					
+					
+					
+					
 
 					if (publicationPage != null)	
 						contextualizationPage = (Page) publicationPage;

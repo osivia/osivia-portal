@@ -62,7 +62,8 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		DynamicPortalObjectContainer.clearCache();
 		
 		invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.portalObjectContainer", getPortalObjectContainer());
-
+		
+		getTracker().init();
 			
 		getTracker().pushState(invocation);
 		

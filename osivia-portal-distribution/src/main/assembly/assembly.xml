@@ -31,6 +31,17 @@
 	</outputFileNameMapping>
     </dependencySet>
 
+   <dependencySet>
+      <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+	<includes>
+         	<include>org.osivia.portal.core:osivia-portal-jbp-core-admin-lib:jar:${project.version}</include>
+       	</includes>
+	<outputFileNameMapping>
+		portal-core-admin-lib.jar
+	</outputFileNameMapping>
+    </dependencySet>
 
  <dependencySet>
       <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
@@ -118,6 +129,7 @@
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-wsrp.sar/**</exclude>
 
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-core-lib.jar</exclude>
+
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-portlet-lib.jar</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-server-lib.jar</exclude>
 
@@ -133,6 +145,9 @@
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal.war/WEB-INF/portlet-instances.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-ajax.war/dyna/dyna.js</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/portlet-instances.xml</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/lib/portal-core-admin-lib.jar</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/faces-config.xml</exclude>
+
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-server.war/WEB-INF/web.xml</exclude>
      	   </excludes>
         </fileSet>

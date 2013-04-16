@@ -34,7 +34,12 @@ public class ErrorValve extends ValveBase {
 		
 		HttpServletRequest httpRequest = request.getRequest();
 		
-		String errorPageUri = System.getProperty("error.default_page_uri");
+		// 2.1 / JSS / Multi-sites
+		String dotServerName = request.getServerName().replaceAll("\\.", "-dot-");
+		String errorPageUri = 	System.getProperty(	"portal.error.host."+dotServerName+".uri"); 
+			
+		if( errorPageUri == null)
+			errorPageUri = System.getProperty("error.default_page_uri");
 		
 		// On ne traite pas la page d'erreur (pas de boucle !!! )
 		if( request.getDecodedRequestURI().equals(errorPageUri))
