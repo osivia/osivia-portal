@@ -14,5 +14,5 @@ public class Constants {
 	public static String ATTR_MY_SPACE_URL = "osivia.MON_ESPACE_URL";
 	public static String ATTR_WIZZARD_URL = "osivia.WIZZARD_URL";
 	public static String ATTR_WIZZARD_MODE = "osivia.WIZZARD_MODE";
-
+	public static String ATTR_REFRESH_URL = "osivia.REFRESH_URL";
 }

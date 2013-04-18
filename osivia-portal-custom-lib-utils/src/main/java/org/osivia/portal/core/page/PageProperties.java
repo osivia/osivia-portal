@@ -44,7 +44,29 @@ public class PageProperties {
 	return localProperties.get();
 	}
 
+	// v2.0.6 : ajout rafraichissement utilisateur sur la requete
+	private boolean refreshingPage = false;
 	
+	
+	public boolean isRefreshingPage() {
+		// TODO : a finir d'implémenter
+			return false;
+		
+//		if( parent != null)
+//			return parent.isRefreshingPage();
+//		
+//		return refreshingPage;
+	}
+
+
+	public void setRefreshingPage(boolean pageRefresh) {
+		if( parent != null)	
+			parent.refreshingPage = pageRefresh;
+		else
+			this.refreshingPage = pageRefresh;
+	}
+
+
 	public  Map<String, String> getPagePropertiesMap()	{
 		
 		Map<String, String> pageProperties;

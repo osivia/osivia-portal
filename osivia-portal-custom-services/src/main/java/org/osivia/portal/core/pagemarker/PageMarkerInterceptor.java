@@ -79,6 +79,8 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 			
 		/* Sauvegarde des états en mode ajax */
 		
+		 boolean alreadySaved = false;
+		 
 		if (cmd instanceof InvokePortletWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())) {
 			
 			ControllerContext controllerCtx = cmd.getControllerContext();
@@ -88,19 +90,23 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 			//  sauvegarde des infos associées au markeur de page
 			
 			PageMarkerUtils.savePageState(controllerCtx, window.getPage());
+			
+			alreadySaved = true;
 		}
 
 		// 2.0.4 : redirection depuis une action portlet		
-		if (cmd instanceof InvokePortletWindowActionCommand && resp instanceof RedirectionResponse) {
+		if (!alreadySaved && cmd instanceof InvokePortletWindowActionCommand ) {
 			
 			ControllerContext controllerCtx = cmd.getControllerContext();
 			
 			Window window = ((InvokePortletWindowActionCommand)cmd).getWindow();
 			
 			PageMarkerUtils.savePageState(controllerCtx, window.getPage());
+			
+			alreadySaved = true;
 		}
 			
-			if (cmd instanceof RenderPageCommand) {
+		if (!alreadySaved && cmd instanceof RenderPageCommand) {
 				
 				ControllerContext controllerCtx = cmd.getControllerContext();
 				Page page = ((PageCommand)cmd).getPage();

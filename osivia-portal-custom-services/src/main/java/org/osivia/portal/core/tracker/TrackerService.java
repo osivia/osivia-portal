@@ -124,6 +124,12 @@ public class TrackerService extends ServiceMBeanSupport implements ITracker, Ser
 	public void setHttpRequest(HttpServletRequest request) {
 		getTrackerBean().setRequest(request);
 	}
+
+
+	public void init() {
+		trackerBean.set(null);
+		
+	}
 	
 	
 }

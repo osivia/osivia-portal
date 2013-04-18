@@ -466,6 +466,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			}
 			
 			
+			if ("true".equals(request.getParameter("refresh")))
+				PageProperties.getProperties().setRefreshingPage(true);
+			
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
 				

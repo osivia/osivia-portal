@@ -34,6 +34,7 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry.Fragment;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.mt.CacheEntry;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
@@ -359,13 +360,13 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
 
       
-         
+         boolean refresh = PageProperties.getProperties().isRefreshingPage();
          
 
          ContentResponse fragment = cachedEntry != null ? cachedEntry.contentRef.getContent() : null;
 
          // If no valid fragment we must invoke
-         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis() || cachedEntry.creationTimeMillis < getServicesCacheService().getCacheInitialisationTs())
+         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis() || cachedEntry.creationTimeMillis < getServicesCacheService().getCacheInitialisationTs() || refresh)
          {
             // Set validation token for revalidation only we have have a fragment
             if (fragment != null)

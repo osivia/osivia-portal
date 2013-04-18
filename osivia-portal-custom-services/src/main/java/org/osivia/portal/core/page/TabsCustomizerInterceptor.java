@@ -524,7 +524,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					} else {
 
 						// On vérifie la validité du cache du header et du cache des services
-						if (headerCount.longValue() == getCacheService().getHeaderCount() && cmsTs > getServicesCacheService().getCacheInitialisationTs())
+						if (headerCount.longValue() == getCacheService().getHeaderCount() && cmsTs > getServicesCacheService().getCacheInitialisationTs() && ! PageProperties.getProperties().isRefreshingPage())
 							refreshUserPortal = false;
 					}
 

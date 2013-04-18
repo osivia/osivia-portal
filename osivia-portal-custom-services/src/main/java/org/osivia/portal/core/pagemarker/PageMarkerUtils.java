@@ -245,6 +245,8 @@ public class PageMarkerUtils {
         if (selectionsMap != null && page != null) {
             PortalObjectId pageId = page.getId();
             Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(selectionsMap.size());
+            
+            try {
 
             // Parcours de tous les éléments de la map
             Set<Entry<SelectionMapIdentifiers, Set<SelectionItem>>> entrySet = selectionsMap.entrySet();
@@ -262,6 +264,9 @@ public class PageMarkerUtils {
                     // Scope session ou scope page ne concernant pas la page courante
                     newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
                 }
+            }
+            } catch (ClassCastException e){
+            	// Pb lie au reload du service, on ignore la map
             }
             markerInfo.setSelectionsMap(newSelectionsMap);
         }

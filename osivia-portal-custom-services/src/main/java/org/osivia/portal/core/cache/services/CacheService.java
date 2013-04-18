@@ -23,6 +23,7 @@ import org.osivia.portal.api.cache.services.CacheFlux;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 import org.osivia.portal.api.cache.services.IGlobalParameters;
+import org.osivia.portal.core.page.PageProperties;
 
 
 
@@ -176,7 +177,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 			// Cache existant et expiré (20s)
 			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration()
-					|| cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) {
+					|| cacheFlux.getTsEnregistrement() < getCacheInitialisationTs() || PageProperties.getProperties().isRefreshingPage() ) {
 				
 				if (infos.getInvoker() != null) {				
 					if (infos.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_SESSION) {
@@ -230,7 +231,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			}
 
 			// reinitialisation des caches
-			if (cacheFlux != null && (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()))
+			if (   (cacheFlux != null && (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs())) || PageProperties.getProperties().isRefreshingPage())
 				cacheFlux = null;
 			
 
