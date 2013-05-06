@@ -95,6 +95,7 @@ public class CmsCommand extends DynamicCommand {
 	private String pagePath;
 
 	private String cmsPath;
+	private String contentPath;
 
 	private String contextualization;
 
@@ -584,6 +585,8 @@ public class CmsCommand extends DynamicCommand {
 
 					// Le path eventuellement en ID a été retranscrit en chemin
 					cmsPath = pubInfos.getDocumentPath();
+					
+					
 
 				} catch (CMSException e) {
 
@@ -617,6 +620,10 @@ public class CmsCommand extends DynamicCommand {
 					// Attention, cet appel peut modifier si nécessaire le
 					// scope de cmsReadItemContext
 					cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
+					
+					
+					
+					
 
 				} catch (CMSException e) {
 
@@ -633,6 +640,25 @@ public class CmsCommand extends DynamicCommand {
 				}
 
 			}
+			
+			
+			
+			/* Adapatation des paths à la navigation */
+			
+			// Le path du contenu est le cmsPath
+			contentPath = cmsPath;
+			
+			if( cmsItem != null){
+				String navigationPath = cmsItem.getProperties().get("navigationPath");
+				if( navigationPath != null)	{
+					// Le cms path est le path de navigation
+					cmsPath = navigationPath;
+				}
+			}
+			
+			
+			
+			
 			// }
 			
 			if( "detailedView".equals(displayContext))	{
@@ -1141,7 +1167,7 @@ public class CmsCommand extends DynamicCommand {
 					}
 				}
 
-				// Mise à jour du path
+				// Mise à jour du path de navigation
 
 				if (cmsPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
 					//String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
@@ -1151,6 +1177,13 @@ public class CmsCommand extends DynamicCommand {
 				}
 
 				state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
+				
+				
+				// Mise à jour du path de contenu
+					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"),
+							new String[] { contentPath });
+
+
 				
 				/* Le path CMS identifie de manière unique la session
 				 * puisqu'il s'agit d'une nouvelle page
