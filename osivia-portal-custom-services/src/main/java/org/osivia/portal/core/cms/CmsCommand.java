@@ -769,16 +769,22 @@ public class CmsCommand extends DynamicCommand {
 						if (currentPage != null) {
 							// v 2.0-rc7
 							contextualizeinPortal = false;
+							
+							// v2.1 : dafpic contextualisation portail sur les pages non contextualisés (template /publish)
+							
+							if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
+								contextualizeinPortal = true;
+							
 							if (currentPage.getProperty("osivia.cms.basePath") != null) {
 
 								if (pagePublishSpaceConfig != null
 										&& "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeExternalContents"))) {
 									contextualizeinPortal = true;
 								}
-							} else {
-								if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
-									contextualizeinPortal = true;
-							}
+							} //else {
+//								if ("1".equals(currentPage.getProperty("osivia.cms.outgoingRecontextualizationSupport")))
+//									contextualizeinPortal = true;
+//							}
 						}	else	{
 							// Pas de page, on contextualise dans le portail
 							// (exemple : permalink)
