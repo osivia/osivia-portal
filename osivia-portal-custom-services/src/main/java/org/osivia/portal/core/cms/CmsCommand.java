@@ -643,16 +643,34 @@ public class CmsCommand extends DynamicCommand {
 			
 			
 			
-			/* Adapatation des paths à la navigation */
+			/* Adapatation des paths à la navigation pilotée par le contenu */
 			
 			// Le path du contenu est le cmsPath
 			contentPath = cmsPath;
+			String itemPublicationPath = cmsPath;
 			
 			if( cmsItem != null){
 				String navigationPath = cmsItem.getProperties().get("navigationPath");
 				if( navigationPath != null)	{
-					// Le cms path est le path de navigation
-					cmsPath = navigationPath;
+					//Le pub infos devient celui de la navigation
+					try {
+						pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, navigationPath);
+
+						// Le path eventuellement en ID a été retranscrit en chemin
+						itemPublicationPath = pubInfos.getDocumentPath();
+					} catch (CMSException e) {
+
+						if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
+							return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+
+						if (e.getErrorCode() == CMSException.ERROR_NOTFOUND)
+							return new UnavailableResourceResponse(cmsPath, false);
+
+						throw e;
+						// TODO : gerer les cas d'erreurs
+						// return new
+						// UpdatePageResponse(currentPage.getId());
+					}
 				}
 			}
 			
@@ -673,7 +691,7 @@ public class CmsCommand extends DynamicCommand {
 
 			boolean contextualizeinPage = false;
 
-			if (cmsPath != null && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(contextualization)) {
+			if (itemPublicationPath != null && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(contextualization)) {
 
 				if (currentPage != null && currentPage.getProperty("osivia.cms.basePath") != null) {
 
@@ -700,7 +718,7 @@ public class CmsCommand extends DynamicCommand {
 						searchPage = (Page) po;
 
 					if (searchPage != null) {
-						PortalObject publicationPage = searchPublicationPage(getControllerContext(), searchPage, cmsPath, getProfilManager());
+						PortalObject publicationPage = searchPublicationPage(getControllerContext(), searchPage, itemPublicationPath, getProfilManager());
 
 						if (publicationPage != null)
 							contextualizationPage = (Page) publicationPage;
@@ -718,7 +736,7 @@ public class CmsCommand extends DynamicCommand {
 						if ("1".equals(currentPage.getProperty("osivia.cms.directContentPublisher"))) {
 							String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
-							if (pageBasePath != null && pageBasePath.equals(cmsPath)) {
+							if (pageBasePath != null && pageBasePath.equals(itemPublicationPath)) {
 								contextualizationPage = currentPage;
 							}
 						}
@@ -790,7 +808,7 @@ public class CmsCommand extends DynamicCommand {
 						 portal = getControllerContext().getController().getPortalObjectContainer().getContext().getDefaultPortal();
 					}
 
-					PortalObject publicationPage = searchPublicationPage(getControllerContext(), portal, cmsPath, getProfilManager());
+					PortalObject publicationPage = searchPublicationPage(getControllerContext(), portal, itemPublicationPath, getProfilManager());
 					
 					
 					
@@ -809,7 +827,7 @@ public class CmsCommand extends DynamicCommand {
 
 						String url = getUrlFactory().getPermaLink(
 								portalCtx, null,
-								null, cmsPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+								null, itemPublicationPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
 						url = url.replaceFirst(reqHost, host);
 						return new RedirectionResponse(url.toString());
 					}
@@ -923,7 +941,7 @@ public class CmsCommand extends DynamicCommand {
 
 					boolean errorDuringCheck = false;
 
-					String pathToCheck = cmsPath;
+					String pathToCheck = itemPublicationPath;
 
 					do {
 
@@ -989,8 +1007,8 @@ public class CmsCommand extends DynamicCommand {
 								
 								/* TODO: check by jss! */
 								if (ECMPageTemplate == null) {
-										boolean isChildPath = (cmsPath.contains(pathToCheck))
-												&& !(cmsPath.equalsIgnoreCase(pathToCheck));
+										boolean isChildPath = (itemPublicationPath.contains(pathToCheck))
+												&& !(itemPublicationPath.equalsIgnoreCase(pathToCheck));
 										if (isChildPath) {
 											String childrenPageTemplate = cmsItemNav.getProperties().get(
 													"childrenPageTemplate");
@@ -1169,9 +1187,9 @@ public class CmsCommand extends DynamicCommand {
 
 				// Mise à jour du path de navigation
 
-				if (cmsPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
+				if (itemPublicationPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
 					//String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
-					String relPath = cmsPath.substring(basePublishPath.length());
+					String relPath = itemPublicationPath.substring(basePublishPath.length());
 					state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"),
 							new String[] { relPath });
 				}
@@ -1226,7 +1244,7 @@ public class CmsCommand extends DynamicCommand {
 			if (page == null) {
 				if (layoutPath != null)
 					logger.error("Le template " + layoutPath + " n'a pas pu être instancié");
-				return new UnavailableResourceResponse(cmsPath, false);
+				return new UnavailableResourceResponse(itemPublicationPath, false);
 			}
 
 			
@@ -1237,7 +1255,7 @@ public class CmsCommand extends DynamicCommand {
 				
 				// Pb sur la navigation, on affiche le contenu sauf si le contenu est la page
 				// auquel cas, on reste sur la page (cas d'une page mal définie pointant vers un path cms qui n'est pas un espace de publication)
-				if(cmsPath != null && cmsPath.equals(page.getProperty("osivia.cms.basePath")))
+				if(itemPublicationPath != null && itemPublicationPath.equals(page.getProperty("osivia.cms.basePath")))
 					isPageToDisplayUncontextualized = true;
 			}
 			
@@ -1328,14 +1346,14 @@ public class CmsCommand extends DynamicCommand {
 			boolean displayContent = false;
 			boolean navigationPlayer = false;
 
-			if (cmsPath != null) {
+			if (itemPublicationPath != null) {
 				if (cmsNav == null)	{
 					if( !isPageToDisplayUncontextualized)
 						displayContent = true;
 				}
 				else {
 
-					if (!computeNavPath(cmsPath).equals(cmsNav.getPath())) {
+					if (!computeNavPath(itemPublicationPath).equals(cmsNav.getPath())) {
 						// Items détachés du path
 						displayContent = true;
 					} else {
