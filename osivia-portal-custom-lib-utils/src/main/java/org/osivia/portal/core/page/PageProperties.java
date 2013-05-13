@@ -50,12 +50,12 @@ public class PageProperties {
 	
 	public boolean isRefreshingPage() {
 		// TODO : a finir d'implémenter
-			return false;
+//			return false;
 		
-//		if( parent != null)
-//			return parent.isRefreshingPage();
-//		
-//		return refreshingPage;
+		if( parent != null)
+			return parent.isRefreshingPage();
+		
+		return refreshingPage;
 	}
 
 

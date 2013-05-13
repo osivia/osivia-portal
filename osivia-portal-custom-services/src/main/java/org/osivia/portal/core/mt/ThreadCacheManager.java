@@ -79,14 +79,30 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 
 
 
-		
-		
+
+
 		
 		
 		
 
 
 		CacheEntry cachedEntry = (CacheEntry) resolver.getAttribute(scopeKey);
+		
+		
+		
+	     // v2.0.8 : gestion des evenements de selection
+        
+		if (cachedEntry != null && window != null) {
+			if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
+				Long selectionTS = (Long) context.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.selection.ts");
+				if (selectionTS != null) {
+					if (cachedEntry.creationTimeMillis < selectionTS.longValue())
+						cachedEntry = null;
+				}
+			}
+		}
+		
+		
 
 		if (cachedEntry != null) {
 			

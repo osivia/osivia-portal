@@ -7,7 +7,7 @@
 	<portlet>
 		<portlet-name>osivia-portal-custom-web-assets-selectionPortlet</portlet-name>
 		<portlet-class>org.osivia.portal.core.selection.portlet.SelectionPortlet</portlet-class>
-		<expiration-cache>0</expiration-cache>
+		<expiration-cache>180</expiration-cache>
 
 		<supports>
 			<mime-type>text/html</mime-type>

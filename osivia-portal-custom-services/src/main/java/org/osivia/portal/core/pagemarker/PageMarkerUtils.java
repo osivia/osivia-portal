@@ -242,34 +242,17 @@ public class PageMarkerUtils {
         // Sauvegarde de l'ensemble des sélections
         Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(
                 ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP);
-        if (selectionsMap != null && page != null) {
-            PortalObjectId pageId = page.getId();
-            Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(selectionsMap.size());
+        if (selectionsMap != null ) {
             
-            try {
-
-            // Parcours de tous les éléments de la map
-            Set<Entry<SelectionMapIdentifiers, Set<SelectionItem>>> entrySet = selectionsMap.entrySet();
-            for (Entry<SelectionMapIdentifiers, Set<SelectionItem>> entry : entrySet) {
-                SelectionMapIdentifiers selectionMapIdentifiers = entry.getKey();
-                Set<SelectionItem> selectionSet = entry.getValue();
-
-                SelectionScope scope = selectionMapIdentifiers.getScope();
-                if ((SelectionScope.SCOPE_NAVIGATION.equals(scope))
-                        || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
-                    // Scope navigation ou scope page concernant la page courante
-                    Set<SelectionItem> newSelectionSet = new LinkedHashSet<SelectionItem>(selectionSet);
-                    newSelectionsMap.put(selectionMapIdentifiers, newSelectionSet);
-                } else {
-                    // Scope session ou scope page ne concernant pas la page courante
-                    newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
-                }
-            }
-            } catch (ClassCastException e){
-            	// Pb lie au reload du service, on ignore la map
-            }
-            markerInfo.setSelectionsMap(newSelectionsMap);
+            markerInfo.setSelectionsMap(selectionsMap);
         }
+        
+        Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,  SelectionService.ATTR_SELECTIONS_TIMESTAMP);
+        if (selectionTs != null) {
+            markerInfo.setSelectionTs(selectionTs);
+        }
+        
+        
 
         // Mémorisation marker dans la session
         Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "markers");
@@ -520,8 +503,41 @@ public class PageMarkerUtils {
                                 // Restauration de l'ensemble des sélection
                                 Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();
                                 if (selectionsMap != null) {
-                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP, selectionsMap);
+                                	 PortalObjectId pageId = page.getId();
+                                	
+                                    Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(selectionsMap.size());
+                                    
+                                    try {
+
+                                    // Parcours de tous les éléments de la map
+                                    Set<Entry<SelectionMapIdentifiers, Set<SelectionItem>>> entrySet = selectionsMap.entrySet();
+                                    for (Entry<SelectionMapIdentifiers, Set<SelectionItem>> entry : entrySet) {
+                                        SelectionMapIdentifiers selectionMapIdentifiers = entry.getKey();
+                                        Set<SelectionItem> selectionSet = entry.getValue();
+
+                                        SelectionScope scope = selectionMapIdentifiers.getScope();
+                                        if ((SelectionScope.SCOPE_NAVIGATION.equals(scope))
+                                                || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
+                                            // Scope navigation ou scope page concernant la page courante
+                                            Set<SelectionItem> newSelectionSet = new LinkedHashSet<SelectionItem>(selectionSet);
+                                            newSelectionsMap.put(selectionMapIdentifiers, newSelectionSet);
+                                        }                            	 else {
+                                                 // Scope session ou scope page ne concernant pas la page courante
+                                                 newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
+                                             }         
+                                    }	
+                                	                                    } catch (ClassCastException e){
+                                    	// Pb lie au reload du service, on ignore la map
+                                    }	
+                                	
+ 
+                                	
+                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP,newSelectionsMap);
                                 }
+                                
+                                if (markerInfo.getSelectionTs() != null) {
+                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());
+                                };
 
                                 if (page != null) {
                                     dumpPageState(controllerContext, page, "APRES restorePageState " + currentPageMarker);

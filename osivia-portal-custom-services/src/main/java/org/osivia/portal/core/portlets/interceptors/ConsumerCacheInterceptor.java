@@ -38,6 +38,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.selection.SelectionService;
 import org.osivia.portal.core.tracker.ITracker;
 
 
@@ -163,7 +164,6 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
     			pw.println("</p>");
 
 
-    	 	 
     	    	  return new FragmentResponse(
     	    	         null,
     	    	         new HashMap<String, Object>(),
@@ -267,8 +267,22 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
           
           
 
-
-          
+	     // v2.0.8 : gestion des evenements de selection
+         
+         long selectionTs = -1;
+         
+         if (cachedEntry != null && window != null)	{
+        	 if( "selection".equals(window.getProperty("osivia.cacheEvents")))	{
+        		 // Le cache est-il bien conforme à la selection
+        		 
+        		 Long savedSelectionTS = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP );
+        		 if( savedSelectionTS != null) {
+        			 selectionTs = savedSelectionTS.longValue();
+        			 if( cachedEntry.selectionTs != selectionTs)
+        				 cachedEntry = null;
+        		 }
+        	 }
+         }
           
           
           
@@ -447,7 +461,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                   cacheFragment,
                   expirationTimeMillis,
                   validationToken,
-                  windowCreationPageMarker);
+                  windowCreationPageMarker,
+                  selectionTs);
                
                
                userContext.setAttribute(scopeKey, cacheEntry);
@@ -478,7 +493,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            fragment,
                            expirationTimeMillis,
                            null,
-                           null);
+                           null,
+                           selectionTs);
                          userContext.setAttribute("sharedcache." +sharedID, sharedCacheEntry);
              	      }
                 }
@@ -510,7 +526,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            fragment,
                            System.currentTimeMillis() + 30 * 1000, // 10 sec.
                            null,
-                           null);
+                           null,
+                           selectionTs);
             		   // v2.0.2 -JSS20130318 - déja fait !!! 
                        //  userContext.setAttribute(scopeKey, cacheEntry);
                         

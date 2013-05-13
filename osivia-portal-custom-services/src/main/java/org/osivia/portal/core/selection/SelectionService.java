@@ -27,6 +27,8 @@ public class SelectionService implements ISelectionService {
 
     /** Selections map attribute. */
     public static final String ATTR_SELECTIONS_MAP = "osivia.selections";
+    
+    public static final String ATTR_SELECTIONS_TIMESTAMP = "osivia.selections.ts";
 
     /** Selection scope property prefixe. */
     private static final String PREFIXE_SELECTION_SCOPE = "osivia.selection.";
@@ -126,6 +128,10 @@ public class SelectionService implements ISelectionService {
             SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(portletRequest, selectionId);
             selectionsMap.remove(selectionIdentifiers);
             context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
+            
+            // Portal notification timestamp
+            context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
+
         }
     }
 
@@ -178,6 +184,9 @@ public class SelectionService implements ISelectionService {
         SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(request, selectionId);
         selectionsMap.put(selectionIdentifiers, selectionItemsSet);
         context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
+        
+        // Portal notification timestamp
+        context.setAttribute(Scope.PRINCIPAL_SCOPE,ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
     }
 
 

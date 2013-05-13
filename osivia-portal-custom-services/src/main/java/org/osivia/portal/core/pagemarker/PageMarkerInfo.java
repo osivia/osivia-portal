@@ -36,8 +36,11 @@ public class PageMarkerInfo implements Serializable {
     Integer firstTab;
 
     PortalObjectId currentPageId;
+    
+    Long selectionTs;
 
-    public PortalObjectId getCurrentPageId() {
+
+	public PortalObjectId getCurrentPageId() {
         return currentPageId;
     }
 
@@ -178,5 +181,14 @@ public class PageMarkerInfo implements Serializable {
     public void setSelectionsMap(Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap) {
         this.selectionsMap = selectionsMap;
     }
+    
+    public Long getSelectionTs() {
+		return selectionTs;
+	}
+
+	public void setSelectionTs(Long selectionTs) {
+		this.selectionTs = selectionTs;
+	}
+
 
 }

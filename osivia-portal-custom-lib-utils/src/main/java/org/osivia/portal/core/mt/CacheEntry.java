@@ -74,6 +74,8 @@ import java.util.Map;
       public final String validationToken;
       
       public final String creationPageMarker;
+      
+      public final long selectionTs;
 
       public CacheEntry(
          StateString navigationalState,
@@ -83,7 +85,8 @@ import java.util.Map;
          ContentResponse content,
          long expirationTimeMillis,
          String validationToken,
-         String creationPageMarker)
+         String creationPageMarker,
+         long selectionTs)
       {
          if (expirationTimeMillis <= 0)
          {
@@ -98,6 +101,7 @@ import java.util.Map;
          this.validationToken = validationToken;
          this.creationPageMarker = creationPageMarker;
          this.creationTimeMillis = System.currentTimeMillis();
+         this.selectionTs = selectionTs;
       }
 
 }

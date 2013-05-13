@@ -164,6 +164,7 @@ public class CmsCommand extends DynamicCommand {
 	public CmsCommand() {
 	}
 
+	// TODO : supprimer parametre scope en 2.1 (pas d'impact car plus utilise)
 	public CmsCommand(String pagePath, String cmsPath, Map<String, String> pageParams, String contextualization,
 			String displayContext, String hideMetaDatas, String itemScope, String displayLiveVersion,
 			String windowPermReference, String addToBreadcrumb, String portalPersistentName) {

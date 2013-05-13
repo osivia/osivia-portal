@@ -46,6 +46,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		PageProperties.getProperties().init();
 
 		
+		
 		DynamicPortalObjectContainer.clearCache();
 
 		

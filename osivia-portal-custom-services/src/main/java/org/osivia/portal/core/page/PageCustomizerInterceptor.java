@@ -465,9 +465,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				defaultPage = true;;
 			}
 			
-			
-			if ("true".equals(request.getParameter("refresh")))
-				PageProperties.getProperties().setRefreshingPage(true);
+
 			
 
 			if ("true".equals(request.getParameter("init-state")) || defaultPage) {
@@ -1124,6 +1122,11 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
 			"osivia.windowSettingMode")))
 				rd.setAttribute(Constants.ATTR_WIZZARD_MODE, "1");
+			
+            RefreshPageCommand refreshCmd = new RefreshPageCommand(cc.getPage().getId().toString(
+					PortalObjectPath.SAFEST_FORMAT));
+              rd.setAttribute(Constants.ATTR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, controllerCtx, null, null));
+
 
 			
 			//

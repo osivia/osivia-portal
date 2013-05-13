@@ -272,6 +272,23 @@ public class AjaxResponseHandler implements ResponseHandler {
 					}
  */
 
+	        // v2.0.8 : gestion des evenements de selection
+			    if( !reloadAjaxWindows && !fullRefresh)	{
+		    	Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+
+
+				for (PortalObject window : windows) {
+				
+					if( "selection".equals(window.getProperty("osivia.cacheEvents")))
+						if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
+							if (!dirtyWindowIds.contains(window.getId()))
+								dirtyWindowIds.add(window.getId());
+						} else	
+							fullRefresh = true;
+				}
+		    }
+	         
+	         
 			// Le rafraichissment de la page doit etre explicitement demandé par le portlet
 	         if( reloadAjaxWindows ){	         
 				if ( !"true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,

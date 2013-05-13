@@ -132,6 +132,7 @@
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-identity.sar/portal-identity.war/WEB-INF/portlet-instances.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal.war/WEB-INF/portlet-instances.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-ajax.war/dyna/dyna.js</exclude>
+		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-ajax.war/dyna/prototype.js</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/portlet-instances.xml</exclude>
 		<exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-server.war/WEB-INF/web.xml</exclude>
      	   </excludes>

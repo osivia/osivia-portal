@@ -175,9 +175,22 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				return null;
 		} else {
 
+			boolean expired = false;
+			
 			// Cache existant et expiré (20s)
-			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration()
-					|| cacheFlux.getTsEnregistrement() < getCacheInitialisationTs() || PageProperties.getProperties().isRefreshingPage() ) {
+			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())
+				expired = true;
+			
+			// Réinitialisation par l'adminstrateur
+			if( cacheFlux.getTsEnregistrement() < getCacheInitialisationTs())
+				expired = true;
+			
+			// Réinitialisation par l'utilisateur : tous sauf parametres
+			if(  PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContenuCache() instanceof IGlobalParameters))
+				expired = true;
+		
+			
+			if (expired ) {
 				
 				if (infos.getInvoker() != null) {				
 					if (infos.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_SESSION) {
@@ -231,7 +244,8 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			}
 
 			// reinitialisation des caches
-			if (   (cacheFlux != null && (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs())) || PageProperties.getProperties().isRefreshingPage())
+			if (   cacheFlux != null)
+			if (   (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContenuCache() instanceof IGlobalParameters)))
 				cacheFlux = null;
 			
 
