@@ -611,39 +611,6 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				// On détermine le path CMS de la page
 				// Pour cela on remonte au 1er sous-niveau
 				
-				
-				/*
-				NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
-				.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-				
-				PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());			
-				
-				if( pageState != null)	{
-					String sNavigationPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-					
-					if( sNavigationPath != null && sNavigationPath.length == 1)	{
-						String pagePath = sNavigationPath[ 0]; // Navigation couranted
-						String spacePath = rpc.getPage().getProperty("osivia.cms.basePath");
-						
-						if( pagePath != null && spacePath != null)	{
-							CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
-							String parentPath = parent.toString();
-
-							while (parentPath.contains(spacePath) && !(parentPath.equals(spacePath))) {
-
-								pagePath = parentPath.toString();
-
-								parent = CMSObjectPath.parse(pagePath).getParent();
-								parentPath = parent.toString();
-
-							}
-							pageCMSPath =  pagePath;
-						}
-					}
-				}*/
-				
-	
-				
 				NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
 				.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 				

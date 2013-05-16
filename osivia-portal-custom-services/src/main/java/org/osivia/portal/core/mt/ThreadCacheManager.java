@@ -21,6 +21,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.StateString;
 import org.osivia.portal.core.mt.CacheEntry;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor;
@@ -41,7 +42,8 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 //		if (true)
 //			return true;
 		
-		
+		if(PageProperties.getProperties().isRefreshingPage())
+			return false;
 		
 		
 		// Caches portlets
@@ -85,6 +87,22 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 
 
 		CacheEntry cachedEntry = (CacheEntry) resolver.getAttribute(scopeKey);
+		
+		
+		
+	     // v2.0.8 : gestion des evenements de selection
+        
+		if (cachedEntry != null && window != null) {
+			if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
+				Long selectionTS = (Long) context.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.selection.ts");
+				if (selectionTS != null) {
+					if (cachedEntry.creationTimeMillis < selectionTS.longValue())
+						cachedEntry = null;
+				}
+			}
+		}
+		
+		
 
 		if (cachedEntry != null) {
 			

@@ -35,12 +35,13 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String bshActivation;
 	private String bshScript;
 	private String cacheID;
+	private String selectionDep;
 
 	public ChangeWindowSettingsCommand() {
 	}
 
 	public ChangeWindowSettingsCommand(String windowId, List<String> style, String displayTitle, String title, String displayDecorators,
-			String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope, String bshActivation, String bshScript, String cacheID) {
+			String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep) {
 		this.windowId = windowId;
 		this.style = style;
 		this.displayTitle = displayTitle;
@@ -55,6 +56,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		this.bshActivation = bshActivation;
 		this.bshScript = bshScript;
 		this.cacheID = cacheID;  
+		this.selectionDep = selectionDep;
 	}
 
 	public ControllerResponse executeAssistantCommand() throws Exception {
@@ -153,7 +155,10 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		else if (window.getDeclaredProperty("osivia.cacheID") != null)
 			window.setDeclaredProperty("osivia.cacheID", null);
 
-		
+		if ("1".equals(selectionDep))
+			window.setDeclaredProperty("osivia.cacheEvents", "selection");
+		else if (window.getDeclaredProperty("osivia.cacheEvents") != null)
+			window.setDeclaredProperty("osivia.cacheEvents", null);	
 		
 		return new UpdatePageResponse(page.getId());
 

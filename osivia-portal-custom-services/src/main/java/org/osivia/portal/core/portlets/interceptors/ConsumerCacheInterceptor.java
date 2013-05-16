@@ -34,9 +34,11 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry.Fragment;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.mt.CacheEntry;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.selection.SelectionService;
 import org.osivia.portal.core.tracker.ITracker;
 
 
@@ -257,6 +259,32 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          	  cachedEntry = globalWindowCaches.get(invocation.getWindowContext().getId());
         	 globalCache = true;
         }
+          
+          
+           
+          
+          
+
+	     // v2.0.8 : gestion des evenements de selection
+         
+         long selectionTs = -1;
+         
+         if (cachedEntry != null && window != null)	{
+        	 if( "selection".equals(window.getProperty("osivia.cacheEvents")))	{
+        		 // Le cache est-il bien conforme à la selection
+        		 
+        		 Long savedSelectionTS = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP );
+        		 if( savedSelectionTS != null) {
+        			 selectionTs = savedSelectionTS.longValue();
+        			 if( cachedEntry.selectionTs != selectionTs)
+        				 cachedEntry = null;
+        		 }
+        	 }
+         }
+          
+          
+          
+          
 
          //
          if (cachedEntry != null && skipNavigationCheck == false)
@@ -343,10 +371,14 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          
 
 
+      
+         boolean refresh = PageProperties.getProperties().isRefreshingPage();
+         
+
          ContentResponse fragment = cachedEntry != null ? cachedEntry.contentRef.getContent() : null;
 
          // If no valid fragment we must invoke
-         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis() || cachedEntry.creationTimeMillis < getServicesCacheService().getCacheInitialisationTs())
+         if (fragment == null || cachedEntry.expirationTimeMillis < System.currentTimeMillis() || cachedEntry.creationTimeMillis < getServicesCacheService().getCacheInitialisationTs() || refresh)
          {
             // Set validation token for revalidation only we have have a fragment
             if (fragment != null)
@@ -427,7 +459,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                   cacheFragment,
                   expirationTimeMillis,
                   validationToken,
-                  windowCreationPageMarker);
+                  windowCreationPageMarker,
+                  selectionTs);
                
                
                userContext.setAttribute(scopeKey, cacheEntry);
@@ -458,7 +491,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            fragment,
                            expirationTimeMillis,
                            null,
-                           null);
+                           null,
+                           selectionTs);
                          userContext.setAttribute("sharedcache." +sharedID, sharedCacheEntry);
              	      }
                 }
@@ -490,7 +524,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            fragment,
                            System.currentTimeMillis() + 30 * 1000, // 10 sec.
                            null,
-                           null);
+                           null,
+                           selectionTs);
             		   // v2.0.2 -JSS20130318 - déja fait !!! 
                        //  userContext.setAttribute(scopeKey, cacheEntry);
                         
@@ -499,6 +534,10 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                         globalWindowCaches.put(invocation.getWindowContext().getId(), initCacheEntry);
             	   }
                }
+               
+           
+               
+               
 
             }
 

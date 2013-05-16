@@ -7,12 +7,15 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.core.page.PageProperties;
@@ -89,6 +92,8 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 			
 		/* Sauvegarde des états en mode ajax */
 		
+		 boolean alreadySaved = false;
+		 
 		if (cmd instanceof InvokePortletWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())) {
 			
 			ControllerContext controllerCtx = cmd.getControllerContext();
@@ -98,12 +103,23 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 			//  sauvegarde des infos associées au markeur de page
 			
 			PageMarkerUtils.savePageState(controllerCtx, window.getPage());
+			
+			alreadySaved = true;
 		}
 
-				
-	
+		// 2.0.4 : redirection depuis une action portlet		
+		if (!alreadySaved && cmd instanceof InvokePortletWindowActionCommand ) {
 			
-			if (cmd instanceof RenderPageCommand) {
+			ControllerContext controllerCtx = cmd.getControllerContext();
+			
+			Window window = ((InvokePortletWindowActionCommand)cmd).getWindow();
+			
+			PageMarkerUtils.savePageState(controllerCtx, window.getPage());
+			
+			alreadySaved = true;
+		}
+			
+		if (!alreadySaved && cmd instanceof RenderPageCommand) {
 				
 				ControllerContext controllerCtx = cmd.getControllerContext();
 				Page page = ((PageCommand)cmd).getPage();

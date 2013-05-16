@@ -23,6 +23,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
+import org.osivia.portal.core.page.RefreshPageCommand;
 
 
 
@@ -122,7 +123,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 		}	
 		
 		
-		
+				
+		if (cmd instanceof RefreshPageCommand) {
+			RefreshPageCommand command = (RefreshPageCommand) cmd;
+
+			//
+			AbstractServerURL asu = new AbstractServerURL();
+			asu.setPortalRequestPath(path);
+			String pageId = command.getPageId();
+
+
+			try {
+				asu.setParameterValue("action", "refreshPage");
+				
+				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
+
+			} catch (UnsupportedEncodingException e) {
+				// ignore
+			}
+			return asu;
+		}
 
 		if (cmd instanceof MoveWindowCommand) {
 			MoveWindowCommand command = (MoveWindowCommand) cmd;

@@ -471,6 +471,12 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
+   
+   <mbean code="org.osivia.portal.core.selection.SelectionService"
+          name="osivia:service=SelectionService" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+   </mbean>
 	
 </server>
    

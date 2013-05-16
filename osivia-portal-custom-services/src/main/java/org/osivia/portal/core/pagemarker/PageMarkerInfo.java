@@ -3,14 +3,17 @@ package org.osivia.portal.core.pagemarker;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.UserPortal;
+import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 
 
 /**
@@ -22,6 +25,11 @@ import org.osivia.portal.core.dynamic.DynamicWindowBean;
  */
 public class PageMarkerInfo implements Serializable {
 	
+    /** Default serial version ID. */
+    private static final long serialVersionUID = 1L;
+
+    /** Selections map. */
+    private Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap;
 	public PageMarkerInfo(String pageMarker) {
 		super();
 		this.pageMarker = pageMarker;
@@ -30,6 +38,8 @@ public class PageMarkerInfo implements Serializable {
 	Integer firstTab;
 	
 	PortalObjectId currentPageId;
+
+    Long selectionTs;
 	
 	public PortalObjectId getCurrentPageId() {
 		return currentPageId;
@@ -152,5 +162,32 @@ public class PageMarkerInfo implements Serializable {
 	public PageNavigationalState getPageNavigationState() {
 		return pns;
 	}
+
+ /**
+     * Getter.
+     * 
+     * @return the selectionsMap
+     */
+    public Map<SelectionMapIdentifiers, Set<SelectionItem>> getSelectionsMap() {
+        return selectionsMap;
+    }
+
+    /**
+     * Setter.
+     * 
+     * @param selectionsMap the selectionsMap to set
+     */
+    public void setSelectionsMap(Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap) {
+        this.selectionsMap = selectionsMap;
+    }
+    
+    public Long getSelectionTs() {
+		return selectionTs;
+	}
+
+	public void setSelectionTs(Long selectionTs) {
+		this.selectionTs = selectionTs;
+	}
+
 
 }

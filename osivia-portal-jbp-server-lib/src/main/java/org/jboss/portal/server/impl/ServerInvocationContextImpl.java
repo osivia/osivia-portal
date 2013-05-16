@@ -132,7 +132,11 @@ public class ServerInvocationContextImpl extends AbstractInvocationContext imple
       this.requestPrefix = req.getContextPath();
 
       //
-      addResolver(ServerInvocation.REQUEST_SCOPE, new RequestAttributeResolver(req));
+      
+      
+ //    HOTFIX 2.0.8 : resolver REQUEST_SCOPE en synchronise
+      addResolver(ServerInvocation.REQUEST_SCOPE, new SyncRequestAttributeResolver(req));
+ //   	  addResolver(ServerInvocation.REQUEST_SCOPE, new RequestAttributeResolver(req));
       addResolver(ServerInvocation.SESSION_SCOPE, new SessionAttributeResolver(req, PortalConstants.PORTAL_SESSION_MAP_KEY, false));
       addResolver(ServerInvocation.PRINCIPAL_SCOPE, new SessionAttributeResolver(req, PortalConstants.PORTAL_PRINCIPAL_MAP_KEY, true));
    }

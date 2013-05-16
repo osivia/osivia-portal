@@ -34,6 +34,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
+import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -73,6 +74,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 					String bshActivation;
 					String bshScript;	
 					String cacheID;
+					String selectionDep;
 
 
 					if (parameterMap.get("windowId") != null) {
@@ -146,10 +148,17 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 						else
 							cacheID = "";
+						
+						if (parameterMap.get("selectionDep") != null)
+							selectionDep = URLDecoder.decode(((String[]) parameterMap.get("selectionDep"))[0], "UTF-8");
+
+						else
+							selectionDep = "";
+
 
 
 						return new ChangeWindowSettingsCommand(windowId, style, displayTitle,title, displayDecorators,
-								idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID);
+								idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID, selectionDep);
 					}
 				}
 
@@ -234,7 +243,16 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 				}
 
 				
+				if ("refreshPage".equals(action)) {
+					String pageId = null;
 
+
+					if (parameterMap.get("pageId") != null ) {
+						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
+						return new RefreshPageCommand(pageId);
+					}
+				}
+				
 				if ("changeLayout".equals(action)) {
 
 					String pageId = null;

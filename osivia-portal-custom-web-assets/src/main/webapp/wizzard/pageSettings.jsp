@@ -687,7 +687,9 @@ function disableOrNotPreviousFormValues(cmsPathInput){
 	
 
 			
-			
+			String checkSelectionDep =  "";
+			if( "selection".equals(window.getDeclaredProperty("osivia.cacheEvents")))
+				checkSelectionDep = "checked";	
 			
 %>
 
@@ -871,12 +873,24 @@ function disableOrNotPreviousFormValues(cmsPathInput){
 
 							<tr>
 								<td>
-									Id. cache partagé : 
+									Id. cache user mutualisé : 
 								</td>
 								<td>
 									<input name="cacheID" value="<%=cacheID%>" />
 								</td>
 							</tr>
+							
+							
+							
+							<tr>
+								<td>
+									Dépendance / service sélection : 
+								</td>
+								<td>
+									<input type="checkbox" name="selectionDep" value="1" <%=checkSelectionDep%>/>
+								</td>
+							</tr>
+							
 							
 		
 					<tr>
