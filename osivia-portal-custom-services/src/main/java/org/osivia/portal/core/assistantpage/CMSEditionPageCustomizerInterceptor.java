@@ -47,12 +47,14 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CMSServiceLocator;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.profils.IProfilManager;
-
-
 
 public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
@@ -75,25 +77,22 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	private PortalObjectContainer portalObjectContainer;
 
 	private IProfilManager profilManager;
-	
+
 	private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
-	
-	ICMSService cmsService ;
-	
-	
-	
-	private static ICMSServiceLocator cmsServiceLocator ;
+
+	ICMSService cmsService;
+
+	private static ICMSServiceLocator cmsServiceLocator;
 
 	public static ICMSService getCMSService() throws Exception {
-		
-		if( cmsServiceLocator == null){
+
+		if (cmsServiceLocator == null) {
 			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 		}
-	
+
 		return cmsServiceLocator.getCMSService();
 
 	}
-
 
 	public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
 		return portalAuthorizationManagerFactory;
@@ -103,7 +102,6 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 		this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
 	}
 
-
 	public IProfilManager getProfilManager() {
 		return profilManager;
 	}
@@ -112,16 +110,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 		this.profilManager = profilManager;
 	}
 
+	private void injectCMSPortletSetting(ControllerRequestDispatcher rd, Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
 
-	
+		HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
 
-	
-	
-	private void injectCMSPortletSetting( ControllerRequestDispatcher rd, Portal portal, Page page, PageRendition rendition, ControllerContext ctx	) throws Exception	{
-		
-		HttpServletRequest request = ctx.getServerInvocation().getServerContext()
-		.getClientRequest();
-		
 		List<Window> windows = new ArrayList<Window>();
 
 		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
@@ -129,136 +121,159 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 		synchronizeRegionContexts(rendition, page);
 
-		for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
+		// Get edit authorization
+		CMSServiceCtx cmsContext = new CMSServiceCtx();
+		cmsContext.setServerInvocation(ctx.getServerInvocation());
 
-			RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
+		String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
 
-			// on vérifie que cette réion fait partie du layout
-			// (elle contient des portlets)
-			if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
+		CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
 
-				String regionId = renderCtx.getId();
+		if (pubInfos.isEditableByUser()) {
+			
+			// Get live document
+			cmsContext.setDisplayLiveVersion("1");
+			CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
 
-				Map regionPorperties = renderCtx.getProperties();
+			for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
 
-				regionPorperties.put("osivia.cmsEditionMode", "preview");
-				String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
-				
-				//TODO : externaliser Nuxeo
-				String nuxeoPublicHost = System.getProperty("nuxeo.publicHost");
-				String nuxeoPublicPort = System.getProperty("nuxeo.publicPort");
-				String nuxeoPrivateHost = System.getProperty("nuxeo.privateHost");
-				String nuxeoPrivatePort = System.getProperty("nuxeo.privatePort");
-				String nuxeoCtx = "/nuxeo";
-				
+				RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
 
-				URI uri = null;
+				// on vérifie que cette réion fait partie du layout
+				// (elle contient des portlets)
+				if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
+
+					String regionId = renderCtx.getId();
+
+					Map regionPorperties = renderCtx.getProperties();
+
+					regionPorperties.put("osivia.cmsEditionMode", "preview");
+
+					// TODO : externaliser Nuxeo
+					String nuxeoPublicHost = System.getProperty("nuxeo.publicHost");
+					String nuxeoPublicPort = System.getProperty("nuxeo.publicPort");
+					String nuxeoPrivateHost = System.getProperty("nuxeo.privateHost");
+					String nuxeoPrivatePort = System.getProperty("nuxeo.privatePort");
+					String nuxeoCtx = "/nuxeo";
+
+					URI uri = null;
 
 					try {
 						uri = new URI("http://" + nuxeoPublicHost + ":" + nuxeoPublicPort + nuxeoCtx);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-				
-				String	url = uri.toString() + "/nxpath/default"+ pagePath +"@view_documents?tabIds=%3AATAB_FOLDER_EDIT&conversationId=0NXMAIN";
 
-				regionPorperties.put("osivia.addCMSFragmentUrl", url);
+					String url = uri.toString() + "/nxpath/default" + liveDoc.getPath() + "@view_documents?tabIds=%3AATAB_FOLDER_EDIT&conversationId=0NXMAIN5";
 
-				// Le mode Ajax est incompatble avec le mode "admin"
-				// Le passage du mode admin en mode normal ,'est pas bien
-				// géré
-				// par le portail, quand il s'agit d'une requête Ajax
-				DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
+					regionPorperties.put("osivia.addCMSFragmentUrl", url);
 
-				for (Object windowCtx : renderCtx.getWindows()) {
+					// Le mode Ajax est incompatble avec le mode "admin"
+					// Le passage du mode admin en mode normal ,'est pas bien
+					// géré
+					// par le portail, quand il s'agit d'une requête Ajax
+					DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
 
-					WindowRendererContext wrc = (WindowRendererContext) windowCtx;
-					Map windowPorperties = wrc.getProperties();
-					String windowId = wrc.getId();
+					for (Object windowCtx : renderCtx.getWindows()) {
 
-					if (!windowId.endsWith("PIA_EMPTY")) {
+						WindowRendererContext wrc = (WindowRendererContext) windowCtx;
+						Map windowPorperties = wrc.getProperties();
+						String windowId = wrc.getId();
 
-						URLContext urlContext = ctx.getServerInvocation().getServerContext()
-								.getURLContext();
+						if (!windowId.endsWith("PIA_EMPTY")) {
 
-						PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-						Window window = (Window) getPortalObjectContainer().getObject(poid);
+							URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
 
-						
-						if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
+							PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
+							Window window = (Window) getPortalObjectContainer().getObject(poid);
 
-							/* TODO 
-							windowPorperties.put("osivia.windowSettingMode", "wizzard");
+							if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
 
-							// Commande suppression
-							windowPorperties.put("osivia.destroyUrl", "displayWindowDelete('" + windowId
-									+ "');return false;");
+								/*
+								 * TODO
+								 * windowPorperties.put("osivia.windowSettingMode"
+								 * , "wizzard");
+								 * 
+								 * // Commande suppression
+								 * windowPorperties.put("osivia.destroyUrl",
+								 * "displayWindowDelete('" + windowId +
+								 * "');return false;");
+								 * 
+								 * // Commande paramètres
+								 * windowPorperties.put("osivia.settingUrl",
+								 * "displayWindowSettings('" + windowId +
+								 * "');return false;");
+								 * 
+								 * windows.add(window);
+								 * 
+								 * // gestion des déplacements
+								 * 
+								 * MoveWindowCommand upC = new
+								 * MoveWindowCommand(windowId, "up"); String
+								 * upUrl = ctx.renderURL(upC, urlContext,
+								 * URLFormat.newInstance(true, true));
+								 * windowPorperties.put("osivia.upUrl", upUrl);
+								 * 
+								 * MoveWindowCommand downC = new
+								 * MoveWindowCommand(windowId, "down"); String
+								 * downUrl = ctx.renderURL(downC, urlContext,
+								 * URLFormat.newInstance(true, true));
+								 * windowPorperties.put("osivia.downUrl",
+								 * downUrl);
+								 * 
+								 * MoveWindowCommand previousC = new
+								 * MoveWindowCommand(windowId,
+								 * "previousRegion"); String previousRegionUrl =
+								 * ctx.renderURL(previousC, urlContext,
+								 * URLFormat.newInstance(true, true));
+								 * windowPorperties
+								 * .put("osivia.previousRegionUrl",
+								 * previousRegionUrl);
+								 * 
+								 * MoveWindowCommand nextRegionC = new
+								 * MoveWindowCommand(windowId, "nextRegion");
+								 * String nextRegionUrl =
+								 * ctx.renderURL(nextRegionC, urlContext,
+								 * URLFormat.newInstance(true, true));
+								 * windowPorperties.put("osivia.nextRegionUrl",
+								 * nextRegionUrl);
+								 * 
+								 * //
+								 * 
+								 * String instanceDisplayName = null;
+								 * InstanceDefinition defInstance =
+								 * getInstanceContainer().getDefinition(
+								 * window.getContent().getURI()); if
+								 * (defInstance != null) instanceDisplayName =
+								 * defInstance
+								 * .getDisplayName().getString(request
+								 * .getLocale(), true);
+								 * 
+								 * if (instanceDisplayName != null)
+								 * windowPorperties
+								 * .put("osivia.instanceDisplayName",
+								 * instanceDisplayName);
+								 */
 
-							// Commande paramètres
-							windowPorperties.put("osivia.settingUrl", "displayWindowSettings('" + windowId
-									+ "');return false;");
-
-							windows.add(window);
-
-							// gestion des déplacements 
-
-							MoveWindowCommand upC = new MoveWindowCommand(windowId, "up");
-							String upUrl = ctx.renderURL(upC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.upUrl", upUrl);
-
-							MoveWindowCommand downC = new MoveWindowCommand(windowId, "down");
-							String downUrl = ctx.renderURL(downC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.downUrl", downUrl);
-
-							MoveWindowCommand previousC = new MoveWindowCommand(windowId, "previousRegion");
-							String previousRegionUrl = ctx.renderURL(previousC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.previousRegionUrl", previousRegionUrl);
-
-							MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, "nextRegion");
-							String nextRegionUrl = ctx.renderURL(nextRegionC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.nextRegionUrl", nextRegionUrl);
-
-							//
-
-							String instanceDisplayName = null;
-							InstanceDefinition defInstance = getInstanceContainer().getDefinition(
-									window.getContent().getURI());
-							if (defInstance != null)
-								instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(),
-										true);
-
-							if (instanceDisplayName != null)
-								windowPorperties.put("osivia.instanceDisplayName", instanceDisplayName);
-								*/
+							}
 
 						}
-
 					}
 				}
 			}
 		}
 
-}
-		
-	
+	}
 
-	
-	
-	
 	@SuppressWarnings("unchecked")
 	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
 		ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
 
-		if (resp instanceof PageRendition && cmd instanceof PageCommand ) {
-			
-			//test si mode assistant activé
-			if (!"preview".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-					"osivia.cmsEditionMode")))
+		if (resp instanceof PageRendition && cmd instanceof PageCommand) {
+
+			// test si mode assistant activé
+			if (!"preview".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.cmsEditionMode")))
 				return resp;
 
 			PageRendition rendition = (PageRendition) resp;
@@ -266,35 +281,23 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 			Page page = rpc.getPage();
 			Portal portal = (Portal) rpc.getPage().getPortal();
 			ControllerContext ctx = cmd.getControllerContext();
-			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext()
-					.getClientRequest();
+			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
 			// This is for inject the pageSettings
-			ControllerRequestDispatcher rd = cmd.getControllerContext().getRequestDispatcher(getTargetContextPath(),
-					getPageSettingPath());
-			
-			
-			
-			if( page instanceof ITemplatePortalObject)	{
-				
+			ControllerRequestDispatcher rd = cmd.getControllerContext().getRequestDispatcher(getTargetContextPath(), getPageSettingPath());
 
-				
+			if (page instanceof ITemplatePortalObject) {
+
 				injectCMSPortletSetting(rd, portal, page, rendition, ctx);
-				
-				
-			}	
+
+			}
 
 			rd.include();
-
 
 		}
 
 		return resp;
 	}
-
-	
-	
-	
 
 	/**
 	 * Synchronize context regions with layout
@@ -306,8 +309,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @throws Exception
 	 */
 
-	
-	//TODO : mutualiser avec mode EDITION PAGE (AssistantPageCustomizer)
+	// TODO : mutualiser avec mode EDITION PAGE (AssistantPageCustomizer)
 	private void synchronizeRegionContexts(PageRendition rendition, Page page) throws Exception {
 
 		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
@@ -325,8 +327,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 				windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
 				windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
-				WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null,
-						WindowState.NORMAL, Mode.VIEW);
+				WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
 				WindowContext settings = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", wr);
 				rendition.getPageResult().addWindowContext(settings);
 
@@ -372,8 +373,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 */
 	public RoleModule getRoleModule() throws Exception {
 		if (roleModule == null) {
-			roleModule = (RoleModule) getIdentityServiceController().getIdentityContext().getObject(
-					IdentityContext.TYPE_ROLE_MODULE);
+			roleModule = (RoleModule) getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
 		}
 		return roleModule;
 	}

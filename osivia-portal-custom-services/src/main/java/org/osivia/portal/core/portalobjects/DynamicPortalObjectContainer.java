@@ -301,6 +301,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			PageNavigationalState ns = null;
 			CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
 			HttpServletRequest request = null;
+			ServerInvocation invocation = null;
 			
 			ControllerContext controllerContext = getCommandContext();
 			if( controllerContext != null)	{
@@ -312,8 +313,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				cmsReadItemContext.setControllerContext(controllerContext);
 
 				request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+				invocation = controllerContext.getServerInvocation();
 			}	else	{
-				ServerInvocation invocation = getInvocation();
+				invocation = getInvocation();
 				
 				PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
 						.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
@@ -331,13 +333,22 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				String cmsPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
 
 				if (cmsPath != null) {
+					
+					String windowsEditableWindowsMode = "";
+					
+					cmsReadItemContext.setDisplayLiveVersion("0");
+					if ("preview".equals(invocation.getAttribute(ControllerCommand.SESSION_SCOPE,
+					"osivia.cmsEditionMode")))	{
+						cmsReadItemContext.setDisplayLiveVersion("1");
+					windowsEditableWindowsMode = "preview";}
 
 					// Pour performances
-					windows = (List<DynamicWindowBean>) request.getAttribute("osivia.editableWindows." + cmsPath[0]);
+					windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0]);
 
 					if (windows == null) {
 						windows = new ArrayList<DynamicWindowBean>();
-
+						
+						
 						List<CMSEditableWindow> editableWindows = getCMSService().getEditableWindows(cmsReadItemContext, cmsPath[0]);
 
 						for (CMSEditableWindow editableWindow : editableWindows) {
@@ -359,7 +370,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 							windows.add(dynaWindow);
 						}
 						
-						request.setAttribute("osivia.editableWindows." + cmsPath[0], windows);
+						invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
 					}
 				}
 			}
