@@ -66,7 +66,7 @@ public class PageMarkerUtils {
 
 	protected static final Log logger = LogFactory.getLog(PageMarkerUtils.class);
 
-	protected static String PAGE_MARKER_PATH = "/pagemarker/";
+	public static String PAGE_MARKER_PATH = "/pagemarker/";
 
 	/**
 	 * Private constructor ; this class cannot be instanciated.
@@ -249,6 +249,14 @@ public class PageMarkerUtils {
 			markerInfo.setCurrentPageId(currentPageId);
 		}
 
+		
+		// Restauration mode popup
+		String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
+		markerInfo.setPopupMode(popupMode);
+		PortalObjectId popupModeWindowID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+		markerInfo.setPopupModeWindowID(popupModeWindowID);
+
+		
 		// Sauvegarde de l'ensemble des sélections
 		Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
 				SelectionService.ATTR_SELECTIONS_MAP);
@@ -536,6 +544,11 @@ public class PageMarkerUtils {
 								if (markerInfo.getCurrentPageId() != null) {
 									controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
 								}
+								
+								// Restauration mode popup
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", markerInfo.getPopupMode());
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", markerInfo.getPopupModeWindowID());								
+								
 
 								// Restauration de l'ensemble des sélection
 								Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();

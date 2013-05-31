@@ -51,6 +51,7 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowComm
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
+import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewContextCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
@@ -96,6 +97,8 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.profils.IProfilManager;
@@ -679,12 +682,29 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 			if (sPath != null && sPath.length > 0)
 				cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[ 0]);
+			
 
 
 		}
 		
 		
-	
+			
+		// v2.1 Entering and exiting the popup mode
+		if( cmd instanceof InvokePortletWindowRenderCommand)	{
+			if ("admin".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode"))) {
+				if (!Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode()))
+					// Exiting admin mode
+					cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+			} else
+			{
+				if (Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode())) {
+					// Entering admin mode
+					cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "admin");
+					cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((InvokePortletWindowRenderCommand) cmd).getTargetId());
+				}
+			}
+		}
+
 		
 		ControllerResponse resp;
 		
@@ -712,6 +732,66 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		
 	
+		
+		// Popup actions
+		if( cmd instanceof RenderPageCommand){
+			
+			PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+			
+			if (popupWindowId != null) {
+
+				if (resp instanceof PageRendition) {
+
+					PageRendition rendition = (PageRendition) resp;
+
+					InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+					String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+					int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+					if (pageMarkerIndex != -1) {
+						url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
+					}
+
+					StringBuffer popupContent = new StringBuffer();
+
+					// Inject javascript
+					popupContent.append(" <script type=\"text/javascript\">");
+					popupContent.append("  parent.setCallbackParams(  null,    '" + url + "');");
+					
+					// redirection if non a popup
+					popupContent.append("  if ( window.self == window.top )	{ ");
+					popupContent.append("  document.location = '"+url+"'");
+					popupContent.append("  } ");
+					
+					if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+						popupContent.append("  parent.jQuery.fancybox.close();");
+					}
+					popupContent.append(" </script>");
+
+					Map windowProps = new HashMap();
+					windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+					windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+					windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+					WindowResult res = new WindowResult("", popupContent.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+					WindowContext bloh = new WindowContext("BLEH", "popup", "0", res);
+					rendition.getPageResult().addWindowContext(bloh);
+
+					//
+					Region region = rendition.getPageResult().getRegion2("popup");
+					DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+					
+					if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+
+						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
+						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
+						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
+					}
+				}
+			}
+		}
+
+		
+		
+		
 		if (cmd instanceof InvokePortletWindowActionCommand || cmd instanceof InvokePortletWindowRenderCommand) {
 			
 			ControllerContext controllerCtx = cmd.getControllerContext();
@@ -724,7 +804,18 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 				unsetMaxMode(windows, controllerCtx);
 			}
+			
+			
+	
+
+			
 		}
+		
+		
+		
+		
+		
+	
 
 		
 		/*************************************************************************/
@@ -854,9 +945,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				
 			}
 			
+			
+			// Inject popup display
+			if(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode") != null)	{
+				PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+				if (rwc.getWindow().getId().equals(popupWindowId)) {
+					properties.setWindowProperty(windowId, "osivia.popupDisplay", "1");
+				}
+			}
+			
+	
 
-			properties.setWindowProperty(windowId,
+			PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+			
+			
+			
+			if( popupWindowId == null){
+				properties.setWindowProperty(windowId,
 					"osivia.displayTitle", "1".equals(rwc.getWindow().getDeclaredProperty("osivia.hideTitle")) ? null : "1");
+			}
 			
 			String title = rwc.getWindow().getDeclaredProperty("osivia.title");
 			
@@ -866,21 +973,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			
 			
 			// Static styles
-			String customStyle = rwc.getWindow().getDeclaredProperty("osivia.style");
 			
-			if( customStyle == null)
-				customStyle = "";
+			if( popupWindowId == null){
+				String customStyle = rwc.getWindow().getDeclaredProperty("osivia.style");
+
+				if (customStyle == null)
+					customStyle = "";
+
+				// Dynamic styles
+
+				String dynamicStyles = (String) windowProperties.get("osivia.dynamicCSSClasses");
+
+				if (dynamicStyles != null)
+					customStyle += " " + dynamicStyles;
+
+				properties.setWindowProperty(windowId, "osivia.style", customStyle);
+			}
 			
-
- 
-			// Dynamic styles
-
-			String dynamicStyles = (String) windowProperties.get( "osivia.dynamicCSSClasses");
-				
-			if( dynamicStyles != null)
-				customStyle += " " + dynamicStyles;
-				
-			properties.setWindowProperty(windowId, "osivia.style",	customStyle);
+			
+			
 			
 			
 			properties.setWindowProperty(windowId, "osivia.ajaxLink",

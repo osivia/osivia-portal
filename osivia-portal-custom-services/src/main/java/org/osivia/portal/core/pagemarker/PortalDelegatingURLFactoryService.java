@@ -10,6 +10,7 @@ import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -20,6 +21,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.WindowCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
@@ -81,6 +83,7 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 				url.setPortalRequestPath(PageMarkerUtils.PAGE_MARKER_PATH+ pageMarker + url.getPortalRequestPath());
 			}
 		}
+		
 
 		return url;
 	}

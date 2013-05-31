@@ -588,10 +588,15 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 				String regionId = renderCtx.getId();
 
 				Map regionPorperties = renderCtx.getProperties();
+				
+				PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+				
+				if( popupWindowId == null){
 
 				regionPorperties.put("osivia.wizzardMode", "pageTemplate");
 				regionPorperties.put("osivia.addPortletUrl", "displayAddPortlet('" + renderCtx.getId()
 						+ "');return false;");
+				}
 
 				// Le mode Ajax est incompatble avec le mode "admin"
 				// Le passage du mode admin en mode normal ,'est pas bien
@@ -614,52 +619,48 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 						Window window = (Window) getPortalObjectContainer().getObject(poid);
 
 						if (!((DynamicWindow) window).isSessionWindow()) {
+							
+							if( popupWindowId == null){
 
-							windowPorperties.put("osivia.windowSettingMode", "wizzard");
+								windowPorperties.put("osivia.windowSettingMode", "wizzard");
 
-							// Commande suppression
-							windowPorperties.put("osivia.destroyUrl", "displayWindowDelete('" + windowId
-									+ "');return false;");
+								// Commande suppression
+								windowPorperties.put("osivia.destroyUrl", "displayWindowDelete('" + windowId + "');return false;");
 
-							// Commande paramètres
-							windowPorperties.put("osivia.settingUrl", "displayWindowSettings('" + windowId
-									+ "');return false;");
+								// Commande paramètres
+								windowPorperties.put("osivia.settingUrl", "displayWindowSettings('" + windowId + "');return false;");
 
-							windows.add(window);
+								windows.add(window);
 
-							/* gestion des déplacements */
+								/* gestion des déplacements */
 
-							MoveWindowCommand upC = new MoveWindowCommand(windowId, "up");
-							String upUrl = ctx.renderURL(upC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.upUrl", upUrl);
+								MoveWindowCommand upC = new MoveWindowCommand(windowId, "up");
+								String upUrl = ctx.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
+								windowPorperties.put("osivia.upUrl", upUrl);
 
-							MoveWindowCommand downC = new MoveWindowCommand(windowId, "down");
-							String downUrl = ctx.renderURL(downC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.downUrl", downUrl);
+								MoveWindowCommand downC = new MoveWindowCommand(windowId, "down");
+								String downUrl = ctx.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
+								windowPorperties.put("osivia.downUrl", downUrl);
 
-							MoveWindowCommand previousC = new MoveWindowCommand(windowId, "previousRegion");
-							String previousRegionUrl = ctx.renderURL(previousC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.previousRegionUrl", previousRegionUrl);
+								MoveWindowCommand previousC = new MoveWindowCommand(windowId, "previousRegion");
+								String previousRegionUrl = ctx.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
+								windowPorperties.put("osivia.previousRegionUrl", previousRegionUrl);
 
-							MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, "nextRegion");
-							String nextRegionUrl = ctx.renderURL(nextRegionC, urlContext,
-									URLFormat.newInstance(true, true));
-							windowPorperties.put("osivia.nextRegionUrl", nextRegionUrl);
+								MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, "nextRegion");
+								String nextRegionUrl = ctx.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
+								windowPorperties.put("osivia.nextRegionUrl", nextRegionUrl);
+							}
 
-							/* Titre de la fenetre d'administration */
+								/* Titre de la fenetre d'administration */
 
-							String instanceDisplayName = null;
-							InstanceDefinition defInstance = getInstanceContainer().getDefinition(
-									window.getContent().getURI());
-							if (defInstance != null)
-								instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(),
-										true);
+								String instanceDisplayName = null;
+								InstanceDefinition defInstance = getInstanceContainer().getDefinition(window.getContent().getURI());
+								if (defInstance != null)
+									instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
 
-							if (instanceDisplayName != null)
-								windowPorperties.put("osivia.instanceDisplayName", instanceDisplayName);
+								if (instanceDisplayName != null)
+									windowPorperties.put("osivia.instanceDisplayName", instanceDisplayName);
+							
 
 						}
 

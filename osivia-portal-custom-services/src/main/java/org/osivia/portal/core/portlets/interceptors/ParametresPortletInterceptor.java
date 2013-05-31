@@ -217,11 +217,20 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 						if (title == null)
 							title = fr.getTitle();
 
+						
+						PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+						
+						String printPortlet = null;
+						
+						if( popupWindowId == null){
+
+						
 						// v1.0.14 : ajout impression
-						String printPortlet = window.getDeclaredProperty("osivia.printPortlet");
+						printPortlet = window.getDeclaredProperty("osivia.printPortlet");
 						if (printPortlet == null)
 							if (WindowState.MAXIMIZED.equals(invocation.getWindowState()))
 								printPortlet = "1";
+						}
 
 						
 						if ("1".equals(printPortlet)) {
@@ -246,6 +255,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 							menuBar.add(printItem);
 
 						}
+						
 
 						if (menuBar.size() > 0) {
 
