@@ -57,10 +57,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       PrintWriter out = rendererContext.getWriter();
       
   
-      
-      
-      
-      PageProperties properties = PageProperties.getProperties();
+        PageProperties properties = PageProperties.getProperties();
       
       // Pour les décorateurs
       properties.setCurrentWindowId(wrc.getId());
@@ -71,6 +68,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       if( "1".equals(hidePortlet))
     	  return;
       
+      
+       
 
       
       // Activation des liens Ajax
@@ -80,20 +79,20 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       
       
       
-      String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
+      String style = "";
       
-      if( style != null)	
-    	  style = style.replaceAll(",", " ");
-      else 
-    	  style = "";
+
+   	  style = properties.getWindowProperty(wrc.getId(), "osivia.style");
+   	  if( style != null)	
+   		  style = style.replaceAll(",", " ");
+   	  else 
+   		  style = "";
+
       
 	
       
       
-      /*
-      if( style != null)
-    	  out.print("<div id=\""+style+"\">");
-    */	  
+
       
       out.println("<div class=\"dyna-window-content\" >");
       
@@ -124,7 +123,18 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       for (Iterator i = modesOrStates.iterator(); i.hasNext();)	{
     	  ActionRendererContext action = (ActionRendererContext)i.next();
     	  if( "admin".equals(action.getName()) && action.isEnabled())	{
-    		     out.print("<a href=\""+action.getURL()+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_form.png\" border=0/></a>");
+    		     //out.print("<a href=\""+action.getURL()+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_form.png\" border=0/></a>");
+    		  
+	    	      String title = properties.getWindowProperty(wrc.getId(), "osivia.title");
+	    	      if( title == null)
+	    	    	  title = "";
+	    	      
+	    	      String instanceName = wrc.getProperty("osivia.instanceDisplayName");
+	    	      title += "   ["+instanceName+"]";
+
+    		  
+    		  out.print("<a class=\"fancyframe_refresh\" title =\""+title+"\" href=\""+action.getURL()+"&windowstate=maximized\"><img src=\"/osivia-portal-custom-web-assets/images/application_form.png\" border=0/></a>");
+    		  
     		       		  
     	  }
          }      
@@ -153,48 +163,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       out.print("<tr><td class=\"portlet-content-left\"></td>");
       out.print("<td class=\"portlet-body\"><div class=\"portlet-content-center\">");
      
-
-      if( "admin".equals(wrc.getMode().toString()))	{
-    	  // Mode administration
-    	  	out.print("<div id=\"admin-mode-background\">");
-    	    out.print("<div id=\"admin-mode-window\">");
-    	   
-    	    // Url du mode VIEW
-    	    String viewURL = "";
-    	    Collection modesOrStates = wrc.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
-    	      for (Iterator i = modesOrStates.iterator(); i.hasNext();)	{
-    	    	  ActionRendererContext action = (ActionRendererContext)i.next();
-    	    	  if( "view".equals(action.getName()) )	{
-    	    		  viewURL = action.getURL();
-    	    	  }
-    	         }      
-
-    	    
-    	      String title = properties.getWindowProperty(wrc.getId(), "osivia.title");
-    	      if( title == null)
-    	    	  title = "";
-    	      
-    	      String instanceName = wrc.getProperty("osivia.instanceDisplayName");
-    	      title += "   ["+instanceName+"]";
-
-
-    	      
-    	    out.print("<div id=\"admin-mode-title\" onclick=\"location.href='"+viewURL+"';\"><img src=\"/osivia-portal-custom-web-assets/images/blank.png\"/><span class=\"title-settings\">Administration "+title+"</span></div>");
-    	    out.print("<div id=\"admin-mode-content\">");
-       }
-      
-     
       
       rendererContext.render(wrc.getPortlet());
       
-      if( "admin".equals(wrc.getMode().toString()))	{
- 	     out.print("</div>");
- 	     out.print("</div>");
- 	    out.print("</div>");
-      }
-      
-
-      
+     
       out.print("</div></td><td class=\"portlet-content-right\"></td></tr>");
 
       //
