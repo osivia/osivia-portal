@@ -184,6 +184,8 @@ public final class RenderPageCommand extends PageCommand
 
          //
          PortalLayout layout = getLayout(layoutService, page);
+         
+          
 
          // The theme for the page
          PortalTheme theme = null;
@@ -239,6 +241,20 @@ public final class RenderPageCommand extends PageCommand
             String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
             theme = themeService.getThemeById(themeId);
          }
+         
+         
+         
+         
+         //V2.1 : popup
+         if( getControllerContext().getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.popupMode") != null)	{
+        		 layout = layoutService.getLayoutById("osivia-popup");
+        		 theme = themeService.getThemeById("osivia-popup");
+         }
+
+         
+         
+         
+         
          // TODO : optimiser acces service multi-threads
          InitialContext initialContext = new InitialContext();
          IMultithreadService multithreadService = (IMultithreadService)initialContext.lookup("java:multithread");
