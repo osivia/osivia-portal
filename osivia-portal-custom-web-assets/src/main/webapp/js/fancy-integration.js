@@ -16,14 +16,13 @@ function callback( )	{
 		window.location.replace(callbackUrl);
 
     
- }
+}
 
 function setCallbackParams( id, url)	{
 
 	callbackId = id;
 	callbackUrl = url;
- }
-
+}
 
 
 function asyncUpdatePortlet( windowId, url)	{
@@ -35,41 +34,59 @@ function asyncUpdatePortlet( windowId, url)	{
 		else
 			// reload full page
 			window.location.replace(url);
- }
+}
 
 
 
 
+var $JQry = jQuery.noConflict();
 
-	var $JQry = jQuery.noConflict();
+$JQry(document).ready(function() {
+	
+	$JQry(".fancyframe").fancybox({
+ 		'type':'iframe',
+ 		'width': 800, 
+ 		'height': 600
+	});
 
-	$JQry(document).ready(function() {
-		$JQry(".fancyframe").fancybox({
-	 		'type':'iframe',
-	 		'width': 800, 
-	 		'height': 600
-		});
+	$JQry(".fancyframe_refresh").fancybox({
+ 		'type':'iframe',
+ 		'width': 800, 
+ 		'height': 600,
+ 		'beforeClose' : function() {
+            callback();
+		}
+	});
+
+	$JQry(".fancybox_inline").fancybox({
+		'titlePosition'     : 'inside',
+        'transitionIn'      : 'none',
+        'transitionOut'     : 'none'
 	});
 	
-	
-	
-	$JQry(document).ready(function() {
-		$JQry(".fancyframe_refresh").fancybox({
-	 		'type':'iframe',
-	 		'width': 800, 
-	 		'height': 600,
-	 		'beforeClose'	:	function() {
-	           // alert('Closed!');
-	            callback();
-			}
-		});
+	$JQry(".fancybox_inline_jstree").fancybox({
+		'titlePosition'     : 'inside',
+        'transitionIn'      : 'none',
+        'transitionOut'     : 'none',
+        'beforeLoad'		: function() {
+        	jstreeOpenAll();
+        	jstreeClearSearch();
+        }
 	});
-	
-	$JQry(document).ready(function() {
-		$JQry(".fancybox_inline").fancybox({
-			'titlePosition'     : 'inside',
-            'transitionIn'      : 'none',
-            'transitionOut'     : 'none'	 		
-		});
-	});
+
+    $JQry(".fancybox_inline_tabs").fancybox({
+        'titlePosition' :   'outside',
+        'transitionIn'	:	'elastic',
+	    'transitionOut'	:	'elastic',
+	    'speedIn'		:	600, 
+	    'speedOut'		:	200, 
+	    'overlayShow'	:	true
+    });
+    
+});
+
+
+function closeFancybox() {
+	parent.jQuery.fancybox.close();
+}
 
