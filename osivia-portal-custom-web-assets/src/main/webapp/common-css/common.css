@@ -1,3 +1,77 @@
+/* Fancybox */
+
+.fancybox-content {
+    display: none;
+}
+
+.fancybox-table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 5px 3px;
+}
+
+.fancybox-table-header {
+    display: table-header-group;
+    font-weight: bold;
+}
+
+form.fancybox-form {
+    display: table-row-group;
+    margin-bottom: 10px;
+}
+
+.fancybox-table-row {
+    display: table-row;   
+}
+
+.fancybox-table-cell {
+    display: table-cell;
+    margin: 2px;
+    vertical-align: middle;
+}
+
+.fancybox-table-header .fancybox-table-cell {
+    margin: 0 5px;
+}
+
+form.fancybox-form .label {
+    margin-right: 5px;
+    text-align: right;
+}
+
+form.fancybox-form .small-input {
+    margin: 0 20px;
+    text-align: left;
+    vertical-align: top;
+}
+
+form.fancybox-form .fancybox-center-content {
+    text-align: center;
+}
+
+form.fancybox-form .required:BEFORE {
+    content: "* ";
+    color: red !important;
+}
+
+
+/* JSTree */
+
+.jstree {
+    width: 280px;
+    min-height: 100px;
+    overflow: auto;
+}
+
+input.filter {
+    width: 180px;
+}
+
+input.inline-checkbox {
+    vertical-align: middle;
+}
+
+
 
 
 
@@ -8,81 +82,81 @@
 
 
 
-div#pageSettings .wizzardMenu .wizzardSettings  {
-    color: #FFFFFF;
-    font-size: x-small;
-    font-weight: bold;
-    margin: 0 0 0 20px;
-    padding: 6px 12px 0 0;
-    text-decoration: none;
-    text-transform: uppercase;
-}
+/* div#pageSettings .wizzardMenu .wizzardSettings  { */
+/*     color: #FFFFFF; */
+/*     font-size: x-small; */
+/*     font-weight: bold; */
+/*     margin: 0 0 0 20px; */
+/*     padding: 6px 12px 0 0; */
+/*     text-decoration: none; */
+/*     text-transform: uppercase; */
+/* } */
 
-div#pageSettings .wizzardMenu .wizzardNav {
+/* div#pageSettings .wizzardMenu .wizzardNav { */
 	
-    color: #FFFFFF;
-    font-size: x-small;
-    font-weight: bold;
-    margin: 0 0 0 20px;
-    padding: 6px 12px 0 0;
-    text-decoration: none;
-    text-transform: uppercase;
-}
+/*     color: #FFFFFF; */
+/*     font-size: x-small; */
+/*     font-weight: bold; */
+/*     margin: 0 0 0 20px; */
+/*     padding: 6px 12px 0 0; */
+/*     text-decoration: none; */
+/*     text-transform: uppercase; */
+/* } */
 
 
-div#pageSettings .wizzardMenu .templateEdit {
-    margin: 0 0 0 20px;
-    padding: 6px 12px 0 0;
+/* div#pageSettings .wizzardMenu .templateEdit { */
+/*     margin: 0 0 0 20px; */
+/*     padding: 6px 12px 0 0; */
 
-}
+/* } */
 
-div#pageSettings .wizzardMenu .templateEdit a {
+/* div#pageSettings .wizzardMenu .templateEdit a { */
 
-    color: #FFFFFF;
-    font-size: x-small;
-    font-weight: bold;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-
-
-div#pageSettings .wizzardMenu .wizzardCacheInit  {
-    margin: 0 0 0 20px;
-    padding: 6px 12px 0 0;
-}
-
-div#pageSettings .wizzardMenu .wizzardCacheInit a {
-
-    color: #FFFFFF;
-    font-size: x-small;
-    font-weight: bold;
-    text-decoration: none;
-    text-transform: uppercase;
-}
+/*     color: #FFFFFF; */
+/*     font-size: x-small; */
+/*     font-weight: bold; */
+/*     text-decoration: none; */
+/*     text-transform: uppercase; */
+/* } */
 
 
-.wizzard-window-content	{
-	height: 400px;
-	overflow:scroll;
-}
+/* div#pageSettings .wizzardMenu .wizzardCacheInit  { */
+/*     margin: 0 0 0 20px; */
+/*     padding: 6px 12px 0 0; */
+/* } */
 
-.wizzard-delete-content	{
+/* div#pageSettings .wizzardMenu .wizzardCacheInit a { */
+
+/*     color: #FFFFFF; */
+/*     font-size: x-small; */
+/*     font-weight: bold; */
+/*     text-decoration: none; */
+/*     text-transform: uppercase; */
+/* } */
+
+
+/* .wizzard-window-content	{ */
+/* 	height: 400px; */
+/* 	overflow:scroll; */
+/* } */
+
+/* .wizzard-delete-content	{ */
 	
-		height: 100px;
-	}
+/* 		height: 100px; */
+/* 	} */
 
-.wizzard-navigation-content	{
-	width: 200px;
-	height: 600px;
-	overflow:scroll;
-}
+/* .wizzard-navigation-content	{ */
+/* 	width: 200px; */
+/* 	height: 600px; */
+/* 	overflow:scroll; */
+/* } */
 
 
-.wizzard-label	{
-	width: 200px;
-	float:left;
+/* .wizzard-label	{ */
+/* 	width: 200px; */
+/* 	float:left; */
 
-}
+/* } */
 
 
 
@@ -257,9 +331,6 @@ z-index:10;
 	border-left:1px solid #BBBBBB;
 	border-right:2px solid #555555;
 	border-bottom:1px solid #555555;
-	color: black;
-	font-size: 11px;
-	font-weight: normal;
 }
 
 
