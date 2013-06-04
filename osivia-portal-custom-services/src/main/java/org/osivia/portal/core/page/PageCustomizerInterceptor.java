@@ -1038,7 +1038,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			if( admin)	{
 				injectAdminHeaders(rpc,  rendition);
 			}	else	{
-				injectStandadrHeaders(rpc,  rendition);
+				injectStandardHeaders(rpc,  rendition);
 			}
 
 			}
@@ -1065,12 +1065,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 	
 	
 	
-	void injectStandadrHeaders(PageCommand rpc, PageRendition rendition) throws Exception	{
-		
-
-		
-	
-
+	private void injectStandardHeaders(PageCommand rpc, PageRendition rendition) throws Exception	{
+	    // Breadcrumb
 		String breadcrumb = injectBreadcrumb(rpc, rendition);
 		if (breadcrumb != null) {
 			Map windowProps = new HashMap();
@@ -1087,26 +1083,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
 		}						
 		
-		
-
-		//
-		String toolbar = injectToolbar(rpc);
-		if (toolbar != null) {
-			Map windowProps = new HashMap();
-			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-			WindowResult res = new WindowResult("", toolbar, Collections.EMPTY_MAP, windowProps, null,
-					WindowState.NORMAL, Mode.VIEW);
-			WindowContext bluh = new WindowContext("BLIH", "toolbar", "0", res);
-			rendition.getPageResult().addWindowContext(bluh);
-
-			//
-			Region region = rendition.getPageResult().getRegion2("toolbar");
-			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-		}
-		
-
+		// Search
 		String search = injectSearch(rpc);
 		if (search != null) {
 			Map windowProps = new HashMap();
@@ -1123,8 +1100,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
 		}		
 		
-		
-
+		// Footer
 		String footerNav = injectFooter(rpc);
 		if (footerNav != null) {
 			Map windowProps = new HashMap();
@@ -1140,11 +1116,33 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			Region region = rendition.getPageResult().getRegion2("footer");
 			DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
 		}	
-		
-			
-		
-	}
-	
+
+        // Page settings
+        StringBuffer pageSettings = new StringBuffer();
+
+        String assistantPageCustomizer = (String) rpc.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_WINDOWS_SETTINGS_CONTENT);
+        if (assistantPageCustomizer != null) {
+            pageSettings.append(assistantPageCustomizer);
+        }
+
+        String toolbarSettings = (String) rpc.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_TOOLBAR_SETTINGS_CONTENT);
+        if (toolbarSettings != null) {
+            pageSettings.append(toolbarSettings);
+        }
+
+        Map<String, String> windowProps = new HashMap<String, String>();
+
+        windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+        WindowResult result = new WindowResult("Page settings", pageSettings.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL,
+                Mode.VIEW);
+        WindowContext settings = new WindowContext("PageSettings", "pageSettings", "0", result);
+        rendition.getPageResult().addWindowContext(settings);
+        
+        Region region = rendition.getPageResult().getRegion2("pageSettings");
+        DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+    }
 	
 	
 void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
@@ -1172,161 +1170,8 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 }
 	
 
-	public String injectToolbar(PageCommand cc) {
-		
-		ControllerContext controllerCtx = cc.getControllerContext();
-		ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(cc), toolbarPath);
-
-		//
-		if (rd != null) {
-			// Get user
-			Controller controller = controllerCtx.getController();
-			User user = controllerCtx.getUser();
-			rd.setAttribute("org.jboss.portal.header.USER", user);
-			
-	
-			Principal principal = controllerCtx.getServerInvocation().getServerContext().getClientRequest()
-					.getUserPrincipal();
-			rd.setAttribute("org.jboss.portal.header.PRINCIPAL", principal);
-
-			if (principal == null) {
-				PortalURL portalURL = null;
-
-				// Redirection vers mon espace
-				MonEspaceCommand cmd = new MonEspaceCommand();
-				portalURL = new PortalURLImpl(cmd, controllerCtx, Boolean.TRUE, null);
-				rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
-			}
-
-	
-			//
-			boolean admin = false;
-			if (cc instanceof RenderPageCommand) {
-				RenderPageCommand rpc = (RenderPageCommand) cc;
-				PortalObject portalObject = rpc.getPage().getPortal();
-				admin = "admin".equalsIgnoreCase(portalObject.getName());
-			}
-
-			//
-			if (!admin) {
-				try {
-					if( isAdministrator(controllerCtx)) {
-						ViewPageCommand showadmin = new ViewPageCommand(adminPortalId);
-						rd.setAttribute("org.jboss.portal.header.ADMIN_PORTAL_URL", new PortalURLImpl(showadmin,
-								controllerCtx, null, null));
-					}
-				} catch (PortalSecurityException e) {
-					logger.error("", e);
-				}
-			}
-
-
-			// PIA : passage en mode édition
-			if (!admin ) {
-
-				try {
-					
-					if( isAdministrator(controllerCtx))  {
-						String mode = "wizzard";
-
-						if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-								"osivia.windowSettingMode")))
-							mode = "normal";
-
-						if (cc instanceof PageCommand) {
-							Page page = ((PageCommand) cc).getPage();
-
-							ChangeModeCommand cmd = new ChangeModeCommand(page.getId().toString(
-									PortalObjectPath.SAFEST_FORMAT), mode);
-
-							rd.setAttribute(Constants.ATTR_WIZZARD_URL, new PortalURLImpl(cmd, controllerCtx, null, null));
-							rd.setAttribute(Constants.ATTR_WIZZARD_MODE, mode);
-						}
-					}
-					
-					/* Edition CMS */
-					// TODO : tester les droits sur la page
-					
-					if( isAdministrator(controllerCtx))  {
-						String currentMode = (String) controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-						"osivia.cmsEditionMode");
-						
-						String newMode = null;
-						if(  "preview".equals(currentMode))
-							newMode = "normal";
-						else
-							newMode = "preview";
-
-						if (cc instanceof PageCommand) {
-							Page page = ((PageCommand) cc).getPage();
-
-							ChangeCMSEditionModeCommand cmd = new ChangeCMSEditionModeCommand(page.getId().toString(
-									PortalObjectPath.SAFEST_FORMAT), newMode);
-
-							rd.setAttribute(Constants.ATTR_CMS_EDITION_URL, new PortalURLImpl(cmd, controllerCtx, null, null));
-							rd.setAttribute(Constants.ATTR_CMS_EDITION_MODE, currentMode);
-						}
-					}
-				
-					
-					
-				} catch (PortalSecurityException e) {
-					logger.error("", e);
-				}
-
-			}
-
-			//
-			SignOutCommand cmd = new SignOutCommand();
-			rd.setAttribute("org.jboss.portal.header.SIGN_OUT_URL", new PortalURLImpl(cmd, controllerCtx,
-					Boolean.FALSE, null));
-			
-			if (principal != null) 
-			{
-				/* Redirection vers mon espace */
-				PortalURL portalURL2 = null;
-				MonEspaceCommand monEspaceCmd = new MonEspaceCommand();
-				portalURL2 = new PortalURLImpl(monEspaceCmd, controllerCtx, Boolean.TRUE, null);
-				rd.setAttribute(Constants.ATTR_MY_SPACE_URL, portalURL2);
-				
-			}
-
-			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());
-			rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx)); 
-			
-			// v1.0.17
-			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-			"osivia.windowSettingMode")))
-				rd.setAttribute(Constants.ATTR_WIZZARD_MODE, "1");
-			
-            RefreshPageCommand refreshCmd = new RefreshPageCommand(cc.getPage().getId().toString(
-					PortalObjectPath.SAFEST_FORMAT));
-              rd.setAttribute(Constants.ATTR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, controllerCtx, null, null));
-
-
-			
-			//
-			rd.include();
-			return rd.getMarkup();
-		}
-
-		//
-		return null;
-	}
-	
-
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	
 	
 	public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx,  IPortalUrlFactory urlFactory, PortalControllerContext portalCtx,Page page, String basePath, CMSItem navItem, List<UserPage> pageList)	{
@@ -2276,7 +2121,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			// v1.0.17
 			if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
 			"osivia.windowSettingMode")))
-				rd.setAttribute(Constants.ATTR_WIZZARD_MODE, "1");
+				rd.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_MODE, "1");
 
 			
 						

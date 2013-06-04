@@ -1,117 +1,91 @@
 package org.osivia.portal.core.assistantpage;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import org.jboss.portal.common.i18n.LocaleFormat;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
-import org.jboss.portal.common.i18n.LocalizedString.Value;
-import org.jboss.portal.core.controller.ControllerCommand;
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.controller.NoSuchResourceException;
-import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
-import org.jboss.portal.core.controller.command.info.CommandInfo;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
-import org.jboss.portal.core.model.portal.DuplicatePortalObjectException;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PageContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
-
+/**
+ * Create page command.
+ * 
+ * @see AssistantCommand
+ */
 public class CreatePageCommand extends AssistantCommand {
 
-	private String pageId;
-	private String name;
-	private String creationType;
-	private String modeleId;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getPageId() {
-		return pageId;
-	}
-
-	public CreatePageCommand() {
-	}
-
-	public CreatePageCommand(String pageId, String name, String creationType, String modeleId) {
-		this.pageId = pageId;
-		this.name = name;
-		this.creationType = creationType;
-		this.modeleId = modeleId;
-	}
+    /** Page name. */
+    private String name;
+    /** Parent page ID. */
+    private String parentPageId;
+    /** Model ID. */
+    private String modelId;
 
 
+    /**
+     * Default constructor.
+     */
+    public CreatePageCommand() {
+        super();
+    }
 
-	public ControllerResponse executeAssistantCommand() throws Exception {
+    /**
+     * Constructor.
+     * 
+     * @param name
+     * @param parentPageId
+     * @param modelId
+     */
+    public CreatePageCommand(String name, String parentPageId, String modelId) {
+        super();
+        this.name = name;
+        this.parentPageId = parentPageId;
+        this.modelId = modelId;
+    }
 
-		// Récupération page
-		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-		Page page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(poid);
-		
-		PortalObject parent = null;
 
-		// changement nom
+    @Override
+    public ControllerResponse executeAssistantCommand() throws Exception {
+        // Récupération de la page parent
+        PortalObjectId portalObjectId = PortalObjectId.parse(this.parentPageId, PortalObjectPath.SAFEST_FORMAT);
+        PageContainer parent = (PageContainer) this.getControllerContext().getController().getPortalObjectContainer().getObject(portalObjectId);
 
-		Page newPage = null;
-		if (creationType.equals("child")) {
-			parent = page;
-		}	else if (creationType.equals("sister")) {
-			parent = page.getParent();
-		}
-		
-		// mise à jour d'après le modèle
-		if( ! "0".equals(modeleId)){
-			PortalObjectId pomodeleId = PortalObjectId.parse(modeleId, PortalObjectPath.SAFEST_FORMAT);
+        Page newPage;
+        // Mise à jour d'après le modèle
+        if (StringUtils.isNotEmpty(this.modelId)) {
+            PortalObjectId poModeleId = PortalObjectId.parse(this.modelId, PortalObjectPath.SAFEST_FORMAT);
+            Page modele = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poModeleId);
 
-			Page modele = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(pomodeleId);
-			modele.copy( parent, name, true);
-			newPage = (Page) parent.getChild(name);
-			
-			// initialisation du nom 
-			Map<Locale, String> displayMap = RenamePageCommand.createLocalizedStringMap(Locale.FRENCH, newPage.getDisplayName(),
-					name);
-			LocalizedString newLocalizedString = new LocalizedString(displayMap, Locale.ENGLISH);
-			newPage.setDisplayName(newLocalizedString);
+            // Le modèle ne doit pas être un ancêtre du parent de la nouvelle page
+            if (PortalObjectUtils.isAncestor(modele, parent)) {
+                throw new IllegalArgumentException(); // TODO : Gestion de l'erreur
+            } else {
+                modele.copy(parent, this.name, true);
+                newPage = (Page) parent.getChild(this.name);
+            }
+        } else {
+            newPage = parent.createPage(this.name);
+        }
 
-			
-		} else	{
-			if (parent instanceof Portal) {
-				newPage = ((Portal) parent).createPage(name);
-			} else if (parent instanceof Page) {
-				Page pa = (Page) parent;
-				newPage = pa.createPage(name);
-			}
-		
-		}
+        // Initialisation du nom
+        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        Map<Locale, String> displayMap = RenamePageCommand.createLocalizedStringMap(locale, null, this.name);
+        LocalizedString localizedString = new LocalizedString(displayMap, Locale.ENGLISH);
+        newPage.setDisplayName(localizedString);
 
-		
-		
-		//Impact sur les caches du bandeau
-		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
-		cacheService.incrementHeaderCount();
+        // Impact sur les caches du bandeau
+        ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+        cacheService.incrementHeaderCount();
 
-		
-		return new UpdatePageResponse(newPage.getId());
-
-	}
+        return new UpdatePageResponse(newPage.getId());
+    }
 
 }

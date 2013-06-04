@@ -23,6 +23,7 @@ public class ChangePageLayoutCommand extends AssistantCommand {
 	}
 
 	public ChangePageLayoutCommand() {
+	    super();
 	}
 
 	public ChangePageLayoutCommand(String pageId, String layout) {

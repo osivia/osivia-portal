@@ -1,437 +1,480 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.osivia.portal.core</groupId>
-	<artifactId>parent</artifactId>
-	<version>2.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>osivia-portal</name>
+    <groupId>org.osivia.portal.core</groupId>
+    <artifactId>parent</artifactId>
+    <version>2.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>osivia-portal</name>
 
+    <properties>
+        
+        <log4j.version>1.2.13</log4j.version>
+        <portlet-api.version>2.0</portlet-api.version>
+        <servlet-api.version>2.4</servlet-api.version>
+        <jstl.version>1.1.2</jstl.version>
+        <common-annotations.version>1.0</common-annotations.version>
+        <hibernate.version>3.0.3</hibernate.version>
 
-	<properties>
+        <!-- Commons -->
+        <commons-logging.version>1.1.1</commons-logging.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <commons-collections.version>3.2.1</commons-collections.version>
+        <commons-beanutils.version>1.8.0</commons-beanutils.version>
 
-		<commons-logging.version>1.1.1</commons-logging.version>
-		<log4j.version>1.2.13</log4j.version>
-		<portlet-api.version>2.0</portlet-api.version>
-		<servlet-api.version>2.4</servlet-api.version>
-		<jstl.version>1.1.2</jstl.version>
-		<junit.version>3.8.1</junit.version>
-		<beanUtils.version>1.8.0</beanUtils.version>
-		<common-annotations.version>1.0</common-annotations.version>
-		<hibernate.version>3.0.3</hibernate.version>
-		
-		<!-- Web Services -->
-		<ws-annotations.version>1.0</ws-annotations.version>
-		<jaxws-api.version>2.0</jaxws-api.version>
-		
-		<jboss.portal.version>2.7.2</jboss.portal.version>
-		<jboss.version>4.2.3.GA</jboss.version>
-		<jboss.modules.identity.version>1.1.3</jboss.modules.identity.version>	
-		<jboss-portal.portlet-portlet.version>2.0.9</jboss-portal.portlet-portlet.version>
+        <!-- Test -->
+        <junit.version>4.11</junit.version>
+        <easymock.version>3.1</easymock.version>
+        <powermock.version>1.5</powermock.version>
 
+        <!-- Web Services -->
+        <ws-annotations.version>1.0</ws-annotations.version>
+        <jaxws-api.version>2.0</jaxws-api.version>
 
-		<!-- TODO : core ne doit pas dependre de Nuxeo 
-    		<nuxeo.automation.version>5.4.2</nuxeo.automation.version>	
--->
+        <jboss.portal.version>2.7.2</jboss.portal.version>
+        <jboss.version>4.2.3.GA</jboss.version>
+        <jboss.modules.identity.version>1.1.3</jboss.modules.identity.version>
+        <jboss-portal.portlet-portlet.version>2.0.9</jboss-portal.portlet-portlet.version>
 
-		<deploy.dir>${osivia-portal-deploy-dir}</deploy.dir>
-		<deploy.socle.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/socle</deploy.socle.dir>
- 		<deploy.socle-libs.dir>${osivia-portal-deploy-dir}/jbossas/server/production/lib</deploy.socle-libs.dir>
- 		<deploy.jbp.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/jboss-portal-ha.sar</deploy.jbp.dir>
-		
-		
-	</properties>
-	
+        <!-- TODO : core ne doit pas dependre de Nuxeo
+        <nuxeo.automation.version>5.4.2</nuxeo.automation.version>
+         -->
 
+        <deploy.dir>${osivia-portal-deploy-dir}</deploy.dir>
+        <deploy.socle.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/socle</deploy.socle.dir>
+        <deploy.socle-libs.dir>${osivia-portal-deploy-dir}/jbossas/server/production/lib</deploy.socle-libs.dir>
+        <deploy.jbp.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/jboss-portal-ha.sar</deploy.jbp.dir>
+    </properties>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>	
-			
-		  	<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-				<version>${commons-logging.version}</version>   
-			</dependency>   
-			
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>${log4j.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils</artifactId>
-				<version>${beanUtils.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			
-			<dependency>
-				<groupId>javax.jws</groupId>
-				<artifactId>jsr181</artifactId>
-				<version>${ws-annotations.version}</version>
-			</dependency>
-			
-			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>jsr250-api</artifactId>
-				<version>${common-annotations.version}</version>
-				<scope>provided</scope>
-			</dependency>	
+    <dependencyManagement>
+        <dependencies>
+        
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
 
+            <dependency>
+	            <groupId>org.easymock</groupId>
+	            <artifactId>easymock</artifactId>
+	            <version>${easymock.version}</version>
+                <scope>test</scope>
+            </dependency>
 
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
 
-			<dependency>
-				<groupId>javax.xml.ws</groupId>
-				<artifactId>jaxws-api</artifactId>
-				<version>${jaxws-api.version}</version>
-			</dependency>
-			
-			<dependency>
-			      <groupId>javax.servlet</groupId>
-			      <artifactId>servlet-api</artifactId>
-			      <version>${servlet-api.version}</version>
-			      <scope>provided</scope>
-    			</dependency> 
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-easymock</artifactId>
+                <version>${powermock.version}</version>
+                <scope>test</scope>
+            </dependency>
 
- 	
-   			
-		</dependencies>
-		
-		
-	</dependencyManagement>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${commons-logging.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons-collections.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-	<dependencies>
-		<dependency>
-			<groupId>javax.portlet</groupId>
-			<artifactId>portlet-api</artifactId>
-			<version>${portlet-api.version}</version>
-			<scope>provided</scope>
-		</dependency>
-	
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
-			<scope>provided</scope>
-		</dependency>   
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.jws</groupId>
+                <artifactId>jsr181</artifactId>
+                <version>${ws-annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>jsr250-api</artifactId>
+                <version>${common-annotations.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.ws</groupId>
+                <artifactId>jaxws-api</artifactId>
+                <version>${jaxws-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
     
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-system</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>javax.portlet</groupId>
+            <artifactId>portlet-api</artifactId>
+            <version>${portlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-common</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-jmx</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossweb</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-system</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-xml-binding</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbossjta</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>	
-		
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jbosssx</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-common</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-   	<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-aop-jdk50</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-jmx</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jbossweb</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-j2ee</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>		  
-    
-    <dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jboss-cache-jdk50</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>		     		
-   		
-    <dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jgroups</artifactId>
-			<version>${jboss.version}</version>
-			<scope>provided</scope>
-		</dependency>	
-    
-    <dependency>
-			<groupId>hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>${hibernate.version}</version>
-			<scope>provided</scope>
-		</dependency>		     		
-	     		
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-xml-binding</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-api-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jbossjta</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jbosssx</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-security-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-aop-jdk50</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-core-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-j2ee</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId> 
-			<artifactId>portal-server-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss-cache-jdk50</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-theme-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-web-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>${jboss.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-common-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>hibernate</groupId>
+            <artifactId>hibernate</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-jems-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-api-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-common-portal-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency>		
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-security-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-			<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>cms-jackrabbit</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency> 
-		
-		<dependency>
-			<groupId>org.jboss.portal</groupId>
-			<artifactId>portal-core-cms-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency> 
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-core-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-server-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal.identity</groupId>
-			<artifactId>identity-identity</artifactId>
-			<version>${jboss.modules.identity.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-theme-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal.portlet</groupId>
-			<artifactId>portlet-portlet</artifactId>
-			<version>${jboss-portal.portlet-portlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-web-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal.portlet</groupId>
-			<artifactId>portlet-controller-lib</artifactId>
-			<version>${jboss-portal.portlet-portlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-common-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal.portlet</groupId>
-			<artifactId>portlet-server-lib</artifactId>
-			<version>${jboss-portal.portlet-portlet.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-jems-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.jboss.portal.portlet</groupId>
-			<artifactId>portlet-api-lib</artifactId>
-			<version>${jboss.portal.version}</version>
-			<scope>provided</scope>
-		</dependency> 
-	
- 	
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId> 
-			<scope>provided</scope>
-		</dependency>
-				
-	</dependencies>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-common-portal-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>cms-jackrabbit</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	<modules>
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-core-cms-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-api</module>
-	   <module>osivia-portal-custom-lib-utils</module>
+        <dependency>
+            <groupId>org.jboss.portal.identity</groupId>
+            <artifactId>identity-identity</artifactId>
+            <version>${jboss.modules.identity.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-custom-services</module>
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-portlet</artifactId>
+            <version>${jboss-portal.portlet-portlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-custom-web-assets</module>
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-controller-lib</artifactId>
+            <version>${jboss-portal.portlet-portlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-administration</module>
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-server-lib</artifactId>
+            <version>${jboss-portal.portlet-portlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-jbp-core-lib</module>
-	   <module>osivia-portal-jbp-portlet-lib</module>
-	   <module>osivia-portal-jbp-server-lib</module>
- 	   <module>osivia-portal-jbp-core-admin-lib</module>
+        <dependency>
+            <groupId>org.jboss.portal.portlet</groupId>
+            <artifactId>portlet-api-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-	   <module>osivia-portal-jbossas-jbossweb-lib</module>
+        <dependency>
+	        <groupId>log4j</groupId>
+	        <artifactId>log4j</artifactId>
+        </dependency>
 
-	   <module>osivia-portal-distribution</module>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
 
-	</modules>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
+        <dependency>
+	        <groupId>org.easymock</groupId>
+	        <artifactId>easymock</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+        </dependency>
 
-	<build>
-	
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<encoding>UTF-8</encoding>
-						<source>1.5</source>
-						<target>1.5</target>
-					</configuration>
-				</plugin>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+        </dependency>
 
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>jboss-packaging-maven-plugin</artifactId>
-					<version>2.1.1</version>
-					<extensions>true</extensions>
-				</plugin>
+    </dependencies>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-				
-     				 <plugin>
-        				<groupId>org.apache.maven.plugins</groupId>
-       					 <artifactId>maven-antrun-plugin</artifactId>
-        				<version>1.3</version>
-      				</plugin>
+    <modules>
+        <module>osivia-portal-api</module>
+        <module>osivia-portal-custom-lib-utils</module>
+        <module>osivia-portal-custom-services</module>
+        <module>osivia-portal-custom-web-assets</module>
+        <module>osivia-portal-administration</module>
+        <module>osivia-portal-jbp-core-lib</module>
+        <module>osivia-portal-jbp-portlet-lib</module>
+        <module>osivia-portal-jbp-server-lib</module>
+        <module>osivia-portal-jbp-core-admin-lib</module>
+        <module>osivia-portal-jbossas-jbossweb-lib</module>
+        <module>osivia-portal-distribution</module>
+    </modules>
 
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.2.1</version>
-				 	<configuration>
-						<tagBase>http://www.osivia.org/repos/osivia-portal/tags</tagBase>
-						<releaseProfiles>unpack,pack</releaseProfiles>
-						<preparationGoals>clean install</preparationGoals>
-						<goals>deploy</goals>
-				      	</configuration>
-				</plugin>
-				
-			</plugins>			
+    <build>
+        <plugins>
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
 
-	</build>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jboss-packaging-maven-plugin</artifactId>
+                <version>2.1.1</version>
+                <extensions>true</extensions>
+            </plugin>
 
-  <scm>
-    <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/trunk</developerConnection>
-  </scm>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
 
- <distributionManagement>
-     <repository>
-          <id>osivia-releases</id>
-          <url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
-     </repository>
-     <snapshotRepository>
-          <id>osivia-snapshots</id>
-          <url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
-     </snapshotRepository>
- </distributionManagement>
-		
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <tagBase>http://www.osivia.org/repos/osivia-portal/tags</tagBase>
+                    <releaseProfiles>unpack,pack</releaseProfiles>
+                    <preparationGoals>clean install</preparationGoals>
+                    <goals>deploy</goals>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <scm>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/trunk</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>osivia-releases</id>
+            <url>http://www.osivia.org/nexus/content/repositories/osivia-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>osivia-snapshots</id>
+            <url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
-

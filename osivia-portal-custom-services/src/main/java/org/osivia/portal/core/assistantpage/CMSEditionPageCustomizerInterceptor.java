@@ -72,7 +72,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 	private RoleModule roleModule;
 
-	private AuthorizationDomainRegistry authorizationDomainRegisrty;
+	private AuthorizationDomainRegistry authorizationDomainRegistry;
 
 	private PortalObjectContainer portalObjectContainer;
 
@@ -387,18 +387,18 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	}
 
 	/**
-	 * @return the authorizationDomainRegisrty
+	 * @return the authorizationDomainRegistry
 	 */
-	public AuthorizationDomainRegistry getAuthorizationDomainRegisrty() {
-		return authorizationDomainRegisrty;
+	public AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
+		return authorizationDomainRegistry;
 	}
 
 	/**
-	 * @param authorizationDomainRegisrty
-	 *            the authorizationDomainRegisrty to set
+	 * @param authorizationDomainRegistry
+	 *            the authorizationDomainRegistry to set
 	 */
-	public void setAuthorizationDomainRegisrty(AuthorizationDomainRegistry authorizationDomainRegisrty) {
-		this.authorizationDomainRegisrty = authorizationDomainRegisrty;
+	public void setAuthorizationDomainRegistry(AuthorizationDomainRegistry authorizationDomainRegistry) {
+		this.authorizationDomainRegistry = authorizationDomainRegistry;
 	}
 
 	/**

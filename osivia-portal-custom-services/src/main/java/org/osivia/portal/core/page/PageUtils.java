@@ -14,7 +14,7 @@ public class PageUtils {
 	
 	public static final String TAB_ORDER = "order";
 
-	public static final Comparator orderComparator = new Comparator() {
+	public static final Comparator<Object> orderComparator = new Comparator<Object>() {
 		
 		public int compare(Object o1, Object o2) {
 			Page page1 = (Page) o1;
@@ -65,7 +65,7 @@ public class PageUtils {
 	
 	public static final Locale FR_LOCALE = Locale.FRENCH;
 	
-	public static final Comparator nameComparator = new Comparator() {
+	public static final Comparator<Object> nameComparator = new Comparator<Object>() {
 
 		public int compare(Object o1, Object o2) {
 			

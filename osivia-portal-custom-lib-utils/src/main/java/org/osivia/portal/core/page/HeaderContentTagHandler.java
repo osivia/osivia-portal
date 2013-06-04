@@ -71,8 +71,8 @@ public class HeaderContentTagHandler extends SimpleTagSupport
          return;
       }
 
-      // PIA :  jquery
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jquery.js\"></script>");
+      // JQuery 1.8.3 for fancybox 2.1.3 compatibility
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jquery/jquery-1.8.3.min.js\"></script>");
 
       
       //
@@ -125,6 +125,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       
       out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
 
+      // JSTree
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
+      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
+      
      // out.flush();
    }
 }

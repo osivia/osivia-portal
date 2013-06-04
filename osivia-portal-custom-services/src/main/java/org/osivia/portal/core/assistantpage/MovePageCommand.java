@@ -3,95 +3,147 @@ package org.osivia.portal.core.assistantpage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.jboss.portal.security.RoleSecurityBinding;
+import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 
+/**
+ * Move page command.
+ * 
+ * @author Cédric Krommenhoek
+ * @see AssistantCommand
+ */
 public class MovePageCommand extends AssistantCommand {
 
-	private String pageId;
-	private String destinationPageId;
+    private String pageId;
+    private String destinationPageId;
 
-	public MovePageCommand() {
-	}
 
-	public MovePageCommand(String pageId, String destinationPageId) {
-		this.pageId = pageId;
-		this.destinationPageId = destinationPageId;
-	}
+    /**
+     * Default constructor.
+     */
+    public MovePageCommand() {
+        super();
+    }
 
-	public ControllerResponse executeAssistantCommand() throws Exception {
-		// Récupération pages
+    /**
+     * Constructor.
+     * 
+     * @param pageId
+     * @param destinationPageId
+     */
+    public MovePageCommand(String pageId, String destinationPageId) {
+        super();
+        this.pageId = pageId;
+        this.destinationPageId = destinationPageId;
+    }
 
-		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-		PortalObject destPage = null;
-		if (!"0".equals(destinationPageId)) {
-			PortalObjectId destPoid = PortalObjectId.parse(destinationPageId, PortalObjectPath.SAFEST_FORMAT);
-			destPage = getControllerContext().getController().getPortalObjectContainer().getObject(destPoid);
-		}
+    /**
+     * Command execution
+     * 
+     * @return response
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public ControllerResponse executeAssistantCommand() throws Exception {
+        // Pages recuperation
+        PortalObjectId pagePortalObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
+        PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(pagePortalObjectId);
+        PortalObject destinationPage = null;
+        if (!StringUtils.endsWith(destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID)) {
+            PortalObjectId destinationPortalObjectId = PortalObjectId.parse(this.destinationPageId, PortalObjectPath.SAFEST_FORMAT);
+            destinationPage = this.getControllerContext().getController().getPortalObjectContainer().getObject(destinationPortalObjectId);
+        }
 
-		/* Mémorisation et tri des pages */
+        if (page.equals(destinationPage)) {
+            // Do nothing
+            return new UpdatePageResponse(page.getId());
+        }        
 
-		SortedSet<Page> pages = new TreeSet<Page>(PageUtils.orderComparator);
-		for (PortalObject po : (Collection<PortalObject>) page.getParent().getChildren(PortalObject.PAGE_MASK)) {
+        // Check parents
+        PortalObject parentPage = page.getParent();
+        PortalObject parentDestination;
+        if (destinationPage == null) {
+            if (StringUtils.endsWith(this.destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID)) {
+                String parentDestinationId = StringUtils.removeEnd(this.destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID);
+                PortalObjectId parentDestinationPortalObjectId = PortalObjectId.parse(parentDestinationId, PortalObjectPath.SAFEST_FORMAT);
+                parentDestination = this.getControllerContext().getController().getPortalObjectContainer().getObject(parentDestinationPortalObjectId);
+            } else {
+                // Unknow destination page
+                throw new IllegalArgumentException(); // TODO : Error management
+            }
+        } else {
+            parentDestination = destinationPage.getParent();
+        }
 
-			Page sister = (Page) po;
-			if (!sister.equals(page)) {
-				pages.add(sister);
-			}
-		}
+        if (page.equals(parentDestination) || PortalObjectUtils.isAncestor(page, parentDestination)) {
+            // Destination page cannot be a descendant of the current page
+            throw new IllegalArgumentException(); // TODO : Error management
+        }
+        
+        // Move
+        if (!parentPage.equals(parentDestination)) {
+            String canonicalId;
+            
+            // Save security bindings
+            canonicalId = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+            DomainConfigurator domainConfigurator = this.getControllerContext().getController().getPortalObjectContainer().getAuthorizationDomain().getConfigurator();
+            Set<RoleSecurityBinding> securityBindings = domainConfigurator.getSecurityBindings(canonicalId);
+            
+            String oldName = page.getName();
+            page = page.copy(parentDestination, oldName, true);
+            parentPage.destroyChild(oldName);
+            
+            // Restore security bindings
+            canonicalId = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+            domainConfigurator.setSecurityBindings(canonicalId, securityBindings);
+        }
 
-		List<Page> pagesTriees = new ArrayList<Page>(pages);
+        // Pages order access
+        SortedSet<Page> pages = new TreeSet<Page>(PageUtils.orderComparator);
+        Collection<PortalObject> siblings = parentDestination.getChildren(PortalObject.PAGE_MASK);
+        for (PortalObject sibling : siblings) {
+            Page siblingPage = (Page) sibling;
+            if (!siblingPage.equals(page)) {
+                pages.add(siblingPage);
+            }
+        }
+        List<Page> sortedPages = new ArrayList<Page>(pages);
 
-		/* Remplacement de l'ordre de la page courante */
+        // Change order        
+        int orderValue = 1;
+        for (Page reorderedPage : sortedPages) {
+            if (reorderedPage.equals(destinationPage)) {
+                page.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+            }
+            reorderedPage.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+        }
+        if (destinationPage == null) {
+            page.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+        }
 
-		int destOrder = 0;
-		if (destPage != null) {
-			if (destPage.getDeclaredProperty(PageUtils.TAB_ORDER) != null)
-				destOrder = Integer.parseInt(destPage.getDeclaredProperty(PageUtils.TAB_ORDER));
-		} else {
-			// Mise en dernière position
-			Page lastPage = pagesTriees.get(pagesTriees.size() - 1);
-			if (lastPage.getDeclaredProperty(PageUtils.TAB_ORDER) != null)
-				destOrder = Integer.parseInt(lastPage.getDeclaredProperty(PageUtils.TAB_ORDER)) + 1;
-			else
-				destOrder = 1;
-		}
+        // Impact sur les caches du bandeau
+        ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+        cacheService.incrementHeaderCount();
 
-		page.setDeclaredProperty(PageUtils.TAB_ORDER, Integer.toString(destOrder));
-
-		/* Remplacement de l'ordre des pages suivantes */
-
-		boolean modifierOrdre = false;
-		for (Page curPage : pagesTriees) {
-			if (curPage.equals(destPage)) {
-				modifierOrdre = true;
-			}
-
-			if (modifierOrdre)
-				curPage.setDeclaredProperty(PageUtils.TAB_ORDER, Integer.toString(++destOrder));
-		}
-
-		
-		//Impact sur les caches du bandeau
-		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
-		cacheService.incrementHeaderCount();
-
-		
-		return new UpdatePageResponse(page.getId());
-
-	}
+        return new UpdatePageResponse(page.getId());
+    }
 
 }

@@ -84,30 +84,46 @@
       <depends optional-attribute-name="Factory" proxy-type="attribute">portal:urlFactory=Delegating</depends>
    </mbean>
 
-   
-	
-	
-	
-	
-	
-	
-	<mbean
-		code="org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor"
-		name="osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer"
-		xmbean-dd=""
-		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-			<xmbean/>
-			<attribute name="TargetContextPath">/osivia-portal-custom-web-assets</attribute>
-  			<attribute name="PageSettingPath">/wizzard/pageSettings.jsp</attribute>
-			<depends optional-attribute-name="ServiceLayout" proxy-type="attribute">portal:service=LayoutService</depends>
-			<depends optional-attribute-name="ServiceTheme" proxy-type="attribute">portal:service=ThemeService</depends>
-			<depends optional-attribute-name="AuthorizationDomainRegisrty" proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
-			<depends optional-attribute-name="IdentityServiceController" proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
-			<depends optional-attribute-name="InstanceContainer" proxy-type="attribute">portal:container=Instance</depends>
-   	        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
- 			<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
-      		<depends optional-attribute-name="PortalAuthorizationManagerFactory" proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends> 			
- 	</mbean>
+
+
+
+
+
+
+
+    <mbean
+        code="org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="TargetContextPath">/osivia-portal-custom-web-assets</attribute>
+        <attribute name="PageSettingPath">/wizard/pageSettings.jsp</attribute>
+        <depends
+            optional-attribute-name="LayoutService"
+            proxy-type="attribute">portal:service=LayoutService</depends>
+        <depends
+            optional-attribute-name="ThemeService"
+            proxy-type="attribute">portal:service=ThemeService</depends>
+        <depends
+            optional-attribute-name="AuthorizationDomainRegistry"
+            proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
+        <depends
+            optional-attribute-name="IdentityServiceController"
+            proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
+        <depends
+            optional-attribute-name="InstanceContainer"
+            proxy-type="attribute">portal:container=Instance</depends>
+        <depends
+            optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject</depends>
+        <depends
+            optional-attribute-name="ProfilManager"
+            proxy-type="attribute">osivia:service=ProfilManager</depends>
+        <depends
+            optional-attribute-name="PortalAuthorizationManagerFactory"
+            proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends>
+    </mbean>
 
 	<mbean
 		code="org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor"
@@ -116,10 +132,10 @@
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 			<xmbean/>
 			<attribute name="TargetContextPath">/osivia-portal-custom-web-assets</attribute>
-  			<attribute name="PageSettingPath">/wizzard/pageSettings.jsp</attribute>
+  			<attribute name="PageSettingPath">/wizard/pageSettings.jsp</attribute>
 			<depends optional-attribute-name="ServiceLayout" proxy-type="attribute">portal:service=LayoutService</depends>
 			<depends optional-attribute-name="ServiceTheme" proxy-type="attribute">portal:service=ThemeService</depends>
-			<depends optional-attribute-name="AuthorizationDomainRegisrty" proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
+			<depends optional-attribute-name="AuthorizationDomainRegistry" proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
 			<depends optional-attribute-name="IdentityServiceController" proxy-type="attribute">portal:service=Module,type=IdentityServiceController</depends>
 			<depends optional-attribute-name="InstanceContainer" proxy-type="attribute">portal:container=Instance</depends>
    	        <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
@@ -128,34 +144,77 @@
  	</mbean>
 
 
+    <mbean
+        code="org.osivia.portal.core.page.PageCustomizerInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=PageCustomizer"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="BreadcrumbPath">/header/breadcrumb.jsp</attribute>
+        <attribute name="SearchPath">/header/search.jsp</attribute>
+        <attribute name="FooterPath">/footer/footer.jsp</attribute>
+        <!-- Overrides the value of core.login.namespace in config.xml -->
+        <!-- attribute name="LoginNamespace">dashboard</attribute -->
+        <depends
+            optional-attribute-name="Config"
+            proxy-type="attribute">portal:service=ServerConfig</depends>
+        <depends
+            optional-attribute-name="PortalAuthorizationManagerFactory"
+            proxy-type="attribute">
+            portal:service=PortalAuthorizationManagerFactory
+        </depends>
+        <depends
+            optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject</depends>
+        <depends
+            optional-attribute-name="UrlFactory"
+            proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends
+            optional-attribute-name="CacheService"
+            proxy-type="attribute">osivia:service=Cache</depends>
+        <depends
+            optional-attribute-name="Profiler"
+            proxy-type="attribute">osivia:service=ProfilerService</depends>
+        <depends
+            optional-attribute-name="ProfilManager"
+            proxy-type="attribute">osivia:service=ProfilManager</depends>
+        <depends
+            optional-attribute-name="ServicesCacheService"
+            proxy-type="attribute">osivia:service=CacheServices</depends>
+    </mbean>
 
-  <mbean code="org.osivia.portal.core.page.PageCustomizerInterceptor"
-          name="osivia:service=Interceptor,type=Command,name=PageCustomizer" xmbean-dd=""
-          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-      <xmbean/>
-      <attribute name="ToolbarPath">/header/toolbar.jsp</attribute>
-      <attribute name="BreadcrumbPath">/header/breadcrumb.jsp</attribute>
-      <attribute name="SearchPath">/header/search.jsp</attribute>
-      <attribute name="FooterPath">/footer/footer.jsp</attribute>      
-      <!-- Overrides the value of core.login.namespace in config.xml  --><!--  attribute name="LoginNamespace">dashboard</attribute -->
-      <depends optional-attribute-name="Config" proxy-type="attribute">portal:service=ServerConfig</depends>
-      <depends optional-attribute-name="PortalAuthorizationManagerFactory" proxy-type="attribute">
-         portal:service=PortalAuthorizationManagerFactory
-      </depends>
-      <depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
-      <depends optional-attribute-name="UrlFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
-      <depends optional-attribute-name="CacheService" proxy-type="attribute">osivia:service=Cache</depends>
- 	 <depends optional-attribute-name="Profiler" proxy-type="attribute">osivia:service=ProfilerService</depends>
-   	<depends optional-attribute-name="ProfilManager" proxy-type="attribute">osivia:service=ProfilManager</depends>   
- <depends optional-attribute-name="ServicesCacheService" proxy-type="attribute">osivia:service=CacheServices</depends>   	
- 
- 				        
-      
-   </mbean>
-   
-   
-   
-   
+
+    <mbean
+        code="org.osivia.portal.core.toolbar.ToolbarCustomizerInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=ToolbarCustomizer"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="TargetSettingsContextPath">/osivia-portal-custom-web-assets</attribute>
+        <attribute name="ToolbarPath">/header/toolbar.jsp</attribute>
+        <attribute name="ToolbarSettingsPath">/wizard/toolbarSettings.jsp</attribute>
+        <depends
+            optional-attribute-name="PortalAuthorizationManagerFactory"
+            proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends>
+        <depends
+            optional-attribute-name="UrlFactory"
+            proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends
+            optional-attribute-name="LayoutService"
+            proxy-type="attribute">portal:service=LayoutService</depends>
+        <depends
+            optional-attribute-name="ThemeService"
+            proxy-type="attribute">portal:service=ThemeService</depends>
+        <depends
+            optional-attribute-name="ProfilManager"
+            proxy-type="attribute">osivia:service=ProfilManager</depends>
+        <depends
+            optional-attribute-name="AuthorizationDomainRegistry"
+            proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
+    </mbean>
+
+
+
   <mbean code="org.osivia.portal.core.page.TabsCustomizerInterceptor"
           name="osivia:service=Interceptor,type=Command,name=TabsCustomizer" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">

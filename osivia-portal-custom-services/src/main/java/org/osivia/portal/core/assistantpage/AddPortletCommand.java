@@ -1,20 +1,12 @@
 package org.osivia.portal.core.assistantpage;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.jboss.portal.core.controller.ControllerCommand;
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.controller.NoSuchResourceException;
-import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
-import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.content.ContentType;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -42,11 +34,9 @@ public class AddPortletCommand extends AssistantCommand {
 	}
 
 	public ControllerResponse executeAssistantCommand() throws Exception {
-
 		// Récupération page
 		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
 		Page page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(poid);
-
 
 		// Tri des fenêtes de la région
 		SortedMap<Integer, Window> regionWindows = new TreeMap<Integer, Window>();
@@ -70,7 +60,6 @@ public class AddPortletCommand extends AssistantCommand {
 		window.setDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION, regionId);
 
 		return new UpdatePageResponse(page.getId());
-
 	}
 
 }
