@@ -6,7 +6,7 @@ var callbackUrl = "";
 function callback( )	{
 
 	var divElt = document.getElementById(callbackId);
-
+	
 	
 	if( divElt != null)
 		// reload portlet

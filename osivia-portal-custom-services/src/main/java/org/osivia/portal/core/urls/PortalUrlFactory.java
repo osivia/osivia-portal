@@ -48,8 +48,10 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.tracker.ITracker;
+
 
 
 public class PortalUrlFactory implements IPortalUrlFactory {
@@ -406,4 +408,22 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		return orginalUrl;
 	}
 
+	   /* Ajout du page marker
+     * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
+     */
+    
+    public String adaptPortalUrlToPopup( PortletRequest request, String originalUrl, boolean closePopup)    throws Exception    {
+
+        String url = originalUrl;
+        int pageMarkerIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+        if (pageMarkerIndex != -1) {
+            if( closePopup)
+                url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(pageMarkerIndex + 1);
+            else
+            url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(pageMarkerIndex + 1);
+        }
+        return url;
+    }
+
+	
 }

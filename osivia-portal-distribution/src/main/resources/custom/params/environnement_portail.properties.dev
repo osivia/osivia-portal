@@ -2,7 +2,7 @@
 error.default_page_uri=/toutatice-portail-demo-charte/error/errorPage.jsp
 
 #forcer le cache des portlets (UNIQUEMENT EN DEBUG !!!!)
-portlets.expirationSecs=0
+#portlets.expirationSecs=0
 
 #active les gestionnaire de statut
 statut.actif=true

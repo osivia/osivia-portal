@@ -18,7 +18,7 @@
 <body id="body">
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
-<p:region regionName='popup' regionID='popup'/>
+<p:region regionName='popup_header' regionID='popup_header'/>
 
 <div id="portal-container">
     <div id="sizer">

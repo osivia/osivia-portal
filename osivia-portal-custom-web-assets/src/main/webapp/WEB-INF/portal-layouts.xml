@@ -7,6 +7,7 @@
 		<uri state="maximized">/WEB-INF/layout/popup/maximized.jsp</uri>
 		<regions>
 			<region name="virtual"/>
+			<region name="popup_header"/>
 			<region name="popup"/>
 		</regions>
 	</layout>

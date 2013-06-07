@@ -704,6 +704,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				}
 			}
 		}
+		
+
 
 		
 		ControllerResponse resp;
@@ -745,6 +747,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 					PageRendition rendition = (PageRendition) resp;
 
 					InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+					
 					String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
 					int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
 					if (pageMarkerIndex != -1) {
@@ -755,7 +758,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 					// Inject javascript
 					popupContent.append(" <script type=\"text/javascript\">");
-					popupContent.append("  parent.setCallbackParams(  null,    '" + url + "');");
+					String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+					popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
 					
 					// redirection if non a popup
 					popupContent.append("  if ( window.self == window.top )	{ ");
@@ -772,11 +776,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 					windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
 					windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 					WindowResult res = new WindowResult("", popupContent.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-					WindowContext bloh = new WindowContext("BLEH", "popup", "0", res);
+					WindowContext bloh = new WindowContext("POPUP_HEADER", "popup_header", "0", res);
 					rendition.getPageResult().addWindowContext(bloh);
 
 					//
-					Region region = rendition.getPageResult().getRegion2("popup");
+					Region region = rendition.getPageResult().getRegion2("popup_header");
 					DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
 					
 					if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {

@@ -46,4 +46,7 @@ public interface IPortalUrlFactory {
 	// Ajout des elements de nvigation( pagemarker) a une url portail
 	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception;
 	
+	 // Ouverture / fermeture d'un popup
+    public String adaptPortalUrlToPopup( PortletRequest request, String orginalUrl, boolean closePopup)    throws Exception ;
+	
 }

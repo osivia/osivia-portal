@@ -21,6 +21,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
+import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
@@ -46,7 +47,9 @@ import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 	protected static final Log logger = LogFactory.getLog(PortalCommandFactory.class);
-	
+
+	public static String POPUP_OPEN_PATH = "/popup_open/";
+	public static String POPUP_CLOSE_PATH = "/popup_close/";
 	public static String POPUP_CLOSED_PATH = "/popup_closed/";
 
 	public IDynamicObjectContainer dynamicCOntainer;
@@ -145,6 +148,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		
 		String path = requestPath;
 		boolean popupClosed = false;
+		boolean popupOpened = false;
+	    boolean closePopup = false;
+
 		
 		// 2.1 : is popup already closed (by javascript)
 		if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
@@ -152,12 +158,26 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 			popupClosed = true;
 		}
 		
+		if (requestPath.startsWith(POPUP_OPEN_PATH)) {
+	            path = requestPath.substring(POPUP_OPEN_PATH.length() -1);
+	            popupOpened = true;
+	        }
+        if (requestPath.startsWith(POPUP_CLOSE_PATH)) {
+            path = requestPath.substring(POPUP_CLOSE_PATH.length() -1);
+            closePopup = true;
+        }
+		
 		String newPath = PageMarkerUtils.restorePageState(controllerContext, path);
 		
 		if( popupClosed) {
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID",null);
 		}
+		
+	    if( closePopup) {
+	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+	    }
+
 
 		/*
 		 * Synchronisation des pages préchargées
@@ -174,6 +194,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 		ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
 		
+		
+	    if( popupOpened && cmd instanceof PortalObjectCommand) {
+	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
+	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((PortalObjectCommand) cmd).getTargetId());
+	        }	
 		
 		return cmd;
 		

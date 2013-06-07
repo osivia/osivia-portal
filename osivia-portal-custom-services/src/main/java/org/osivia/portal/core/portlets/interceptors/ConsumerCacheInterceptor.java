@@ -283,8 +283,13 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          }
           
           
-          
-          
+         // gestion des fermetures de popup
+
+        if( cachedEntry != null && window != null && ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing") != null)   {
+             PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+             if( window.getId().equals(popupWindowId))
+                 cachedEntry = null;
+         }
 
          //
          if (cachedEntry != null && skipNavigationCheck == false)
