@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.AccessDeniedException;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -269,14 +270,30 @@ public final class RenderPageCommand extends PageCommand
          
          List<Window> filteredWindows = new ArrayList<Window>();
          
+        
+         // filtre sur popup
+         if( getControllerContext().getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.popupMode") != null) {
+             isMultiThreadEnabled = false;
+         }
+         
          for (PortalObject window: windows){
         	 if( window instanceof Window){
         		 
         		 boolean addWindow = true;
+         
+                 // filtre sur popup
+                 if( getControllerContext().getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.popupMode") != null) {
+                     PortalObjectId popupWindowId = (PortalObjectId) (((ControllerContext)getContext()) .getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID"));
+                     if( popupWindowId != null){
+                         if( !window.getId().equals(popupWindowId))
+                             addWindow = false;
+                     }
+                 }
+
 
         		 
-        		 // TODO : Le getProperty ne marche pas sur les fenetres dynamiques
-        		 //String conditionalScope =  window.getProperty("osivia.conditionalScope");
+        		 
+        		 // Affichage conditionnel / profil
         		 String conditionalScope =  window.getProperty("osivia.conditionalScope");
         		 if( conditionalScope != null)	{
         			 addWindow = false;
