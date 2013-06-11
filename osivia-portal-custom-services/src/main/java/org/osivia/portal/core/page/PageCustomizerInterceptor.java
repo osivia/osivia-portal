@@ -1111,7 +1111,38 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
 			windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
 			windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-			WindowResult res = new WindowResult("", footerNav, Collections.EMPTY_MAP, windowProps, null,
+			
+			
+			  /* JSS20130610 :  Injection path CMS pour Ajax */
+            
+	        // On determine le path de navigation cms
+			// TODO : ajouter test uniquement en edition CMS
+	        
+
+	        NavigationalStateContext nsContext = (NavigationalStateContext) rpc.getControllerContext().getAttributeResolver(
+	                ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+	        PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
+
+	        String sPath[] = null;
+	        if (pageState != null)
+	            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+	        
+	        StringBuffer footer = new StringBuffer();
+	        
+	        footer.append(footerNav);
+
+	        if (sPath != null && sPath.length == 1) {
+
+	            footer.append("<script type='text/javascript'>\n");
+	            footer.append("cmsPath = \"");
+	            footer.append(sPath[0]);
+	            footer.append("\";\n");
+
+	            footer.append("</script>\n");
+	        }
+			
+			
+			WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null,
 					WindowState.NORMAL, Mode.VIEW);
 			WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
 			rendition.getPageResult().addWindowContext(bloh);
@@ -1133,6 +1164,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (toolbarSettings != null) {
             pageSettings.append(toolbarSettings);
         }
+        
+
+      
+
+
 
         Map<String, String> windowProps = new HashMap<String, String>();
 

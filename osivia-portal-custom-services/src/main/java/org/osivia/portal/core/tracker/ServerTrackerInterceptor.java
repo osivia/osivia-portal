@@ -63,33 +63,15 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		// v1.0.10 : réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();
 		
+		
+	    DynamicPortalObjectContainer.clearCache();
+	      
 	
-		// TODO : il faut reussir à préinitialiser le host avant le LoginInterceptor
-		// car le prechargement des pages doit tenir compte de la policy du host courant
-		// actuellement, génération d'une exception
-/*		
-		// Par défaut, le portail est calculé en fonction de l'url
-		// Ensuite, il sera ajusté en fonction de la commande Jboss Portal
-		// Ce traitement sert pour le calcul des pages au login
-		String reqHost = invocation.getServerContext().getClientRequest().getServerName();
-		String portalName = null;
-		Iterator<PortalObject> portals = getPortalObjectContainer().getContext("").getChildren().iterator();
-		while(portals.hasNext())	{
-			PortalObject portal =  portals.next();
-			String host = portal.getDeclaredProperty("osivia.site.hostName");
-			if( reqHost.equals(host))
-				portalName = portal.getName();
-		}
-		if( portalName == null)
-			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
-		
-		PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
-*/		
+	
 		
 		
 		
-		
-		DynamicPortalObjectContainer.clearCache();
+
 		
 		invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.portalObjectContainer", getPortalObjectContainer());
 		
@@ -101,9 +83,37 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	    
 	    getTracker().setHttpRequest( context.getClientRequest());
 	    
-	    HttpSession session = context.getClientRequest().getSession();
+	    HttpSession session = context.getClientRequest().getSession( true);
 	 
 		getTracker().setHttpSession(session);
+		
+		
+		
+		
+		  // TODO : il faut reussir à préinitialiser le host avant le LoginInterceptor
+        // car le prechargement des pages doit tenir compte de la policy du host courant
+        // actuellement, génération d'une exception
+        
+        // Par défaut, le portail est calculé en fonction de l'url
+        // Ensuite, il sera ajusté en fonction de la commande Jboss Portal
+        // Ce traitement sert pour le calcul des pages au login
+        String reqHost = invocation.getServerContext().getClientRequest().getServerName();
+        String portalName = null;
+        Iterator<PortalObject> portals = getPortalObjectContainer().getContext("").getChildren().iterator();
+        while(portals.hasNext())    {
+            PortalObject portal =  portals.next();
+            String host = portal.getDeclaredProperty("osivia.site.hostName");
+            if( reqHost.equals(host))
+                portalName = portal.getName();
+        }
+        if( portalName == null)
+            portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
+        
+        PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
+
+		
+		
+		
 		
 		try {
 				// Continue invocation
