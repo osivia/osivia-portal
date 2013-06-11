@@ -24,6 +24,8 @@ public class CMSPublicationInfos {
 	private boolean editableByUser = false;
 	private boolean anonymouslyReadable = false;
 	private boolean published = false;
+	
+	private List<String> subTypes;
 
 	private String publishSpaceType = null;
 	private String publishSpacePath = null;
@@ -99,6 +101,14 @@ public class CMSPublicationInfos {
 
 	public void setPublished(boolean published) {
 		this.published = published;
+	}
+	
+	public List<String> getSubTypes() {
+		return subTypes;
+	}
+
+	public void setSubTypes(List<String> subTypes) {
+		this.subTypes = subTypes;
 	}
 
 	public List<Integer> getErrorCodes() {
