@@ -21,6 +21,10 @@ public interface IPortalUrlFactory {
 	public static final String PERM_LINK_TYPE_RSS = "rss";	
 	public static final String PERM_LINK_TYPE_RSS_PICTURE = "rsspicture";		
 	public static final String PERM_LINK_TYPE_CMS = "cms";	
+	
+	public static final int POPUP_URL_ADAPTER_OPEN = 0;
+    public static final int POPUP_URL_ADAPTER_CLOSE = 1;	
+    public static final int POPUP_URL_ADAPTER_CLOSED_NOTIFICATION = 2; 
 
 	// TODO : à déplacer dans le cms
 	public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws Exception;
@@ -47,6 +51,6 @@ public interface IPortalUrlFactory {
 	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception;
 	
 	 // Ouverture / fermeture d'un popup
-    public String adaptPortalUrlToPopup( PortletRequest request, String orginalUrl, boolean closePopup)    throws Exception ;
+    public String adaptPortalUrlToPopup( PortletRequest request, String orginalUrl, int adapter)    throws Exception ;
 	
 }

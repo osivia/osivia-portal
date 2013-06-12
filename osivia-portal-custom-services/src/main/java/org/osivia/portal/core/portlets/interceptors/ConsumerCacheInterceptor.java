@@ -284,13 +284,12 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
           
           
          // gestion des fermetures de popup
-
-        if( cachedEntry != null && window != null && ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing") != null)   {
-             PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-             if( window.getId().equals(popupWindowId))
-                 cachedEntry = null;
+         
+         if( cachedEntry != null && ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed") != null) {
+             cachedEntry = null;
          }
 
+ 
          //
          if (cachedEntry != null && skipNavigationCheck == false)
          {
@@ -448,6 +447,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             		filterAttributes.put("osivia.emptyResponse", orig.getAttributes().get("osivia.emptyResponse"));
             		filterAttributes.put("osivia.menuBar", orig.getAttributes().get("osivia.menuBar"));
             		filterAttributes.put("osivia.portletPath", orig.getAttributes().get("osivia.portletPath"));
+            		filterAttributes.put("osivia.popupCallbackUrl", orig.getAttributes().get("osivia.popupCallbackUrl"));
             		
             		// TEST V2 PERMALINK
             		//filterAttributes.put("osivia.cms.portletContentPath", orig.getAttributes().get("osivia.cms.portletContentPath"));

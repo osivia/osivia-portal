@@ -412,15 +412,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
      */
     
-    public String adaptPortalUrlToPopup( PortletRequest request, String originalUrl, boolean closePopup)    throws Exception    {
+    public String adaptPortalUrlToPopup( PortletRequest request, String originalUrl, int popupAdapter)    throws Exception    {
 
         String url = originalUrl;
         int pageMarkerIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
         if (pageMarkerIndex != -1) {
-            if( closePopup)
+            if( popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_CLOSE)
                 url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(pageMarkerIndex + 1);
-            else
+            else  if( popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_OPEN)
             url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(pageMarkerIndex + 1);
+            else  if( popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION)
+                url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
         }
         return url;
     }

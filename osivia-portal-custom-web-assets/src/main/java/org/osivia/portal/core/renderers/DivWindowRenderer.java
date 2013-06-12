@@ -95,6 +95,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             return;
 
 
+        String scripts =  properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
+        if( scripts != null)
+            out.print(scripts);
+        
+        
         // Activation des liens Ajax
         String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
         if (!"1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))

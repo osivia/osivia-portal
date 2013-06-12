@@ -689,7 +689,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		
 			
-		// v2.1 Entering and exiting the popup mode
+		// v2.1 Entering and exiting the admin popup mode
 		if( cmd instanceof InvokePortletWindowRenderCommand)	{
 			if ("admin".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode"))) {
 				if (!Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode()))
@@ -735,7 +735,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 	
 		
-		// Popup actions
+		// Fermeture applicative des popup : les windows n'existent plus
+		// injection d'une region permettant de fermer la popup
+		
 		if( cmd instanceof RenderPageCommand){
 			
 			PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
@@ -743,7 +745,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			if (popupWindowId != null) {
 
 				if (resp instanceof PageRendition) {
-
+				    
 					PageRendition rendition = (PageRendition) resp;
 
 					InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
@@ -758,17 +760,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 					// Inject javascript
 					popupContent.append(" <script type=\"text/javascript\">");
-					String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
-					popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
+					
+	                if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+	                       String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+	                       popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
+	                       popupContent.append("  parent.jQuery.fancybox.close();");
+	                }
 					
 					// redirection if non a popup
 					popupContent.append("  if ( window.self == window.top )	{ ");
 					popupContent.append("  document.location = '"+url+"'");
 					popupContent.append("  } ");
-					
-					if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
-						popupContent.append("  parent.jQuery.fancybox.close();");
-					}
+
+
+
 					popupContent.append(" </script>");
 
 					Map windowProps = new HashMap();
@@ -781,14 +786,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 					//
 					Region region = rendition.getPageResult().getRegion2("popup_header");
-					DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+					DynaRenderOptions.AJAX.setOptions(region.getProperties());
 					
-					if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
 
+                    if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
 						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
 						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
 						cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
-					}
+
+				    }
 				}
 			}
 		}
@@ -1018,6 +1024,39 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				}
 					
 			}
+			
+			
+			/* Ajout script callback (fermeture par la croix des fancybox) */ 
+			
+            if (popupWindowId != null && (popupWindowId.equals(((RenderWindowCommand) cmd).getTargetId()))) {
+                
+                if (!"1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+
+                   InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+                    
+                    String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+                    int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+                    if (pageMarkerIndex != -1) {
+                        url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
+                    }
+
+
+                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl");
+                    if( callbackURL != null)
+                            url = callbackURL;
+                    StringBuffer popupContent = new StringBuffer();
+
+                    // Inject javascript
+                    popupContent.append(" <script type=\"text/javascript\">");
+                    String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+                    popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
+                    popupContent.append(" </script>");
+                    
+                    properties.setWindowProperty(windowId, "osivia.popupScript", popupContent.toString());
+                }
+            }
+			
+			
 			
 
 		}

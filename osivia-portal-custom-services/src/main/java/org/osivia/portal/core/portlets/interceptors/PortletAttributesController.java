@@ -72,6 +72,12 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 	    	       }
 
 	    	}
+	    	
+            /* Empty portlet */	    	
+	          if(cr.getAttributes().get("osivia.popupCallbackUrl") != null) {
+	              ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl", cr.getAttributes().get("osivia.popupCallbackUrl"));
+	          }
+
 	    }
 	    
 	    

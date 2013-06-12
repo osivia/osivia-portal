@@ -283,6 +283,10 @@ public final class RenderPageCommand extends PageCommand
          
                  // filtre sur popup
                  if( getControllerContext().getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.popupMode") != null) {
+                     
+                     if( getControllerContext().getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.popupModeClosing") != null)
+                         addWindow = false;
+                     
                      PortalObjectId popupWindowId = (PortalObjectId) (((ControllerContext)getContext()) .getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID"));
                      if( popupWindowId != null){
                          if( !window.getId().equals(popupWindowId))
