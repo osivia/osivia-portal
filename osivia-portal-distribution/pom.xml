@@ -15,7 +15,7 @@
 	<name>Osivia portal distribution</name>
 
    
-    	<packaging>pom</packaging>
+    	<!--<packaging>pom</packaging>-->
 
 	<prerequisites>
 		<maven>2.1.0</maven>

@@ -1,22 +1,22 @@
 package org.osivia.portal.api;
 
 public class Constants {
-	public static String ATTR_SITE_MAP = "osivia.siteMap";
-	public static String ATTR_BREADCRUMB = "osivia.breadcrumb";
-	// TEST V2 PERMALINK
-	//public static String ATTR_PERMLINK_URL = "osivia.permlinkUrl";
-	public static String ATTR_SEARCH_URL = "osivia.searchUrl";
-	public static String ATTR_URL_FACTORY = "osivia.urlfactory";
-	public static String ATTR_PORTAL_CTX = "osivia.ctrlctx";
-	public static String ATTR_USER_PORTAL = "osivia.userPortal";
-	public static String ATTR_PAGE_ID = "osivia.currentPageId";
-	public static String ATTR_FIRST_TAB = "osivia.firstTab";
-	
+
+    public static String ATTR_SITE_MAP = "osivia.siteMap";
+    public static String ATTR_BREADCRUMB = "osivia.breadcrumb";
+    // TEST V2 PERMALINK
+    // public static String ATTR_PERMLINK_URL = "osivia.permlinkUrl";
+    public static String ATTR_SEARCH_URL = "osivia.searchUrl";
+    public static String ATTR_URL_FACTORY = "osivia.urlfactory";
+    public static String ATTR_PORTAL_CTX = "osivia.ctrlctx";
+    public static String ATTR_USER_PORTAL = "osivia.userPortal";
+    public static String ATTR_PAGE_ID = "osivia.currentPageId";
+    public static String ATTR_FIRST_TAB = "osivia.firstTab";
 
 
     // Toolbar constants
-    /** Dynamic page indicator. */
-    public static final String ATTR_TOOLBAR_DYNAMIC_PAGE_INDICATOR = "osivia.toolbar.dynamicPage";    
+    /** Editable static page indicator. */
+    public static final String ATTR_TOOLBAR_EDITABLE_PAGE = "osivia.toolbar.editablePage";
     /** Page template access URL. */
     public static final String ATTR_TOOLBAR_TEMPLATE_ACCESS_URL = "osivia.toolbar.pageTemplateURL";
     /** Caches initialization URL. */
@@ -41,8 +41,8 @@ public class Constants {
     public static final String ATTR_TOOLBAR_PRINCIPAL = "osivia.toolbar.principal";
     /** Mon espace URL. */
     public static final String ATTR_TOOLBAR_MON_ESPACE_URL = "osivia.toolbar.monEspaceURL";
-     /** Rafraichissement utilisateur*/   
-	public static String ATTR_REFRESH_PAGE_URL = "osivia.REFRESH_URL";
+    /** User refresh page URL. */
+    public static final String ATTR_TOOLBAR_REFRESH_PAGE_URL = "osivia.toolbar.refreshPageURL";
 
     // Toolbar settings constants
     /** Toolbar settings content. */
@@ -60,7 +60,7 @@ public class Constants {
     /** Draft page indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
     /** Layouts list. */
-    public static final String ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST = "osivia.toolbarSettings.layoutsList";    
+    public static final String ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST = "osivia.toolbarSettings.layoutsList";
     /** Current layout. */
     public static final String ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT = "osivia.toolbarSettings.currentLayout";
     /** Themes list. */
@@ -85,7 +85,7 @@ public class Constants {
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH = "osivia.toolbarSettings.cmsBasePath";
     /** CMS navigation mode indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE = "osivia.toolbarSettings.cmsNavigationMode";
-    
+
     // Windows constants
     /** Toolbar settings content. */
     public static final String ATTR_WINDOWS_SETTINGS_CONTENT = "osivia.windows.settingsContent";
@@ -98,7 +98,7 @@ public class Constants {
     /** Current page. */
     public static final String ATTR_WINDOWS_PAGE = "osivia.portlets.page";
     /** Current windows list. */
-    public static final String ATTR_WINDOWS_CURRENT_LIST = "osivia.setting.windows";    
+    public static final String ATTR_WINDOWS_CURRENT_LIST = "osivia.setting.windows";
     /** Window setting mode. */
     public static final String ATTR_WINDOWS_SETTING_MODE = "osivia.windowSettingMode";
     /** Window setting wizard mode value. */
@@ -122,4 +122,12 @@ public class Constants {
     /** Next region portlet move command URL. */
     public static final String ATTR_WINDOWS_NEXT_REGION_COMMAND_URL = "osivia.nextRegionUrl";
     
+    
+    /**
+     * Private constructor : prevent instantiation.
+     */
+    private Constants() {
+        // Do nothing
+    }
+
 }

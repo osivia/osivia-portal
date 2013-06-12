@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.BooleanUtils"%>
 <%@page import="org.jboss.portal.theme.PortalTheme"%>
 <%@page import="org.jboss.portal.core.controller.ControllerContext"%>
 <%@page import="org.osivia.portal.core.portalobjects.PortalObjectUtils"%>
@@ -72,12 +73,12 @@ Boolean cmsNavigationMode = (Boolean) request.getAttribute(Constants.ATTR_TOOLBA
 
 // Draft page checkbox value
 String checkDraft = StringUtils.EMPTY;
-if (draftPage) {
+if (BooleanUtils.isTrue(draftPage)) {
     checkDraft = "checked=\"checked\"";
 }
 // CMS navigation mode checkbox value
 String checkCmsNavigationMode = StringUtils.EMPTY; 
-if (cmsNavigationMode) {
+if (BooleanUtils.isTrue(cmsNavigationMode)) {
     checkCmsNavigationMode = "checked=\"checked\"";
 }
 
@@ -127,34 +128,24 @@ var currentPageId = '<%=currentPageId %>';
                     <div class="fancybox-table-cell label required"><%=rb.getString("NEW_PAGE_NAME") %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" name="name" required />
-                    </div>                    
-                </div>
-            </div>
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label required"><%=rb.getString("NEW_PAGE_PARENT") %></div>
-                    <div class="fancybox-table-cell">
-                        <label for="parent-select-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                        <input id="parent-select-filter" type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" />                                               
                     </div>
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                </div>
 
+                <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label"><%=rb.getString("NEW_PAGE_MODEL") %></div>
                     <div class="fancybox-table-cell">
-                        <label for="model-select-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                        <input id="model-select-filter" type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" />                       
+                        <input type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" placeholder="<%=rb.getString("JSTREE_FILTER") %>" />                       
                     </div>
+                
+                    <div class="fancybox-table-cell label required"><%=rb.getString("NEW_PAGE_PARENT") %></div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" placeholder="<%=rb.getString("JSTREE_FILTER") %>" />                                               
+                    </div>                    
                 </div>
                 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                    
-                    <div class="fancybox-table-cell">
-                        <div id="jstreeParentSelect" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeParentSelect", true, false, false) %>
-                        </div>                        
-                    </div>
-                    
                     <div class="fancybox-table-cell">
                         <label for="checkboxNoModel"><%=rb.getString("NEW_PAGE_NO_MODEL") %></label>                        
                         <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeModelSelect', this.checked)" class="inline-checkbox" />
@@ -164,6 +155,14 @@ var currentPageId = '<%=currentPageId %>';
                         <div id="jstreeModelSelect" class="jstree-select-unique">
                             <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeModelSelect") %>
                         </div>
+                    </div>
+                
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                    
+                    <div class="fancybox-table-cell">
+                        <div id="jstreeParentSelect" class="jstree-select-unique">
+                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeParentSelect", true, false, false) %>
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -175,40 +174,6 @@ var currentPageId = '<%=currentPageId %>';
         </form>
     </div>
 </div>
-
-
-<!-- Fancybox de renommage de page -->
-<%-- <div class="fancybox-content">
-    <div id="page-rename">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="renamePage" />
-            <input type="hidden" name="jstreeRenamePageSelect" />
-            <input type="hidden" name="displayName" />
-            <input type="hidden" name="oldDisplayName" />
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <label for="rename-page-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                        <input id="rename-page-filter" type="text" onkeyup="jstreeSearch('jstreeRenamePageSelect', this.value)" />
-                    </div>
-                </div>
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <div id="jstreeRenamePageSelect" class="jstree-rename">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeRenamePageSelect") %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_RENAME_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="jstreeCancelRename('jstreeRenamePageSelect')" />
-            </div>
-        </form>
-    </div>
-</div> --%>
 
 
 <!-- Fancybox de sélection de la page d'accueil -->
@@ -275,12 +240,32 @@ var currentPageId = '<%=currentPageId %>';
 
 <!-- Fancybox de propriétés de la page -->
 <div class="fancybox-content">
-    <div id="page-properties">        
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changePageProperties" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
+    <div id="page-properties">
+        <div class="fancybox-table">
+        
+            <!-- Renommer la page -->
+            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+                <input type="hidden" name="action" value="renamePage" />
+                <input type="hidden" name="pageId" value="<%=currentPageId %>" />    
 
-            <div class="fancybox-table">
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell label">
+                        <p><%=rb.getString("PAGE_NAME") %></p>
+                    </div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" name="displayName" value="<%=currentPageName %>" />                    
+                    </div>
+                    <div class="fancybox-table-cell">
+                        <input type="submit" value='<%=rb.getString("PAGE_RENAME_SUBMIT") %>' />
+                    </div>
+                </div>
+            </form>        
+        
+            <!-- Mode brouillon -->  
+            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+                <input type="hidden" name="action" value="changePageProperties" />
+                <input type="hidden" name="pageId" value="<%=currentPageId %>" />    
+                
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
                         <p><%=rb.getString("PAGE_DRAFT_MODE") %></p>
@@ -288,26 +273,17 @@ var currentPageId = '<%=currentPageId %>';
                     <div class="fancybox-table-cell">
                         <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> class="small-input" />                        
                     </div>
+                    <div class="fancybox-table-cell">
+                        <input type="submit" value='<%=rb.getString("PAGE_PROPERTIES_SUBMIT") %>' />
+                    </div>
                 </div>
-            </div>
+            </form>
             
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_PROPERTIES_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
-            </div>
-        </form> 
-    </div>
-</div>
+            <!-- Sélectionner le layout -->
+            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+                <input type="hidden" name="action" value="changeLayout" />
+                <input type="hidden" name="pageId" value="<%=currentPageId %>" />
 
-
-<!-- Fancybox de sélection du layout -->
-<div class="fancybox-content">
-    <div id="page-layout">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changeLayout" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-            
-            <div class="fancybox-table">
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
                         <p><%=rb.getString("PAGE_LAYOUT") %></p>
@@ -342,26 +318,17 @@ var currentPageId = '<%=currentPageId %>';
                             %>
                         </select>                        
                     </div>
+                    <div class="fancybox-table-cell">
+                        <input type="submit" value='<%=rb.getString("PAGE_LAYOUT_SUBMIT") %>' />
+                    </div>
                 </div>
-            </div>
+            </form>
             
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_LAYOUT_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de sélection du thème -->
-<div class="fancybox-content">
-    <div id="page-theme">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changeTheme" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-            
-            <div class="fancybox-table">
+            <!-- Sélectionner le thème -->
+            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+                <input type="hidden" name="action" value="changeTheme" />
+                <input type="hidden" name="pageId" value="<%=currentPageId %>" />
+                
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
                         <p><%=rb.getString("PAGE_THEME") %></p>
@@ -396,14 +363,13 @@ var currentPageId = '<%=currentPageId %>';
                             %>
                         </select>                        
                     </div>
+                    <div class="fancybox-table-cell">
+                        <input type="submit" value='<%=rb.getString("PAGE_THEME_SUBMIT") %>' />
+                    </div>
                 </div>
-            </div>
+            </form>
             
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_THEME_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -456,25 +422,27 @@ var currentPageId = '<%=currentPageId %>';
                     <div class="fancybox-table-cell"><%=rb.getString("PAGE_ACCESS") %></div>
                 </div>
                 <%
-                for (Role role : roles) {
-                    Set<String> actions = null;
-                    if(actionsForRoles.containsKey(role.getName())){
-                        actions = actionsForRoles.get(role.getName());
-                    }
-                    String checked = StringUtils.EMPTY;
-                    if (CollectionUtils.isNotEmpty(actions) && actions.contains("view")) {
-                        checked = "checked=\"checked\"";
-                    }
-                    %>
-                    <div class="fancybox-table-row">
-                        <div class="fancybox-table-cell label">
-                            <p><%=role.getDisplayName() %></p>
+                if (CollectionUtils.isNotEmpty(roles)) {
+                    for (Role role : roles) {
+                        Set<String> actions = null;
+                        if (actionsForRoles.containsKey(role.getName())){
+                            actions = actionsForRoles.get(role.getName());
+                        }
+                        String checked = StringUtils.EMPTY;
+                        if (CollectionUtils.isNotEmpty(actions) && actions.contains("view")) {
+                            checked = "checked=\"checked\"";
+                        }
+                        %>
+                        <div class="fancybox-table-row">
+                            <div class="fancybox-table-cell label">
+                                <p><%=role.getDisplayName() %></p>
+                            </div>
+                            <div class="fancybox-table-cell">
+                                <input type="checkbox" name="view" value="<%=role.getName() %>" class="small-input" <%=checked %> />
+                            </div>
                         </div>
-                        <div class="fancybox-table-cell">
-                            <input type="checkbox" name="view" value="<%=role.getName() %>" class="small-input" <%=checked %> />
-                        </div>
-                    </div>
-                    <%
+                        <%
+                    }
                 }
                 %>
             </div>

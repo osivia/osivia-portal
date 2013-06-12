@@ -1,3 +1,18 @@
+
+/** Regions and windows commands */
+
+.commands {
+	display: inline-block;
+	border-style: solid;
+	border-width: 1px;
+	border-color: rgb(125, 119, 96);
+	border-color: rgba(125, 119, 96, 0.2);	
+    margin-bottom: 8px;
+    padding: 5px 10px 2px;
+}
+
+
+
 /* Fancybox */
 
 .fancybox-content {
@@ -55,6 +70,7 @@ form.fancybox-form .required:BEFORE {
 }
 
 
+
 /* JSTree */
 
 .jstree {
@@ -72,13 +88,46 @@ input.inline-checkbox {
 }
 
 
+.textarea-wrapper {
+    margin: 0;
+    padding: 0;
+}
+
+.textarea-wrapper textarea {
+	-webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+	width:100%;
+	
+}
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
 .fixed{
 	background-color: #CCCCCC;	
 }
-
+ */
 
 
 
@@ -166,7 +215,7 @@ input.inline-checkbox {
 
 
 
-
+/* 
 div#linkSettings{
 	padding: 2px;
 }
@@ -201,13 +250,13 @@ div#linkSettings{
 
 
 
-/* for the modal window for the page settings */
+for the modal window for the page settings
 .modalDialog_transparentDivs{	
-	filter:alpha(opacity=40);	/* Transparency */
-	opacity:0.4;	/* Transparency */
+	filter:alpha(opacity=40);	Transparency
+	opacity:0.4;	Transparency
 	background-color: #AAA;
 	z-index: 10;
-	position:absolute; /* Always needed	*/
+	position:absolute; Always needed	
 }
 .modalDialog_contentDiv{
 	
@@ -216,17 +265,17 @@ div#linkSettings{
 	border-right:2px solid #555555;
 	border-bottom:1px solid #555555;
 	
-	/*padding:2px;*/
-	z-index:100;/* Always needed	*/
-	position:absolute;	/* Always needed	*/
-	background-color:#FFF;	/* White background color for the message */
+	padding:2px;
+	z-index:100;Always needed	
+	position:absolute;	Always needed	
+	background-color:#FFF;	White background color for the message
 }
 .modalDialog_contentDiv_shadow{
-	/*z-index:90*/;/* Always needed	- to make it appear below the message */
-	/*position:absolute;*/	/* Always needed	*/
-	/*background-color:#555;*/
-	/*filter:alpha(opacity=30);*/	/* Transparency */
-	/*opacity:0.3;*/	/* Transparency */	
+	z-index:90;Always needed	- to make it appear below the message
+	position:absolute;	Always needed	
+	background-color:#555;
+	filter:alpha(opacity=30);	Transparency
+	opacity:0.3;	Transparency	
 }
 
 .close-settings{
@@ -265,6 +314,9 @@ div#linkSettings{
 div.toggleStyle	{
 background: none repeat scroll 0 0 #CCCCCC;
 }
+ */
+
+
 /*
 <div id="maximized_background" style="height: 1420px;"> &nbsp; </div>
 
@@ -318,7 +370,7 @@ z-index:10;
 	
 }*/
 
-
+/* 
 #admin-mode-window {
 	z-index:200;
 	position: absolute;
@@ -352,6 +404,6 @@ z-index:10;
     overflow: auto;
     padding: 10px;
 }
-
+ */
 
 

@@ -81,8 +81,8 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.formatters.IFormatter;
+import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
@@ -795,137 +795,136 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         // HTML "div" fancyboxes parent node
         Element divParent = new DOMElement(IFormatter.QNAME_NODE_DIV);
         divParent.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CONTAINER);
+
         if (CollectionUtils.isEmpty(windows)) {
             divParent.setText(HTML_TEXT_DEFAULT);
-        }
+        } else {
+            // Loop on each page window
+            for (Window window : windows) {
+                boolean checkboxChecked;
 
-        // Loop on each page window
-        for (Window window : windows) {
-            boolean checkboxChecked;
+                String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+                String fancyboxId = PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId;
 
-            String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
-            String fancyboxId = PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId;
+                // Fancybox
+                Element divFancyboxContent = new DOMElement(QNAME_NODE_DIV);
+                divFancyboxContent.addAttribute(QNAME_ATTRIBUTE_ID, fancyboxId);
+                divParent.add(divFancyboxContent);
 
-            // Fancybox
-            Element divFancyboxContent = new DOMElement(QNAME_NODE_DIV);
-            divFancyboxContent.addAttribute(QNAME_ATTRIBUTE_ID, fancyboxId);
-            divParent.add(divFancyboxContent);
+                // Form
+                Element form = new DOMElement(QNAME_NODE_FORM);
+                form.addAttribute(QNAME_ATTRIBUTE_ACTION, commandUrl);
+                form.addAttribute(QNAME_ATTRIBUTE_METHOD, FORM_METHOD_GET);
+                form.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_FORM);
+                divFancyboxContent.add(form);
 
-            // Form
-            Element form = new DOMElement(QNAME_NODE_FORM);
-            form.addAttribute(QNAME_ATTRIBUTE_ACTION, commandUrl);
-            form.addAttribute(QNAME_ATTRIBUTE_METHOD, FORM_METHOD_GET);
-            form.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_FORM);
-            divFancyboxContent.add(form);
+                // Hidden fields
+                Element inputHiddenAction = new DOMElement(QNAME_NODE_INPUT);
+                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
+                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_ACTION);
+                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_VALUE, HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
+                form.add(inputHiddenAction);
 
-            // Hidden fields
-            Element inputHiddenAction = new DOMElement(QNAME_NODE_INPUT);
-            inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
-            inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_ACTION);
-            inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_VALUE, HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
-            form.add(inputHiddenAction);
+                Element inputHiddenWindowId = new DOMElement(QNAME_NODE_INPUT);
+                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
+                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_WINDOW_ID);
+                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_VALUE, windowId);
+                form.add(inputHiddenWindowId);
 
-            Element inputHiddenWindowId = new DOMElement(QNAME_NODE_INPUT);
-            inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
-            inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_WINDOW_ID);
-            inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_VALUE, windowId);
-            form.add(inputHiddenWindowId);
+                // Table
+                Element table = new DOMElement(QNAME_NODE_DIV);
+                table.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_TABLE);
+                form.add(table);
 
-            // Table
-            Element table = new DOMElement(QNAME_NODE_DIV);
-            table.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_TABLE);
-            form.add(table);
+                // Styles rows
+                String windowStylesProperty = window.getDeclaredProperty("osivia.style");
+                List<String> windowStyles = new ArrayList<String>();
+                if (StringUtils.isNotEmpty(windowStylesProperty)) {
+                    windowStyles.addAll(Arrays.asList(windowStylesProperty.split(",")));
+                }
+                this.insertStylesRows(table, resourceBundle, portalStyles, windowStyles);
 
-            // Styles rows
-            String windowStylesProperty = window.getDeclaredProperty("osivia.style");
-            List<String> windowStyles = new ArrayList<String>();
-            if (StringUtils.isNotEmpty(windowStylesProperty)) {
-                windowStyles.addAll(Arrays.asList(windowStylesProperty.split(",")));
+                // Title bar display row
+                String hideTitle = window.getDeclaredProperty("osivia.hideTitle");
+                checkboxChecked = !"1".equals(hideTitle);
+                table.add(this.generateRow("Affichage barre de titre :", INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
+
+                // Title
+                String title = window.getDeclaredProperty("osivia.title");
+                if (title == null) {
+                    title = StringUtils.EMPTY;
+                }
+                table.add(this.generateRow("Titre :", INPUT_TYPE_TEXT, "title", title, false));
+
+                // Icons display
+                String hideDecorators = window.getDeclaredProperty("osivia.hideDecorators");
+                checkboxChecked = !"1".equals(hideDecorators);
+                table.add(this.generateRow("Affichage des icônes :", INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
+
+                // AJAX links and forms
+                String ajaxLinks = window.getProperty("osivia.ajaxLink");
+                checkboxChecked = "1".equals(ajaxLinks);
+                table.add(this.generateRow("Liens et formulaires en AJAX :", INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
+
+                // Print
+                String print = window.getProperty("osivia.printPortlet");
+                checkboxChecked = "1".equals(print);
+                table.add(this.generateRow("Impression :", INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
+
+                // Hide empty portlet
+                String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
+                checkboxChecked = "1".equals(hideEmptyPortlet);
+                table.add(this.generateRow("Masquer ce portlet si contenu vide :", INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked));
+
+                // Conditional scope
+                this.insertConditionalScopeRow(table, resourceBundle, window);
+
+                // Customize ID
+                String customizeId = window.getDeclaredProperty("osivia.idPerso");
+                if (customizeId == null) {
+                    customizeId = StringUtils.EMPTY;
+                }
+                table.add(this.generateRow("Id. personnalisation :", INPUT_TYPE_TEXT, "idPerso", customizeId, false));
+
+                // Shared cache ID
+                String cacheId = window.getProperty("osivia.cacheID");
+                if (cacheId == null) {
+                    cacheId = StringUtils.EMPTY;
+                }
+                table.add(this.generateRow("Id. cache partagé :", INPUT_TYPE_TEXT, "cacheID", cacheId, false));
+
+                // Bash activation
+                String bashActivation = window.getDeclaredProperty("osivia.bshActivation");
+                boolean isBashActive = "1".equals(bashActivation);
+                String scriptContent = window.getProperty("osivia.bshScript");
+                if (scriptContent == null) {
+                    scriptContent = StringUtils.EMPTY;
+                }
+                this.insertDynamicPropertiesRows(table, resourceBundle, isBashActive, scriptContent);
+
+                // Selection service dependency
+                String cacheEvents = window.getProperty("osivia.cacheEvents");
+                checkboxChecked = "selection".equals(cacheEvents);
+                table.add(this.generateRow("Dépendance / service sélection :", INPUT_TYPE_CHECKBOX, "selectionDep", "1", checkboxChecked));
+
+                // Buttons
+                Element buttonsContainer = new DOMElement(QNAME_NODE_DIV);
+                buttonsContainer.addAttribute(QNAME_ATTRIBUTE_CLASS, "fancybox-center-content");
+                form.add(buttonsContainer);
+
+                // Submit button
+                Element submitButton = new DOMElement(QNAME_NODE_INPUT);
+                submitButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_SUBMIT);
+                submitButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Changer les paramètres");
+                buttonsContainer.add(submitButton);
+
+                // Cancel button
+                Element cancelButton = new DOMElement(QNAME_NODE_INPUT);
+                cancelButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_BUTTON);
+                cancelButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Annuler");
+                cancelButton.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "closeFancybox()");
+                buttonsContainer.add(cancelButton);
             }
-            this.insertStylesRows(table, resourceBundle, portalStyles, windowStyles);
-
-            // Title bar display row
-            String hideTitle = window.getDeclaredProperty("osivia.hideTitle");
-            checkboxChecked = !"1".equals(hideTitle);
-            table.add(this.generateRow("Affichage barre de titre :", INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
-
-            // Title
-            String title = window.getDeclaredProperty("osivia.title");
-            if (title == null) {
-                title = StringUtils.EMPTY;
-            }
-            table.add(this.generateRow("Titre :", INPUT_TYPE_TEXT, "title", title, false));
-
-            // Icons display
-            String hideDecorators = window.getDeclaredProperty("osivia.hideDecorators");
-            checkboxChecked = !"1".equals(hideDecorators);
-            table.add(this.generateRow("Affichage des icônes :", INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
-
-            // AJAX links and forms
-            String ajaxLinks = window.getProperty("osivia.ajaxLink");
-            checkboxChecked = "1".equals(ajaxLinks);
-            table.add(this.generateRow("Liens et formulaires en AJAX :", INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
-
-            // Print
-            String print = window.getProperty("osivia.printPortlet");
-            checkboxChecked = "1".equals(print);
-            table.add(this.generateRow("Impression :", INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
-
-            // Hide empty portlet
-            String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
-            checkboxChecked = "1".equals(hideEmptyPortlet);
-            table.add(this.generateRow("Masquer ce portlet si contenu vide :", INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked));
-
-            // Conditional scope
-            this.insertConditionalScopeRow(table, resourceBundle, window);
-
-            // Customize ID
-            String customizeId = window.getDeclaredProperty("osivia.idPerso");
-            if (customizeId == null) {
-                customizeId = StringUtils.EMPTY;
-            }
-            table.add(this.generateRow("Id. personnalisation :", INPUT_TYPE_TEXT, "idPerso", customizeId, false));
-
-            // Shared cache ID
-            String cacheId = window.getProperty("osivia.cacheID");
-            if (cacheId == null) {
-                cacheId = StringUtils.EMPTY;
-            }
-            table.add(this.generateRow("Id. cache partagé :", INPUT_TYPE_TEXT, "cacheID", cacheId, false));
-
-            // Bash activation
-            String bashActivation = window.getDeclaredProperty("osivia.bshActivation");
-            boolean isBashActive = "1".equals(bashActivation);
-            String scriptContent = window.getProperty("osivia.bshScript");
-            if (scriptContent == null) {
-                scriptContent = StringUtils.EMPTY;
-            }
-            this.insertDynamicPropertiesRows(table, resourceBundle, isBashActive, scriptContent);
-
-            
-            // Hide empty portlet
-            String cacheEvents = window.getProperty("osivia.cacheEvents");
-            checkboxChecked = "selection".equals(cacheEvents);
-            table.add(this.generateRow("Dépendance / service sélection :", INPUT_TYPE_CHECKBOX, "selectionDep", "1", checkboxChecked));
-
-            
-            // Buttons
-            Element buttonsContainer = new DOMElement(QNAME_NODE_DIV);
-            buttonsContainer.addAttribute(QNAME_ATTRIBUTE_CLASS, "fancybox-center-content");
-            form.add(buttonsContainer);
-
-            // Submit button
-            Element submitButton = new DOMElement(QNAME_NODE_INPUT);
-            submitButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_SUBMIT);
-            submitButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Changer les paramètres");
-            buttonsContainer.add(submitButton);
-
-            // Cancel button
-            Element cancelButton = new DOMElement(QNAME_NODE_INPUT);
-            cancelButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_BUTTON);
-            cancelButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Annuler");
-            cancelButton.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "closeFancybox()");
-            buttonsContainer.add(cancelButton);
         }
 
         // Get HTML data
@@ -1253,8 +1252,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         if ((response instanceof PageRendition) && (command instanceof PageCommand)) {
             // Teste si le mode assistant est activé
-            if (!Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(command.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-                    "osivia.windowSettingMode"))) {
+            Object windowSettingMode = command.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_WINDOWS_SETTING_MODE);
+            if (!Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
                 return response;
             }
 
@@ -1276,9 +1275,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             // Current page
             dispatcher.setAttribute(Constants.ATTR_WINDOWS_PAGE, page);
 
-            if (!(page instanceof ITemplatePortalObject)) {
-                // Pour mémo : soit un template, soit une page classique
-                this.injectPortletSetting(dispatcher, page, rendition, context);
+            PageType pageType = PageType.getPageType(page, context);
+            if (PageType.STATIC_PAGE.equals(pageType)) {
+                // Portlets settings injection
+                this.injectPortletSettings(dispatcher, page, rendition, context);
             }
 
             dispatcher.include();
@@ -1291,7 +1291,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 
     @SuppressWarnings("unchecked")
-    private void injectPortletSetting(ControllerRequestDispatcher dispatcher, Page currentPage, PageRendition rendition, ControllerContext context)
+    private void injectPortletSettings(ControllerRequestDispatcher dispatcher, Page currentPage, PageRendition rendition, ControllerContext context)
             throws Exception {
         HttpServletRequest request = context.getServerInvocation().getServerContext().getClientRequest();
 
@@ -1303,23 +1303,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         this.synchronizeRegionContexts(rendition, currentPage);
 
         for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
-
             RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
 
-            // on vérifie que cette réion fait partie du layout
-            // (elle contient des portlets)
+            // On vérifie que cette région fait partie du layout (elle contient des portlets)
             if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
                 Map<String, String> regionProperties = renderCtx.getProperties();
-
-                String regionId = renderCtx.getId();
-
-                Map regionPorperties = renderCtx.getProperties();
 
                 PortalObjectId popupWindowId = (PortalObjectId) context.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
 
                 if (popupWindowId == null) {
-                regionProperties.put(Constants.ATTR_WINDOWS_WIZARD_MODE, Constants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE);
-                regionProperties.put(Constants.ATTR_WINDOWS_ADD_PORTLET_URL, "#add-portlet");
+                    regionProperties.put(Constants.ATTR_WINDOWS_WIZARD_MODE, Constants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE);
+                    regionProperties.put(Constants.ATTR_WINDOWS_ADD_PORTLET_URL, "#add-portlet");
                 }
 
                 // Le mode Ajax est incompatble avec le mode "admin".
@@ -1340,44 +1334,44 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
                             if (popupWindowId == null) {
 
-                // Window settings mode
-                            windowProperties.put(Constants.ATTR_WINDOWS_SETTING_MODE, Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
+                                // Window settings mode
+                                windowProperties.put(Constants.ATTR_WINDOWS_SETTING_MODE, Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
 
-                            // Commande suppression
-                            windowProperties.put(Constants.ATTR_WINDOWS_DELETE_PORTLET_URL, "#delete-portlet");
+                                // Commande suppression
+                                windowProperties.put(Constants.ATTR_WINDOWS_DELETE_PORTLET_URL, "#delete-portlet");
 
-                            // Commande paramètres
-                            windowProperties.put(Constants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL, "#" + PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId);
+                                // Commande paramètres
+                                windowProperties.put(Constants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL, "#" + PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId);
 
-                            windows.add(window);
+                                windows.add(window);
 
-                            // Commandes de déplacement
-                            MoveWindowCommand upC = new MoveWindowCommand(windowId, MoveWindowCommand.UP);
-                            String upUrl = context.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(Constants.ATTR_WINDOWS_UP_COMMAND_URL, upUrl);
+                                // Commandes de déplacement
+                                MoveWindowCommand upC = new MoveWindowCommand(windowId, MoveWindowCommand.UP);
+                                String upUrl = context.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
+                                windowProperties.put(Constants.ATTR_WINDOWS_UP_COMMAND_URL, upUrl);
 
-                            MoveWindowCommand downC = new MoveWindowCommand(windowId, MoveWindowCommand.DOWN);
-                            String downUrl = context.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(Constants.ATTR_WINDOWS_DOWN_COMMAND_URL, downUrl);
+                                MoveWindowCommand downC = new MoveWindowCommand(windowId, MoveWindowCommand.DOWN);
+                                String downUrl = context.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
+                                windowProperties.put(Constants.ATTR_WINDOWS_DOWN_COMMAND_URL, downUrl);
 
-                            MoveWindowCommand previousC = new MoveWindowCommand(windowId, MoveWindowCommand.PREVIOUS_REGION);
-                            String previousRegionUrl = context.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(Constants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL, previousRegionUrl);
+                                MoveWindowCommand previousC = new MoveWindowCommand(windowId, MoveWindowCommand.PREVIOUS_REGION);
+                                String previousRegionUrl = context.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
+                                windowProperties.put(Constants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL, previousRegionUrl);
 
-                            MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, MoveWindowCommand.NEXT_REGION);
-                            String nextRegionUrl = context.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(Constants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL, nextRegionUrl);
+                                MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, MoveWindowCommand.NEXT_REGION);
+                                String nextRegionUrl = context.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
+                                windowProperties.put(Constants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL, nextRegionUrl);
 
-                            // Titre de la fenetre d'administration
-                            String instanceDisplayName = null;
-                            InstanceDefinition defInstance = this.getInstanceContainer().getDefinition(window.getContent().getURI());
-                            if (defInstance != null) {
-                                instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
-                            }
+                                // Titre de la fenetre d'administration
+                                String instanceDisplayName = null;
+                                InstanceDefinition defInstance = this.getInstanceContainer().getDefinition(window.getContent().getURI());
+                                if (defInstance != null) {
+                                    instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
+                                }
 
-                            if (instanceDisplayName != null) {
-                                windowProperties.put("osivia.instanceDisplayName", instanceDisplayName);
-                            }
+                                if (instanceDisplayName != null) {
+                                    windowProperties.put("osivia.instanceDisplayName", instanceDisplayName);
+                                }
                             }
 
                         }
@@ -1389,7 +1383,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         dispatcher.setAttribute(Constants.ATTR_WINDOWS_CURRENT_LIST, windows);
     }
-
 
 
     /**
@@ -1425,7 +1418,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
         }
     }
-
+    
 
     /**
      * @return the pageSettingPath

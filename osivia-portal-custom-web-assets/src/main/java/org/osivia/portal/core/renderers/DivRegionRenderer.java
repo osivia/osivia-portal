@@ -49,6 +49,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX = "fancybox_inline";
+    /** Region commands class. */
+    private static final String CLASS_COMMANDS = "commands";
     /** "Add" image source. */
     private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/application_add.png";
 
@@ -76,6 +78,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             String url = rendererContext.getProperty(Constants.ATTR_WINDOWS_ADD_PORTLET_URL);
             
             DOMElement div = new DOMElement(IFormatter.QNAME_NODE_DIV);
+            div.addAttribute(IFormatter.QNAME_ATTRIBUTE_CLASS, CLASS_COMMANDS);
             
             DOMElement a = new DOMElement(IFormatter.QNAME_NODE_A);
             a.addAttribute(IFormatter.QNAME_ATTRIBUTE_HREF, url);

@@ -25,7 +25,6 @@ package org.osivia.portal.core.renderers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.dom.DOMElement;
@@ -50,10 +49,8 @@ import org.osivia.portal.core.page.PageProperties;
  */
 public class DivWindowRenderer extends AbstractObjectRenderer implements WindowRenderer {
 
-    /** Window settings border class. */
-    private static final String CLASS_DIV_BORDER = "pia-window-settings-border";    
-    /** Window settings content class. */
-    private static final String CLASS_DIV_CONTENT = "pia-window-settings";
+    /** Windows settings commands class. */
+    private static final String CLASS_COMMANDS = "commands";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** Fancybox class, required for link. */
@@ -185,45 +182,40 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         if (Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingsMode)) {
             String windowId = windowRendererContext.getId();
             String onclickAction = "windowId = '" + windowId + "'";
-            
-            // Border
-            DOMElement divBorder = new DOMElement(IFormatter.QNAME_NODE_DIV);
-            divBorder.addAttribute(IFormatter.QNAME_ATTRIBUTE_CLASS, CLASS_DIV_BORDER);
-            
-            // Inner content
-            DOMElement divContent = new DOMElement(IFormatter.QNAME_NODE_DIV);
-            divContent.addAttribute(IFormatter.QNAME_ATTRIBUTE_CLASS, CLASS_DIV_CONTENT);
-            divBorder.add(divContent);
+
+            // Commands container
+            DOMElement div = new DOMElement(IFormatter.QNAME_NODE_DIV);
+            div.addAttribute(IFormatter.QNAME_ATTRIBUTE_CLASS, CLASS_COMMANDS);
             
             // Up move command
             String upUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_UP_COMMAND_URL);
             DOMElement upLink = this.generatePortletCommandLink(upUrl, null, UP_LINK_IMAGE_SOURCE,  null,null);
-            divContent.add(upLink);
+            div.add(upLink);
 
             // Down move command
             String downUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_DOWN_COMMAND_URL);
             DOMElement downLink = this.generatePortletCommandLink(downUrl, null, DOWN_LINK_IMAGE_SOURCE,  null,null);
-            divContent.add(downLink);
+            div.add(downLink);
             
             // Previous region move command
             String previousRegionUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
             DOMElement previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, PREVIOUS_REGION_LINK_IMAGE_SOURCE,  null,null);
-            divContent.add(previousRegionLink);
+            div.add(previousRegionLink);
             
             // Next region move command
             String nextRegionUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
             DOMElement nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, NEXT_REGION_LINK_IMAGE_SOURCE,  null,null);
-            divContent.add(nextRegionLink);
+            div.add(nextRegionLink);
             
             // Shading
             DOMElement imgShading = new DOMElement(IFormatter.QNAME_NODE_IMG);
             imgShading.addAttribute(IFormatter.QNAME_ATTRIBUTE_SRC, SHADING_IMAGE_SOURCE);
-            divContent.add(imgShading);
+            div.add(imgShading);
             
             // Window settings display command
             String displaySettingsUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
             DOMElement displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, DISPLAY_SETTINGS_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_INLINE, null);
-            divContent.add(displaySettingsLink);
+            div.add(displaySettingsLink);
             
             // Portlet administration display command
             Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
@@ -238,7 +230,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     String instanceName = windowRendererContext.getProperty("osivia.instanceDisplayName");
                     title += "   ["+instanceName+"]";                    
                     DOMElement displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME, title);
-                    divContent.add(displayAdminLink);
+                    div.add(displayAdminLink);
 
 
                 }
@@ -246,17 +238,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             
             // Shading (can't reuse first shading node)
             DOMElement imgShading2 = (DOMElement) imgShading.cloneNode(true);
-            divContent.add(imgShading2);
+            div.add(imgShading2);
             
             // Delete portlet command
             String deleteUrl = windowRendererContext.getProperty(Constants.ATTR_WINDOWS_DELETE_PORTLET_URL);
             DOMElement deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, DELETE_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_INLINE, null);
-            divContent.add(deleteLink);
+            div.add(deleteLink);
             
             // Print
             HTMLWriter htmlWriter = new HTMLWriter(writer);
             try {
-                htmlWriter.write(divBorder);
+                htmlWriter.write(div);
             } catch (IOException e) {
                 throw new RenderException(e);
             }

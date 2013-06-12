@@ -58,8 +58,10 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.RefreshPageCommand;
 
 /**
  * Toolbar customizer interceptor.
@@ -169,6 +171,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(getTargetThemeContextPath(command), this.toolbarPath);
 
         if (dispatcher != null) {
+            Page page = command.getPage();
+            
             Principal principal = context.getServerInvocation().getServerContext().getClientRequest().getUserPrincipal();
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
 
@@ -182,11 +186,15 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             }
 
             // Mode d'édition
-            String mode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode");
+            String mode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_WINDOWS_SETTING_MODE);
 
             if (PageCustomizerInterceptor.isAdministrator(context)) {
                 try {
-                    Page page = command.getPage();
+                    PageType pageType = PageType.getPageType(page, context);
+                    
+                    // Editable page indicator
+                    Boolean editablePage = PageType.STATIC_PAGE.equals(pageType);
+                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_EDITABLE_PAGE, editablePage);
 
                     ViewPageCommand showAdmin = new ViewPageCommand(adminPortalId);
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_ADMIN_PORTAL_URL, new PortalURLImpl(showAdmin, context, null, null));
@@ -202,19 +210,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_URL, new PortalURLImpl(changeModeCommand, context, null, null));
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_MODE, newMode);
 
-                    if (page instanceof ITemplatePortalObject) {
-                        // Dynamic page
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_DYNAMIC_PAGE_INDICATOR, true);
-
+                    if (PageType.TEMPLATE_PAGE.equals(pageType))  {
                         // Page template access
                         ITemplatePortalObject templatePortalObject = (ITemplatePortalObject) page;
                         ViewPageCommand showPage = new ViewPageCommand(templatePortalObject.getTemplate().getId());
                         String url = new PortalURLImpl(showPage, context, null, null).toString();
                         url += "?init-state=true&edit-template-mode=true";
                         dispatcher.setAttribute(Constants.ATTR_TOOLBAR_TEMPLATE_ACCESS_URL, url);
-                    } else {
-                        // Static page
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_DYNAMIC_PAGE_INDICATOR, false);
                     }
 
                     // Caches initialization
@@ -240,6 +242,9 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                 }
             }
 
+            RefreshPageCommand refreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+            dispatcher.setAttribute(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, context, false, null));
+          
             // Sign out
             SignOutCommand signOutCommand = new SignOutCommand();
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, new PortalURLImpl(signOutCommand, context, false, null));
@@ -277,8 +282,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         if (dispatcher != null) {
             Page page = command.getPage();
 
-            if (PageCustomizerInterceptor.isAdministrator(context) && !(page instanceof ITemplatePortalObject)) {
+            if (PageCustomizerInterceptor.isAdministrator(context)) {
                 try {
+                    PageType pageType = PageType.getPageType(page, context);
+                    
                     URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
                     // Formatter
@@ -294,12 +301,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     // Page
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
 
-                    if (page instanceof ITemplatePortalObject) {
-                        // Dynamic page
-
-                    } else {
-                        // Static page
-
+                    if (PageType.STATIC_PAGE.equals(pageType)) {
                         // Default page indicator
                         Boolean defaultPage = page.getName().equals(page.getPortal().getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME));
                         dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE, defaultPage);
