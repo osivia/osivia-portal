@@ -14,6 +14,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
+import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
@@ -500,6 +501,22 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     return new PermLinkCommand(permMlinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
 
                 }
+                
+				/* CMS commands */
+				
+				if ("CMSDeleteFragment".equals(action)) {
+					
+					String pageId = null;
+					String pagePath = null;
+					String refURI = null;
+	
+					if (parameterMap.get("pageId") != null && parameterMap.get("pagePath") != null && parameterMap.get("refURI") != null ) {
+						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
+						pagePath = URLDecoder.decode(((String[]) parameterMap.get("pagePath"))[0], "UTF-8");
+						refURI = URLDecoder.decode(((String[]) parameterMap.get("refURI"))[0], "UTF-8");
+						return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
+					}
+				}	                
 
 
             }

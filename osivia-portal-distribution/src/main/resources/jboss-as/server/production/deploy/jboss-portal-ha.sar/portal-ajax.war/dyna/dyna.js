@@ -21,25 +21,51 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
 
-function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId) {
-    var options = {
-            requestHeaders: ["ajax","true","bilto","toto"],
-            method: "post",
-            postBody: "action=" + action + "&windowId=" + windowId + "&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId,
-            onSuccess: function(t) {
-            },
-            on404: function(t) {
-                alert("Error 404: location " + t.statusText + " was not found.");
-            },
-            onFailure: function(t) {
-                alert("Error " + t.status + " -- " + t.statusText);
-            },
-            onLoading: function(t) {
-            }
-    };
-    new Ajax.Request(server_base_url + "/ajax", options);
+var currentSubmit;
+
+function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
+{
+   var options = {
+      requestHeaders: ["ajax","true","bilto","toto"],
+      method: "post",
+      postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId,
+      onSuccess: function(t)
+      {
+      },
+      on404: function(t)
+      {
+         alert("Error 404: location " + t.statusText + " was not found.");
+      },
+      onFailure: function(t)
+      {
+         alert("Error " + t.status + " -- " + t.statusText);
+      },
+      onLoading: function(t)
+      {
+      }
+   };
+// LBI : gestion de DND en mode CMS
+   new Ajax.Request(server_base_url + "/cmsAjax", options);
 }
 
+function snapshot()
+{
+
+   // Find draggable regions
+   var regions_on_page = $$(".dnd-region");
+
+   // Save current state in the DOM itself
+   for (var i = 0; i < regions_on_page.length; i++)
+   {
+      var regionDiv = regions_on_page[i]
+      for (var j = 0; j < regionDiv.childNodes.length; j++)
+      {
+         var child = regionDiv.childNodes[j];
+         child["regionId"] = regionDiv.id;
+         child["pos"] = j;
+      }
+   }
+}
 
 // Check that the URL starts with the provided prefix
 function isURLAccepted(url) {
@@ -334,14 +360,75 @@ function copyInnerHTML(srcContainer, dstContainer, className) {
 }
 
 
-function footer() {
-    // Find the dyna portlets
-    var portlets_on_page = $$(".partial-refresh-window");
+function footer()
+{
+   //
+   var WindowMoveObserver = Class.create();
+   WindowMoveObserver.prototype =
+   {
+      initialize: function(element)
+      {
+         this.element = $(element);
+      },
+      onStart: function()
+      {
+      },
+      onEnd: function()
+      {
+         var elt = Draggables.activeDraggable.element;
 
-    // Add listener for the dyna windows on the dyna-window element
-    // and not async-window as this one will have its markup replaced
-    for(var i = 0;i < portlets_on_page.length;i++) {
-        var portlet = Element.up(portlets_on_page[i]);
-        Event.observe(portlet, "click", bilto);
-    }
+         // LBI - var injected by the footer
+         var windowId = cmsPath;
+         
+         var fromRegionId = elt["regionId"];
+         var fromPos = elt["pos"];
+
+         // Doing the snapshot after move will give us the new region and pos of the window
+         snapshot();
+         var toRegionId = elt["regionId"];
+         var toPos = elt["pos"];
+
+         // Perform request
+         sendData("windowmove", windowId, fromPos, fromRegionId, toPos, toRegionId);
+      }
+   };
+
+   // Find the draggable regions
+   var regions_on_page = $$(".dnd-region");
+   // This is the main cause of https://jira.jboss.org/jira/browse/JBPORTAL-2047
+   // for some reson, the prototype.js double dollar sign (which is the equivalent of getElementsByClassName)
+   //is the only function that will give us a proper handle for the "drop" part to work
+   //TODO - if more problems continue with DnD, this may be the root of the problem
+   //var regions_on_page = document.getElementsByClassName("dnd-region");
+
+   // Create draggable regions
+   for (var i = 0; i < regions_on_page.length; i++)
+   {
+      var region = regions_on_page[i];
+      if (typeof Sortable != 'undefined')
+      {
+         Sortable.create(region, {dropOnEmpty:true,handle:"dnd-handle",tag:"div",containment:regions_on_page,constraint:false,hoverclass:"dnd-droppable"});
+      }
+   }
+
+   //
+   if (typeof Draggables != 'undefined')
+   {
+      Draggables.addObserver(new WindowMoveObserver());
+   }
+   //
+   snapshot();
+
+   // Find the dyna portlets
+   var portlets_on_page = $$(".partial-refresh-window");
+
+   // Add listener for the dyna windows on the dyna-window element
+   // and not async-window as this one will have its markup replaced
+   for (var i = 0; i < portlets_on_page.length; i++)
+   {
+      var portlet = Element.up(portlets_on_page[i]);
+      Event.observe(portlet, "click", bilto);
+   }
 }
+
+

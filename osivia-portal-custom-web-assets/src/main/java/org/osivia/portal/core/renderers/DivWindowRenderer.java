@@ -29,6 +29,7 @@ import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
+import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
@@ -38,7 +39,6 @@ import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageProperties;
-
 
 /**
  * Implementation of a WindowRenderer, based on div tags.
@@ -79,52 +79,89 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     public void render(RendererContext rendererContext, WindowRendererContext wrc) throws RenderException {
         PrintWriter out = rendererContext.getWriter();
 
-
         PageProperties properties = PageProperties.getProperties();
-
+        
         // Pour les décorateurs
         properties.setCurrentWindowId(wrc.getId());
-
-
+        
+        // Déterminer si la window appartient à une région CMS
+        Boolean regionCms = false;
+        if(wrc instanceof WindowContext) {
+      	  WindowContext wc = (WindowContext) wrc;
+      	  
+      	  if(wc.getRegionCms() != null && wrc.getProperty("osivia.windowId") != null) {
+      		  regionCms = wc.getRegionCms(); 
+      	  }
+        }
+        
         String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
+        
+        if( "1".equals(hidePortlet))
+      	  return;
+        
 
-        if ("1".equals(hidePortlet))
-            return;
+        
+        // Activation des liens Ajax
+        String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
+        
+        
+        if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode"))) {
+      	  // if is window cms, prepare the drag & drop style
+      	  if(regionCms) {
+      		  out.print("<div id=\"window_"+wrc.getProperty("osivia.windowId")+"\" class=\"dnd-region dnd-handle no-ajax-link\"> " +
+      	    	  		"<div>");   
+      	  }
+      	  else {
+      		  out.print("<div class=\"no-ajax-link\"> " +
+    	    	  		"<div>");   
+      	  }
+        }
+        
+        
+        String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
+        
+        if( style != null)	
+      	  style = style.replaceAll(",", " ");
+        else 
+      	 style = "";
+        
+  	
+       
+  	   String cssFragment = "";
+  	   if(regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+  		   cssFragment = "fragmentPreview";
+  	   }
+        
+        out.println("<div class=\" dyna-window-content "+cssFragment+"\" >");
+        
+        // create / edit fragment actions
+        // TODO externaliser libelles
+  	   if( regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+  		   out.println("<div class=\" previewOverlay\" >");
+  		   
+  		   out.print("<a class=\"fancyframe_refresh\" href=\""+wrc.getProperty("osivia.cmsEditUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/> Modifier le contenu</a> ");
+  		   out.print("<a href=\""+wrc.getProperty("osivia.cmsDeleteUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/>Supprimer la boite</a> ");
+  		   
+  		   out.println("</div>");
+  		   
+  	   }
+      
 
+      
 
         String scripts =  properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
         if( scripts != null)
             out.print(scripts);
+
+
         
+        out.print("<div class=\"portlet-container "+style+"\">");
         
-        // Activation des liens Ajax
-        String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
-        if (!"1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))
-            out.print("<div class=\"no-ajax-link\">");
-
-
-        String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
-
-        if (style != null)
-            style = style.replaceAll(",", " ");
-        else
-            style = "";
-
-
-        /*
-         * if( style != null)
-         * out.print("<div id=\""+style+"\">");
-         */
-
-        out.println("<div class=\"dyna-window-content\" >");
-
-        out.print("<div class=\"portlet-container " + style + "\">");
-
-
         // Print portlet commands
         this.printPortletCommands(out, wrc, properties);
 
 
+        
         out.print("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 
 
@@ -162,9 +199,25 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
          */
         out.print("</div>"); // dyna-window-content
 
+      // in cms mode, create a new fragment below the current window
+      // TODO externaliser libelles      
+      if( regionCms && wrc.getProperty("osivia.cmsEditUrl") != null)	{
+    	 
+    	  
+    	  out.print("<div class=\"regionPreview\">");
+    	  out.println("<div class=\"previewOverlay\" >");
+    	  
+    	  out.print("<a class=\"fancyframe_refresh\" href=\""+wrc.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
+    	  
+    	  out.print("</div>");
+    	  out.println("</div>");
+    	  
+      }
+
+
         // Activation des liens Ajax
         if (!"1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode")))
-            out.print("</div>");
+            out.print("</div></div>");
 
 
     }
@@ -287,3 +340,4 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     }
 
 }
+

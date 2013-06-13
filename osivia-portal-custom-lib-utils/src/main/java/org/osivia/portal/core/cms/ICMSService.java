@@ -34,6 +34,44 @@ public interface ICMSService {
 
 	public List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx)  throws CMSException ;
 	
+	/**
+	 * Build and return all windows included in the page
+	 * @param cmsCtx context
+	 * @param pagePath the path of the page
+	 * @return the windows
+	 * @throws CMSException
+	 */
 	public List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsCtx, String pagePath)  throws CMSException ;
 	
+	/**
+	 * Get urls used to access ECM specific views
+	 * @param cmsCtx context
+	 * @param command type of command acceded (ex : create, edit, etc.)
+	 * @param path  the path of the page
+	 * @param requestParameters GET params added in the URL 
+	 * @return url
+	 * @throws CMSException
+	 */
+	public String getEcmUrl(CMSServiceCtx cmsCtx, EcmCommand command, String path, Map<String, String> requestParameters)  throws CMSException ;
+	
+	/**
+	 * Remove a CMS fragment on a page
+	 * @param cmsCtx context
+	 * @param pagePath the path of the page
+	 * @param refURI an unique identifier on the fragment to delete in the current page
+	 * @throws CMSException
+	 */
+	public void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI)  throws CMSException ;
+	
+	/**
+	 * Move a CMS fragment on a page (drag & drop)
+	 * @param cmsCtx context
+	 * @param pagePath the path of the page
+	 * @param refURI an unique identifier of the fragment to move in the current page
+	 * @param toURI an unique identifier of an object which recieve the fragment (region or window)
+	 * @param belowFragment 'true' if fgt is dropped below the destination, 'false' if above
+	 * @param dropOnEmptyRegion 'true' if the fgt is moved in an empty region, 'false' if it is dragged between existing fragments
+	 * @throws CMSException
+	 */	
+	public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI, String toURI, boolean belowFragment, boolean dropOnEmptyRegion) throws CMSException ;
 }

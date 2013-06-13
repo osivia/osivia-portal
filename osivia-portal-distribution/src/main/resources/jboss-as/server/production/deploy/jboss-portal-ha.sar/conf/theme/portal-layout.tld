@@ -43,6 +43,9 @@
       <attribute>
          <name>regionID</name>
       </attribute>
+      <attribute>
+         <name>regionCms</name>
+      </attribute>      
    </tag>
    <tag>
       <name>portlet</name>

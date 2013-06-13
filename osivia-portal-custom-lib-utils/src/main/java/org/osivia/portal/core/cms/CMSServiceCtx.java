@@ -34,6 +34,23 @@ public class CMSServiceCtx {
 	private String pageId;
 	private Object doc;
 	
+	/** if 'true', indicate to don't access the cache. load the latest data */ 
+	private boolean forceReload = false;
+	
+	/**
+	 * @return the forceReload
+	 */
+	public boolean isForceReload() {
+		return forceReload;
+	}
+
+	/**
+	 * @param forceReload the forceReload to set
+	 */
+	public void setForceReload(boolean forceReload) {
+		this.forceReload = forceReload;
+	}
+
 	/**
 	 * Variable permettant de forcer le scope 
 	 * de mise en cache de l'objet de retour

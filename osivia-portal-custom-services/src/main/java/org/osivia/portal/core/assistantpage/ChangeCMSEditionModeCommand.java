@@ -11,6 +11,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 
 
@@ -50,7 +51,7 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
 		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-		getControllerContext().setAttribute(SESSION_SCOPE, "osivia.cmsEditionMode", mode);
+		getControllerContext().setAttribute(SESSION_SCOPE, Constants.ATTR_TOOLBAR_CMS_EDITION_MODE, mode);
 		
 		return new UpdatePageResponse(page.getId());
 

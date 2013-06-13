@@ -1,6 +1,5 @@
 package org.osivia.portal.core.toolbar;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,9 +50,11 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
+import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.MonEspaceCommand;
@@ -164,9 +165,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
      * 
      * @param command page command
      * @return toolbar HTML content
-     * @throws IOException
+     * @throws Exception
+     * @throws CMSException
      */
-    private String injectToolbar(PageCommand command) throws IOException {
+    private String injectToolbar(PageCommand command) throws CMSException, Exception {
         ControllerContext context = command.getControllerContext();
         ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(getTargetThemeContextPath(command), this.toolbarPath);
 
@@ -224,7 +226,12 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     String url = new PortalURLImpl(initCacheCmd, context, null, null).toString();
                     url += "?init-cache=true";
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CACHES_INIT_URL, url);
+                } catch (PortalSecurityException e) {
+                    logger.error(StringUtils.EMPTY, e);
+                }
+            }
 
+            if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)) {
                     String cmsMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_TOOLBAR_CMS_EDITION_MODE);
 
                     String newCmsMode;
@@ -237,10 +244,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                             newCmsMode);
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CMS_EDITION_URL, new PortalURLImpl(changeCmsModeCommand, context, null, null));
                     dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CMS_EDITION_MODE, cmsMode);
-                } catch (PortalSecurityException e) {
-                    logger.error(StringUtils.EMPTY, e);
-                }
             }
+
 
             RefreshPageCommand refreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, context, false, null));

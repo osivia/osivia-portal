@@ -536,6 +536,23 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
+   
+   <!-- Manage AJAX actions used by the CMS edition mode -->
+   <mbean code="org.osivia.portal.core.assistantpage.CmsAjaxCommandFactory" name="portal:commandFactory=cmsAjax" xmbean-dd=""
+      xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+   		<xmbean/>
+   </mbean>
+   
+    <!-- Delegator of cmsAjax -->
+   <mbean code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          name="portal:commandFactory=Delegate,path=cmsAjax" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+      <attribute name="Path">/cmsAjax</attribute>
+      <depends optional-attribute-name="DelegatingFactory" proxy-type="attribute">portal:commandFactory=Delegating
+      </depends>
+      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">portal:commandFactory=cmsAjax</depends>
+   </mbean>
 	
 </server>
    

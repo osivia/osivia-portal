@@ -2,12 +2,22 @@
    "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
 
-  <display-name>Portlet CMS</display-name>
-    
-    <taglib>
-		<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
-		<taglib-location>/WEB-INF/tld/c.tld</taglib-location>
-    </taglib>
+	<display-name>Portlet CMS</display-name>
 
 	
+	<taglib>
+		<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+		<taglib-location>/WEB-INF/tld/c.tld</taglib-location>
+	</taglib>
+
+<!-- Servlet des commandes -->
+	<servlet>
+		<servlet-name>DynaCmsAjaxServlet</servlet-name>
+		<servlet-class>org.jboss.portal.theme.servlet.DynaAjaxServlet</servlet-class>
+		<load-on-startup>0</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DynaCmsAjaxServlet</servlet-name>
+		<url-pattern>/cmsAjax/*</url-pattern>
+	</servlet-mapping>
 </web-app>

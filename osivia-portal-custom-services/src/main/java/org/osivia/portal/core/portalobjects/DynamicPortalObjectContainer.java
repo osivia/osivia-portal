@@ -35,6 +35,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.system.ServiceMBeanSupport;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSEditableWindow;
 import org.osivia.portal.core.cms.CMSException;
@@ -336,9 +337,12 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 					
 					String windowsEditableWindowsMode = "";
 					
+					
 					cmsReadItemContext.setDisplayLiveVersion("0");
 					if ("preview".equals(invocation.getAttribute(ControllerCommand.SESSION_SCOPE,
-					"osivia.cmsEditionMode")))	{
+					Constants.ATTR_TOOLBAR_CMS_EDITION_MODE)))	{
+					
+					
 						cmsReadItemContext.setDisplayLiveVersion("1");
 					windowsEditableWindowsMode = "preview";}
 
