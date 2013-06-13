@@ -69,6 +69,14 @@
 	<version>${project.version}</version>
 	<type>jar</type>
    </dependency>
+   
+   
+<dependency>
+    <groupId>org.osivia.portal.core</groupId>
+        <artifactId>osivia-portal-jbp-theme-lib</artifactId>
+    <version>${project.version}</version>
+    <type>jar</type>
+</dependency>
 
 
  <dependency>
