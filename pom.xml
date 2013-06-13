@@ -409,6 +409,7 @@
         <module>osivia-portal-jbp-portlet-lib</module>
         <module>osivia-portal-jbp-server-lib</module>
         <module>osivia-portal-jbp-core-admin-lib</module>
+        <module>osivia-portal-jbp-theme-lib</module>
         <module>osivia-portal-jbossas-jbossweb-lib</module>
         <module>osivia-portal-distribution</module>
     </modules>
