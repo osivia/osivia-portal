@@ -140,7 +140,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String sPath[] = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-            if (sPath.length == 1)
+            if (sPath != null && sPath.length == 1)
                 pagePath = sPath[0];
         }
 
