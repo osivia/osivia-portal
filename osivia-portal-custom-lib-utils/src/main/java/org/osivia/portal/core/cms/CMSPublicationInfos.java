@@ -2,6 +2,7 @@ package org.osivia.portal.core.cms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service optimisé pour renvoyer toutes les informations de contenu liées à la
@@ -25,7 +26,7 @@ public class CMSPublicationInfos {
 	private boolean anonymouslyReadable = false;
 	private boolean published = false;
 	
-	private List<String> subTypes;
+	private Map<String, String> subTypes;
 
 	private String publishSpaceType = null;
 	private String publishSpacePath = null;
@@ -103,11 +104,11 @@ public class CMSPublicationInfos {
 		this.published = published;
 	}
 	
-	public List<String> getSubTypes() {
+	public Map<String, String> getSubTypes() {
 		return subTypes;
 	}
 
-	public void setSubTypes(List<String> subTypes) {
+	public void setSubTypes(Map<String, String> subTypes) {
 		this.subTypes = subTypes;
 	}
 
