@@ -75,7 +75,12 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 	    	
             /* Empty portlet */	    	
 	          if(cr.getAttributes().get("osivia.popupCallbackUrl") != null) {
-	              ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl", cr.getAttributes().get("osivia.popupCallbackUrl"));
+	              
+	                if( invocation.getWindowContext() instanceof WindowContextImpl)  {
+	                    String windowId = invocation.getWindowContext().getId();
+	                    windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+	                    ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+windowId, cr.getAttributes().get("osivia.popupCallbackUrl"));
+	                }
 	          }
 
 	    }

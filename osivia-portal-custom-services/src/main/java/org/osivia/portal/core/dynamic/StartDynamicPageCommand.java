@@ -99,14 +99,32 @@ public class StartDynamicPageCommand extends DynamicCommand {
 					.concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
 
 			
-			
 			PortalObjectId potemplateid = PortalObjectId.parse(templateId, PortalObjectPath.SAFEST_FORMAT);
+			String potemplatepath = potemplateid.toString( PortalObjectPath.CANONICAL_FORMAT);
+			
+	         PortalObject currentPortal = parent;
+             while (! (currentPortal instanceof Portal))    {
+                 currentPortal = currentPortal.getParent();
+             } 
+			
+			// templates defined in others portals may be redefined localy
+            String templatePortal =  potemplateid.getPath().getName(0);
+            if( ! templatePortal.equals(currentPortal.getName()))  {
+			    
+			    // Build local path
+			    String localPath = "/"+currentPortal.getName() + potemplatepath.substring(templatePortal.length() + 1);
+			    PortalObjectPath localTemplatePath = new PortalObjectPath(localPath, PortalObjectPath.CANONICAL_FORMAT);
+			    
+			    PortalObjectId polocaltemplateId = new PortalObjectId("", localTemplatePath);
+			    
+			    // If exists in current portal, get it
+			    if( getControllerContext().getController().getPortalObjectContainer().getObject(polocaltemplateId) != null)
+			        potemplateid = polocaltemplateId;
+			}
+			
 			
 			IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 			"osivia:service=DynamicPortalObjectContainer");
-			
-			
-			
 			
 			
 			Map<String, String> properties = new HashMap<String, String>();

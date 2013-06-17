@@ -1040,15 +1040,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
                     }
 
-
-                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl");
+                    String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+ callbackId);
                     if( callbackURL != null)
                             url = callbackURL;
                     StringBuffer popupContent = new StringBuffer();
 
                     // Inject javascript
                     popupContent.append(" <script type=\"text/javascript\">");
-                    String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
                     popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
                     popupContent.append(" </script>");
                     
