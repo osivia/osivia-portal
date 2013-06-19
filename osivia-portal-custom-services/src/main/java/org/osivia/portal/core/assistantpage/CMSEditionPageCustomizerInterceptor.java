@@ -241,10 +241,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 					
 
-					// Le mode Ajax est incompatble avec le mode "admin"
-					// Le passage du mode admin en mode normal ,'est pas bien
-					// géré
-					// par le portail, quand il s'agit d'une requête Ajax
+					// Le mode Ajax est incompatble avec le mode "edition cms"
+					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
+                    // - sur le close, la requete n'est pas traitée en AJAX
 					DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
 
 					for (Object windowCtx : renderCtx.getWindows()) {
@@ -270,6 +269,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 								requestParameters.put("belowURI", refURI);
 								String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
 								windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
+								windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
+								
 										
 								
 								requestParameters.put("refURI", refURI);
@@ -285,7 +286,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 			                        url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_REFRESH_PATH + url.substring(pageMarkerIndex + 1);
 			                    }
                                 windowPorperties.put("osivia.cmsEditCallbackUrl", url);
+                                // Sera ignoré car on n'est pas en ajax
                                 windowPorperties.put("osivia.cmsEditCallbackId", windowId);                               
+                                
+                                
+                                
                                 
 								
 																
@@ -294,73 +299,6 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 								windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
 								
 
-
-
-								/*
-								 * TODO
-								 * windowPorperties.put("osivia.windowSettingMode"
-								 * , "wizzard");
-								 * 
-								 * // Commande suppression
-								 * windowPorperties.put("osivia.destroyUrl",
-								 * "displayWindowDelete('" + windowId +
-								 * "');return false;");
-								 * 
-								 * // Commande paramètres
-								 * windowPorperties.put("osivia.settingUrl",
-								 * "displayWindowSettings('" + windowId +
-								 * "');return false;");
-								 * 
-								 * windows.add(window);
-								 * 
-								 * // gestion des déplacements
-								 * 
-								 * MoveWindowCommand upC = new
-								 * MoveWindowCommand(windowId, "up"); String
-								 * upUrl = ctx.renderURL(upC, urlContext,
-								 * URLFormat.newInstance(true, true));
-								 * windowPorperties.put("osivia.upUrl", upUrl);
-								 * 
-								 * MoveWindowCommand downC = new
-								 * MoveWindowCommand(windowId, "down"); String
-								 * downUrl = ctx.renderURL(downC, urlContext,
-								 * URLFormat.newInstance(true, true));
-								 * windowPorperties.put("osivia.downUrl",
-								 * downUrl);
-								 * 
-								 * MoveWindowCommand previousC = new
-								 * MoveWindowCommand(windowId,
-								 * "previousRegion"); String previousRegionUrl =
-								 * ctx.renderURL(previousC, urlContext,
-								 * URLFormat.newInstance(true, true));
-								 * windowPorperties
-								 * .put("osivia.previousRegionUrl",
-								 * previousRegionUrl);
-								 * 
-								 * MoveWindowCommand nextRegionC = new
-								 * MoveWindowCommand(windowId, "nextRegion");
-								 * String nextRegionUrl =
-								 * ctx.renderURL(nextRegionC, urlContext,
-								 * URLFormat.newInstance(true, true));
-								 * windowPorperties.put("osivia.nextRegionUrl",
-								 * nextRegionUrl);
-								 * 
-								 * //
-								 * 
-								 * String instanceDisplayName = null;
-								 * InstanceDefinition defInstance =
-								 * getInstanceContainer().getDefinition(
-								 * window.getContent().getURI()); if
-								 * (defInstance != null) instanceDisplayName =
-								 * defInstance
-								 * .getDisplayName().getString(request
-								 * .getLocale(), true);
-								 * 
-								 * if (instanceDisplayName != null)
-								 * windowPorperties
-								 * .put("osivia.instanceDisplayName",
-								 * instanceDisplayName);
-								 */
 
 							}
 
@@ -397,16 +335,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 			ControllerContext ctx = cmd.getControllerContext();
 			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
-			// This is for inject the pageSettings
-			ControllerRequestDispatcher rd = cmd.getControllerContext().getRequestDispatcher(getTargetContextPath(), getPageSettingPath());
 
 			if (page instanceof ITemplatePortalObject) {
 
 				injectCMSPortletSetting( portal, page, rendition, ctx);
 
 			}
-
-//			rd.include();
 
 		}
 

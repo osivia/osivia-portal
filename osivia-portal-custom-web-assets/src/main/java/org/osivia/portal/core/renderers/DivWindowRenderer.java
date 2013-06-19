@@ -207,7 +207,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     	  out.print("<div class=\"regionPreview\">");
     	  out.println("<div class=\"previewOverlay\" >");
     	  
-    	  out.print("<a class=\"fancyframe_refresh\" href=\""+wrc.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
+    	  out.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+wrc.getProperty("osivia.cmsCreateCallBackURL")+"'\"  href=\""+wrc.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
     	  
     	  out.print("</div>");
     	  out.println("</div>");

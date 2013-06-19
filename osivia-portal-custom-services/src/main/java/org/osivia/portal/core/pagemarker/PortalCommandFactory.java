@@ -155,9 +155,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 		
 		// 2.1 : is popup already closed (by javascript)
-        if (requestPath.startsWith(POPUP_CLOSE_PATH)) {
-            path = requestPath.substring(POPUP_CLOSE_PATH.length() -1);
-            closePopup = true;
+        if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
+            path = requestPath.substring(POPUP_CLOSED_PATH.length() -1);
+            popupClosed = true;
         }
         
         if (requestPath.startsWith(POPUP_REFRESH_PATH)) {
