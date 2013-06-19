@@ -348,6 +348,18 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 					// Pour performances
 					windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0]);
+					
+					if( windows != null)   {
+			            // Réinitialisation par l'utilisateur 
+			            
+			            if(  PageProperties.getProperties().isRefreshingPage())  {
+			                if( invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0] + ".resfreshed") == null) {
+			                    invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0] + ".resfreshed", "1");
+			                    windows = null;
+			                }
+			            }
+					}
+					
 
 					if (windows == null) {
 						windows = new ArrayList<DynamicWindowBean>();
@@ -373,6 +385,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 							windows.add(dynaWindow);
 						}
+						
 						
 						invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
 					}

@@ -139,7 +139,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
   	   if( regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
   		   out.println("<div class=\" previewOverlay\" >");
   		   
-  		   out.print("<a class=\"fancyframe_refresh\" href=\""+wrc.getProperty("osivia.cmsEditUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/> Modifier le contenu</a> ");
+  		   out.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsEditCallbackUrl")+"';callBackId='"+rendererContext.getProperty("osivia.cmsEditCallbackId")+"'\" href=\""+wrc.getProperty("osivia.cmsEditUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/> Modifier le contenu</a> ");
   		   out.print("<a href=\""+wrc.getProperty("osivia.cmsDeleteUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/>Supprimer la boite</a> ");
   		   
   		   out.println("</div>");

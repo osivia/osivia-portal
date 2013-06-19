@@ -186,7 +186,16 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				expired = true;
 			
 			// Réinitialisation par l'utilisateur : tous sauf parametres
-			if(  PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContenuCache() instanceof IGlobalParameters))
+			
+			if(  PageProperties.getProperties().isRefreshingPage())  {
+			    // On controle que la page n'a pas déja été rechargée dans la requete courante
+			    if( !PageProperties.getProperties().getPagePropertiesMap().containsKey( "reloaded_"+ infos.getCleItem()))
+			        expired = true;
+			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ infos.getCleItem(), "1");
+			}
+			
+			
+			if(  (cacheFlux.getContenuCache() instanceof IGlobalParameters))
 				expired = true;
 		
 			

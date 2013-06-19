@@ -33,6 +33,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
@@ -51,6 +52,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 	public static String POPUP_OPEN_PATH = "/popup_open/";
 	public static String POPUP_CLOSE_PATH = "/popup_close/";
 	public static String POPUP_CLOSED_PATH = "/popup_closed/";
+	public static String POPUP_REFRESH_PATH = "/popup_refresh/";
 
 	public IDynamicObjectContainer dynamicCOntainer;
 	public PortalObjectContainer portalObjectContainer;
@@ -153,10 +155,15 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 		
 		// 2.1 : is popup already closed (by javascript)
-		if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
-			path = requestPath.substring(POPUP_CLOSED_PATH.length() -1);
-			popupClosed = true;
-		}
+        if (requestPath.startsWith(POPUP_CLOSE_PATH)) {
+            path = requestPath.substring(POPUP_CLOSE_PATH.length() -1);
+            closePopup = true;
+        }
+        
+        if (requestPath.startsWith(POPUP_REFRESH_PATH)) {
+            path = requestPath.substring(POPUP_REFRESH_PATH.length() -1);
+            PageProperties.getProperties().setRefreshingPage(true);
+        }
 		
 		if (requestPath.startsWith(POPUP_OPEN_PATH)) {
 	            path = requestPath.substring(POPUP_OPEN_PATH.length() -1);

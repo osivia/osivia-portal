@@ -125,7 +125,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer
     	  markup.print("<div class=\"regionPreview\">");
     	  markup.println("<div class=\"previewOverlay\" >");
     	  
-    	  markup.print("<a class=\"fancyframe_refresh\" href=\""+rendererContext.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
+    	  markup.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsCreateCallBackURL")+"'\" href=\""+rendererContext.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
     	  
     	  markup.print("</div>");
     	  markup.println("</div>");

@@ -406,7 +406,7 @@
 
   <!-- Pour faire du debug sur le portail -->
   <category name="org.osivia.portal">
-      <priority value="DEBUG"/>
+      <priority value="INFO"/>
       <appender-ref ref="PORTAL"/>
    </category>
 
@@ -432,7 +432,7 @@
 
 
   <category name="PORTAL_WINDOW">
-      <priority value="DEBUG"/>
+      <priority value="INFO"/>
       <appender-ref ref="WINDOW"/>
    </category>
 

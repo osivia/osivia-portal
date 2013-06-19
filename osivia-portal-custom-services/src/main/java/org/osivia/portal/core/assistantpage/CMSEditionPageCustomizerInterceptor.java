@@ -29,6 +29,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.theme.PageRendition;
@@ -57,6 +58,10 @@ import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 
@@ -183,7 +188,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     }
 
-	private void injectCMSPortletSetting(ControllerRequestDispatcher rd, Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
+	private void injectCMSPortletSetting( Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
 
 		HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
 
@@ -230,6 +235,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 					String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
 					regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
 					
+					URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
+					RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                    String resfreshUrl= ctx.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(true, true));
+                    regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 					
 
 					// Le mode Ajax est incompatble avec le mode "admin"
@@ -246,7 +255,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 						if (!windowId.endsWith("PIA_EMPTY")) {
 
-							URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
+
 
 							PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
 							Window window = (Window) getPortalObjectContainer().getObject(poid);
@@ -266,13 +275,25 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 								requestParameters.put("refURI", refURI);
 								String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
 								windowPorperties.put("osivia.cmsEditUrl", cmsEditUrl);
+								
+								
+								// To reload only current window on backup
+			                    InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
+			                    String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
+			                    int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+			                    if (pageMarkerIndex != -1) {
+			                        url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_REFRESH_PATH + url.substring(pageMarkerIndex + 1);
+			                    }
+                                windowPorperties.put("osivia.cmsEditCallbackUrl", url);
+                                windowPorperties.put("osivia.cmsEditCallbackId", windowId);                               
+                                
+								
 																
 								CMSDeleteFragmentCommand deleteCMD = new CMSDeleteFragmentCommand(window.getPage().getId().toString(PortalObjectPath.SAFEST_FORMAT), liveDoc.getPath(), refURI);
 								String deleteFragmentUrl = ctx.renderURL(deleteCMD, urlContext,	URLFormat.newInstance(true, true));
 								windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
 								
-								String serverContext = ctx.getServerInvocation().getServerContext().getPortalContextPath();
-								rd.setAttribute("osivia.setting.COMMAND_URL", serverContext + "/commands");
+
 
 
 								/*
@@ -381,11 +402,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 			if (page instanceof ITemplatePortalObject) {
 
-				injectCMSPortletSetting(rd, portal, page, rendition, ctx);
+				injectCMSPortletSetting( portal, page, rendition, ctx);
 
 			}
 
-			rd.include();
+//			rd.include();
 
 		}
 
