@@ -1,0 +1,103 @@
+/* ============= Mode Edition CMS ===================== */
+.regionPreview {
+	background-color: lightgrey;
+	min-height: 16px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	width: 80%;
+	
+}
+.regionPreview .add {
+	background:  transparent url(../images/icone_creation2.gif) center left
+		no-repeat;
+	padding-left: 16px;
+	color: #555555;	
+}
+
+
+/*
+.regionPreview:hover {
+	border : 2px lightgreen solid;
+	display: block;
+}
+
+.regionPreview .previewOverlay {
+	display: none;
+}
+
+
+
+.regionPreview:hover  > div.previewOverlay {
+	position: absolute;
+	left: inherit; 
+	top: inherit;
+	display: block;
+
+	z-index: 100;	
+	background-image: url(../images/bleu_transparent.gif);
+	background-repeat: repeat;
+}
+*/
+
+.fragmentPreview {
+
+	border : 2px #555555 dashed;
+	padding : 2px;
+
+}
+
+/*
+.fragmentPreview .previewOverlay {
+	display: none;
+}
+*/
+.fragmentPreview:hover {
+	border : 2px blue solid;
+	/*display: block;*/
+}
+/*
+.fragmentPreview:hover  > div.previewOverlay {
+	position: absolute;
+	left: inherit; 
+	top: inherit;
+	
+	width: 100%;
+	height: 100%;
+	
+	display: block;
+
+	z-index: 100;	
+	background-image: url(../images/bleu_transparent.gif);
+	background-repeat: repeat;
+}
+*/
+
+.fragmentPreview .add {
+	background-color: lightgrey;
+	min-height: 1em;
+	margin-top: 10px;
+	margin-bottom: 10px;		
+	background:  transparent url(../images/icone_creation2.gif) center left no-repeat;
+	padding-left: 16px;
+	color: #555555;	
+}
+.fragmentPreview .edit {
+	background-color: lightgrey;
+	min-height: 1em;
+	margin-top: 10px;
+	margin-bottom: 10px;		
+	background:  transparent url(../images/icone_edition2.gif) center left
+		no-repeat;
+	padding-left: 16px;
+	color: #555555;	
+}
+.fragmentPreview .delete {
+	background-color: lightgrey;
+	min-height: 1em;
+	margin-top: 10px;
+	margin-bottom: 10px;		
+	background:  transparent url(../images/icone_suppression2.gif) center left
+		no-repeat;
+	padding-left: 16px;
+	color: #555555;	
+}
