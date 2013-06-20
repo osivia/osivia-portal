@@ -25,6 +25,8 @@ package org.osivia.portal.core.renderers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.dom.DOMElement;
@@ -77,6 +79,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * {@inheritDoc}
      */
     public void render(RendererContext rendererContext, WindowRendererContext wrc) throws RenderException {
+
+        String language = wrc.getProperty("osivia.language");
+        Locale locale = null;
+        if (language != null) {
+            locale = new Locale(language);
+        } else {
+            locale = new Locale("En_US");
+        }
+        ResourceBundle rb = ResourceBundle.getBundle(IFormatter.RESOURCE_BUNDLE_NAME, locale);
+
+
         PrintWriter out = rendererContext.getWriter();
 
         PageProperties properties = PageProperties.getProperties();
@@ -134,15 +147,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         
         out.println("<div class=\" dyna-window-content "+cssFragment+"\" >");
         
-        // create / edit fragment actions
-        // TODO externaliser libelles
+        // edit / remove fragment actions
   	   if( regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
-  		   out.println("<div class=\" previewOverlay\" >");
+            // out.println("<div class=\" previewOverlay\" >");
   		   
-  		   out.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsEditCallbackUrl")+"';callBackId='"+rendererContext.getProperty("osivia.cmsEditCallbackId")+"'\" href=\""+wrc.getProperty("osivia.cmsEditUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_edit.png\" border=0/> Modifier le contenu</a> ");
-  		   out.print("<a href=\""+wrc.getProperty("osivia.cmsDeleteUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/cross.png\" border=0/>Supprimer la boite</a> ");
+            out.print("<a class=\"fancyframe_refresh edit\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsEditCallbackUrl")+"';callBackId='"+rendererContext.getProperty("osivia.cmsEditCallbackId")+"'\" href=\"" + wrc.getProperty("osivia.cmsEditUrl")
+ + "\">" + rb.getString("CMS_EDIT_FRAGMENT")
+                    + "</a> ");
+            out.print("<a href=\"" + wrc.getProperty("osivia.cmsDeleteUrl") + "\" class=\"delete\">" + rb.getString("CMS_DELETE_FRAGMENT") +
+            		"</a> ");
   		   
-  		   out.println("</div>");
+            // out.println("</div>");
   		   
   	   }
       
@@ -199,17 +214,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
          */
         out.print("</div>"); // dyna-window-content
 
-      // in cms mode, create a new fragment below the current window
-      // TODO externaliser libelles      
+      // in cms mode, create a new fragment below the current window   
       if( regionCms && wrc.getProperty("osivia.cmsEditUrl") != null)	{
     	 
     	  
     	  out.print("<div class=\"regionPreview\">");
-    	  out.println("<div class=\"previewOverlay\" >");
+            // out.println("<div class=\"previewOverlay\" >");
     	  
-    	  out.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+wrc.getProperty("osivia.cmsCreateCallBackURL")+"'\"  href=\""+wrc.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
+            out.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='"+wrc.getProperty("osivia.cmsCreateCallBackURL")+"'\" href=\"" + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + rb.getString("CMS_ADD_FRAGMENT")
+                    + "</a>");
     	  
-    	  out.print("</div>");
+            // out.print("</div>");
     	  out.println("</div>");
     	  
       }

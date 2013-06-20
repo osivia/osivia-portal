@@ -25,6 +25,8 @@ package org.osivia.portal.core.renderers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
@@ -64,6 +66,18 @@ public class DivRegionRenderer extends AbstractObjectRenderer
      */	
    public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException
    {
+
+        String language = rrc.getProperty("osivia.language");
+        Locale locale = null;
+        if (language != null) {
+            locale = new Locale(language);
+        }
+        else {
+            locale = new Locale("En_US");
+        }
+        ResourceBundle rb = ResourceBundle.getBundle(IFormatter.RESOURCE_BUNDLE_NAME, locale);
+
+
 	   Boolean regionCms = false;
 	   if(rrc.getRegionCms() != null) {
 		   regionCms = rrc.getRegionCms();
@@ -123,20 +137,22 @@ public class DivRegionRenderer extends AbstractObjectRenderer
     	 
     	  
     	  markup.print("<div class=\"regionPreview\">");
-    	  markup.println("<div class=\"previewOverlay\" >");
+            // markup.println("<div class=\"previewOverlay\" >");
     	  
-    	  markup.print("<a class=\"fancyframe_refresh\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsCreateCallBackURL")+"'\" href=\""+rendererContext.getProperty("osivia.cmsCreateUrl")+"\"><img src=\"/osivia-portal-custom-web-assets/images/application_add.png\" border=0/> Ajouter un contenu</a>");
+            markup.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='"+rendererContext.getProperty("osivia.cmsCreateCallBackURL")+"'\" href=\"" + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">"
+                    + rb.getString("CMS_ADD_FRAGMENT") + "</a>");
     	  
-    	  markup.print("</div>");
+            // markup.print("</div>");
     	  markup.println("</div>");
     	  
     	  // if region is empty, create a zone to drop other fragments here
     	  if(rrc.getWindows().size() == 1) {
     		  WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
-    	      // TODO externaliser libelles
     		  if(wrc.getId().contains("_PIA_EMPTY")) {
     		  
-    			  markup.println("<div id=\"region_"+rrc.getId()+"\" class=\"dnd-region dnd-handle fragmentPreview\">Déposer du contenu ici.</div>");
+                    markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region dnd-handle fragmentPreview\">"
+ + rb.getString("CMS_EMPTY_REGION")
+                            + "</div>");
     			  
     		  }
     	  }

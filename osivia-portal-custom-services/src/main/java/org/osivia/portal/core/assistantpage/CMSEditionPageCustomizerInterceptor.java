@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -188,7 +189,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     }
 
-	private void injectCMSPortletSetting( Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
+    private void injectCMSPortletSetting( Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
+
+
+        Locale locale = ctx.getServerInvocation().getRequest().getLocale();
+
 
 		HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
 
@@ -234,12 +239,14 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 					
 					String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
 					regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
-					
-					URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
-					RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                    regionPorperties.put("osivia.language", locale.getLanguage());
+
+                    URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
+                    RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                     String resfreshUrl= ctx.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(true, true));
                     regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
-					
+                    
+                    
 
 					// Le mode Ajax est incompatble avec le mode "edition cms"
 					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
@@ -299,6 +306,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 								windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
 								
 
+                                windowPorperties.put("osivia.language", locale.getLanguage());
 
 							}
 

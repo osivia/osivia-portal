@@ -22,26 +22,26 @@
  ******************************************************************************/
 package org.osivia.portal.core.page;
 
-import org.jboss.portal.theme.LayoutConstants;
-import org.jboss.portal.theme.page.PageResult;
-import org.jboss.portal.theme.page.WindowContext;
-import org.jboss.portal.theme.page.WindowResult;
-import org.w3c.dom.Element;
-import org.apache.jasper.runtime.PageContextImpl;
-import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xml.serialize.OutputFormat;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.jboss.portal.theme.LayoutConstants;
+import org.jboss.portal.theme.page.PageResult;
+import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
+import org.w3c.dom.Element;
 
 /**
  * Ce tag a été modifié pour éviter les duplications de déclarations pour les différents portlets
@@ -115,8 +115,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport
       
       
       
-     out.write("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
-      
+        out.write("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
+        out.write("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
+
       
       out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
       out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");	 
