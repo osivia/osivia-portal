@@ -32,6 +32,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
+import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -161,6 +162,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
         
         if (requestPath.startsWith(POPUP_REFRESH_PATH)) {
+            // Fait pour utiliser le mode refresh (portlet + CMS) pour un portlet
+            // NON VALIDE car mode AJAX non activé en CMS
             path = requestPath.substring(POPUP_REFRESH_PATH.length() -1);
             PageProperties.getProperties().setRefreshingPage(true);
         }
@@ -184,6 +187,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		
 	    if( closePopup) {
 	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+	       
+	       
 	    }
 
 
@@ -203,10 +208,24 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
 		
 		
-	    if( popupOpened && cmd instanceof PortalObjectCommand) {
+	    if( popupOpened && cmd instanceof PortalObjectCommand  ) {
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((PortalObjectCommand) cmd).getTargetId());
 	        }	
+	    
+	    if( popupOpened && cmd instanceof StartDynamicWindowCommand ) {
+	        // Calcul du popupWindowID
+               controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
+               PortalObjectPath pagePath = PortalObjectPath.parse(((StartDynamicWindowCommand) cmd).getPageId(), PortalObjectPath.SAFEST_FORMAT);
+               String windowPath = pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/popupWindow";
+               controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", new PortalObjectId("", PortalObjectPath.parse(windowPath, PortalObjectPath.CANONICAL_FORMAT)));
+            }   
+	       
+	    if( closePopup) {
+	        // On memorise la commande qui sera executée au retour
+	           controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd", cmd);
+       }       
+	       
 		
 		return cmd;
 		

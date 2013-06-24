@@ -139,8 +139,9 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState( getControllerContext());
 			
 			if( markerInfo != null)	{
-       		 
-		       	properties.put("osivia.dynamic.close_page_path",markerInfo.getPageId().toString());
+			    // Pas de retour si ouverture depuis un popup
+       		   if( markerInfo.getPopupMode() == null)
+       		       properties.put("osivia.dynamic.close_page_path",markerInfo.getPageId().toString());
 			}
 			
 				

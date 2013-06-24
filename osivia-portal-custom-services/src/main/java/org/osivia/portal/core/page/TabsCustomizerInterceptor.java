@@ -204,7 +204,9 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
                 if (admin) {
                     this.injectAdminHeaders(rpc, rendition);
                 } else {
-                    this.injectStandardHeaders(rpc, rendition);
+                    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+                    if( popupWindowId == null)
+                        this.injectStandardHeaders(rpc, rendition);
                 }
 
             }

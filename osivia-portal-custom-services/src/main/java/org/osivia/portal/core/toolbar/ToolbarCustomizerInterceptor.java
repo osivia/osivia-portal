@@ -128,9 +128,14 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
             PortalObject portalObject = renderPageCommand.getPage().getPortal();
             boolean admin = MODE_ADMIN.equalsIgnoreCase(portalObject.getName());
+            
+            PortalObjectId popupWindowId = (PortalObjectId) command.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+            
 
-            // Toolbar must not be loaded in JBoss portal administration
-            if (!admin) {
+            // Toolbar must not be loaded : 
+            //    - in JBoss portal administration
+            //    - in popup mode
+            if (!admin && popupWindowId == null) {
                 // Toolbar
                 String toolbarContent = this.injectToolbar(renderPageCommand);
                 if (toolbarContent != null) {

@@ -26,6 +26,10 @@ public interface IPortalUrlFactory {
     public static final int POPUP_URL_ADAPTER_CLOSE = 1;	
     public static final int POPUP_URL_ADAPTER_CLOSED_NOTIFICATION = 2; 
 
+    
+    /* Portal level API */
+    
+    
 	// TODO : à déplacer dans le cms
 	public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws Exception;
 	
@@ -40,13 +44,20 @@ public interface IPortalUrlFactory {
 	public String getStartPageUrl(PortalControllerContext ctx, String pageName, String templateName,
 			Map<String, String> props, Map<String, String> params) throws Exception	;
 
-	
-	
+	public String getStartPopupUrl(PortalControllerContext ctx,  String portletInstance, Map<String, String> props, Map<String, String> params)  throws Exception;
 	public String getDestroyPageUrl(PortalControllerContext ctx,String parentId, String pageId) 	;
+    public String adaptPortalUrlToNavigation( PortalControllerContext ctx, String orginalUrl)    throws Exception;
+    public String adaptPortalUrlToPopup( PortalControllerContext ctx, String orginalUrl, int adapter)    throws Exception ;
+	
+	
+	/* Portlets level API */
 	
 	// Api simplifiée de lancement d'un portlet
 	public String getExecutePortletLink(RenderRequest request,  String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws Exception;
 	
+	   // Api simplifiée de lancement d'un portlet dans une popup
+    public String getExecutePortletLinkinPopup(RenderRequest request,  String portletInstance, Map<String, String> windowProperties, Map<String, String> params) throws Exception;
+
 	// Ajout des elements de nvigation( pagemarker) a une url portail
 	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception;
 	

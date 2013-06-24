@@ -748,9 +748,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 				    
 					PageRendition rendition = (PageRendition) resp;
 
-					InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
 					
-					String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+					ControllerCommand endPopupCMD  = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd");
+					if( endPopupCMD == null)
+					    endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+					    
+					String url =    new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
 					int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
 					if (pageMarkerIndex != -1) {
 						url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
@@ -1032,23 +1035,48 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 
                 if (!"1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
 
-                   InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
                     
-                    String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+                   
+                   String popupId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+                   
+                   // AJAX refresh ID
+                   String callbackId = popupId;
+                   
+                   // Window dynamique : retour
+                    String url = rwc.getWindow().getDeclaredProperty("osivia.dynamic.close_url"); 
+                                          
+                     if( url != null)   {
+                         // Pas d'ajax sur windows dynamique
+                         callbackId = null;
+                     }
+                     else   {
+                         InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+                         url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+                     }
+                    
                     int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
                     if (pageMarkerIndex != -1) {
                         url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
                     }
+                    
+                    /* URL de callback forcée par le portlet */
 
-                    String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
-                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+ callbackId);
+                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+ popupId);
                     if( callbackURL != null)
                             url = callbackURL;
+                    
+                    
+                    
+                    
                     StringBuffer popupContent = new StringBuffer();
+                    
 
                     // Inject javascript
                     popupContent.append(" <script type=\"text/javascript\">");
-                    popupContent.append("  parent.setCallbackParams(  '"+callbackId+"',    '" + url + "');");
+                    String callbackIDJS = "null";
+                    if( callbackId != null)
+                        callbackIDJS = "'"+callbackId+"'";
+                    popupContent.append("  parent.setCallbackParams(  "+callbackIDJS+",    '" + url + "');");
                     popupContent.append(" </script>");
                     
                     properties.setWindowProperty(windowId, "osivia.popupScript", popupContent.toString());
@@ -1080,8 +1108,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			if( admin)	{
 				injectAdminHeaders(rpc,  rendition);
 			}	else	{
-				injectStandardHeaders(rpc,  rendition);
-			}
+			    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+			    
+			    if( popupWindowId == null)
+			    
+			        injectStandardHeaders(rpc,  rendition);
+			    }
 
 			}
 			

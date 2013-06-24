@@ -16,6 +16,7 @@
 </head>
 
 <body id="body">
+
 <p:region regionName='AJAXScripts' regionID='AJAXScripts'/>
 
 <p:region regionName='popup_header' regionID='popup_header'/>
