@@ -18,9 +18,7 @@ import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
-import org.osivia.portal.core.assistantpage.ChangePageLayoutCommand;
 import org.osivia.portal.core.assistantpage.ChangePagePropertiesCommand;
-import org.osivia.portal.core.assistantpage.ChangePageThemeCommand;
 import org.osivia.portal.core.assistantpage.ChangeWindowSettingsCommand;
 import org.osivia.portal.core.assistantpage.CreatePageCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
@@ -28,7 +26,6 @@ import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
 import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
-import org.osivia.portal.core.assistantpage.RenamePageCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
@@ -156,7 +153,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         }
 
                         if (parameterMap.get("selectionDep") != null) {
-                            selectionDep = URLDecoder.decode(((String[]) parameterMap.get("selectionDep"))[0], "UTF-8");
+                            selectionDep = URLDecoder.decode(parameterMap.get("selectionDep")[0], "UTF-8");
                         } else {
                             selectionDep = "";
                         }
@@ -173,22 +170,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
                         return new DeletePageCommand(pageId);
-                    }
-                }
-
-                if ("renamePage".equals(action)) {
-                    String pageId;
-                    String displayName;
-
-                    if (((parameterMap.get("pageId") != null) || (parameterMap.get("jstreeRenamePageSelect") != null))
-                            && (parameterMap.get("displayName") != null)) {
-                        if (parameterMap.get("pageId") == null) {
-                            pageId = URLDecoder.decode(parameterMap.get("jstreeRenamePageSelect")[0], CharEncoding.UTF_8);
-                        } else {
-                            pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        }
-                        displayName = URLDecoder.decode(parameterMap.get("displayName")[0], CharEncoding.UTF_8);
-                        return new RenamePageCommand(pageId, displayName);
                     }
                 }
 
@@ -250,59 +231,49 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
-
                 if ("refreshPage".equals(action)) {
                     String pageId = null;
 
 
                     if (parameterMap.get("pageId") != null) {
-                        pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
                         return new RefreshPageCommand(pageId);
                     }
                 }
 
-                // Change page layout command
-                if ("changeLayout".equals(action)) {
-
-                    String pageId = null;
-                    String layout = null;
-
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("newLayout") != null)) {
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        layout = URLDecoder.decode(parameterMap.get("newLayout")[0], CharEncoding.UTF_8);
-
-                        return new ChangePageLayoutCommand(pageId, layout);
-                    }
-                }
-                
-                // Change page theme command
-                if ("changeTheme".equals(action)) {
-                    String pageId;
-                    String theme;
-                    
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("newTheme") != null)) {
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        theme = URLDecoder.decode(parameterMap.get("newTheme")[0], CharEncoding.UTF_8);
-                        
-                        return new ChangePageThemeCommand(pageId, theme);
-                    }
-                }
-
+                // Change page properties command
                 if ("changePageProperties".equals(action)) {
-
                     String pageId = null;
-
 
                     if (parameterMap.get("pageId") != null) {
+                        // Page ID
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
 
+                        // Display name
+                        String displayName = null;
+                        if (parameterMap.get("displayName") != null) {
+                            displayName = URLDecoder.decode(parameterMap.get("displayName")[0], CharEncoding.UTF_8);
+                        }
+
+                        // Draft mode
                         String draftPage = null;
                         if (parameterMap.get("draftPage") != null) {
                             draftPage = URLDecoder.decode(parameterMap.get("draftPage")[0], CharEncoding.UTF_8);
                         }
 
+                        // Layout
+                        String layout = null;
+                        if (parameterMap.get("newLayout") != null) {
+                            layout = URLDecoder.decode(parameterMap.get("newLayout")[0], CharEncoding.UTF_8);
+                        }
 
-                        return new ChangePagePropertiesCommand(pageId, draftPage);
+                        // Theme
+                        String theme = null;
+                        if (parameterMap.get("newTheme") != null) {
+                            theme = URLDecoder.decode(parameterMap.get("newTheme")[0], CharEncoding.UTF_8);
+                        }
+
+                        return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme);
                     }
                 }
 

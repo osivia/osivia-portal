@@ -17,5 +17,11 @@
         <service-class>org.osivia.portal.api.selection.ISelectionService</service-class>
         <service-ref>osivia:service=SelectionService</service-ref>
     </service>
+    
+    <service>
+        <service-name>InternationalizationService</service-name>
+        <service-class>org.osivia.portal.api.internationalization.IInternationalizationService</service-class>
+        <service-ref>osivia:service=InternationalizationService</service-ref>
+    </service>
  
 </portlet-app>

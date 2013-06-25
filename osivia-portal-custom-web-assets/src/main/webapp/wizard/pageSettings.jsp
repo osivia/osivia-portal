@@ -1,4 +1,6 @@
-<%@page import="org.osivia.portal.api.Constants"%>
+<%@page import="java.util.Locale"%>
+<%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
+<%@page import="org.osivia.portal.core.auth.constants.InternalConstants"%>
 <%@page import="org.jboss.portal.core.controller.ControllerContext"%>
 <%@page import="org.jboss.portal.portlet.Portlet"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
@@ -27,23 +29,26 @@
 
 
 <%
-    //Resource bundle
-ResourceBundle rb = ResourceBundle.getBundle(IFormatter.RESOURCE_BUNDLE_NAME, request.getLocale());
+//Internationalization service
+IInternationalizationService is = (IInternationalizationService) request.getAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE);
 
 //Formatter
-IFormatter formatter = (IFormatter) request.getAttribute(Constants.ATTR_WINDOWS_FORMATTER);
+IFormatter formatter = (IFormatter) request.getAttribute(InternalConstants.ATTR_WINDOWS_FORMATTER);
 //Controller context
-ControllerContext context = (ControllerContext) request.getAttribute(Constants.ATTR_WINDOWS_CONTROLLER_CONTEXT);
+ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_WINDOWS_CONTROLLER_CONTEXT);
 // Command URL
-String commandUrl = (String) request.getAttribute(Constants.ATTR_WINDOWS_COMMAND_URL);
+String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_WINDOWS_COMMAND_URL);
 // Current page
-Page currentPage = (Page) request.getAttribute(Constants.ATTR_WINDOWS_PAGE);
+Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_WINDOWS_PAGE);
 // Current page windows list
 @SuppressWarnings("unchecked")
-List<Window> windows = (List<Window>) request.getAttribute(Constants.ATTR_WINDOWS_CURRENT_LIST);
+List<Window> windows = (List<Window>) request.getAttribute(InternalConstants.ATTR_WINDOWS_CURRENT_LIST);
 
 //Current page ID
 String currentPageId = formatter.formatHtmlSafeEncodingId(currentPage.getId());
+
+//Locale
+Locale locale = request.getLocale();
 %>
 
 
@@ -99,7 +104,7 @@ function toggleRow(link, divClass) {
             <%=formatter.formatHtmlPortletsList(context) %>
             
             <div class="fancybox-center-content">
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -118,11 +123,11 @@ function toggleRow(link, divClass) {
             <input type="hidden" name="windowId" />
             
             <div class="fancybox-center-content">
-                <p><%=rb.getString("PORTLET_SUPPRESSION_CONFIRM_MESSAGE") %></p>
+                <p><%=is.getString("PORTLET_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
             </div>
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PORTLET_SUPPRESSION_SUBMIT") %>' onclick="selectWindow(this.form)" />
-                <input type="button" value='<%=rb.getString("PORTLET_SUPPRESSION_CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("YES", locale) %>' onclick="selectWindow(this.form)" />
+                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>

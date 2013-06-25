@@ -19,6 +19,7 @@
         <jstl.version>1.1.2</jstl.version>
         <common-annotations.version>1.0</common-annotations.version>
         <hibernate.version>3.0.3</hibernate.version>
+        <jaxb-xjc.version>2.2.4</jaxb-xjc.version>
 
         <!-- Commons -->
         <commons-logging.version>1.1.1</commons-logging.version>
@@ -139,6 +140,13 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-xjc</artifactId>
+                <version>${jaxb-xjc.version}</version>
                 <scope>provided</scope>
             </dependency>
             
@@ -355,6 +363,11 @@
             <artifactId>portlet-api-lib</artifactId>
             <version>${jboss.portal.version}</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
         </dependency>
 
         <dependency>

@@ -6,17 +6,15 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
-import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.osivia.portal.api.Constants;
-import org.osivia.portal.core.portalobjects.CMSTemplatePage;
+import org.osivia.portal.core.auth.constants.InternalConstants;
 
 
 public class ChangeCMSEditionModeCommand extends ControllerCommand {
-	
+
 	private static final CommandInfo info = new ActionCommandInfo(false);
 	protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
 
@@ -30,11 +28,11 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 	private String mode;
 
 	public String getMode() {
-		return mode;
+		return this.mode;
 	}
 
 	public String getPageId() {
-		return pageId;
+		return this.pageId;
 	}
 
 	public ChangeCMSEditionModeCommand() {
@@ -48,11 +46,11 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 	public ControllerResponse execute()  {
 
 		// Récupération page
-		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
+		PortalObjectId poid = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
+		PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-		getControllerContext().setAttribute(SESSION_SCOPE, Constants.ATTR_TOOLBAR_CMS_EDITION_MODE, mode);
-		
+        this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, this.mode);
+
 		return new UpdatePageResponse(page.getId());
 
 	}

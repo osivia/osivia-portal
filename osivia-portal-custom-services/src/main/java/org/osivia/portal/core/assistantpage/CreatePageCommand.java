@@ -17,7 +17,7 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Create page command.
- * 
+ *
  * @see AssistantCommand
  */
 public class CreatePageCommand extends AssistantCommand {
@@ -39,7 +39,7 @@ public class CreatePageCommand extends AssistantCommand {
 
     /**
      * Constructor.
-     * 
+     *
      * @param name
      * @param parentPageId
      * @param modelId
@@ -64,8 +64,8 @@ public class CreatePageCommand extends AssistantCommand {
             PortalObjectId poModeleId = PortalObjectId.parse(this.modelId, PortalObjectPath.SAFEST_FORMAT);
             Page modele = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poModeleId);
 
-            // Le modèle ne doit pas être un ancêtre du parent de la nouvelle page
-            if (PortalObjectUtils.isAncestor(modele, parent)) {
+            // Le modèle ne doit pas être parent de la nouvelle page
+            if ((modele.equals(parent)) || PortalObjectUtils.isAncestor(modele, parent)) {
                 throw new IllegalArgumentException(); // TODO : Gestion de l'erreur
             } else {
                 modele.copy(parent, this.name, true);
@@ -77,7 +77,7 @@ public class CreatePageCommand extends AssistantCommand {
 
         // Initialisation du nom
         Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
-        Map<Locale, String> displayMap = RenamePageCommand.createLocalizedStringMap(locale, null, this.name);
+        Map<Locale, String> displayMap = createLocalizedStringMap(locale, null, this.name);
         LocalizedString localizedString = new LocalizedString(displayMap, Locale.ENGLISH);
         newPage.setDisplayName(localizedString);
 

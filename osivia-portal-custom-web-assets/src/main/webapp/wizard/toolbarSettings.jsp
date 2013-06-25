@@ -1,3 +1,5 @@
+<%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
+<%@page import="org.osivia.portal.core.auth.constants.InternalConstants"%>
 <%@page import="org.apache.commons.lang.BooleanUtils"%>
 <%@page import="org.jboss.portal.theme.PortalTheme"%>
 <%@page import="org.jboss.portal.core.controller.ControllerContext"%>
@@ -15,60 +17,56 @@
 <%@page import="org.jboss.portal.core.model.portal.PortalObjectPath"%>
 <%@page import="java.util.Collection"%>
 <%@page import="org.jboss.portal.core.model.portal.Page"%>
-<%@page import="java.util.ResourceBundle"%>
-<%@page import="org.osivia.portal.api.Constants"%>
 
 <%@page contentType="text/html"%>
 <%@page pageEncoding="UTF-8"%>
 
 
 <%
-// Resource bundle
-ResourceBundle rb = ResourceBundle.getBundle(IFormatter.RESOURCE_BUNDLE_NAME, request.getLocale());
+//Internationalization service
+IInternationalizationService is = (IInternationalizationService) request.getAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE);
 
 // Formatter
-IFormatter formatter = (IFormatter) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
+IFormatter formatter = (IFormatter) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
 // Controller context
-ControllerContext context = (ControllerContext) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT);
+ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT);
+
 // Generic command URL
-String commandUrl = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
+String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
 // Current page
-Page currentPage = (Page) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_PAGE);
+Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
 // Default page
-Boolean defaultPage = (Boolean) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE);
+Boolean defaultPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE);
 // Draft page
-Boolean draftPage = (Boolean) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
+Boolean draftPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
 // Layout list
 @SuppressWarnings("unchecked")
-List<PortalLayout> layoutsList = (List<PortalLayout>) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
+List<PortalLayout> layoutsList = (List<PortalLayout>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
 // Current layout
-String currentLayout = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT);
+String currentLayout = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT);
 //Themes list
 @SuppressWarnings("unchecked")
-List<PortalTheme> themesList = (List<PortalTheme>) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
+List<PortalTheme> themesList = (List<PortalTheme>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
 // Current theme
-String currentTheme = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME);
-// Siblings pages
-@SuppressWarnings("unchecked")
-Collection<Page> siblings = (Collection<Page>) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_SIBLINGS_PAGES);
+String currentTheme = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME);
 // Roles
 @SuppressWarnings("unchecked")
-List<Role> roles = (List<Role>) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_ROLES);
+List<Role> roles = (List<Role>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES);
 // Actions for roles
 @SuppressWarnings("unchecked")
-Map<String, Set<String>> actionsForRoles = (Map<String, Set<String>>) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES);
+Map<String, Set<String>> actionsForRoles = (Map<String, Set<String>>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES);
 // Delete page command URL
-String deletePageCommandUrl = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL);
+String deletePageCommandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL);
 // CMS scope select
-String cmsScopeSelect = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT);
+String cmsScopeSelect = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT);
 // CMS display live version
-String cmsDisplayLiveVersion = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION);   
+String cmsDisplayLiveVersion = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION);   
 // CMS recontextualization support
-String cmsRecontextualizationSupport = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
+String cmsRecontextualizationSupport = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
 // CMS base path
-String cmsBasePath = (String) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
+String cmsBasePath = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
 // CMS navigation mode
-Boolean cmsNavigationMode = (Boolean) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE);
+Boolean cmsNavigationMode = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE);
 
 
 // Draft page checkbox value
@@ -84,6 +82,7 @@ if (BooleanUtils.isTrue(cmsNavigationMode)) {
 
 
 // Locales
+Locale locale = request.getLocale();
 @SuppressWarnings("unchecked")
 Enumeration<Locale> locales = request.getLocales();
 
@@ -125,7 +124,7 @@ var currentPageId = '<%=currentPageId %>';
 
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label required"><%=rb.getString("NEW_PAGE_NAME") %></div>
+                    <div class="fancybox-table-cell label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" name="name" required />
                     </div>
@@ -134,20 +133,20 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label"><%=rb.getString("NEW_PAGE_MODEL") %></div>
+                    <div class="fancybox-table-cell label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" placeholder="<%=rb.getString("JSTREE_FILTER") %>" />                       
+                        <input type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
                     </div>
                 
-                    <div class="fancybox-table-cell label required"><%=rb.getString("NEW_PAGE_PARENT") %></div>
+                    <div class="fancybox-table-cell label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" placeholder="<%=rb.getString("JSTREE_FILTER") %>" />                                               
+                        <input type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
                     </div>                    
                 </div>
                 
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell">
-                        <label for="checkboxNoModel"><%=rb.getString("NEW_PAGE_NO_MODEL") %></label>                        
+                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
                         <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeModelSelect', this.checked)" class="inline-checkbox" />
                     </div>
                     
@@ -161,77 +160,15 @@ var currentPageId = '<%=currentPageId %>';
                     
                     <div class="fancybox-table-cell">
                         <div id="jstreeParentSelect" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeParentSelect", true, false, false) %>
+                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeParentSelect", true, false, false, true) %>
                         </div>                        
                     </div>
                 </div>
             </div>
 
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("NEW_PAGE_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de sélection de la page d'accueil -->
-<div class="fancybox-content">
-    <div id="home-page-selection">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="makeDefaultPage" />
-            <input type="hidden" name="jstreeHomeSelect" />
-  
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <label for="rename-page-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                        <input id="rename-page-filter" type="text" onkeyup="jstreeSearch('jstreeHomeSelect', this.value)" />
-                    </div>
-                </div>
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <div id="jstreeHomeSelect" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeHomeSelect") %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-  
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("HOME_PAGE_SELECTION_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-
-
-
-<!-- Fancybox de renommage de la page courante -->
-<div class="fancybox-content">
-    <div id="current-page-rename">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="renamePage" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />    
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_NAME") %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="displayName" value="<%=currentPageName %>" />                    
-                    </div>
-                </div>
-            </div>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_RENAME_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -241,64 +178,42 @@ var currentPageId = '<%=currentPageId %>';
 <!-- Fancybox de propriétés de la page -->
 <div class="fancybox-content">
     <div id="page-properties">
-        <div class="fancybox-table">
+        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+            <input type="hidden" name="action" value="changePageProperties" />
+            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
         
-            <!-- Renommer la page -->
-            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-                <input type="hidden" name="action" value="renamePage" />
-                <input type="hidden" name="pageId" value="<%=currentPageId %>" />    
-
+            <div class="fancybox-table">
+                        
+                <!-- Renommer la page -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_NAME") %></p>
-                    </div>
+                    <div class="fancybox-table-cell label required"><%=is.getString("PAGE_NAME", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="text" name="displayName" value="<%=currentPageName %>" />                    
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <input type="submit" value='<%=rb.getString("PAGE_RENAME_SUBMIT") %>' />
+                        <input type="text" name="displayName" value="<%=currentPageName %>" required />                    
                     </div>
                 </div>
-            </form>        
-        
-            <!-- Mode brouillon -->  
-            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-                <input type="hidden" name="action" value="changePageProperties" />
-                <input type="hidden" name="pageId" value="<%=currentPageId %>" />    
-                
+            
+                <!-- Mode brouillon -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_DRAFT_MODE") %></p>
-                    </div>
+                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> class="small-input" />                        
                     </div>
-                    <div class="fancybox-table-cell">
-                        <input type="submit" value='<%=rb.getString("PAGE_PROPERTIES_SUBMIT") %>' />
-                    </div>
                 </div>
-            </form>
-            
-            <!-- Sélectionner le layout -->
-            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-                <input type="hidden" name="action" value="changeLayout" />
-                <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-
+                
+                <!-- Sélection du layout -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_LAYOUT") %></p>
-                    </div>
+                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
                     <div class="fancybox-table-cell">
                         <select name="newLayout">
                             <%
                             if (CollectionUtils.isNotEmpty(layoutsList)) {
                                 if (StringUtils.isEmpty(currentLayout)) {
                                     %>
-                            <option selected="selected" value=""><%=rb.getString("PAGE_DEFAULT_LAYOUT") %></option>
+                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
                                     <%
                                 } else {
                                     %>
-                            <option value=""><%=rb.getString("PAGE_DEFAULT_LAYOUT") %></option>
+                            <option value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
                                     <%
                                 }
                                 
@@ -318,32 +233,22 @@ var currentPageId = '<%=currentPageId %>';
                             %>
                         </select>                        
                     </div>
-                    <div class="fancybox-table-cell">
-                        <input type="submit" value='<%=rb.getString("PAGE_LAYOUT_SUBMIT") %>' />
-                    </div>
                 </div>
-            </form>
-            
-            <!-- Sélectionner le thème -->
-            <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-                <input type="hidden" name="action" value="changeTheme" />
-                <input type="hidden" name="pageId" value="<%=currentPageId %>" />
                 
+                <!-- Sélection du thème -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_THEME") %></p>
-                    </div>
+                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_THEME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <select name="newTheme">
                             <%
                             if (CollectionUtils.isNotEmpty(themesList)) {
                                 if (StringUtils.isEmpty(currentTheme)) {
                                     %>
-                            <option selected="selected" value=""><%=rb.getString("PAGE_DEFAULT_THEME") %></option>
+                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
                                     <%
                                 } else {
                                     %>
-                            <option value=""><%=rb.getString("PAGE_DEFAULT_THEME") %></option>
+                            <option value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
                                     <%
                                 }
                                 
@@ -363,20 +268,22 @@ var currentPageId = '<%=currentPageId %>';
                             %>
                         </select>                        
                     </div>
-                    <div class="fancybox-table-cell">
-                        <input type="submit" value='<%=rb.getString("PAGE_THEME_SUBMIT") %>' />
-                    </div>
                 </div>
-            </form>
             
-        </div>
+            </div>
+            
+            <div class="fancybox-center-content">
+                <input type="submit" value='<%=is.getString("CHANGE", locale) %>' />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+            </div>
+        </form>
     </div>
 </div>
 
 
 <!-- Fancybox de déplacement de la page -->
 <div class="fancybox-content">
-    <div id="page-order">
+    <div id="page-location">
         <form action="<%=commandUrl %>" method="get" class="fancybox-form">
             <input type="hidden" name="action" value="changePageOrder" />
             <input type="hidden" name="pageId" value="<%=currentPageId %>" />
@@ -384,25 +291,25 @@ var currentPageId = '<%=currentPageId %>';
             
             <div class="fancybox-table">
                 <div class="fancybox-table-row">                
-                    <div class="fancybox-table-cell label required"><%=rb.getString("PAGE_ORDER") %></div>
+                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_ORDER", locale) %></div>
+                </div>
+                <div class="fancybox-table-row">
                     <div class="fancybox-table-cell">
-                        <label for="rename-page-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                        <input id="rename-page-filter" type="text" onkeyup="jstreeSearch('jstreePageOrder', this.value)" />
+                        <input type="text" onkeyup="jstreeSearch('jstreePageOrder', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
                     </div>
                 </div>
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">&nbsp;</div>
                     <div class="fancybox-table-cell">
                         <div id="jstreePageOrder" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePageOrder", false, true, false) %>
+                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePageOrder", false, true, false, false) %>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_ORDER_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("PAGE_ORDER_SUBMIT", locale) %>' />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -418,8 +325,8 @@ var currentPageId = '<%=currentPageId %>';
             
             <div class="fancybox-table">
                 <div class="fancybox-table-header">
-                    <div class="fancybox-table-cell label"><%=rb.getString("PAGE_ROLES") %></div>
-                    <div class="fancybox-table-cell"><%=rb.getString("PAGE_ACCESS") %></div>
+                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_ROLES", locale) %></div>
+                    <div class="fancybox-table-cell"><%=is.getString("PAGE_ACCESS", locale) %></div>
                 </div>
                 <%
                 if (CollectionUtils.isNotEmpty(roles)) {
@@ -448,8 +355,8 @@ var currentPageId = '<%=currentPageId %>';
             </div>
             
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_RIGHTS_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("PAGE_RIGHTS_SUBMIT", locale) %>' />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -466,7 +373,16 @@ var currentPageId = '<%=currentPageId %>';
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_CMS_SCOPE") %></p>
+                        <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
+                    </div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" />
+                    </div>
+                </div>
+            
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell label">
+                        <p><%=is.getString("PAGE_CMS_SCOPE", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
                         <p><%=cmsScopeSelect %></p>
@@ -475,7 +391,7 @@ var currentPageId = '<%=currentPageId %>';
                 
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_CMS_VERSION") %></p>
+                        <p><%=is.getString("PAGE_CMS_VERSION", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
                         <p><%=cmsDisplayLiveVersion %></p>
@@ -484,25 +400,16 @@ var currentPageId = '<%=currentPageId %>';
                 
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_CMS_CONTEXTUALIZATION") %></p>
+                        <p><%=is.getString("PAGE_CMS_CONTEXTUALIZATION", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
                         <p><%=cmsRecontextualizationSupport %></p>
                     </div>
                 </div>
-                
+
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_CMS_PATH") %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" />
-                    </div>
-                </div>
-                
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
-                        <p><%=rb.getString("PAGE_CMS_UNDER_SECTION_NAVIGATION_DISPLAY") %></p>
+                        <p><%=is.getString("PAGE_CMS_UNDER_SECTION_NAVIGATION_DISPLAY", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
                         <input type="checkbox" name="cmsNavigationMode" value="1" class="small-input" <%=checkCmsNavigationMode %> />
@@ -511,8 +418,8 @@ var currentPageId = '<%=currentPageId %>';
             </div>
             
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_CMS_SUBMIT") %>' onMouseOver="disableOrNotPreviousFormValues(this.form['cmsBasePath']);" />
-                <input type="button" value='<%=rb.getString("CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("PAGE_CMS_SUBMIT", locale) %>' onMouseOver="disableOrNotPreviousFormValues(this.form['cmsBasePath']);" />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -524,11 +431,11 @@ var currentPageId = '<%=currentPageId %>';
     <div id="page-suppression">
         <form action="<%=deletePageCommandUrl %>" method="post" class="fancybox-form">
             <div class="fancybox-center-content">
-                <p><%=rb.getString("PAGE_SUPPRESSION_CONFIRM_MESSAGE") %></p>
+                <p><%=is.getString("PAGE_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
             </div>
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=rb.getString("PAGE_SUPPRESSION_SUBMIT") %>' />
-                <input type="button" value='<%=rb.getString("PAGE_SUPPRESSION_CANCEL") %>' onclick="closeFancybox()" />
+                <input type="submit" value='<%=is.getString("YES", locale) %>' />
+                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
     </div>
@@ -541,14 +448,13 @@ var currentPageId = '<%=currentPageId %>';
         <div class="fancybox-table">
             <div class="fancybox-table-row">
                 <div class="fancybox-table-cell">
-                    <label for="pages-list-filter"><%=rb.getString("JSTREE_FILTER") %></label>
-                    <input id="pages-list-filter" type="text" onkeyup="jstreeSearch('jstreePagesList', this.value)" class="filter" />
+                    <input type="text" onkeyup="jstreeSearch('jstreePagesList', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
                 </div>
             </div>
             <div class="fancybox-table-row">
                 <div class="fancybox-table-cell">
                     <div id="jstreePagesList" class="jstree-links">
-                        <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePagesList", false, false, true) %>
+                        <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePagesList", false, false, true, false) %>
                     </div>
                 </div>
             </div>

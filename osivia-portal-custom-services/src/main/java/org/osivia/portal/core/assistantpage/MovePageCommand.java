@@ -17,15 +17,15 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.auth.constants.InternalConstants;
 import org.osivia.portal.core.cache.global.ICacheService;
-import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 
 /**
  * Move page command.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see AssistantCommand
  */
@@ -44,7 +44,7 @@ public class MovePageCommand extends AssistantCommand {
 
     /**
      * Constructor.
-     * 
+     *
      * @param pageId
      * @param destinationPageId
      */
@@ -57,7 +57,7 @@ public class MovePageCommand extends AssistantCommand {
 
     /**
      * Command execution
-     * 
+     *
      * @return response
      */
     @SuppressWarnings("unchecked")
@@ -67,7 +67,7 @@ public class MovePageCommand extends AssistantCommand {
         PortalObjectId pagePortalObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
         PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(pagePortalObjectId);
         PortalObject destinationPage = null;
-        if (!StringUtils.endsWith(destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID)) {
+        if (!StringUtils.endsWith(this.destinationPageId, InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID)) {
             PortalObjectId destinationPortalObjectId = PortalObjectId.parse(this.destinationPageId, PortalObjectPath.SAFEST_FORMAT);
             destinationPage = this.getControllerContext().getController().getPortalObjectContainer().getObject(destinationPortalObjectId);
         }
@@ -75,14 +75,14 @@ public class MovePageCommand extends AssistantCommand {
         if (page.equals(destinationPage)) {
             // Do nothing
             return new UpdatePageResponse(page.getId());
-        }        
+        }
 
         // Check parents
         PortalObject parentPage = page.getParent();
         PortalObject parentDestination;
         if (destinationPage == null) {
-            if (StringUtils.endsWith(this.destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID)) {
-                String parentDestinationId = StringUtils.removeEnd(this.destinationPageId, IFormatter.SUFFIX_VIRTUAL_END_NODES_ID);
+            if (StringUtils.endsWith(this.destinationPageId, InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID)) {
+                String parentDestinationId = StringUtils.removeEnd(this.destinationPageId, InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
                 PortalObjectId parentDestinationPortalObjectId = PortalObjectId.parse(parentDestinationId, PortalObjectPath.SAFEST_FORMAT);
                 parentDestination = this.getControllerContext().getController().getPortalObjectContainer().getObject(parentDestinationPortalObjectId);
             } else {
@@ -97,20 +97,20 @@ public class MovePageCommand extends AssistantCommand {
             // Destination page cannot be a descendant of the current page
             throw new IllegalArgumentException(); // TODO : Error management
         }
-        
+
         // Move
         if (!parentPage.equals(parentDestination)) {
             String canonicalId;
-            
+
             // Save security bindings
             canonicalId = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
             DomainConfigurator domainConfigurator = this.getControllerContext().getController().getPortalObjectContainer().getAuthorizationDomain().getConfigurator();
             Set<RoleSecurityBinding> securityBindings = domainConfigurator.getSecurityBindings(canonicalId);
-            
+
             String oldName = page.getName();
             page = page.copy(parentDestination, oldName, true);
             parentPage.destroyChild(oldName);
-            
+
             // Restore security bindings
             canonicalId = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
             domainConfigurator.setSecurityBindings(canonicalId, securityBindings);
@@ -127,7 +127,7 @@ public class MovePageCommand extends AssistantCommand {
         }
         List<Page> sortedPages = new ArrayList<Page>(pages);
 
-        // Change order        
+        // Change order
         int orderValue = 1;
         for (Page reorderedPage : sortedPages) {
             if (reorderedPage.equals(destinationPage)) {

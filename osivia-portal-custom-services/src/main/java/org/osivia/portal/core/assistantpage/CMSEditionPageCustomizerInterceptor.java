@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.osivia.portal.core.assistantpage;
 
@@ -20,7 +20,6 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
-import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.portal.Page;
@@ -50,8 +49,8 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.auth.constants.InternalConstants;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -103,10 +102,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 		return cmsServiceLocator.getCMSService();
 
 	}
-	
+
 
 	public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
-		return portalAuthorizationManagerFactory;
+		return this.portalAuthorizationManagerFactory;
 	}
 
 	public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
@@ -114,7 +113,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	}
 
 	public IProfilManager getProfilManager() {
-		return profilManager;
+		return this.profilManager;
 	}
 
 	public void setProfilManager(IProfilManager profilManager) {
@@ -124,7 +123,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Check if the user can modify the current page
-     * 
+     *
      * @param ctx
      * @param page
      * @return
@@ -146,8 +145,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String sPath[] = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-            if (sPath != null && sPath.length == 1)
+            if ((sPath != null) && (sPath.length == 1)) {
                 pagePath = sPath[0];
+            }
         }
 
 
@@ -163,7 +163,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Check if the user can modify the current page
-     * 
+     *
      * @param ctx
      * @param page
      * @return
@@ -200,9 +200,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 		List<Window> windows = new ArrayList<Window>();
 
 		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-		PortalLayout pageLayout = getServiceLayout().getLayout(layoutId, true);
+		PortalLayout pageLayout = this.getServiceLayout().getLayout(layoutId, true);
 
-		synchronizeRegionContexts(rendition, page);
+		this.synchronizeRegionContexts(rendition, page);
 
 		// Get edit authorization
 		CMSServiceCtx cmsContext = new CMSServiceCtx();
@@ -213,7 +213,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 		CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
 
 		if (pubInfos.isEditableByUser()) {
-			
+
 			// Get live document
 			cmsContext.setDisplayLiveVersion("1");
 			CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
@@ -232,11 +232,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 					regionPorperties.put("osivia.cmsEditionMode", "preview");
 
-					
+
 					// build and set url for create fgt in region in CMS mode
 					Map<String, String> requestParameters = new HashMap<String, String>();
 					requestParameters.put("region", regionId);
-					
+
 					String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
 					regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
                     regionPorperties.put("osivia.language", locale.getLanguage());
@@ -245,8 +245,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                     String resfreshUrl= ctx.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(true, true));
                     regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
-                    
-                    
+
+
 
 					// Le mode Ajax est incompatble avec le mode "edition cms"
 					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
@@ -264,27 +264,27 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 
 							PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-							Window window = (Window) getPortalObjectContainer().getObject(poid);
+							Window window = (Window) this.getPortalObjectContainer().getObject(poid);
 
 							if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
-								
+
 								// build and set urls for create/edit fgts in window in CMS mode
 								String refURI = window.getProperty("osivia.refURI");
 								windowPorperties.put("osivia.windowId", refURI);
-								
+
 								requestParameters = new HashMap<String, String>();
 								requestParameters.put("belowURI", refURI);
 								String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
 								windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
 								windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
-								
-										
-								
+
+
+
 								requestParameters.put("refURI", refURI);
 								String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
 								windowPorperties.put("osivia.cmsEditUrl", cmsEditUrl);
-								
-								
+
+
 								// To reload only current window on backup
 			                    InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
 			                    String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
@@ -294,17 +294,17 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 			                    }
                                 windowPorperties.put("osivia.cmsEditCallbackUrl", url);
                                 // Sera ignoré car on n'est pas en ajax
-                                windowPorperties.put("osivia.cmsEditCallbackId", windowId);                               
-                                
-                                
-                                
-                                
-								
-																
+                                windowPorperties.put("osivia.cmsEditCallbackId", windowId);
+
+
+
+
+
+
 								CMSDeleteFragmentCommand deleteCMD = new CMSDeleteFragmentCommand(window.getPage().getId().toString(PortalObjectPath.SAFEST_FORMAT), liveDoc.getPath(), refURI);
 								String deleteFragmentUrl = ctx.renderURL(deleteCMD, urlContext,	URLFormat.newInstance(true, true));
 								windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
-								
+
 
                                 windowPorperties.put("osivia.language", locale.getLanguage());
 
@@ -323,30 +323,32 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 		ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
 
-		if (resp instanceof PageRendition && cmd instanceof PageCommand) {
+		if ((resp instanceof PageRendition) && (cmd instanceof PageCommand)) {
 
-			
+
 			PageRendition rendition = (PageRendition) resp;
 			PageCommand rpc = (PageCommand) cmd;
 			Page page = rpc.getPage();
-			
-			if( !(page instanceof CMSTemplatePage))
-				return resp;
-			
+
+			if( !(page instanceof CMSTemplatePage)) {
+                return resp;
+            }
+
 			// test si mode assistant activé
-			if (!"preview".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_TOOLBAR_CMS_EDITION_MODE)))
-				return resp;
+            if (!"preview".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                return resp;
+            }
 
-			
 
-			Portal portal = (Portal) rpc.getPage().getPortal();
+
+			Portal portal = rpc.getPage().getPortal();
 			ControllerContext ctx = cmd.getControllerContext();
 			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
 
 			if (page instanceof ITemplatePortalObject) {
 
-				injectCMSPortletSetting( portal, page, rendition, ctx);
+				this.injectCMSPortletSetting( portal, page, rendition, ctx);
 
 			}
 
@@ -357,9 +359,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 	/**
 	 * Synchronize context regions with layout
-	 * 
+	 *
 	 * if a region is not present in the context, creates a new one
-	 * 
+	 *
 	 * @param rendition
 	 * @param page
 	 * @throws Exception
@@ -369,7 +371,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	private void synchronizeRegionContexts(PageRendition rendition, Page page) throws Exception {
 
 		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-		PortalLayout layout = getServiceLayout().getLayout(layoutId, true);
+		PortalLayout layout = this.getServiceLayout().getLayout(layoutId, true);
 
 		for (Object region : layout.getLayoutInfo().getRegionNames()) {
 
@@ -398,7 +400,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the serviceLayout
 	 */
 	public LayoutService getServiceLayout() {
-		return serviceLayout;
+		return this.serviceLayout;
 	}
 
 	/**
@@ -413,7 +415,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the pageSettingPath
 	 */
 	public String getPageSettingPath() {
-		return pageSettingPath;
+		return this.pageSettingPath;
 	}
 
 	/**
@@ -428,10 +430,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the roleModule
 	 */
 	public RoleModule getRoleModule() throws Exception {
-		if (roleModule == null) {
-			roleModule = (RoleModule) getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
+		if (this.roleModule == null) {
+			this.roleModule = (RoleModule) this.getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
 		}
-		return roleModule;
+		return this.roleModule;
 	}
 
 	/**
@@ -446,7 +448,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the authorizationDomainRegistry
 	 */
 	public AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
-		return authorizationDomainRegistry;
+		return this.authorizationDomainRegistry;
 	}
 
 	/**
@@ -461,7 +463,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the identityServiceController
 	 */
 	public IdentityServiceController getIdentityServiceController() {
-		return identityServiceController;
+		return this.identityServiceController;
 	}
 
 	/**
@@ -476,7 +478,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the targetContextPath
 	 */
 	public String getTargetContextPath() {
-		return targetContextPath;
+		return this.targetContextPath;
 	}
 
 	/**
@@ -491,7 +493,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the instanceContainer
 	 */
 	public InstanceContainer getInstanceContainer() {
-		return instanceContainer;
+		return this.instanceContainer;
 	}
 
 	/**
@@ -506,7 +508,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	 * @return the serviceTheme
 	 */
 	public ThemeService getServiceTheme() {
-		return serviceTheme;
+		return this.serviceTheme;
 	}
 
 	/**
@@ -518,7 +520,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 	}
 
 	public PortalObjectContainer getPortalObjectContainer() {
-		return portalObjectContainer;
+		return this.portalObjectContainer;
 	}
 
 	public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {

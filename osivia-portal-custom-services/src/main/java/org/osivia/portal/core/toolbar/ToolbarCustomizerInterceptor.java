@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
+import org.dom4j.QName;
+import org.dom4j.dom.DOMElement;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -54,19 +57,20 @@ import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
-import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.auth.constants.HtmlConstants;
+import org.osivia.portal.core.auth.constants.InternalConstants;
+import org.osivia.portal.core.auth.constants.InternationalizationConstants;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
-import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 
 /**
  * Toolbar customizer interceptor.
- * 
+ *
  * @see ControllerInterceptor
  */
 public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterceptor {
@@ -87,6 +91,29 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     private static final String MODE_PREVIEW = "preview";
     /** Mode admin. */
     private static final String MODE_ADMIN = "admin";
+
+    /** HTML class "toolbar-menu". */
+    private static final String HTML_CLASS_TOOLBAR_MENU = "toolbar-menu";
+    /** HTML class "toolbar-menu-title". */
+    private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
+    /** HTML class "fancybox_inline". */
+    private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
+
+    /** Pages list URL. */
+    private static final String URL_PAGES_LIST = "#pages-list";
+    /** Page creation URL. */
+    private static final String URL_PAGE_CREATION = "#page-creation";
+    /** Page suppression URL. */
+    private static final String URL_PAGE_SUPPRESSION = "#page-suppression";
+    /** Page location URL. */
+    private static final String URL_PAGE_LOCATION = "#page-location";
+    /** Page properties URL. */
+    private static final String URL_PAGE_PROPERTIES = "#page-properties";
+    /** Page CMS URL. */
+    private static final String URL_PAGE_CMS = "#page-cms";
+    /** Page rights URL. */
+    private static final String URL_PAGE_RIGHTS = "#page-rights";
+
 
     /** Logger. */
     protected static final Log logger = LogFactory.getLog(ToolbarCustomizerInterceptor.class);
@@ -114,7 +141,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Invocation.
-     * 
+     *
      * @param command command
      * @return invocation response
      */
@@ -156,7 +183,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                 String toolbarSettingsContent = this.injectToolbarSettings(renderPageCommand);
                 if (toolbarSettingsContent != null) {
                     // Toolbar settings content save
-                    command.getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_TOOLBAR_SETTINGS_CONTENT,
+                    command.getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, InternalConstants.ATTR_TOOLBAR_SETTINGS_CONTENT,
                             toolbarSettingsContent);
                 }
             }
@@ -167,108 +194,45 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Toolbar injection.
-     * 
+     *
      * @param command page command
      * @return toolbar HTML content
      * @throws Exception
-     * @throws CMSException
      */
-    private String injectToolbar(PageCommand command) throws CMSException, Exception {
+    private String injectToolbar(PageCommand command) throws Exception {
         ControllerContext context = command.getControllerContext();
         ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(getTargetThemeContextPath(command), this.toolbarPath);
 
         if (dispatcher != null) {
             Page page = command.getPage();
-            
+
             Principal principal = context.getServerInvocation().getServerContext().getClientRequest().getUserPrincipal();
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
 
+            // Redirection vers mon espace
+            MonEspaceCommand monEspaceCommand = new MonEspaceCommand();
+            PortalURL portalURL = new PortalURLImpl(monEspaceCommand, context, true, null);
             if (principal == null) {
-                PortalURL portalURL = null;
-
-                // Redirection vers mon espace
-                MonEspaceCommand monEspaceCommand = new MonEspaceCommand();
-                portalURL = new PortalURLImpl(monEspaceCommand, context, Boolean.TRUE, null);
                 dispatcher.setAttribute(Constants.ATTR_TOOLBAR_LOGIN_URL, portalURL);
+            } else {
+                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_MY_SPACE_URL, portalURL);
             }
 
-            // Mode d'édition
-            String mode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_WINDOWS_SETTING_MODE);
-
-            if (PageCustomizerInterceptor.isAdministrator(context)) {
-                try {
-                    PageType pageType = PageType.getPageType(page, context);
-                    
-                    // Editable page indicator
-                    Boolean editablePage = PageType.STATIC_PAGE.equals(pageType);
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_EDITABLE_PAGE, editablePage);
-
-                    ViewPageCommand showAdmin = new ViewPageCommand(adminPortalId);
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_ADMIN_PORTAL_URL, new PortalURLImpl(showAdmin, context, null, null));
-
-                    // Préparation du lien de retour en mode normal
-                    String newMode;
-                    if (MODE_WIZARD.equals(mode)) {
-                        newMode = MODE_NORMAL;
-                    } else {
-                        newMode = MODE_WIZARD;
-                    }
-                    ChangeModeCommand changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), newMode);
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_URL, new PortalURLImpl(changeModeCommand, context, null, null));
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_MODE, newMode);
-
-                    if (PageType.TEMPLATE_PAGE.equals(pageType))  {
-                        // Page template access
-                        ITemplatePortalObject templatePortalObject = (ITemplatePortalObject) page;
-                        ViewPageCommand showPage = new ViewPageCommand(templatePortalObject.getTemplate().getId());
-                        String url = new PortalURLImpl(showPage, context, null, null).toString();
-                        url += "?init-state=true&edit-template-mode=true";
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_TEMPLATE_ACCESS_URL, url);
-                    }
-
-                    // Caches initialization
-                    ViewPageCommand initCacheCmd = new ViewPageCommand(page.getId());
-                    String url = new PortalURLImpl(initCacheCmd, context, null, null).toString();
-                    url += "?init-cache=true";
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CACHES_INIT_URL, url);
-                } catch (PortalSecurityException e) {
-                    logger.error(StringUtils.EMPTY, e);
-                }
+            try {
+                // Administration HTML content that must be injected into toolbar
+                String administrationHtmlContent = this.formatHtmlAdministration(context, page);
+                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationHtmlContent);
+            } catch (PortalSecurityException e) {
+                logger.error(StringUtils.EMPTY, e);
             }
 
-            if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)) {
-                    String cmsMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_TOOLBAR_CMS_EDITION_MODE);
-
-                    String newCmsMode;
-                    if (MODE_PREVIEW.equals(cmsMode)) {
-                        newCmsMode = MODE_NORMAL;
-                    } else {
-                        newCmsMode = MODE_PREVIEW;
-                    }
-                    ChangeCMSEditionModeCommand changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
-                            newCmsMode);
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CMS_EDITION_URL, new PortalURLImpl(changeCmsModeCommand, context, null, null));
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_CMS_EDITION_MODE, cmsMode);
-            }
-
-
+            // Refresh
             RefreshPageCommand refreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, context, false, null));
-          
+
             // Sign out
             SignOutCommand signOutCommand = new SignOutCommand();
             dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, new PortalURLImpl(signOutCommand, context, false, null));
-
-            // Redirection vers mon espace
-            if (principal != null) {
-                MonEspaceCommand monEspaceCommand = new MonEspaceCommand();
-                PortalURL portalURL = new PortalURLImpl(monEspaceCommand, context, true, null);
-                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_MON_ESPACE_URL, portalURL);
-            }
-
-            if (MODE_WIZARD.equals(mode)) {
-                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_MODE, Constants.VALUE_TOOLBAR_WIZARD_MODE);
-            }
 
             dispatcher.include();
             return dispatcher.getMarkup();
@@ -278,8 +242,216 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     }
 
     /**
+     * Utility method used to generate administration HTML content.
+     *
+     * @param context controller context
+     * @param page current page
+     * @return HTML data
+     * @throws Exception
+     */
+    private String formatHtmlAdministration(ControllerContext context, Page page) throws Exception {
+        PageType pageType = PageType.getPageType(page, context);
+
+        Locale locale = context.getServerInvocation().getRequest().getLocale();
+
+        // Administration root element
+        Element administration = new DOMElement(QName.get(HtmlConstants.DIV));
+
+
+        // Configuration menu root element
+        Element configurationMenu = new DOMElement(QName.get(HtmlConstants.DIV));
+        configurationMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+        administration.add(configurationMenu);
+
+        // Configuration menu title
+        Element configurationMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
+        configurationMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+        configurationMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
+        configurationMenu.add(configurationMenuTitle);
+
+        // Configuration menu "ul" node
+        Element configurationMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+        configurationMenu.add(configurationMenuUl);
+
+        // Caches initialization
+        ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
+        String cachesInitializationUrl = new PortalURLImpl(cachesInitializationCommand, context, null, null).toString();
+        cachesInitializationUrl += "?init-cache=true";
+
+        Element cachesInitialization = new DOMElement(QName.get(HtmlConstants.A));
+        cachesInitialization.addAttribute(QName.get(HtmlConstants.HREF), cachesInitializationUrl);
+        cachesInitialization.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
+        this.addSubMenuElement(configurationMenuUl, cachesInitialization);
+
+        // JBoss administration
+        ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(adminPortalId);
+        String jbossAdministrationUrl = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
+
+        Element jbossAdministration = new DOMElement(QName.get(HtmlConstants.A));
+        jbossAdministration.addAttribute(QName.get(HtmlConstants.HREF), jbossAdministrationUrl);
+        jbossAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
+        this.addSubMenuElement(configurationMenuUl, jbossAdministration);
+
+        // Pages list
+        this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGES_LIST,
+                this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
+
+
+        if (PageCustomizerInterceptor.isAdministrator(context)) {
+            // Template edition menu root element
+            Element templateEditionMenu = new DOMElement(QName.get(HtmlConstants.DIV));
+            templateEditionMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+            administration.add(templateEditionMenu);
+
+            // Template edition menu title
+            Element templateEditionMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
+            templateEditionMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+            templateEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE, locale));
+            templateEditionMenu.add(templateEditionMenuTitle);
+
+            // Template edition menu "ul" node
+            Element templateEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+            templateEditionMenu.add(templateEditionMenuUl);
+
+            // Icons display
+            String mode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+            ChangeModeCommand changeModeCommand;
+            String modeHtmlClass;
+            if (MODE_WIZARD.equals(mode)) {
+                changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_NORMAL);
+                modeHtmlClass = "check";
+            } else {
+                changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_WIZARD);
+                modeHtmlClass = "uncheck";
+            }
+            String changeModeUrl = new PortalURLImpl(changeModeCommand, context, null, null).toString();
+
+            Element iconsDisplay = new DOMElement(QName.get(HtmlConstants.A));
+            iconsDisplay.addAttribute(QName.get(HtmlConstants.HREF), changeModeUrl);
+            iconsDisplay.addAttribute(QName.get(HtmlConstants.CLASS), modeHtmlClass);
+            iconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
+            this.addSubMenuElement(templateEditionMenuUl, iconsDisplay);
+
+            // HR
+            this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
+
+            // Page creation
+            this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_CREATION,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CREATION, locale));
+
+            // Page template access
+            if (pageType.isTemplated()) {
+                ITemplatePortalObject templatePortalObject = (ITemplatePortalObject) page;
+                ViewPageCommand pageTemplateAccessCommand = new ViewPageCommand(templatePortalObject.getTemplate().getId());
+                String pageTemplateAccessUrl = new PortalURLImpl(pageTemplateAccessCommand, context, null, null).toString();
+                pageTemplateAccessUrl += "?init-state=true&edit-template-mode=true";
+
+                this.addSubMenuFancyboxLink(templateEditionMenuUl, pageTemplateAccessUrl,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
+            }
+
+            if (pageType.isEditable()) {
+                // Page suppression
+                this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_SUPPRESSION,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_SUPPRESSION, locale));
+
+                // Page location
+                this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_LOCATION,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_LOCATION, locale));
+
+                // HR
+                this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
+
+                // Page properties
+                if (!pageType.isTemplated()) {
+                    this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_PROPERTIES,
+                            this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_PROPERTIES, locale));
+                }
+
+                // Page CMS
+                this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_CMS,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CMS, locale));
+
+                // Page rights
+                this.addSubMenuFancyboxLink(templateEditionMenuUl, URL_PAGE_RIGHTS,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_RIGHTS, locale));
+            }
+        }
+
+
+        if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)) {
+            // CMS edition menu root element
+            Element cmsEditionMenu = new DOMElement(QName.get(HtmlConstants.DIV));
+            cmsEditionMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+            administration.add(cmsEditionMenu);
+
+            // CMS edition menu title
+            Element cmsEditionMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
+            cmsEditionMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+            cmsEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_EDITION_MENU_TITLE, locale));
+            cmsEditionMenu.add(cmsEditionMenuTitle);
+
+            // Template edition menu "ul" node
+            Element templateEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+            cmsEditionMenu.add(templateEditionMenuUl);
+
+            // CMS icons display
+            String cmsMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+            ChangeCMSEditionModeCommand changeCmsModeCommand;
+            String cmsModeHtmlClass;
+            if (MODE_PREVIEW.equals(cmsMode)) {
+                changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_NORMAL);
+                cmsModeHtmlClass = "check";
+            } else {
+                changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_PREVIEW);
+                cmsModeHtmlClass = "uncheck";
+            }
+            String changeCmsModeUrl = new PortalURLImpl(changeCmsModeCommand, context, null, null).toString();
+
+            Element cmsIconsDisplay = new DOMElement(QName.get(HtmlConstants.A));
+            cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.HREF), changeCmsModeUrl);
+            cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.CLASS), cmsModeHtmlClass);
+            cmsIconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
+            this.addSubMenuElement(templateEditionMenuUl, cmsIconsDisplay);
+        }
+
+
+        String htmlData = this.writeHtmlData(administration);
+        return htmlData;
+    }
+
+    /**
+     * Add sub-menu Fancybox link
+     *
+     * @param ul current "ul" element
+     * @param url Fancybox "div" identifier
+     * @param title link text and Fancybox title value
+     */
+    private void addSubMenuFancyboxLink(Element ul, String url, String title) {
+        Element element = new DOMElement(QName.get(HtmlConstants.A));
+        element.addAttribute(QName.get(HtmlConstants.HREF), url);
+        element.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYBOX_INLINE);
+        element.addAttribute(QName.get(HtmlConstants.TITLE), title);
+        element.setText(title);
+        this.addSubMenuElement(ul, element);
+    }
+
+    /**
+     * Add sub-menu element.
+     *
+     * @param ul current "ul" element
+     * @param element element to add
+     */
+    private void addSubMenuElement(Element ul, Element element) {
+        Element li = new DOMElement(QName.get(HtmlConstants.LI));
+        li.add(element);
+        ul.add(li);
+    }
+
+
+    /**
      * Toolbar settings injection.
-     * 
+     *
      * @param command page command
      * @return HTML content
      * @throws Exception
@@ -295,92 +467,91 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             if (PageCustomizerInterceptor.isAdministrator(context)) {
                 try {
                     PageType pageType = PageType.getPageType(page, context);
-                    
+                    if (PageType.NON_DEFAULT_TEMPLATE_CMS_ROOT_PAGE.equals(pageType)) {
+                        page = (Page) page.getParent();
+                    }
+
                     URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
+                    // Internationalization service
+                    dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
+
                     // Formatter
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this);
+                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this);
 
                     // Controller context
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT, context);
+                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT, context);
 
                     // Generic command URL
                     String serverContext = context.getServerInvocation().getServerContext().getPortalContextPath();
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, serverContext + "/commands");
+                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, serverContext + "/commands");
 
                     // Page
-                    dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
+                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
 
-                    if (PageType.STATIC_PAGE.equals(pageType)) {
+                    if (pageType.isEditable()) {
                         // Default page indicator
                         Boolean defaultPage = page.getName().equals(page.getPortal().getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME));
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE, defaultPage);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE, defaultPage);
 
-                        // Draft page indicator
-                        Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
+                        if (!pageType.isTemplated()) {
+                            // Draft page indicator
+                            Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
+                            dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
-                        // Layouts
-                        List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
-                        Collections.sort(layouts, new PortalLayoutComparator());
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
+                            // Layouts
+                            List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
+                            Collections.sort(layouts, new PortalLayoutComparator());
+                            dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
 
-                        // Current layout
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT, page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
+                            // Current layout
+                            dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT,
+                                    page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
 
-                        // Themes
-                        List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
-                        Collections.sort(themes, new PortalThemeComparator());
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
+                            // Themes
+                            List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
+                            Collections.sort(themes, new PortalThemeComparator());
+                            dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
 
-                        // Current theme
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME, page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME));
-
-                        // Siblings pages
-                        SortedSet<Page> siblings = new TreeSet<Page>(PageUtils.orderComparator);
-                        for (PortalObject po : page.getParent().getChildren()) {
-                            if (po instanceof Page) {
-                                Page sibling = (Page) po;
-                                if (!sibling.equals(page)) {
-                                    siblings.add(sibling);
-                                }
-                            }
-
+                            // Current theme
+                            dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME,
+                                    page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME));
                         }
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_SIBLINGS_PAGES, siblings);
 
                         // Roles
                         List<Role> roles = this.profilManager.getFilteredRoles();
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_ROLES, roles);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES, roles);
 
                         // Actions for roles
                         DomainConfigurator domainConfigurator = this.authorizationDomainRegistry.getDomain("portalobject").getConfigurator();
                         Set<RoleSecurityBinding> constraints = domainConfigurator.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
                         Map<String, Set<String>> actionsForRoles = new HashMap<String, Set<String>>();
-                        for (RoleSecurityBinding roleSecurityBinding : constraints) {
-                            actionsForRoles.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
+                        if (CollectionUtils.isNotEmpty(constraints)) {
+                            for (RoleSecurityBinding roleSecurityBinding : constraints) {
+                                actionsForRoles.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
+                            }
                         }
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES, actionsForRoles);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES, actionsForRoles);
 
                         // Page suppression
                         DeletePageCommand deletePageCommand = new DeletePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
                         String deletePageCommandUrl = context.renderURL(deletePageCommand, urlContext, URLFormat.newInstance(true, true));
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
 
                         // CMS scope select
                         String scope = page.getDeclaredProperty("osivia.cms.scope");
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT, this.formatScopeList(page, "scope", scope));
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT, this.formatScopeList(page, "scope", scope));
 
                         // CMS display live version
                         CMSServiceCtx cmsServiceCtx = new CMSServiceCtx();
                         cmsServiceCtx.setControllerContext(context);
                         String displayLiveVersion = page.getDeclaredProperty("osivia.cms.displayLiveVersion");
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION,
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION,
                                 this.formatDisplayLiveVersionList(cmsServiceCtx, page, "displayLiveVersion", displayLiveVersion));
 
                         // CMS recontextualization support
                         String outgoingRecontextualizationSupport = page.getDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport");
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT, this.formatInheritedCheckVakue(page,
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT, this.formatInheritedCheckVakue(page,
                                 "outgoingRecontextualizationSupport", "osivia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport));
 
                         // CMS base path
@@ -388,12 +559,12 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                         if (pageCmsBasePath == null) {
                             pageCmsBasePath = StringUtils.EMPTY;
                         }
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
 
                         // CMS navigation mode
                         String navigationMode = page.getDeclaredProperty("osivia.navigationMode");
                         Boolean cmsNavigationMode = "cms".equals(navigationMode);
-                        dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE, cmsNavigationMode);
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE, cmsNavigationMode);
                     }
                 } catch (PortalSecurityException e) {
                     logger.error(StringUtils.EMPTY, e);
@@ -409,7 +580,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Utility method used to access the target theme context path.
-     * 
+     *
      * @param portalCommand command
      * @return the target theme context path
      */
@@ -436,7 +607,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Getter for toolbarPath.
-     * 
+     *
      * @return the toolbarPath
      */
     public String getToolbarPath() {
@@ -445,7 +616,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Setter for toolbarPath.
-     * 
+     *
      * @param toolbarPath the toolbarPath to set
      */
     public void setToolbarPath(String toolbarPath) {
@@ -454,7 +625,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Getter for toolbarSettingsPath.
-     * 
+     *
      * @return the toolbarSettingsPath
      */
     public String getToolbarSettingsPath() {
@@ -463,7 +634,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Setter for toolbarSettingsPath.
-     * 
+     *
      * @param toolbarSettingsPath the toolbarSettingsPath to set
      */
     public void setToolbarSettingsPath(String toolbarSettingsPath) {
@@ -472,7 +643,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Getter for urlFactory.
-     * 
+     *
      * @return the urlFactory
      */
     public IPortalUrlFactory getUrlFactory() {
@@ -481,7 +652,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Setter for urlFactory.
-     * 
+     *
      * @param urlFactory the urlFactory to set
      */
     public void setUrlFactory(IPortalUrlFactory urlFactory) {
@@ -490,7 +661,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Getter for targetSettingsContextPath.
-     * 
+     *
      * @return the targetSettingsContextPath
      */
     public String getTargetSettingsContextPath() {
@@ -499,7 +670,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     /**
      * Setter for targetSettingsContextPath.
-     * 
+     *
      * @param targetSettingsContextPath the targetSettingsContextPath to set
      */
     public void setTargetSettingsContextPath(String targetSettingsContextPath) {

@@ -123,6 +123,9 @@
         <depends
             optional-attribute-name="PortalAuthorizationManagerFactory"
             proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends>
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
     </mbean>
 
 	<mbean
@@ -211,6 +214,9 @@
         <depends
             optional-attribute-name="AuthorizationDomainRegistry"
             proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
     </mbean>
 
 
@@ -530,18 +536,36 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
    </mbean>
-   
-   <mbean code="org.osivia.portal.core.selection.SelectionService"
-          name="osivia:service=SelectionService" xmbean-dd=""
-          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-      <xmbean/>
-   </mbean>
-   
-   <!-- Manage AJAX actions used by the CMS edition mode -->
-   <mbean code="org.osivia.portal.core.assistantpage.CmsAjaxCommandFactory" name="portal:commandFactory=cmsAjax" xmbean-dd=""
-      xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-   		<xmbean/>
-   </mbean>
+
+    <!-- Selection service -->
+    <mbean
+        code="org.osivia.portal.core.selection.SelectionService"
+        name="osivia:service=SelectionService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+
+    <!-- Internationalization service -->
+    <mbean
+        code="org.osivia.portal.core.internationalization.InternationalizationService"
+        name="osivia:service=InternationalizationService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CustomizationService"
+            proxy-type="attribute">osivia:service=CustomizationService</depends>
+    </mbean>
+
+    <!-- Manage AJAX actions used by the CMS edition mode -->
+    <mbean
+        code="org.osivia.portal.core.assistantpage.CmsAjaxCommandFactory"
+        name="portal:commandFactory=cmsAjax"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
    
     <!-- Delegator of cmsAjax -->
    <mbean code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"

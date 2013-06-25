@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -57,6 +56,7 @@ import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.auth.constants.InternalConstants;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
@@ -301,11 +301,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
 
     public List<UserPage> getCMSHeaderTabs(ControllerContext controllerCtx, Page cmsPage) throws Exception {
-
-
         String navigationScope = cmsPage.getProperty("osivia.cms.navigationScope");
-
-        Locale locale = Locale.FRENCH;
 
         CMSServiceCtx cmxCtx = new CMSServiceCtx();
         cmxCtx.setControllerContext(controllerCtx);
@@ -546,8 +542,9 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
             rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx));
 
             // v1.0.17
-            if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
-                rd.setAttribute(Constants.ATTR_TOOLBAR_WIZARD_MODE, "1");
+            if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+                    InternalConstants.ATTR_WINDOWS_SETTING_MODE))) {
+                rd.setAttribute(InternalConstants.ATTR_TOOLBAR_WIZARD_MODE, "1");
             }
 
 
@@ -565,7 +562,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Cette structure est générée pour simplifier l'intégration graphique et pour optimiser les performances
-     * 
+     *
      * @param rpc
      * @return
      */
@@ -578,7 +575,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
         ControllerContext controllerCtx = rpc.getControllerContext();
         ServerRequest request = controllerCtx.getServerInvocation().getRequest();
 
-        Page page = rpc.getPage();
         Portal portal = rpc.getPortal();
 
 
@@ -586,10 +582,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
         userPortal.setName(portal.getName());
 
         PortalAuthorizationManager pam = this.portalAuthorizationManagerFactory.getManager();
-
-
-        // Get a locale
-        Locale locale = Locale.FRENCH;
 
         List<UserPage> mainPages = new ArrayList<UserPage>(10);
         userPortal.setUserPages(mainPages);

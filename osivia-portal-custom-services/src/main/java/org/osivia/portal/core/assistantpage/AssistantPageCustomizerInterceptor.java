@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.osivia.portal.core.assistantpage;
 
@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -30,6 +29,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.Mode;
@@ -74,9 +74,12 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.auth.constants.HtmlConstants;
+import org.osivia.portal.core.auth.constants.InternalConstants;
+import org.osivia.portal.core.auth.constants.InternationalizationConstants;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
@@ -96,28 +99,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /** Windows settings fancyboxes prefix. */
     private static final String PREFIX_ID_FANCYBOX_WINDOW_SETTINGS = "window-settings-";
 
-    /** HTML Fancybox container class. */
-    private static final String HTML_CLASS_FANCYBOX_CONTAINER = "fancybox-content";
-    /** HTML Fancybox form class. */
-    private static final String HTML_CLASS_FANCYBOX_FORM = "fancybox-form";
-    /** HTML class "navigation-item" for "li" nodes. */
-    private static final String HTML_CLASS_NAVIGATION_ITEM = "navigation-item";
-    /** HTML class "fancybox-table" for "div" nodes. */
-    private static final String HTML_CLASS_FANCYBOX_TABLE = "fancybox-table";
-    /** HTML class "fancybox-table-row" for "div" nodes. */
-    private static final String HTML_CLASS_FANCYBOX_ROW = "fancybox-table-row";
-    /** HTML class "fancybox-table-cell" for "div" nodes. */
-    private static final String HTML_CLASS_FANCYBOX_CELL = "fancybox-table-cell";
-    /** HTML class "label" for "div" nodes. */
-    private static final String HTML_CLASS_FANCYBOX_LABEL = "label";
-    /** HTML class "toggle-row". */
+    /** HTML toggle row display class. */
     private static final String HTML_CLASS_TOGGLE_ROW = "toggle-row";
     /** HTML class "styles-toggle-row". */
     private static final String HTML_CLASS_TOGGLE_STYLES_ROW = "styles-toggle-row";
     /** HTML class "dynamic-properties-toggle-row". */
     private static final String HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW = "dynamic-properties-toggle-row";
-    /** HTML class "small-input" for small inputs like checkboxes. */
-    private static final String HTML_CLASS_SMALL_INPUT = "small-input";
     /** HTML name "action". */
     private static final String HTML_NAME_ACTION = "action";
     /** HTML name "windowId". */
@@ -128,12 +115,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     private static final String HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES = "changeWindowSettings";
     /** HTML rel "page" for "li" nodes. */
     private static final String HTML_REL_PAGE = "page";
-    /** HTML default href for "a" nodes. */
-    private static final String HTML_HREF_DEFAULT = "#";
-    /** HTML default text. */
-    private static final String HTML_TEXT_DEFAULT = "&nbsp;";
-    /** HTML display none style. */
-    private static final String HTML_STYLE_DISPLAY_NONE = "display: none;";
 
 
     /** Default icon location. */
@@ -162,6 +143,9 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     protected IProfilManager profilManager;
 
     protected PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+
+    /** Internationalization service. */
+    protected IInternationalizationService internationalizationService;
 
 
     public static ICMSService getCMSService() throws Exception {
@@ -525,7 +509,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * {@inheritDoc}
      */
     public String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, false, false, false);
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, false, false, false, false);
     }
 
 
@@ -533,17 +517,16 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * {@inheritDoc}
      */
     public String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, boolean displayRoot,
-            boolean displayVirtualEndNodes, boolean sortAlphabetically) throws IOException {
+            boolean displayVirtualEndNodes, boolean sortAlphabetically, boolean hideCmsPages) throws IOException {
         if ((currentPage == null) || (context == null)) {
             return null;
         }
 
         Locale locale = context.getServerInvocation().getRequest().getLocale();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, locale);
 
         String virtualEndNodesText = null;
         if (displayVirtualEndNodes) {
-            virtualEndNodesText = resourceBundle.getString(KEY_VIRTUAL_END_NODES);
+            virtualEndNodesText = this.internationalizationService.getString(InternationalizationConstants.KEY_VIRTUAL_END_NODES, locale);
         }
 
         Portal portal = currentPage.getPortal();
@@ -551,22 +534,22 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Element ul;
 
         // Recursive tree generation
-        Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, sortAlphabetically);
+        Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, sortAlphabetically, hideCmsPages);
 
         // Root generation
         if (displayRoot) {
             String portalId = this.formatHtmlSafeEncodingId(portal.getId());
 
-            ul = new DOMElement(QNAME_NODE_UL);
+            ul = new DOMElement(QName.get(HtmlConstants.UL));
 
-            Element li = new DOMElement(QNAME_NODE_LI);
-            li.addAttribute(QNAME_ATTRIBUTE_ID, idPrefix + portalId);
-            li.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_NAVIGATION_ITEM);
+            Element li = new DOMElement(QName.get(HtmlConstants.LI));
+            li.addAttribute(QName.get(HtmlConstants.ID), idPrefix + portalId);
+            li.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
             ul.add(li);
 
-            Element a = new DOMElement(QNAME_NODE_A);
-            a.addAttribute(QNAME_ATTRIBUTE_HREF, HTML_HREF_DEFAULT);
-            a.setText(resourceBundle.getString(KEY_ROOT_NODE));
+            Element a = new DOMElement(QName.get(HtmlConstants.A));
+            a.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
+            a.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ROOT_NODE, locale));
             li.add(a);
 
             li.add(ulChildren);
@@ -582,17 +565,18 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Utility method used to generate recursive HTML tree of portal objects.
-     * 
+     *
      * @param parent parent page or portal
      * @param context controller context, which contains locales and URL generation data
      * @param idPrefix avoid multiples identifiers with this prefix
      * @param virtualEndNodesText virtual end nodes text, null if these nodes aren't to be displayed
      * @param sortAlphabetically sort alphabetically indicator
+     * @param hideCmsPages hide CMS pages indicator
      * @return HTML "ul" node
      * @throws IOException
      */
     private Element generateRecursiveHtmlTreePortalObjects(PortalObject parent, ControllerContext context, String idPrefix, String virtualEndNodesText,
-            boolean sortAlphabetically) throws IOException {
+            boolean sortAlphabetically, boolean hideCmsPages) throws IOException {
         Locale[] locales = context.getServerInvocation().getRequest().getLocales();
 
         Collection<PortalObject> children = parent.getChildren(PortalObject.PAGE_MASK);
@@ -615,7 +599,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
             if (authManager.checkPermission(permission)) {
                 Page page = (Page) child;
-                sortedPages.add(page);
+
+                if (!(hideCmsPages && StringUtils.isNotEmpty(page.getProperty("osivia.cms.basePath")))) {
+                    sortedPages.add(page);
+                }
             }
         }
 
@@ -624,8 +611,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Generate HTML node for each page
-        Element ul = new DOMElement(QNAME_NODE_UL);
-        ul.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_NAVIGATION_ITEM);
+        Element ul = new DOMElement(QName.get(HtmlConstants.UL));
+        ul.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
 
         for (Page page : sortedPages) {
             String pageId = this.formatHtmlSafeEncodingId(page.getId());
@@ -636,19 +623,19 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             String url = new PortalURLImpl(showPage, context, null, null).toString();
             url = url + "?init-state=true";
 
-            Element li = new DOMElement(QNAME_NODE_LI);
-            li.addAttribute(QNAME_ATTRIBUTE_ID, idPrefix + pageId);
-            li.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_NAVIGATION_ITEM);
-            li.addAttribute(QNAME_ATTRIBUTE_REL, HTML_REL_PAGE);
+            Element li = new DOMElement(QName.get(HtmlConstants.LI));
+            li.addAttribute(QName.get(HtmlConstants.ID), idPrefix + pageId);
+            li.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
+            li.addAttribute(QName.get(HtmlConstants.REL), HTML_REL_PAGE);
             ul.add(li);
 
-            Element a = new DOMElement(QNAME_NODE_A);
-            a.addAttribute(QNAME_ATTRIBUTE_HREF, url);
+            Element a = new DOMElement(QName.get(HtmlConstants.A));
+            a.addAttribute(QName.get(HtmlConstants.HREF), url);
             a.setText(pageName);
             li.add(a);
 
             // Recursive generation
-            Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(page, context, idPrefix, virtualEndNodesText, sortAlphabetically);
+            Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(page, context, idPrefix, virtualEndNodesText, sortAlphabetically, hideCmsPages);
             if (ulChildren != null) {
                 li.add(ulChildren);
             }
@@ -658,13 +645,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (StringUtils.isNotEmpty(virtualEndNodesText)) {
             String parentId = this.formatHtmlSafeEncodingId(parent.getId());
 
-            Element liVirtualEndNode = new DOMElement(QNAME_NODE_LI);
-            liVirtualEndNode.addAttribute(QNAME_ATTRIBUTE_ID, idPrefix + parentId + SUFFIX_VIRTUAL_END_NODES_ID);
-            liVirtualEndNode.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_NAVIGATION_ITEM);
-            liVirtualEndNode.addAttribute(QNAME_ATTRIBUTE_REL, HTML_REL_PAGE);
+            Element liVirtualEndNode = new DOMElement(QName.get(HtmlConstants.LI));
+            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.ID), idPrefix + parentId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
+            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
+            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.REL), HTML_REL_PAGE);
 
-            Element aVirtualEndNode = new DOMElement(QNAME_NODE_A);
-            aVirtualEndNode.addAttribute(QNAME_ATTRIBUTE_HREF, HTML_HREF_DEFAULT);
+            Element aVirtualEndNode = new DOMElement(QName.get(HtmlConstants.A));
+            aVirtualEndNode.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
             aVirtualEndNode.setText(virtualEndNodesText);
             liVirtualEndNode.add(aVirtualEndNode);
 
@@ -698,7 +685,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         HttpServletRequest httpRequest = context.getServerInvocation().getServerContext().getClientRequest();
         Locale locale = httpRequest.getLocale();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, locale);
 
         List<InstanceDefinition> instances = new ArrayList<InstanceDefinition>(this.instanceContainer.getDefinitions());
         if (CollectionUtils.isEmpty(instances)) {
@@ -706,8 +692,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
         Collections.sort(instances, new InstanceComparator(locale));
 
-        Element table = new DOMElement(QNAME_NODE_DIV);
-        table.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_TABLE);
+        Element table = new DOMElement(QName.get(HtmlConstants.DIV));
+        table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
 
         for (InstanceDefinition instance : instances) {
             // Get portlet
@@ -720,17 +706,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
 
             // HTML elements initialization
-            Element row = new DOMElement(QNAME_NODE_DIV);
-            row.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_ROW);
+            Element row = new DOMElement(QName.get(HtmlConstants.DIV));
+            row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
             table.add(row);
-            Element leftCell = new DOMElement(QNAME_NODE_DIV);
-            leftCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+            Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
+            leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
             row.add(leftCell);
-            Element middleCell = new DOMElement(QNAME_NODE_DIV);
-            middleCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+            Element middleCell = new DOMElement(QName.get(HtmlConstants.DIV));
+            middleCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
             row.add(middleCell);
-            Element rightCell = new DOMElement(QNAME_NODE_DIV);
-            rightCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+            Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
+            rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
             row.add(rightCell);
 
             // Portlet icon
@@ -744,8 +730,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             if (StringUtils.isEmpty(iconLocation)) {
                 iconLocation = DEFAULT_ICON_LOCATION;
             }
-            Element img = new DOMElement(QNAME_NODE_IMG);
-            img.addAttribute(QNAME_ATTRIBUTE_SRC, iconLocation);
+            Element img = new DOMElement(QName.get(HtmlConstants.IMG));
+            img.addAttribute(QName.get(HtmlConstants.SRC), iconLocation);
             leftCell.add(img);
 
             // Portlet display name
@@ -756,10 +742,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             middleCell.setText(displayName);
 
             // Submit
-            Element input = new DOMElement(QNAME_NODE_INPUT);
-            input.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_SUBMIT);
-            input.addAttribute(QNAME_ATTRIBUTE_VALUE, resourceBundle.getString(KEY_ADD_PORTLET_SUBMIT_VALUE));
-            input.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "selectPortlet('" + instance.getId() + "', this.form)");
+            Element input = new DOMElement(QName.get(HtmlConstants.INPUT));
+            input.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_SUBMIT);
+            input.addAttribute(QName.get(HtmlConstants.VALUE),
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_ADD_PORTLET_SUBMIT_VALUE, locale));
+            input.addAttribute(QName.get(HtmlConstants.ONCLICK), "selectPortlet('" + instance.getId() + "', this.form)");
             rightCell.add(input);
         }
 
@@ -779,7 +766,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         HttpServletRequest httpRequest = context.getServerInvocation().getServerContext().getClientRequest();
         Locale locale = httpRequest.getLocale();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, locale);
 
         Portal portal = currentPage.getPortal();
         String portalContextPath = context.getServerInvocation().getServerContext().getPortalContextPath();
@@ -793,11 +779,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // HTML "div" fancyboxes parent node
-        Element divParent = new DOMElement(IFormatter.QNAME_NODE_DIV);
-        divParent.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CONTAINER);
+        Element divParent = new DOMElement(QName.get(HtmlConstants.DIV));
+        divParent.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CONTAINER);
 
         if (CollectionUtils.isEmpty(windows)) {
-            divParent.setText(HTML_TEXT_DEFAULT);
+            divParent.setText(HtmlConstants.TEXT_DEFAULT);
         } else {
             // Loop on each page window
             for (Window window : windows) {
@@ -807,33 +793,33 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 String fancyboxId = PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId;
 
                 // Fancybox
-                Element divFancyboxContent = new DOMElement(QNAME_NODE_DIV);
-                divFancyboxContent.addAttribute(QNAME_ATTRIBUTE_ID, fancyboxId);
+                Element divFancyboxContent = new DOMElement(QName.get(HtmlConstants.DIV));
+                divFancyboxContent.addAttribute(QName.get(HtmlConstants.ID), fancyboxId);
                 divParent.add(divFancyboxContent);
 
                 // Form
-                Element form = new DOMElement(QNAME_NODE_FORM);
-                form.addAttribute(QNAME_ATTRIBUTE_ACTION, commandUrl);
-                form.addAttribute(QNAME_ATTRIBUTE_METHOD, FORM_METHOD_GET);
-                form.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_FORM);
+                Element form = new DOMElement(QName.get(HtmlConstants.FORM));
+                form.addAttribute(QName.get(HtmlConstants.ACTION), commandUrl);
+                form.addAttribute(QName.get(HtmlConstants.METHOD), HtmlConstants.FORM_METHOD_GET);
+                form.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_FORM);
                 divFancyboxContent.add(form);
 
                 // Hidden fields
-                Element inputHiddenAction = new DOMElement(QNAME_NODE_INPUT);
-                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
-                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_ACTION);
-                inputHiddenAction.addAttribute(QNAME_ATTRIBUTE_VALUE, HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
+                Element inputHiddenAction = new DOMElement(QName.get(HtmlConstants.INPUT));
+                inputHiddenAction.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_HIDDEN);
+                inputHiddenAction.addAttribute(QName.get(HtmlConstants.NAME), HTML_NAME_ACTION);
+                inputHiddenAction.addAttribute(QName.get(HtmlConstants.VALUE), HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
                 form.add(inputHiddenAction);
 
-                Element inputHiddenWindowId = new DOMElement(QNAME_NODE_INPUT);
-                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN);
-                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_NAME, HTML_NAME_WINDOW_ID);
-                inputHiddenWindowId.addAttribute(QNAME_ATTRIBUTE_VALUE, windowId);
+                Element inputHiddenWindowId = new DOMElement(QName.get(HtmlConstants.INPUT));
+                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_HIDDEN);
+                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.NAME), HTML_NAME_WINDOW_ID);
+                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.VALUE), windowId);
                 form.add(inputHiddenWindowId);
 
                 // Table
-                Element table = new DOMElement(QNAME_NODE_DIV);
-                table.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_TABLE);
+                Element table = new DOMElement(QName.get(HtmlConstants.DIV));
+                table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
                 form.add(table);
 
                 // Styles rows
@@ -842,56 +828,65 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 if (StringUtils.isNotEmpty(windowStylesProperty)) {
                     windowStyles.addAll(Arrays.asList(windowStylesProperty.split(",")));
                 }
-                this.insertStylesRows(table, resourceBundle, portalStyles, windowStyles);
+                this.insertStylesRows(table, locale, portalStyles, windowStyles);
 
                 // Title bar display row
                 String hideTitle = window.getDeclaredProperty("osivia.hideTitle");
                 checkboxChecked = !"1".equals(hideTitle);
-                table.add(this.generateRow("Affichage barre de titre :", INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
+                table.add(this.generateRow(
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE_DISPLAY, locale),
+                        HtmlConstants.INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
 
                 // Title
                 String title = window.getDeclaredProperty("osivia.title");
                 if (title == null) {
                     title = StringUtils.EMPTY;
                 }
-                table.add(this.generateRow("Titre :", INPUT_TYPE_TEXT, "title", title, false));
+                table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE, locale),
+                        HtmlConstants.INPUT_TYPE_TEXT, "title", title, false));
 
                 // Icons display
                 String hideDecorators = window.getDeclaredProperty("osivia.hideDecorators");
                 checkboxChecked = !"1".equals(hideDecorators);
-                table.add(this.generateRow("Affichage des icônes :", INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
+                table.add(this.generateRow(
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_ICONS_DISPLAY, locale),
+                        HtmlConstants.INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
 
                 // AJAX links and forms
                 String ajaxLinks = window.getProperty("osivia.ajaxLink");
                 checkboxChecked = "1".equals(ajaxLinks);
-                table.add(this.generateRow("Liens et formulaires en AJAX :", INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
+                table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_AJAX_LINK, locale),
+                        HtmlConstants.INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
 
                 // Print
                 String print = window.getProperty("osivia.printPortlet");
                 checkboxChecked = "1".equals(print);
-                table.add(this.generateRow("Impression :", INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
+                table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PRINT, locale),
+                        HtmlConstants.INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
 
                 // Hide empty portlet
                 String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
                 checkboxChecked = "1".equals(hideEmptyPortlet);
-                table.add(this.generateRow("Masquer ce portlet si contenu vide :", INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked));
 
                 // Conditional scope
-                this.insertConditionalScopeRow(table, resourceBundle, window);
+                this.insertConditionalScopeRow(table, locale, window);
 
                 // Customize ID
                 String customizeId = window.getDeclaredProperty("osivia.idPerso");
                 if (customizeId == null) {
                     customizeId = StringUtils.EMPTY;
                 }
-                table.add(this.generateRow("Id. personnalisation :", INPUT_TYPE_TEXT, "idPerso", customizeId, false));
+                table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CUSTOM_ID, locale),
+                        HtmlConstants.INPUT_TYPE_TEXT, "idPerso", customizeId, false));
 
                 // Shared cache ID
                 String cacheId = window.getProperty("osivia.cacheID");
                 if (cacheId == null) {
                     cacheId = StringUtils.EMPTY;
                 }
-                table.add(this.generateRow("Id. cache partagé :", INPUT_TYPE_TEXT, "cacheID", cacheId, false));
+                table.add(this.generateRow(
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHARED_CACHE_ID, locale),
+                        HtmlConstants.INPUT_TYPE_TEXT, "cacheID", cacheId, false));
 
                 // Bash activation
                 String bashActivation = window.getDeclaredProperty("osivia.bshActivation");
@@ -900,29 +895,34 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 if (scriptContent == null) {
                     scriptContent = StringUtils.EMPTY;
                 }
-                this.insertDynamicPropertiesRows(table, resourceBundle, isBashActive, scriptContent);
+                this.insertDynamicPropertiesRows(table, locale, isBashActive, scriptContent);
 
                 // Selection service dependency
                 String cacheEvents = window.getProperty("osivia.cacheEvents");
                 checkboxChecked = "selection".equals(cacheEvents);
-                table.add(this.generateRow("Dépendance / service sélection :", INPUT_TYPE_CHECKBOX, "selectionDep", "1", checkboxChecked));
+                table.add(this.generateRow(
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SELECTION_DEPENDENCY, locale),
+                        HtmlConstants.INPUT_TYPE_CHECKBOX,
+                        "selectionDep", "1", checkboxChecked));
 
                 // Buttons
-                Element buttonsContainer = new DOMElement(QNAME_NODE_DIV);
-                buttonsContainer.addAttribute(QNAME_ATTRIBUTE_CLASS, "fancybox-center-content");
+                Element buttonsContainer = new DOMElement(QName.get(HtmlConstants.DIV));
+                buttonsContainer.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CENTER_CONTENT);
                 form.add(buttonsContainer);
 
                 // Submit button
-                Element submitButton = new DOMElement(QNAME_NODE_INPUT);
-                submitButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_SUBMIT);
-                submitButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Changer les paramètres");
+                Element submitButton = new DOMElement(QName.get(HtmlConstants.INPUT));
+                submitButton.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_SUBMIT);
+                submitButton.addAttribute(QName.get(HtmlConstants.VALUE),
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_SUBMIT, locale));
                 buttonsContainer.add(submitButton);
 
                 // Cancel button
-                Element cancelButton = new DOMElement(QNAME_NODE_INPUT);
-                cancelButton.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_BUTTON);
-                cancelButton.addAttribute(QNAME_ATTRIBUTE_VALUE, "Annuler");
-                cancelButton.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "closeFancybox()");
+                Element cancelButton = new DOMElement(QName.get(HtmlConstants.INPUT));
+                cancelButton.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_BUTTON);
+                cancelButton.addAttribute(QName.get(HtmlConstants.VALUE),
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_CANCEL, locale));
+                cancelButton.addAttribute(QName.get(HtmlConstants.ONCLICK), "closeFancybox()");
                 buttonsContainer.add(cancelButton);
             }
         }
@@ -935,12 +935,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Utility method, used to write HTML data.
-     * 
+     *
      * @param htmlElement HTML element to write
      * @return HTML data
      * @throws IOException
      */
-    private String writeHtmlData(Element htmlElement) throws IOException {
+    protected String writeHtmlData(Element htmlElement) throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         OutputStream bufferedOutput = new BufferedOutputStream(output);
         HTMLWriter htmlWriter = null;
@@ -951,16 +951,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             htmlWriter.write(htmlElement);
 
             resultat = output.toString(CharEncoding.UTF_8);
+
+            bufferedOutput.close();
+            output.close();
+            htmlWriter.close();
         } catch (IOException e) {
             throw e;
-        } finally {
-            try {
-                bufferedOutput.close();
-                output.close();
-                htmlWriter.close();
-            } catch (IOException e) {
-                throw e;
-            }
         }
         return resultat;
     }
@@ -968,75 +964,76 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Utility method used to insert styles rows.
-     * 
+     *
      * @param tableParent parent table node
-     * @param resourceBundle resource bundle
+     * @param locale current locale
      * @param portalStyles portal styles
      * @param windowStyles window styles
      */
-    private void insertStylesRows(Element tableParent, ResourceBundle resourceBundle, List<String> portalStyles, List<String> windowStyles) {
+    private void insertStylesRows(Element tableParent, Locale locale, List<String> portalStyles, List<String> windowStyles) {
         String displayStyle = StringUtils.EMPTY;
         for (String windowStyle : windowStyles) {
             displayStyle += windowStyle + " ";
         }
         if (StringUtils.isEmpty(displayStyle)) {
-            displayStyle = resourceBundle.getString(KEY_WINDOW_PROPERTIES_NO_STYLE);
+            displayStyle = this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_NO_STYLE, locale);
         }
 
         Set<String> styles = new HashSet<String>(portalStyles);
         styles.addAll(windowStyles);
 
         // Styles row
-        Element rowStyles = new DOMElement(QNAME_NODE_DIV);
-        rowStyles.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_ROW);
+        Element rowStyles = new DOMElement(QName.get(HtmlConstants.DIV));
+        rowStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
         tableParent.add(rowStyles);
 
         // Styles left cell
-        Element leftCellStyles = new DOMElement(QNAME_NODE_DIV);
-        leftCellStyles.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL + " " + HTML_CLASS_FANCYBOX_LABEL);
-        leftCellStyles.setText(resourceBundle.getString(KEY_WINDOW_PROPERTIES_STYLES));
+        Element leftCellStyles = new DOMElement(QName.get(HtmlConstants.DIV));
+        leftCellStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+        leftCellStyles.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES, locale));
         rowStyles.add(leftCellStyles);
 
         // Styles right cell
-        Element rightCellStyles = new DOMElement(QNAME_NODE_DIV);
-        rightCellStyles.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+        Element rightCellStyles = new DOMElement(QName.get(HtmlConstants.DIV));
+        rightCellStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
         rightCellStyles.setText(displayStyle);
         rowStyles.add(rightCellStyles);
 
         // Styles right cell display link
-        Element aStylesDisplay = new DOMElement(QNAME_NODE_A);
-        aStylesDisplay.addAttribute(QNAME_ATTRIBUTE_HREF, HTML_HREF_DEFAULT);
-        aStylesDisplay.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "toggleRow(this, '" + HTML_CLASS_TOGGLE_STYLES_ROW + "')");
-        aStylesDisplay.setText(resourceBundle.getString(KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK));
+        Element aStylesDisplay = new DOMElement(QName.get(HtmlConstants.A));
+        aStylesDisplay.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
+        aStylesDisplay.addAttribute(QName.get(HtmlConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_STYLES_ROW + "')");
+        aStylesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK, locale));
         rightCellStyles.add(aStylesDisplay);
 
         if (CollectionUtils.isNotEmpty(styles)) {
             // Styles display toggle row
-            Element rowToggle = new DOMElement(QNAME_NODE_DIV);
-            rowToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_STYLES_ROW + " " + HTML_CLASS_FANCYBOX_ROW);
-            rowToggle.addAttribute(QNAME_ATTRIBUTE_STYLE, HTML_STYLE_DISPLAY_NONE);
+            Element rowToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+            rowToggle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_STYLES_ROW + " "
+                    + HtmlConstants.CLASS_FANCYBOX_ROW);
+            rowToggle.addAttribute(QName.get(HtmlConstants.STYLE), HtmlConstants.STYLE_DISPLAY_NONE);
             tableParent.add(rowToggle);
 
             // Styles display toggle empty left cell
-            Element leftCellToggle = new DOMElement(QNAME_NODE_DIV);
-            leftCellToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
-            leftCellToggle.setText(HTML_TEXT_DEFAULT);
+            Element leftCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+            leftCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            leftCellToggle.setText(HtmlConstants.TEXT_DEFAULT);
             rowToggle.add(leftCellToggle);
 
             // Styles display toggle right cell
-            Element rightCellToggle = new DOMElement(QNAME_NODE_DIV);
-            rightCellToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+            Element rightCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+            rightCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
             rowToggle.add(rightCellToggle);
 
             // Styles display table
-            Element table = new DOMElement(QNAME_NODE_DIV);
-            table.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_TABLE);
+            Element table = new DOMElement(QName.get(HtmlConstants.DIV));
+            table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
             rightCellToggle.add(table);
 
             // Loop on each style
             for (String style : styles) {
                 boolean checkboxChecked = windowStyles.contains(style);
-                Element row = this.generateRow(style, INPUT_TYPE_CHECKBOX, HTML_NAME_STYLE, style, checkboxChecked);
+                Element row = this.generateRow(style, HtmlConstants.INPUT_TYPE_CHECKBOX, HTML_NAME_STYLE, style, checkboxChecked);
                 table.add(row);
             }
         }
@@ -1045,56 +1042,59 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Utility method used to insert conditional scope row.
-     * 
+     *
      * @param tableParent parent table node
-     * @param resourceBundle resource bundle
+     * @param locale current locale
      * @param window window
      */
-    private void insertConditionalScopeRow(Element tableParent, ResourceBundle resourceBundle, Window window) {
+    private void insertConditionalScopeRow(Element tableParent, Locale locale, Window window) {
         String conditionalScope = window.getProperty("osivia.conditionalScope");
         Map<String, String> scopes = new LinkedHashMap<String, String>();
 
         List<ProfilBean> profils = this.getProfilManager().getListeProfils();
         for (ProfilBean profil : profils) {
-            scopes.put(profil.getName(), "Profil " + profil.getName());
+            scopes.put(profil.getName(),
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_PROFIL, locale) + " "
+                            + profil.getName());
         }
         if (!scopes.isEmpty()) {
             // Row
-            Element row = new DOMElement(QNAME_NODE_DIV);
-            row.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_ROW);
+            Element row = new DOMElement(QName.get(HtmlConstants.DIV));
+            row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
             tableParent.add(row);
 
             // Left cell
-            Element leftCell = new DOMElement(QNAME_NODE_DIV);
-            leftCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL + " " + HTML_CLASS_FANCYBOX_LABEL);
-            leftCell.setText("Affichage conditionné au profil :");
+            Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
+            leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+            leftCell.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_DISPLAY, locale));
             row.add(leftCell);
 
             // Right cell
-            Element rightCell = new DOMElement(QNAME_NODE_DIV);
-            rightCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+            Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
+            rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
             row.add(rightCell);
 
             // Select
-            Element select = new DOMElement(QNAME_NODE_SELECT);
-            select.addAttribute(QNAME_ATTRIBUTE_NAME, "conditionalScope");
+            Element select = new DOMElement(QName.get(HtmlConstants.SELECT));
+            select.addAttribute(QName.get(HtmlConstants.NAME), "conditionalScope");
             rightCell.add(select);
 
             // All profiles option
-            Element optionAllProfiles = new DOMElement(QNAME_NODE_OPTION);
-            optionAllProfiles.addAttribute(QNAME_ATTRIBUTE_VALUE, StringUtils.EMPTY);
+            Element optionAllProfiles = new DOMElement(QName.get(HtmlConstants.OPTION));
+            optionAllProfiles.addAttribute(QName.get(HtmlConstants.VALUE), StringUtils.EMPTY);
             if (StringUtils.isNotEmpty(conditionalScope)) {
-                optionAllProfiles.addAttribute(QNAME_ATTRIBUTE_SELECTED, SELECTED);
+                optionAllProfiles.addAttribute(QName.get(HtmlConstants.SELECTED), HtmlConstants.INPUT_SELECTED);
             }
-            optionAllProfiles.setText("Tous les profils");
+            optionAllProfiles.setText(this.internationalizationService.getString(
+                    InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_ALL_PROFILES, locale));
             select.add(optionAllProfiles);
 
             for (String scope : scopes.keySet()) {
                 // Scope option
-                Element optionScope = new DOMElement(QNAME_NODE_OPTION);
-                optionScope.addAttribute(QNAME_ATTRIBUTE_VALUE, scope);
+                Element optionScope = new DOMElement(QName.get(HtmlConstants.OPTION));
+                optionScope.addAttribute(QName.get(HtmlConstants.VALUE), scope);
                 if (StringUtils.equals(conditionalScope, scope)) {
-                    optionScope.addAttribute(QNAME_ATTRIBUTE_SELECTED, SELECTED);
+                    optionScope.addAttribute(QName.get(HtmlConstants.SELECTED), HtmlConstants.INPUT_SELECTED);
                 }
                 optionScope.setText(scopes.get(scope));
                 select.add(optionScope);
@@ -1104,92 +1104,94 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Utility method used to insert dynamic properties rows.
-     * 
+     *
      * @param tableParent parent table node
-     * @param resourceBundle resource bundle
+     * @param locale current locale
      * @param isBashActive bash active indicator
      * @param scriptContent script content
      */
-    private void insertDynamicPropertiesRows(Element tableParent, ResourceBundle resourceBundle, boolean isBashActive, String scriptContent) {
+    private void insertDynamicPropertiesRows(Element tableParent, Locale locale, boolean isBashActive, String scriptContent) {
         // Label - checkbox input unique ID link
         String checkboxId = UUID.randomUUID().toString();
 
         // Dynamic properties label
         String dynamicPropertiesLabel;
         if (isBashActive) {
-            dynamicPropertiesLabel = "Script Shell";
+            dynamicPropertiesLabel = InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHELL_SCRIPT;
         } else {
             dynamicPropertiesLabel = "-";
         }
 
         // Dynamic properties row
-        Element rowDynamicProperties = new DOMElement(QNAME_NODE_DIV);
-        rowDynamicProperties.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_ROW);
+        Element rowDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
+        rowDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
         tableParent.add(rowDynamicProperties);
 
         // Dynamic properties left cell
-        Element leftCellDynamicProperties = new DOMElement(QNAME_NODE_DIV);
-        leftCellDynamicProperties.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL + " " + HTML_CLASS_FANCYBOX_LABEL);
-        leftCellDynamicProperties.setText("Propriétés dynamiques :");
+        Element leftCellDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
+        leftCellDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+        leftCellDynamicProperties.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES,
+                locale));
         rowDynamicProperties.add(leftCellDynamicProperties);
 
         // Dynamic properties right cell
-        Element rightCellDynamicProperties = new DOMElement(QNAME_NODE_DIV);
-        rightCellDynamicProperties.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+        Element rightCellDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
+        rightCellDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
         rightCellDynamicProperties.setText(dynamicPropertiesLabel);
         rowDynamicProperties.add(rightCellDynamicProperties);
 
         // Dynamic properties right cell display link
-        Element aDynamicPropertiesDisplay = new DOMElement(QNAME_NODE_A);
-        aDynamicPropertiesDisplay.addAttribute(QNAME_ATTRIBUTE_HREF, HTML_HREF_DEFAULT);
-        aDynamicPropertiesDisplay.addAttribute(QNAME_ATTRIBUTE_ONCLICK, "toggleRow(this, '" + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + "')");
-        aDynamicPropertiesDisplay.setText("Modifier");
+        Element aDynamicPropertiesDisplay = new DOMElement(QName.get(HtmlConstants.A));
+        aDynamicPropertiesDisplay.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
+        aDynamicPropertiesDisplay.addAttribute(QName.get(HtmlConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + "')");
+        aDynamicPropertiesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CHANGE, locale));
         rightCellDynamicProperties.add(aDynamicPropertiesDisplay);
 
         // Dynamic properties display toggle row
-        Element rowToggle = new DOMElement(QNAME_NODE_DIV);
-        rowToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + " " + HTML_CLASS_FANCYBOX_ROW);
-        rowToggle.addAttribute(QNAME_ATTRIBUTE_STYLE, HTML_STYLE_DISPLAY_NONE);
+        Element rowToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+        rowToggle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + " "
+                + HtmlConstants.CLASS_FANCYBOX_ROW);
+        rowToggle.addAttribute(QName.get(HtmlConstants.STYLE), HtmlConstants.STYLE_DISPLAY_NONE);
         tableParent.add(rowToggle);
 
         // Dynamic properties display toggle left cell
-        Element leftCellToggle = new DOMElement(QNAME_NODE_DIV);
-        leftCellToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+        Element leftCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+        leftCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
         rowToggle.add(leftCellToggle);
 
         // Dynamic properties display toggle checkbox label
-        Element label = new DOMElement(QNAME_NODE_LABEL);
-        label.addAttribute(QNAME_ATTRIBUTE_FOR, checkboxId);
-        label.setText("Activer le script beanshell :");
+        Element label = new DOMElement(QName.get(HtmlConstants.LABEL));
+        label.addAttribute(QName.get(HtmlConstants.FOR), checkboxId);
+        label.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES_BEAN_SHELL, locale));
         leftCellToggle.add(label);
 
         // Dynamic properties display toggle checkbox
-        Element checkbox = new DOMElement(QNAME_NODE_INPUT);
-        checkbox.addAttribute(QNAME_ATTRIBUTE_ID, checkboxId);
-        checkbox.addAttribute(QNAME_ATTRIBUTE_TYPE, INPUT_TYPE_CHECKBOX);
-        checkbox.addAttribute(QNAME_ATTRIBUTE_NAME, "bshActivation");
-        checkbox.addAttribute(QNAME_ATTRIBUTE_VALUE, "1");
-        checkbox.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_SMALL_INPUT);
+        Element checkbox = new DOMElement(QName.get(HtmlConstants.INPUT));
+        checkbox.addAttribute(QName.get(HtmlConstants.ID), checkboxId);
+        checkbox.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_CHECKBOX);
+        checkbox.addAttribute(QName.get(HtmlConstants.NAME), "bshActivation");
+        checkbox.addAttribute(QName.get(HtmlConstants.VALUE), "1");
+        checkbox.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_SMALL_INPUT);
         if (isBashActive) {
-            checkbox.addAttribute(QNAME_ATTRIBUTE_CHECKED, CHECKED);
+            checkbox.addAttribute(QName.get(HtmlConstants.CHECKED), HtmlConstants.INPUT_CHECKED);
         }
         leftCellToggle.add(checkbox);
 
         // Dynamic properties display toggle right cell
-        Element rightCellToggle = new DOMElement(QNAME_NODE_DIV);
-        rightCellToggle.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+        Element rightCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
+        rightCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
         rowToggle.add(rightCellToggle);
 
         // Dynamic properties display toggle right cell textarea
-        Element textarea = new DOMElement(QNAME_NODE_TEXTAREA);
-        textarea.addAttribute(QNAME_ATTRIBUTE_NAME, "bshScript");
-        textarea.addAttribute(QNAME_ATTRIBUTE_ROWS, "10");
-        textarea.addAttribute(QNAME_ATTRIBUTE_COLS, "75");
+        Element textarea = new DOMElement(QName.get(HtmlConstants.TEXTAREA));
+        textarea.addAttribute(QName.get(HtmlConstants.NAME), "bshScript");
+        textarea.addAttribute(QName.get(HtmlConstants.ROWS), "10");
+        textarea.addAttribute(QName.get(HtmlConstants.COLS), "75");
         textarea.setText(scriptContent);
         rightCellToggle.add(textarea);
 
         // Dynamic properties display toggle right cell example
-        Element example = new DOMElement(QNAME_NODE_PRE);
+        Element example = new DOMElement(QName.get(HtmlConstants.PRE));
         StringBuffer sb = new StringBuffer();
         sb.append("/*\n");
         sb.append("implicits variables :\n");
@@ -1213,31 +1215,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     private Element generateRow(String label, String inputType, String inputName, String inputValue, boolean checkboxChecked) {
         // Row
-        Element row = new DOMElement(QNAME_NODE_DIV);
-        row.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_ROW);
+        Element row = new DOMElement(QName.get(HtmlConstants.DIV));
+        row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
 
         // Left cell
-        Element leftCell = new DOMElement(QNAME_NODE_DIV);
-        leftCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL + " " + HTML_CLASS_FANCYBOX_LABEL);
+        Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
+        leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
         leftCell.setText(label);
         row.add(leftCell);
 
         // Right cell
-        Element rightCell = new DOMElement(QNAME_NODE_DIV);
-        rightCell.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_FANCYBOX_CELL);
+        Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
+        rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
         row.add(rightCell);
 
         // Right cell input
-        Element input = new DOMElement(QNAME_NODE_INPUT);
-        input.addAttribute(QNAME_ATTRIBUTE_TYPE, inputType);
-        input.addAttribute(QNAME_ATTRIBUTE_NAME, inputName);
+        Element input = new DOMElement(QName.get(HtmlConstants.INPUT));
+        input.addAttribute(QName.get(HtmlConstants.TYPE), inputType);
+        input.addAttribute(QName.get(HtmlConstants.NAME), inputName);
         if (inputValue != null) {
-            input.addAttribute(QNAME_ATTRIBUTE_VALUE, inputValue);
+            input.addAttribute(QName.get(HtmlConstants.VALUE), inputValue);
         }
-        if (INPUT_TYPE_CHECKBOX.equals(inputType)) {
-            input.addAttribute(QNAME_ATTRIBUTE_CLASS, HTML_CLASS_SMALL_INPUT);
+        if (HtmlConstants.INPUT_TYPE_CHECKBOX.equals(inputType)) {
+            input.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_SMALL_INPUT);
             if (checkboxChecked) {
-                input.addAttribute(QNAME_ATTRIBUTE_CHECKED, CHECKED);
+                input.addAttribute(QName.get(HtmlConstants.CHECKED), HtmlConstants.INPUT_CHECKED);
             }
         }
         rightCell.add(input);
@@ -1252,8 +1254,9 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         if ((response instanceof PageRendition) && (command instanceof PageCommand)) {
             // Teste si le mode assistant est activé
-            Object windowSettingMode = command.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_WINDOWS_SETTING_MODE);
-            if (!Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
+            Object windowSettingMode = command.getControllerContext()
+                    .getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+            if (!InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
                 return response;
             }
 
@@ -1265,15 +1268,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             // This is for inject the pageSettings
             ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(this.getTargetContextPath(), this.getPageSettingPath());
 
+            // Internationalization service
+            dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
             // Formatter
-            dispatcher.setAttribute(Constants.ATTR_WINDOWS_FORMATTER, this);
+            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_FORMATTER, this);
             // Context
-            dispatcher.setAttribute(Constants.ATTR_WINDOWS_CONTROLLER_CONTEXT, context);
+            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CONTROLLER_CONTEXT, context);
             // URL générique de commande
             String portalContextPath = context.getServerInvocation().getServerContext().getPortalContextPath();
-            dispatcher.setAttribute(Constants.ATTR_WINDOWS_COMMAND_URL, portalContextPath + "/commands");
+            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_COMMAND_URL, portalContextPath + "/commands");
             // Current page
-            dispatcher.setAttribute(Constants.ATTR_WINDOWS_PAGE, page);
+            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
 
             PageType pageType = PageType.getPageType(page, context);
             if (PageType.STATIC_PAGE.equals(pageType)) {
@@ -1283,7 +1288,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
             dispatcher.include();
 
-            context.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.ATTR_WINDOWS_SETTINGS_CONTENT, dispatcher.getMarkup());
+            context.setAttribute(ControllerCommand.REQUEST_SCOPE, InternalConstants.ATTR_WINDOWS_SETTINGS_CONTENT, dispatcher.getMarkup());
         }
 
         return response;
@@ -1312,8 +1317,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 PortalObjectId popupWindowId = (PortalObjectId) context.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
 
                 if (popupWindowId == null) {
-                    regionProperties.put(Constants.ATTR_WINDOWS_WIZARD_MODE, Constants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE);
-                    regionProperties.put(Constants.ATTR_WINDOWS_ADD_PORTLET_URL, "#add-portlet");
+                    regionProperties.put(InternalConstants.ATTR_WINDOWS_WIZARD_MODE, InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE);
+                    regionProperties.put(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL, "#add-portlet");
                 }
 
                 // Le mode Ajax est incompatble avec le mode "admin".
@@ -1328,68 +1333,62 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     if (!windowId.endsWith("PIA_EMPTY")) {
                         URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
                         PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-                        Window window = (Window) this.getPortalObjectContainer().getObject(poid);
+                        DynamicWindow window = (DynamicWindow) this.getPortalObjectContainer().getObject(poid);
 
-                        if (!((DynamicWindow) window).isSessionWindow()) {
+                        if (!window.isSessionWindow() && (popupWindowId == null)) {
+                            // Window settings mode
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_SETTING_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
 
-                            if (popupWindowId == null) {
+                            // Commande suppression
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL, "#delete-portlet");
 
-                                // Window settings mode
-                                windowProperties.put(Constants.ATTR_WINDOWS_SETTING_MODE, Constants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
+                            // Commande paramètres
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL, "#" + PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId);
 
-                                // Commande suppression
-                                windowProperties.put(Constants.ATTR_WINDOWS_DELETE_PORTLET_URL, "#delete-portlet");
+                            windows.add(window);
 
-                                // Commande paramètres
-                                windowProperties.put(Constants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL, "#" + PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId);
+                            // Commandes de déplacement
+                            MoveWindowCommand upC = new MoveWindowCommand(windowId, MoveWindowCommand.UP);
+                            String upUrl = context.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL, upUrl);
 
-                                windows.add(window);
+                            MoveWindowCommand downC = new MoveWindowCommand(windowId, MoveWindowCommand.DOWN);
+                            String downUrl = context.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL, downUrl);
 
-                                // Commandes de déplacement
-                                MoveWindowCommand upC = new MoveWindowCommand(windowId, MoveWindowCommand.UP);
-                                String upUrl = context.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
-                                windowProperties.put(Constants.ATTR_WINDOWS_UP_COMMAND_URL, upUrl);
+                            MoveWindowCommand previousC = new MoveWindowCommand(windowId, MoveWindowCommand.PREVIOUS_REGION);
+                            String previousRegionUrl = context.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL, previousRegionUrl);
 
-                                MoveWindowCommand downC = new MoveWindowCommand(windowId, MoveWindowCommand.DOWN);
-                                String downUrl = context.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
-                                windowProperties.put(Constants.ATTR_WINDOWS_DOWN_COMMAND_URL, downUrl);
+                            MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, MoveWindowCommand.NEXT_REGION);
+                            String nextRegionUrl = context.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
+                            windowProperties.put(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL, nextRegionUrl);
 
-                                MoveWindowCommand previousC = new MoveWindowCommand(windowId, MoveWindowCommand.PREVIOUS_REGION);
-                                String previousRegionUrl = context.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
-                                windowProperties.put(Constants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL, previousRegionUrl);
-
-                                MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, MoveWindowCommand.NEXT_REGION);
-                                String nextRegionUrl = context.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
-                                windowProperties.put(Constants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL, nextRegionUrl);
-
-                                // Titre de la fenetre d'administration
-                                String instanceDisplayName = null;
-                                InstanceDefinition defInstance = this.getInstanceContainer().getDefinition(window.getContent().getURI());
-                                if (defInstance != null) {
-                                    instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
-                                }
-
-                                if (instanceDisplayName != null) {
-                                    windowProperties.put("osivia.instanceDisplayName", instanceDisplayName);
-                                }
+                            // Admin window title
+                            String instanceDisplayName = null;
+                            InstanceDefinition defInstance = this.getInstanceContainer().getDefinition(window.getContent().getURI());
+                            if (defInstance != null) {
+                                instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
                             }
+                            if (instanceDisplayName != null) {
+                                windowProperties.put(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME, instanceDisplayName);
 
+                            }
                         }
-
                     }
                 }
             }
         }
 
-        dispatcher.setAttribute(Constants.ATTR_WINDOWS_CURRENT_LIST, windows);
+        dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CURRENT_LIST, windows);
     }
 
 
     /**
      * Synchronize context regions with layout
-     * 
+     *
      * if a region is not present in the context, creates a new one
-     * 
+     *
      * @param rendition
      * @param page
      * @throws Exception
@@ -1418,7 +1417,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
         }
     }
-    
+
 
     /**
      * @return the pageSettingPath
@@ -1516,7 +1515,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for portalObjectContainer.
-     * 
+     *
      * @return the portalObjectContainer
      */
     public PortalObjectContainer getPortalObjectContainer() {
@@ -1525,7 +1524,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalObjectContainer.
-     * 
+     *
      * @param portalObjectContainer the portalObjectContainer to set
      */
     public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
@@ -1534,7 +1533,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for portalAuthorizationManagerFactory.
-     * 
+     *
      * @return the portalAuthorizationManagerFactory
      */
     public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
@@ -1543,7 +1542,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalAuthorizationManagerFactory.
-     * 
+     *
      * @param portalAuthorizationManagerFactory the portalAuthorizationManagerFactory to set
      */
     public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
@@ -1552,7 +1551,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for layoutService.
-     * 
+     *
      * @return the layoutService
      */
     public LayoutService getLayoutService() {
@@ -1561,7 +1560,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for layoutService.
-     * 
+     *
      * @param layoutService the layoutService to set
      */
     public void setLayoutService(LayoutService layoutService) {
@@ -1570,7 +1569,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for themeService.
-     * 
+     *
      * @return the themeService
      */
     public ThemeService getThemeService() {
@@ -1579,7 +1578,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for themeService.
-     * 
+     *
      * @param themeService the themeService to set
      */
     public void setThemeService(ThemeService themeService) {
@@ -1588,7 +1587,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for profilManager.
-     * 
+     *
      * @return the profilManager
      */
     public IProfilManager getProfilManager() {
@@ -1597,11 +1596,29 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for profilManager.
-     * 
+     *
      * @param profilManager the profilManager to set
      */
     public void setProfilManager(IProfilManager profilManager) {
         this.profilManager = profilManager;
+    }
+
+    /**
+     * Getter for internationalizationService.
+     *
+     * @return the internationalizationService
+     */
+    public IInternationalizationService getInternationalizationService() {
+        return this.internationalizationService;
+    }
+
+    /**
+     * Setter for internationalizationService.
+     *
+     * @param internationalizationService the internationalizationService to set
+     */
+    public void setInternationalizationService(IInternationalizationService internationalizationService) {
+        this.internationalizationService = internationalizationService;
     }
 
 }
