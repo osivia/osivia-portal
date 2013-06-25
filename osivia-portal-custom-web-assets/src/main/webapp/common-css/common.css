@@ -79,6 +79,11 @@
 }
 
 
+.toolbar-menu hr {
+    visibility:	inherit;
+
+}
+
 /* Fancybox */
 
 .fancybox-content {

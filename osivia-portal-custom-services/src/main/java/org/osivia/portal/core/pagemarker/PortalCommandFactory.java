@@ -223,6 +223,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 	       
 	    if( closePopup) {
 	        // On memorise la commande qui sera executée au retour
+	        // TODO : en plus , transformer la commande et render minimaliste du popup (juste un view)
 	           controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd", cmd);
        }       
 	       
