@@ -61,7 +61,8 @@ public final class InternationalizationConstants {
     public static final String KEY_PAGE_RIGHTS = "SUBMENU_PAGE_RIGHTS";
     /** Bundle resource key for CMS edition menu title. */
     public static final String KEY_CMS_EDITION_MENU_TITLE = "MENU_CMS_EDITION";
-
+    /** Bundle resource key for CMS sitemap. */
+    public static final String KEY_CMS_EDITION_SITEMAP = "SUBMENU_CMS_SITEMAP";
 
     // Window properties
 
