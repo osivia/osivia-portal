@@ -564,6 +564,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx cmxCtx = new CMSServiceCtx();
                     cmxCtx.setControllerContext(controllerCtx);
                     cmxCtx.setScope(navigationScope);
+
+                    // test si mode assistant activé
+                    if ("preview".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                        cmxCtx.setDisplayLiveVersion("1");
+                    }
+
                     CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
 
                     // Affichage en mode page ?
@@ -1712,6 +1718,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmxCtx.setControllerContext(controllerCtx);
                         cmxCtx.setScope(navigationScope);
 
+                        // test si mode assistant activé
+                        if ("preview".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                            cmxCtx.setDisplayLiveVersion("1");
+                        }
+
+
 
                         while (pathPublication.contains(basePath)) {
 
@@ -1728,6 +1740,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                             BreadcrumbItem item = new BreadcrumbItem(navItem.getProperties().get("displayName"), url, null, false);
                             breadcrumbDisplay.getChilds().add(0, item);
+
 
                             // Get the navigation parent
 

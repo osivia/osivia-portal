@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,9 +33,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -44,25 +41,15 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
-import org.jboss.portal.server.request.URLContext;
 import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSHandlerProperties;
-import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSObjectPath;
-import org.osivia.portal.core.cms.CMSPublicationInfos;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
+import org.osivia.portal.core.auth.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.PermLinkCommand;
-import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
@@ -569,10 +556,12 @@ public class CmsCommand extends DynamicCommand {
 				cmsReadItemContext = new CMSServiceCtx();
 				cmsReadItemContext.setControllerContext(getControllerContext());
 
-				//if (IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(contextualization)) {
-					//cmsReadItemContext.setScope(itemScope);
-				cmsReadItemContext.setDisplayLiveVersion(displayLiveVersion);
-				//}
+                // test si mode assistant activé
+                if ("preview".equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                    cmsReadItemContext.setDisplayLiveVersion("1");
+                }
+
+
 			}
 
 			/* Lecture des informations de publication */
@@ -934,6 +923,9 @@ public class CmsCommand extends DynamicCommand {
 				portalSiteScope = baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
 				cmsReadNavContext.setControllerContext(getControllerContext());
 				cmsReadNavContext.setScope(portalSiteScope);
+	            if ("preview".equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+	                cmsReadNavContext.setDisplayLiveVersion("1");
+                }
 			}
 
 			if (baseCMSPublicationPage != null

@@ -51,6 +51,7 @@ import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
@@ -98,6 +99,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
     /** HTML class "fancybox_inline". */
     private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
+    /** HTML class "fancybox_refresh". */
+    private static final String HTML_CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
 
     /** Pages list URL. */
     private static final String URL_PAGES_LIST = "#pages-list";
@@ -413,6 +416,20 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.CLASS), cmsModeHtmlClass);
             cmsIconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
             this.addSubMenuElement(templateEditionMenuUl, cmsIconsDisplay);
+
+            Map<String, String> windowProps = new HashMap<String, String>();
+            windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
+            Map<String, String> params = new HashMap<String, String>();
+
+            String siteMapPopupURL = getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
+                    "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params);
+
+            Element cmsViewSitemap = new DOMElement(QName.get(HtmlConstants.A));
+            cmsViewSitemap.addAttribute(QName.get(HtmlConstants.HREF), siteMapPopupURL);
+            cmsViewSitemap.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+            cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_EDITION_SITEMAP, locale));
+            this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
+
         }
 
 
@@ -565,6 +582,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                         String navigationMode = page.getDeclaredProperty("osivia.navigationMode");
                         Boolean cmsNavigationMode = "cms".equals(navigationMode);
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE, cmsNavigationMode);
+
+
                     }
                 } catch (PortalSecurityException e) {
                     logger.error(StringUtils.EMPTY, e);
