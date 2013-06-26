@@ -1,11 +1,11 @@
 package org.osivia.portal.core.assistantpage;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * build commands provided by ajax action requests
@@ -22,13 +22,14 @@ public class CmsAjaxCommandFactory extends AbstractCommandFactory {
         if ("windowmove".equals(action)) {
 
             String windowId = req.getParameter("windowId");
-            // String fromPos = req.getParameter("fromPos");
+            String fromPos = req.getParameter("fromPos");
             String fromRegion = req.getParameter("fromRegion");
             String toPos = req.getParameter("toPos");
             String toRegion = req.getParameter("toRegion");
+            int fromPosInt = Integer.parseInt(fromPos);
             int toPosInt = Integer.parseInt(toPos);
 
-            return new CmsMoveFragmentCommand(windowId, fromRegion, toRegion, (toPosInt > 0));
+            return new CmsMoveFragmentCommand(windowId, fromRegion, fromPosInt, toRegion, toPosInt);
         }
 
         //

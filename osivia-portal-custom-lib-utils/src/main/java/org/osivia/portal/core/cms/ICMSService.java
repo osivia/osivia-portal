@@ -63,15 +63,16 @@ public interface ICMSService {
 	 */
 	public void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI)  throws CMSException ;
 	
-	/**
-	 * Move a CMS fragment on a page (drag & drop)
-	 * @param cmsCtx context
-	 * @param pagePath the path of the page
-	 * @param refURI an unique identifier of the fragment to move in the current page
-	 * @param toURI an unique identifier of an object which recieve the fragment (region or window)
-	 * @param belowFragment 'true' if fgt is dropped below the destination, 'false' if above
-	 * @param dropOnEmptyRegion 'true' if the fgt is moved in an empty region, 'false' if it is dragged between existing fragments
-	 * @throws CMSException
-	 */	
-	public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI, String toURI, boolean belowFragment, boolean dropOnEmptyRegion) throws CMSException ;
+	    /**
+     * Move a CMS fragment on a page (drag & drop)
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @param fromRegion the identifier of the region from the fragment is moved
+     * @param fromPos position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region)
+     * @param toRegion the identifier of the region where the fragment is dropped
+     * @param toPos the new position of the fgt in the toRegion
+     * @throws CMSException
+     */	
+    public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos) throws CMSException;
 }

@@ -85,26 +85,46 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
 
-        String cssRegion = "";
-        if ("preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
-            cssRegion = "";
-        }
-
         PrintWriter markup = rendererContext.getWriter();
+        
+        markup.print("<div"); // Main DIV region
 
-
-        markup.print("<div");
-        // if (rrc == null) // || region.getWindows().size() <= 0)
-        // {
-        // markup.print(" class='empty-region " + cssRegion + "'");
-        // } else
         if (rrc.getCSSId() != null) {
             markup.print(" id='");
             markup.print(rrc.getCSSId());
-            markup.print("' class='" + cssRegion + "'");
-
+            markup.print("'");
         }
         markup.print(">");
+        
+
+        // in cms mode, create a new fragment on the top of this region
+        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+
+
+            markup.print("<div class=\"regionPreview\">");
+
+            markup.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
+                    + "'\" href=\"" + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">"
+                    + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
+
+
+            markup.println("</div>");
+
+            if (rrc.getWindows().size() == 1) {
+                WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
+                if (wrc.getId().contains("_PIA_EMPTY")) {
+
+                    markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"fragmentPreview\">"
+                            + INTERNATIONALIZATION_SERVICE.getString("CMS_EMPTY_REGION", locale) + "</div>");
+
+                }
+            }
+
+            // Begin of DIV for Drag n drop
+            markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
+        }
+
+
 
         // Lien d'ajout de portlet
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
@@ -130,35 +150,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 throw new RenderException(e);
             }
         }
-
-
-        // in cms mode, create a new fragment on the top of this region
-        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
-
-
-            markup.print("<div class=\"regionPreview\">");
-            // markup.println("<div class=\"previewOverlay\" >");
-
-            markup.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
-                    + "'\" href=\"" + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">"
-                    + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
-
-            // markup.print("</div>");
-            markup.println("</div>");
-
-            // if region is empty, create a zone to drop other fragments here
-            if (rrc.getWindows().size() == 1) {
-                WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
-                if (wrc.getId().contains("_PIA_EMPTY")) {
-
-                    markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region dnd-handle fragmentPreview\">"
-                            + INTERNATIONALIZATION_SERVICE.getString("CMS_EMPTY_REGION", locale)
-                            + "</div>");
-
-                }
-            }
-        }
-
     }
 
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
@@ -170,6 +161,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         PrintWriter markup = rendererContext.getWriter();
-        markup.print("</div>");
+
+        Boolean regionCms = false;
+        if (rrc.getRegionCms() != null) {
+            regionCms = rrc.getRegionCms();
+        }
+
+        // End of DIV for Drag n drop
+        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+            markup.print("</div>");
+        }
+
+        markup.print("</div>"); // End of Main DIV region
     }
 }

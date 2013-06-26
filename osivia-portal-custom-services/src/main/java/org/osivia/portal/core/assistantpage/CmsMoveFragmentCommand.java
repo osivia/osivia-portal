@@ -34,32 +34,26 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
     /** the path of the page */
     private String pagePath;
 
-    /** an unique identifier of the fragment to move in the current page */
-    private String refURI;
+    /** the identifier of the region from the fragment is moved */
+    private String fromRegion;
 
-    /** an unique identifier of an object which recieve the fragment (region or window) */
-    private String toURI;
+    /** position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region) */
+    private Integer fromPos;
 
-    /** 'true' if fgt is dropped below the destination, 'false' if above */
-    private boolean belowFragment;
+    /** the identifier of the region where the fragment is dropped */
+    private String toRegion;
+    
+    /** the new position of the fgt in the toRegion */
+    private Integer toPos;
 
-    /** 'true' if the fgt is moved in an empty region, 'false' if it is dragged between existing fragments */
-    private boolean dropOnEmptyRegion = false;
 
-    public CmsMoveFragmentCommand(String pagePath, String refURI, String toURI, boolean belowFragment) {
+    public CmsMoveFragmentCommand(String pagePath, String fromRegion, Integer fromPosInt, String toRegion, Integer toPosInt) {
         this.pagePath = pagePath;
 
-        // Change window ID to ECM ID (remove prefix
-        this.refURI = refURI.replaceAll("^window_", "");
-
-        if (toURI.contains("region_")) {
-            this.toURI = toURI.replaceAll("^region_", "");
-            this.dropOnEmptyRegion = true;
-        } else {
-            this.toURI = toURI.replaceAll("^window_", "");
-        }
-
-        this.belowFragment = belowFragment;
+        this.fromRegion = fromRegion.replaceAll("^region_", "");
+        this.toRegion = toRegion.replaceAll("^region_", "");
+        this.fromPos = fromPosInt;
+        this.toPos = toPosInt;
     }
 
 
@@ -74,7 +68,7 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
 
 
-            getCMSService().moveFragment(cmsCtx, pagePath, refURI, toURI, belowFragment, dropOnEmptyRegion);
+            getCMSService().moveFragment(cmsCtx, pagePath, fromRegion, fromPos, toRegion, toPos);
         } catch (CMSException e) {
             throw new ControllerException(e);
         } catch (Exception e) {

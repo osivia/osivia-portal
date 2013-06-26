@@ -126,14 +126,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode"))) {
       	  // if is window cms, prepare the drag & drop style
-      	  if(regionCms) {
-      		  out.print("<div id=\"window_"+wrc.getProperty("osivia.windowId")+"\" class=\"dnd-region dnd-handle no-ajax-link\"> " +
-      	    	  		"<div>");
-      	  }
-      	  else {
-      		  out.print("<div class=\"no-ajax-link\"> " +
-    	    	  		"<div>");
-      	  }
+            // if(regionCms) {
+            // out.print("<div id=\"zone_" + wrc.getProperty("osivia.windowId") + "\" class=\"no-ajax-link\"> " + "<div id=\"window_"
+            // + wrc.getProperty("osivia.windowId") + "\">");
+            // }
+            // else {
+            out.print("<div class=\"no-ajax-link\"> ");
+            // + "<div>");
+            // }
         }
 
 
@@ -240,7 +240,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Activation des liens Ajax
         if (!"1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode"))) {
-            out.print("</div></div>");
+            // out.print("</div></div>");
+            out.print("</div>");
         }
 
 
