@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="1.2"
+              xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+    
+<application>
+	<view-handler>org.jboss.portletbridge.application.PortletViewHandler</view-handler>
+	<state-manager>org.jboss.portletbridge.application.PortletStateManager</state-manager>
+	<property-resolver>org.osivia.portal.administration.ejb.SetToListPropResolver</property-resolver>
+</application>
+
+<managed-bean>
+	<managed-bean-name>resource</managed-bean-name>
+	<managed-bean-class>org.osivia.portal.administration.ejb.ResourceBean</managed-bean-class>
+	<managed-bean-scope>application</managed-bean-scope>
+</managed-bean>
+
+<managed-bean>
+	<managed-bean-name>mediaBean</managed-bean-name>
+	<managed-bean-class>org.osivia.portal.administration.ejb.MediaBean</managed-bean-class>
+	<managed-bean-scope>application</managed-bean-scope>
+</managed-bean>
+
+<managed-bean>
+	<managed-bean-name>mediaData</managed-bean-name>
+	<managed-bean-class>org.osivia.portal.administration.ejb.MediaData</managed-bean-class>
+	<managed-bean-scope>application</managed-bean-scope>
+</managed-bean>
+
+ <converter>
+ 	<converter-id>profilConverter</converter-id>
+ 	<converter-class>org.osivia.portal.administration.ejb.ProfilConverter</converter-class>
+ </converter>
+
+
+
+</faces-config>

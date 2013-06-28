@@ -1,0 +1,57 @@
+<!DOCTYPE portlet-app PUBLIC
+   "-//JBoss Portal//DTD JBoss Portlet 2.6//EN"
+   "http://www.jboss.org/portal/dtd/jboss-portlet_2_6.dtd">
+
+
+   <portlet-app>
+    <portlet>
+         <portlet-name>osivia-portal-administration-portlet</portlet-name>
+         <transaction>
+            <trans-attribute>Required</trans-attribute>            
+        </transaction>
+          <header-content>
+           <script src="/faces/rfRes/org/ajax4jsf/framework.pack.js" type="text/javascript" ></script>
+           <script src="/faces/rfRes/org/richfaces/ui.pack.js" type="text/javascript" ></script>
+           <link rel="stylesheet" type="text/css" href="/css/screen.css" media="screen"/>
+         </header-content>
+         
+    </portlet>
+    
+    <service>
+	   	<service-name>PortalObjectContainer</service-name>
+	   	<service-class>org.jboss.portal.core.model.portal.PortalObjectContainer</service-class>
+	   	<service-ref>portal:container=PortalObject</service-ref>
+	</service>
+	
+	<service>
+	   	<service-name>ThemeService</service-name>
+	   	<service-class>org.jboss.portal.theme.ThemeService</service-class>
+	   	<service-ref>portal:service=ThemeService</service-ref>
+	</service>
+	
+	<service>
+	   	<service-name>LayoutService</service-name>
+	   	<service-class>org.jboss.portal.theme.LayoutService</service-class>
+	   	<service-ref>portal:service=LayoutService</service-ref>
+	</service>
+	
+	<service>
+	   	<service-name>PiaConfigDeployer</service-name>
+	   	<service-class>org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager</service-class>
+	   	<service-ref>osivia:service=ConfigDeployer</service-ref>
+	</service>
+	
+	<service>
+	   	<service-name>PiaProfilManager</service-name>
+	   	<service-class>org.osivia.portal.core.profils.IProfilManager</service-class>
+	   	<service-ref>osivia:service=ProfilManager</service-ref>
+	</service>
+	
+	<!-- 
+	<service>
+	   	<service-name>ResourceServingPortlet</service-name>
+	   	<service-class>javax.portlet.ResourceServingPortlet</service-class>
+	   	<service-ref>portal:service=PiaConfigDeployer</service-ref>
+	</service>
+	     -->
+</portlet-app>         
