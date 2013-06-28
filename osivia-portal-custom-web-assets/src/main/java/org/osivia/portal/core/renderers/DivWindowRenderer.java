@@ -135,23 +135,44 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       out.print("</div>");
       }
       
-      out.print("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+      //v2.0.9 : génération de div
+      if( ! "div".equals(System.getProperty("portlets.rendering")))
+    	  out.print("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 
      
 
       if(  "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle")))	{
-      
- 	  
-    	  out.print("<tr><td class=\"portlet-titlebar-left\"></td>");
-    	  out.print("<td class=\"portlet-titlebar-center\">");
+    	  
+          //v2.0.9 : génération de div
+    	  if(  "div".equals(System.getProperty("portlets.rendering")))	{
+    		  out.print("<div class=\"portlet-header\">");
+    	  }
+      	  else	{
+        	  out.print("<tr><td class=\"portlet-titlebar-left\"></td>");
+        	  out.print("<td class=\"portlet-titlebar-center\">");
+          }
     	  
     	  rendererContext.render(wrc.getDecoration());
-    	  out.print("</td><td class=\"portlet-titlebar-right\"></td></tr>");
+    	  
+          //v2.0.9 : génération de div
+          if( ! "div".equals(System.getProperty("portlets.rendering")))	{
+        	  out.print("</td><td class=\"portlet-titlebar-right\"></td></tr>");
+          }
+          
+      	  if(  "div".equals(System.getProperty("portlets.rendering")))	{
+    		  out.print("</div>");
+    	  }
+  
       }	
 
       //
-      out.print("<tr><td class=\"portlet-content-left\"></td>");
-      out.print("<td class=\"portlet-body\"><div class=\"portlet-content-center\">");
+      //v2.0.9 : génération de div
+      if( ! "div".equals(System.getProperty("portlets.rendering")))	{
+    	  out.print("<tr><td class=\"portlet-content-left\"></td>");
+    	  out.print("<td class=\"portlet-body\">");
+      }
+    	  
+      out.print("<div class=\"portlet-content-center\">");
      
 
       if( "admin".equals(wrc.getMode().toString()))	{
@@ -194,14 +215,31 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       }
       
 
+      //v2.0.9 : génération de div
+
+ 
+//      out.print("</div></td><td class=\"portlet-content-right\"></td></tr>");
+//
+//      //
+//      out.print("<tr><td class=\"portlet-footer-left\"></td>");
+//      out.print("<td class=\"portlet-footer-center\"></td>");
+//      out.print("<td class=\"portlet-footer-right\"></td></tr>");
+//      out.print("</table></div>");
+//      
+//      
+      out.print("</div>");
       
-      out.print("</div></td><td class=\"portlet-content-right\"></td></tr>");
+      if( ! "div".equals(System.getProperty("portlets.rendering")))	{
+    	  out.print("</td><td class=\"portlet-content-right\"></td></tr>");
 
       //
-      out.print("<tr><td class=\"portlet-footer-left\"></td>");
-      out.print("<td class=\"portlet-footer-center\"></td>");
-      out.print("<td class=\"portlet-footer-right\"></td></tr>");
-      out.print("</table></div>");
+    	  out.print("<tr><td class=\"portlet-footer-left\"></td>");
+    	  out.print("<td class=\"portlet-footer-center\"></td>");
+    	  out.print("<td class=\"portlet-footer-right\"></td></tr>");
+    	  out.print("</table>");
+      }
+      out.print("</div>");
+  
       
       //fin du style
       /*
