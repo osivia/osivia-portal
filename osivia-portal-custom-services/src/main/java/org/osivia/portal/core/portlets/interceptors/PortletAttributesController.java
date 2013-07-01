@@ -5,16 +5,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.PortalObjectPath.CanonicalFormat;
 import org.jboss.portal.core.model.portal.portlet.WindowContextImpl;
-import org.jboss.portal.identity.User;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
@@ -22,9 +18,6 @@ import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.response.ContentResponse;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
-import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
-import org.nuxeo.ecm.automation.client.jaxrs.Session;
-import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.core.page.EncodedParams;
 
 import bsh.Interpreter;
@@ -89,7 +82,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 	    /* Dynamic properties */
 	    
 	    
-		if (response instanceof FragmentResponse && invocation instanceof RenderInvocation) {
+		if ((response instanceof FragmentResponse) && (invocation instanceof RenderInvocation)) {
 			
 			   ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
 	    	

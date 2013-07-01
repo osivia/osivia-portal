@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
 
     <parent>
         <groupId>org.osivia.portal.core</groupId>
@@ -9,29 +11,12 @@
         <version>2.1-SNAPSHOT</version>
     </parent>
 
-
     <groupId>org.osivia.portal</groupId>
     <artifactId>osivia-portal-api</artifactId>
-    <version>2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Portal API library</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.nuxeo.ecm.automation</groupId>
-            <artifactId>nuxeo-automation-client</artifactId>
-            <version>5.4.2</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
-
+    <name>OSIVIA Portal - API library</name>
+    
+    
     <profiles>
         <profile>
             <id>deploy-osivia-modules</id>
@@ -48,7 +33,9 @@
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <copy file="${basedir}/target/${project.build.finalName}.jar" todir="${deploy.socle-libs.dir}" />
+                                        <copy
+                                            file="${basedir}/target/${project.build.finalName}.jar"
+                                            todir="${deploy.socle-libs.dir}" />
                                     </tasks>
                                 </configuration>
                                 <phase>package</phase>
@@ -59,6 +46,5 @@
             </build>
         </profile>
     </profiles>
-
 
 </project>

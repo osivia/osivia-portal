@@ -1,98 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	
-	
-	<parent>
-		<groupId>org.osivia.portal.core</groupId>
-		<artifactId>parent</artifactId>
-		<version>2.1-SNAPSHOT</version>
-	</parent>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.osivia.portal.core</groupId>
-	<artifactId>osivia-portal-jbp-portlet-lib</artifactId>
-	<version>2.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <parent>
+        <groupId>org.osivia.portal.core</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.1-SNAPSHOT</version>
+    </parent>
 
-	<name>Portal portlet lib library</name>
-	
- 
- 	<dependencies>
-	 	<dependency>
-			<groupId>org.osivia.portal.core</groupId>
-	     		<artifactId>osivia-portal-custom-lib-utils</artifactId>
-	     		<version>2.1-SNAPSHOT</version>
-	     		<scope>provided</scope>
-		</dependency>
-	 	<dependency>
-			<groupId>org.osivia.portal</groupId>
-	     		<artifactId>osivia-portal-api</artifactId>
-	     		<version>2.1-SNAPSHOT</version>
-	     		<scope>provided</scope>
-		</dependency>
-
-	</dependencies>
-
- 
- 
- 	<build>   		
-   
-    <plugins>
-       
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-        
-          <execution>
-          <id>make-jar</id>
-          <goals>
-            <goal>run</goal>
-          </goals>        
-          <configuration>
-            <tasks>
-                  <unzip src="${basedir}/original-file/portal-portlet-lib.jar" dest="${basedir}/target/classes" overwrite="true" />            
-             </tasks>
-          </configuration>
-          <phase>generate-resources</phase>
-        </execution>
-        </executions>
-      </plugin>
-		</plugins>
-
-	</build>    
+    <artifactId>osivia-portal-jbp-portlet-lib</artifactId>
+    <packaging>jar</packaging>
+    <name>OSIVIA Portal - Portlet library</name>
 
 
-<profiles>	 
-   <profile>
-     <id>deploy-osivia-modules</id>
-     <build>
-		<plugins>
-     <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-antrun-plugin</artifactId>
-      <executions>
-      <execution>
-        <id>copy-jar</id>
-        <goals>
-            <goal>run</goal>
-          </goals>        
-        <configuration>
-          <tasks>
-                 <copy file="${basedir}/target/${project.build.finalName}.jar" tofile="${deploy.jbp.dir}/lib/portal-portlet-lib.jar" overwrite="true" />
-          </tasks>
-        </configuration>
-        <phase>package</phase>
-      </execution>
-      </executions>
-    </plugin>
-		</plugins>
-	</build>
-  </profile>
- </profiles>
-	
-	
+    <dependencies>
+    
+        <dependency>
+            <groupId>org.osivia.portal</groupId>
+            <artifactId>osivia-portal-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    
+        <dependency>
+            <groupId>org.osivia.portal.core</groupId>
+            <artifactId>osivia-portal-custom-lib-utils</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-jar</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <unzip
+                                    src="${basedir}/original-file/portal-portlet-lib.jar"
+                                    dest="${basedir}/target/classes"
+                                    overwrite="true" />
+                            </tasks>
+                        </configuration>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <profiles>
+        <profile>
+            <id>deploy-osivia-modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-jar</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy
+                                            file="${basedir}/target/${project.build.finalName}.jar"
+                                            tofile="${deploy.jbp.dir}/lib/portal-portlet-lib.jar"
+                                            overwrite="true" />
+                                    </tasks>
+                                </configuration>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
-

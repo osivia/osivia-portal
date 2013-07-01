@@ -39,6 +39,7 @@
 
 .toolbar-menu ul {
     position: absolute;
+    margin: 0;
     padding: 0;
     background-color: #FFFFFF;
     visibility: hidden;
@@ -78,11 +79,10 @@
     background-position: 15px 0;
 }
 
-
 .toolbar-menu hr {
     visibility:	inherit;
-
 }
+
 
 /* Fancybox */
 
