@@ -79,10 +79,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             locale = Locale.US;
         }
 
-        Boolean regionCms = false;
-        if (rrc.getRegionCms() != null) {
-            regionCms = rrc.getRegionCms();
-        }
 
 
         PrintWriter markup = rendererContext.getWriter();
@@ -98,7 +94,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         
 
         // in cms mode, create a new fragment on the top of this region
-        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+        if (showCmsTools(rendererContext, rrc)) {
 
 
             markup.print("<div class=\"regionPreview\">");
@@ -152,6 +148,22 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
     }
 
+    /**
+     * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
+     * 
+     * @param rendererContext page context
+     * @param rrc region context
+     * @return
+     */
+    private Boolean showCmsTools(RendererContext rendererContext, RegionRendererContext rrc) {
+        Boolean showCmsTools = false;
+        if (rrc.getRegionCms() != null && rrc.getRegionCms() == true
+                && InternalConstants.CMS_EDITION_MODE_ON.equals(rendererContext.getProperty(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+            showCmsTools = true;
+        }
+        return showCmsTools;
+    }
+
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
             WindowRendererContext wrc = (WindowRendererContext) i.next();
@@ -168,7 +180,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // End of DIV for Drag n drop
-        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+        if (showCmsTools(rendererContext, rrc)) {
             markup.print("</div>");
         }
 

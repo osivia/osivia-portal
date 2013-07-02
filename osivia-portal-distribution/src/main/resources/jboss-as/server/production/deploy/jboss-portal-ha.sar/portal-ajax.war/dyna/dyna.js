@@ -23,12 +23,12 @@
 
 var currentSubmit;
 
-function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId)
+function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, refUri)
 {
    var options = {
       requestHeaders: ["ajax","true","bilto","toto"],
       method: "post",
-      postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId,
+      postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId+ "&refUri=" + refUri,
       onSuccess: function(t)
       {
       },
@@ -383,13 +383,19 @@ function footer()
          var fromRegionId = elt["regionId"];
          var fromPos = elt["pos"];
 
+	
+
          // Doing the snapshot after move will give us the new region and pos of the window
          snapshot();
          var toRegionId = elt["regionId"];
          var toPos = elt["pos"];
 
+	 
+	 var refUri = document.getElementById(toRegionId).childNodes[toPos].id;
+
          // Perform request
-         sendData("windowmove", windowId, fromPos, fromRegionId, toPos, toRegionId);
+         sendData("windowmove", windowId, fromPos, fromRegionId, toPos, toRegionId, refUri);
+
       }
    };
 
@@ -430,5 +436,4 @@ function footer()
       Event.observe(portlet, "click", bilto);
    }
 }
-
 

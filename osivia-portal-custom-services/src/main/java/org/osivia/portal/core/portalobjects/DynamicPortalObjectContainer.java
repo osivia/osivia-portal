@@ -340,7 +340,8 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 					cmsReadItemContext.setDisplayLiveVersion("0");
-                    if ("preview".equals(invocation.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                    if (InternalConstants.CMS_VERSION_PREVIEW.equals(invocation.getAttribute(ControllerCommand.SESSION_SCOPE,
+                            InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
 
 
 						cmsReadItemContext.setDisplayLiveVersion("1");

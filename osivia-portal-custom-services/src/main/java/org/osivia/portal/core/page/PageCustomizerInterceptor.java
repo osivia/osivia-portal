@@ -566,7 +566,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     cmxCtx.setScope(navigationScope);
 
                     // test si mode assistant activé
-                    if ("preview".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                    if (InternalConstants.CMS_VERSION_PREVIEW.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+                            InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
                         cmxCtx.setDisplayLiveVersion("1");
                     }
 
@@ -1719,7 +1720,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmxCtx.setScope(navigationScope);
 
                         // test si mode assistant activé
-                        if ("preview".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                        if (InternalConstants.CMS_VERSION_PREVIEW.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
+                                InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
                             cmxCtx.setDisplayLiveVersion("1");
                         }
 

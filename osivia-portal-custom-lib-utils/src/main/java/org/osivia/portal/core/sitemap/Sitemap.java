@@ -15,10 +15,12 @@ public class Sitemap {
     /** The absolute URL of the  link. */
     private String url;
 
+    /** true if the document has been published */
+    private Boolean published;
 
-    private String liveId;
+    /** true if the document has changed since the last publication */
+    private Boolean editedInLiveVersion;
 	
-	private boolean liveVersion;
 
 	/** Canonical constructor.*/
 	public Sitemap(String aTitle, String anUrl) {
@@ -50,33 +52,37 @@ public class Sitemap {
 	public void setUrl(String anUrl) {
 		this.url = anUrl;
 	}
-	
-    /**
-     * @return the liveVersion
-     */
-    public boolean isLiveVersion() {
-        return liveVersion;
-    }
+
 
     /**
-     * @param liveVersion the liveVersion to set
+     * @return the published
      */
-    public void setLiveVersion(boolean liveVersion) {
-        this.liveVersion = liveVersion;
+    public Boolean getPublished() {
+        return published;
     }
 
-    /**
-     * @return the liveId
-     */
-    public String getLiveId() {
-        return liveId;
-    }
 
     /**
-     * @param liveId the liveId to set
+     * @param published the published to set
      */
-    public void setLiveId(String liveId) {
-        this.liveId = liveId;
+    public void setPublished(Boolean published) {
+        this.published = published;
+    }
+
+
+    /**
+     * @return the editedInLiveVersion
+     */
+    public Boolean getEditedInLiveVersion() {
+        return editedInLiveVersion;
+    }
+
+
+    /**
+     * @param editedInLiveVersion the editedInLiveVersion to set
+     */
+    public void setEditedInLiveVersion(Boolean editedInLiveVersion) {
+        this.editedInLiveVersion = editedInLiveVersion;
     }
 
     public String toString() {

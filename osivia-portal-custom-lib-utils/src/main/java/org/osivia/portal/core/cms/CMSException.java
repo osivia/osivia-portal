@@ -15,12 +15,20 @@ public class CMSException extends Exception {
 		return errorCode;
 	}
 
-	public CMSException( Throwable e)	{
-		super( e);
+    public CMSException(Throwable e) {
+        super(e);
 	}
 
 	public CMSException(int errorCode) {
         this.errorCode = errorCode;
     }	
 	
+    public CMSException(String message) {
+        super(message);
+    }
+
+    public CMSException(String message, Throwable e) {
+        super(message, e);
+    }
+
 }

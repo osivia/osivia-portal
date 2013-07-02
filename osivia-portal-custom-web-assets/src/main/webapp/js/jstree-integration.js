@@ -21,6 +21,16 @@ $JQry(document).ready(function() {
 					"icon" : {
 						"image" : "/osivia-portal-custom-web-assets/jstree/types-icons/page.png"
 					}
+				},
+				"pageOnline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/icone_doc_valide2.gif"
+					}
+				},
+				"pageOffline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/icone_doc_travail2.gif"
+					}
 				}
 			}
 		},

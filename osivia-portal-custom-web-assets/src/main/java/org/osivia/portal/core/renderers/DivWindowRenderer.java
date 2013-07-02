@@ -102,16 +102,6 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Pour les décorateurs
         properties.setCurrentWindowId(wrc.getId());
 
-        // Déterminer si la window appartient à une région CMS
-        Boolean regionCms = false;
-        if(wrc instanceof WindowContext) {
-      	  WindowContext wc = (WindowContext) wrc;
-
-      	  if((wc.getRegionCms() != null) && (wrc.getProperty("osivia.windowId") != null)) {
-      		  regionCms = wc.getRegionCms();
-      	  }
-        }
-
         String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
 
         if( "1".equals(hidePortlet)) {
@@ -131,7 +121,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // + wrc.getProperty("osivia.windowId") + "\">");
             // }
             // else {
-            out.print("<div class=\"no-ajax-link\"> ");
+            out.print("<div ");
+            if (wrc.getProperty("osivia.windowId") != null) {
+                out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
+            }
+            out.print("class=\"no-ajax-link\"> ");
             // + "<div>");
             // }
         }
@@ -148,23 +142,20 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
   	   String cssFragment = "";
-  	   if(regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
+        if (showCmsTools(wrc)) {
   		   cssFragment = "fragmentPreview";
   	   }
 
         out.println("<div class=\" dyna-window-content "+cssFragment+"\" >");
 
         // edit / remove fragment actions
-        if (regionCms && "preview".equals(rendererContext.getProperty("osivia.cmsEditionMode"))) {
-            // out.println("<div class=\" previewOverlay\" >");
+        if (showCmsTools(wrc)) {
 
             out.print("<a class=\"fancyframe_refresh edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "'\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
             out.print("<a href=\"" + wrc.getProperty("osivia.cmsDeleteUrl") + "\" class=\"delete\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
-
-            // out.println("</div>");
 
         }
 
@@ -214,25 +205,19 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print("<td class=\"portlet-footer-right\"></td></tr>");
         out.print("</table></div>");
 
-        // fin du style
-        /*
-         * if( style != null)
-         * out.print("</div>");
-         */
+
         out.print("</div>"); // dyna-window-content
 
       // in cms mode, create a new fragment below the current window
-      if( regionCms && (wrc.getProperty("osivia.cmsEditUrl") != null))	{
+        if (showCmsTools(wrc)) {
 
 
     	  out.print("<div class=\"regionPreview\">");
-            // out.println("<div class=\"previewOverlay\" >");
 
             out.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL") + "'\" href=\""
                     + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale)
                     + "</a>");
 
-            // out.print("</div>");
     	  out.println("</div>");
 
       }
@@ -245,6 +230,30 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
 
+    }
+
+    /**
+     * Display CMS Tools if window is marked "CMS" (dynamic window) and if the tools are enabled in the session
+     * 
+     * @param wrc window context
+     * @return
+     */
+    private Boolean showCmsTools(WindowRendererContext wrc) {
+        // Déterminer si la window appartient à une région CMS
+        Boolean regionCms = false;
+        Boolean showCmsTools = false;
+        if (wrc instanceof WindowContext) {
+            WindowContext wc = (WindowContext) wrc;
+
+            if ((wc.getRegionCms() != null) && (wrc.getProperty("osivia.windowId") != null)) {
+                regionCms = wc.getRegionCms();
+            }
+
+            if (regionCms && InternalConstants.CMS_EDITION_MODE_ON.equals(wrc.getProperty(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                showCmsTools = true;
+            }
+        }
+        return showCmsTools;
     }
 
 

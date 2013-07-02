@@ -59,10 +59,30 @@ public final class InternationalizationConstants {
     public static final String KEY_PAGE_CMS = "SUBMENU_PAGE_CMS";
     /** Bundle resource key for page rights. */
     public static final String KEY_PAGE_RIGHTS = "SUBMENU_PAGE_RIGHTS";
-    /** Bundle resource key for CMS edition menu title. */
-    public static final String KEY_CMS_EDITION_MENU_TITLE = "MENU_CMS_EDITION";
-    /** Bundle resource key for CMS sitemap. */
-    public static final String KEY_CMS_EDITION_SITEMAP = "SUBMENU_CMS_SITEMAP";
+    
+    // CMS properties   
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE = "MENU_CMS_PAGE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_ONLINE = "MENU_CMS_PAGE_ONLINE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_PREVIEW = "MENU_CMS_PAGE_PREVIEW";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";    
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_DISPLAY_ONLINE_VERSION = "SUBMENU_CMS_DISPLAY_ONLINE_VERSION";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_DISPLAY_EDITION_MODE = "SUBMENU_CMS_DISPLAY_EDITION_MODE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_HIDE_EDITION_MODE = "SUBMENU_CMS_HIDE_EDITION_MODE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_CREATE = "SUBMENU_CMS_PAGE_CREATE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_OPTIONS = "SUBMENU_CMS_PAGE_OPTIONS";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_SITEMAP = "SUBMENU_CMS_SITEMAP";
 
     // Window properties
 

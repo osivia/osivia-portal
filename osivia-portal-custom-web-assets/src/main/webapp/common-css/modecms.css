@@ -1,3 +1,17 @@
+/* ============ Toolbar  ===================== */
+.toolbar-menu .online-version {
+	color : white;
+	background-color: rgb(110, 183, 53);
+	text-transform: none;
+	padding: 2px;
+}
+.toolbar-menu .preview-version {
+	color : white;
+	background-color: rgb(89, 119, 189);
+	text-transform: none;
+	padding: 2px;
+}
+
 /* ============= Mode Edition CMS ===================== */
 .regionPreview {
 	background-color: lightgrey;

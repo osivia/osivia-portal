@@ -64,26 +64,22 @@ public class SitemapPortlet extends GenericPortlet {
         }
     }
 
-    private Sitemap createServiceItem(ControllerContext ctx, CMSServiceCtx cmsReadNavContext, PortalControllerContext portalCtx, String spacePath,
-            String basePath, String nuxeoPath, boolean isParentNavigable) throws Exception {
-        CMSItem cmsItem = getCMSService().getPortalNavigationItem(cmsReadNavContext, nuxeoPath, nuxeoPath);
+    private Sitemap createServiceItem(ControllerContext ctx, CMSServiceCtx cmsReadNavContext, PortalControllerContext portalCtx, String basePath, String nuxeoPath, boolean isParentNavigable) throws Exception {
+        CMSItem cmsItem = getCMSService().getPortalNavigationItem(cmsReadNavContext, basePath, nuxeoPath);
 
         if (cmsItem != null) {
 
             String title = cmsItem.getProperties().get("title");
 
             String navPath = cmsItem.getPath();
-            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, navPath, null, null, null, null, null, "1", null);
+            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, navPath, null, null, "sitemap", null, null, null, null);
             pageUrl = portalUrlFactory.adaptPortalUrlToPopup(portalCtx, pageUrl, portalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
 
-            String liveId = "";
-
-
             Sitemap displayItem = new Sitemap(title, pageUrl);
-            displayItem.setLiveId(liveId);
+            displayItem.setPublished(cmsItem.getPublished());
 
             String displayMode = cmsItem.getProperties().get("pageDisplayMode");
-            String navigationElement = cmsItem.getProperties().get("navigationElement");
+            // String navigationElement = cmsItem.getProperties().get("navigationElement");
             if (displayMode != null && displayMode.equals("1")) {
 
                 List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsReadNavContext, basePath, nuxeoPath);
@@ -91,7 +87,7 @@ public class SitemapPortlet extends GenericPortlet {
                 for (CMSItem child : navItems) {
 
 
-                    Sitemap newItem = createServiceItem(ctx, cmsReadNavContext, portalCtx, spacePath, navPath, child.getPath(), true);
+                    Sitemap newItem = createServiceItem(ctx, cmsReadNavContext, portalCtx, basePath, child.getPath(), true);
 
                     if (newItem != null)
                         displayItem.getChildren().add(newItem);
@@ -109,13 +105,15 @@ public class SitemapPortlet extends GenericPortlet {
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
 
         logger.debug("doView");
-
+        // TODO lire une prop du fichier de config
+        PortalWindow window = WindowFactory.getWindow(request);
+        String basePath = window.getProperty("osivia.cms.basePath");
 
         try {
 
             PortalControllerContext portalCtx = new PortalControllerContext(getPortletContext(), request, response);
 
-            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, "/greta-domain/root/les-greta-en-bretagne", null, null, null, null, null, "1", null);
+            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, basePath, null, null, null, null, null, null, null);
 
             pageUrl = portalUrlFactory.adaptPortalUrlToPopup(portalCtx, pageUrl, portalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
             request.setAttribute("pageUrl", pageUrl);
@@ -123,9 +121,6 @@ public class SitemapPortlet extends GenericPortlet {
 
             response.setContentType("text/html");
 
-            PortalWindow window = WindowFactory.getWindow(request);
-
-            String basePath = window.getProperty("osivia.cms.basePath");
 
             if (basePath != null) {
 
@@ -138,7 +133,7 @@ public class SitemapPortlet extends GenericPortlet {
 
 
                 Sitemap displayItem = createServiceItem(context, cmsReadNavContext, new PortalControllerContext(getPortletContext(), request, response),
-                        basePath, basePath, basePath, true);
+                        basePath, basePath, true);
 
                 if (displayItem != null) {
 
@@ -164,8 +159,4 @@ public class SitemapPortlet extends GenericPortlet {
 
         logger.debug("doView end");
     }
-
-
-
-
 }

@@ -46,14 +46,18 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
     /** the new position of the fgt in the toRegion */
     private Integer toPos;
 
+    /** the id of the window moved */
+    private String refUri;
 
-    public CmsMoveFragmentCommand(String pagePath, String fromRegion, Integer fromPosInt, String toRegion, Integer toPosInt) {
+
+    public CmsMoveFragmentCommand(String pagePath, String fromRegion, Integer fromPosInt, String toRegion, Integer toPosInt, String refUri) {
         this.pagePath = pagePath;
 
         this.fromRegion = fromRegion.replaceAll("^region_", "");
         this.toRegion = toRegion.replaceAll("^region_", "");
         this.fromPos = fromPosInt;
         this.toPos = toPosInt;
+        this.refUri = refUri;
     }
 
 
@@ -68,7 +72,7 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
 
 
-            getCMSService().moveFragment(cmsCtx, pagePath, fromRegion, fromPos, toRegion, toPos);
+            getCMSService().moveFragment(cmsCtx, pagePath, fromRegion, fromPos, toRegion, toPos, refUri);
         } catch (CMSException e) {
             throw new ControllerException(e);
         } catch (Exception e) {

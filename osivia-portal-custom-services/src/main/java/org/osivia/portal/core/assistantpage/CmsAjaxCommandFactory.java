@@ -26,10 +26,11 @@ public class CmsAjaxCommandFactory extends AbstractCommandFactory {
             String fromRegion = req.getParameter("fromRegion");
             String toPos = req.getParameter("toPos");
             String toRegion = req.getParameter("toRegion");
+            String refUri = req.getParameter("refUri");
             int fromPosInt = Integer.parseInt(fromPos);
             int toPosInt = Integer.parseInt(toPos);
 
-            return new CmsMoveFragmentCommand(windowId, fromRegion, fromPosInt, toRegion, toPosInt);
+            return new CmsMoveFragmentCommand(windowId, fromRegion, fromPosInt, toRegion, toPosInt, refUri);
         }
 
         //

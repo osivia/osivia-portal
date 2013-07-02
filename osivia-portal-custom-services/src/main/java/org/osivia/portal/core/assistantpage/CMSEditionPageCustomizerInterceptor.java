@@ -230,7 +230,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 					Map regionPorperties = renderCtx.getProperties();
 
-					regionPorperties.put("osivia.cmsEditionMode", "preview");
+                    // Set the current edition mode to the region
+                    regionPorperties.put(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE,
+                            ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE));
 
 
 					// build and set url for create fgt in region in CMS mode
@@ -267,6 +269,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 							Window window = (Window) this.getPortalObjectContainer().getObject(poid);
 
 							if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
+
+                                // Set the current edition mode to the window
+                                windowPorperties.put(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE,
+                                        ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE));
+
 
 								// build and set urls for create/edit fgts in window in CMS mode
 								String refURI = window.getProperty("osivia.refURI");
@@ -335,7 +342,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 			// test si mode assistant activé
-            if (!"preview".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+            if (!InternalConstants.CMS_VERSION_PREVIEW.equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
+                    InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
                 return resp;
             }
 

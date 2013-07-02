@@ -8,6 +8,8 @@ public class CMSItem {
 	private String path;	
 	private Map<String, String> properties;	
 	
+    private Boolean published;
+
 	public Object getNativeItem() {
 		return nativeItem;
 	}
@@ -29,6 +31,22 @@ public class CMSItem {
 		this.properties = properties;
 		this.nativeItem = nativeItem;
 	}
+
+
+    /**
+     * @return the published
+     */
+    public Boolean getPublished() {
+        return published;
+    }
+
+
+    /**
+     * @param published the published to set
+     */
+    public void setPublished(Boolean published) {
+        this.published = published;
+    }
 
 
 }

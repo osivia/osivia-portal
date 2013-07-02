@@ -105,13 +105,15 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			AbstractServerURL asu = new AbstractServerURL();
 			asu.setPortalRequestPath(this.path);
 			String pageId = command.getPageId();
-			String mode = command.getMode();
+            String version = command.getVersion();
+            String editionMode = command.getEditionMode();
 
 			try {
 				asu.setParameterValue("action", "changeCMSEditionMode");
 
 				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
-				asu.setParameterValue("mode", URLEncoder.encode(mode,"UTF-8"));
+                asu.setParameterValue("version", URLEncoder.encode(version, "UTF-8"));
+                asu.setParameterValue("editionMode", URLEncoder.encode(editionMode, "UTF-8"));
 
 			} catch (UnsupportedEncodingException e) {
 				// ignore

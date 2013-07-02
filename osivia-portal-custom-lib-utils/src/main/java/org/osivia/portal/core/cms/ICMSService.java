@@ -63,7 +63,7 @@ public interface ICMSService {
 	 */
 	public void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI)  throws CMSException ;
 	
-	    /**
+	        /**
      * Move a CMS fragment on a page (drag & drop)
      * 
      * @param cmsCtx context
@@ -72,7 +72,9 @@ public interface ICMSService {
      * @param fromPos position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region)
      * @param toRegion the identifier of the region where the fragment is dropped
      * @param toPos the new position of the fgt in the toRegion
+     * @param refUri the id of the window moved
      * @throws CMSException
      */	
-    public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos) throws CMSException;
+    public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos, String refUri)
+            throws CMSException;
 }

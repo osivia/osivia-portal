@@ -19,6 +19,7 @@ import org.dom4j.dom.DOMElement;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
@@ -53,13 +54,18 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.HtmlConstants;
 import org.osivia.portal.api.contexte.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.EcmCommand;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
@@ -93,10 +99,16 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     /** Mode admin. */
     private static final String MODE_ADMIN = "admin";
 
+    // TODO Constantes dans internal constantes ?
+
     /** HTML class "toolbar-menu". */
     private static final String HTML_CLASS_TOOLBAR_MENU = "toolbar-menu";
+
     /** HTML class "toolbar-menu-title". */
     private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
+    private static final String CLASSES_PREVIEW = "preview-version";
+    private static final String CLASSES_ONLINE = "online-version";
+
     /** HTML class "fancybox_inline". */
     private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** HTML class "fancybox_refresh". */
@@ -124,6 +136,21 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     /** Admin portal ID. */
     private static final PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
+    
+
+    private static ICMSServiceLocator cmsServiceLocator;
+
+    public static ICMSService getCMSService() throws Exception {
+
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
+
+        return cmsServiceLocator.getCMSService();
+
+    }
+
+
     /** Toolbar path. */
     private String toolbarPath;
     /** Toolbar settings path. */
@@ -132,6 +159,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     private IPortalUrlFactory urlFactory;
     /** Target settings context path. */
     private String targetSettingsContextPath;
+
 
 
     /**
@@ -388,56 +416,184 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsEditionMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
             administration.add(cmsEditionMenu);
 
-            // CMS edition menu title
-            Element cmsEditionMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
-            cmsEditionMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
-            cmsEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_EDITION_MENU_TITLE, locale));
-            cmsEditionMenu.add(cmsEditionMenuTitle);
 
-            // Template edition menu "ul" node
-            Element cmsEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
-            cmsEditionMenu.add(cmsEditionMenuUl);
-
-            // CMS icons display
-            String cmsMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
-            ChangeCMSEditionModeCommand changeCmsModeCommand;
-            String cmsModeHtmlClass;
-            if (MODE_PREVIEW.equals(cmsMode)) {
-                changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_NORMAL);
-                cmsModeHtmlClass = HtmlConstants.CLASS_CHECK;
-            } else {
-                changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_PREVIEW);
-                cmsModeHtmlClass = HtmlConstants.CLASS_UNCHECK;
-            }
-            String changeCmsModeUrl = new PortalURLImpl(changeCmsModeCommand, context, null, null).toString();
-
-            Element cmsIconsDisplay = new DOMElement(QName.get(HtmlConstants.A));
-            cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.HREF), changeCmsModeUrl);
-            cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.CLASS), cmsModeHtmlClass);
-            cmsIconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
-            this.addSubMenuElement(cmsEditionMenuUl, cmsIconsDisplay);
-
-            // HR
-            this.addSubMenuElement(cmsEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
-
-            Map<String, String> windowProps = new HashMap<String, String>();
-            windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
-            Map<String, String> params = new HashMap<String, String>();
-
-            String siteMapPopupURL = this.getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
-                    "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params);
-
-            Element cmsViewSitemap = new DOMElement(QName.get(HtmlConstants.A));
-            cmsViewSitemap.addAttribute(QName.get(HtmlConstants.HREF), siteMapPopupURL);
-            cmsViewSitemap.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-            cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_EDITION_SITEMAP, locale));
-            this.addSubMenuElement(cmsEditionMenuUl, cmsViewSitemap);
+            formatHtmlCmsMenu(context, page, locale, cmsEditionMenu);
 
         }
 
 
         String htmlData = this.writeHtmlData(administration);
         return htmlData;
+    }
+
+    /**
+     * Utility method used to generate cms menu in HTML content.
+     * 
+     * @param context controller context
+     * @param page current page
+     * @param locale current locale
+     * @param cmsEditionMenu the menu object
+     * @return HTML data
+     * @throws Exception
+     */
+    private void formatHtmlCmsMenu(ControllerContext context, Page page, Locale locale, Element cmsEditionMenu) throws Exception {
+
+        String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+        String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+
+
+        // CMS edition menu title
+        //Element cmsDocumentIcon = new DOMElement(QName.get(HtmlConstants.IMG));
+        Element cmsDocumentSpan = new DOMElement(QName.get(HtmlConstants.SPAN));
+        Element cmsEditionMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
+
+        cmsEditionMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+        cmsEditionMenuTitle.setText(this.internationalizationService.getString(
+InternationalizationConstants.KEY_CMS_PAGE,
+ locale));
+        
+        //cmsEditionMenuTitle.add(cmsDocumentIcon);
+
+
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            //cmsDocumentIcon.addAttribute(HtmlConstants.SRC, "/osivia-portal-custom-web-assets/images/icone_doc_travail2.gif");
+            cmsDocumentSpan.addAttribute(QName.get(HtmlConstants.CLASS), CLASSES_PREVIEW);
+            cmsDocumentSpan.setText(HtmlConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
+                    InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale)));
+        } else {
+            //cmsDocumentIcon.addAttribute(HtmlConstants.SRC, "/osivia-portal-custom-web-assets/images/icone_doc_valide2.gif");
+            cmsDocumentSpan.addAttribute(QName.get(HtmlConstants.CLASS), CLASSES_ONLINE);
+            cmsDocumentSpan.setText(HtmlConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
+                    InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale)));
+        }
+
+
+        cmsEditionMenu.add(cmsEditionMenuTitle);
+        cmsEditionMenu.add(cmsDocumentSpan);
+
+
+        // document state icon
+
+
+        // Template edition menu "ul" node
+        Element templateEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+        cmsEditionMenu.add(templateEditionMenuUl);
+
+        // CMS icons display
+
+
+        // ========== Switch live / online version
+
+        ChangeCMSEditionModeCommand changeVersion;
+        ChangeCMSEditionModeCommand changeEditionMode = null;
+        String strChangeVersion, strChangeEditionMode = null;
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
+                    InternalConstants.CMS_EDITION_MODE_OFF);
+            strChangeVersion = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_ONLINE_VERSION, locale);
+
+            if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
+                changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
+                        InternalConstants.CMS_VERSION_PREVIEW, InternalConstants.CMS_EDITION_MODE_OFF);
+                strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_HIDE_EDITION_MODE, locale);
+            } else {
+                changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
+                        InternalConstants.CMS_VERSION_PREVIEW, InternalConstants.CMS_EDITION_MODE_ON);
+                strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
+            }
+        } else {
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+                    InternalConstants.CMS_EDITION_MODE_OFF);
+            strChangeVersion = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_LIVE_VERSION, locale);
+        }
+
+
+        String changeCmsVersionUrl = new PortalURLImpl(changeVersion, context, null, null).toString();
+
+        Element cmsChangeVersion = new DOMElement(QName.get(HtmlConstants.A));
+        cmsChangeVersion.addAttribute(QName.get(HtmlConstants.HREF), changeCmsVersionUrl);
+        cmsChangeVersion.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "p");
+        cmsChangeVersion.setText(strChangeVersion);
+        this.addSubMenuElement(templateEditionMenuUl, cmsChangeVersion);
+
+        if (changeEditionMode != null) {
+
+            String changeCmsEditionModeUrl = new PortalURLImpl(changeEditionMode, context, null, null).toString();
+
+            Element cmsChangeEditionMode = new DOMElement(QName.get(HtmlConstants.A));
+            cmsChangeEditionMode.addAttribute(QName.get(HtmlConstants.HREF), changeCmsEditionModeUrl);
+            cmsChangeEditionMode.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "m");
+            cmsChangeEditionMode.setText(strChangeEditionMode);
+            this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
+        }
+
+
+        // HR
+        this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
+
+        // ========== create / modify doc
+        
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(context.getServerInvocation());
+
+        // test si mode assistant activé
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+            cmsCtx.setDisplayLiveVersion("1");
+        }
+
+        Map<String, String> requestParameters = new HashMap<String, String>();
+
+        String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+        CMSItem liveDoc = getCMSService().getContent(cmsCtx, pagePath);
+
+        String path = liveDoc.getPath();
+        String createPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
+
+        Element cmsCreatePage = new DOMElement(QName.get(HtmlConstants.A));
+        cmsCreatePage.addAttribute(QName.get(HtmlConstants.HREF), createPageUrl);
+        cmsCreatePage.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "n");
+        cmsCreatePage.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsCreatePage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage);
+        
+        String editPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
+
+        Element cmsEditPage = new DOMElement(QName.get(HtmlConstants.A));
+        cmsEditPage.addAttribute(QName.get(HtmlConstants.HREF), editPageUrl);
+        cmsEditPage.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "e");
+        cmsEditPage.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsEditPage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
+
+
+        // HR
+        this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
+
+        // ========== to ECM....
+        
+        String ecmUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.viewSummary, path, requestParameters);
+
+        Element cmsViewEcm = new DOMElement(QName.get(HtmlConstants.A));
+        cmsViewEcm.addAttribute(QName.get(HtmlConstants.HREF), ecmUrl);
+        cmsViewEcm.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "b");
+        cmsViewEcm.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsViewEcm.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_TO_ECM, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsViewEcm);
+        
+        // ========== sitemap
+        // TODO do not use basePath
+        Map<String, String> windowProps = new HashMap<String, String>();
+        windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
+        Map<String, String> params = new HashMap<String, String>();
+
+        String siteMapPopupURL = getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
+                "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params);
+
+        Element cmsViewSitemap = new DOMElement(QName.get(HtmlConstants.A));
+        cmsViewSitemap.addAttribute(QName.get(HtmlConstants.HREF), siteMapPopupURL);
+        cmsViewSitemap.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
     }
 
     /**

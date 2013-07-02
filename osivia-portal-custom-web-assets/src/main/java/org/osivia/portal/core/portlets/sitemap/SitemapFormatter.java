@@ -98,7 +98,10 @@ public class SitemapFormatter {
             Element li = new DOMElement(LI);
             // li.addAttribute(QNAME_ATTRIBUTE_ID, idPrefix + pageId);
             li.addAttribute(CLASS, CLASS_NAVIGATION_ITEM);
-            li.addAttribute("rel", "page");
+
+            // li.addAttribute("rel", page.getPublished() ? "pageOnline" : "pageOffline");
+            li.addAttribute("rel", "pageOnline");
+
             ul.add(li);
 
             Element a = new DOMElement(A);

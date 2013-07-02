@@ -3,13 +3,14 @@ package org.osivia.portal.api;
 
 /**
  * HTML constants, used for DOM4J generation.
- *
+ * 
  * @author Cédric Krommenhoek
  */
 public final class HtmlConstants {
 
     /** HTML default text. */
     public static final String TEXT_DEFAULT = "&nbsp;";
+
 
 
     // HTML nodes
@@ -50,6 +51,8 @@ public final class HtmlConstants {
     public static final String PRE = "pre";
     /** HTML "select" nodes. */
     public static final String SELECT = "select";
+    /** HTML SPAN nodes. */
+    public static final String SPAN = "span";
     /** HTML "textarea" nodes. */
     public static final String TEXTAREA = "textarea";
     /** HTML "ul" nodes. */
@@ -82,6 +85,7 @@ public final class HtmlConstants {
     public static final String REL = "rel";
     /** HTML "rows" attributes. */
     public static final String ROWS = "rows";
+
     /** HTML "selected" attributes. */
     public static final String SELECTED = "selected";
     /** HTML "src" attributes. */
@@ -94,7 +98,8 @@ public final class HtmlConstants {
     public static final String TYPE = "type";
     /** HTML "value" attributes. */
     public static final String VALUE = "value";
-
+    /** HTML "accesskey" attributes. */
+    public static final String ACCESSKEY = "accesskey";
 
     // HTML attributes values
 
@@ -146,6 +151,9 @@ public final class HtmlConstants {
     public static final String CLASS_CHECK = "check";
     /** HTML uncheck class. */
     public static final String CLASS_UNCHECK = "uncheck";
+
+
+
 
 
     /**

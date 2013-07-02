@@ -557,7 +557,8 @@ public class CmsCommand extends DynamicCommand {
 				cmsReadItemContext.setControllerContext(getControllerContext());
 
                 // test si mode assistant activé
-                if ("preview".equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                if (InternalConstants.CMS_VERSION_PREVIEW.equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
+                        InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
                     cmsReadItemContext.setDisplayLiveVersion("1");
                 }
 
@@ -583,8 +584,8 @@ public class CmsCommand extends DynamicCommand {
 					if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
 						return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
 
-					if (e.getErrorCode() == CMSException.ERROR_NOTFOUND)
-						return new UnavailableResourceResponse(cmsPath, false);
+                    if (e.getErrorCode() == CMSException.ERROR_NOTFOUND)
+                        return new UnavailableResourceResponse(cmsPath, false);
 
 					throw e;
 					// TODO : gerer les cas d'erreurs
@@ -615,18 +616,48 @@ public class CmsCommand extends DynamicCommand {
 					
 					
 
+
 				} catch (CMSException e) {
 
-					if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
-						return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+                    boolean continueThrow = true;
 
-					if (e.getErrorCode() == CMSException.ERROR_NOTFOUND)
-						return new UnavailableResourceResponse(cmsPath, false);
+                    if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
+                        return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
 
-					throw e;
-					// TODO : gerer les cas d'erreurs
-					// return new
-					// UpdatePageResponse(currentPage.getId());
+                    if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) {
+
+                        if ("sitemap".equals(displayContext)) {
+
+                            cmsReadItemContext.setDisplayLiveVersion("1");
+                            try {
+                                cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
+
+                                continueThrow = false;
+
+                                getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
+                                        InternalConstants.CMS_VERSION_PREVIEW);
+
+                            } catch (CMSException e2) {
+                                if (e2.getErrorCode() == CMSException.ERROR_FORBIDDEN)
+                                    return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+
+                                if (e2.getErrorCode() == CMSException.ERROR_NOTFOUND) {
+                                    return new UnavailableResourceResponse(cmsPath, false);
+                                }
+
+                                throw e2;
+
+                            }
+
+                        }
+
+                        // return new UnavailableResourceResponse(cmsPath, false);
+
+                    }
+
+                    if (continueThrow) {
+                        throw e;
+                    }
 				}
 
 			}
@@ -923,7 +954,8 @@ public class CmsCommand extends DynamicCommand {
 				portalSiteScope = baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
 				cmsReadNavContext.setControllerContext(getControllerContext());
 				cmsReadNavContext.setScope(portalSiteScope);
-	            if ("preview".equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+                if (InternalConstants.CMS_VERSION_PREVIEW.equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
+                        InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
 	                cmsReadNavContext.setDisplayLiveVersion("1");
                 }
 			}

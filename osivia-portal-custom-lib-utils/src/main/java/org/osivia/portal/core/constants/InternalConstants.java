@@ -14,6 +14,9 @@ public final class InternalConstants {
 
     /** Edition mode. */
     public static final String ATTR_TOOLBAR_WIZARD_MODE = "osivia.toolbar.wizardMode";
+
+    /** Edition CMS mode. */
+    public static final String ATTR_TOOLBAR_CMS_VERSION = "osivia.toolbar.cmsVersion";
     /** Edition CMS mode. */
     public static final String ATTR_TOOLBAR_CMS_EDITION_MODE = "osivia.toolbar.cmsEditionMode";
 
@@ -105,6 +108,12 @@ public final class InternalConstants {
     /** Suffix for virtual end tree nodes identifiers. */
     public static final String SUFFIX_VIRTUAL_END_NODES_ID = "VirtualEndNode";
 
+
+    // CMS constants
+    public static final String CMS_VERSION_PREVIEW = "preview";
+    public static final String CMS_VERSION_ONLINE = "online";
+    public static final String CMS_EDITION_MODE_ON = "1";
+    public static final String CMS_EDITION_MODE_OFF = "0";
 
     /**
      * Private constructor : prevent instantiation.
