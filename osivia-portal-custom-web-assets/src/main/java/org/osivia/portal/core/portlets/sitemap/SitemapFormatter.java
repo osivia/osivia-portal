@@ -1,11 +1,11 @@
 package org.osivia.portal.core.portlets.sitemap;
 
-import static org.osivia.portal.core.auth.constants.HtmlConstants.A;
-import static org.osivia.portal.core.auth.constants.HtmlConstants.CLASS;
-import static org.osivia.portal.core.auth.constants.HtmlConstants.CLASS_NAVIGATION_ITEM;
-import static org.osivia.portal.core.auth.constants.HtmlConstants.HREF;
-import static org.osivia.portal.core.auth.constants.HtmlConstants.LI;
-import static org.osivia.portal.core.auth.constants.HtmlConstants.UL;
+import static org.osivia.portal.api.HtmlConstants.A;
+import static org.osivia.portal.api.HtmlConstants.CLASS;
+import static org.osivia.portal.api.HtmlConstants.CLASS_NAVIGATION_ITEM;
+import static org.osivia.portal.api.HtmlConstants.HREF;
+import static org.osivia.portal.api.HtmlConstants.LI;
+import static org.osivia.portal.api.HtmlConstants.UL;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

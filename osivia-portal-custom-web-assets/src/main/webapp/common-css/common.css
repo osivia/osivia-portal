@@ -120,9 +120,13 @@ form.fancybox-form {
     margin: 0 5px;
 }
 
-form.fancybox-form .label {
+.fancybox-label {
     margin-right: 5px;
     text-align: right;
+}
+
+.fancybox-upper {
+	vertical-align: top;
 }
 
 form.fancybox-form .small-input {

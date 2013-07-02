@@ -17,8 +17,8 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.auth.constants.InternalConstants;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 

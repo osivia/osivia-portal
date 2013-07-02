@@ -1,5 +1,5 @@
 <%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
-<%@page import="org.osivia.portal.core.auth.constants.InternalConstants"%>
+<%@page import="org.osivia.portal.core.constants.InternalConstants"%>
 <%@page import="org.apache.commons.lang.BooleanUtils"%>
 <%@page import="org.jboss.portal.theme.PortalTheme"%>
 <%@page import="org.jboss.portal.core.controller.ControllerContext"%>
@@ -124,7 +124,7 @@ var currentPageId = '<%=currentPageId %>';
 
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" name="name" required />
                     </div>
@@ -133,19 +133,19 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
                     </div>
                 
-                    <div class="fancybox-table-cell label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
                     </div>                    
                 </div>
                 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
+                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
                         <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
                         <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeModelSelect', this.checked)" class="inline-checkbox" />
                     </div>
@@ -186,7 +186,7 @@ var currentPageId = '<%=currentPageId %>';
                         
                 <!-- Renommer la page -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label required"><%=is.getString("PAGE_NAME", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("PAGE_NAME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" name="displayName" value="<%=currentPageName %>" required />                    
                     </div>
@@ -194,7 +194,7 @@ var currentPageId = '<%=currentPageId %>';
             
                 <!-- Mode brouillon -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> class="small-input" />                        
                     </div>
@@ -202,7 +202,7 @@ var currentPageId = '<%=currentPageId %>';
                 
                 <!-- Sélection du layout -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
                     <div class="fancybox-table-cell">
                         <select name="newLayout">
                             <%
@@ -237,7 +237,7 @@ var currentPageId = '<%=currentPageId %>';
                 
                 <!-- Sélection du thème -->
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_THEME", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_THEME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <select name="newTheme">
                             <%
@@ -291,7 +291,7 @@ var currentPageId = '<%=currentPageId %>';
             
             <div class="fancybox-table">
                 <div class="fancybox-table-row">                
-                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_ORDER", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ORDER", locale) %></div>
                 </div>
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell">
@@ -325,7 +325,7 @@ var currentPageId = '<%=currentPageId %>';
             
             <div class="fancybox-table">
                 <div class="fancybox-table-header">
-                    <div class="fancybox-table-cell label"><%=is.getString("PAGE_ROLES", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ROLES", locale) %></div>
                     <div class="fancybox-table-cell"><%=is.getString("PAGE_ACCESS", locale) %></div>
                 </div>
                 <%
@@ -341,7 +341,7 @@ var currentPageId = '<%=currentPageId %>';
                         }
                         %>
                         <div class="fancybox-table-row">
-                            <div class="fancybox-table-cell label">
+                            <div class="fancybox-table-cell fancybox-label">
                                 <p><%=role.getDisplayName() %></p>
                             </div>
                             <div class="fancybox-table-cell">
@@ -372,7 +372,7 @@ var currentPageId = '<%=currentPageId %>';
             
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
+                    <div class="fancybox-table-cell fancybox-label">
                         <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
@@ -381,7 +381,7 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
             
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
+                    <div class="fancybox-table-cell fancybox-label">
                         <p><%=is.getString("PAGE_CMS_SCOPE", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
@@ -390,7 +390,7 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
                 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
+                    <div class="fancybox-table-cell fancybox-label">
                         <p><%=is.getString("PAGE_CMS_VERSION", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
@@ -399,7 +399,7 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
                 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
+                    <div class="fancybox-table-cell fancybox-label">
                         <p><%=is.getString("PAGE_CMS_CONTEXTUALIZATION", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
@@ -408,7 +408,7 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell label">
+                    <div class="fancybox-table-cell fancybox-label">
                         <p><%=is.getString("PAGE_CMS_UNDER_SECTION_NAVIGATION_DISPLAY", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">

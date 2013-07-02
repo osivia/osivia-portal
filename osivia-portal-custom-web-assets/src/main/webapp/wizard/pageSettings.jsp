@@ -1,6 +1,6 @@
 <%@page import="java.util.Locale"%>
 <%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
-<%@page import="org.osivia.portal.core.auth.constants.InternalConstants"%>
+<%@page import="org.osivia.portal.core.constants.InternalConstants"%>
 <%@page import="org.jboss.portal.core.controller.ControllerContext"%>
 <%@page import="org.jboss.portal.portlet.Portlet"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>

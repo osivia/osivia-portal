@@ -74,16 +74,16 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.HtmlConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.auth.constants.HtmlConstants;
-import org.osivia.portal.core.auth.constants.InternalConstants;
-import org.osivia.portal.core.auth.constants.InternationalizationConstants;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PageUtils;
@@ -537,7 +537,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, sortAlphabetically, hideCmsPages);
 
         // Root generation
-        if (displayRoot) {
+        if (displayRoot && (ulChildren != null)) {
             String portalId = this.formatHtmlSafeEncodingId(portal.getId());
 
             ul = new DOMElement(QName.get(HtmlConstants.UL));

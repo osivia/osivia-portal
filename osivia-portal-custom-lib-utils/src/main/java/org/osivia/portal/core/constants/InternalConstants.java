@@ -1,4 +1,4 @@
-package org.osivia.portal.core.auth.constants;
+package org.osivia.portal.core.constants;
 
 
 public final class InternalConstants {

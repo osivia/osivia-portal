@@ -36,10 +36,10 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.HtmlConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.auth.constants.HtmlConstants;
-import org.osivia.portal.core.auth.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * Implementation of a Region renderer, based on div tags.

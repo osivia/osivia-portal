@@ -1,9 +1,9 @@
-package org.osivia.portal.core.auth.constants;
+package org.osivia.portal.api;
 
 
 /**
  * HTML constants, used for DOM4J generation.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public final class HtmlConstants {
@@ -20,6 +20,16 @@ public final class HtmlConstants {
     public static final String DIV = "div";
     /** HTML "form" nodes. */
     public static final String FORM = "form";
+    /** HTML "h1" nodes. */
+    public static final String H1 = "h1";
+    /** HTML "h2" nodes. */
+    public static final String H2 = "h2";
+    /** HTML "h3" nodes. */
+    public static final String H3 = "h3";
+    /** HTML "h4" nodes. */
+    public static final String H4 = "h4";
+    /** HTML "h5" nodes. */
+    public static final String H5 = "h5";
     /** HTML "hr" nodes. */
     public static final String HR = "hr";
     /** HTML "img" nodes. */
@@ -30,8 +40,12 @@ public final class HtmlConstants {
     public static final String LABEL = "label";
     /** HTML "li" nodes. */
     public static final String LI = "li";
+    /** HTML "ol" nodes. */
+    public static final String OL = "ol";
     /** HTML "option" nodes. */
     public static final String OPTION = "option";
+    /** HTML "p" nodes. */
+    public static final String P = "p";
     /** HTML "pre" nodes. */
     public static final String PRE = "pre";
     /** HTML "select" nodes. */
@@ -117,7 +131,7 @@ public final class HtmlConstants {
     /** HTML Fancybox form class. */
     public static final String CLASS_FANCYBOX_FORM = "fancybox-form";
     /** HTML Fancybox cell label class. */
-    public static final String CLASS_FANCYBOX_LABEL = "label";
+    public static final String CLASS_FANCYBOX_LABEL = "fancybox-label";
     /** HTML Fancybox table class. */
     public static final String CLASS_FANCYBOX_TABLE = "fancybox-table";
     /** HTML Fancybox table row class. */
@@ -128,6 +142,10 @@ public final class HtmlConstants {
     public static final String CLASS_SMALL_INPUT = "small-input";
     /** HTML toggle row display class. */
     public static final String CLASS_TOGGLE_ROW = "toggle-row";
+    /** HTML check class. */
+    public static final String CLASS_CHECK = "check";
+    /** HTML uncheck class. */
+    public static final String CLASS_UNCHECK = "uncheck";
 
 
     /**

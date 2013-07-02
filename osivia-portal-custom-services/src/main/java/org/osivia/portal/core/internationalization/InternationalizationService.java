@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
-import org.osivia.portal.core.auth.constants.InternationalizationConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
 
 /**

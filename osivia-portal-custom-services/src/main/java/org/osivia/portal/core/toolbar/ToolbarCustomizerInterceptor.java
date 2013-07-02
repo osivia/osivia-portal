@@ -51,6 +51,7 @@ import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.HtmlConstants;
 import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
@@ -58,10 +59,9 @@ import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
-import org.osivia.portal.core.auth.constants.HtmlConstants;
-import org.osivia.portal.core.auth.constants.InternalConstants;
-import org.osivia.portal.core.auth.constants.InternationalizationConstants;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
@@ -158,14 +158,14 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
             PortalObject portalObject = renderPageCommand.getPage().getPortal();
             boolean admin = MODE_ADMIN.equalsIgnoreCase(portalObject.getName());
-            
-            PortalObjectId popupWindowId = (PortalObjectId) command.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-            
 
-            // Toolbar must not be loaded : 
+            PortalObjectId popupWindowId = (PortalObjectId) command.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+
+
+            // Toolbar must not be loaded :
             //    - in JBoss portal administration
             //    - in popup mode
-            if (!admin && popupWindowId == null) {
+            if (!admin && (popupWindowId == null)) {
                 // Toolbar
                 String toolbarContent = this.injectToolbar(renderPageCommand);
                 if (toolbarContent != null) {
@@ -322,10 +322,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             String modeHtmlClass;
             if (MODE_WIZARD.equals(mode)) {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_NORMAL);
-                modeHtmlClass = "check";
+                modeHtmlClass = HtmlConstants.CLASS_CHECK;
             } else {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_WIZARD);
-                modeHtmlClass = "uncheck";
+                modeHtmlClass = HtmlConstants.CLASS_UNCHECK;
             }
             String changeModeUrl = new PortalURLImpl(changeModeCommand, context, null, null).toString();
 
@@ -395,8 +395,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsEditionMenu.add(cmsEditionMenuTitle);
 
             // Template edition menu "ul" node
-            Element templateEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
-            cmsEditionMenu.add(templateEditionMenuUl);
+            Element cmsEditionMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+            cmsEditionMenu.add(cmsEditionMenuUl);
 
             // CMS icons display
             String cmsMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
@@ -404,10 +404,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             String cmsModeHtmlClass;
             if (MODE_PREVIEW.equals(cmsMode)) {
                 changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_NORMAL);
-                cmsModeHtmlClass = "check";
+                cmsModeHtmlClass = HtmlConstants.CLASS_CHECK;
             } else {
                 changeCmsModeCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), MODE_PREVIEW);
-                cmsModeHtmlClass = "uncheck";
+                cmsModeHtmlClass = HtmlConstants.CLASS_UNCHECK;
             }
             String changeCmsModeUrl = new PortalURLImpl(changeCmsModeCommand, context, null, null).toString();
 
@@ -415,20 +415,23 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.HREF), changeCmsModeUrl);
             cmsIconsDisplay.addAttribute(QName.get(HtmlConstants.CLASS), cmsModeHtmlClass);
             cmsIconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
-            this.addSubMenuElement(templateEditionMenuUl, cmsIconsDisplay);
+            this.addSubMenuElement(cmsEditionMenuUl, cmsIconsDisplay);
+
+            // HR
+            this.addSubMenuElement(cmsEditionMenuUl, new DOMElement(QName.get(HtmlConstants.HR)));
 
             Map<String, String> windowProps = new HashMap<String, String>();
             windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
             Map<String, String> params = new HashMap<String, String>();
 
-            String siteMapPopupURL = getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
+            String siteMapPopupURL = this.getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
                     "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params);
 
             Element cmsViewSitemap = new DOMElement(QName.get(HtmlConstants.A));
             cmsViewSitemap.addAttribute(QName.get(HtmlConstants.HREF), siteMapPopupURL);
             cmsViewSitemap.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
             cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_EDITION_SITEMAP, locale));
-            this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
+            this.addSubMenuElement(cmsEditionMenuUl, cmsViewSitemap);
 
         }
 

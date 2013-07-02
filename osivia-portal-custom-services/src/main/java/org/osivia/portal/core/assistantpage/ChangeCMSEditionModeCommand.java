@@ -10,7 +10,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.osivia.portal.core.auth.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternalConstants;
 
 
 public class ChangeCMSEditionModeCommand extends ControllerCommand {

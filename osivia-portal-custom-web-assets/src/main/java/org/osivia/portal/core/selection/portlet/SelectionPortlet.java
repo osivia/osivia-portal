@@ -23,7 +23,7 @@ import org.osivia.portal.api.selection.ISelectionService;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.api.windows.WindowFactory;
-import org.osivia.portal.core.auth.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * Selection Portlet.

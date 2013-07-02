@@ -1,6 +1,6 @@
 <%@page import="org.osivia.portal.core.selection.portlet.SelectionPortlet"%>
 <%@page import="java.util.Locale"%>
-<%@page import="org.osivia.portal.core.auth.constants.InternalConstants"%>
+<%@page import="org.osivia.portal.core.constants.InternalConstants"%>
 <%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
