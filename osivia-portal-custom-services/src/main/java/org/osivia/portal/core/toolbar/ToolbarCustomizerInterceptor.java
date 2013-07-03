@@ -246,7 +246,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             if (principal == null) {
                 dispatcher.setAttribute(Constants.ATTR_TOOLBAR_LOGIN_URL, portalURL.toString());
             } else {
-                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_MY_SPACE_URL, portalURL);
+                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_MY_SPACE_URL, portalURL.toString());
             }
 
             try {

@@ -14,6 +14,9 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.selection.ISelectionService;
 import org.osivia.portal.api.selection.SelectionItem;
 
@@ -41,12 +44,13 @@ public class SelectionService implements ISelectionService {
     /**
      * {@inheritDoc}
      */
-    public boolean addItem(Object request, String selectionId, SelectionItem selectionItem) {
+    public boolean addItem(PortalControllerContext portalCtx, String selectionId, SelectionItem selectionItem) {
         // Debug log
         if (logger.isDebugEnabled()) {
             logger.debug("addItem");
         }
-
+        Object request = portalCtx.getRequest();
+        
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
 
@@ -69,12 +73,14 @@ public class SelectionService implements ISelectionService {
     /**
      * {@inheritDoc}
      */
-    public boolean removeItem(Object request, String selectionId, String itemId) {
+    public boolean removeItem(PortalControllerContext portalCtx, String selectionId, String itemId) {
         // Debug log
         if (logger.isDebugEnabled()) {
             logger.debug("removeItem");
         }
 
+        Object request = portalCtx.getRequest();
+        
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
 
@@ -97,12 +103,14 @@ public class SelectionService implements ISelectionService {
     /**
      * {@inheritDoc}
      */
-    public Set<SelectionItem> getSelectionItems(Object request, String selectionId) {
+    public Set<SelectionItem> getSelectionItems(PortalControllerContext portalCtx, String selectionId) {
         // Debug log
         if (logger.isDebugEnabled()) {
             logger.debug("getSelectionItemsSet");
         }
 
+        Object request = portalCtx.getRequest();
+        
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
             return this.getSelectionItemsSet(portletRequest, selectionId);
@@ -115,12 +123,14 @@ public class SelectionService implements ISelectionService {
     /**
      * {@inheritDoc}
      */
-    public void deleteSelection(Object request, String selectionId) {
+    public void deleteSelection(PortalControllerContext portalCtx, String selectionId) {
         // Debug log
         if (logger.isDebugEnabled()) {
             logger.debug("deleteSelection");
         }
 
+        Object request = portalCtx.getRequest();
+        
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
             ControllerContext context = this.getContext(portletRequest);

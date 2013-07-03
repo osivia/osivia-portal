@@ -2,6 +2,9 @@ package org.osivia.portal.api.selection;
 
 import java.util.Set;
 
+import org.osivia.portal.api.context.PortalControllerContext;
+
+
 
 /**
  * Selection service interface.
@@ -18,7 +21,7 @@ public interface ISelectionService {
      * @param selectionItem item to add
      * @return true if the item has been added
      */
-    boolean addItem(Object request, String selectionId, SelectionItem selectionItem);
+    boolean addItem(PortalControllerContext portalCtx, String selectionId, SelectionItem selectionItem);
 
     /**
      * Remove item to a specified selection.
@@ -28,7 +31,7 @@ public interface ISelectionService {
      * @param itemId item to remove identifier
      * @return true if the item has been removed
      */
-    boolean removeItem(Object request, String selectionId, String itemId);
+    boolean removeItem(PortalControllerContext portalCtx, String selectionId, String itemId);
 
     /**
      * Access to a specified selection items set.
@@ -37,7 +40,7 @@ public interface ISelectionService {
      * @param selectionId specified selection identifier
      * @return the selection items set
      */
-    Set<SelectionItem> getSelectionItems(Object request, String selectionId);
+    Set<SelectionItem> getSelectionItems(PortalControllerContext portalCtx, String selectionId);
 
     /**
      * Delete a specified selection
@@ -45,6 +48,6 @@ public interface ISelectionService {
      * @param request generated request
      * @param selectionId specified selection identifier
      */
-    void deleteSelection(Object request, String selectionId);
+    void deleteSelection(PortalControllerContext portalCtx, String selectionId);
 
 }

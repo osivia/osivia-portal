@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.net.media.MediaType;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.selection.ISelectionService;
 import org.osivia.portal.api.selection.SelectionItem;
@@ -122,13 +123,13 @@ public class SelectionPortlet extends GenericPortlet {
         if (PORTLET_MODE_VIEW.equals(request.getPortletMode().toString()) && REQUEST_PARAMETER_DELETE.equals(request.getParameter(REQUEST_PARAMETER_ACTION))) {
             String selectionId = this.getSelectionId(request);
             String itemId = request.getParameter(REQUEST_PARAMETER_ITEM_ID);
-            this.selectionService.removeItem(request, selectionId, itemId);
+            this.selectionService.removeItem(new PortalControllerContext(getPortletContext(), request, response), selectionId, itemId);
         }
 
         if (PORTLET_MODE_VIEW.equals(request.getPortletMode().toString())
                 && REQUEST_PARAMETER_DELETE_ALL.equals(request.getParameter(REQUEST_PARAMETER_ACTION))) {
             String selectionId = this.getSelectionId(request);
-            this.selectionService.deleteSelection(request, selectionId);
+            this.selectionService.deleteSelection(new PortalControllerContext(getPortletContext(), request, response), selectionId);
         }
     }
 
@@ -161,7 +162,7 @@ public class SelectionPortlet extends GenericPortlet {
         request.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
 
         String selectionId = this.getSelectionId(request);
-        Set<SelectionItem> selectionItemsSet = this.selectionService.getSelectionItems(request, selectionId);
+        Set<SelectionItem> selectionItemsSet = this.selectionService.getSelectionItems(new PortalControllerContext(getPortletContext(), request, response), selectionId);
         request.setAttribute(REQUEST_ATTRIBUTE_SELECTION, selectionItemsSet);
 
         response.setContentType(MediaType.TEXT_HTML.getValue());
