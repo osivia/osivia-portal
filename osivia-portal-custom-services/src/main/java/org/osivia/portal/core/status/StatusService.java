@@ -1,4 +1,4 @@
-package org.osivia.portal.core.statut;
+package org.osivia.portal.core.status;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,10 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.net.ProxyUtils;
-import org.osivia.portal.api.statut.ServeurIndisponible;
+import org.osivia.portal.api.status.UnavailableServer;
 
 
-public class StatutService extends ServiceMBeanSupport implements StatutServiceMBean, Serializable {
+public class StatusService extends ServiceMBeanSupport implements StatusServiceMBean, Serializable {
 
 	/**
 	 * 
@@ -97,7 +97,7 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 				statutLog.info("Le service " + service.getUrl() + " est UP");
 			}
 
-			catch (ServeurIndisponible e) {
+			catch (UnavailableServer e) {
 				
 				service.setServiceUp(false);
 				
@@ -109,7 +109,7 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 
 	}
 
-	public void notifyError(String serviceCode, ServeurIndisponible e) {
+	public void notifyError(String serviceCode, UnavailableServer e) {
 
 		statutLog.error("Erreur " + serviceCode + " : " + e.toString());
 
@@ -124,10 +124,10 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 	 * la requete
 	 * 
 	 * @param service
-	 * @throws ServeurIndisponible
+	 * @throws UnavailableServer
 	 */
 	
-	public void testerService(ServiceState service) throws ServeurIndisponible {
+	public void testerService(ServiceState service) throws UnavailableServer {
 
 		try {
 			
@@ -146,10 +146,10 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 			
 			future.get(timeOut, TimeUnit.SECONDS);
 		} catch (Exception e) {
-			if (e.getCause() instanceof ServeurIndisponible)
-				throw (ServeurIndisponible) e.getCause();
+			if (e.getCause() instanceof UnavailableServer)
+				throw (UnavailableServer) e.getCause();
 			else	
-				throw new ServeurIndisponible("Probleme controle url : " + e.getClass().getName() + " "
+				throw new UnavailableServer("Probleme controle url : " + e.getClass().getName() + " "
 						+ e.getMessage() + e.getCause());
 		}
 
@@ -209,13 +209,13 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 				statutLog.debug("rc= " + rc);
 
 				if (rc != HttpStatus.SC_OK) {
-					ServeurIndisponible e = new ServeurIndisponible(rc);
+					UnavailableServer e = new UnavailableServer(rc);
 					throw e;
 				}
 
 			} catch (Exception e) {
-				if( ! (e instanceof ServeurIndisponible))	{
-					ServeurIndisponible exc = new ServeurIndisponible(e.getMessage());
+				if( ! (e instanceof UnavailableServer))	{
+					UnavailableServer exc = new UnavailableServer(e.getMessage());
 					throw exc;
 					}
 				else 

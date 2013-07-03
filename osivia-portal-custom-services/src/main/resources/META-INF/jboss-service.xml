@@ -489,8 +489,8 @@
 	</mbean>
 	
 	<mbean
-		code="org.osivia.portal.core.statut.StatutService"
-		name="osivia:service=StatutServices">
+		code="org.osivia.portal.core.status.StatusService"
+		name="osivia:service=StatusServices">
 	</mbean>
 	
 	

@@ -4,7 +4,6 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
-import org.jboss.portal.core.controller.ControllerContext;
 
 public class PortalControllerContext {
 	
@@ -23,7 +22,8 @@ public class PortalControllerContext {
 
 	}
 
-	// Non portlet context (portal request)
+	// Non portlet context (portal, servlet,...)
+	// Will be adapted at portal level
 	public PortalControllerContext(Object controllerCtx) {
 		this.controllerCtx = controllerCtx;	
 	}

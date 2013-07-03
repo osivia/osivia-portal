@@ -39,7 +39,7 @@ public class ErrorValve extends ValveBase {
 		String errorPageUri = 	System.getProperty(	"portal.error.host."+dotServerName+".uri"); 
 			
 		if( errorPageUri == null)
-			errorPageUri = System.getProperty("error.default_page_uri");
+			errorPageUri = System.getProperty("error.defaultPageUri");
 		
 		// On ne traite pas la page d'erreur (pas de boucle !!! )
 		if( request.getDecodedRequestURI().equals(errorPageUri))

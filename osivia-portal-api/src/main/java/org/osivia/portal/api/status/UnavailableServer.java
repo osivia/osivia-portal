@@ -1,6 +1,6 @@
-package org.osivia.portal.api.statut;
+package org.osivia.portal.api.status;
 
-public class ServeurIndisponible extends Exception {
+public class UnavailableServer extends Exception {
 
 
 	private static final long serialVersionUID = -19758871528355142L;
@@ -9,11 +9,11 @@ public class ServeurIndisponible extends Exception {
 	
 	String message = null;
 
-	public ServeurIndisponible( int httpCode) {
+	public UnavailableServer( int httpCode) {
 		this.httpCode = httpCode;
 	}
 
-	public ServeurIndisponible( String message) {
+	public UnavailableServer( String message) {
 		this.message = message;
 	}
 	

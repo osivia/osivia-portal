@@ -2,7 +2,7 @@ package org.osivia.portal.api.cache.services;
 
 
 
-public class CacheFlux {
+public class CacheDatas {
 
 	private long tsSaving;
 	private Object cacheContent;
@@ -16,7 +16,7 @@ public class CacheFlux {
 		this.tsSaving = tsEnregistrement;
 	}
 
-	public CacheFlux(CacheInfo infos, Object contenuCache) {
+	public CacheDatas(CacheInfo infos, Object contenuCache) {
 		super();
 		this.tsSaving = System.currentTimeMillis();
 		this.cacheContent = contenuCache;

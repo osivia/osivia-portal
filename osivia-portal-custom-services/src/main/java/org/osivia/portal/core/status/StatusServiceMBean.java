@@ -1,10 +1,10 @@
 /**
  * 
  */
-package org.osivia.portal.core.statut;
+package org.osivia.portal.core.status;
 
 import org.jboss.system.ServiceMBean;
-import org.osivia.portal.api.statut.IStatutService;
+import org.osivia.portal.api.status.IStatusService;
 
 
 
@@ -14,7 +14,7 @@ import org.osivia.portal.api.statut.IStatutService;
  * @author jss
  *
  */
-public interface StatutServiceMBean extends ServiceMBean,IStatutService {
+public interface StatusServiceMBean extends ServiceMBean,IStatusService {
 
 	public void startService()throws Exception;
 	

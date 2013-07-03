@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
-import org.osivia.portal.api.cache.services.CacheFlux;
+import org.osivia.portal.api.cache.services.CacheDatas;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 import org.osivia.portal.api.cache.services.IGlobalParameters;
@@ -40,7 +40,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, CacheFlux> mCaches = new Hashtable<String, CacheFlux>();
+	private Map<String, CacheDatas> mCaches = new Hashtable<String, CacheDatas>();
 
 	protected static final Log logger = LogFactory.getLog(CacheService.class);
 	
@@ -66,18 +66,18 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	 */
 
 	@SuppressWarnings("unchecked")
-	private Map<String, CacheFlux> getMapCache(CacheInfo infosCache) throws Exception {
+	private Map<String, CacheDatas> getMapCache(CacheInfo infosCache) throws Exception {
 
-		Map<String, CacheFlux> caches = mCaches;
+		Map<String, CacheDatas> caches = mCaches;
 
 		// Cache dans le contexte du portlet
 
 		if (infosCache.getScope() == CacheInfo.CACHE_SCOPE_PORTLET_CONTEXT) {
 
 			PortletContext ctx = ((PortletContext) infosCache.getContext());
-			caches = (Map<String, CacheFlux>) ctx.getAttribute("caches");
+			caches = (Map<String, CacheDatas>) ctx.getAttribute("caches");
 			if (caches == null) {
-				caches = new Hashtable<String, CacheFlux>();
+				caches = new Hashtable<String, CacheDatas>();
 				ctx.setAttribute("caches", caches);
 			}
 		}
@@ -94,10 +94,10 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				if(userName == null)
 					userName = "";
 				// when user is logged cache must be refreshed
-				caches = (Map<String, CacheFlux>) session.getAttribute("caches."+userName);
+				caches = (Map<String, CacheDatas>) session.getAttribute("caches."+userName);
 				//caches = (Map<String, CacheFlux>) session.getAttribute("caches");				
 				if (caches == null) {
-					caches = new Hashtable<String, CacheFlux>();
+					caches = new Hashtable<String, CacheDatas>();
 					session.setAttribute("caches."+userName, caches);
 				}
 			}
@@ -109,10 +109,10 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				if(userName == null)
 					userName = "";
 				// when user is logged cache must be refreshed
-				caches = (Map<String, CacheFlux>) session.getAttribute("caches."+userName);				
+				caches = (Map<String, CacheDatas>) session.getAttribute("caches."+userName);				
 				//caches = (Map<String, CacheFlux>) session.getAttribute("caches");
 				if (caches == null) {
-					caches = new Hashtable<String, CacheFlux>();
+					caches = new Hashtable<String, CacheDatas>();
 					session.setAttribute("caches."+userName, caches);
 				}
 			}
@@ -125,12 +125,12 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	public Object getCache(CacheInfo infos) throws Exception {
 
-		CacheFlux cacheFlux = null;
+		CacheDatas cacheFlux = null;
 
 		if (infos.getScope() == CacheInfo.CACHE_SCOPE_NONE)
 			return infos.getInvoker().invoke();
 
-		Map<String, CacheFlux> caches = getMapCache(infos);
+		Map<String, CacheDatas> caches = getMapCache(infos);
 		
 		// On renvoie le cache tel quel (sans controle de validité)
 		if (infos.isForceNOTReload()) {
@@ -217,14 +217,14 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	}
 
-	private void asyncRefreshCache(CacheFlux cacheFlux, CacheInfo infos, Map<String, CacheFlux> caches) throws Exception {
+	private void asyncRefreshCache(CacheDatas cacheFlux, CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
 		
 		AsyncRefreshCacheThread asyncThread = new  AsyncRefreshCacheThread(this, infos, caches);	
 		CacheThreadsPool.getInstance().execute(asyncThread);
 		
 	}
 	
-	void refreshCache(CacheInfo infos, Map<String, CacheFlux> caches) throws Exception {
+	void refreshCache(CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
 		
 		Object response = infos.getInvoker().invoke();
 		storeCache(infos, caches, response);
@@ -237,7 +237,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	}
 
-	private void rafraichirCacheSynchronise(CacheInfo infos, Map<String, CacheFlux> caches) throws Exception {
+	private void rafraichirCacheSynchronise(CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
 
 		Object synchronizer = null;
 
@@ -246,7 +246,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 		synchronized (synchronizer) {
 
-			CacheFlux cacheFlux = null;
+			CacheDatas cacheFlux = null;
 
 			if (!infos.isForceReload()) {
 				cacheFlux = caches.get(infos.getItemKey());
@@ -295,7 +295,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	 * @param cacheFlux donnée à mettre à jour
 	 * @return vrai si l ethread est en cours d'exécution
 	 */
-	private boolean isAsyncThreadRefreshingCache(CacheFlux cacheFlux) {
+	private boolean isAsyncThreadRefreshingCache(CacheDatas cacheFlux) {
 		boolean isReloading = false;
 		// Indique si une "demande d'exécution du thread a été effectuée.
 		if (cacheFlux.getTsAskForReloading() != 0L) {
@@ -309,9 +309,9 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		return isReloading;
 	}
 
-	private synchronized void storeCache(CacheInfo infos, Map<String, CacheFlux> caches, Object response)
+	private synchronized void storeCache(CacheInfo infos, Map<String, CacheDatas> caches, Object response)
 			throws Exception {
-		CacheFlux old = caches.get(infos.getItemKey());
+		CacheDatas old = caches.get(infos.getItemKey());
 		
 		// v1.0.23 : suppression fichiers temporaires
 		
@@ -324,7 +324,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			}
 		}
 		
-		caches.put(infos.getItemKey(), new CacheFlux(infos, response));
+		caches.put(infos.getItemKey(), new CacheDatas(infos, response));
 	}
 
 	public long getCacheInitialisationTs() {

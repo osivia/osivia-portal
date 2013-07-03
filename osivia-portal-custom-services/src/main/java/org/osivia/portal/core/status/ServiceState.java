@@ -1,4 +1,4 @@
-package org.osivia.portal.core.statut;
+package org.osivia.portal.core.status;
 
 
 public class ServiceState {

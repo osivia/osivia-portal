@@ -28,7 +28,7 @@ public class PortletApplicationDeployment extends PortletAppDeployment  {
 	   {
 	      // Inject services if needed
 	      injectStandardService("CacheService","org.osivia.portal.api.cache.services.ICacheService","osivia:service=CacheServices");
-	      injectStandardService("StatutService","org.osivia.portal.api.statut.IStatutService","osivia:service=StatutServices");
+	      injectStandardService("StatusService","org.osivia.portal.api.status.IStatusService","osivia:service=StatusServices");
 	      injectStandardService("UrlService","org.osivia.portal.api.urls.IPortalUrlFactory","osivia:service=UrlFactory");
 	      injectStandardService("ProfilService","org.osivia.portal.core.profils.IProfilManager","osivia:service=ProfilManager");
 	      injectStandardService("NuxeoService","fr.toutatice.portail.core.nuxeo.INuxeoService","osivia:service=NuxeoService");
