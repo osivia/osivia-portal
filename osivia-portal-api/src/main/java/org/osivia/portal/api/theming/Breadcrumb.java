@@ -1,4 +1,4 @@
-package org.osivia.portal.api.charte;
+package org.osivia.portal.api.theming;
 
 import java.util.ArrayList;
 import java.util.List;

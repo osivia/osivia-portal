@@ -134,9 +134,9 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		
 		// On renvoie le cache tel quel (sans controle de validité)
 		if (infos.isForceNOTReload()) {
-			cacheFlux =  caches.get(infos.getCleItem());
+			cacheFlux =  caches.get(infos.getItemKey());
 			if( cacheFlux != null)
-				return cacheFlux.getContenuCache();
+				return cacheFlux.getContent();
 			else 
 				return null;
 		}
@@ -145,16 +145,16 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 		// On récupère le cache
 		if (!infos.isForceReload()) {
-			cacheFlux = caches.get(infos.getCleItem());
+			cacheFlux = caches.get(infos.getItemKey());
 		}
 		
 		// 1.0.27 : initialisation des parametres globaux
 		if (cacheFlux != null)	{
-			if( cacheFlux.getContenuCache() instanceof IGlobalParameters)	{
+			if( cacheFlux.getContent() instanceof IGlobalParameters)	{
 				if( cacheFlux.getTsEnregistrement() < portalParameterslastInitialisationTs)	{
 					// Le cache est obsolete, on le conserve quand meme
 					// car en cas d'erreur il sera reutilise (isForceNOTReload)
-					cacheFlux.setTsEnregistrement(0L);
+					cacheFlux.setTsSaving(0L);
 				}
 			}
 		}
@@ -170,7 +170,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				}else{
 					rafraichirCacheSynchronise(infos, caches);
 				}
-				return caches.get(infos.getCleItem()).getContenuCache();
+				return caches.get(infos.getItemKey()).getContent();
 			} else
 				return null;
 		} else {
@@ -178,7 +178,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			boolean expired = false;
 			
 			// Cache existant et expiré (20s)
-			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())
+			if (System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getExpirationDelay())
 				expired = true;
 			
 			// Réinitialisation par l'adminstrateur
@@ -189,13 +189,13 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			
 			if(  PageProperties.getProperties().isRefreshingPage())  {
 			    // On controle que la page n'a pas déja été rechargée dans la requete courante
-			    if( !PageProperties.getProperties().getPagePropertiesMap().containsKey( "reloaded_"+ infos.getCleItem()))
+			    if( !PageProperties.getProperties().getPagePropertiesMap().containsKey( "reloaded_"+ infos.getItemKey()))
 			        expired = true;
-			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ infos.getCleItem(), "1");
+			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ infos.getItemKey(), "1");
 			}
 			
 			
-			if(  (cacheFlux.getContenuCache() instanceof IGlobalParameters))
+			if(  (cacheFlux.getContent() instanceof IGlobalParameters))
 				expired = true;
 		
 			
@@ -207,13 +207,13 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 					}else{
 						rafraichirCacheSynchronise(infos, caches);
 					}
-					return caches.get(infos.getCleItem()).getContenuCache();
+					return caches.get(infos.getItemKey()).getContent();
 				} else
 					return null;
 			}
 		}
 
-		return caches.get(infos.getCleItem()).getContenuCache();
+		return caches.get(infos.getItemKey()).getContent();
 
 	}
 
@@ -242,19 +242,19 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		Object synchronizer = null;
 
 		// synchronizer global
-		synchronizer = CacheSynchronizer.getSynchronizer(infos.getCleItem());
+		synchronizer = CacheSynchronizer.getSynchronizer(infos.getItemKey());
 
 		synchronized (synchronizer) {
 
 			CacheFlux cacheFlux = null;
 
 			if (!infos.isForceReload()) {
-				cacheFlux = caches.get(infos.getCleItem());
+				cacheFlux = caches.get(infos.getItemKey());
 			}
 
 			// reinitialisation des caches
 			if (   cacheFlux != null)
-			if (   (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContenuCache() instanceof IGlobalParameters)))
+			if (   (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContent() instanceof IGlobalParameters)))
 				cacheFlux = null;
 			
 
@@ -269,7 +269,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 					boolean isReloading = isAsyncThreadRefreshingCache(cacheFlux);
 
-					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())
+					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getExpirationDelay())
 							&& (!isReloading)) {
 
 						cacheFlux.setTsAskForReloading(System.currentTimeMillis());
@@ -278,7 +278,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 					}
 				} else {
 					
-					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getDelaiExpiration())) {
+					if ((System.currentTimeMillis() - cacheFlux.getTsEnregistrement() > infos.getExpirationDelay())) {
 						
 						refreshCache(infos, caches);
 						
@@ -311,20 +311,20 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	private synchronized void storeCache(CacheInfo infos, Map<String, CacheFlux> caches, Object response)
 			throws Exception {
-		CacheFlux old = caches.get(infos.getCleItem());
+		CacheFlux old = caches.get(infos.getItemKey());
 		
 		// v1.0.23 : suppression fichiers temporaires
 		
 		if( old != null){
 			
-			Object contenu = old.getContenuCache();
+			Object contenu = old.getContent();
 			
 			if( contenu instanceof ICacheDataListener)	{
 				((ICacheDataListener) contenu).remove();
 			}
 		}
 		
-		caches.put(infos.getCleItem(), new CacheFlux(infos, response));
+		caches.put(infos.getItemKey(), new CacheFlux(infos, response));
 	}
 
 	public long getCacheInitialisationTs() {

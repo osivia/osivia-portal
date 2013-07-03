@@ -4,30 +4,30 @@ package org.osivia.portal.api.cache.services;
 
 public class CacheFlux {
 
-	private long tsEnregistrement;
-	private Object contenuCache;
+	private long tsSaving;
+	private Object cacheContent;
 	private long tsAskForReloading;
 
 	public long getTsEnregistrement() {
-		return tsEnregistrement;
+		return tsSaving;
 	}
 
-	public void setTsEnregistrement(long tsEnregistrement) {
-		this.tsEnregistrement = tsEnregistrement;
+	public void setTsSaving(long tsEnregistrement) {
+		this.tsSaving = tsEnregistrement;
 	}
 
 	public CacheFlux(CacheInfo infos, Object contenuCache) {
 		super();
-		this.tsEnregistrement = System.currentTimeMillis();
-		this.contenuCache = contenuCache;
+		this.tsSaving = System.currentTimeMillis();
+		this.cacheContent = contenuCache;
 	}
 
-	public Object getContenuCache() {
-		return contenuCache;
+	public Object getContent() {
+		return cacheContent;
 	}
 
-	public void setContenuCache(Object contenuCache) {
-		this.contenuCache = contenuCache;
+	public void setContent(Object contenuCache) {
+		this.cacheContent = contenuCache;
 	}
 
 	public long getTsAskForReloading() {

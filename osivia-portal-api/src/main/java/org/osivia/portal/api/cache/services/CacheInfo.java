@@ -5,7 +5,7 @@ import javax.portlet.PortletRequest;
 
 public class CacheInfo {
 	
-	private long delaiExpiration = 60000L;
+	private long expirationDelay = 60000L;
 	
 	private int scope;
 	private Object request;
@@ -60,7 +60,7 @@ public class CacheInfo {
 	public void setContext(PortletContext context) {
 		this.context = context;
 	}
-	private String cleItem;
+	private String itemKey;
 	private IServiceInvoker invoker;
 	
 	
@@ -69,18 +69,18 @@ public class CacheInfo {
 		super();
 		this.scope = scope;
 		this.request = request;
-		this.cleItem = cleItem;
+		this.itemKey = cleItem;
 		this.invoker = invoker;
 		this.context = context;
 		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
 	}
 	
 	
-	public long getDelaiExpiration() {
-		return delaiExpiration;
+	public long getExpirationDelay() {
+		return expirationDelay;
 	}
-	public void setDelaiExpiration(long delaiExpiration) {
-		this.delaiExpiration = delaiExpiration;
+	public void setExpirationDelay(long expirationDelay) {
+		this.expirationDelay = expirationDelay;
 	}
 	public int getScope() {
 		return scope;
@@ -94,11 +94,11 @@ public class CacheInfo {
 	public void setRequest(Object request) {
 		this.request = request;
 	}
-	public String getCleItem() {
-		return cleItem;
+	public String getItemKey() {
+		return itemKey;
 	}
-	public void setCleItem(String cleItem) {
-		this.cleItem = cleItem;
+	public void setItemKey(String itemKey) {
+		this.itemKey = itemKey;
 	}
 	public IServiceInvoker getInvoker() {
 		return invoker;

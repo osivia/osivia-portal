@@ -244,7 +244,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             MonEspaceCommand monEspaceCommand = new MonEspaceCommand();
             PortalURL portalURL = new PortalURLImpl(monEspaceCommand, context, true, null);
             if (principal == null) {
-                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_LOGIN_URL, portalURL);
+                dispatcher.setAttribute(Constants.ATTR_TOOLBAR_LOGIN_URL, portalURL.toString());
             } else {
                 dispatcher.setAttribute(Constants.ATTR_TOOLBAR_MY_SPACE_URL, portalURL);
             }
@@ -259,11 +259,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
             // Refresh
             RefreshPageCommand refreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-            dispatcher.setAttribute(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, context, false, null));
+            dispatcher.setAttribute(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, new PortalURLImpl(refreshCmd, context, false, null).toString());
 
             // Sign out
             SignOutCommand signOutCommand = new SignOutCommand();
-            dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, new PortalURLImpl(signOutCommand, context, false, null));
+            dispatcher.setAttribute(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, new PortalURLImpl(signOutCommand, context, false, null).toString());
 
             dispatcher.include();
             return dispatcher.getMarkup();

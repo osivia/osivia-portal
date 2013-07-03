@@ -268,6 +268,8 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 				sharedProperties.putAll(properties);
 
 			} else   {
+			    // JSS 20130703-001
+			    // corrige le bug de mélange de propriétés entre les pages
 				properties = new HashMap<String, String>();
 				properties.putAll(sharedProperties);
 
