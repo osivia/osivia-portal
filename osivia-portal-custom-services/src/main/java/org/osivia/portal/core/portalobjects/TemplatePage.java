@@ -260,15 +260,18 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 				for (Object key : localProperties.keySet()) {
 					properties.put((String) key, (String) localProperties.get(key));
 				}
-
-				
+			
 
 				properties.put("osivia.fetchedPortalProperties", pageId);
-
+				
+				sharedProperties= new HashMap<String, String>();
 				sharedProperties.putAll(properties);
 
-			} else
-				properties = sharedProperties;
+			} else   {
+				properties = new HashMap<String, String>();
+				properties.putAll(sharedProperties);
+
+			}
 
 		}
 

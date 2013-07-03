@@ -74,7 +74,7 @@ import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
 import org.osivia.portal.api.charte.UserPage;
 import org.osivia.portal.api.charte.UserPortal;
-import org.osivia.portal.api.contexte.PortalControllerContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
@@ -970,7 +970,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         properties.setWindowProperty(
                                 windowId,
                                 "osivia.closeUrl",
-                                this.getUrlFactory().getDestroyProcUrl(new PortalControllerContext(controllerCtx),
+                                this.getUrlFactory().getStopPortletUrl(new PortalControllerContext(controllerCtx),
                                         rwc.getWindow().getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
                     }
                 }

@@ -39,7 +39,7 @@ public abstract class DynamicPage extends PageImpl {
 	
 	Map<String, DynamicPage> dynamicSubPages;
 	
-	protected Map<String, String> properties ;
+	protected Map<String, String> properties = null;
 	
 	abstract DynamicWindow createSessionWindow ( DynamicWindowBean dynamicWindowBean);
 

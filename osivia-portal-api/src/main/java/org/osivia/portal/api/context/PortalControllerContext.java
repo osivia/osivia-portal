@@ -1,4 +1,4 @@
-package org.osivia.portal.api.contexte;
+package org.osivia.portal.api.context;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
@@ -8,7 +8,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 
 public class PortalControllerContext {
 	
-	ControllerContext controllerCtx;
+    Object controllerCtx;
 	PortletRequest request;
 	PortletResponse response;
 	PortletContext portletCtx;
@@ -16,19 +16,20 @@ public class PortalControllerContext {
 
 	public PortalControllerContext(PortletContext portletCtx, PortletRequest request, PortletResponse response) {
 		super();
-		this.controllerCtx = (ControllerContext) request.getAttribute("osivia.controller");
+    	this.controllerCtx = request.getAttribute("osivia.controller");
 		this.request = request;
 		this.response = response;
 		this.portletCtx = portletCtx;
 
 	}
 
-	public PortalControllerContext(ControllerContext ctx) {
-		this.controllerCtx = ctx;	
+	// Non portlet context (portal request)
+	public PortalControllerContext(Object controllerCtx) {
+		this.controllerCtx = controllerCtx;	
 	}
 
 
-	public ControllerContext getControllerCtx() {
+	public Object getControllerCtx() {
 		return controllerCtx;
 	}
 

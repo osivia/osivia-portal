@@ -53,7 +53,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.HtmlConstants;
-import org.osivia.portal.api.contexte.PortalControllerContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
@@ -586,8 +586,8 @@ InternationalizationConstants.KEY_CMS_PAGE,
         windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
         Map<String, String> params = new HashMap<String, String>();
 
-        String siteMapPopupURL = getUrlFactory().getStartPopupUrl(new PortalControllerContext(context),
-                "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params);
+        String siteMapPopupURL = getUrlFactory().getStartPortletUrl(new PortalControllerContext(context),
+                "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProps, params,true );
 
         Element cmsViewSitemap = new DOMElement(QName.get(HtmlConstants.A));
         cmsViewSitemap.addAttribute(QName.get(HtmlConstants.HREF), siteMapPopupURL);

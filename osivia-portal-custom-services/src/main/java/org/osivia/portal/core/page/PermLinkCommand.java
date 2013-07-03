@@ -19,7 +19,7 @@ import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
-import org.osivia.portal.api.contexte.PortalControllerContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
