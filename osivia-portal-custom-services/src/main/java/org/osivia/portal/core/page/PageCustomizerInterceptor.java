@@ -1221,6 +1221,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx, IPortalUrlFactory urlFactory, PortalControllerContext portalCtx, Page page, String basePath,
             CMSItem navItem, List<UserPage> pageList) {
 
+
+
         try {
             // CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
 
@@ -1242,12 +1244,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if (navItems.size() > 0) {
 
                 for (CMSItem navSubItem : navItems) {
-                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
-                        this.addSubpagesToSiteMap(cmsCtx, urlFactory, portalCtx, page, basePath, navSubItem, subPages);
+                    if ("1".equals(navSubItem.getProperties().get("menuItem"))) {
+                        addSubpagesToSiteMap(cmsCtx, urlFactory, portalCtx, page, basePath, navSubItem, subPages);
                     }
                 }
-
-
             }
         } catch (Exception e) {
             // May be a security issue, don't block footer
@@ -1332,26 +1332,52 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 } else {
 
+                    try {
 
-                    UserPage userPage = new UserPage();
-                    mainPages.add(userPage);
+                        CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
 
 
-                    ViewPageCommand showSubPage = new ViewPageCommand(page.getId());
+                        if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
 
-                    userPage.setId(page.getId());
-                    String subName = page.getDisplayName().getString(locale, true);
-                    if (subName == null) {
-                        subName = page.getName();
+                            CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, page.getDeclaredProperty("osivia.cms.basePath"),
+                                    page.getDeclaredProperty("osivia.cms.basePath"));
+
+
+                            if (navItem != null) {
+                                this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem,
+                                        mainPages);
+
+
+                            }
+                        } else {
+
+                            // Page statique sans espace de publication
+
+                            UserPage userPage = new UserPage();
+                            mainPages.add(userPage);
+
+
+                            ViewPageCommand showSubPage = new ViewPageCommand(page.getId());
+
+                            userPage.setId(page.getId());
+                            String subName = page.getDisplayName().getString(locale, true);
+                            if (subName == null) {
+                                subName = page.getName();
+                            }
+                            userPage.setName(subName);
+
+                            List<UserPage> childrens = new ArrayList<UserPage>(10);
+                            userPage.setChildren(childrens);
+
+
+                            String url = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
+                            userPage.setUrl(url + "?init-state=true");
+                        }
+                    } catch (Exception e) {
+                        // May be a security issue, don't block footer
+                        logger.error(e.getMessage());
+
                     }
-                    userPage.setName(subName);
-
-                    List<UserPage> childrens = new ArrayList<UserPage>(10);
-                    userPage.setChildren(childrens);
-
-
-                    String url = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
-                    userPage.setUrl(url + "?init-state=true");
 
 
                 }

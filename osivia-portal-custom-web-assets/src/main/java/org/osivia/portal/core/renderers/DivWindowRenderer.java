@@ -86,9 +86,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * {@inheritDoc}
      */
     public void render(RendererContext rendererContext, WindowRendererContext wrc) throws RenderException {
-
         String language = wrc.getProperty("osivia.language");
-        Locale locale = null;
+        Locale locale;
         if (language != null) {
             locale = new Locale(language);
         } else {
@@ -104,52 +103,44 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
 
-        if( "1".equals(hidePortlet)) {
+        if ("1".equals(hidePortlet)) {
             return;
         }
-
 
 
         // Activation des liens Ajax
         String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
 
+        // Windows setting mode
+        String windowsSettingMode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
 
-        if( ! "1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode"))) {
-      	  // if is window cms, prepare the drag & drop style
-            // if(regionCms) {
-            // out.print("<div id=\"zone_" + wrc.getProperty("osivia.windowId") + "\" class=\"no-ajax-link\"> " + "<div id=\"window_"
-            // + wrc.getProperty("osivia.windowId") + "\">");
-            // }
-            // else {
+        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
             out.print("<div ");
             if (wrc.getProperty("osivia.windowId") != null) {
                 out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
             }
             out.print("class=\"no-ajax-link\"> ");
-            // + "<div>");
-            // }
         }
 
 
         String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
 
-        if( style != null) {
+        if (style != null) {
             style = style.replaceAll(",", " ");
         } else {
             style = "";
         }
 
 
+        String cssFragment = "";
+        if (this.showCmsTools(wrc)) {
+            cssFragment = "fragmentPreview";
+        }
 
-  	   String cssFragment = "";
-        if (showCmsTools(wrc)) {
-  		   cssFragment = "fragmentPreview";
-  	   }
-
-        out.println("<div class=\" dyna-window-content "+cssFragment+"\" >");
+        out.println("<div class=\" dyna-window-content " + cssFragment + "\" >");
 
         // edit / remove fragment actions
-        if (showCmsTools(wrc)) {
+        if (this.showCmsTools(wrc)) {
 
             out.print("<a class=\"fancyframe_refresh edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "'\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
@@ -160,71 +151,82 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
 
-
-        String scripts =  properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
-        if( scripts != null) {
+        String scripts = properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
+        if (scripts != null) {
             out.print(scripts);
         }
 
 
+        out.print("<div class=\"portlet-container " + style + "\">");
 
-        out.print("<div class=\"portlet-container "+style+"\">");
 
         // Print portlet commands
         this.printPortletCommands(out, wrc, properties);
 
 
+        // Portlet container rendering
+        String portletsRendering = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING);
+        if (InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
+            // Div rendering
 
-        out.print("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
+            // Header
+            if ("1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
+                out.print("<div class='portlet-header'>");
+                rendererContext.render(wrc.getDecoration());
+                out.print("</div>");
+            }
 
+            // Body
+            out.print("<div class='portlet-content-center'>");
+            rendererContext.render(wrc.getPortlet());
+            out.print("</div>");
 
-        if ("1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
+            // Footer
 
+        } else {
+            // Table rendering
+            out.print("<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">");
 
-            out.print("<tr><td class=\"portlet-titlebar-left\"></td>");
-            out.print("<td class=\"portlet-titlebar-center\">");
+            // Header
+            if ("1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
+                out.print("<tr><td class=\"portlet-titlebar-left\"></td>");
+                out.print("<td class=\"portlet-titlebar-center\">");
+                rendererContext.render(wrc.getDecoration());
+                out.print("</td><td class=\"portlet-titlebar-right\"></td></tr>");
+            }
 
-            rendererContext.render(wrc.getDecoration());
-            out.print("</td><td class=\"portlet-titlebar-right\"></td></tr>");
+            // Body
+            out.print("<tr><td class=\"portlet-content-left\"></td>");
+            out.print("<td class=\"portlet-body\"><div class=\"portlet-content-center\">");
+            rendererContext.render(wrc.getPortlet());
+            out.print("</div></td><td class=\"portlet-content-right\"></td></tr>");
+
+            // Footer
+            out.print("<tr><td class=\"portlet-footer-left\"></td>");
+            out.print("<td class=\"portlet-footer-center\"></td>");
+            out.print("<td class=\"portlet-footer-right\"></td></tr>");
+            out.print("</table>");
         }
 
-        //
-        out.print("<tr><td class=\"portlet-content-left\"></td>");
-        out.print("<td class=\"portlet-body\"><div class=\"portlet-content-center\">");
-
-
-
-        rendererContext.render(wrc.getPortlet());
-
-
-        out.print("</div></td><td class=\"portlet-content-right\"></td></tr>");
-
-        //
-        out.print("<tr><td class=\"portlet-footer-left\"></td>");
-        out.print("<td class=\"portlet-footer-center\"></td>");
-        out.print("<td class=\"portlet-footer-right\"></td></tr>");
-        out.print("</table></div>");
-
-
+        out.print("</div>"); // portlet-container
         out.print("</div>"); // dyna-window-content
 
-      // in cms mode, create a new fragment below the current window
-        if (showCmsTools(wrc)) {
+        // in cms mode, create a new fragment below the current window
+        if (this.showCmsTools(wrc)) {
 
 
-    	  out.print("<div class=\"regionPreview\">");
+            out.print("<div class=\"regionPreview\">");
 
             out.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL") + "'\" href=\""
-                    + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale)
-                    + "</a>");
+                    + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
-    	  out.println("</div>");
+            out.println("</div>");
 
-      }
+        }
 
 
         // Activation des liens Ajax
-        if (!"1".equals(ajaxLink) || "wizzard".equals(wrc.getProperty("osivia.windowSettingMode"))) {
+        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
             // out.print("</div></div>");
             out.print("</div>");
         }
@@ -234,7 +236,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /**
      * Display CMS Tools if window is marked "CMS" (dynamic window) and if the tools are enabled in the session
-     * 
+     *
      * @param wrc window context
      * @return
      */
@@ -259,6 +261,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /**
      * Utility method used to print portlet commands.
+     *
      * @param writer renderer writer
      * @param windowRendererContext window renderer context
      * @throws RenderException
@@ -346,6 +349,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /**
      * Utility method used to generate an image command link.
+     *
      * @param href link URL
      * @param onclick onclick action, may be null
      * @param imageSource image source
@@ -375,4 +379,3 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     }
 
 }
-

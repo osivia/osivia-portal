@@ -9,8 +9,26 @@ public final class InternalConstants {
     /** Window title property name. */
     public static final String PROP_WINDOW_TITLE = "osivia.title";
 
+
+
+
+
+
+    // Services
+
     /** Internationalization service. */
     public static final String ATTR_INTERNATIONALIZATION_SERVICE = "osivia.internationalizationService";
+
+
+    // System properties
+
+    /** Portlets rendering. */
+    public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING = "portlets.rendering";
+    /** Portlets div rendering. */
+    public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV = "div";
+
+
+    // Toolbar constants
 
     /** Edition mode. */
     public static final String ATTR_TOOLBAR_WIZARD_MODE = "osivia.toolbar.wizardMode";
@@ -19,9 +37,6 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_CMS_VERSION = "osivia.toolbar.cmsVersion";
     /** Edition CMS mode. */
     public static final String ATTR_TOOLBAR_CMS_EDITION_MODE = "osivia.toolbar.cmsEditionMode";
-
-
-    // Toolbar settings constants
 
     /** Toolbar settings content. */
     public static final String ATTR_TOOLBAR_SETTINGS_CONTENT = "osivia.toolbarSettings.settingsContent";
@@ -114,6 +129,7 @@ public final class InternalConstants {
     public static final String CMS_VERSION_ONLINE = "online";
     public static final String CMS_EDITION_MODE_ON = "1";
     public static final String CMS_EDITION_MODE_OFF = "0";
+
 
     /**
      * Private constructor : prevent instantiation.

@@ -288,47 +288,46 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // Administration root element
         Element administration = new DOMElement(QName.get(HtmlConstants.DIV));
 
-
-        // Configuration menu root element
-        Element configurationMenu = new DOMElement(QName.get(HtmlConstants.DIV));
-        configurationMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
-        administration.add(configurationMenu);
-
-        // Configuration menu title
-        Element configurationMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
-        configurationMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
-        configurationMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
-        configurationMenu.add(configurationMenuTitle);
-
-        // Configuration menu "ul" node
-        Element configurationMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
-        configurationMenu.add(configurationMenuUl);
-
-        // Caches initialization
-        ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
-        String cachesInitializationUrl = new PortalURLImpl(cachesInitializationCommand, context, null, null).toString();
-        cachesInitializationUrl += "?init-cache=true";
-
-        Element cachesInitialization = new DOMElement(QName.get(HtmlConstants.A));
-        cachesInitialization.addAttribute(QName.get(HtmlConstants.HREF), cachesInitializationUrl);
-        cachesInitialization.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
-        this.addSubMenuElement(configurationMenuUl, cachesInitialization);
-
-        // JBoss administration
-        ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(adminPortalId);
-        String jbossAdministrationUrl = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
-
-        Element jbossAdministration = new DOMElement(QName.get(HtmlConstants.A));
-        jbossAdministration.addAttribute(QName.get(HtmlConstants.HREF), jbossAdministrationUrl);
-        jbossAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
-        this.addSubMenuElement(configurationMenuUl, jbossAdministration);
-
-        // Pages list
-        this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGES_LIST,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
-
-
         if (PageCustomizerInterceptor.isAdministrator(context)) {
+            // Configuration menu root element
+            Element configurationMenu = new DOMElement(QName.get(HtmlConstants.DIV));
+            configurationMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+            administration.add(configurationMenu);
+
+            // Configuration menu title
+            Element configurationMenuTitle = new DOMElement(QName.get(HtmlConstants.A));
+            configurationMenuTitle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+            configurationMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
+            configurationMenu.add(configurationMenuTitle);
+
+            // Configuration menu "ul" node
+            Element configurationMenuUl = new DOMElement(QName.get(HtmlConstants.UL));
+            configurationMenu.add(configurationMenuUl);
+
+            // Caches initialization
+            ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
+            String cachesInitializationUrl = new PortalURLImpl(cachesInitializationCommand, context, null, null).toString();
+            cachesInitializationUrl += "?init-cache=true";
+
+            Element cachesInitialization = new DOMElement(QName.get(HtmlConstants.A));
+            cachesInitialization.addAttribute(QName.get(HtmlConstants.HREF), cachesInitializationUrl);
+            cachesInitialization.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
+            this.addSubMenuElement(configurationMenuUl, cachesInitialization);
+
+            // JBoss administration
+            ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(adminPortalId);
+            String jbossAdministrationUrl = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
+
+            Element jbossAdministration = new DOMElement(QName.get(HtmlConstants.A));
+            jbossAdministration.addAttribute(QName.get(HtmlConstants.HREF), jbossAdministrationUrl);
+            jbossAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
+            this.addSubMenuElement(configurationMenuUl, jbossAdministration);
+
+            // Pages list
+            this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGES_LIST,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
+
+
             // Template edition menu root element
             Element templateEditionMenu = new DOMElement(QName.get(HtmlConstants.DIV));
             templateEditionMenu.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
@@ -418,7 +417,6 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
 
             formatHtmlCmsMenu(context, page, locale, cmsEditionMenu);
-
         }
 
 
