@@ -70,11 +70,11 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";    
     /** Bundle resource key for CMS edition */
-    public static final String KEY_CMS_DISPLAY_ONLINE_VERSION = "SUBMENU_CMS_DISPLAY_ONLINE_VERSION";
+    // public static final String KEY_CMS_DISPLAY_ONLINE_VERSION = "SUBMENU_CMS_DISPLAY_ONLINE_VERSION";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_EDITION_MODE = "SUBMENU_CMS_DISPLAY_EDITION_MODE";
     /** Bundle resource key for CMS edition */
-    public static final String KEY_CMS_HIDE_EDITION_MODE = "SUBMENU_CMS_HIDE_EDITION_MODE";
+    // public static final String KEY_CMS_HIDE_EDITION_MODE = "SUBMENU_CMS_HIDE_EDITION_MODE";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_CREATE = "SUBMENU_CMS_PAGE_CREATE";
     /** Bundle resource key for CMS edition */
