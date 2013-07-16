@@ -384,7 +384,8 @@ public class PageMarkerUtils {
 
 				// TEST PERF
 				// if( false)
-				if ((controlledPageMarker == null) && (currentPageMarker != null)) {
+				//v2.1 WORKSPACE : en AJAX, les pagemarker arrivent à 0 -> pas de restauration
+				if (! "0".equals(currentPageMarker) && (controlledPageMarker == null) && (currentPageMarker != null)) {
 					// Traitement lié au back du navigateur
 
 					Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
