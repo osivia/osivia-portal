@@ -320,7 +320,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         }
 
                         return new ChangePageCMSPropertiesCommand(pageId, cmsBasePath, scope, pageContextualizationSupport, outgoingRecontextualizationSupport,
-                                navigationScope, cmsNavigationMode, displayLiveVersion);
+                                navigationScope, displayLiveVersion);
                     }
                 }
 

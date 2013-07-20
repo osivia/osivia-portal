@@ -1012,22 +1012,6 @@ public class CmsCommand extends DynamicCommand {
 								boolean computePageTemplate = true;
 
 
-
-								// En mde navigation cms, toutes les pages sont dynamiques, meme la page d'accueil statique
-								// Sinon  les Sous-pages des pages statiques sont également dynamiques
-								
-								// Page statique : on ignore le page template de
-								// l'ECM pour la page de tete
-								// (pas de template dans ce cas, on reste sur la
-								// page statique)
-								
-								/*
-								if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
-									if (!("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))))
-										if (cmsItemNav.getPath().equals(basePublishPath))	{
-											computePageTemplate = false;
-										}
-								}*/
 								// Sur les pages statiques, on ignore le template par défaut
 								
 								if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
@@ -1112,8 +1096,6 @@ public class CmsCommand extends DynamicCommand {
 						// Sinon  les Sous-pages des pages statiques sont également dynamiques
 						
 						// v2.0-rc7
-//						if (("cms".equals(baseCMSPublicationPage.getProperty("osivia.navigationMode"))) || !cmsNav.getPath().equals(basePublishPath)) {
-
 						if( ECMPageTemplate != null)	{
 							layoutType = CmsCommand.LAYOUT_TYPE_SCRIPT;
 							layoutRules = "return ECMPageTemplate;";

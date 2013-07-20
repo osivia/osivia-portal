@@ -65,8 +65,7 @@ String cmsDisplayLiveVersion = (String) request.getAttribute(InternalConstants.A
 String cmsRecontextualizationSupport = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
 // CMS base path
 String cmsBasePath = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
-// CMS navigation mode
-Boolean cmsNavigationMode = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE);
+
 
 
 // Draft page checkbox value
@@ -74,11 +73,7 @@ String checkDraft = StringUtils.EMPTY;
 if (BooleanUtils.isTrue(draftPage)) {
     checkDraft = "checked=\"checked\"";
 }
-// CMS navigation mode checkbox value
-String checkCmsNavigationMode = StringUtils.EMPTY; 
-if (BooleanUtils.isTrue(cmsNavigationMode)) {
-    checkCmsNavigationMode = "checked=\"checked\"";
-}
+
 
 
 // Locales
@@ -406,15 +401,7 @@ var currentPageId = '<%=currentPageId %>';
                         <p><%=cmsRecontextualizationSupport %></p>
                     </div>
                 </div>
-
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label">
-                        <p><%=is.getString("PAGE_CMS_UNDER_SECTION_NAVIGATION_DISPLAY", locale) %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <input type="checkbox" name="cmsNavigationMode" value="1" class="small-input" <%=checkCmsNavigationMode %> />
-                    </div>                    
-                </div>                
+            
             </div>
             
             <div class="fancybox-center-content">

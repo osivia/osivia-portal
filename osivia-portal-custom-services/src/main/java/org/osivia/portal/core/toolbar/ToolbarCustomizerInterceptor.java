@@ -748,11 +748,8 @@ InternationalizationConstants.KEY_CMS_PAGE,
                         }
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
 
-                        // CMS navigation mode
-                        String navigationMode = page.getDeclaredProperty("osivia.navigationMode");
-                        Boolean cmsNavigationMode = "cms".equals(navigationMode);
-                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE, cmsNavigationMode);
-
+  
+                        
 
                     }
                 } catch (PortalSecurityException e) {

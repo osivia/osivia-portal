@@ -300,57 +300,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    public List<UserPage> getCMSHeaderTabs(ControllerContext controllerCtx, Page cmsPage) throws Exception {
-        String navigationScope = cmsPage.getProperty("osivia.cms.navigationScope");
-
-        CMSServiceCtx cmxCtx = new CMSServiceCtx();
-        cmxCtx.setControllerContext(controllerCtx);
-        cmxCtx.setScope(navigationScope);
-
-        PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
-
-
-        List<UserPage> mainPages = new ArrayList<UserPage>(10);
-
-
-        // CMS sub pages
-
-
-        // if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
-        // .getDeclaredProperty("osivia.cms.basePath") != null))) {
-
-        try {
-
-            CMSItem publishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, cmsPage);
-
-            if ((publishSpaceConfig != null) && "1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
-
-                List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage.getDeclaredProperty("osivia.cms.basePath"),
-                        cmsPage.getDeclaredProperty("osivia.cms.basePath"));
-
-
-                for (CMSItem navItem : navItems) {
-                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
-                        this.addSubpagesToCMSHeaderTab(cmxCtx, this.urlFactory, portalCtx, cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"),
-                                navItem, mainPages);
-
-
-                    }
-                }
-
-
-            }
-
-
-        } catch (Exception e) {
-            // May be a security issue, don't block footer
-            logger.error(e.getMessage());
-        }
-        // }
-
-
-        return mainPages;
-    }
+   
 
 
     public String injectAdminTabbedNav(PageCommand rpc) {
@@ -484,56 +434,10 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
             rd.setAttribute(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
 
 
-            String pageCMSPath = null;
 
 
-            // Navigation CMS
+            rd.setAttribute(Constants.ATTR_PAGE_ID, mainPage.getId()); // Path page
 
-            if ("cms".equals(rpc.getPage().getProperty("osivia.navigationMode"))) {
-
-                // On détermine le path CMS de la page
-                // Pour cela on remonte au 1er sous-niveau
-
-                NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-                PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
-
-                if (pageState != null) {
-                    String sContentPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"));
-
-                    if ((sContentPath != null) && (sContentPath.length == 1)) {
-
-
-                        String spacePath = rpc.getPage().getProperty("osivia.cms.basePath");
-
-                        if (spacePath != null) {
-
-                            String contentPath = spacePath + sContentPath[0];
-
-                            CMSObjectPath parent = CMSObjectPath.parse(contentPath).getParent();
-                            String parentPath = parent.toString();
-
-                            while (parentPath.contains(spacePath) && !(parentPath.equals(spacePath))) {
-
-                                contentPath = parentPath.toString();
-
-                                parent = CMSObjectPath.parse(contentPath).getParent();
-                                parentPath = parent.toString();
-
-                            }
-                            pageCMSPath = contentPath;
-                        }
-
-                    }
-                }
-            }
-
-
-            if (pageCMSPath != null) {
-                rd.setAttribute(Constants.ATTR_PAGE_ID, pageCMSPath); // path CMS
-            } else {
-                rd.setAttribute(Constants.ATTR_PAGE_ID, mainPage.getId()); // Path page
-            }
 
             rd.setAttribute(Constants.ATTR_FIRST_TAB, controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));
 
@@ -619,20 +523,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
             if (pam.checkPermission(perm) && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
 
-                String navigationMode = child.getDeclaredProperty("osivia.navigationMode");
-
-                if ("cms".equals(navigationMode)) {
-
-
-                    List<UserPage> cmsPages = this.getCMSHeaderTabs(controllerCtx, child);
-
-
-                    for (UserPage cmsPage : cmsPages) {
-                        mainPages.add(cmsPage);
-                    }
-
-
-                } else {
 
                     UserPage userPage = new UserPage();
                     mainPages.add(userPage);
@@ -700,9 +590,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
                         }
                     }
                 }
-
-            }
-
         }
 
         // logger.debug("getPageBean 5" + System.currentTimeMillis());

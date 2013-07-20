@@ -74,8 +74,7 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT = "osivia.toolbarSettings.cmsRecontextualizationSupport";
     /** CMS base path. */
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH = "osivia.toolbarSettings.cmsBasePath";
-    /** CMS navigation mode indicator. */
-    public static final String ATTR_TOOLBAR_SETTINGS_CMS_NAVIGATION_MODE = "osivia.toolbarSettings.cmsNavigationMode";
+
 
 
     // Windows constants

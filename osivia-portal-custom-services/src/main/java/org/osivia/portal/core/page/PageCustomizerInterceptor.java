@@ -1286,16 +1286,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if (pam.checkPermission(null, perm)) {
 
 
-                String navigationMode = page.getDeclaredProperty("osivia.navigationMode");
+                if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page.getDeclaredProperty("osivia.cms.basePath") != null))) {
 
-                if ("cms".equals(navigationMode)) {
-
-                    // CMS sub pages
-
-                    // v2.0-rc7
-
-                    // if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page
-                    // .getDeclaredProperty("osivia.cms.basePath") != null))) {
 
                     try {
 
@@ -1381,7 +1373,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                 }
-                // }
             }
         }
 
@@ -1389,74 +1380,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    public UserPortal getCMSSiteMap(PageCommand cc) throws Exception {
-        ControllerContext controllerCtx = cc.getControllerContext();
-
-        PortalAuthorizationManager pam = this.portalAuthorizationManagerFactory.getManager();
-        Portal portal = cc.getPortal();
-        PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
-
-
-        Page cmsPage = cc.getPortal().getDefaultPage();
-        String navigationScope = cmsPage.getProperty("osivia.cms.navigationScope");
-
-        Locale locale = Locale.FRENCH;
-
-        CMSServiceCtx cmxCtx = new CMSServiceCtx();
-        cmxCtx.setControllerContext(controllerCtx);
-        cmxCtx.setScope(navigationScope);
-
-
-        UserPortal siteMap = new UserPortal();
-        siteMap.setName(portal.getName());
-        List<UserPage> mainPages = new ArrayList<UserPage>(10);
-        siteMap.setUserPages(mainPages);
-
-
-        // CMS sub pages
-
-        // v2.0-rc7
-        // if (("1".equals(cmsPage.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (cmsPage
-        // .getDeclaredProperty("osivia.cms.basePath") != null))) {
-
-        try {
-            CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, cmsPage);
-
-            if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
-
-
-                List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, cmsPage.getDeclaredProperty("osivia.cms.basePath"),
-                        cmsPage.getDeclaredProperty("osivia.cms.basePath"));
-
-
-                for (CMSItem navItem : navItems) {
-                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
-                        this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, cmsPage, cmsPage.getDeclaredProperty("osivia.cms.basePath"), navItem,
-                                mainPages);
-                    }
-                }
-            }
-
-
-        } catch (Exception e) {
-            // May be a security issue, don't block footer
-            logger.error(e.getMessage());
-        }
-        // }
-
-        return siteMap;
-    }
-
-
+    
     public UserPortal getSiteMap(PageCommand cc) throws Exception {
 
         UserPortal userPortal;
 
-        // String navigationMode = cc.getPortal().getProperty("osivia.navigationMode");
-
-        // if( "cms".equals(navigationMode))
-        // userPortal = getCMSSiteMap(cc);
-        // else
         userPortal = this.getPageSiteMap(cc);
 
         return userPortal;

@@ -33,7 +33,7 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 	public ChangePageCMSPropertiesCommand() {
 	}
 
-	public ChangePageCMSPropertiesCommand(String pageId, String cmsBasePath, String scope, String pageContextualizationSupport, String outgoingRecontextualizationSupport, String navigationScope, String cmsNavigationMode, String displayLiveVersion) {
+	public ChangePageCMSPropertiesCommand(String pageId, String cmsBasePath, String scope, String pageContextualizationSupport, String outgoingRecontextualizationSupport, String navigationScope, String displayLiveVersion) {
 		this.pageId = pageId;
 		this.cmsBasePath = cmsBasePath;
 		this.scope=scope;
@@ -63,12 +63,6 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
 			page.setDeclaredProperty("osivia.cms.navigationScope", null);
 		}
 		
-		if ("1".equals(cmsNavigationMode)) {
-			page.setDeclaredProperty("osivia.navigationMode", "cms");
-		} else {
-			page.setDeclaredProperty("osivia.navigationMode", null);
-		}
-
 		
 		if (scope != null && scope.length() != 0) {
 			page.setDeclaredProperty("osivia.cms.scope", scope);
