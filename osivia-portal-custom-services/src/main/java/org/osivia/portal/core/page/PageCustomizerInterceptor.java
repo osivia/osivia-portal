@@ -1227,7 +1227,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             // CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
 
             UserPage userPage = new UserPage();
-            pageList.add(userPage);
+
             userPage.setName(navItem.getProperties().get("displayName"));
             userPage.setId(navItem.getPath());
             Map<String, String> pageParams = new HashMap<String, String>();
@@ -1235,11 +1235,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     null, null, null, null);
             userPage.setUrl(url);
 
-            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
-
+            
             List<UserPage> subPages = new ArrayList<UserPage>(10);
             userPage.setChildren(subPages);
-
+            
+            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
 
             if (navItems.size() > 0) {
 
@@ -1249,6 +1249,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     }
                 }
             }
+            
+            pageList.add(userPage);
+            
+            
         } catch (Exception e) {
             // May be a security issue, don't block footer
             logger.error(e.getMessage());
@@ -1285,9 +1289,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             PortalObjectPermission perm = new PortalObjectPermission(page.getId(), PortalObjectPermission.VIEW_MASK);
             if (pam.checkPermission(null, perm)) {
 
-
-                // if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page.getDeclaredProperty("osivia.cms.basePath") !=
-                // null))) {
                 if (page.getDeclaredProperty("osivia.cms.basePath") != null) {
 
                     try {
@@ -1301,21 +1302,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                                     pagePublishSpaceConfig, mainPages);
 
 
-//                            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page.getDeclaredProperty("osivia.cms.basePath"),
-//                                    page.getDeclaredProperty("osivia.cms.basePath"));
-//
-//
-//                            if (navItems != null) {
-//
-//                                for (CMSItem navItem : navItems) {
-//                                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
-//                                        this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"),
-//                                                navItem, mainPages);
-//                                    }
-//                                }
-                            // } else {
-                            // logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
-                            // }
                         }
 
 
@@ -1700,86 +1686,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
             }
-
-            /*
-             * Synchronisation du breadcrum avec l'état de la page
-             * (un item est crée automatiquement en vue max)
-             *
-             * Il s'agit ici de traiter les portlets maximisés manuellement par l'utilisateur
-             */
-
-
-            /*
-             * // Find first non navigation portlet
-             *
-             * int firstPortlet = -1;
-             * int iPortlet = 0;
-             * for ( BreadcrumbItem item : breadcrumbMemo.getChilds()) {
-             *
-             * if( !item.isNavigationPlayer()) {
-             * firstPortlet = iPortlet;
-             * }
-             *
-             * iPortlet++;
-             * }
-             *
-             *
-             * // if( breadcrumbMemo.getChilds().size() == 0) {
-             * if( firstPortlet == -1) {
-             * // Si la page courante devient MAXIMIZED, on l'ajoute au breadcrumb
-             * for (Object winCtx : winsCtx.values()) {
-             * WindowContext wctx = (WindowContext)winCtx;
-             * if( WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-             *
-             * PortalObjectId targetWindowId = PortalObjectId.parse( wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
-             * Window window = (Window) getPortalObjectContainer().getObject(targetWindowId);
-             *
-             * // Les portlets CMS sont dejà enregistrés dans le breadcrum
-             * if( ! "1".equals(window.getDeclaredProperty("osivia.portletContextualizedInPage"))){
-             *
-             * // On supprimer les items courants
-             * while( breadcrumbMemo.getChilds().size() > firstPortlet)
-             * breadcrumbMemo.getChilds().remove(firstPortlet);
-             *
-             *
-             * String title = wctx.getProperty("osivia.title");
-             * if( title == null)
-             * title = wctx.getResult().getTitle();
-             * page = ((PageCommand) rpc).getPage();
-             * ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
-             * String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
-             * BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
-             * breadcrumbMemo.getChilds().add(newItem);
-             * }
-             * }
-             * }
-             * } else {
-             * //else if (breadcrumbMemo.getChilds().size() == 1) {
-             * // Si le premier item était lié à une maximisattion et qu'on repasse
-             * // en mode NORMAL, il faut le supprimer
-             * BreadcrumbItem firstItem = breadcrumbMemo.getChilds().get(firstPortlet);
-             *
-             * //if( firstItem.isUserMaximized()){
-             * boolean isWindowMaximized = false;
-             *
-             * for (Object winCtx : winsCtx.values()) {
-             * WindowContext wctx = (WindowContext)winCtx;
-             * if( WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-             *
-             * isWindowMaximized = true;
-             * }
-             *
-             *
-             * }
-             * if( ! isWindowMaximized) {
-             * breadcrumbMemo.getChilds().clear();
-             *
-             * while( breadcrumbMemo.getChilds().size() > firstPortlet)
-             * breadcrumbMemo.getChilds().remove(firstPortlet);
-             * }
-             * //}
-             * }
-             */
 
 
             /*
