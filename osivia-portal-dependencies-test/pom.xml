@@ -15,17 +15,7 @@
 
 
     <dependencies>
-    
-        <!-- OSIVIA Portal lib utils -->
-        
-        <dependency>
-            <groupId>org.osivia.portal.core</groupId>
-            <artifactId>osivia-portal-custom-lib-utils</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        
-        
+  
         <!-- JBoss -->
         
         <dependency>

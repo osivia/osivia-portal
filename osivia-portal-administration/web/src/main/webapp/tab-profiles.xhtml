@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <p class="tab-sub-title">Administrez les profils du portail</p>
+
+    <div class="admininistration-adaptive-container">
+        <a4j:form id="profiles-form">
+            <div class="administration-commands">
+                <!-- Add -->
+                <a4j:commandLink
+                    id="add-profile-action"
+                    action="#{profilesBean.addProfile}"
+                    oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
+                    <h:graphicImage
+                        value="/images/icons/create_doc.gif"
+                        alt="Ajouter"
+                        title="Ajouter un profil" />
+                </a4j:commandLink>
+            
+                <!-- Edit -->
+                <div class="administration-command-on">
+                    <a4j:commandLink
+                        id="edit-profile-action"
+                        action="#{profilesBean.editProfile}"
+                        oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
+                        <h:graphicImage
+                            value="/images/icons/edit.png"
+                            alt="Modifier"
+                            title="Modifier le profil sélectionné" />
+                    </a4j:commandLink>
+                </div>
+                <div class="administration-command-off">
+                    <h:graphicImage
+                        value="/images/icons/edit.png"
+                        alt="Modifier"
+                        title="Modifier le profil sélectionné" />
+                </div>
+            
+                <!-- Delete -->
+                <div class="administration-command-on">
+                    <a4j:commandLink
+                        id="delete-profile-action"
+                        action="#{profilesBean.deleteProfile}"
+                        reRender="profiles-list">
+                        <h:graphicImage
+                            value="/images/icons/delete.gif"
+                            alt="Supprimer"
+                            title="Supprimer le profil sélectionné" />
+                    </a4j:commandLink>
+                </div>
+                <div class="administration-command-off">
+                    <h:graphicImage
+                        value="/images/icons/delete.gif"
+                        alt="Supprimer"
+                        title="Supprimer le profil sélectionné" />
+                </div>
+            </div>
+            
+            <!-- List -->
+            <rich:orderingList
+                id="profiles-list"
+                value="#{profilesBean.profiles}"
+                var="profile"
+                controlsType="button"
+                onclick="toggleCommands(this.id);"
+                selection="#{profilesBean.selectedProfiles}"
+                converter="profileConverter">
+                <rich:column>
+                    <f:facet name="header">
+                        <h:outputText value="Profil" />
+                    </f:facet>
+                    <h:outputText value="#{profile.name}" />
+                </rich:column>
+                <a4j:support
+                    event="onchange"
+                    immediate="true"
+                    reRender="administration-commands" />
+            </rich:orderingList>
+    
+            <!-- Buttons -->
+            <div class="administration-commands">
+                <a4j:commandButton
+                    id="refresh-profiles-action"
+                    value="Rafraichir"
+                    action="#{profilesBean.refreshProfiles}"
+                    reRender="profiles-list" />
+                <a4j:commandButton
+                    id="save-profiles-action"
+                    value="Enregistrer"
+                    action="#{profilesBean.save}" />
+            </div>
+            
+        </a4j:form>
+    </div>
+
+    <f:subview id="popup-profile">
+        <ui:include src="popup-profile.xhtml" />
+    </f:subview>
+    
+    <h:panelGroup id="profiles-error-messages">
+        <h:outputText value="#{profilesBean.messages}" class="messages-display error" />
+    </h:panelGroup>
+
+</div>

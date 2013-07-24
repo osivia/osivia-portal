@@ -3,10 +3,10 @@ package org.osivia.portal.api;
 
 /**
  * HTML constants, used for DOM4J generation.
- * 
+ *
  * @author Cédric Krommenhoek
  */
-public final class HtmlConstants {
+public final class HTMLConstants {
 
     /** HTML default text. */
     public static final String TEXT_DEFAULT = "&nbsp;";
@@ -19,6 +19,10 @@ public final class HtmlConstants {
     public static final String A = "a";
     /** HTML "div" nodes. */
     public static final String DIV = "div";
+    /** HTML "figcaption" nodes. */
+    public static final String FIGCAPTION = "figcaption";
+    /** HTML "figure" nodes. */
+    public static final String FIGURE = "figure";
     /** HTML "form" nodes. */
     public static final String FORM = "form";
     /** HTML "h1" nodes. */
@@ -63,6 +67,8 @@ public final class HtmlConstants {
 
     /** HTML "action" attributes. */
     public static final String ACTION = "action";
+    /** HTML "alt" attributes. */
+    public static final String ALT = "alt";
     /** HTML "checked" attributes. */
     public static final String CHECKED = "checked";
     /** HTML "class" attributes. */
@@ -85,13 +91,14 @@ public final class HtmlConstants {
     public static final String REL = "rel";
     /** HTML "rows" attributes. */
     public static final String ROWS = "rows";
-
     /** HTML "selected" attributes. */
     public static final String SELECTED = "selected";
     /** HTML "src" attributes. */
     public static final String SRC = "src";
     /** HTML "style" attributes. */
     public static final String STYLE = "style";
+    /** HTML "target" attributes. */
+    public static final String TARGET = "target";
     /** HTML "title" attributes. */
     public static final String TITLE = "title";
     /** HTML "type" attributes. */
@@ -123,6 +130,8 @@ public final class HtmlConstants {
     public static final String INPUT_TYPE_CHECKBOX = "checkbox";
     /** HTML display none style. */
     public static final String STYLE_DISPLAY_NONE = "display: none;";
+    /** HTML new window target. */
+    public static final String TARGET_NEW_WINDOW = "_blank";
 
 
     // HTML classes
@@ -141,6 +150,10 @@ public final class HtmlConstants {
     public static final String CLASS_FANCYBOX_TABLE = "fancybox-table";
     /** HTML Fancybox table row class. */
     public static final String CLASS_FANCYBOX_ROW = "fancybox-table-row";
+    /** HTML Fancybox portlet popup class. */
+    public static final String CLASS_FANCYFRAME = "fancyframe";
+    /** HTML Fancybox portlet popup with refresh on close class. */
+    public static final String CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
     /** HTML navigation item class for "li" nodes. */
     public static final String CLASS_NAVIGATION_ITEM = "navigation-item";
     /** HTML small inputs like checkboxes class. */
@@ -159,7 +172,7 @@ public final class HtmlConstants {
     /**
      * Private constructor : prevent instantiation.
      */
-    private HtmlConstants() {
+    private HTMLConstants() {
         throw new AssertionError();
     }
 

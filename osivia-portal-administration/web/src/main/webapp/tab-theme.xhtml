@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <p class="tab-sub-title">Choisissez le thème par défaut du portail :</p>
+
+    <a4j:form>
+        <h:selectOneListbox
+            onChange="submit();"
+            immediate="true"
+            required="true"
+            size="6"
+            value="#{themeBean.theme}">
+            <f:selectItems value="#{themeBean.themes}" />
+        </h:selectOneListbox>
+        <br />
+        <br />
+        <a4j:commandButton
+            value="Enregistrer les modifications"
+            action="#{themeBean.updateTheme}"
+            reRender="theme-messages" />
+    </a4j:form>
+    
+    <h:panelGroup id="theme-messages">
+        <h:outputText value="#{themeBean.messages}" class="messages-display" />
+    </h:panelGroup>
+
+</div>

@@ -36,7 +36,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.HtmlConstants;
+import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -126,17 +126,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
             String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
 
-            DOMElement div = new DOMElement(QName.get(HtmlConstants.DIV));
-            div.addAttribute(QName.get(HtmlConstants.CLASS), CLASS_COMMANDS);
+            DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_COMMANDS);
 
-            DOMElement a = new DOMElement(QName.get(HtmlConstants.A));
-            a.addAttribute(QName.get(HtmlConstants.HREF), url);
-            a.addAttribute(QName.get(HtmlConstants.CLASS), CLASS_FANCYBOX);
-            a.addAttribute(QName.get(HtmlConstants.ONCLICK), "regionId = '" + rrc.getId() + "'");
+            DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
+            a.addAttribute(QName.get(HTMLConstants.HREF), url);
+            a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
+            a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + rrc.getId() + "'");
             div.add(a);
 
-            DOMElement img = new DOMElement(QName.get(HtmlConstants.IMG));
-            img.addAttribute(QName.get(HtmlConstants.SRC), SRC_IMG_ADD);
+            DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
+            img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
             a.add(img);
 
             HTMLWriter htmlWriter = new HTMLWriter(markup);

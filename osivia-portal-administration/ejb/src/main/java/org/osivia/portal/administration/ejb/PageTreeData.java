@@ -1,41 +1,63 @@
 package org.osivia.portal.administration.ejb;
 
-import org.jboss.portal.core.model.portal.PortalObjectId;
+import java.io.Serializable;
 
 
-public class PageTreeData {
+/**
+ * Page tree node data.
+ *
+ * @author Cédric Krommenhoek
+ * @see Serializable
+ */
+public class PageTreeData implements Serializable {
 
-	private String pageId;
-	private String name;
+    /** Default serial version ID. */
+    private static final long serialVersionUID = 1L;
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+    /** Page identifier. */
+    private final String id;
+    /** Page name. */
+	private final String name;
 
 
-	public String getPageId() {
-		return pageId;
-	}
+    /**
+     * Constructor using fields.
+     *
+     * @param id page identifier
+     * @param name page name
+     */
+    public PageTreeData(String id, String name) {
+        super();
+        this.id = id;
+        this.name = name;
+    }
 
-	public void setPageId(String pageId) {
-		this.pageId = pageId;
-	}
 
-	
+    /**
+     * Getter for id.
+     *
+     * @return the id
+     */
+    public String getId() {
+        return this.id;
+    }
 
-	public PageTreeData(String pageId, String name) {
-		super();
-		this.pageId = pageId;
-		this.name = name;
-	}
+    /**
+     * Getter for name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.name;
+    }
 
 }

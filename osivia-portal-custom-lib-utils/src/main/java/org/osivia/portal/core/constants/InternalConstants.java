@@ -10,14 +10,22 @@ public final class InternalConstants {
     public static final String PROP_WINDOW_TITLE = "osivia.title";
 
 
+    // Session attributes
 
-
+    /** Administrator indicator. */
+    public static final String ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME = "osivia.isAdministrator";
 
 
     // Services
 
     /** Internationalization service. */
     public static final String ATTR_INTERNATIONALIZATION_SERVICE = "osivia.internationalizationService";
+
+
+    // Portlets instances
+
+    /** Administration portlet. */
+    public static final String PORTLET_ADMINISTRATION_INSTANCE_NAME = "osivia-portal-administration-portletInstance";
 
 
     // System properties

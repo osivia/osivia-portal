@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+<head>
+<c:set
+    var="context"
+    value="${facesContext.externalContext.requestContextPath}" />
+</head>
+
+<body>
+    <div class="table">
+        <div class="table-row">
+            <div class="table-cell portal-selection">
+                <a4j:form ajaxsubmit="true">
+                    <p class="tab-sub-title">Choisissez le portail que vous souhaitez administrer :</p>
+                    <div class="administration-content">
+                        <h:selectOneListbox
+                            value="#{portalBean.portalId}"
+                            valueChangeListener="#{portalBean.selectPortal}"
+                            immediate="true"
+                            required="true">
+                            <f:selectItems value="#{portalBean.portals}" />
+                            <a4j:support
+                                event="onchange"
+                                immediate="true"
+                                reRender="portal-tabs" />
+                        </h:selectOneListbox>
+                    </div>
+                </a4j:form>
+            </div>
+
+            <div class="table-cell administration">
+                <rich:tabPanel
+                    id="portal-tabs"
+                    switchType="ajax">
+
+                    <!-- Export tab -->
+                    <rich:tab
+                        label="Export"
+                        disabled="#{empty portalBean.portalId}">
+                        <ui:include src="tab-export.xhtml" />
+                    </rich:tab>
+
+                    <!-- Import tab -->
+                    <rich:tab label="Import">
+                        <ui:include src="tab-import.xhtml" />
+                    </rich:tab>
+
+                    <!-- Styles tab -->
+                    <rich:tab
+                        label="Styles"
+                        action="#{stylesBean.refreshStyles}"
+                        disabled="#{empty portalBean.portalId}">
+                        <ui:include src="tab-styles.xhtml" />
+                    </rich:tab>
+
+                    <!-- Layout tab -->
+                    <rich:tab
+                        label="Layout"
+                        disabled="#{empty portalBean.portalId}">
+                        <ui:include src="tab-layout.xhtml" />
+                    </rich:tab>
+
+                    <!-- Theme tab -->
+                    <rich:tab
+                        label="Thème"
+                        disabled="#{empty portalBean.portalId}">
+                        <ui:include src="tab-theme.xhtml" />
+                    </rich:tab>
+
+                    <!-- Profiles tab -->
+                    <rich:tab
+                        label="Profils"
+                        action="#{profilesBean.refreshProfiles}"
+                        disabled="#{empty portalBean.portalId}">
+                        <ui:include src="tab-profiles.xhtml" />
+                    </rich:tab>
+
+                    <!-- System tab -->
+                    <rich:tab label="Système">
+                        <ui:include src="tab-system.xhtml" />
+                    </rich:tab>
+
+                </rich:tabPanel>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -74,7 +74,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.HtmlConstants;
+import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -540,15 +540,15 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (displayRoot && (ulChildren != null)) {
             String portalId = this.formatHtmlSafeEncodingId(portal.getId());
 
-            ul = new DOMElement(QName.get(HtmlConstants.UL));
+            ul = new DOMElement(QName.get(HTMLConstants.UL));
 
-            Element li = new DOMElement(QName.get(HtmlConstants.LI));
-            li.addAttribute(QName.get(HtmlConstants.ID), idPrefix + portalId);
-            li.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
+            Element li = new DOMElement(QName.get(HTMLConstants.LI));
+            li.addAttribute(QName.get(HTMLConstants.ID), idPrefix + portalId);
+            li.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
             ul.add(li);
 
-            Element a = new DOMElement(QName.get(HtmlConstants.A));
-            a.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
+            Element a = new DOMElement(QName.get(HTMLConstants.A));
+            a.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
             a.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ROOT_NODE, locale));
             li.add(a);
 
@@ -611,8 +611,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Generate HTML node for each page
-        Element ul = new DOMElement(QName.get(HtmlConstants.UL));
-        ul.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
+        Element ul = new DOMElement(QName.get(HTMLConstants.UL));
+        ul.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
 
         for (Page page : sortedPages) {
             String pageId = this.formatHtmlSafeEncodingId(page.getId());
@@ -623,14 +623,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             String url = new PortalURLImpl(showPage, context, null, null).toString();
             url = url + "?init-state=true";
 
-            Element li = new DOMElement(QName.get(HtmlConstants.LI));
-            li.addAttribute(QName.get(HtmlConstants.ID), idPrefix + pageId);
-            li.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
-            li.addAttribute(QName.get(HtmlConstants.REL), HTML_REL_PAGE);
+            Element li = new DOMElement(QName.get(HTMLConstants.LI));
+            li.addAttribute(QName.get(HTMLConstants.ID), idPrefix + pageId);
+            li.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
+            li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_PAGE);
             ul.add(li);
 
-            Element a = new DOMElement(QName.get(HtmlConstants.A));
-            a.addAttribute(QName.get(HtmlConstants.HREF), url);
+            Element a = new DOMElement(QName.get(HTMLConstants.A));
+            a.addAttribute(QName.get(HTMLConstants.HREF), url);
             a.setText(pageName);
             li.add(a);
 
@@ -645,13 +645,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (StringUtils.isNotEmpty(virtualEndNodesText)) {
             String parentId = this.formatHtmlSafeEncodingId(parent.getId());
 
-            Element liVirtualEndNode = new DOMElement(QName.get(HtmlConstants.LI));
-            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.ID), idPrefix + parentId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
-            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_NAVIGATION_ITEM);
-            liVirtualEndNode.addAttribute(QName.get(HtmlConstants.REL), HTML_REL_PAGE);
+            Element liVirtualEndNode = new DOMElement(QName.get(HTMLConstants.LI));
+            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.ID), idPrefix + parentId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
+            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
+            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_PAGE);
 
-            Element aVirtualEndNode = new DOMElement(QName.get(HtmlConstants.A));
-            aVirtualEndNode.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
+            Element aVirtualEndNode = new DOMElement(QName.get(HTMLConstants.A));
+            aVirtualEndNode.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
             aVirtualEndNode.setText(virtualEndNodesText);
             liVirtualEndNode.add(aVirtualEndNode);
 
@@ -692,8 +692,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
         Collections.sort(instances, new InstanceComparator(locale));
 
-        Element table = new DOMElement(QName.get(HtmlConstants.DIV));
-        table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
+        Element table = new DOMElement(QName.get(HTMLConstants.DIV));
+        table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
 
         for (InstanceDefinition instance : instances) {
             // Get portlet
@@ -706,17 +706,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
 
             // HTML elements initialization
-            Element row = new DOMElement(QName.get(HtmlConstants.DIV));
-            row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
+            Element row = new DOMElement(QName.get(HTMLConstants.DIV));
+            row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
             table.add(row);
-            Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
-            leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
+            leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             row.add(leftCell);
-            Element middleCell = new DOMElement(QName.get(HtmlConstants.DIV));
-            middleCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            Element middleCell = new DOMElement(QName.get(HTMLConstants.DIV));
+            middleCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             row.add(middleCell);
-            Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
-            rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
+            rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             row.add(rightCell);
 
             // Portlet icon
@@ -730,8 +730,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             if (StringUtils.isEmpty(iconLocation)) {
                 iconLocation = DEFAULT_ICON_LOCATION;
             }
-            Element img = new DOMElement(QName.get(HtmlConstants.IMG));
-            img.addAttribute(QName.get(HtmlConstants.SRC), iconLocation);
+            Element img = new DOMElement(QName.get(HTMLConstants.IMG));
+            img.addAttribute(QName.get(HTMLConstants.SRC), iconLocation);
             leftCell.add(img);
 
             // Portlet display name
@@ -742,11 +742,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             middleCell.setText(displayName);
 
             // Submit
-            Element input = new DOMElement(QName.get(HtmlConstants.INPUT));
-            input.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_SUBMIT);
-            input.addAttribute(QName.get(HtmlConstants.VALUE),
+            Element input = new DOMElement(QName.get(HTMLConstants.INPUT));
+            input.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
+            input.addAttribute(QName.get(HTMLConstants.VALUE),
                     this.internationalizationService.getString(InternationalizationConstants.KEY_ADD_PORTLET_SUBMIT_VALUE, locale));
-            input.addAttribute(QName.get(HtmlConstants.ONCLICK), "selectPortlet('" + instance.getId() + "', this.form)");
+            input.addAttribute(QName.get(HTMLConstants.ONCLICK), "selectPortlet('" + instance.getId() + "', this.form)");
             rightCell.add(input);
         }
 
@@ -779,11 +779,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // HTML "div" fancyboxes parent node
-        Element divParent = new DOMElement(QName.get(HtmlConstants.DIV));
-        divParent.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CONTAINER);
+        Element divParent = new DOMElement(QName.get(HTMLConstants.DIV));
+        divParent.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
 
         if (CollectionUtils.isEmpty(windows)) {
-            divParent.setText(HtmlConstants.TEXT_DEFAULT);
+            divParent.setText(HTMLConstants.TEXT_DEFAULT);
         } else {
             // Loop on each page window
             for (Window window : windows) {
@@ -793,33 +793,33 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 String fancyboxId = PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId;
 
                 // Fancybox
-                Element divFancyboxContent = new DOMElement(QName.get(HtmlConstants.DIV));
-                divFancyboxContent.addAttribute(QName.get(HtmlConstants.ID), fancyboxId);
+                Element divFancyboxContent = new DOMElement(QName.get(HTMLConstants.DIV));
+                divFancyboxContent.addAttribute(QName.get(HTMLConstants.ID), fancyboxId);
                 divParent.add(divFancyboxContent);
 
                 // Form
-                Element form = new DOMElement(QName.get(HtmlConstants.FORM));
-                form.addAttribute(QName.get(HtmlConstants.ACTION), commandUrl);
-                form.addAttribute(QName.get(HtmlConstants.METHOD), HtmlConstants.FORM_METHOD_GET);
-                form.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_FORM);
+                Element form = new DOMElement(QName.get(HTMLConstants.FORM));
+                form.addAttribute(QName.get(HTMLConstants.ACTION), commandUrl);
+                form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
+                form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
                 divFancyboxContent.add(form);
 
                 // Hidden fields
-                Element inputHiddenAction = new DOMElement(QName.get(HtmlConstants.INPUT));
-                inputHiddenAction.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_HIDDEN);
-                inputHiddenAction.addAttribute(QName.get(HtmlConstants.NAME), HTML_NAME_ACTION);
-                inputHiddenAction.addAttribute(QName.get(HtmlConstants.VALUE), HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
+                Element inputHiddenAction = new DOMElement(QName.get(HTMLConstants.INPUT));
+                inputHiddenAction.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
+                inputHiddenAction.addAttribute(QName.get(HTMLConstants.NAME), HTML_NAME_ACTION);
+                inputHiddenAction.addAttribute(QName.get(HTMLConstants.VALUE), HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
                 form.add(inputHiddenAction);
 
-                Element inputHiddenWindowId = new DOMElement(QName.get(HtmlConstants.INPUT));
-                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_HIDDEN);
-                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.NAME), HTML_NAME_WINDOW_ID);
-                inputHiddenWindowId.addAttribute(QName.get(HtmlConstants.VALUE), windowId);
+                Element inputHiddenWindowId = new DOMElement(QName.get(HTMLConstants.INPUT));
+                inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
+                inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.NAME), HTML_NAME_WINDOW_ID);
+                inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.VALUE), windowId);
                 form.add(inputHiddenWindowId);
 
                 // Table
-                Element table = new DOMElement(QName.get(HtmlConstants.DIV));
-                table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
+                Element table = new DOMElement(QName.get(HTMLConstants.DIV));
+                table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
                 form.add(table);
 
                 // Styles rows
@@ -835,7 +835,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 checkboxChecked = !"1".equals(hideTitle);
                 table.add(this.generateRow(
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE_DISPLAY, locale),
-                        HtmlConstants.INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
+                        HTMLConstants.INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
 
                 // Title
                 String title = window.getDeclaredProperty("osivia.title");
@@ -843,26 +843,26 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     title = StringUtils.EMPTY;
                 }
                 table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE, locale),
-                        HtmlConstants.INPUT_TYPE_TEXT, "title", title, false));
+                        HTMLConstants.INPUT_TYPE_TEXT, "title", title, false));
 
                 // Icons display
                 String hideDecorators = window.getDeclaredProperty("osivia.hideDecorators");
                 checkboxChecked = !"1".equals(hideDecorators);
                 table.add(this.generateRow(
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_ICONS_DISPLAY, locale),
-                        HtmlConstants.INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
+                        HTMLConstants.INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
 
                 // AJAX links and forms
                 String ajaxLinks = window.getProperty("osivia.ajaxLink");
                 checkboxChecked = "1".equals(ajaxLinks);
                 table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_AJAX_LINK, locale),
-                        HtmlConstants.INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
+                        HTMLConstants.INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
 
                 // Print
                 String print = window.getProperty("osivia.printPortlet");
                 checkboxChecked = "1".equals(print);
                 table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PRINT, locale),
-                        HtmlConstants.INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
+                        HTMLConstants.INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
 
                 // Hide empty portlet
                 String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
@@ -877,7 +877,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     customizeId = StringUtils.EMPTY;
                 }
                 table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CUSTOM_ID, locale),
-                        HtmlConstants.INPUT_TYPE_TEXT, "idPerso", customizeId, false));
+                        HTMLConstants.INPUT_TYPE_TEXT, "idPerso", customizeId, false));
 
                 // Shared cache ID
                 String cacheId = window.getProperty("osivia.cacheID");
@@ -886,7 +886,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 }
                 table.add(this.generateRow(
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHARED_CACHE_ID, locale),
-                        HtmlConstants.INPUT_TYPE_TEXT, "cacheID", cacheId, false));
+                        HTMLConstants.INPUT_TYPE_TEXT, "cacheID", cacheId, false));
 
                 // Bash activation
                 String bashActivation = window.getDeclaredProperty("osivia.bshActivation");
@@ -902,27 +902,27 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 checkboxChecked = "selection".equals(cacheEvents);
                 table.add(this.generateRow(
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SELECTION_DEPENDENCY, locale),
-                        HtmlConstants.INPUT_TYPE_CHECKBOX,
+                        HTMLConstants.INPUT_TYPE_CHECKBOX,
                         "selectionDep", "1", checkboxChecked));
 
                 // Buttons
-                Element buttonsContainer = new DOMElement(QName.get(HtmlConstants.DIV));
-                buttonsContainer.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+                Element buttonsContainer = new DOMElement(QName.get(HTMLConstants.DIV));
+                buttonsContainer.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
                 form.add(buttonsContainer);
 
                 // Submit button
-                Element submitButton = new DOMElement(QName.get(HtmlConstants.INPUT));
-                submitButton.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_SUBMIT);
-                submitButton.addAttribute(QName.get(HtmlConstants.VALUE),
+                Element submitButton = new DOMElement(QName.get(HTMLConstants.INPUT));
+                submitButton.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
+                submitButton.addAttribute(QName.get(HTMLConstants.VALUE),
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_SUBMIT, locale));
                 buttonsContainer.add(submitButton);
 
                 // Cancel button
-                Element cancelButton = new DOMElement(QName.get(HtmlConstants.INPUT));
-                cancelButton.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_BUTTON);
-                cancelButton.addAttribute(QName.get(HtmlConstants.VALUE),
+                Element cancelButton = new DOMElement(QName.get(HTMLConstants.INPUT));
+                cancelButton.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
+                cancelButton.addAttribute(QName.get(HTMLConstants.VALUE),
                         this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_CANCEL, locale));
-                cancelButton.addAttribute(QName.get(HtmlConstants.ONCLICK), "closeFancybox()");
+                cancelButton.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
                 buttonsContainer.add(cancelButton);
             }
         }
@@ -983,57 +983,57 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         styles.addAll(windowStyles);
 
         // Styles row
-        Element rowStyles = new DOMElement(QName.get(HtmlConstants.DIV));
-        rowStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
+        Element rowStyles = new DOMElement(QName.get(HTMLConstants.DIV));
+        rowStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
         tableParent.add(rowStyles);
 
         // Styles left cell
-        Element leftCellStyles = new DOMElement(QName.get(HtmlConstants.DIV));
-        leftCellStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+        Element leftCellStyles = new DOMElement(QName.get(HTMLConstants.DIV));
+        leftCellStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
         leftCellStyles.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES, locale));
         rowStyles.add(leftCellStyles);
 
         // Styles right cell
-        Element rightCellStyles = new DOMElement(QName.get(HtmlConstants.DIV));
-        rightCellStyles.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+        Element rightCellStyles = new DOMElement(QName.get(HTMLConstants.DIV));
+        rightCellStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
         rightCellStyles.setText(displayStyle);
         rowStyles.add(rightCellStyles);
 
         // Styles right cell display link
-        Element aStylesDisplay = new DOMElement(QName.get(HtmlConstants.A));
-        aStylesDisplay.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
-        aStylesDisplay.addAttribute(QName.get(HtmlConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_STYLES_ROW + "')");
+        Element aStylesDisplay = new DOMElement(QName.get(HTMLConstants.A));
+        aStylesDisplay.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
+        aStylesDisplay.addAttribute(QName.get(HTMLConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_STYLES_ROW + "')");
         aStylesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK, locale));
         rightCellStyles.add(aStylesDisplay);
 
         if (CollectionUtils.isNotEmpty(styles)) {
             // Styles display toggle row
-            Element rowToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-            rowToggle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_STYLES_ROW + " "
-                    + HtmlConstants.CLASS_FANCYBOX_ROW);
-            rowToggle.addAttribute(QName.get(HtmlConstants.STYLE), HtmlConstants.STYLE_DISPLAY_NONE);
+            Element rowToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+            rowToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_STYLES_ROW + " "
+                    + HTMLConstants.CLASS_FANCYBOX_ROW);
+            rowToggle.addAttribute(QName.get(HTMLConstants.STYLE), HTMLConstants.STYLE_DISPLAY_NONE);
             tableParent.add(rowToggle);
 
             // Styles display toggle empty left cell
-            Element leftCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-            leftCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
-            leftCellToggle.setText(HtmlConstants.TEXT_DEFAULT);
+            Element leftCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+            leftCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
+            leftCellToggle.setText(HTMLConstants.TEXT_DEFAULT);
             rowToggle.add(leftCellToggle);
 
             // Styles display toggle right cell
-            Element rightCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-            rightCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            Element rightCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+            rightCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             rowToggle.add(rightCellToggle);
 
             // Styles display table
-            Element table = new DOMElement(QName.get(HtmlConstants.DIV));
-            table.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_TABLE);
+            Element table = new DOMElement(QName.get(HTMLConstants.DIV));
+            table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
             rightCellToggle.add(table);
 
             // Loop on each style
             for (String style : styles) {
                 boolean checkboxChecked = windowStyles.contains(style);
-                Element row = this.generateRow(style, HtmlConstants.INPUT_TYPE_CHECKBOX, HTML_NAME_STYLE, style, checkboxChecked);
+                Element row = this.generateRow(style, HTMLConstants.INPUT_TYPE_CHECKBOX, HTML_NAME_STYLE, style, checkboxChecked);
                 table.add(row);
             }
         }
@@ -1059,31 +1059,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
         if (!scopes.isEmpty()) {
             // Row
-            Element row = new DOMElement(QName.get(HtmlConstants.DIV));
-            row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
+            Element row = new DOMElement(QName.get(HTMLConstants.DIV));
+            row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
             tableParent.add(row);
 
             // Left cell
-            Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
-            leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+            Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
+            leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
             leftCell.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_DISPLAY, locale));
             row.add(leftCell);
 
             // Right cell
-            Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
-            rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+            Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
+            rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             row.add(rightCell);
 
             // Select
-            Element select = new DOMElement(QName.get(HtmlConstants.SELECT));
-            select.addAttribute(QName.get(HtmlConstants.NAME), "conditionalScope");
+            Element select = new DOMElement(QName.get(HTMLConstants.SELECT));
+            select.addAttribute(QName.get(HTMLConstants.NAME), "conditionalScope");
             rightCell.add(select);
 
             // All profiles option
-            Element optionAllProfiles = new DOMElement(QName.get(HtmlConstants.OPTION));
-            optionAllProfiles.addAttribute(QName.get(HtmlConstants.VALUE), StringUtils.EMPTY);
+            Element optionAllProfiles = new DOMElement(QName.get(HTMLConstants.OPTION));
+            optionAllProfiles.addAttribute(QName.get(HTMLConstants.VALUE), StringUtils.EMPTY);
             if (StringUtils.isNotEmpty(conditionalScope)) {
-                optionAllProfiles.addAttribute(QName.get(HtmlConstants.SELECTED), HtmlConstants.INPUT_SELECTED);
+                optionAllProfiles.addAttribute(QName.get(HTMLConstants.SELECTED), HTMLConstants.INPUT_SELECTED);
             }
             optionAllProfiles.setText(this.internationalizationService.getString(
                     InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_ALL_PROFILES, locale));
@@ -1091,10 +1091,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
             for (String scope : scopes.keySet()) {
                 // Scope option
-                Element optionScope = new DOMElement(QName.get(HtmlConstants.OPTION));
-                optionScope.addAttribute(QName.get(HtmlConstants.VALUE), scope);
+                Element optionScope = new DOMElement(QName.get(HTMLConstants.OPTION));
+                optionScope.addAttribute(QName.get(HTMLConstants.VALUE), scope);
                 if (StringUtils.equals(conditionalScope, scope)) {
-                    optionScope.addAttribute(QName.get(HtmlConstants.SELECTED), HtmlConstants.INPUT_SELECTED);
+                    optionScope.addAttribute(QName.get(HTMLConstants.SELECTED), HTMLConstants.INPUT_SELECTED);
                 }
                 optionScope.setText(scopes.get(scope));
                 select.add(optionScope);
@@ -1123,75 +1123,75 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Dynamic properties row
-        Element rowDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
-        rowDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
+        Element rowDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
+        rowDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
         tableParent.add(rowDynamicProperties);
 
         // Dynamic properties left cell
-        Element leftCellDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
-        leftCellDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+        Element leftCellDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
+        leftCellDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
         leftCellDynamicProperties.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES,
                 locale));
         rowDynamicProperties.add(leftCellDynamicProperties);
 
         // Dynamic properties right cell
-        Element rightCellDynamicProperties = new DOMElement(QName.get(HtmlConstants.DIV));
-        rightCellDynamicProperties.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+        Element rightCellDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
+        rightCellDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
         rightCellDynamicProperties.setText(dynamicPropertiesLabel);
         rowDynamicProperties.add(rightCellDynamicProperties);
 
         // Dynamic properties right cell display link
-        Element aDynamicPropertiesDisplay = new DOMElement(QName.get(HtmlConstants.A));
-        aDynamicPropertiesDisplay.addAttribute(QName.get(HtmlConstants.HREF), HtmlConstants.A_HREF_DEFAULT);
-        aDynamicPropertiesDisplay.addAttribute(QName.get(HtmlConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + "')");
+        Element aDynamicPropertiesDisplay = new DOMElement(QName.get(HTMLConstants.A));
+        aDynamicPropertiesDisplay.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
+        aDynamicPropertiesDisplay.addAttribute(QName.get(HTMLConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + "')");
         aDynamicPropertiesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CHANGE, locale));
         rightCellDynamicProperties.add(aDynamicPropertiesDisplay);
 
         // Dynamic properties display toggle row
-        Element rowToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-        rowToggle.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + " "
-                + HtmlConstants.CLASS_FANCYBOX_ROW);
-        rowToggle.addAttribute(QName.get(HtmlConstants.STYLE), HtmlConstants.STYLE_DISPLAY_NONE);
+        Element rowToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+        rowToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + " "
+                + HTMLConstants.CLASS_FANCYBOX_ROW);
+        rowToggle.addAttribute(QName.get(HTMLConstants.STYLE), HTMLConstants.STYLE_DISPLAY_NONE);
         tableParent.add(rowToggle);
 
         // Dynamic properties display toggle left cell
-        Element leftCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-        leftCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+        Element leftCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+        leftCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
         rowToggle.add(leftCellToggle);
 
         // Dynamic properties display toggle checkbox label
-        Element label = new DOMElement(QName.get(HtmlConstants.LABEL));
-        label.addAttribute(QName.get(HtmlConstants.FOR), checkboxId);
+        Element label = new DOMElement(QName.get(HTMLConstants.LABEL));
+        label.addAttribute(QName.get(HTMLConstants.FOR), checkboxId);
         label.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES_BEAN_SHELL, locale));
         leftCellToggle.add(label);
 
         // Dynamic properties display toggle checkbox
-        Element checkbox = new DOMElement(QName.get(HtmlConstants.INPUT));
-        checkbox.addAttribute(QName.get(HtmlConstants.ID), checkboxId);
-        checkbox.addAttribute(QName.get(HtmlConstants.TYPE), HtmlConstants.INPUT_TYPE_CHECKBOX);
-        checkbox.addAttribute(QName.get(HtmlConstants.NAME), "bshActivation");
-        checkbox.addAttribute(QName.get(HtmlConstants.VALUE), "1");
-        checkbox.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_SMALL_INPUT);
+        Element checkbox = new DOMElement(QName.get(HTMLConstants.INPUT));
+        checkbox.addAttribute(QName.get(HTMLConstants.ID), checkboxId);
+        checkbox.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_CHECKBOX);
+        checkbox.addAttribute(QName.get(HTMLConstants.NAME), "bshActivation");
+        checkbox.addAttribute(QName.get(HTMLConstants.VALUE), "1");
+        checkbox.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_SMALL_INPUT);
         if (isBashActive) {
-            checkbox.addAttribute(QName.get(HtmlConstants.CHECKED), HtmlConstants.INPUT_CHECKED);
+            checkbox.addAttribute(QName.get(HTMLConstants.CHECKED), HTMLConstants.INPUT_CHECKED);
         }
         leftCellToggle.add(checkbox);
 
         // Dynamic properties display toggle right cell
-        Element rightCellToggle = new DOMElement(QName.get(HtmlConstants.DIV));
-        rightCellToggle.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+        Element rightCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
+        rightCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
         rowToggle.add(rightCellToggle);
 
         // Dynamic properties display toggle right cell textarea
-        Element textarea = new DOMElement(QName.get(HtmlConstants.TEXTAREA));
-        textarea.addAttribute(QName.get(HtmlConstants.NAME), "bshScript");
-        textarea.addAttribute(QName.get(HtmlConstants.ROWS), "10");
-        textarea.addAttribute(QName.get(HtmlConstants.COLS), "75");
+        Element textarea = new DOMElement(QName.get(HTMLConstants.TEXTAREA));
+        textarea.addAttribute(QName.get(HTMLConstants.NAME), "bshScript");
+        textarea.addAttribute(QName.get(HTMLConstants.ROWS), "10");
+        textarea.addAttribute(QName.get(HTMLConstants.COLS), "75");
         textarea.setText(scriptContent);
         rightCellToggle.add(textarea);
 
         // Dynamic properties display toggle right cell example
-        Element example = new DOMElement(QName.get(HtmlConstants.PRE));
+        Element example = new DOMElement(QName.get(HTMLConstants.PRE));
         StringBuffer sb = new StringBuffer();
         sb.append("/*\n");
         sb.append("implicits variables :\n");
@@ -1215,31 +1215,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     private Element generateRow(String label, String inputType, String inputName, String inputValue, boolean checkboxChecked) {
         // Row
-        Element row = new DOMElement(QName.get(HtmlConstants.DIV));
-        row.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_ROW);
+        Element row = new DOMElement(QName.get(HTMLConstants.DIV));
+        row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
 
         // Left cell
-        Element leftCell = new DOMElement(QName.get(HtmlConstants.DIV));
-        leftCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL + " " + HtmlConstants.CLASS_FANCYBOX_LABEL);
+        Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
+        leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
         leftCell.setText(label);
         row.add(leftCell);
 
         // Right cell
-        Element rightCell = new DOMElement(QName.get(HtmlConstants.DIV));
-        rightCell.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_FANCYBOX_CELL);
+        Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
+        rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
         row.add(rightCell);
 
         // Right cell input
-        Element input = new DOMElement(QName.get(HtmlConstants.INPUT));
-        input.addAttribute(QName.get(HtmlConstants.TYPE), inputType);
-        input.addAttribute(QName.get(HtmlConstants.NAME), inputName);
+        Element input = new DOMElement(QName.get(HTMLConstants.INPUT));
+        input.addAttribute(QName.get(HTMLConstants.TYPE), inputType);
+        input.addAttribute(QName.get(HTMLConstants.NAME), inputName);
         if (inputValue != null) {
-            input.addAttribute(QName.get(HtmlConstants.VALUE), inputValue);
+            input.addAttribute(QName.get(HTMLConstants.VALUE), inputValue);
         }
-        if (HtmlConstants.INPUT_TYPE_CHECKBOX.equals(inputType)) {
-            input.addAttribute(QName.get(HtmlConstants.CLASS), HtmlConstants.CLASS_SMALL_INPUT);
+        if (HTMLConstants.INPUT_TYPE_CHECKBOX.equals(inputType)) {
+            input.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_SMALL_INPUT);
             if (checkboxChecked) {
-                input.addAttribute(QName.get(HtmlConstants.CHECKED), HtmlConstants.INPUT_CHECKED);
+                input.addAttribute(QName.get(HTMLConstants.CHECKED), HTMLConstants.INPUT_CHECKED);
             }
         }
         rightCell.add(input);

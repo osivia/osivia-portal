@@ -1,7 +1,7 @@
 package org.osivia.portal.administration.ejb;
 
+import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -12,21 +12,20 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
 import org.jboss.portal.core.model.portal.Page;
@@ -40,372 +39,441 @@ import org.jboss.portal.security.AuthorizationDomainRegistry;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
+import org.osivia.portal.administration.util.AdministrationConstants;
+import org.osivia.portal.administration.util.AdministrationUtils;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-
+/**
+ * Export servlet.
+ *
+ * @author Cédric Krommenhoek
+ * @see HttpServlet
+ */
 public class ExportServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
-
-	public static String EXPORT_PORTALNAME_SESSION = "osivia.export.config";
-
-	@SuppressWarnings("unchecked")
-	public void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException {
-		
-		if( ! FileUploadBean.checkAdminPrivileges(request))	{
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			return;
-		}
-
-		IDynamicObjectContainer dynamicObjectContainer = null;
-
-		UserTransaction tx = null;
-		// As we are in servlet, cache must explicitly initialized
-
-		try {
-
-			dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class,
-					"osivia:service=DynamicPortalObjectContainer");
-
-			// ignore dynamic windows
-
-			dynamicObjectContainer.startPersistentIteration();
-
-			PortalObjectContainer portalObjectContainer = Locator.findMBean(PortalObjectContainer.class,
-					"portal:container=PortalObject");
-
-			/* Create the transaction */
-
-			InitialContext ctx = new InitialContext();
-			tx = (UserTransaction) ctx.lookup("UserTransaction");
-			tx.begin();
-
-			/* Read the portal object */
-
-			String pageId = request.getParameter("pageId");
-			String filter = request.getParameter("filter");
-
-
-			String portalName = (String) request.getSession().getAttribute(EXPORT_PORTALNAME_SESSION);
-
-			PortalObject po;
-
-			if (pageId != null)
-				po = portalObjectContainer.getObject(PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT));
-			else
-				po = portalObjectContainer.getObject(PortalObjectId.parse("/" + portalName,
-						PortalObjectPath.CANONICAL_FORMAT));
-
-			if (po != null) {
-
-				response.setContentType("text/xml");
-
-				String fileName = "export_";
-
-				if (po instanceof Page)
-					fileName += "page_";
-				else
-					fileName += "portal_";
-
-				fileName += po.getName().toLowerCase() + ".xml";
-
-				response.addHeader("Content-disposition", "attachment; filename=\"" + fileName + "\"");
-
-				/* CReate the stream */
-
-				ServletOutputStream os = response.getOutputStream();
-				exportConfig(os, po, filter);
-				os.flush();
-				os.close();
-
-			}
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-
-		finally {
-
-			try {
-				if (tx != null)
-					tx.commit();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (dynamicObjectContainer != null)
-				dynamicObjectContainer.stopPersistentIteration();
-
-		}
-
-	}
-
-	public void exportConfig(OutputStream os, PortalObject po, String filter) throws DOMException, Exception {
-		String XALAN_INDENT_AMOUNT = "{http://xml.apache.org/xslt}" + "indent-amount";
-
-		// Création de la source DOM
-		Source source = new DOMSource(genererParametres(po, filter));
-
-		Result resultat = new StreamResult(os);
-
-		// Configuration du transformer
-		TransformerFactory fabrique = TransformerFactory.newInstance();
-
-		Transformer transformer = fabrique.newTransformer();
-		transformer.setOutputProperty(XALAN_INDENT_AMOUNT, "2");
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-
-		// transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,"http://www.jboss.org/portal/dtd/portal-object_2_6.dtd");
-		transformer.transform(source, resultat);
-
-	}
-
-	private Document genererParametres(PortalObject po, String filter) throws DOMException, Exception {
-
-		// Création d'une fabrique de documents
-		DocumentBuilderFactory fabrique = DocumentBuilderFactory.newInstance();
-
-		// création d'un constructeur de documents
-		DocumentBuilder constructeur = fabrique.newDocumentBuilder();
-
-		Document document = constructeur.newDocument();
-
-		// Propriétés du DOM
-		document.setXmlVersion("1.0");
-		document.setXmlStandalone(true);
-
-		// document.
-
-		Element mainPortalObject;
-		String parentRef = null;
-
-		if (po instanceof Page) {
-
-			mainPortalObject = exportPage((Page) po, document, filter);
-			parentRef = po.getId().getPath().getParent().toString(PortalObjectPath.LEGACY_FORMAT);
-		} else {
-
-			mainPortalObject = exportPortal((Portal) po, document, filter);
-		}
-
-		// Création de l'arborescence du DOM
-		Element deployments = creerElement(document, "deployments");
-		// racine.appendChild(document.createComment("Commentaire sous la racine"));
-
-		Element deployment = creerElement(document, "deployment");
-		deployments.appendChild(deployment);
-
-		if (parentRef == null)
-			deployment.appendChild(creerElement(document, "parent-ref"));
-		else
-			deployment.appendChild(creerElement(document, "parent-ref", parentRef));
-
-		deployment.appendChild(creerElement(document, "if-exists", "overwrite"));
-
-		// deployment.setAttribute("id","0");
-
-		deployment.appendChild(mainPortalObject);
-
-		document.appendChild(deployments);
-
-		// ------------------
-		try {
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			Transformer transformer = tFactory.newTransformer();
-			DOMSource source = new DOMSource(document);
-			StringWriter sw = new StringWriter();
-			StreamResult result = new StreamResult(sw);
-			transformer.transform(source, result);
-			String xmlString = sw.toString();
-			System.out.println(xmlString);
-		} catch (Exception e) {
-
-		}
-
-		// ----------------
-		return document;
-
-	}
-
-	private Element creerElement(Document document, String name, String content) {
-		Element element;
-
-		element = document.createElement(name);
-		if (content != null)
-			element.setTextContent(content);
-
-		return element;
-	}
-
-	private Element creerElement(Document document, String name) {
-
-		return creerElement(document, name, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Element exportPortal(Portal portal, Document document, String filter) throws Exception {
-
-		Element portalElement = creerElement(document, "portal");
-
-		portalElement.appendChild(creerElement(document, "portal-name", portal.getName()));
-
-		Element supportedModes = creerElement(document, "supported-modes");
-		supportedModes.appendChild(creerElement(document, "mode", "view"));
-		supportedModes.appendChild(creerElement(document, "mode", "edit"));
-		supportedModes.appendChild(creerElement(document, "mode", "help"));
-		portalElement.appendChild(supportedModes);
-
-		Element supportedWindowStates = creerElement(document, "supported-window-states");
-		supportedWindowStates.appendChild(creerElement(document, "window-state", "normal"));
-		supportedWindowStates.appendChild(creerElement(document, "window-state", "minimized"));
-		supportedWindowStates.appendChild(creerElement(document, "window-state", "maximized"));
-		portalElement.appendChild(supportedWindowStates);
-
-		Element securityConstraint = creerSecurityConstraint(document, portal);
-
-		portalElement.appendChild(securityConstraint);
-
-		Element propertiesElement = creerElement(document, "properties");
-		Map<String, String> properties = portal.getDeclaredProperties();
-		for (String name : properties.keySet()) {
-			Element propertyElement = creerElement(document, "property");
-			propertyElement.appendChild(creerElement(document, "name", name));
-			propertyElement.appendChild(creerElement(document, "value", properties.get(name)));
-			propertiesElement.appendChild(propertyElement);
-		}
-		portalElement.appendChild(propertiesElement);
-
-		for (PortalObject portalObject : portal.getChildren()) {
-			if (portalObject instanceof Page && ( (! "true".equals(filter)) || ! "1".equals( ((Page) portalObject).getProperty("osivia.draftPage")) ))
-				portalElement.appendChild(creerPage(document, (Page) portalObject, filter));
-
-		}
-
-		return portalElement;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Element exportPage(Page page, Document document, String filter) throws Exception {
-
-		return creerPage(document, (Page) page, filter);
-
-	}
-
-	private Element creerWindow(Document document, Window window) {
-
-		Element windowElement = creerElement(document, "window");
-
-		windowElement.appendChild(creerElement(document, "window-name", window.getName()));
-		windowElement.appendChild(creerElement(document, "instance-ref", window.getContent().getURI()));
-
-		Element propertiesElement = creerElement(document, "properties");
-		Map<String, String> properties = window.getDeclaredProperties();
-		for (String name : properties.keySet()) {
-
-			if (name.equals("theme.region")) {
-				windowElement.appendChild(creerElement(document, "region", properties.get(name)));
-			} else {
-				// Recopie des autres propriétés
-				Element propertyElement = creerElement(document, "property");
-				propertyElement.appendChild(creerElement(document, "name", name));
-				propertyElement.appendChild(creerElement(document, "value", properties.get(name)));
-				propertiesElement.appendChild(propertyElement);
-			}
-		}
-		windowElement.appendChild(propertiesElement);
-
-		// valeur height obligatoire
-		windowElement.appendChild(creerElement(document, "height", "0"));
-
-		return windowElement;
-	}
-
-	private Element creerPage(Document document, Page page, String filter) throws Exception {
-
-		Element pageElement = creerElement(document, "page");
-
-		pageElement.appendChild(creerElement(document, "page-name", page.getName()));
-
-		// Création des langues
-
-		LocalizedString displayName = page.getDisplayName();
-		Map<Locale, Value> values = displayName.getValues();
-		for (Locale locale : values.keySet()) {
-			Value value = values.get(locale);
-			Element displayNameElement = creerElement(document, "display-name", value.getString());
-			displayNameElement.setAttribute("xml:lang", locale.getLanguage());
-			pageElement.appendChild(displayNameElement);
-		}
-
-		Map<String, String> properties = page.getDeclaredProperties();
-
-		Element propertiesElement = creerElement(document, "properties");
-		for (String name : properties.keySet()) {
-			Element propertyElement = creerElement(document, "property");
-			propertyElement.appendChild(creerElement(document, "name", name));
-			propertyElement.appendChild(creerElement(document, "value", properties.get(name)));
-			propertiesElement.appendChild(propertyElement);
-		}
-		pageElement.appendChild(propertiesElement);
-
-		Element securityConstraint = creerSecurityConstraint(document, page);
-		pageElement.appendChild(securityConstraint);
-
-		// Création des windows
-
-		for (PortalObject child : page.getChildren()) {
-			if (child instanceof Window) {
-				pageElement.appendChild(creerWindow(document, (Window) child));
-			}
-		}
-
-		// Création des sous-pages
-
-		for (PortalObject child : page.getChildren()) {
-			if (child instanceof Page   && ((! "true".equals(filter)) || ( ! "1".equals( ((Page) child).getProperty("osivia.draftPage")))  )) {
-				
-				pageElement.appendChild(creerPage(document, (Page) child, filter));
-			}
-		}
-
-		return pageElement;
-
-	}
-
-	private Element creerSecurityConstraint(Document document, PortalObject po) throws Exception {
-
-		AuthorizationDomainRegistry auth = Locator.findMBean(AuthorizationDomainRegistry.class,
-				"portal:service=AuthorizationDomainRegistry");
-
-		Element securityConstraint = creerElement(document, "security-constraint");
-
-		DomainConfigurator dc = auth.getDomain("portalobject").getConfigurator();
-		Set<RoleSecurityBinding> constraint = dc.getSecurityBindings(po.getId().toString(
-				PortalObjectPath.CANONICAL_FORMAT));
-
-		for (RoleSecurityBinding roleSecurityBinding : constraint) {
-			Set<String> actions = roleSecurityBinding.getActions();
-			Element policyPermission = creerElement(document, "policy-permission");
-
-			for (String action : actions) {
-				policyPermission.appendChild(creerElement(document, "action-name", action));
-			}
-
-			String role = roleSecurityBinding.getRoleName();
-			if (role.equals(SecurityConstants.UNCHECKED_ROLE_NAME)) {
-				policyPermission.appendChild(creerElement(document, "unchecked"));
-			} else {
-				Element roleElement = creerElement(document, "role-name", roleSecurityBinding.getRoleName());
-				policyPermission.appendChild(roleElement);
-			}
-
-			securityConstraint.appendChild(policyPermission);
-		}
-
-		return securityConstraint;
-	}
+    /** Default serial version ID. */
+    private static final long serialVersionUID = 1L;
+
+    /** Portal object container. */
+    private static PortalObjectContainer portalObjectContainer;
+    /** Dynamic object container. */
+    private static IDynamicObjectContainer dynamicObjectContainer;
+    /** Authorization domain registry. */
+    private static AuthorizationDomainRegistry authorizationDomainRegistry;
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check administrator privileges
+        if (!AdministrationUtils.checkAdminPrivileges(request)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        UserTransaction transaction = null;
+        try {
+            this.getDynamicObjectContainer().startPersistentIteration();
+
+            // Create the transaction
+            InitialContext initialContext = new InitialContext();
+            transaction = (UserTransaction) initialContext.lookup("UserTransaction");
+            transaction.begin();
+
+            String pageId = request.getParameter(AdministrationConstants.PAGE_ID_PARAMETER_NAME);
+            String filter = request.getParameter(AdministrationConstants.EXPORT_FILTER_PARAMETER_NAME);
+
+            String portalId = (String) request.getSession().getAttribute(AdministrationConstants.PORTAL_ID_ATTRIBUTE_NAME);
+
+            PortalObject portalObject;
+            if (StringUtils.isNotBlank(pageId)) {
+                portalObject = this.getPortalObjectContainer().getObject(PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT));
+            } else {
+                portalObject = this.getPortalObjectContainer().getObject(PortalObjectId.parse(portalId, PortalObjectPath.SAFEST_FORMAT));
+            }
+
+            if (portalObject != null) {
+                response.setContentType("text/xml");
+
+                // Header
+                StringBuffer headerValue = new StringBuffer();
+                headerValue.append("attachment; filename=\"export_");
+                if (portalObject instanceof Page) {
+                    headerValue.append("page_");
+                } else {
+                    headerValue.append("portal_");
+                }
+                headerValue.append(portalObject.getName().toLowerCase());
+                headerValue.append(".xml\"");
+                response.addHeader("Content-disposition", headerValue.toString());
+
+                // Stream creation
+                ServletOutputStream output = response.getOutputStream();
+                this.configExport(output, portalObject, filter);
+                output.flush();
+                output.close();
+            }
+        } catch (Exception e) {
+            throw new ServletException(e);
+        } finally {
+            try {
+                // Commit
+                if (transaction != null) {
+                    transaction.commit();
+                }
+            } catch (Exception e) {
+                throw new ServletException(e);
+            } finally {
+                this.getDynamicObjectContainer().stopPersistentIteration();
+            }
+        }
+    }
+
+
+    /**
+     * Getter for portalObjectContainer.
+     *
+     * @return the portalObjectContainer
+     */
+    private synchronized PortalObjectContainer getPortalObjectContainer() {
+        if (portalObjectContainer == null) {
+            String portalObjectContainerName = this.getInitParameter(AdministrationConstants.PORTAL_OBJECT_CONTAINER_NAME);
+            portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, portalObjectContainerName);
+        }
+        return portalObjectContainer;
+    }
+
+
+    /**
+     * Getter for dynamicObjectContainer.
+     *
+     * @return the dynamicObjectContainer
+     */
+    private synchronized IDynamicObjectContainer getDynamicObjectContainer() {
+        if (dynamicObjectContainer == null) {
+            String dynamicObjectContainerName = this.getInitParameter(AdministrationConstants.DYNAMIC_OBJECT_CONTAINER_NAME);
+            dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, dynamicObjectContainerName);
+        }
+        return dynamicObjectContainer;
+    }
+
+
+    /**
+     * Getter for authorizationDomainRegistry.
+     *
+     * @return the authorizationDomainRegistry
+     */
+    private synchronized AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
+        if (authorizationDomainRegistry == null) {
+            String authorizationDomainRegistryName = this.getInitParameter(AdministrationConstants.AUTHORIZATION_DOMAIN_REGISTRY_NAME);
+            authorizationDomainRegistry = Locator.findMBean(AuthorizationDomainRegistry.class, authorizationDomainRegistryName);
+        }
+        return authorizationDomainRegistry;
+    }
+
+
+    /**
+     * Utility method used to export config.
+     *
+     * @param output output stream
+     * @param portalObject portal object to export
+     * @param filter filter
+     * @throws DOMException
+     * @throws ParserConfigurationException
+     * @throws TransformerException
+     */
+    private void configExport(OutputStream output, PortalObject portalObject, String filter) throws DOMException, ParserConfigurationException,
+            TransformerException {
+        String xalanIndentAmount = "{http://xml.apache.org/xslt}" + "indent-amount";
+
+        Source source = new DOMSource(this.parametersGeneration(portalObject, filter));
+        Result result = new StreamResult(output);
+
+        // Transformer
+        TransformerFactory factory = TransformerFactory.newInstance();
+        Transformer transformer = factory.newTransformer();
+        transformer.setOutputProperty(xalanIndentAmount, "2");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.transform(source, result);
+    }
+
+
+    /**
+     * Utility method used to generate export parameters.
+     *
+     * @param portalObject portal object to export
+     * @param filter filter
+     * @return DOM document
+     * @throws DOMException
+     * @throws ParserConfigurationException
+     */
+    private Document parametersGeneration(PortalObject portalObject, String filter) throws DOMException, ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+        // DOM properties
+        document.setXmlVersion("1.0");
+        document.setXmlStandalone(true);
+
+        Element mainPortalObject;
+        String parentRef = null;
+        if (portalObject instanceof Page) {
+            Page page = (Page) portalObject;
+            mainPortalObject = this.pageExport(page, document, filter);
+            parentRef = page.getId().getPath().getParent().toString(PortalObjectPath.LEGACY_FORMAT);
+        } else {
+            Portal portal = (Portal) portalObject;
+            mainPortalObject = this.portalExport(portal, document, filter);
+        }
+
+        Element deployments = this.elementCreation(document, "deployments");
+
+        Element deployment = this.elementCreation(document, "deployment");
+        deployments.appendChild(deployment);
+
+        if (parentRef == null) {
+            deployment.appendChild(this.elementCreation(document, "parent-ref"));
+        } else {
+            deployment.appendChild(this.elementCreation(document, "parent-ref", parentRef));
+        }
+
+        deployment.appendChild(this.elementCreation(document, "if-exists", "overwrite"));
+
+        deployment.appendChild(mainPortalObject);
+
+        document.appendChild(deployments);
+
+        return document;
+    }
+
+
+    /**
+     * Utility method used to export page.
+     *
+     * @param page page to export
+     * @param document DOM document
+     * @param filter filter
+     * @return DOM element
+     */
+    private Element pageExport(Page page, Document document, String filter) {
+        return this.pageCreation(document, page, filter);
+    }
+
+
+    /**
+     * Utility method used to create DOM page
+     *
+     * @param document DOM document
+     * @param page page to export
+     * @param filter filter
+     * @return DOM element
+     */
+    private Element pageCreation(Document document, Page page, String filter) {
+        Element pageElement = this.elementCreation(document, "page");
+        pageElement.appendChild(this.elementCreation(document, "page-name", page.getName()));
+
+        // Display names
+        LocalizedString displayName = page.getDisplayName();
+        Map<Locale, Value> values = displayName.getValues();
+        for (Locale locale : values.keySet()) {
+            Value value = values.get(locale);
+            Element displayNameElement = this.elementCreation(document, "display-name", value.getString());
+            displayNameElement.setAttribute("xml:lang", locale.getLanguage());
+            pageElement.appendChild(displayNameElement);
+        }
+
+        // Properties
+        Element propertiesElement = this.elementCreation(document, "properties");
+        Map<String, String> properties = page.getDeclaredProperties();
+        for (String name : properties.keySet()) {
+            Element propertyElement = this.elementCreation(document, "property");
+            propertyElement.appendChild(this.elementCreation(document, "name", name));
+            propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+            propertiesElement.appendChild(propertyElement);
+        }
+        pageElement.appendChild(propertiesElement);
+
+        // Security constraint
+        Element securityConstraint = this.securityConstraintCreation(document, page);
+        pageElement.appendChild(securityConstraint);
+
+        // Windows
+        for (PortalObject child : page.getChildren()) {
+            if (child instanceof Window) {
+                pageElement.appendChild(this.windowCreation(document, (Window) child));
+            }
+        }
+
+        // Sub pages
+        for (PortalObject child : page.getChildren()) {
+            if ((child instanceof Page) && ((!"true".equals(filter)) || (!"1".equals(((Page) child).getProperty("osivia.draftPage"))))) {
+                pageElement.appendChild(this.pageCreation(document, (Page) child, filter));
+            }
+        }
+
+        return pageElement;
+    }
+
+
+    /**
+     * Utility method used to export portal.
+     *
+     * @param portal portal to export
+     * @param document DOM document
+     * @param filter filter
+     * @return DOM element
+     */
+    private Element portalExport(Portal portal, Document document, String filter) {
+        Element portalElement = this.elementCreation(document, "portal");
+        portalElement.appendChild(this.elementCreation(document, "portal-name", portal.getName()));
+
+        // Supported modes
+        Element supportedModes = this.elementCreation(document, "supported-modes");
+        supportedModes.appendChild(this.elementCreation(document, "mode", "view"));
+        supportedModes.appendChild(this.elementCreation(document, "mode", "edit"));
+        supportedModes.appendChild(this.elementCreation(document, "mode", "help"));
+        portalElement.appendChild(supportedModes);
+
+        // Supported window states
+        Element supportedWindowStates = this.elementCreation(document, "supported-window-states");
+        supportedWindowStates.appendChild(this.elementCreation(document, "window-state", "normal"));
+        supportedWindowStates.appendChild(this.elementCreation(document, "window-state", "minimized"));
+        supportedWindowStates.appendChild(this.elementCreation(document, "window-state", "maximized"));
+        portalElement.appendChild(supportedWindowStates);
+
+        // Security constraint
+        Element securityConstraint = this.securityConstraintCreation(document, portal);
+        portalElement.appendChild(securityConstraint);
+
+        // Properties
+        Element propertiesElement = this.elementCreation(document, "properties");
+        Map<String, String> properties = portal.getDeclaredProperties();
+        for (String name : properties.keySet()) {
+            Element propertyElement = this.elementCreation(document, "property");
+            propertyElement.appendChild(this.elementCreation(document, "name", name));
+            propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+            propertiesElement.appendChild(propertyElement);
+        }
+        portalElement.appendChild(propertiesElement);
+
+        // Sub pages
+        for (PortalObject portalObject : portal.getChildren()) {
+            if ((portalObject instanceof Page) && ((!"true".equals(filter)) || !"1".equals(((Page) portalObject).getProperty("osivia.draftPage")))) {
+                portalElement.appendChild(this.pageCreation(document, (Page) portalObject, filter));
+            }
+        }
+
+        return portalElement;
+    }
+
+
+    /**
+     * Utility method used to create DOM element.
+     *
+     * @param document DOM document
+     * @param name element name
+     * @return DOM element
+     */
+    private Element elementCreation(Document document, String name) {
+        return this.elementCreation(document, name, null);
+    }
+
+
+    /**
+     * Utility method used to create DOM element.
+     *
+     * @param document DOM document
+     * @param name element name
+     * @param content element content, may be null
+     * @return DOM element
+     */
+    private Element elementCreation(Document document, String name, String content) {
+        Element element = document.createElement(name);
+        if (content != null) {
+            element.setTextContent(content);
+        }
+        return element;
+    }
+
+
+    /**
+     * Utility method used to create security constraint.
+     *
+     * @param document DOM document
+     * @param portalObject portal object to export
+     * @return DOM element
+     */
+    @SuppressWarnings("unchecked")
+    private Element securityConstraintCreation(Document document, PortalObject portalObject) {
+        Element securityConstraint = this.elementCreation(document, "security-constraint");
+
+        DomainConfigurator domainConfigurator = this.getAuthorizationDomainRegistry().getDomain("portalobject").getConfigurator();
+        String id = portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+        Set<RoleSecurityBinding> constraint = domainConfigurator.getSecurityBindings(id);
+
+        for (RoleSecurityBinding roleSecurityBinding : constraint) {
+            Set<String> actions = roleSecurityBinding.getActions();
+            Element policyPermission = this.elementCreation(document, "policy-permission");
+
+            for (String action : actions) {
+                policyPermission.appendChild(this.elementCreation(document, "action-name", action));
+            }
+
+            String role = roleSecurityBinding.getRoleName();
+            if (role.equals(SecurityConstants.UNCHECKED_ROLE_NAME)) {
+                policyPermission.appendChild(this.elementCreation(document, "unchecked"));
+            } else {
+                Element roleElement = this.elementCreation(document, "role-name", roleSecurityBinding.getRoleName());
+                policyPermission.appendChild(roleElement);
+            }
+
+            securityConstraint.appendChild(policyPermission);
+        }
+
+        return securityConstraint;
+    }
+
+
+    /**
+     * Utility method used to create window.
+     *
+     * @param document DOM document
+     * @param window window to export
+     * @return DOM element
+     */
+    private Element windowCreation(Document document, Window window) {
+        Element windowElement = this.elementCreation(document, "window");
+        windowElement.appendChild(this.elementCreation(document, "window-name", window.getName()));
+        windowElement.appendChild(this.elementCreation(document, "instance-ref", window.getContent().getURI()));
+
+        // Properties
+        Element propertiesElement = this.elementCreation(document, "properties");
+        Map<String, String> properties = window.getDeclaredProperties();
+        for (String name : properties.keySet()) {
+            if (name.equals("theme.region")) {
+                windowElement.appendChild(this.elementCreation(document, "region", properties.get(name)));
+            } else {
+                // Other properties
+                Element propertyElement = this.elementCreation(document, "property");
+                propertyElement.appendChild(this.elementCreation(document, "name", name));
+                propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+                propertiesElement.appendChild(propertyElement);
+            }
+        }
+        windowElement.appendChild(propertiesElement);
+
+        // Mandatory height
+        windowElement.appendChild(this.elementCreation(document, "height", "0"));
+
+        return windowElement;
+    }
 
 }

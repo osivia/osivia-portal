@@ -4,7 +4,7 @@
       <if-exists>overwrite</if-exists>
       <page>
          <page-name>osivia-admin</page-name>
-         <display-name xml:lang="en">osivia portal</display-name>
+         <display-name xml:lang="en">OSIVIA Portal</display-name>
 
          <supported-locale>fr</supported-locale>
          <supported-locale>en</supported-locale>

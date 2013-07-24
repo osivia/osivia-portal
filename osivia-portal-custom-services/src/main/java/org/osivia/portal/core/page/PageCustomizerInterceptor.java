@@ -1245,7 +1245,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 for (CMSItem navSubItem : navItems) {
                     if ("1".equals(navSubItem.getProperties().get("menuItem"))) {
-                        addSubpagesToSiteMap(cmsCtx, urlFactory, portalCtx, page, basePath, navSubItem, subPages);
+                        this.addSubpagesToSiteMap(cmsCtx, urlFactory, portalCtx, page, basePath, navSubItem, subPages);
                     }
                 }
             }
@@ -1326,22 +1326,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     try {
 
-                        CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
-
-
-                        if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
-
-                            CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, page.getDeclaredProperty("osivia.cms.basePath"),
-                                    page.getDeclaredProperty("osivia.cms.basePath"));
-
-
-                            if (navItem != null) {
-                                this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"), navItem,
-                                        mainPages);
-
-
-                            }
-                        } else {
 
                             // Page statique sans espace de publication
 
@@ -1364,7 +1348,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                             String url = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
                             userPage.setUrl(url + "?init-state=true");
-                        }
+
                     } catch (Exception e) {
                         // May be a security issue, don't block footer
                         logger.error(e.getMessage());
@@ -1380,7 +1364,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    
+
     public UserPortal getSiteMap(PageCommand cc) throws Exception {
 
         UserPortal userPortal;

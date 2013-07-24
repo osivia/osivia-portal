@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <p class="tab-sub-title">Dump des threads</p>
+    <div class="administration-indent-content">
+        <a href="#{facesContext.externalContext.requestContextPath}/dump" target="_blank">Télécharger</a>
+    </div>
+
+    <p class="tab-sub-title">Activité</p>
+    <div class="administration-indent-content">
+        <a4j:form>
+            <h:panelGroup>
+                <h:outputText value="#{systemBean.sessionsCount}" /> sessions actives 
+            </h:panelGroup>
+
+            <div>
+                <a4j:commandButton
+                    value="Rafraichir"
+                    action="#{systemBean.refresh}"
+                    reRender="system-data" />
+            </div>
+        </a4j:form>
+    </div>
+    
+    <p class="tab-sub-title">Paramètres</p>
+    <div class="administration-indent-content">
+        <a4j:form>
+            <h:panelGroup id="system-parameters">
+                <h:outputText value="#{systemBean.messages}" />
+            </h:panelGroup>
+            
+            <div>
+                <a4j:commandButton
+                    value="Recharger les vocabulaires"
+                    action="#{systemBean.reloadPortalParameters}"
+                    reRender="system-parameters" />
+            </div>
+        </a4j:form>
+    </div>
+    
+</div>

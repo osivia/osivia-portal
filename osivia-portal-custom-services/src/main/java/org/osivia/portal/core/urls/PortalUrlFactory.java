@@ -1,12 +1,12 @@
 package org.osivia.portal.core.urls;
 
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderRequest;
 
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -46,7 +46,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     private ITracker tracker;
 
     public ITracker getTracker() {
-        return tracker;
+        return this.tracker;
     }
 
     public void setTracker(ITracker tracker) {
@@ -58,7 +58,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
 
     public IProfilManager getProfilManager() {
-        return profilManager;
+        return this.profilManager;
     }
 
     public void setProfilManager(IProfilManager profilManager) {
@@ -69,9 +69,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     private String addToBreadcrumb(PortletRequest request) {
 
         if (request == null)
+         {
             return null;
         // Pas dans un context portlet (appel depuis pagecustomizer), pas de breadcrumb
         // return "0";
+        }
 
         // On regarde si on est dans une window MAXIMIZED
 
@@ -80,7 +82,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String addToBreadcrumb = "0";
 
-        if (window != null && ctx != null) {
+        if ((window != null) && (ctx != null)) {
 
 
             NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
@@ -89,7 +91,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             // On regarde si la fenêtre est en vue MAXIMIZED
 
 
-            if (windowNavState != null && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
 
                 addToBreadcrumb = "1";
 
@@ -111,14 +113,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         if (window != null) {
             Page page = window.getPage();
             // contenu deja contextualise dans la page courante
-            if (CmsCommand.isContentAlreadyContextualizedInPage(ControllerContextAdapter.getControllerContext(ctx), page, path))
+            if (CmsCommand.isContentAlreadyContextualizedInPage(ControllerContextAdapter.getControllerContext(ctx), page, path)) {
                 return page;
+            }
         }
 
         Portal portal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext().getDefaultPortal();
 
         // dans d'autres pages du portail
-        PortalObject page = CmsCommand.searchPublicationPage(ControllerContextAdapter.getControllerContext(ctx), portal, path, getProfilManager());
+        PortalObject page = CmsCommand.searchPublicationPage(ControllerContextAdapter.getControllerContext(ctx), portal, path, this.getProfilManager());
         if (page != null) {
             return (Page) page;
         }
@@ -141,14 +144,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
             Portal defaultPortal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext().getDefaultPortal();
 
-            if (!defaultPortal.getName().equals(portalName))
+            if (!defaultPortal.getName().equals(portalName)) {
                 portalPersistentName = portalName;
+            }
 
         }
 
 
         ControllerCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext, hideMetaDatas, scope, displayLiveVersion,
-                windowPermReference, addToBreadcrumb(ctx.getRequest()), portalPersistentName);
+                windowPermReference, this.addToBreadcrumb(ctx.getRequest()), portalPersistentName);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
         String url = portalURL.toString();
@@ -177,13 +181,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         String url = portalURL.toString();
         url += "&pageId=" + pageId + "&regionId=" + region + "&instanceId=" + portletInstance + "&windowName=" + windowName + "&props="
                 + WindowPropertiesEncoder.encodeProperties(props) + "&params=" + WindowPropertiesEncoder.encodeProperties(params) + "&addToBreadcrumb="
-                + addToBreadcrumb(ctx.getRequest());
+                + this.addToBreadcrumb(ctx.getRequest());
         return url;
     }
 
 
-   
-    
+
+
 
     public String getPermaLink(PortalControllerContext ctx, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
             throws Exception {
@@ -200,15 +204,16 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
             Portal defaultPortal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext().getDefaultPortal();
 
-            if (!defaultPortal.getName().equals(portalName))
+            if (!defaultPortal.getName().equals(portalName)) {
                 portalPersistentName = portalName;
+            }
 
         }
 
 
         /* Direct CMS Link : use CMSCommand */
 
-        if (PortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
+        if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
 
             // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null, null,
             // null, portalPersistentName);
@@ -257,7 +262,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /*
      * Ajout du page marker
-     * 
+     *
      * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
      */
 
@@ -270,22 +275,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
             Matcher mResOriginal = expOrginial.matcher(orginalUrl);
 
-            if (mResOriginal.matches() && mResOriginal.groupCount() == 7) {
+            if (mResOriginal.matches() && (mResOriginal.groupCount() == 7)) {
                 // Not the current host ?
                 ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalCtx);
 
 
                 String contextPath = ctx.getServerInvocation().getServerContext().getPortalContextPath();
 
-                if (contextPath.endsWith("/auth"))
+                if (contextPath.endsWith("/auth")) {
                     contextPath = contextPath.substring(0, contextPath.length() - 5);
+                }
 
 
                 String serverName = ctx.getServerInvocation().getServerContext().getClientRequest().getServerName();
 
 
-                if (!serverName.equals(mResOriginal.group(1)) || !contextPath.substring(1).equals(mResOriginal.group(3)))
+                if (!serverName.equals(mResOriginal.group(1)) || !contextPath.substring(1).equals(mResOriginal.group(3))) {
                     return orginalUrl;
+                }
 
                 StringBuffer transformedUrl = new StringBuffer();
                 transformedUrl.append("http://" + mResOriginal.group(1));
@@ -319,7 +326,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /*
      * Ajout du page marker
-     * 
+     *
      * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
      */
 
@@ -328,12 +335,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         String url = originalUrl;
         int pageMarkerIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
         if (pageMarkerIndex != -1) {
-            if (popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_CLOSE)
+            if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) {
                 url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(pageMarkerIndex + 1);
-            else if (popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_OPEN)
+            } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN) {
                 url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(pageMarkerIndex + 1);
-            else if (popupAdapter == PortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION)
+            } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION) {
                 url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
+            }
         }
         return url;
     }
@@ -365,7 +373,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         portalName = "/" + portalName;
 
-        return getStartPageUrl(ctx, portalName, pageName, templateName, props, params);
+        return this.getStartPageUrl(ctx, portalName, pageName, templateName, props, params);
 
     }
 
@@ -377,8 +385,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         url += "&parentId=" + parentId + "&pageId=" + pageId;
         return url;
     }
-    
-    
+
+
 
 
     // API simplifiée d'execution d'un portlet depuis un autre portlet
@@ -391,34 +399,45 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String pageId = URLEncoder.encode(
                 PortalObjectPath.parse("/osivia-util/popup", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-        
+
         // Valeurs par défaut
 
-        if (windowProperties.get("osivia.hideDecorators") == null)
+        if (windowProperties.get("osivia.hideDecorators") == null) {
             windowProperties.put("osivia.hideDecorators", "1");
-        if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null)
+        }
+        if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
             windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+        }
 
 
 
         String url = portalURL.toString();
         url += "&pageId=" + pageId + "&regionId=popup&instanceId=" + portletInstance + "&windowName=popupWindow&props="
                 + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params) + "&addToBreadcrumb="
-                + addToBreadcrumb(portalCtx.getRequest());
-        
-        url = adaptPortalUrlToPopup(portalCtx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN);
-        
+                + this.addToBreadcrumb(portalCtx.getRequest());
+
+        url = this.adaptPortalUrlToPopup(portalCtx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN);
+
         return url;
-        
+
 
     }
 
- 
+
 
     public String getStartPortletUrl(PortalControllerContext portalCtx, String portletInstance, Map<String, String> windowProperties, Map<String, String> params, boolean popup) throws Exception {
-        
-        if( popup)
-            return getStartPortletInPopupUrl(portalCtx,  portletInstance,  windowProperties,  params);
+        // Maps initialization
+        if (windowProperties == null) {
+            windowProperties = new HashMap<String, String>();
+        }
+        if (params == null) {
+            params = new HashMap<String, String>();
+        }
+
+
+        if( popup) {
+            return this.getStartPortletInPopupUrl(portalCtx,  portletInstance,  windowProperties,  params);
+        }
 
 
 
@@ -436,19 +455,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         // Valeurs par défaut
 
-        if (windowProperties.get("osivia.hideDecorators") == null)
+        if (windowProperties.get("osivia.hideDecorators") == null) {
             windowProperties.put("osivia.hideDecorators", "1");
-        if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null)
+        }
+        if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
             windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+        }
 
         String url = portalURL.toString();
         url += "&pageId=" + pageId + "&regionId=" + region + "&instanceId=" + portletInstance + "&windowName=" + windowName + "&props="
                 + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params)
-                + "&addToBreadcrumb=" + addToBreadcrumb(portalCtx.getRequest());
+                + "&addToBreadcrumb=" + this.addToBreadcrumb(portalCtx.getRequest());
         return url;
 
     }
-    
+
 
 
 

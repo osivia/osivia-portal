@@ -39,7 +39,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.HtmlConstants;
+import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -274,8 +274,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             String onclickAction = "windowId = '" + windowId + "'";
 
             // Commands container
-            Element div = new DOMElement(QName.get(HtmlConstants.DIV));
-            div.addAttribute(QName.get(HtmlConstants.CLASS), CLASS_COMMANDS);
+            Element div = new DOMElement(QName.get(HTMLConstants.DIV));
+            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_COMMANDS);
 
             // Up move command
             String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
@@ -298,8 +298,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             div.add(nextRegionLink);
 
             // Shading
-            Element imgShading = new DOMElement(QName.get(HtmlConstants.IMG));
-            imgShading.addAttribute(QName.get(HtmlConstants.SRC), SHADING_IMAGE_SOURCE);
+            Element imgShading = new DOMElement(QName.get(HTMLConstants.IMG));
+            imgShading.addAttribute(QName.get(HTMLConstants.SRC), SHADING_IMAGE_SOURCE);
             div.add(imgShading);
 
             // Window settings display command
@@ -328,8 +328,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             }
 
             // Shading (can't reuse first shading node)
-            Element imgShading2 = new DOMElement(QName.get(HtmlConstants.IMG));
-            imgShading2.addAttribute(QName.get(HtmlConstants.SRC), SHADING_IMAGE_SOURCE);
+            Element imgShading2 = new DOMElement(QName.get(HTMLConstants.IMG));
+            imgShading2.addAttribute(QName.get(HTMLConstants.SRC), SHADING_IMAGE_SOURCE);
             div.add(imgShading2);
 
             // Delete portlet command
@@ -358,21 +358,21 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      */
     private Element generatePortletCommandLink(String href, String onclick, String imageSource, String fancyboxClass, String title) {
         // HTML "a" node
-        DOMElement a = new DOMElement(QName.get(HtmlConstants.A));
-        a.addAttribute(QName.get(HtmlConstants.HREF), href);
+        DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
+        a.addAttribute(QName.get(HTMLConstants.HREF), href);
         if (onclick != null) {
-            a.addAttribute(QName.get(HtmlConstants.ONCLICK), onclick);
+            a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
         }
         if (StringUtils.isNotEmpty(fancyboxClass)) {
-            a.addAttribute(QName.get(HtmlConstants.CLASS), fancyboxClass);
+            a.addAttribute(QName.get(HTMLConstants.CLASS), fancyboxClass);
         }
         if (StringUtils.isNotEmpty(title)) {
-            a.addAttribute(QName.get(HtmlConstants.TITLE), title);
+            a.addAttribute(QName.get(HTMLConstants.TITLE), title);
         }
 
         // HTML "img" sub node
-        Element img = new DOMElement(QName.get(HtmlConstants.IMG));
-        img.addAttribute(QName.get(HtmlConstants.SRC), imageSource);
+        Element img = new DOMElement(QName.get(HTMLConstants.IMG));
+        img.addAttribute(QName.get(HTMLConstants.SRC), imageSource);
         a.add(img);
 
         return a;

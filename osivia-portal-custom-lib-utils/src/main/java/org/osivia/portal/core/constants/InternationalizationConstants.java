@@ -33,11 +33,13 @@ public final class InternationalizationConstants {
 
     // Toolbar administration
 
-    /** Bundle resource key for configuration menu title. */
-    public static final String KEY_CONFIGURATION_MENU_TITLE = "MENU_CONFIGURATION";
-    /** Bundle resource key for caches initialization. */
-    public static final String KEY_CACHES_INITIALIZATION = "SUBMENU_CACHES_INITIALIZATION";
-    /** Bundle resource key for JBoss administration. */
+    /** Bundle resource key for shortcuts menu title. */
+    public static final String KEY_SHORTCUTS_MENU_TITLE = "MENU_SHORTCUTS";
+    /** Bundle resource key for home access. */
+    public static final String KEY_HOME = "SUBMENU_HOME";
+    /** Bundle resource key for OSIVIA administration access. */
+    public static final String KEY_OSIVIA_ADMINISTRATION = "SUBMENU_OSIVIA_ADMINISTRATION";
+    /** Bundle resource key for JBoss administration access. */
     public static final String KEY_JBOSS_ADMINISTRATION = "SUBMENU_JBOSS_ADMINISTRATION";
     /** Bundle resource key for pages list. */
     public static final String KEY_PAGES_LIST = "SUBMENU_PAGES_LIST";
@@ -59,8 +61,10 @@ public final class InternationalizationConstants {
     public static final String KEY_PAGE_CMS = "SUBMENU_PAGE_CMS";
     /** Bundle resource key for page rights. */
     public static final String KEY_PAGE_RIGHTS = "SUBMENU_PAGE_RIGHTS";
-    
-    // CMS properties   
+    /** Bundle resource key for caches initialization. */
+    public static final String KEY_CACHES_INITIALIZATION = "SUBMENU_CACHES_INITIALIZATION";
+
+    // CMS properties
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE = "MENU_CMS_PAGE";
     /** Bundle resource key for CMS edition */
@@ -68,7 +72,7 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_PREVIEW = "MENU_CMS_PAGE_PREVIEW";
     /** Bundle resource key for CMS edition */
-    public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";    
+    public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";
     /** Bundle resource key for CMS edition */
     // public static final String KEY_CMS_DISPLAY_ONLINE_VERSION = "SUBMENU_CMS_DISPLAY_ONLINE_VERSION";
     /** Bundle resource key for CMS edition */
