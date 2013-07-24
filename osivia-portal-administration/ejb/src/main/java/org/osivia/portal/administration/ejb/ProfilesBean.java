@@ -147,6 +147,7 @@ public class ProfilesBean extends AbstractAdministrationBean {
             portalProfiles.add(portalProfile);
         }
         this.profileManager.setListeProfils(portal, portalProfiles);
+        this.setMessages("Les profils ont été mis à jour.");
     }
 
 

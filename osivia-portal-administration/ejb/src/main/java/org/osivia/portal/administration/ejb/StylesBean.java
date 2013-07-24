@@ -32,6 +32,8 @@ public class StylesBean extends AbstractAdministrationBean {
 
     /** Style. */
     private String style;
+    /** Old style value for edition. */
+    private String oldStyle;
     /** Selected styles. */
     private Set<String> selectedStyles;
     /** Styles list. */
@@ -63,7 +65,52 @@ public class StylesBean extends AbstractAdministrationBean {
      * Add style action.
      */
     public void addStyle() {
+        this.style = StringUtils.EMPTY;
+        this.oldStyle = null;
+        this.setPopupTitle("Ajouter style");
+    }
 
+
+    /**
+     * Edit style action.
+     */
+    public void editStyle() {
+        if (this.selectedStyles.isEmpty()) {
+            this.addStyle();
+        } else {
+            this.style = this.selectedStyles.iterator().next();
+            this.oldStyle = this.style;
+            this.setPopupTitle("Editer style " + this.style);
+        }
+    }
+
+
+    /**
+     * Delete style action.
+     */
+    public void deleteStyle() {
+        for (String selectedStyle : this.selectedStyles) {
+            this.styles.remove(selectedStyle);
+        }
+    }
+
+
+    /**
+     * Add or edit popup submit action.
+     */
+    public void submit() {
+        if (this.oldStyle == null) {
+            // Add
+            if (this.styles.contains(this.style)) {
+                this.setMessages("Le style existe déjà.");
+            } else {
+                this.styles.add(this.style);
+            }
+        } else {
+            // Edit
+            this.styles.remove(this.oldStyle);
+            this.styles.add(this.style);
+        }
     }
 
 
@@ -78,6 +125,18 @@ public class StylesBean extends AbstractAdministrationBean {
         }
         String[] stringsArray = StringUtils.split(property, SEPARATOR);
         this.styles = Arrays.asList(stringsArray);
+    }
+
+
+    /**
+     * Save styles action.
+     */
+    public void save() {
+        Portal portal = this.getPortal();
+        String[] stringsArray = this.styles.toArray(new String[this.styles.size()]);
+        String property = StringUtils.join(stringsArray, SEPARATOR);
+        portal.setDeclaredProperty(PORTAL_STYLES_DECLARED_PROPERTY, property);
+        this.setMessages("Les styles ont été mis à jour.");
     }
 
 

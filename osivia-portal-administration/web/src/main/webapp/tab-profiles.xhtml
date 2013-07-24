@@ -94,7 +94,8 @@
                 <a4j:commandButton
                     id="save-profiles-action"
                     value="Enregistrer"
-                    action="#{profilesBean.save}" />
+                    action="#{profilesBean.save}"
+                    reRender="profiles-messages" />
             </div>
             
         </a4j:form>
@@ -104,8 +105,8 @@
         <ui:include src="popup-profile.xhtml" />
     </f:subview>
     
-    <h:panelGroup id="profiles-error-messages">
-        <h:outputText value="#{profilesBean.messages}" class="messages-display error" />
+    <h:panelGroup id="profiles-messages">
+        <h:outputText value="#{profilesBean.messages}" class="messages-display" />
     </h:panelGroup>
 
 </div>

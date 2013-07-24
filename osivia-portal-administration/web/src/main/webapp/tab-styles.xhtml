@@ -93,7 +93,8 @@
                 <a4j:commandButton
                     id="save-styles-action"
                     value="Enregistrer"
-                    action="#{stylesBean.save}" />
+                    action="#{stylesBean.save}"
+                    reRender="styles-messages" />
             </div>
     
         </a4j:form>
@@ -102,5 +103,9 @@
     <f:subview>
         <ui:include src="popup-style.xhtml" />
     </f:subview>
+    
+    <h:panelGroup id="styles-messages">
+        <h:outputText value="#{stylesBean.messages}" class="messages-display" />
+    </h:panelGroup>
 
 </div>
