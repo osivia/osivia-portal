@@ -1286,8 +1286,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if (pam.checkPermission(null, perm)) {
 
 
-                if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page.getDeclaredProperty("osivia.cms.basePath") != null))) {
-
+                // if (("1".equals(page.getDeclaredProperty("osivia.cms.pageContextualizationSupport")) && (page.getDeclaredProperty("osivia.cms.basePath") !=
+                // null))) {
+                if (page.getDeclaredProperty("osivia.cms.basePath") != null) {
 
                     try {
 
@@ -1296,22 +1297,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                         if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
+                            this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"),
+                                    pagePublishSpaceConfig, mainPages);
 
-                            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page.getDeclaredProperty("osivia.cms.basePath"),
-                                    page.getDeclaredProperty("osivia.cms.basePath"));
 
-
-                            if (navItems != null) {
-
-                                for (CMSItem navItem : navItems) {
-                                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
-                                        this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"),
-                                                navItem, mainPages);
-                                    }
-                                }
-                            } else {
-                                logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
-                            }
+//                            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmxCtx, page.getDeclaredProperty("osivia.cms.basePath"),
+//                                    page.getDeclaredProperty("osivia.cms.basePath"));
+//
+//
+//                            if (navItems != null) {
+//
+//                                for (CMSItem navItem : navItems) {
+//                                    if ("1".equals(navItem.getProperties().get("menuItem"))) {
+//                                        this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"),
+//                                                navItem, mainPages);
+//                                    }
+//                                }
+                            // } else {
+                            // logger.error("getPageSiteMap le path " + page.getDeclaredProperty("osivia.cms.basePath") + " n'est pas accessible");
+                            // }
                         }
 
 
