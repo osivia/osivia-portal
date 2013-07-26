@@ -110,7 +110,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
                 if (wrc.getId().contains("_PIA_EMPTY")) {
 
-                    markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"fragmentPreview\">"
+                    markup.println("<div id=\"emptyRegion_" + rrc.getId() + "\" class=\"fragmentPreview\">"
                             + INTERNATIONALIZATION_SERVICE.getString("CMS_EMPTY_REGION", locale) + "</div>");
 
                 }
