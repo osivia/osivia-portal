@@ -283,4 +283,10 @@ z-index:10;
 }
 
 
+/* Fancybox */
+
+.fancybox-content {
+    display: none;
+}
+
 

@@ -23,10 +23,23 @@ public class CMSPublicationInfos {
 	private String documentPath = null;
 	private String liveId = null;
 	private boolean editableByUser = false;
+	// Modif FILEBROWSER-begin
+	private boolean deletableByUser = false;
+	// Modif FILEBROWSER-end
 	private boolean anonymouslyReadable = false;
 	private boolean published = false;
+	// Modif COMMENTS-begin
+	private boolean commentableByUser;
+	// Modif COMMENTS-end
 	
+	// Modif SPACEID-begin
+	private String spaceID = null;
+	private String parentSpaceID = null;
+	// Modif SPACEID-end
+	
+	// Modif SPACEID-begin
 	private Map<String, String> subTypes;
+	// Modif SPACEID-end
 
 	private String publishSpaceType = null;
 	private String publishSpacePath = null;
@@ -87,7 +100,16 @@ public class CMSPublicationInfos {
 	public void setEditableByUser(boolean editableByUser) {
 		this.editableByUser = editableByUser;
 	}
+	// Modif FILEBROWSER-begin
+	public boolean isDeletableByUser() {
+		return deletableByUser;
+	}
 
+	public void setDeletableByUser(boolean deletableByUser) {
+		this.deletableByUser = deletableByUser;
+	}
+
+	// Modif FILEBROWSER-end
 	public boolean isAnonymouslyReadable() {
 		return anonymouslyReadable;
 	}
@@ -103,7 +125,35 @@ public class CMSPublicationInfos {
 	public void setPublished(boolean published) {
 		this.published = published;
 	}
+	// Modif COMMENTS-begin
+	public boolean isCommentableByUser() {
+		return commentableByUser;
+	}
+
+	public void setCommentableByUser(boolean commentableByUser) {
+		this.commentableByUser = commentableByUser;
+	}
+	// Modif COMMENTS-end
+
+	// Modif SPACEID-begin
+	public String getSpaceID() {
+		return spaceID;
+	}
+
+	public void setSpaceID(String spaceID) {
+		this.spaceID = spaceID;
+	}
+
+	public String getParentSpaceID() {
+		return parentSpaceID;
+	}
+
+	public void setParentSpaceID(String parentSpaceID) {
+		this.parentSpaceID = parentSpaceID;
+	}
+	// Modif SPACEID-begin
 	
+	// Modif SUBTYPES-begin
 	public Map<String, String> getSubTypes() {
 		return subTypes;
 	}
@@ -111,6 +161,7 @@ public class CMSPublicationInfos {
 	public void setSubTypes(Map<String, String> subTypes) {
 		this.subTypes = subTypes;
 	}
+	// Modif SUBTYPES-end
 
 	public List<Integer> getErrorCodes() {
 		return errorCodes;

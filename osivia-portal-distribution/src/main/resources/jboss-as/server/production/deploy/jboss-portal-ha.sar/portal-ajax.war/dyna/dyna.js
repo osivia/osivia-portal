@@ -21,6 +21,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
  ******************************************************************************/
 
+//Modif COMMENTS-begin
+var fancyContainerDivId = null;
+//Modif COMMENTS-end
+
+
+
 function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId) {
     var options = {
             requestHeaders: ["ajax","true","bilto","toto"],
@@ -215,7 +221,21 @@ function bilto(event) {
         return;
     }
 
-    var container = Element.up(source, "div.dyna-window");
+	
+
+//    var container = Element.up(source, "div.dyna-window");
+
+    var container = null;
+	
+    //Modif COMMENTS-begin
+    if( fancyContainerDivId != null)
+	container = document.getElementById(fancyContainerDivId);
+
+
+    if( container == null)
+	container = Element.up(source, "div.dyna-window");
+    //Modif COMMENTS-end
+
 
     // We found the window
     if (container != null) {
@@ -284,6 +304,11 @@ function bilto(event) {
         if (url != null) {
             directAjaxCall(container, options, url, event);	
         }
+	
+	//Modif COMMENTS-begin
+	if( fancyContainerDivId)
+		parent.jQuery.fancybox.close();
+	//Modif COMMENTS-end
     }
 }
 

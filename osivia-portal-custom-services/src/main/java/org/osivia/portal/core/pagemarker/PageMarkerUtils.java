@@ -364,7 +364,9 @@ public class PageMarkerUtils {
 
                 // TEST PERF
                 // if( false)
-                if ((controlledPageMarker == null) && (currentPageMarker != null)) {
+		//v2.1 WORKSPACE : en AJAX, les pagemarker arrivent à 0 -> pas de restauration
+		if (! "0".equals(currentPageMarker) && (controlledPageMarker == null) && (currentPageMarker != null)) {
+//                if ((controlledPageMarker == null) && (currentPageMarker != null)) {
                     // Traitement lié au back du navigateur
 
                     Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
@@ -526,7 +528,8 @@ public class PageMarkerUtils {
                                                  newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
                                              }         
                                     }	
-                                	                                    } catch (ClassCastException e){
+                                	
+                                    } catch (ClassCastException e){
                                     	// Pb lie au reload du service, on ignore la map
                                     }	
                                 	
@@ -537,7 +540,8 @@ public class PageMarkerUtils {
                                 
                                 if (markerInfo.getSelectionTs() != null) {
                                     controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());
-                                };
+                                }
+;
 
                                 if (page != null) {
                                     dumpPageState(controllerContext, page, "APRES restorePageState " + currentPageMarker);
