@@ -330,6 +330,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             // Pages list
             this.addSubMenuFancyboxLink(shortcutsMenuUl, URL_PAGES_LIST,
                     this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
+            
+            // Page portail (TEST JSS uniquuement en mode PORTAL)
+            if( InternalConstants.PORTAL_TYPE_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE)))  {
+                this.addSubMenuFancyboxLink(shortcutsMenuUl, URL_PAGE_CREATION,
+                        this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CREATION, locale));
+                
+            }
 
 
             // Template edition menu root element

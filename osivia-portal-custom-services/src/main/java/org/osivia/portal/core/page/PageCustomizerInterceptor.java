@@ -1125,35 +1125,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
 
-            /* JSS20130610 : Injection path CMS pour Ajax */
-
-            // On determine le path de navigation cms
-            // TODO : ajouter test uniquement en edition CMS
-
-
-            NavigationalStateContext nsContext = (NavigationalStateContext) rpc.getControllerContext().getAttributeResolver(
-                    ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-            PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
-
-            String sPath[] = null;
-            if (pageState != null) {
-                sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-            }
 
             StringBuffer footer = new StringBuffer();
 
             footer.append(footerNav);
 
-            if ((sPath != null) && (sPath.length == 1)) {
-
-                footer.append("<script type='text/javascript'>\n");
-                footer.append("cmsPath = \"");
-                footer.append(sPath[0]);
-                footer.append("\";\n");
-
-                footer.append("</script>\n");
-            }
-
+  
 
             WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
             WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
@@ -1179,6 +1156,35 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append(toolbarSettings);
         }
 
+        
+        
+        /* JSS20130610 : Injection path CMS pour Ajax */
+
+        // On determine le path de navigation cms
+        // TODO : ajouter test uniquement en edition CMS
+
+
+        NavigationalStateContext nsContext = (NavigationalStateContext) rpc.getControllerContext().getAttributeResolver(
+                ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+        PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
+
+        String sPath[] = null;
+        if (pageState != null) {
+            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+        }
+
+
+
+        if ((sPath != null) && (sPath.length == 1)) {
+
+            pageSettings.append("<script type='text/javascript'>\n");
+            pageSettings.append("cmsPath = \"");
+            pageSettings.append(sPath[0]);
+            pageSettings.append("\";\n");
+            pageSettings.append("</script>\n");
+        }
+        
+        
 
         Map<String, String> windowProps = new HashMap<String, String>();
 
@@ -1897,81 +1903,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             rd.setAttribute(Constants.ATTR_BREADCRUMB, breadcrumbDisplay);
 
             PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
-
-            // TEST V2 PERMALINK : Permalink sur les contenus
-            /*
-             *
-             *
-             *
-             *
-             * // First : Content defined to portlet
-             *
-             * String docPath = (String) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.portletContentPath");
-             *
-             * if( docPath == null) {
-             *
-             * // Secund : Content associated to window
-             *
-             * for (Object winCtx : winsCtx.values()) {
-             *
-             * WindowContext wctx = (WindowContext) winCtx;
-             *
-             * if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-             *
-             * PortalObjectId targetWindowId = PortalObjectId.parse( wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
-             *
-             * Window window = (Window) portalObjectContainer.getObject(targetWindowId);
-             *
-             * if( window != null) {
-             * docPath = window.getProperty("osivia.cms.portletContentPath");
-             * }
-             * }
-             * }
-             * }
-             *
-             *
-             *
-             *
-             * if( docPath == null) {
-             *
-             * // Else, content from CMS navigation
-             * if( pageState != null) {
-             *
-             * String navPath[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-             *
-             * String pathNavigation = null;
-             * if( navPath != null && navPath.length > 0)
-             * pathNavigation = sPath[ 0];
-             *
-             * docPath = pathNavigation;
-             *
-             *
-             *
-             * }
-             *
-             * }
-             *
-             * if( docPath != null)
-             * rd.setAttribute(Constants.ATTR_PERMLINK_URL, getUrlFactory().getPermaLink(portalCtx, null, null, docPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS));
-             */
-
-            /*
-             * A combiner avec breadcrumb.jsp
-             *
-             * <!--
-             * <% if( permLinkUrl != null) { %>
-             *
-             *
-             * <a class="permalink" title="Lien permanent" href="<%= permLinkUrl %>"><img
-             * src="/toutatice-portail-demo-charte/themes/atomo/images/permalink.png"> </a>
-             *
-             * <%
-             *
-             * }
-             * %>
-             *
-             * -->
-             */
 
 
             rd.setAttribute(Constants.ATTR_URL_FACTORY, this.getUrlFactory());

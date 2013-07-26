@@ -95,7 +95,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         // actuellement, génération d'une exception
         
         // Par défaut, le portail est calculé en fonction de l'url
-        // Ensuite, il sera ajusté en fonction de la commande Jboss Portal
+        // Ensuite, il sera ajusté en fonction de la commande Jboss Portal (PageMarkerInterceptor)
         // Ce traitement sert pour le calcul des pages au login
         String reqHost = invocation.getServerContext().getClientRequest().getServerName();
         String portalName = null;

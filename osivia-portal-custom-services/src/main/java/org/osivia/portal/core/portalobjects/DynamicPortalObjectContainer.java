@@ -295,9 +295,20 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 			PortalObjectPath pagePath = pageId.getPath();
 
-			if ((pagePath == null) || !pagePath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
-                return windows;
-            }
+
+			
+			
+			// Hors requete (ex : au deploiement d'une webapp)
+			if (pagePath == null || this.getInvocation() == null ) 
+			    return windows;
+
+	         // JSS : on peut avoir des EditableWindows sur des pages statiques
+            // TODO : a optimiser ( 1 seul appel à cette méthode)
+
+			
+//			if ((pagePath == null) || !pagePath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
+//                return windows;
+//            }
 
 
 			PageNavigationalState ns = null;

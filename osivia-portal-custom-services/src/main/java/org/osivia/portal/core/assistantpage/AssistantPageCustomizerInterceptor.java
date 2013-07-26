@@ -281,19 +281,31 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         Map<String, String> policies = new LinkedHashMap<String, String>();
 
-        policies.put("local", "Contenus du portail courant");
-        policies.put("global", "Tous les contenus");
+        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL, "Contenus du portail courant");
+        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NONE, "Tous les contenus");
 
-        String sitePolicy = po.getProperty("osivia.portal.publishingPolicy");
+ 
+        String inheritedFilteringPolicy = po.getParent().getProperty(InternalConstants.PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY);
 
         String inheritedLabel = null;
-        if ("satellite".equals(sitePolicy)) {
-            inheritedLabel = "Contenus du portail";
-        }
-        ;
-        if (inheritedLabel == null) {
-            inheritedLabel = "Tous les contenus";
-        }
+        
+        if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL.equals(inheritedFilteringPolicy)) {
+             inheritedLabel = "Contenus du portail courant";
+         } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NONE.equals(inheritedFilteringPolicy)) {
+             inheritedLabel = "Tous les contenus";
+         } else {
+              String portalType =  po.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
+              if( InternalConstants.PORTAL_TYPE_SPACE.equals(portalType)) {
+                inheritedLabel = "Contenus du portail courant";
+              } else  {
+                  inheritedLabel = "Tous les contenus";
+              }
+       }
+        
+        
+        
+
+        
         inheritedLabel = "Hérité du portail [" + inheritedLabel + "]";
 
 

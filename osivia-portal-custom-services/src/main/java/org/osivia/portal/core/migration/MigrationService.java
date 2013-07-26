@@ -68,6 +68,7 @@ public class MigrationService implements IMigrationManager {
 		 
 		 modules.add(new MigrationModule2060());
 		 modules.add(new MigrationModule2061());
+		 modules.add(new MigrationModule2100());
 		 
 		 Collections.sort(modules, orderComparator);
 		 

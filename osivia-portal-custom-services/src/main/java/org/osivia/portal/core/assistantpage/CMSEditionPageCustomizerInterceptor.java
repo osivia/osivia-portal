@@ -337,28 +337,35 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 			PageCommand rpc = (PageCommand) cmd;
 			Page page = rpc.getPage();
 
-			if( !(page instanceof CMSTemplatePage)) {
+
+             // TODO JSS : test trop restrictif (page statique CMS)
+//            if( !(page instanceof CMSTemplatePage)) {
+//                return resp;
+//            }
+            
+            if( !checkWritePermission( cmd.getControllerContext() , page))  {
                 return resp;
             }
 
+			
 			// test si mode assistant activé
             if (!InternalConstants.CMS_VERSION_PREVIEW.equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
                     InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
                 return resp;
             }
 
-
+ 
 
 			Portal portal = rpc.getPage().getPortal();
 			ControllerContext ctx = cmd.getControllerContext();
 			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
-
-			if (page instanceof ITemplatePortalObject) {
+            // TODO JSS : test trop restrictif (page statique CMS)
+			//if (page instanceof ITemplatePortalObject) {
 
 				this.injectCMSPortletSetting( portal, page, rendition, ctx);
 
-			}
+			//}
 
 		}
 
