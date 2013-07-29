@@ -23,8 +23,13 @@ public class CMSPublicationInfos {
 	private String documentPath = null;
 	private String liveId = null;
 	private boolean editableByUser = false;
+	private boolean deletableByUser = false;
 	private boolean anonymouslyReadable = false;
 	private boolean published = false;
+	private boolean commentableByUser;
+
+	private String spaceID = null;
+	private String parentSpaceID = null;
 	
 	private Map<String, String> subTypes;
 
@@ -88,6 +93,14 @@ public class CMSPublicationInfos {
 		this.editableByUser = editableByUser;
 	}
 
+	public boolean isDeletableByUser() {
+		return deletableByUser;
+	}
+
+	public void setDeletableByUser(boolean deletableByUser) {
+		this.deletableByUser = deletableByUser;
+	}
+
 	public boolean isAnonymouslyReadable() {
 		return anonymouslyReadable;
 	}
@@ -102,6 +115,30 @@ public class CMSPublicationInfos {
 
 	public void setPublished(boolean published) {
 		this.published = published;
+	}
+
+	public boolean isCommentableByUser() {
+		return commentableByUser;
+	}
+
+	public void setCommentableByUser(boolean commentableByUser) {
+		this.commentableByUser = commentableByUser;
+	}
+
+	public String getSpaceID() {
+		return spaceID;
+	}
+
+	public void setSpaceID(String spaceID) {
+		this.spaceID = spaceID;
+	}
+
+	public String getParentSpaceID() {
+		return parentSpaceID;
+	}
+
+	public void setParentSpaceID(String parentSpaceID) {
+		this.parentSpaceID = parentSpaceID;
 	}
 	
 	public Map<String, String> getSubTypes() {
