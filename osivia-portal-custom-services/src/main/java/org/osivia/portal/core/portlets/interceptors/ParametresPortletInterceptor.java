@@ -200,17 +200,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 					}
 				}
 
-				// TEST V2 PERMALINK
-				/*
-
-				String portletCMSPath =  (String) attributes.get("osivia.cms.portletContentPath");
-				if (portletCMSPath != null) {
-					if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
-						ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.portletContentPath", portletCMSPath);
-					}
-				}
-				*/
-
 
 				/* v 1.0.14 : affichage d'une barre de menu */
 

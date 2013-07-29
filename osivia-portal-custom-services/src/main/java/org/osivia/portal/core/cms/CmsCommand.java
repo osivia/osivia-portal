@@ -1442,7 +1442,6 @@ public class CmsCommand extends DynamicCommand {
 				if (contextualizationPage != null)
 					windowProperties.put("osivia.portletContextualizedInPage", "1");
 				
-				windowProperties.put("osivia.cms.portletContentPath", cmsItemToDisplay.getPath());
 
 				StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(
 						PortalObjectPath.SAFEST_FORMAT), "virtual", contentProperties.getPortletInstance(),

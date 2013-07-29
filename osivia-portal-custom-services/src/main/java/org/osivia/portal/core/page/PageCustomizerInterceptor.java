@@ -1486,7 +1486,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             /* Lien de recherche */
 
             Map<String, String> props = new HashMap<String, String>();
-            props.put("osivia.nuxeoPath", "/");
+            props.put("osivia.cms.uri", "/");
             Map<String, String> params = new HashMap<String, String>();
             params.put("osivia.keywords", "__REPLACE_KEYWORDS__");
 

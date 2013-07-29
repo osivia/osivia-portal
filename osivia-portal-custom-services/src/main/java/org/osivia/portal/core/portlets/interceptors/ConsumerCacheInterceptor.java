@@ -443,9 +443,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             		filterAttributes.put("osivia.portletPath", orig.getAttributes().get("osivia.portletPath"));
             		filterAttributes.put("osivia.popupCallbackUrl", orig.getAttributes().get("osivia.popupCallbackUrl"));
 
-            		// TEST V2 PERMALINK
-            		//filterAttributes.put("osivia.cms.portletContentPath", orig.getAttributes().get("osivia.cms.portletContentPath"));
-
+ 
             	    cacheFragment = new FragmentResponse(orig.getProperties(),   filterAttributes, orig.getContentType(), orig.getBytes(), orig.getChars(), orig.getTitle(), orig.getCacheControl(), orig.getNextModes());
             	}
 

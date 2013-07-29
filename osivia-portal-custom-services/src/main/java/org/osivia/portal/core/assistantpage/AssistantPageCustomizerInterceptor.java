@@ -282,7 +282,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Map<String, String> policies = new LinkedHashMap<String, String>();
 
         policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL, "Contenus du portail courant");
-        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NONE, "Tous les contenus");
+        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER, "Tous les contenus");
 
  
         String inheritedFilteringPolicy = po.getParent().getProperty(InternalConstants.PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY);
@@ -291,7 +291,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         
         if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL.equals(inheritedFilteringPolicy)) {
              inheritedLabel = "Contenus du portail courant";
-         } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NONE.equals(inheritedFilteringPolicy)) {
+         } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER.equals(inheritedFilteringPolicy)) {
              inheritedLabel = "Tous les contenus";
          } else {
               String portalType =  po.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
