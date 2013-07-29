@@ -1387,10 +1387,6 @@ public class CmsCommand extends DynamicCommand {
 			if (displayContent) {
 				
 				
-				
-				
-				
-				
 
 				/* Affichage du contenu */
 
@@ -1440,7 +1436,11 @@ public class CmsCommand extends DynamicCommand {
 					windowProperties.put("osivia.dynamic.unclosable", "1");
 
 				if (contextualizationPage != null)
-					windowProperties.put("osivia.portletContextualizedInPage", "1");
+					windowProperties.put("osivia.cms.contextualization", "1");
+				
+				
+				if( windowProperties.get("osivia.cms.uri") != null)
+				    windowProperties.put("osivia.cms.uri", cmsPath);
 				
 
 				StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(

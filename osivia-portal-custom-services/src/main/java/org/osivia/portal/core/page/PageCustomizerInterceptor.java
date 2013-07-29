@@ -1730,7 +1730,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                         // Les portlets CMS sont dejà enregistrés dans le
                         // breadcrumb
-                        if (!"1".equals(window.getDeclaredProperty("osivia.portletContextualizedInPage"))) {
+                        if (!"1".equals(window.getDeclaredProperty("osivia.cms.contextualization"))) {
 
                             // On supprimer les items courants
                             if (firstPortlet != -1) {

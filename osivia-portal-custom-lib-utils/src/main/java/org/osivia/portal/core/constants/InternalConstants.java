@@ -124,10 +124,12 @@ public final class InternalConstants {
     /** Instance display name. */
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
     
-    
+    /** Classical portal (static pages) */
     public static final String PORTAL_TYPE_STATIC_PORTAL = "static";
+    /** ECM mapped portal (ECM space) */
     public static final String PORTAL_TYPE_SPACE = "space";
     
+    /** Requests filtered by ECM references */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER = "none";
     
