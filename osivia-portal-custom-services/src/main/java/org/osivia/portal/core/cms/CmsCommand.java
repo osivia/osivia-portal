@@ -1439,7 +1439,7 @@ public class CmsCommand extends DynamicCommand {
 					windowProperties.put("osivia.cms.contextualization", "1");
 				
 				
-				if( windowProperties.get("osivia.cms.uri") != null)
+                if (windowProperties.get("osivia.cms.uri") == null)
 				    windowProperties.put("osivia.cms.uri", cmsPath);
 				
 
