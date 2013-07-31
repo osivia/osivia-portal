@@ -31,7 +31,7 @@ public class PortletApplicationDeployment extends PortletAppDeployment  {
 	      injectStandardService("StatusService","org.osivia.portal.api.status.IStatusService","osivia:service=StatusServices");
 	      injectStandardService("UrlService","org.osivia.portal.api.urls.IPortalUrlFactory","osivia:service=UrlFactory");
 	      injectStandardService("ProfilService","org.osivia.portal.core.profils.IProfilManager","osivia:service=ProfilManager");
-	      injectStandardService("NuxeoService","fr.toutatice.portail.core.nuxeo.INuxeoService","osivia:service=NuxeoService");
+	      injectStandardService("NuxeoService","fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService","osivia:service=NuxeoService");
 	      injectStandardService("FormatterService","org.osivia.portal.core.formatters.IFormatter","osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
 
 	      //
