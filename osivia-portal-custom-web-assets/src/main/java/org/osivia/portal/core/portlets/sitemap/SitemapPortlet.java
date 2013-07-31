@@ -131,6 +131,10 @@ public class SitemapPortlet extends GenericPortlet {
                 cmsReadNavContext.setControllerContext(context);
                 cmsReadNavContext.setDisplayLiveVersion("1");
 
+                // Force to reload navigation
+                cmsReadNavContext.setForceReload(true);
+                getCMSService().getPortalNavigationItem(cmsReadNavContext, basePath, basePath);
+                cmsReadNavContext.setForceReload(false);
 
                 Sitemap displayItem = createServiceItem(context, cmsReadNavContext, new PortalControllerContext(getPortletContext(), request, response),
                         basePath, basePath, true);

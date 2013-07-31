@@ -58,6 +58,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
+import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
@@ -433,7 +434,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         }
 
 
-        if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)) {
+        if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page) && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(context, page)) {
             // CMS edition menu root element
             Element cmsEditionMenu = new DOMElement(QName.get(HTMLConstants.DIV));
             cmsEditionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
@@ -461,7 +462,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
         String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
-
+        URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
         // CMS edition menu title
         // Element cmsDocumentIcon = new DOMElement(QName.get(HtmlConstants.IMG));
@@ -594,6 +595,16 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsEditPage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
 
+        // Publish document
+        
+        CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId()
+                .toString(PortalObjectPath.SAFEST_FORMAT), path);
+        String publishURL = context.renderURL(publish, urlContext, URLFormat.newInstance(true, true));
+
+        Element cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.A));
+        cmsPublishDoc.addAttribute(QName.get(HTMLConstants.HREF), publishURL);
+        cmsPublishDoc.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc);
 
         // HR
         this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));

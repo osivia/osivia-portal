@@ -15,6 +15,7 @@ import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
+import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
@@ -488,7 +489,21 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 						refURI = URLDecoder.decode(((String[]) parameterMap.get("refURI"))[0], "UTF-8");
 						return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
 					}
-				}	                
+                }
+
+
+                if ("CMSPublishDocument".equals(action)) {
+
+                    String pageId = null;
+                    String pagePath = null;
+
+                    if (parameterMap.get("pageId") != null && parameterMap.get("pagePath") != null) {
+                        pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
+                        pagePath = URLDecoder.decode(((String[]) parameterMap.get("pagePath"))[0], "UTF-8");
+
+                        return new CMSPublishDocumentCommand(pageId, pagePath);
+                    }
+                }
 
 
             }

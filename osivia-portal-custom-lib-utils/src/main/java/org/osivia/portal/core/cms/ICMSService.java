@@ -63,7 +63,7 @@ public interface ICMSService {
 	 */
 	public void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI)  throws CMSException ;
 	
-	        /**
+    /**
      * Move a CMS fragment on a page (drag & drop)
      * 
      * @param cmsCtx context
@@ -77,4 +77,23 @@ public interface ICMSService {
      */	
     public void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos, String refUri)
             throws CMSException;
+
+
+    /**
+     * Return true if the document type is allowed in CMS mode for creation and edition
+     * 
+     * @param cmsCtx context
+     * @param type the type name
+     * @return the permission
+     */
+    public boolean isTypeAllowedForWebPages(CMSServiceCtx cmsCtx, String type) throws CMSException;
+
+    /**
+     * Publish the current live version of a document online
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    public void publishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 }

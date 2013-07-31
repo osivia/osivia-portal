@@ -10,6 +10,7 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
+import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
@@ -283,7 +284,25 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			return asu;
 		}
 
+        if (cmd instanceof CMSPublishDocumentCommand) {
+            CMSPublishDocumentCommand command = (CMSPublishDocumentCommand) cmd;
 
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSPublishDocument");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
 		return null;
 	}

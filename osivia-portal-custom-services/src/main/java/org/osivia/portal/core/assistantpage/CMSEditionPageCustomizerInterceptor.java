@@ -57,12 +57,10 @@ import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
-import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 
 public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
@@ -188,6 +186,55 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 
     }
+
+    /**
+     * Check if the current content is managed as a web page
+     * 
+     * @param ctx the portal context
+     * @param page the current page
+     * @return true if the type is allowed in CMS edition mode
+     * @throws Exception
+     */
+    public static boolean checkWebPagePermission(ControllerContext ctx, Page page) throws Exception {
+
+        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+        PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
+
+        // Get the full content path
+        String pagePath = null;
+        String sPath[] = null;
+        if (pageState != null) {
+            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"));
+            if ((sPath != null) && (sPath.length == 1)) {
+                pagePath = sPath[0];
+            }
+        }
+
+
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setServerInvocation(ctx.getServerInvocation());
+
+
+        if (pagePath != null) {
+
+            // test display live version
+            if (InternalConstants.CMS_VERSION_PREVIEW.equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+                cmsContext.setDisplayLiveVersion("1");
+            }
+
+            // ECM request for select the type
+            CMSItem content = getCMSService().getContent(cmsContext, pagePath);
+            String type = content.getProperties().get("type");
+
+            // check if type is known as a web page type
+            return getCMSService().isTypeAllowedForWebPages(cmsContext, type);
+
+        }
+        return false;
+
+    }
+
 
     private void injectCMSPortletSetting( Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
 

@@ -84,6 +84,8 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_OPTIONS = "SUBMENU_CMS_PAGE_OPTIONS";
     /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_PUBLISH = "SUBMENU_CMS_PAGE_PUBLISH";
+    /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_SITEMAP = "SUBMENU_CMS_SITEMAP";
