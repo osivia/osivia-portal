@@ -8,7 +8,12 @@ import org.osivia.portal.administration.util.AdministrationConstants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.SessionListener;
 
-
+/**
+ * System bean.
+ * 
+ * @author Cédric Krommenhoek
+ * @see AbstractAdministrationBean
+ */
 @Name("systemBean")
 @Scope(ScopeType.EVENT)
 public class SystemBean extends AbstractAdministrationBean {
@@ -23,13 +28,21 @@ public class SystemBean extends AbstractAdministrationBean {
 
 
     /**
+     * Default constructor.
+     */
+    public SystemBean() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Create
     @Override
     public void init() {
         super.init();
-        this.cacheService = (ICacheService) this.portletContext.getAttribute(AdministrationConstants.CACHE_SERVICE_NAME);
+        this.cacheService = (ICacheService) this.getPortletContext().getAttribute(AdministrationConstants.CACHE_SERVICE_NAME);
     }
 
 

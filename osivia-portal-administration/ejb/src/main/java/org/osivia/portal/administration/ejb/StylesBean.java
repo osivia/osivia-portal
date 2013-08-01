@@ -41,6 +41,14 @@ public class StylesBean extends AbstractAdministrationBean {
 
 
     /**
+     * Default constructor.
+     */
+    public StylesBean() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Create

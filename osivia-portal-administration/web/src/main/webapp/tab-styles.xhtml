@@ -8,7 +8,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">Définition des styles du portail</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_CONFIG')}" />
+    </p>
     
     <div class="admininistration-adaptive-container">
         <a4j:form id="styles-form">
@@ -20,8 +22,8 @@
                     oncomplete="javascript:Richfaces.showModalPanel('popup-style',{left:'auto',top:'auto'})">
                     <h:graphicImage
                         value="/images/icons/create_doc.gif"
-                        alt="Ajouter"
-                        title="Ajouter un style" />
+                        alt="#{internationalizationBean.getString('ADD')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_ADD')}" />
                 </a4j:commandLink>
             
                 <!-- Edit -->
@@ -32,15 +34,15 @@
                         oncomplete="javascript:Richfaces.showModalPanel('popup-style',{left:'auto',top:'auto'})">
                         <h:graphicImage
                             value="/images/icons/edit.png"
-                            alt="Modifier"
-                            title="Modifier le style sélectionné" />
+                            alt="#{internationalizationBean.getString('EDIT')}"
+                            title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_EDIT')}" />
                     </a4j:commandLink>
                 </div>
                 <div class="administration-command-off">
                     <h:graphicImage
                         value="/images/icons/edit.png"
-                        alt="Modifier"
-                        title="Modifier le style sélectionné" />
+                        alt="#{internationalizationBean.getString('EDIT')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_EDIT')}" />
                 </div>
             
                 <!-- Delete -->
@@ -51,15 +53,15 @@
                         reRender="styles-list">
                         <h:graphicImage
                             value="/images/icons/delete.gif"
-                            alt="Supprimer"
-                            title="Supprimer le style sélectionné" />
+                            alt="#{internationalizationBean.getString('DELETE')}"
+                            title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_DELETE')}" />
                     </a4j:commandLink>
                 </div>
                 <div class="administration-command-off">
                     <h:graphicImage
                         value="/images/icons/delete.gif"
-                        alt="Supprimer"
-                        title="Supprimer le style sélectionné" />
+                        alt="#{internationalizationBean.getString('DELETE')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_DELETE')}" />
                 </div>
             </div>
     
@@ -73,7 +75,7 @@
                 selection="#{stylesBean.selectedStyles}">
                 <rich:column>
                     <f:facet name="header">
-                        <h:outputText value="Style" />
+                        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_LIST_HEADER')}" />
                     </f:facet>
                     <h:outputText value="#{style}" />
                 </rich:column>
@@ -87,12 +89,12 @@
             <div class="administration-commands">
                 <a4j:commandButton
                     id="refresh-styles-action"
-                    value="Rafraichir"
+                    value="#{internationalizationBean.getString('REFRESH')}"
                     action="#{stylesBean.refreshStyles}"
                     reRender="styles-list" />
                 <a4j:commandButton
                     id="save-styles-action"
-                    value="Enregistrer"
+                    value="#{internationalizationBean.getString('SAVE')}"
                     action="#{stylesBean.save}"
                     reRender="styles-messages" />
             </div>

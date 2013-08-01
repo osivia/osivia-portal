@@ -8,7 +8,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">Administrez les profils du portail</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_CONFIG')}" />
+    </p>
 
     <div class="admininistration-adaptive-container">
         <a4j:form id="profiles-form">
@@ -20,8 +22,8 @@
                     oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
                     <h:graphicImage
                         value="/images/icons/create_doc.gif"
-                        alt="Ajouter"
-                        title="Ajouter un profil" />
+                        alt="#{internationalizationBean.getString('ADD')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_ADD')}" />
                 </a4j:commandLink>
             
                 <!-- Edit -->
@@ -32,15 +34,15 @@
                         oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
                         <h:graphicImage
                             value="/images/icons/edit.png"
-                            alt="Modifier"
-                            title="Modifier le profil sélectionné" />
+                            alt="#{internationalizationBean.getString('EDIT')}"
+                            title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
                     </a4j:commandLink>
                 </div>
                 <div class="administration-command-off">
                     <h:graphicImage
                         value="/images/icons/edit.png"
-                        alt="Modifier"
-                        title="Modifier le profil sélectionné" />
+                        alt="#{internationalizationBean.getString('EDIT')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
                 </div>
             
                 <!-- Delete -->
@@ -51,15 +53,15 @@
                         reRender="profiles-list">
                         <h:graphicImage
                             value="/images/icons/delete.gif"
-                            alt="Supprimer"
-                            title="Supprimer le profil sélectionné" />
+                            alt="#{internationalizationBean.getString('DELETE')}"
+                            title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
                     </a4j:commandLink>
                 </div>
                 <div class="administration-command-off">
                     <h:graphicImage
                         value="/images/icons/delete.gif"
-                        alt="Supprimer"
-                        title="Supprimer le profil sélectionné" />
+                        alt="#{internationalizationBean.getString('DELETE')}"
+                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
                 </div>
             </div>
             
@@ -74,7 +76,7 @@
                 converter="profileConverter">
                 <rich:column>
                     <f:facet name="header">
-                        <h:outputText value="Profil" />
+                        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_LIST_HEADER')}" />
                     </f:facet>
                     <h:outputText value="#{profile.name}" />
                 </rich:column>
@@ -88,12 +90,12 @@
             <div class="administration-commands">
                 <a4j:commandButton
                     id="refresh-profiles-action"
-                    value="Rafraichir"
+                    value="#{internationalizationBean.getString('REFRESH')}"
                     action="#{profilesBean.refreshProfiles}"
                     reRender="profiles-list" />
                 <a4j:commandButton
                     id="save-profiles-action"
-                    value="Enregistrer"
+                    value="#{internationalizationBean.getString('SAVE')}"
                     action="#{profilesBean.save}"
                     reRender="profiles-messages" />
             </div>

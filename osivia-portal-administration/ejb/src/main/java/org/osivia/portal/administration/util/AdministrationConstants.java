@@ -1,7 +1,11 @@
 package org.osivia.portal.administration.util;
 
-
-public class AdministrationConstants {
+/**
+ * Administration constants.
+ *
+ * @author Cédric Krommenhoek
+ */
+public final class AdministrationConstants {
 
     /** Portal object container name. */
     public static final String PORTAL_OBJECT_CONTAINER_NAME = "PortalObjectContainer";
@@ -19,6 +23,8 @@ public class AdministrationConstants {
     public static final String PROFILE_MANAGER_NAME = "ProfileManager";
     /** Cache service name. */
     public static final String CACHE_SERVICE_NAME = "CacheService";
+    /** Internationalization service name. */
+    public static final String INTERNATIONALIZATION_SERVICE_NAME = "InternationalizationService";
 
     /** Portal identifier attribute name. */
     public static final String PORTAL_ID_ATTRIBUTE_NAME = "osivia.portal.administration.portalId";

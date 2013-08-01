@@ -43,13 +43,21 @@ public class LayoutBean extends AbstractAdministrationBean {
 
 
     /**
+     * Default constructor.
+     */
+    public LayoutBean() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Create
     @Override
     public void init() {
         super.init();
-        this.layoutService = (LayoutService) this.portletContext.getAttribute(AdministrationConstants.LAYOUT_SERVICE_NAME);
+        this.layoutService = (LayoutService) this.getPortletContext().getAttribute(AdministrationConstants.LAYOUT_SERVICE_NAME);
     }
 
 

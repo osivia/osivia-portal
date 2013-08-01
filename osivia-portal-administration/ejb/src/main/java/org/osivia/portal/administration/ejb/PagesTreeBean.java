@@ -20,7 +20,7 @@ import org.richfaces.model.TreeNode;
 import org.richfaces.model.TreeNodeImpl;
 
 /**
- * Pages tree bean
+ * Pages tree bean.
  *
  * @author Cédric Krommenhoek
  * @see AbstractAdministrationBean
@@ -32,6 +32,9 @@ public class PagesTreeBean extends AbstractAdministrationBean {
     /** Default serial version ID. */
     private static final long serialVersionUID = 1L;
 
+    /** Page tree data root identifier and name. */
+    private static final String PAGE_TREE_DATA_ROOT = "portal";
+
     /** Pages comparator. */
     private static final Comparator<Page> PAGES_COMPARATOR = new PagesComparator();
 
@@ -39,6 +42,14 @@ public class PagesTreeBean extends AbstractAdministrationBean {
     private String page;
     /** Pages tree. */
     private TreeNode<PageTreeData> pagesTree;
+
+
+    /**
+     * Default constructor.
+     */
+    public PagesTreeBean() {
+        super();
+    }
 
 
     /**
@@ -68,10 +79,10 @@ public class PagesTreeBean extends AbstractAdministrationBean {
     public TreeNode<PageTreeData> getPagesTree() {
         if (this.pagesTree == null) {
             this.pagesTree = new TreeNodeImpl<PageTreeData>();
-            this.pagesTree.setData(new PageTreeData("portal", "portal")); // FIXME
+            this.pagesTree.setData(new PageTreeData(PAGE_TREE_DATA_ROOT, PAGE_TREE_DATA_ROOT));
 
             // As we are in servlet, cache must explicitly initialized
-            this.dynamicObjectContainer.startPersistentIteration();
+            this.getDynamicObjectContainer().startPersistentIteration();
 
             Portal portal = this.getPortal();
 
@@ -88,7 +99,7 @@ public class PagesTreeBean extends AbstractAdministrationBean {
                 }
             }
 
-            this.dynamicObjectContainer.stopPersistentIteration();
+            this.getDynamicObjectContainer().stopPersistentIteration();
         }
         return this.pagesTree;
     }

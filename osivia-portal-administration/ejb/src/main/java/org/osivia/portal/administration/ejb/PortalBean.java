@@ -67,6 +67,14 @@ public class PortalBean extends Observable implements Serializable {
 
 
     /**
+     * Default constructor.
+     */
+    public PortalBean() {
+        super();
+    }
+
+
+    /**
      * Init method.
      */
     @Create

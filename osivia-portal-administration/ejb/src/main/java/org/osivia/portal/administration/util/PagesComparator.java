@@ -20,6 +20,14 @@ public class PagesComparator implements Comparator<Page> {
 
 
     /**
+     * Default constructor.
+     */
+    public PagesComparator() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     public int compare(Page page1, Page page2) {

@@ -19,7 +19,9 @@
         <div class="table-row">
             <div class="table-cell portal-selection">
                 <a4j:form ajaxsubmit="true">
-                    <p class="tab-sub-title">Choisissez le portail que vous souhaitez administrer :</p>
+                    <p class="tab-sub-title">
+                        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SELECTION')}" />
+                    </p>
                     <div class="administration-content">
                         <h:selectOneListbox
                             value="#{portalBean.portalId}"
@@ -43,19 +45,19 @@
 
                     <!-- Export tab -->
                     <rich:tab
-                        label="Export"
+                        label="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_TAB')}"
                         disabled="#{empty portalBean.portalId}">
                         <ui:include src="tab-export.xhtml" />
                     </rich:tab>
 
                     <!-- Import tab -->
-                    <rich:tab label="Import">
+                    <rich:tab label="#{internationalizationBean.getString('ADMIN_PORTLET_IMPORT_TAB')}">
                         <ui:include src="tab-import.xhtml" />
                     </rich:tab>
 
                     <!-- Styles tab -->
                     <rich:tab
-                        label="Styles"
+                        label="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_TAB')}"
                         action="#{stylesBean.refreshStyles}"
                         disabled="#{empty portalBean.portalId}">
                         <ui:include src="tab-styles.xhtml" />
@@ -63,28 +65,28 @@
 
                     <!-- Layout tab -->
                     <rich:tab
-                        label="Layout"
+                        label="#{internationalizationBean.getString('ADMIN_PORTLET_LAYOUT_TAB')}"
                         disabled="#{empty portalBean.portalId}">
                         <ui:include src="tab-layout.xhtml" />
                     </rich:tab>
 
                     <!-- Theme tab -->
                     <rich:tab
-                        label="Thème"
+                        label="#{internationalizationBean.getString('ADMIN_PORTLET_THEME_TAB')}"
                         disabled="#{empty portalBean.portalId}">
                         <ui:include src="tab-theme.xhtml" />
                     </rich:tab>
 
                     <!-- Profiles tab -->
                     <rich:tab
-                        label="Profils"
+                        label="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_TAB')}"
                         action="#{profilesBean.refreshProfiles}"
                         disabled="#{empty portalBean.portalId}">
                         <ui:include src="tab-profiles.xhtml" />
                     </rich:tab>
 
                     <!-- System tab -->
-                    <rich:tab label="Système">
+                    <rich:tab label="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_TAB')}">
                         <ui:include src="tab-system.xhtml" />
                     </rich:tab>
 

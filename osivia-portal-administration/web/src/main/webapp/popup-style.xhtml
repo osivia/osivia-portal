@@ -24,7 +24,7 @@
                         <div class="table">
                             <div class="table-row">
                                 <div class="table-cell">
-                                    <h:outputLabel value="Style" />
+                                    <h:outputLabel value="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_POPUP_STYLE')}" />
                                 </div>
                                 <div class="table-cell">
                                     <h:inputText value="#{stylesBean.style}" />
@@ -38,7 +38,7 @@
                                 align="center"
                                 type="submit"
                                 reRender="styles-list,styles-messages"
-                                value="Enregistrer"
+                                value="#{internationalizationBean.getString('SAVE')}"
                                 action="#{stylesBean.submit}"
                                 oncomplete="javascript:Richfaces.hideModalPanel('popup-style'); return false;">
                             </a4j:commandButton>
@@ -46,7 +46,7 @@
                                 id="cancel-submit-action"
                                 align="center"
                                 type="submit"
-                                value="Annuler"
+                                value="#{internationalizationBean.getString('CANCEL')}"
                                 onclick="javascript:Richfaces.hideModalPanel('popup-style'); return false;"></a4j:commandButton>
                         </div>
                     </h:form>

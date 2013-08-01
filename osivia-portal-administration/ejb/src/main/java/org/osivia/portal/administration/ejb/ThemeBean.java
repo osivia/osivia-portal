@@ -42,13 +42,21 @@ public class ThemeBean extends AbstractAdministrationBean {
 
 
     /**
+     * Default constructor.
+     */
+    public ThemeBean() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Create
     @Override
     public void init() {
         super.init();
-        this.themeService = (ThemeService) this.portletContext.getAttribute(AdministrationConstants.THEME_SERVICE_NAME);
+        this.themeService = (ThemeService) this.getPortletContext().getAttribute(AdministrationConstants.THEME_SERVICE_NAME);
     }
 
 

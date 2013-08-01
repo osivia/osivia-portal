@@ -8,28 +8,38 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">Dump des threads</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_DUMP')}" />
+    </p>
     <div class="administration-indent-content">
-        <a href="#{facesContext.externalContext.requestContextPath}/dump" target="_blank">Télécharger</a>
+        <a href="#{facesContext.externalContext.requestContextPath}/dump" target="_blank">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_DOWNLOAD')}" />
+        </a>
     </div>
 
-    <p class="tab-sub-title">Activité</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_ACTIVITY')}" />
+    </p>
     <div class="administration-indent-content">
         <a4j:form>
             <h:panelGroup>
-                <h:outputText value="#{systemBean.sessionsCount}" /> sessions actives 
+                <h:outputText value="#{systemBean.sessionsCount}" />
+                <span>&nbsp;</span>
+                <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_SESSIONS_COUNT')}" />
             </h:panelGroup>
 
             <div>
                 <a4j:commandButton
-                    value="Rafraichir"
+                    value="#{internationalizationBean.getString('REFRESH')}"
                     action="#{systemBean.refresh}"
                     reRender="system-data" />
             </div>
         </a4j:form>
     </div>
     
-    <p class="tab-sub-title">Paramètres</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_PARAMETERS')}" />
+    </p>
     <div class="administration-indent-content">
         <a4j:form>
             <h:panelGroup id="system-parameters">
@@ -38,7 +48,7 @@
             
             <div>
                 <a4j:commandButton
-                    value="Recharger les vocabulaires"
+                    value="#{internationalizationBean.getString('ADMIN_PORTLET_SYSTEM_RELOAD_VOCABULARIES')}"
                     action="#{systemBean.reloadPortalParameters}"
                     reRender="system-parameters" />
             </div>

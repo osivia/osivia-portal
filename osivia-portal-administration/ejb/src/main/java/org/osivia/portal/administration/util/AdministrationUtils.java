@@ -10,15 +10,13 @@ import org.apache.commons.lang.BooleanUtils;
  *
  * @author Cédric Krommenhoek
  */
-public class AdministrationUtils {
+public final class AdministrationUtils {
 
     /**
-     * Default constructor.
-     * AdministrationUtils instances should NOT be constructed in standard programming.
-     * This constructor is public to permit tools that require a JavaBean instance to operate.
+     * Private constructor : prevent instantiation.
      */
-    public AdministrationUtils() {
-        super();
+    private AdministrationUtils() {
+        throw new AssertionError();
     }
 
 

@@ -18,7 +18,7 @@ import org.richfaces.model.UploadItem;
 
 /**
  * Import bean.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see AbstractAdministrationBean
  */
@@ -29,14 +29,25 @@ public class ImportBean extends AbstractAdministrationBean {
     /** Default serial version ID. */
     private static final long serialVersionUID = 1L;
 
+    /** Initial uploads available. */
+    private static final int INITIAL_UPLOADS_AVAILABLE = 5;
+
     /** Portal deployment manager. */
     private IParametresPortailDeploymentManager deployer;
     /** Uploads available. */
-    private int uploadsAvailable = 5;
+    private int uploadsAvailable = INITIAL_UPLOADS_AVAILABLE;
     /** Auto upload. */
     private final boolean autoUpload = false;
     /** Use flash. */
     private boolean useFlash = false;
+
+
+    /**
+     * Default constructor.
+     */
+    public ImportBean() {
+        super();
+    }
 
 
     /**

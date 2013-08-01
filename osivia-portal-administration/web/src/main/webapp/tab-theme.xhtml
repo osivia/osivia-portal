@@ -8,7 +8,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">Choisissez le thème par défaut du portail :</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_THEME_CONFIG')}" />
+    </p>
 
     <a4j:form>
         <h:selectOneListbox
@@ -22,7 +24,7 @@
         <br />
         <br />
         <a4j:commandButton
-            value="Enregistrer les modifications"
+            value="#{internationalizationBean.getString('SAVE')}"
             action="#{themeBean.updateTheme}"
             reRender="theme-messages" />
     </a4j:form>

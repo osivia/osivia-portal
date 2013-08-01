@@ -39,6 +39,13 @@ public class ProfilesBean extends AbstractAdministrationBean {
     private boolean edition;
 
 
+    /**
+     * Default constructor.
+     */
+    public ProfilesBean() {
+        super();
+    }
+
 
     /**
      * {@inheritDoc}
@@ -47,7 +54,7 @@ public class ProfilesBean extends AbstractAdministrationBean {
     @Override
     public void init() {
         super.init();
-        this.profileManager = (IProfilManager) this.portletContext.getAttribute(AdministrationConstants.PROFILE_MANAGER_NAME);
+        this.profileManager = (IProfilManager) this.getPortletContext().getAttribute(AdministrationConstants.PROFILE_MANAGER_NAME);
     }
 
 

@@ -19,6 +19,14 @@ public class ProfileConverter implements Converter {
 
 
     /**
+     * Default constructor.
+     */
+    public ProfileConverter() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     public Object getAsObject(FacesContext context, UIComponent component, String value) {

@@ -14,9 +14,17 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.seam.annotations.In;
 import org.osivia.portal.administration.util.AdministrationConstants;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
+/**
+ * Abstract administration bean super-class.
+ *
+ * @author Cédric Krommenhoek
+ * @see Serializable
+ * @see Observer
+ */
 public abstract class AbstractAdministrationBean implements Serializable, Observer {
 
     /** Default serial version ID. */
@@ -24,14 +32,16 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
 
     /** Portal bean. */
     @In("portalBean")
-    protected PortalBean portalBean;
+    private PortalBean portalBean;
 
     /** Portlet context. */
-    protected PortletContext portletContext;
+    private PortletContext portletContext;
     /** Portal object container. */
-    protected PortalObjectContainer portalObjectContainer;
+    private PortalObjectContainer portalObjectContainer;
     /** Dynamic object container. */
-    protected IDynamicObjectContainer dynamicObjectContainer;
+    private IDynamicObjectContainer dynamicObjectContainer;
+    /** Internationalization service. */
+    private IInternationalizationService internationalizationService;
 
     /** Messages. */
     private String messages;
@@ -46,6 +56,8 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
         this.portletContext = (PortletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
         this.portalObjectContainer = (PortalObjectContainer) this.portletContext.getAttribute(AdministrationConstants.PORTAL_OBJECT_CONTAINER_NAME);
         this.dynamicObjectContainer = (IDynamicObjectContainer) this.portletContext.getAttribute(AdministrationConstants.DYNAMIC_OBJECT_CONTAINER_NAME);
+        this.internationalizationService = (IInternationalizationService) this.portletContext
+                .getAttribute(AdministrationConstants.INTERNATIONALIZATION_SERVICE_NAME);
     }
 
 
@@ -73,6 +85,42 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
 
 
     /**
+     * Getter for portletContext.
+     *
+     * @return the portletContext
+     */
+    public PortletContext getPortletContext() {
+        return this.portletContext;
+    }
+
+    /**
+     * Getter for portalObjectContainer.
+     *
+     * @return the portalObjectContainer
+     */
+    public PortalObjectContainer getPortalObjectContainer() {
+        return this.portalObjectContainer;
+    }
+
+    /**
+     * Getter for dynamicObjectContainer.
+     *
+     * @return the dynamicObjectContainer
+     */
+    public IDynamicObjectContainer getDynamicObjectContainer() {
+        return this.dynamicObjectContainer;
+    }
+
+    /**
+     * Getter for internationalizationService.
+     *
+     * @return the internationalizationService
+     */
+    public IInternationalizationService getInternationalizationService() {
+        return this.internationalizationService;
+    }
+
+    /**
      * Getter for messages.
      *
      * @return the messages
@@ -94,7 +142,7 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
 
     /**
      * Getter for popupTitle.
-     * 
+     *
      * @return the popupTitle
      */
     public String getPopupTitle() {
@@ -103,7 +151,7 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
 
     /**
      * Setter for popupTitle.
-     * 
+     *
      * @param popupTitle the popupTitle to set
      */
     public void setPopupTitle(String popupTitle) {

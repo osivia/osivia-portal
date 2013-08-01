@@ -43,7 +43,6 @@ import org.osivia.portal.administration.util.AdministrationConstants;
 import org.osivia.portal.administration.util.AdministrationUtils;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -64,6 +63,14 @@ public class ExportServlet extends HttpServlet {
     private static IDynamicObjectContainer dynamicObjectContainer;
     /** Authorization domain registry. */
     private static AuthorizationDomainRegistry authorizationDomainRegistry;
+
+
+    /**
+     * Default constructor.
+     */
+    public ExportServlet() {
+        super();
+    }
 
 
     /**
@@ -184,12 +191,10 @@ public class ExportServlet extends HttpServlet {
      * @param output output stream
      * @param portalObject portal object to export
      * @param filter filter
-     * @throws DOMException
      * @throws ParserConfigurationException
      * @throws TransformerException
      */
-    private void configExport(OutputStream output, PortalObject portalObject, String filter) throws DOMException, ParserConfigurationException,
-            TransformerException {
+    private void configExport(OutputStream output, PortalObject portalObject, String filter) throws ParserConfigurationException, TransformerException {
         String xalanIndentAmount = "{http://xml.apache.org/xslt}" + "indent-amount";
 
         Source source = new DOMSource(this.parametersGeneration(portalObject, filter));
@@ -211,10 +216,9 @@ public class ExportServlet extends HttpServlet {
      * @param portalObject portal object to export
      * @param filter filter
      * @return DOM document
-     * @throws DOMException
      * @throws ParserConfigurationException
      */
-    private Document parametersGeneration(PortalObject portalObject, String filter) throws DOMException, ParserConfigurationException {
+    private Document parametersGeneration(PortalObject portalObject, String filter) throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.newDocument();
@@ -269,8 +273,8 @@ public class ExportServlet extends HttpServlet {
 
 
     /**
-     * Utility method used to create DOM page
-     *
+     * Utility method used to create DOM page.
+     * 
      * @param document DOM document
      * @param page page to export
      * @param filter filter

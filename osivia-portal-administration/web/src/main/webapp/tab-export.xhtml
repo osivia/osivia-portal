@@ -10,18 +10,26 @@
 
     <c:set var="context" value="${facesContext.externalContext.requestContextPath}" />
 
-    <p class="tab-sub-title">Export de la configuration du portail</p>
+    <p class="tab-sub-title">
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_CONFIG')}" />
+    </p>
     <div class="administration-indent-content">
         <a
             href="#{context}/export"
-            target="_blank">Export intégral (toutes les pages)</a>
+            target="_blank">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_ALL')}" />
+        </a>
         <a
             href="#{context}/export?filter=true"
-            target="_blank">Export pour publication (pages brouillons exclues)</a>
+            target="_blank">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PUBLISHED')}" />
+        </a>
     </div>
 
     <h:form>
-        <p class="tab-sub-title">Export de la configuration des pages</p>
+        <p class="tab-sub-title">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PAGES')}" />
+        </p>
         <rich:tree
             value="#{pagesTreeBean.pagesTree}"
             var="page">
@@ -29,7 +37,9 @@
                 <h:outputText value="#{page}" />
                 <a
                     href="#{context}/export?pageId=#{page.id}"
-                    target="_blank">Exporter</a>
+                    target="_blank">
+                    <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PAGE_LINK')}" />
+                </a>
             </rich:treeNode>
         </rich:tree>
     </h:form>

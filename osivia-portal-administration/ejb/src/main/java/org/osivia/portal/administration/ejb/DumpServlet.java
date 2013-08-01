@@ -23,6 +23,14 @@ public class DumpServlet extends HttpServlet {
 
 
     /**
+     * Default constructor.
+     */
+    public DumpServlet() {
+        super();
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override

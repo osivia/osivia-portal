@@ -26,7 +26,7 @@
                             <!-- Profile name -->
                             <div class="table-row">
                                 <div class="table-cell">
-                                    <h:outputLabel value="Identifiant du profil" />
+                                    <h:outputLabel value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_POPUP_ID')}" />
                                 </div>
                                 <div class="table-cell">
                                     <h:outputText
@@ -41,7 +41,7 @@
                             <!-- Profile role -->
                             <div class="table-row">
                                 <div class="table-cell">
-                                    <h:outputLabel value="Rôle" />
+                                    <h:outputLabel value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_POPUP_ROLE')}" />
                                 </div>
                                 <div class="table-cell">
                                     <h:inputText value="#{profilesBean.profile.role}" />
@@ -51,7 +51,7 @@
                             <!-- Profile URL -->
                             <div class="table-row">
                                 <div class="table-cell">
-                                    <h:outputLabel value="URL" />
+                                    <h:outputLabel value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_POPUP_URL')}" />
                                 </div>
                                 <div class="table-cell">
                                     <h:inputText value="#{profilesBean.profile.url}" />
@@ -61,7 +61,7 @@
                             <!-- Nuxeo virtual user -->
                             <div class="table-row">
                                 <div class="table-cell">
-                                    <h:outputLabel value="Nuxeo virtual user" />
+                                    <h:outputLabel value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_POPUP_NUXEO_VIRTUAL_USER')}" />
                                 </div>
                                 <div class="table-cell">
                                     <h:inputText value="#{profilesBean.profile.nuxeoVirtualUser}" />
@@ -76,7 +76,7 @@
                                 align="center"
                                 type="submit"
                                 reRender="profiles-list,profiles-messages"
-                                value="Ajouter"
+                                value="#{internationalizationBean.getString('ADD')}"
                                 action="#{profilesBean.addProfileSubmit}"
                                 oncomplete="javascript:Richfaces.hideModalPanel('popup-profile'); return false;"
                                 rendered="#{not profilesBean.edition}">
@@ -86,7 +86,7 @@
                                 align="center"
                                 type="submit"
                                 reRender="profiles-list"
-                                value="Enregistrer"
+                                value="#{internationalizationBean.getString('SAVE')}"
                                 action="#{profilesBean.editProfileSubmit}"
                                 oncomplete="javascript:Richfaces.hideModalPanel('popup-profile'); return false;"
                                 rendered="#{profilesBean.edition}">
@@ -95,7 +95,7 @@
                                 id="cancel-submit-action"
                                 align="center"
                                 type="submit"
-                                value="Annuler"
+                                value="#{internationalizationBean.getString('CANCEL')}"
                                 onclick="javascript:Richfaces.hideModalPanel('popup-profile'); return false;"></a4j:commandButton>
                         </div>
                     </h:form>
