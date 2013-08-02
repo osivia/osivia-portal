@@ -180,7 +180,7 @@ var currentPageId = '<%=currentPageId %>';
 
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_NAME", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" name="name" required />
                     </div>
@@ -189,12 +189,12 @@ var currentPageId = '<%=currentPageId %>';
                 </div>
 
                 <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_TEMPLATE_MODEL", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
                     </div>
                 
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_PARENT", locale) %></div>
                     <div class="fancybox-table-cell">
                         <input type="text" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
                     </div>                    
@@ -202,7 +202,7 @@ var currentPageId = '<%=currentPageId %>';
                 
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label fancybox-upper">
-                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
+                        <label for="checkboxNoModel"><%=is.getString("NEW_TEMPLATE_NO_MODEL", locale) %></label>                        
                         <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" class="inline-checkbox" />
                     </div>
                     
@@ -223,7 +223,7 @@ var currentPageId = '<%=currentPageId %>';
             </div>
 
             <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
+                <input type="submit" value='<%=is.getString("NEW_TEMPLATE_SUBMIT", locale) %>' />
                 <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
             </div>
         </form>
