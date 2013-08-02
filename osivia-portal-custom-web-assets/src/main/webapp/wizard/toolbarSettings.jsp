@@ -207,7 +207,7 @@ var currentPageId = '<%=currentPageId %>';
                     </div>
                     
                     <div class="fancybox-table-cell">
-                        <div id="jstreeModelSelect" class="jstree-select-unique">
+                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
                             <%=formatter.formatHTMLTreePortalObjects(currentPage, context, "jstreeTemplateModelSelect") %>
                         </div>
                     </div>
@@ -215,7 +215,7 @@ var currentPageId = '<%=currentPageId %>';
                     <div class="fancybox-table-cell">&nbsp;</div>
                     
                     <div class="fancybox-table-cell">
-                        <div id="jstreeParentSelect" class="jstree-select-unique">
+                        <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
                             <%=formatter.formatHTMLTreeTemplateParent(currentPage, context, "jstreeTemplateParentSelect") %>
                         </div>                        
                     </div>
