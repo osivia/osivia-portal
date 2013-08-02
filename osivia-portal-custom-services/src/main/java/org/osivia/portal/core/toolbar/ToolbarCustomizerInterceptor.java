@@ -310,6 +310,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                 && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(context, page)) {
             // Web page menu
             this.generateAdministrationWebPageMenu(context, page, administration);
+            this.generateAdministrationToggleVersion(context, page, administration);
         }
 
         return this.writeHtmlData(administration);
@@ -543,73 +544,46 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         administration.add(cmsEditionMenu);
 
         // CMS edition menu title
-        Element cmsDocumentSpan = new DOMElement(QName.get(HTMLConstants.SPAN));
         Element cmsEditionMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
 
         cmsEditionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
         cmsEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE, locale));
 
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
-            cmsDocumentSpan.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_PREVIEW);
-            cmsDocumentSpan.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
-                    InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale)));
-        } else {
-            cmsDocumentSpan.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_ONLINE);
-            cmsDocumentSpan.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
-                    InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale)));
-        }
-
         cmsEditionMenu.add(cmsEditionMenuTitle);
-        cmsEditionMenu.add(cmsDocumentSpan);
+
 
         // Template edition menu "ul" node
         Element templateEditionMenuUl = new DOMElement(QName.get(HTMLConstants.UL));
         cmsEditionMenu.add(templateEditionMenuUl);
 
+
         // ========== Switch live / online version
 
-        ChangeCMSEditionModeCommand changeVersion;
+        // ChangeCMSEditionModeCommand changeVersion;
         ChangeCMSEditionModeCommand changeEditionMode = null;
-        String strChangeVersion = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_LIVE_VERSION, locale);
         String strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
-        String cssChangeVersion, cssChangeEditionMode = null;
+        String cssChangeEditionMode = null;
 
-
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
-                    InternalConstants.CMS_EDITION_MODE_OFF);
-            // strChangeVersion = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_LIVE_VERSION, locale);
-            cssChangeVersion = HTMLConstants.CLASS_CHECK;
-
-            if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
-                changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
-                        InternalConstants.CMS_VERSION_PREVIEW, InternalConstants.CMS_EDITION_MODE_OFF);
-                // strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_HIDE_EDITION_MODE, locale);
-                cssChangeEditionMode = HTMLConstants.CLASS_CHECK;
-            } else {
-                changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
-                        InternalConstants.CMS_VERSION_PREVIEW, InternalConstants.CMS_EDITION_MODE_ON);
-                // strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
-                cssChangeEditionMode = HTMLConstants.CLASS_UNCHECK;
-            }
-        } else {
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
-                    InternalConstants.CMS_EDITION_MODE_OFF);
-            // strChangeVersion = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_LIVE_VERSION, locale);
-            cssChangeVersion = HTMLConstants.CLASS_UNCHECK;
+        // the first time, edition mode is null, it will be ON when the user will see the live version of the document
+        if (editionMode == null) {
+            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
         }
 
 
-        String changeCmsVersionUrl = new PortalURLImpl(changeVersion, context, null, null).toString();
+        if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
+            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+                    InternalConstants.CMS_EDITION_MODE_OFF);
 
-        Element cmsChangeVersion = new DOMElement(QName.get(HTMLConstants.A));
-        cmsChangeVersion.addAttribute(QName.get(HTMLConstants.HREF), changeCmsVersionUrl);
-        cmsChangeVersion.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "p");
-        cmsChangeVersion.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeVersion);
-        cmsChangeVersion.setText(strChangeVersion);
-        this.addSubMenuElement(templateEditionMenuUl, cmsChangeVersion);
+            cssChangeEditionMode = HTMLConstants.CLASS_CHECK;
+        } else {
+            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+                    InternalConstants.CMS_EDITION_MODE_ON);
 
-        if (changeEditionMode != null) {
+            cssChangeEditionMode = HTMLConstants.CLASS_UNCHECK;
+        }
+
+
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
 
             String changeCmsEditionModeUrl = new PortalURLImpl(changeEditionMode, context, null, null).toString();
 
@@ -618,6 +592,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "m");
             cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeEditionMode);
             cmsChangeEditionMode.setText(strChangeEditionMode);
+            this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
+
+        } else {
+            Element cmsChangeEditionMode = new DOMElement(QName.get(HTMLConstants.P));
+            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeEditionMode);
+            cmsChangeEditionMode.setText(strChangeEditionMode);
+
             this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
         }
 
@@ -672,22 +653,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // HR
         this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
 
-        // ========== to ECM....
-
-        /*
-         * // Link "to ECM disabled
-         * String ecmUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.viewSummary, path, requestParameters);
-         *
-         * Element cmsViewEcm = new DOMElement(QName.get(HtmlConstants.A));
-         * cmsViewEcm.addAttribute(QName.get(HtmlConstants.HREF), ecmUrl);
-         * cmsViewEcm.addAttribute(QName.get(HtmlConstants.ACCESSKEY), "b");
-         * cmsViewEcm.addAttribute(QName.get(HtmlConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-         * cmsViewEcm.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_TO_ECM, locale));
-         * this.addSubMenuElement(templateEditionMenuUl, cmsViewEcm);
-         */
 
         // ========== sitemap
-        // TODO do not use basePath
         Map<String, String> windowProps = new HashMap<String, String>();
         windowProps.put("osivia.cms.basePath", page.getProperty("osivia.cms.basePath"));
         Map<String, String> params = new HashMap<String, String>();
@@ -700,6 +667,60 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsViewSitemap.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
         cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
+
+    }
+
+
+    private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws Exception {
+        Locale locale = context.getServerInvocation().getRequest().getLocale();
+        String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+
+
+        // ---------------------
+        String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+        ChangeCMSEditionModeCommand changeVersion;
+
+        // the first time, edition mode is null, it will be ON when the user will see the live version of the document
+        if (editionMode == null) {
+            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
+        }
+
+        Element cmsToggleVersion = new DOMElement(QName.get(HTMLConstants.A));
+
+
+        Element cmsToggleBtn1 = new DOMElement(QName.get(HTMLConstants.SPAN));
+        cmsToggleVersion.add(cmsToggleBtn1);
+        Element cmsToggleBtn2 = new DOMElement(QName.get(HTMLConstants.SPAN));
+
+        // Element cmsToggleBtn3 = new DOMElement(QName.get(HTMLConstants.SPAN));
+        // cmsToggleBtn2.add(cmsToggleBtn3);
+
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_PREVIEW);
+            cmsToggleBtn1.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
+                    InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale)));
+            cmsToggleBtn1.add(cmsToggleBtn2);
+            cmsToggleBtn2.setText(HTMLConstants.TEXT_DEFAULT);
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
+                    editionMode);
+
+        } else {
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_ONLINE);
+
+            cmsToggleBtn1.add(cmsToggleBtn2);
+            cmsToggleBtn1.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
+                    InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale)));
+
+            cmsToggleBtn2.setText(HTMLConstants.TEXT_DEFAULT);
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+                    editionMode);
+
+        }
+
+        String changeCmsVersionUrl = new PortalURLImpl(changeVersion, context, null, null).toString();
+        cmsToggleVersion.addAttribute(QName.get(HTMLConstants.HREF), changeCmsVersionUrl);
+
+        administration.add(cmsToggleVersion);
     }
 
     /**
