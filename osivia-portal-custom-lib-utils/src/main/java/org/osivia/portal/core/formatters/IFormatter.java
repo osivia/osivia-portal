@@ -25,7 +25,7 @@ public interface IFormatter {
     String formatContextualization(PortalObject po, String selectedScope) throws Exception;
 
     /**
-     * Format hierarchical tree pages into HTML data, with UL and LI nodes
+     * Format hierarchical tree pages objects into HTML data, with UL and LI nodes
      *
      * @param currentPage current page
      * @param context controller context, which contains locales and URL generation data
@@ -33,23 +33,51 @@ public interface IFormatter {
      * @return HTML data
      * @throws IOException
      */
-    String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
+    String formatHTMLTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
 
     /**
-     * Format hierarchical tree pages into HTML data, with UL and LI nodes
+     * Format hierarchical tree pages (without templates) into HTML data, with UL and LI nodes
      *
      * @param currentPage current page
      * @param context controller context, which contains locales and URL generation data
      * @param idPrefix avoid multiples identifiers with this prefix
-     * @param displayRoot display root indicator
-     * @param displayVirtualEndNodes display virtual end nodes indicator
-     * @param sortAlphabetically sort alphabetically indicator
-     * @param hideCmsPages hide CMS pages indicator
      * @return HTML data
      * @throws IOException
      */
-    String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, boolean displayRoot, boolean displayVirtualEndNodes,
-            boolean sortAlphabetically, boolean hideCmsPages) throws IOException;
+    String formatHTMLTreePageParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
+
+    /**
+     * Format hierarchical tree templates into HTML data, with UL and LI nodes
+     *
+     * @param currentPage current page
+     * @param context controller context, which contains locales and URL generation data
+     * @param idPrefix avoid multiples identifiers with this prefix
+     * @return HTML data
+     * @throws IOException
+     */
+    String formatHTMLTreeTemplateParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
+
+    /**
+     * Format hierarchical tree alphabetically movable pages objects into HTML data, with UL and LI nodes
+     *
+     * @param currentPage current page
+     * @param context controller context, which contains locales and URL generation data
+     * @param idPrefix avoid multiples identifiers with this prefix
+     * @return HTML data
+     * @throws IOException
+     */
+    String formatHTMLTreePortalObjectsMove(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
+
+    /**
+     * Format hierarchical tree alphabetically ordered pages objects into HTML data, with UL and LI nodes
+     *
+     * @param currentPage current page
+     * @param context controller context, which contains locales and URL generation data
+     * @param idPrefix avoid multiples identifiers with this prefix
+     * @return HTML data
+     * @throws IOException
+     */
+    String formatHTMLTreePortalObjectsAlphaOrder(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
 
     /**
      * Format portal object ID into HTML-safe identifier.

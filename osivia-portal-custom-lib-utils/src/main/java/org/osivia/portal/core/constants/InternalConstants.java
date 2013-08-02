@@ -123,24 +123,31 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_NEXT_REGION_COMMAND_URL = "osivia.nextRegionUrl";
     /** Instance display name. */
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
-    
+
     /** Classical portal (static pages) */
     public static final String PORTAL_TYPE_STATIC_PORTAL = "static";
     /** ECM mapped portal (ECM space) */
     public static final String PORTAL_TYPE_SPACE = "space";
-    
+
+
     /** Requests filtered by ECM references */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER = "none";
-    
+
     public static final String PORTAL_PROP_NAME_PORTAL_TYPE = "osivia.portal.portalType";
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
+
+    public static final String PROP_VALUE_ON = "1";
+    public static final String PAGE_PROP_NAME_DYNAMIC = "osivia.page.dynamic";
 
 
     // Various technical constants
 
     /** Suffix for virtual end tree nodes identifiers. */
     public static final String SUFFIX_VIRTUAL_END_NODES_ID = "VirtualEndNode";
+
+    /** Templates path name convention. */
+    public static final String TEMPLATES_PATH_NAME = "templates";
 
 
     // CMS constants

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.osivia.portal.core.portalobjects;
 
@@ -11,12 +11,15 @@ import java.util.Map;
 
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.osivia.portal.core.constants.InternalConstants;
 
 
 /**
  * Utility class with null-safe methods for portal objects.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see PortalObject
  */
@@ -34,12 +37,12 @@ public class PortalObjectUtils {
 
     /**
      * Check if object "po1" is an ancestor of object "po2".
-     * 
+     *
      * @param po1 first object, perhaps ancestor of the second, may be null
      * @param po2 second object, perhaps child of the first, may be null
      * @return true if the first objet is an ancestor of the second (they are both not null)
      */
-    public static boolean isAncestor(PortalObject po1, PortalObject po2) {
+    public static final boolean isAncestor(PortalObject po1, PortalObject po2) {
         if ((po1 == null) || (po2 == null)) {
             return false;
         }
@@ -56,12 +59,12 @@ public class PortalObjectUtils {
 
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
-     * 
+     *
      * @param po portal object, may be null
      * @param locales locales, may be null
      * @return the display name
      */
-    public static String getDisplayName(PortalObject po, Locale[] locales) {
+    public static final String getDisplayName(PortalObject po, Locale[] locales) {
         if (po == null) {
             return null;
         }
@@ -106,12 +109,12 @@ public class PortalObjectUtils {
 
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
-     * 
+     *
      * @param po portal object, may be null
      * @param locales locales, may be null
      * @return the display name
      */
-    public static String getDisplayName(PortalObject po, Enumeration<Locale> locales) {
+    public static final String getDisplayName(PortalObject po, Enumeration<Locale> locales) {
         if (po == null) {
             return null;
         }
@@ -124,6 +127,67 @@ public class PortalObjectUtils {
         Locale[] array = collection.toArray(new Locale[collection.size()]);
 
         return getDisplayName(po, array);
+    }
+
+
+    /**
+     * Check if portal object is a template.
+     *
+     * @param po portal object to check, may be null
+     * @return true if portal object is a template
+     */
+    public static final boolean isTemplate(PortalObject po) {
+        if (po == null) {
+            return false;
+        }
+
+        PortalObject parent = po.getParent();
+        if (parent == null) {
+            return false;
+        } else if (parent instanceof Portal) {
+            return InternalConstants.TEMPLATES_PATH_NAME.equals(po.getName());
+        } else {
+            return isTemplate(parent);
+        }
+    }
+
+
+    /**
+     * Access to the templates root of the current portal objects tree.
+     * If the templates root does not exist, it will be created.
+     *
+     * @param po a portal object of the current tree
+     * @return templates root
+     */
+    public static final PortalObject getTemplatesRoot(PortalObject po) {
+        if (po == null) {
+            return null;
+        }
+
+        // Get current portal
+        Portal portal;
+        if (po instanceof Portal) {
+            portal = (Portal) po;
+        } else if (po instanceof Page) {
+            Page page = (Page) po;
+            portal = page.getPortal();
+        } else {
+            return null;
+        }
+
+        // Access templates root
+        PortalObject templatesRoot = portal.getChild(InternalConstants.TEMPLATES_PATH_NAME);
+        if (templatesRoot == null) {
+            // Create templates root if it does not exist
+            try {
+                portal.createPage(InternalConstants.TEMPLATES_PATH_NAME);
+                templatesRoot = portal.getChild(InternalConstants.TEMPLATES_PATH_NAME);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        return templatesRoot;
     }
 
 }

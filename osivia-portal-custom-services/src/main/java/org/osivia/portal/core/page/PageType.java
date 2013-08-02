@@ -3,46 +3,63 @@ package org.osivia.portal.core.page;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 
 
 /**
  * Page types enumeration.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public enum PageType {
 
     /** Static page. */
-    STATIC_PAGE(false, true),
-    /** Template page. */
-    TEMPLATE_PAGE(true, false),
+    STATIC_PAGE(false, true, false),
+    /** Static CMS page. */
+    STATIC_CMS_PAGE(false, true, false),
     /** Static CMS sub page. */
-    STATIC_CMS_SUB_PAGE(false, false),
-    /** Non-default portal home template CMS root page. */
-    NON_DEFAULT_TEMPLATE_CMS_ROOT_PAGE(true, true);
+    STATIC_CMS_SUB_PAGE(false, false, false),
+    /** Dynamic page (without CMS). */
+    DYNAMIC_PAGE(true, false, false),
+    /** Dynamic CMS page. */
+    DYNAMIC_CMS_PAGE(true, false, true),
+    /** Dynamic CMS page without portal page anchor. */
+    DYNAMIC_CMS_PAGE_WITHOUT_PORTAL_PAGE(true, false, false);
 
-    
-    private boolean templated;
-    
-    private boolean editable;
-    
-    
-    private PageType(boolean templated, boolean editable) {
+
+    /** Page templated indicator. */
+    private final boolean templated;
+    /** Page editable indicator. */
+    private final boolean editable;
+    /** Portal page available indicator. */
+    private final boolean portalPageAvailable;
+
+
+    /**
+     * Constructor using fields.
+     *
+     * @param templated page templated indicator
+     * @param editable page editable indicator
+     * @param portalPageAvailable portal page available indicator
+     */
+    private PageType(boolean templated, boolean editable, boolean portalPageAvailable) {
         this.templated = templated;
         this.editable = editable;
+        this.portalPageAvailable = portalPageAvailable;
     }
-    
+
 
     /**
      * Static access to page type from page and controller context.
-     * 
+     *
      * @param page type checked page
      * @param controllerContext controller context
      * @return page type
@@ -51,40 +68,64 @@ public enum PageType {
         NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
         PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
 
-        String sPath[] = null;
+        // Page CMS base path
+        String basePath = page.getProperty("osivia.cms.basePath");
+        // Page CMS state path
+        String statePath[] = null;
         if (pageState != null) {
             QName qName = new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path");
-            sPath = pageState.getParameter(qName);
+            statePath = pageState.getParameter(qName);
         }
 
-        String basePath = page.getProperty("osivia.cms.basePath");
-
+        PageType type;
         if (page instanceof ITemplatePortalObject) {
-            if ((sPath != null) && (sPath.length == 1) && (sPath[0].equals(basePath))
-                    && !page.getName().equals(page.getPortal().getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME))) {
-                // Non-default portal home template CMS root page
-                return NON_DEFAULT_TEMPLATE_CMS_ROOT_PAGE;
+            // Templated page
+            if (ArrayUtils.isEmpty(statePath)) {
+                type = DYNAMIC_PAGE;
+            } else if (StringUtils.equals(InternalConstants.PROP_VALUE_ON, page.getProperty(InternalConstants.PAGE_PROP_NAME_DYNAMIC))) {
+                type = DYNAMIC_CMS_PAGE_WITHOUT_PORTAL_PAGE;
             } else {
-                // Template page
-                return TEMPLATE_PAGE;
+                type = DYNAMIC_CMS_PAGE;
             }
         } else {
-            if ((sPath != null) && (sPath.length == 1) && (!sPath[0].equals(basePath))) {
-                // Static CMS sub page
-                return STATIC_CMS_SUB_PAGE;
+            // Non-templated page
+            if (ArrayUtils.isEmpty(statePath)) {
+                type = STATIC_PAGE;
+            } else if (StringUtils.equals(basePath, statePath[0])) {
+                type = STATIC_CMS_PAGE;
             } else {
-                // Static page
-                return STATIC_PAGE;
+                type = STATIC_CMS_SUB_PAGE;
             }
         }
+        return type;
     }
-    
-    public final boolean isTemplated() {
-        return templated;
+
+
+    /**
+     * Getter for templated.
+     *
+     * @return the templated
+     */
+    public boolean isTemplated() {
+        return this.templated;
     }
-    
-    public final boolean isEditable() {
-        return editable;
+
+    /**
+     * Getter for editable.
+     *
+     * @return the editable
+     */
+    public boolean isEditable() {
+        return this.editable;
     }
-    
+
+    /**
+     * Getter for portalPageAvailable.
+     * 
+     * @return the portalPageAvailable
+     */
+    public boolean isPortalPageAvailable() {
+        return this.portalPageAvailable;
+    }
+
 }

@@ -330,11 +330,26 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String parentId;
                     String modelId;
 
-                    if ((parameterMap.get("name") != null) && (parameterMap.get("jstreeParentSelect") != null)
-                            && (parameterMap.get("jstreeModelSelect") != null)) {
+                    if ((parameterMap.get("name") != null) && (parameterMap.get("jstreePageParentSelect") != null)
+                            && (parameterMap.get("jstreePageModelSelect") != null)) {
                         name = URLDecoder.decode(parameterMap.get("name")[0], CharEncoding.UTF_8);
-                        parentId = URLDecoder.decode(parameterMap.get("jstreeParentSelect")[0], CharEncoding.UTF_8);
-                        modelId = URLDecoder.decode(parameterMap.get("jstreeModelSelect")[0], CharEncoding.UTF_8);
+                        parentId = URLDecoder.decode(parameterMap.get("jstreePageParentSelect")[0], CharEncoding.UTF_8);
+                        modelId = URLDecoder.decode(parameterMap.get("jstreePageModelSelect")[0], CharEncoding.UTF_8);
+
+                        return new CreatePageCommand(name, parentId, modelId);
+                    }
+                }
+
+                if ("createTemplate".equals(action)) {
+                    String name;
+                    String parentId;
+                    String modelId;
+
+                    if ((parameterMap.get("name") != null) && (parameterMap.get("jstreeTemplateParentSelect") != null)
+                            && (parameterMap.get("jstreeTemplateModelSelect") != null)) {
+                        name = URLDecoder.decode(parameterMap.get("name")[0], CharEncoding.UTF_8);
+                        parentId = URLDecoder.decode(parameterMap.get("jstreeTemplateParentSelect")[0], CharEncoding.UTF_8);
+                        modelId = URLDecoder.decode(parameterMap.get("jstreeTemplateModelSelect")[0], CharEncoding.UTF_8);
 
                         return new CreatePageCommand(name, parentId, modelId);
                     }
@@ -474,19 +489,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     return new PermLinkCommand(permMlinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
 
                 }
-                
+
 				/* CMS commands */
-				
+
 				if ("CMSDeleteFragment".equals(action)) {
-					
+
 					String pageId = null;
 					String pagePath = null;
 					String refURI = null;
-	
-					if (parameterMap.get("pageId") != null && parameterMap.get("pagePath") != null && parameterMap.get("refURI") != null ) {
-						pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
-						pagePath = URLDecoder.decode(((String[]) parameterMap.get("pagePath"))[0], "UTF-8");
-						refURI = URLDecoder.decode(((String[]) parameterMap.get("refURI"))[0], "UTF-8");
+
+					if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null) ) {
+						pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+						pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+						refURI = URLDecoder.decode(parameterMap.get("refURI")[0], "UTF-8");
 						return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
 					}
                 }
@@ -497,9 +512,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String pageId = null;
                     String pagePath = null;
 
-                    if (parameterMap.get("pageId") != null && parameterMap.get("pagePath") != null) {
-                        pageId = URLDecoder.decode(((String[]) parameterMap.get("pageId"))[0], "UTF-8");
-                        pagePath = URLDecoder.decode(((String[]) parameterMap.get("pagePath"))[0], "UTF-8");
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null)) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
 
                         return new CMSPublishDocumentCommand(pageId, pagePath);
                     }

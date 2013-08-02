@@ -54,7 +54,7 @@
     display: block;
 }
 
-.toolbar-menu ul a {
+.toolbar-menu ul a, .toolbar-menu ul p {
     display: block;
     font-size: 10px;
     line-height: 22px;

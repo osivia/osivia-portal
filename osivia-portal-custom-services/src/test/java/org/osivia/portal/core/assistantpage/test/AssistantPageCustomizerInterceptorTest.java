@@ -4,11 +4,9 @@
 package org.osivia.portal.core.assistantpage.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -154,106 +152,154 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.replay(currentPageStateMock);
     }
 
+
     /**
-     * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlTreePortalObjects(Page, ControllerContext, String)} and
-     * {@link AssistantPageCustomizerInterceptor#formatHtmlTreePortalObjects(Page, ControllerContext, String, boolean, boolean)}.
+     * Test method for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePortalObjects(Page, ControllerContext, String)}.
+     *
+     * @throws IOException
      */
     @Test
-    public void testFormatHtmlTreePortalObjects() {
+    public final void testFormatHTMLTreePortalObjects() throws IOException {
         Page currentPageMock = this.generatePortalArborescence();
 
         String htmlData;
-        try {
-            // Test 1 : null current page
-            htmlData = this.formatter.formatHtmlTreePortalObjects(null, this.context, ID_PREFIX);
-            assertNull(htmlData);
 
-            // Test 2 : null context
-            htmlData = this.formatter.formatHtmlTreePortalObjects(currentPageMock, null, ID_PREFIX);
-            assertNull(htmlData);
+        // Test 1 : null current page
+        htmlData = this.formatter.formatHTMLTreePortalObjects(null, this.context, ID_PREFIX);
+        assertNull(htmlData);
 
-            // Test 3 : nominal case
-            htmlData = this.formatter.formatHtmlTreePortalObjects(currentPageMock, this.context, ID_PREFIX);
-            assertNotNull(htmlData);
-            assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
-            assertEquals(3, StringUtils.countMatches(htmlData, "<li"));
-            assertEquals(3, StringUtils.countMatches(htmlData, "<a"));
-            assertEquals(3, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
+        // Test 2 : null context
+        htmlData = this.formatter.formatHTMLTreePortalObjects(currentPageMock, null, ID_PREFIX);
+        assertNull(htmlData);
 
-            // Test 4 : arguments combinatorial
-            for (int i = 1; i <= 2; i++) {
-                for (int j = 1; j <= 2; j++) {
-                    for (int k = 1; k <= 2; k++) {
-                        for (int l = 1; l <= 2; l++) {
-                            boolean displayRoot = (i == 2);
-                            boolean displayVirtualEndNodes = (j == 2);
-                            boolean sortAlphabetically = (k == 2);
-                            boolean hideTemplatedPage = (l == 2);
-
-                            htmlData = this.formatter.formatHtmlTreePortalObjects(currentPageMock, this.context, ID_PREFIX, displayRoot,
-                                    displayVirtualEndNodes, sortAlphabetically, hideTemplatedPage);
-                            assertNotNull(htmlData);
-
-                            // "ul" nodes count
-                            int ulCount = 1;
-                            if (!hideTemplatedPage) {
-                                ulCount++;
-                            }
-                            if (displayRoot) {
-                                ulCount++;
-                            }
-                            assertEquals(ulCount, StringUtils.countMatches(htmlData, "<ul"));
-
-                            // "li" nodes count
-                            int liCount = 1;
-                            if (!hideTemplatedPage) {
-                                liCount += 2;
-                            }
-                            if (displayRoot) {
-                                liCount++;
-                            }
-                            if (displayVirtualEndNodes) {
-                                if (hideTemplatedPage) {
-                                    liCount++;
-                                } else {
-                                    liCount += 2;
-                                }
-                            }
-                            assertEquals(liCount, StringUtils.countMatches(htmlData, "<li"));
-
-                            // "a" nodes count
-                            int aCount = liCount;
-                            assertEquals(aCount, StringUtils.countMatches(htmlData, "<a"));
-
-                            // "id" attributes count
-                            int idCount = liCount;
-                            assertEquals(idCount, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
-
-                            // Order testing
-                            if (!hideTemplatedPage) {
-                                int indexCurrentPage = StringUtils.indexOf(htmlData, "[01]");
-                                int indexSiblingPage = StringUtils.indexOf(htmlData, "[02]");
-                                if (sortAlphabetically) {
-                                    assertTrue(indexCurrentPage < indexSiblingPage);
-                                } else {
-                                    assertFalse(indexCurrentPage < indexSiblingPage);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
+        // Test 3 : nominal case
+        htmlData = this.formatter.formatHTMLTreePortalObjects(currentPageMock, this.context, ID_PREFIX);
+        assertNotNull(htmlData);
+        assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "<li"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "<a"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
     }
+
+
+    /**
+     * Test case for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePageParent(Page, ControllerContext, String)}.
+     *
+     * @throws IOException
+     */
+    @Test
+    public final void testFormatHTMLTreePageParent() throws IOException {
+        Page currentPageMock = this.generatePortalArborescence();
+
+        String htmlData;
+
+        // Test 1 : null current page
+        htmlData = this.formatter.formatHTMLTreePageParent(null, this.context, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 2 : null context
+        htmlData = this.formatter.formatHTMLTreePageParent(currentPageMock, null, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 3 : nominal case
+        htmlData = this.formatter.formatHTMLTreePageParent(currentPageMock, this.context, ID_PREFIX);
+        assertNotNull(htmlData);
+        assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
+        assertEquals(2, StringUtils.countMatches(htmlData, "<li"));
+        assertEquals(2, StringUtils.countMatches(htmlData, "<a"));
+        assertEquals(2, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
+    }
+
+
+    /**
+     * Test case for {@link AssistantPageCustomizerInterceptor#formatHTMLTreeTemplateParent(Page, ControllerContext, String)}.
+     *
+     * @throws IOException
+     */
+    @Test
+    public final void testFormatHTMLTreeTemplateParent() throws IOException {
+        Page currentPageMock = this.generatePortalArborescence();
+
+        String htmlData;
+
+        // Test 1 : null current page
+        htmlData = this.formatter.formatHTMLTreeTemplateParent(null, this.context, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 2 : null context
+        htmlData = this.formatter.formatHTMLTreeTemplateParent(currentPageMock, null, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 3 : nominal case
+        htmlData = this.formatter.formatHTMLTreeTemplateParent(currentPageMock, this.context, ID_PREFIX);
+        assertNotNull(htmlData);
+        assertEquals(StringUtils.EMPTY, htmlData);
+    }
+
+
+    /**
+     * Test case for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePortalObjectsMove(Page, ControllerContext, String)}.
+     *
+     * @throws IOException
+     */
+    @Test
+    public final void testFormatHTMLTreePortalObjectsMove() throws IOException {
+        Page currentPageMock = this.generatePortalArborescence();
+
+        String htmlData;
+
+        // Test 1 : null current page
+        htmlData = this.formatter.formatHTMLTreePortalObjectsMove(null, this.context, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 2 : null context
+        htmlData = this.formatter.formatHTMLTreePortalObjectsMove(currentPageMock, null, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 3 : nominal case
+        htmlData = this.formatter.formatHTMLTreePortalObjectsMove(currentPageMock, this.context, ID_PREFIX);
+        assertNotNull(htmlData);
+        assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
+        assertEquals(5, StringUtils.countMatches(htmlData, "<li"));
+        assertEquals(5, StringUtils.countMatches(htmlData, "<a"));
+        assertEquals(5, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
+    }
+
+
+    /**
+     * Test case for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePortalObjectsAlphaOrder(Page, ControllerContext, String)}.
+     * 
+     * @throws IOException
+     */
+    @Test
+    public final void testFormatHTMLTreePortalObjectsAlphaOrder() throws IOException {
+        Page currentPageMock = this.generatePortalArborescence();
+
+        String htmlData;
+
+        // Test 1 : null current page
+        htmlData = this.formatter.formatHTMLTreePortalObjectsAlphaOrder(null, this.context, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 2 : null context
+        htmlData = this.formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPageMock, null, ID_PREFIX);
+        assertNull(htmlData);
+
+        // Test 3 : nominal case
+        htmlData = this.formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPageMock, this.context, ID_PREFIX);
+        assertNotNull(htmlData);
+        assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "<li"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "<a"));
+        assertEquals(3, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
+    }
+
 
     /**
      * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlSafeEncodingId(PortalObjectId)}.
      */
     @Test
-    public void testFormatHtmlSafeEncodingId() {
+    public final void testFormatHtmlSafeEncodingId() {
         PortalObjectId portalObjectIdMock = EasyMock.createMock("PortalObjectIdMock", PortalObjectId.class);
         String safeEncodingId;
 
@@ -304,7 +350,7 @@ public class AssistantPageCustomizerInterceptorTest {
      * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlPortletsList(ControllerContext)}.
      */
     @Test
-    public void testFormatHtmlPortletsList() {
+    public final void testFormatHtmlPortletsList() {
         String htmlData;
         try {
             // Test 1 : null context
@@ -328,7 +374,7 @@ public class AssistantPageCustomizerInterceptorTest {
      * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlWindowsSettings(Page, java.util.List, ControllerContext)}
      */
     @Test
-    public void testFormatHtmlWindowsSettings() {
+    public final void testFormatHtmlWindowsSettings() {
         Page currentPageMock = this.generatePortalArborescence();
 
         List<Window> windows = new ArrayList<Window>();
@@ -399,14 +445,17 @@ public class AssistantPageCustomizerInterceptorTest {
 
         // Current page mock operations
         EasyMock.expect(currentPageMock.getPortal()).andStubReturn(portalMock);
+        EasyMock.expect(currentPageMock.getParent()).andStubReturn(portalMock);
         EasyMock.expect(currentPageMock.getChildren(EasyMock.anyInt())).andReturn(currentPageChildren).anyTimes();
         EasyMock.expect(currentPageMock.getId()).andStubReturn(currentPageIdMock);
+        EasyMock.expect(currentPageMock.getName()).andReturn("current-page").anyTimes();
         EasyMock.expect(currentPageMock.getDisplayName()).andReturn(currentPageDisplay).anyTimes();
         EasyMock.expect(currentPageMock.getDeclaredProperty(EasyMock.anyObject(String.class))).andReturn("2").anyTimes();
         EasyMock.expect(currentPageMock.getProperty("osivia.cms.basePath")).andReturn(CMS_BASE_PATH).anyTimes();
         // Current page ID mock operations
         EasyMock.expect(currentPageIdMock.toString(EasyMock.anyObject(Format.class))).andReturn(CURRENT_PAGE_ID).anyTimes();
         // Portal mock operations
+        EasyMock.expect(portalMock.getParent()).andReturn(null).anyTimes();
         EasyMock.expect(portalMock.getChildren(EasyMock.anyInt())).andReturn(portalChildren).anyTimes();
         EasyMock.expect(portalMock.getId()).andStubReturn(portalIdMock);
         EasyMock.expect(portalMock.getDisplayName()).andReturn(portalDisplay).anyTimes();
@@ -414,14 +463,17 @@ public class AssistantPageCustomizerInterceptorTest {
         // Portal ID mock operations
         EasyMock.expect(portalIdMock.toString(EasyMock.anyObject(Format.class))).andReturn("/portal/").anyTimes();
         // Sibling page mock operations
+        EasyMock.expect(siblingPageMock.getParent()).andStubReturn(portalMock);
         EasyMock.expect(siblingPageMock.getChildren(EasyMock.anyInt())).andReturn(new ArrayList<PortalObject>()).anyTimes();
         EasyMock.expect(siblingPageMock.getId()).andStubReturn(siblingPageIdMock);
+        EasyMock.expect(siblingPageMock.getName()).andReturn("sibling-page").anyTimes();
         EasyMock.expect(siblingPageMock.getDisplayName()).andReturn(siblingPageDisplay).anyTimes();
         EasyMock.expect(siblingPageMock.getDeclaredProperty(EasyMock.anyObject(String.class))).andReturn("1").anyTimes();
         EasyMock.expect(siblingPageMock.getProperty("osivia.cms.basePath")).andReturn(null).anyTimes();
         // Sibling page ID mock operations
         EasyMock.expect(siblingPageIdMock.toString(EasyMock.anyObject(Format.class))).andReturn("/portal/sibling-page/").anyTimes();
         // Sub page mock operations
+        EasyMock.expect(subPageMock.getParent()).andStubReturn(currentPageMock);
         EasyMock.expect(subPageMock.getChildren(EasyMock.anyInt())).andReturn(null).anyTimes();
         EasyMock.expect(subPageMock.getId()).andStubReturn(subPageIdMock);
         EasyMock.expect(subPageMock.getDisplayName()).andReturn(subPageDisplay).anyTimes();

@@ -11,6 +11,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
@@ -272,34 +273,41 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 							topBar.append("<p class=\"portlet-action-link\">");
 							for (MenubarItem menuItem : sortedItems) {
-								topBar.append("<a");
-								if (menuItem.getOnClickEvent() != null) {
-                                    topBar.append(" onclick=\"" + menuItem.getOnClickEvent() + "\"");
-                                }
+                                if (StringUtils.isNotBlank(menuItem.getUrl())) {
+                                    // Link
+                                    topBar.append("<a");
 
-								if (menuItem.getUrl() != null) {
+                                    // Onclick action
+                                    if (menuItem.getOnClickEvent() != null) {
+                                        topBar.append(" onclick=\"" + menuItem.getOnClickEvent() + "\"");
+                                    }
+
+                                    // HREF
                                     topBar.append(" href=\"" + menuItem.getUrl() + "\"");
+
+                                    // Target
+                                    if (menuItem.getTarget() != null) {
+                                        topBar.append(" target=\"" + menuItem.getTarget() + "\"");
+                                    }
+
+                                    // Title
+                                    if (menuItem.getTitle() != null) {
+                                        topBar.append(" title=\"" + menuItem.getTitle() + "\"");
+                                    }
+                                } else {
+                                    // Text display
+                                    topBar.append("<span");
                                 }
 
-								if (menuItem.getTarget() != null) {
-                                    topBar.append(" target=\"" + menuItem.getTarget() + "\"");
-                                }
-
-								if (menuItem.getTitle() != null) {
-                                    topBar.append(" title=\"" + menuItem.getTitle() + "\"");
-                                }
-
-								String className = "";
-
+                                // HTML class
+                                String className = StringUtils.EMPTY;
 								if (menuItem.getClassName() != null) {
                                     className += menuItem.getClassName();
                                 }
-
 								if (menuItem.isAjaxDisabled() == true) {
                                     className += " no-ajax-link";
                                 }
-
-								if (className.length() > 0) {
+                                if (StringUtils.isNotBlank(className)) {
                                     topBar.append(" class=\"" + "portlet-menuitem " + className + "\"");
                                 }
 
@@ -308,7 +316,13 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 								if (menuItem.getTitle() != null) {
                                     topBar.append(" " + menuItem.getTitle());
                                 }
-								topBar.append("</a>");
+
+                                // Closing tag
+                                if (StringUtils.isNotBlank(menuItem.getUrl())) {
+                                    topBar.append("</a>");
+                                } else {
+                                    topBar.append("</span>");
+                                }
 							}
 							topBar.append("</p>");
 

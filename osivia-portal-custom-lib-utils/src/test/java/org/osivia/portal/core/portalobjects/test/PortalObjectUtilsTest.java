@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.osivia.portal.core.portalobjects.test;
 
@@ -24,12 +24,13 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.server.ServerRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 
 /**
  * PortalObjectUtils tests.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see PortalObjectUtils
  */
@@ -50,6 +51,10 @@ public class PortalObjectUtilsTest {
     Page pageMock;
     /** Sub page object mock. */
     Page subPageMock;
+    /** Templates root mock. */
+    Page templatesRootMock;
+    /** Template mock. */
+    Page templateMock;
 
 
     /**
@@ -57,12 +62,15 @@ public class PortalObjectUtilsTest {
      */
     @Before
     public void setUp() {
+        // Portal object
         this.portalObjectMock = EasyMock.createMock("PortalObject", PortalObject.class);
         EasyMock.expect(this.portalObjectMock.getParent()).andReturn(null).anyTimes();
 
+        // Portal
         this.portalMock = EasyMock.createMock("Portal", Portal.class);
         EasyMock.expect(this.portalMock.getParent()).andReturn(null).anyTimes();
 
+        // Page
         this.pageMock = EasyMock.createMock("Page", Page.class);
         EasyMock.expect(this.pageMock.getParent()).andStubReturn(this.portalMock);
         Map<Locale, String> pageDisplayNames = new HashMap<Locale, String>();
@@ -74,13 +82,36 @@ public class PortalObjectUtilsTest {
         EasyMock.expect(this.pageMock.getDisplayName()).andReturn(pageLocalizedString).anyTimes();
         EasyMock.expect(this.pageMock.getName()).andReturn(PAGE_NAME).anyTimes();
 
+        // Sub page
         this.subPageMock = EasyMock.createMock("SubPage", Page.class);
+        EasyMock.expect(this.subPageMock.getPortal()).andStubReturn(this.portalMock);
         EasyMock.expect(this.subPageMock.getParent()).andStubReturn(this.pageMock);
         Map<Locale, String> subPageDisplayNames = new HashMap<Locale, String>();
         subPageDisplayNames.put(Locale.GERMANY, GERMAN_PAGE_NAME);
         LocalizedString subPagelocalizedString = new LocalizedString(subPageDisplayNames, Locale.ENGLISH);
         EasyMock.expect(this.subPageMock.getDisplayName()).andReturn(subPagelocalizedString).anyTimes();
         EasyMock.expect(this.subPageMock.getName()).andReturn(SUB_PAGE_NAME).anyTimes();
+
+        // Templates root
+        this.templatesRootMock = EasyMock.createMock("TemplatesRoot", Page.class);
+        EasyMock.expect(this.templatesRootMock.getParent()).andStubReturn(this.portalMock);
+        EasyMock.expect(this.templatesRootMock.getName()).andReturn(InternalConstants.TEMPLATES_PATH_NAME).anyTimes();
+
+        EasyMock.expect(this.portalMock.getChild(InternalConstants.TEMPLATES_PATH_NAME)).andStubReturn(this.templatesRootMock);
+
+        // Template
+        this.templateMock = EasyMock.createMock("Template", Page.class);
+        EasyMock.expect(this.templateMock.getPortal()).andStubReturn(this.portalMock);
+        EasyMock.expect(this.templateMock.getParent()).andStubReturn(this.templatesRootMock);
+
+
+        // Replay
+        EasyMock.replay(this.portalObjectMock);
+        EasyMock.replay(this.portalMock);
+        EasyMock.replay(this.pageMock);
+        EasyMock.replay(this.subPageMock);
+        EasyMock.replay(this.templatesRootMock);
+        EasyMock.replay(this.templateMock);
     }
 
 
@@ -89,12 +120,6 @@ public class PortalObjectUtilsTest {
      */
     @Test
     public final void testIsAncestor() {
-        EasyMock.replay(this.portalObjectMock);
-        EasyMock.replay(this.portalMock);
-        EasyMock.replay(this.pageMock);
-        EasyMock.replay(this.subPageMock);
-
-
         // Test 1 : both arguments are null
         boolean result1 = PortalObjectUtils.isAncestor(null, null);
         assertFalse(result1);
@@ -143,10 +168,6 @@ public class PortalObjectUtilsTest {
         Locale[] localesArray;
         Enumeration<Locale> localesEnum;
         List<Locale> localesList;
-
-        EasyMock.replay(this.pageMock);
-        EasyMock.replay(this.subPageMock);
-
 
         // Test 1 : both arguments are null
         localesArray = null;
@@ -243,6 +264,73 @@ public class PortalObjectUtilsTest {
 
         EasyMock.verify(this.pageMock);
         EasyMock.verify(this.subPageMock);
+    }
+
+    /**
+     * Test method for {@link PortalObjectUtils#isTemplate(PortalObject)}.
+     */
+    @Test
+    public final void testIsTemplate() {
+        // Test 1 : null
+        boolean result1 = PortalObjectUtils.isTemplate(null);
+        assertFalse(result1);
+
+        // Test 2 : template
+        boolean result2 = PortalObjectUtils.isTemplate(this.templateMock);
+        assertTrue(result2);
+
+        // Test 3 : templates root page
+        boolean result3 = PortalObjectUtils.isTemplate(this.templatesRootMock);
+        assertTrue(result3);
+
+        // Test 4 : portal
+        boolean result4 = PortalObjectUtils.isTemplate(this.portalMock);
+        assertFalse(result4);
+
+        // Test 5 : sub page
+        boolean result5 = PortalObjectUtils.isTemplate(this.subPageMock);
+        assertFalse(result5);
+
+        // Test 6 : page
+        boolean result6 = PortalObjectUtils.isTemplate(this.pageMock);
+        assertFalse(result6);
+
+
+        EasyMock.verify(this.portalMock);
+        EasyMock.verify(this.pageMock);
+        EasyMock.verify(this.subPageMock);
+        EasyMock.verify(this.templatesRootMock);
+        EasyMock.verify(this.templateMock);
+    }
+
+
+    /**
+     * Test case for {@link PortalObjectUtils#getTemplatesRoot(PortalObject)}
+     */
+    @Test
+    public final void testGetTemplatesRoot() {
+        // Test 1 : null
+        PortalObject result1 = PortalObjectUtils.getTemplatesRoot(null);
+        assertNull(result1);
+
+        // Test 2 : portal
+        PortalObject result2 = PortalObjectUtils.getTemplatesRoot(this.portalMock);
+        assertEquals(this.templatesRootMock, result2);
+
+        // Test 3 : page
+        PortalObject result3 = PortalObjectUtils.getTemplatesRoot(this.subPageMock);
+        assertEquals(this.templatesRootMock, result3);
+
+        // Test 4 : template
+        PortalObject result4 = PortalObjectUtils.getTemplatesRoot(this.templateMock);
+        assertEquals(this.templatesRootMock, result4);
+
+
+        EasyMock.verify(this.portalMock);
+        EasyMock.verify(this.pageMock);
+        EasyMock.verify(this.subPageMock);
+        EasyMock.verify(this.templatesRootMock);
+        EasyMock.verify(this.templateMock);
     }
 
 }

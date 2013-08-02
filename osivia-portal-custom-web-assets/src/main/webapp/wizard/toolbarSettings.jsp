@@ -114,8 +114,8 @@ var currentPageId = '<%=currentPageId %>';
     <div id="page-creation">
         <form action="<%=commandUrl %>" method="get" class="fancybox-form">
             <input type="hidden" name="action" value="createPage" />
-            <input type="hidden" name="jstreeParentSelect" value="<%=portalId %>" />
-            <input type="hidden" name="jstreeModelSelect" />
+            <input type="hidden" name="jstreePageParentSelect" value="<%=portalId %>" />
+            <input type="hidden" name="jstreePageModelSelect" />
 
             <div class="fancybox-table">
                 <div class="fancybox-table-row">
@@ -130,24 +130,85 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
+                        <input type="text" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
                     </div>
                 
                     <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
+                        <input type="text" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
                     </div>                    
                 </div>
                 
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label fancybox-upper">
                         <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
-                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeModelSelect', this.checked)" class="inline-checkbox" />
+                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" class="inline-checkbox" />
+                    </div>
+                    
+                    <div class="fancybox-table-cell">
+                        <div id="jstreePageModelSelect" class="jstree-select-unique">
+                            <%=formatter.formatHTMLTreePortalObjects(currentPage, context, "jstreePageModelSelect") %>
+                        </div>
+                    </div>
+                
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                    
+                    <div class="fancybox-table-cell">
+                        <div id="jstreePageParentSelect" class="jstree-select-unique">
+                            <%=formatter.formatHTMLTreePageParent(currentPage, context, "jstreePageParentSelect") %>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+
+            <div class="fancybox-center-content">
+                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
+                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Fancybox de création de template -->
+<div class="fancybox-content">
+    <div id="template-creation">
+        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+            <input type="hidden" name="action" value="createTemplate" />
+            <input type="hidden" name="jstreeTemplateParentSelect" value="<%=portalId %>" />
+            <input type="hidden" name="jstreeTemplateModelSelect" />
+
+            <div class="fancybox-table">
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" name="name" required />
+                    </div>
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                    <div class="fancybox-table-cell">&nbsp;</div>
+                </div>
+
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
+                    </div>
+                
+                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
+                    <div class="fancybox-table-cell">
+                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
+                    </div>                    
+                </div>
+                
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
+                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
+                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" class="inline-checkbox" />
                     </div>
                     
                     <div class="fancybox-table-cell">
                         <div id="jstreeModelSelect" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeModelSelect") %>
+                            <%=formatter.formatHTMLTreePortalObjects(currentPage, context, "jstreeTemplateModelSelect") %>
                         </div>
                     </div>
                 
@@ -155,7 +216,7 @@ var currentPageId = '<%=currentPageId %>';
                     
                     <div class="fancybox-table-cell">
                         <div id="jstreeParentSelect" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreeParentSelect", true, false, false, true) %>
+                            <%=formatter.formatHTMLTreeTemplateParent(currentPage, context, "jstreeTemplateParentSelect") %>
                         </div>                        
                     </div>
                 </div>
@@ -296,7 +357,7 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell">
                         <div id="jstreePageOrder" class="jstree-select-unique">
-                            <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePageOrder", false, true, false, false) %>
+                            <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePageOrder") %>
                         </div>
                     </div>
                 </div>
@@ -441,7 +502,7 @@ var currentPageId = '<%=currentPageId %>';
             <div class="fancybox-table-row">
                 <div class="fancybox-table-cell">
                     <div id="jstreePagesList" class="jstree-links">
-                        <%=formatter.formatHtmlTreePortalObjects(currentPage, context, "jstreePagesList", false, false, true, false) %>
+                        <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePagesList") %>
                     </div>
                 </div>
             </div>

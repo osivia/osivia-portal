@@ -279,6 +279,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // init cms Path
         state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
         state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"));
+        state.remove(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"));
+
 
         nsContext.setPageNavigationalState(pageId, new PageNavigationalState(state));
 
@@ -1130,7 +1132,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             footer.append(footerNav);
 
-  
+
 
             WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
             WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
@@ -1156,8 +1158,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append(toolbarSettings);
         }
 
-        
-        
+
+
         /* JSS20130610 : Injection path CMS pour Ajax */
 
         // On determine le path de navigation cms
@@ -1183,8 +1185,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append("\";\n");
             pageSettings.append("</script>\n");
         }
-        
-        
+
+
 
         Map<String, String> windowProps = new HashMap<String, String>();
 
@@ -1241,10 +1243,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     null, null, null, null);
             userPage.setUrl(url);
 
-            
+
             List<UserPage> subPages = new ArrayList<UserPage>(10);
             userPage.setChildren(subPages);
-            
+
             List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
 
             if (navItems.size() > 0) {
@@ -1255,10 +1257,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     }
                 }
             }
-            
+
             pageList.add(userPage);
-            
-            
+
+
         } catch (Exception e) {
             // May be a security issue, don't block footer
             logger.error(e.getMessage());

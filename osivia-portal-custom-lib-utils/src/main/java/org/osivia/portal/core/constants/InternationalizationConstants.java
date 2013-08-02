@@ -33,8 +33,8 @@ public final class InternationalizationConstants {
 
     // Toolbar administration
 
-    /** Bundle resource key for shortcuts menu title. */
-    public static final String KEY_SHORTCUTS_MENU_TITLE = "MENU_SHORTCUTS";
+    /** Bundle resource key for configuration menu title. */
+    public static final String KEY_CONFIGURATION_MENU_TITLE = "MENU_CONFIGURATION";
     /** Bundle resource key for home access. */
     public static final String KEY_HOME = "SUBMENU_HOME";
     /** Bundle resource key for OSIVIA administration access. */
@@ -45,12 +45,18 @@ public final class InternationalizationConstants {
     public static final String KEY_PAGES_LIST = "SUBMENU_PAGES_LIST";
     /** Bundle resource key for template edition menu title. */
     public static final String KEY_TEMPLATE_EDITION_MENU_TITLE = "MENU_TEMPLATE_EDITION";
+    /** Bundle resource key for page edition menu title. */
+    public static final String KEY_PAGE_EDITION_MENU_TITLE = "MENU_PAGE_EDITION";
     /** Bundle resource key for icons display. */
     public static final String KEY_ICONS_DISPLAY = "SUBMENU_ICONS_DISPLAY";
     /** Bundle resource key for page creation. */
     public static final String KEY_PAGE_CREATION = "SUBMENU_PAGE_CREATION";
+    /** Bundle resource key for template creation. */
+    public static final String KEY_TEMPLATE_CREATION = "SUBMENU_TEMPLATE_CREATION";
     /** Bundle resource key for page template access. */
     public static final String KEY_PAGE_TEMPLATE_ACCESS = "SUBMENU_PAGE_TEMPLATE_ACCESS";
+    /** Bundle resource key for portal page access. */
+    public static final String KEY_PORTAL_PAGE_ACCESS = "SUBMENU_PORTAL_PAGE_ACCESS";
     /** Bundle resource key for page suppression. */
     public static final String KEY_PAGE_SUPPRESSION = "SUBMENU_PAGE_SUPPRESSION";
     /** Bundle resource key for page location. */

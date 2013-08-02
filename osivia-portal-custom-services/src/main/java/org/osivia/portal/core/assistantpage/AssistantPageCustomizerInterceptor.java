@@ -99,6 +99,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /** Windows settings fancyboxes prefix. */
     private static final String PREFIX_ID_FANCYBOX_WINDOW_SETTINGS = "window-settings-";
 
+    // HTML classes
     /** HTML toggle row display class. */
     private static final String HTML_CLASS_TOGGLE_ROW = "toggle-row";
     /** HTML class "styles-toggle-row". */
@@ -116,6 +117,19 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /** HTML rel "page" for "li" nodes. */
     private static final String HTML_REL_PAGE = "page";
 
+    // HTML tree options names
+    /** Display root option name. */
+    private static final String DISPLAY_ROOT = "display-root";
+    /** Display virtual end nodes option name. */
+    private static final String DISPLAY_VIRTUAL_END_NODES = "display-virtual-end-nodes";
+    /** Sort alphabetically option name. */
+    private static final String SORT_ALPHABETICALLY = "sort-alphabetically";
+    /** Hide CMS pages option name. */
+    private static final String HIDE_CMS_PAGES = "hide-cms-pages";
+    /** Templated pages filter option name. */
+    private static final String TEMPLATED_PAGES_FILTER = "templated-pages-filter";
+    /** Non-templated pages filter option name. */
+    private static final String NON_TEMPLATED_PAGES_FILTER = "non-templated-pages-filter";
 
     /** Default icon location. */
     private static final String DEFAULT_ICON_LOCATION = "/portal-core/images/portletIcon_Default1.gif";
@@ -284,11 +298,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL, "Contenus du portail courant");
         policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER, "Tous les contenus");
 
- 
+
         String inheritedFilteringPolicy = po.getParent().getProperty(InternalConstants.PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY);
 
         String inheritedLabel = null;
-        
+
         if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL.equals(inheritedFilteringPolicy)) {
              inheritedLabel = "Contenus du portail courant";
          } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER.equals(inheritedFilteringPolicy)) {
@@ -301,11 +315,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                   inheritedLabel = "Tous les contenus";
               }
        }
-        
-        
-        
 
-        
+
+
+
+
         inheritedLabel = "Hérité du portail [" + inheritedLabel + "]";
 
 
@@ -520,16 +534,60 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /**
      * {@inheritDoc}
      */
-    public String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, false, false, false, false);
+    public String formatHTMLTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+        Set<String> options = new TreeSet<String>();
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
     }
-
 
     /**
      * {@inheritDoc}
      */
-    public String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, boolean displayRoot,
-            boolean displayVirtualEndNodes, boolean sortAlphabetically, boolean hideCmsPages) throws IOException {
+    public String formatHTMLTreePageParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+        Set<String> options = new TreeSet<String>();
+        options.add(DISPLAY_ROOT);
+        options.add(HIDE_CMS_PAGES);
+        options.add(NON_TEMPLATED_PAGES_FILTER);
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String formatHTMLTreeTemplateParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+        Set<String> options = new TreeSet<String>();
+        options.add(HIDE_CMS_PAGES);
+        options.add(TEMPLATED_PAGES_FILTER);
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String formatHTMLTreePortalObjectsMove(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+        Set<String> options = new TreeSet<String>();
+        options.add(DISPLAY_VIRTUAL_END_NODES);
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String formatHTMLTreePortalObjectsAlphaOrder(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+        Set<String> options = new TreeSet<String>();
+        options.add(SORT_ALPHABETICALLY);
+        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
+    }
+
+    /**
+     * Utility method used to format hierarchical tree pages into HTML data, with UL and LI nodes.
+     *
+     * @param currentPage current page
+     * @param context controller context
+     * @param idPrefix avoid multiples identifiers with this prefix
+     * @param options format options
+     * @return
+     */
+    private String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, Set<String> options) throws IOException {
         if ((currentPage == null) || (context == null)) {
             return null;
         }
@@ -537,7 +595,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Locale locale = context.getServerInvocation().getRequest().getLocale();
 
         String virtualEndNodesText = null;
-        if (displayVirtualEndNodes) {
+        if (options.contains(DISPLAY_VIRTUAL_END_NODES)) {
             virtualEndNodesText = this.internationalizationService.getString(InternationalizationConstants.KEY_VIRTUAL_END_NODES, locale);
         }
 
@@ -546,10 +604,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Element ul;
 
         // Recursive tree generation
-        Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, sortAlphabetically, hideCmsPages);
+        Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, options);
 
         // Root generation
-        if (displayRoot && (ulChildren != null)) {
+        if (options.contains(DISPLAY_ROOT) && (ulChildren != null)) {
             String portalId = this.formatHtmlSafeEncodingId(portal.getId());
 
             ul = new DOMElement(QName.get(HTMLConstants.UL));
@@ -574,7 +632,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         return resultat;
     }
 
-
     /**
      * Utility method used to generate recursive HTML tree of portal objects.
      *
@@ -582,13 +639,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * @param context controller context, which contains locales and URL generation data
      * @param idPrefix avoid multiples identifiers with this prefix
      * @param virtualEndNodesText virtual end nodes text, null if these nodes aren't to be displayed
-     * @param sortAlphabetically sort alphabetically indicator
-     * @param hideCmsPages hide CMS pages indicator
+     * @param options format options
      * @return HTML "ul" node
      * @throws IOException
      */
     private Element generateRecursiveHtmlTreePortalObjects(PortalObject parent, ControllerContext context, String idPrefix, String virtualEndNodesText,
-            boolean sortAlphabetically, boolean hideCmsPages) throws IOException {
+            Set<String> options) throws IOException {
         Locale[] locales = context.getServerInvocation().getRequest().getLocales();
 
         Collection<PortalObject> children = parent.getChildren(PortalObject.PAGE_MASK);
@@ -600,7 +656,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         PortalAuthorizationManager authManager = this.portalAuthorizationManagerFactory.getManager();
 
         SortedSet<Page> sortedPages;
-        if (sortAlphabetically) {
+        if (options.contains(SORT_ALPHABETICALLY)) {
             sortedPages = new TreeSet<Page>(PageUtils.nameComparator);
         } else {
             sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
@@ -612,7 +668,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             if (authManager.checkPermission(permission)) {
                 Page page = (Page) child;
 
-                if (!(hideCmsPages && StringUtils.isNotEmpty(page.getProperty("osivia.cms.basePath")))) {
+                // Check display if current page is a CMS page
+                boolean checkCMSDisplay = !(options.contains(HIDE_CMS_PAGES) && StringUtils.isNotEmpty(page.getProperty("osivia.cms.basePath")));
+                // Check display if current page is a template
+                boolean checkTemplateDisplay = !(options.contains(TEMPLATED_PAGES_FILTER) && !PortalObjectUtils.isTemplate(page));
+                // Check display if current page isn't a template
+                boolean checkNonTemplateDisplay = !(options.contains(NON_TEMPLATED_PAGES_FILTER) && PortalObjectUtils.isTemplate(page));
+
+                if (checkCMSDisplay && checkTemplateDisplay && checkNonTemplateDisplay) {
                     sortedPages.add(page);
                 }
             }
@@ -647,7 +710,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             li.add(a);
 
             // Recursive generation
-            Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(page, context, idPrefix, virtualEndNodesText, sortAlphabetically, hideCmsPages);
+            Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(page, context, idPrefix, virtualEndNodesText, options);
             if (ulChildren != null) {
                 li.add(ulChildren);
             }
@@ -953,6 +1016,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * @throws IOException
      */
     protected String writeHtmlData(Element htmlElement) throws IOException {
+        if (htmlElement == null) {
+            return StringUtils.EMPTY;
+        }
+
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         OutputStream bufferedOutput = new BufferedOutputStream(output);
         HTMLWriter htmlWriter = null;
