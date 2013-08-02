@@ -386,8 +386,27 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         this.addSubMenuFancyboxLink(configurationMenuUl, URL_TEMPLATE_CREATION,
                 this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION, locale));
 
-        // HR
-        this.addSubMenuElement(configurationMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+        if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
+            // HR
+            this.addSubMenuElement(configurationMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+
+            // Technical page access
+            if (pageType.isPortalPageAvailable()) {
+                ViewPageCommand technicalPageAccessCommand = new ViewPageCommand(page.getParent().getId());
+                String technicalPageAccessUrl = new PortalURLImpl(technicalPageAccessCommand, context, null, null).toString();
+                technicalPageAccessUrl += "?init-state=true&edit-template-mode=true";
+
+                Element technicalPageAccessLink = new DOMElement(QName.get(HTMLConstants.A));
+                technicalPageAccessLink.addAttribute(QName.get(HTMLConstants.HREF), technicalPageAccessUrl);
+                technicalPageAccessLink.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PORTAL_PAGE_ACCESS, locale));
+                this.addSubMenuElement(configurationMenuUl, technicalPageAccessLink);
+            } else {
+                Element technicalPageAccessDisable = new DOMElement(QName.get(HTMLConstants.P));
+                technicalPageAccessDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PORTAL_PAGE_ACCESS, locale));
+
+                this.addSubMenuElement(configurationMenuUl, technicalPageAccessDisable);
+            }
+        }
 
         // Page template access
         if (pageType.isTemplated()) {
@@ -405,23 +424,6 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             pageTemplateAccessDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
 
             this.addSubMenuElement(configurationMenuUl, pageTemplateAccessDisable);
-        }
-
-        // Technical page access
-        if (pageType.isPortalPageAvailable()) {
-            ViewPageCommand technicalPageAccessCommand = new ViewPageCommand(page.getParent().getId());
-            String technicalPageAccessUrl = new PortalURLImpl(technicalPageAccessCommand, context, null, null).toString();
-            technicalPageAccessUrl += "?init-state=true&edit-template-mode=true";
-
-            Element technicalPageAccessLink = new DOMElement(QName.get(HTMLConstants.A));
-            technicalPageAccessLink.addAttribute(QName.get(HTMLConstants.HREF), technicalPageAccessUrl);
-            technicalPageAccessLink.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PORTAL_PAGE_ACCESS, locale));
-            this.addSubMenuElement(configurationMenuUl, technicalPageAccessLink);
-        } else {
-            Element technicalPageAccessDisable = new DOMElement(QName.get(HTMLConstants.P));
-            technicalPageAccessDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PORTAL_PAGE_ACCESS, locale));
-
-            this.addSubMenuElement(configurationMenuUl, technicalPageAccessDisable);
         }
 
         // HR
