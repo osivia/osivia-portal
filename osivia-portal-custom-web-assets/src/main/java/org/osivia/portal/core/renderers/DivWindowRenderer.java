@@ -142,12 +142,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // edit / remove fragment actions
         if (this.showCmsTools(wrc)) {
 
-            out.print("<a class=\"fancyframe_refresh edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
+            out.println("<div class=\"cms-commands\">");
+
+            out.print("<a class=\"fancyframe_refresh cmd edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "'\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
-            out.print("<a href=\"" + wrc.getProperty("osivia.cmsDeleteUrl") + "\" class=\"delete\">"
+            out.print("<a href=\"" + wrc.getProperty("osivia.cmsDeleteUrl") + "\" class=\"cmd delete\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
 
+            out.print("</div>");
         }
 
 
@@ -215,9 +218,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         if (this.showCmsTools(wrc)) {
 
 
-            out.print("<div class=\"regionPreview\">");
+            out.print("<div class=\"cms-commands cms-region-commands\">");
 
-            out.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL") + "'\" href=\""
+            out.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL") + "'\" href=\""
                     + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
             out.println("</div>");

@@ -4,7 +4,6 @@
 	display: inline-block;
 	margin: 0;
 	padding: 0;
-	/*font:26px/1.5 Trebuchet MS, Arial, Helvetica, sans-serif;*/
 	text-transform: none;
 	white-space: nowrap;
 	text-align: center;
@@ -19,34 +18,27 @@
 	background-color: transparent;
 }
 
-
-#toolbar .online-version span  {
+#toolbar .online-version span {
 	padding: 0px 3px 0px 0px;
 	height: 24px;
 	line-height: 2;
 	background-color: rgb(110, 183, 53);
 	border: 1px solid #BBBBBB;
 	border-radius: 3px;
-	/*box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.2) ;*/
-	/*box-shadow: -1px -4px 8px rgba(255, 255, 255, 0.6) inset, 1px 3px 5px black inset;*/
-	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px black inset;
+	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;
 }
-
 
 #toolbar .online-version span span {
 	padding: 0 0 0 40px;
 	background-color: #CCCCCC;
 	border: 1px solid #BBBBBB;
-    /*box-shadow: inset 3px 4px 0 rgba(255, 255, 255, 0.3), 0 0 2px 1px rgba(0, 0, 0, 0.3) ;*/
-    /*box-shadow: 1px 4px 8px white inset, -1px -4px 8px black inset;*/
-    box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
+	box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
 }
 
 #toolbar .online-version:hover span span {
-
 	background-color: #DDDDDD;
 }
-
 
 #toolbar .preview-version span {
 	padding: 0px 0px 0px 3px;
@@ -55,8 +47,8 @@
 	background-color: rgb(89, 119, 189);
 	border: 1px solid #BBBBBB;
 	border-radius: 3px;
-	/*box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.2) ;*/	
-	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px black inset;
+	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;
 }
 
 #toolbar .preview-version span span {
@@ -64,53 +56,40 @@
 	background-color: #CCCCCC;
 	border: 1px solid #BBBBBB;
 	border-radius: 3px;
-    /*box-shadow: inset 3px 4px 0 rgba(255, 255, 255, 0.3), 0 0 2px 1px rgba(0, 0, 0, 0.3) ;*/
-    box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
-
+	box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
 }
 
 #toolbar .preview-version:hover span span {
-
 	background-color: #DDDDDD;
 }
-
-
-
-
 
 toggle-test {
 	display: inline-block;
 }
 
 .toggle-test .text {
-    background-color: green;
-    border: 1px solid grey;
-    border-radius: 10px 10px 10px 10px;
-    box-shadow: -1px -4px 8px rgba(255, 255, 255, 0.6) inset, 1px 3px 5px black inset;
-    color: white;
-    display: inline-block;
-    line-height: 50px;
-    padding: 0 15px 0 90px;
+	background-color: green;
+	border: 1px solid grey;
+	border-radius: 10px 10px 10px 10px;
+	box-shadow: -1px -4px 8px rgba(255, 255, 255, 0.6) inset, 1px 3px 5px
+		black inset;
+	color: white;
+	display: inline-block;
+	line-height: 50px;
+	padding: 0 15px 0 90px;
 }
 
 .toggle-test .button {
 	background-color: gray;
-    border: 1px solid gray;
-    border-radius: 10px 10px 10px 10px;
-    box-shadow: 1px 4px 8px white inset, -1px -4px 8px black inset;
-    display: inline-block;
-    height: 56px;
-    margin: -3px;
-    position: absolute;
-    width: 75px;
+	border: 1px solid gray;
+	border-radius: 10px 10px 10px 10px;
+	box-shadow: 1px 4px 8px white inset, -1px -4px 8px black inset;
+	display: inline-block;
+	height: 56px;
+	margin: -3px;
+	position: absolute;
+	width: 75px;
 }
-
-
-
-
-
-
-
 
 /* ============= Mode Edition CMS ===================== */
 .regionPreview {
@@ -121,95 +100,61 @@ toggle-test {
 	width: 80%;
 }
 
-.regionPreview .add {
-	background: transparent url(../images/icone_creation2.gif) center left
-		no-repeat;
-	padding-left: 16px;
-	color: #555555;
-}
 
-/*
-.regionPreview:hover {
-	border : 2px lightgreen solid;
-	display: block;
-}
-
-.regionPreview .previewOverlay {
-	display: none;
-}
-
-
-
-.regionPreview:hover  > div.previewOverlay {
-	position: absolute;
-	left: inherit; 
-	top: inherit;
-	display: block;
-
-	z-index: 100;	
-	background-image: url(../images/bleu_transparent.gif);
-	background-repeat: repeat;
-}
-*/
 .fragmentPreview {
 	border: 2px #555555 dashed;
 	padding: 2px;
 }
 
-/*
-.fragmentPreview .previewOverlay {
-	display: none;
-}
-*/
 .fragmentPreview:hover {
-	border: 2px blue solid;
-	/*display: block;*/
+	border-color: white;
+	-moz-box-shadow: 0 0 12px #5977BD;
+	-webkit-box-shadow: 0 0 12px #5977BD;
+	-o-box-shadow: 0 0 12px #5977BD;
+	box-shadow: 0 0 12px #5977BD;
 }
-/*
-.fragmentPreview:hover  > div.previewOverlay {
-	position: absolute;
-	left: inherit; 
-	top: inherit;
-	
-	width: 100%;
-	height: 100%;
-	
-	display: block;
 
-	z-index: 100;	
-	background-image: url(../images/bleu_transparent.gif);
-	background-repeat: repeat;
+
+.cms-region-commands {
+	margin-top: 15px;
 }
-*/
-.fragmentPreview .add {
-	background-color: lightgrey;
+
+.cms-commands {
+	display: inline-block;
+	border-style: solid;
+	border-width: 1px 8px;
+	border-color: rgba(125, 119, 96, 0.2);
+	margin-bottom: 15px;
+}
+
+.cms-commands .cmd { 
+	display: inline-block;
+	padding: 5px 20px;
 	min-height: 1em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	background: transparent url(../images/icone_creation2.gif) center left
+	color: #555555;
+	background-color: #FCFCFC;
+	border: 1px solid rgba(125, 119, 96, 0.2);
+}
+
+.cms-commands .cmd:hover {
+	background-color: #FFFFFF;
+}
+
+.cms-commands .add {
+	background: #FCFCFC url(../images/icone_plus2.gif) center left
 		no-repeat;
-	padding-left: 16px;
-	color: #555555;
+	
 }
 
-.fragmentPreview .edit {
-	background-color: lightgrey;
-	min-height: 1em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	background: transparent url(../images/icone_edition2.gif) center left
+.cms-commands .edit {
+	background: #FCFCFC url(../images/icone_edition.gif) center left
 		no-repeat;
-	padding-left: 16px;
-	color: #555555;
+	background-size: 16px 16px;
 }
 
-.fragmentPreview .delete {
-	background-color: lightgrey;
-	min-height: 1em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	background: transparent url(../images/icone_suppression2.gif) center
-		left no-repeat;
-	padding-left: 16px;
-	color: #555555;
+.cms-commands .delete {
+	background: #FCFCFC url(../images/icone_suppression.gif) center left
+		no-repeat;
+	background-size: 16px 16px;
 }
+

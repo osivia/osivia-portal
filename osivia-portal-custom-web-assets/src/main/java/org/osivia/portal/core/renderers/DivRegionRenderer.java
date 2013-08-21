@@ -97,9 +97,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         if (showCmsTools(rendererContext, rrc)) {
 
 
-            markup.print("<div class=\"regionPreview\">");
+            markup.print("<div class=\"cms-commands\">");
 
-            markup.print("<a class=\"fancyframe_refresh add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
+            markup.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
                     + "'\" href=\"" + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
