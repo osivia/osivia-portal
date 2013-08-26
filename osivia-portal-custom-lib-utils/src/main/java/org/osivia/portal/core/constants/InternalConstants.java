@@ -3,8 +3,14 @@ package org.osivia.portal.core.constants;
 
 public final class InternalConstants {
 
+    /** JBoss administration portal name. */
+    public static final String JBOSS_ADMINISTRATION_PORTAL_NAME = "admin";
+
     /** Admin action name. */
     public static final String ACTION_ADMIN = "admin";
+
+    /** Tab order property name. */
+    public static final String TAB_ORDER_PROPERTY_NAME = "order";
 
     /** Window title property name. */
     public static final String PROP_WINDOW_TITLE = "osivia.title";
@@ -56,8 +62,8 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_COMMAND_URL = "osivia.toolbarSettings.commandURL";
     /** Current page. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE = "osivia.toolbarSettings.page";
-    /** Default page indicator. */
-    public static final String ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE = "osivia.toolbarSettings.defaultPage";
+    /** CMS templated indicator. */
+    public static final String ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED = "osivia.toolbarSettings.cmsTemplated";
     /** Draft page indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
     /** Layouts list. */

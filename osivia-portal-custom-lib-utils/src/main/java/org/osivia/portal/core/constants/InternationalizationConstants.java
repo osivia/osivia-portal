@@ -43,32 +43,33 @@ public final class InternationalizationConstants {
     public static final String KEY_JBOSS_ADMINISTRATION = "SUBMENU_JBOSS_ADMINISTRATION";
     /** Bundle resource key for pages list. */
     public static final String KEY_PAGES_LIST = "SUBMENU_PAGES_LIST";
-    /** Bundle resource key for template edition menu title. */
-    public static final String KEY_TEMPLATE_EDITION_MENU_TITLE = "MENU_TEMPLATE_EDITION";
-    /** Bundle resource key for page edition menu title. */
-    public static final String KEY_PAGE_EDITION_MENU_TITLE = "MENU_PAGE_EDITION";
-    /** Bundle resource key for icons display. */
-    public static final String KEY_ICONS_DISPLAY = "SUBMENU_ICONS_DISPLAY";
     /** Bundle resource key for page creation. */
     public static final String KEY_PAGE_CREATION = "SUBMENU_PAGE_CREATION";
     /** Bundle resource key for template creation. */
     public static final String KEY_TEMPLATE_CREATION = "SUBMENU_TEMPLATE_CREATION";
     /** Bundle resource key for page template access. */
     public static final String KEY_PAGE_TEMPLATE_ACCESS = "SUBMENU_PAGE_TEMPLATE_ACCESS";
-    /** Bundle resource key for portal page access. */
-    public static final String KEY_PORTAL_PAGE_ACCESS = "SUBMENU_PORTAL_PAGE_ACCESS";
-    /** Bundle resource key for page suppression. */
-    public static final String KEY_PAGE_SUPPRESSION = "SUBMENU_PAGE_SUPPRESSION";
-    /** Bundle resource key for page location. */
-    public static final String KEY_PAGE_LOCATION = "SUBMENU_PAGE_LOCATION";
-    /** Bundle resource key for page properties. */
-    public static final String KEY_PAGE_PROPERTIES = "SUBMENU_PAGE_PROPERTIES";
-    /** Bundle resource key for page CMS. */
-    public static final String KEY_PAGE_CMS = "SUBMENU_PAGE_CMS";
-    /** Bundle resource key for page rights. */
-    public static final String KEY_PAGE_RIGHTS = "SUBMENU_PAGE_RIGHTS";
     /** Bundle resource key for caches initialization. */
     public static final String KEY_CACHES_INITIALIZATION = "SUBMENU_CACHES_INITIALIZATION";
+    /** Bundle resource key for template edition menu title. */
+    public static final String KEY_TEMPLATE_EDITION_MENU_TITLE = "MENU_TEMPLATE_EDITION";
+    /** Bundle resource key for page edition menu title. */
+    public static final String KEY_PAGE_EDITION_MENU_TITLE = "MENU_PAGE_EDITION";
+    /** Bundle resource key for space edition menu title. */
+    public static final String KEY_SPACE_EDITION_MENU_TITLE = "MENU_SPACE_EDITION";
+    /** Bundle resource key for icons display. */
+    public static final String KEY_ICONS_DISPLAY = "SUBMENU_ICONS_DISPLAY";
+    /** Bundle resource key for suppression. */
+    public static final String KEY_SUPPRESSION = "SUBMENU_SUPPRESSION";
+    /** Bundle resource key for location. */
+    public static final String KEY_LOCATION = "SUBMENU_LOCATION";
+    /** Bundle resource key for properties. */
+    public static final String KEY_PROPERTIES = "SUBMENU_PROPERTIES";
+    /** Bundle resource key for page CMS configuration. */
+    public static final String KEY_CMS_CONFIGURATION = "SUBMENU_CMS_CONFIGURATION";
+    /** Bundle resource key for rights. */
+    public static final String KEY_RIGHTS = "SUBMENU_RIGHTS";
+
 
     // CMS properties
     /** Bundle resource key for CMS edition */
@@ -80,11 +81,7 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";
     /** Bundle resource key for CMS edition */
-    // public static final String KEY_CMS_DISPLAY_ONLINE_VERSION = "SUBMENU_CMS_DISPLAY_ONLINE_VERSION";
-    /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_EDITION_MODE = "SUBMENU_CMS_DISPLAY_EDITION_MODE";
-    /** Bundle resource key for CMS edition */
-    // public static final String KEY_CMS_HIDE_EDITION_MODE = "SUBMENU_CMS_HIDE_EDITION_MODE";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_CREATE = "SUBMENU_CMS_PAGE_CREATE";
     /** Bundle resource key for CMS edition */

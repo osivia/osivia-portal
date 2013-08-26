@@ -35,8 +35,8 @@ ControllerContext context = (ControllerContext) request.getAttribute(InternalCon
 String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
 // Current page
 Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
-// Default page
-Boolean defaultPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DEFAULT_PAGE);
+// CMS templated
+Boolean cmsTemplated = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
 // Draft page
 Boolean draftPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
 // Layout list
@@ -67,13 +67,17 @@ String cmsRecontextualizationSupport = (String) request.getAttribute(InternalCon
 String cmsBasePath = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
 
 
+// CMS templated disabled configurations
+String disabledCMSTemplated = StringUtils.EMPTY;
+if (BooleanUtils.isTrue(cmsTemplated)) {
+    disabledCMSTemplated = "disabled";
+}
 
 // Draft page checkbox value
 String checkDraft = StringUtils.EMPTY;
 if (BooleanUtils.isTrue(draftPage)) {
-    checkDraft = "checked=\"checked\"";
+    checkDraft = "checked";
 }
-
 
 
 // Locales
@@ -252,7 +256,7 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> class="small-input" />                        
+                        <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> <%=disabledCMSTemplated %> class="small-input" />                        
                     </div>
                 </div>
                 
@@ -260,7 +264,7 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <select name="newLayout">
+                        <select name="newLayout" <%=disabledCMSTemplated %>>
                             <%
                             if (CollectionUtils.isNotEmpty(layoutsList)) {
                                 if (StringUtils.isEmpty(currentLayout)) {
@@ -295,7 +299,7 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_THEME", locale) %></div>
                     <div class="fancybox-table-cell">
-                        <select name="newTheme">
+                        <select name="newTheme" <%=disabledCMSTemplated %>>
                             <%
                             if (CollectionUtils.isNotEmpty(themesList)) {
                                 if (StringUtils.isEmpty(currentTheme)) {
@@ -325,8 +329,19 @@ var currentPageId = '<%=currentPageId %>';
                         </select>                        
                     </div>
                 </div>
-            
+  
             </div>
+            
+            <!-- CMS templated message -->
+            <%
+            if (BooleanUtils.isTrue(cmsTemplated)) {
+                %>
+                <div class="fancybox-center-content">
+                    <p><%=is.getString("PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED", locale) %></p>
+                </div>
+                <%
+            }
+            %>
             
             <div class="fancybox-center-content">
                 <input type="submit" value='<%=is.getString("CHANGE", locale) %>' />
@@ -357,7 +372,7 @@ var currentPageId = '<%=currentPageId %>';
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell">
                         <div id="jstreePageOrder" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePageOrder") %>
+                            <%=formatter.formatHTMLTreePortalObjectsMove(currentPage, context, "jstreePageOrder") %>
                         </div>
                     </div>
                 </div>

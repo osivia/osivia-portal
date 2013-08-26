@@ -6,23 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.impl.model.portal.WindowImpl;
-import org.jboss.portal.core.impl.portlet.state.LocalPortletInvoker;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
-import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 
 
@@ -52,8 +48,8 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 		this.container = container;
 		this.dynamicContainer = dynamicContainer;
 
-		containerContext = template.getObjectNode().getContext();
-		setObjectNode(template.getObjectNode());
+		this.containerContext = template.getObjectNode().getContext();
+		this.setObjectNode(template.getObjectNode());
 
 		this.template = (PageImpl) template;
 
@@ -67,53 +63,55 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 	}
 
 	public PortalObject getParent() {
-		if (parent == null) {
-			parent = container.getObject(parentId);
+		if (this.parent == null) {
+			this.parent = this.container.getObject(this.parentId);
 		}
-		return parent;
+		return this.parent;
 	}
 
 	DynamicWindow createSessionWindow(DynamicWindowBean dynamicWindowBean) {
-		return new DynamicTemplateWindow(this, dynamicWindowBean.getName(), containerContext, dynamicContainer,
+		return new DynamicTemplateWindow(this, dynamicWindowBean.getName(), this.containerContext, this.dynamicContainer,
 				dynamicWindowBean.getUri(), dynamicWindowBean.getProperties(), dynamicWindowBean);
 	}
 
 	private List<Window> getWindows() {
 
-		if (windows == null) {
-			windows = new ArrayList<Window>();
-			if (template != null) {
-				Collection childs = template.getChildren(PortalObject.WINDOW_MASK);
+		if (this.windows == null) {
+			this.windows = new ArrayList<Window>();
+			if (this.template != null) {
+				Collection childs = this.template.getChildren(PortalObject.WINDOW_MASK);
 
 				for (Object child : childs) {
-					if (child instanceof WindowImpl)
-						windows.add(new DynamicTemplateWindow(this, (WindowImpl) child, ((WindowImpl) child).getName(),
-								containerContext, dynamicContainer));
+					if (child instanceof WindowImpl) {
+                        this.windows.add(new DynamicTemplateWindow(this, (WindowImpl) child, ((WindowImpl) child).getName(),
+								this.containerContext, this.dynamicContainer));
+                    }
 
 				}
 
 				// ajout fenetre dynamiques
-				windows.addAll(getDynamicWindows().values());
+				this.windows.addAll(this.getDynamicWindows().values());
 			}
 
-			return windows;
+			return this.windows;
 		}
 
-		return windows;
+		return this.windows;
 	}
 
 	@Override
 	public Collection getChildren() {
 
-		if (children == null) {
+		if (this.children == null) {
 
-			children = new ArrayList<PortalObject>();
+			this.children = new ArrayList<PortalObject>();
 
-			for (Object po : template.getChildren()) {
+			for (Object po : this.template.getChildren()) {
 
-				if (po instanceof WindowImpl)
-					children.add(new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(),
-							containerContext, dynamicContainer));
+				if (po instanceof WindowImpl) {
+                    this.children.add(new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(),
+							this.containerContext, this.dynamicContainer));
+                }
 
 				// TODO : childs
 				/*
@@ -123,48 +121,50 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 				 * pageBean)); }
 				 */
 
-				children.addAll(getDynamicWindows().values());
+				this.children.addAll(this.getDynamicWindows().values());
 			}
 
 			// Indispensable ???
-			if (getDeclaredProperty("osivia.cms.layoutRules") != null)
-				children.add(CMSTemplatePage.createPage(container, parentId, template, dynamicContainer));
+			if (this.getDeclaredProperty("osivia.cms.layoutRules") != null) {
+                this.children.add(CMSTemplatePage.createPage(this.container, this.parentId, this.template, this.dynamicContainer));
+            }
 		}
 
-		return children;
+		return this.children;
 	}
 
 	@Override
 	public Collection getChildren(int wantedMask) {
 
-		if (wantedMask != PortalObject.WINDOW_MASK)
-			return template.getChildren(wantedMask);
-		else {
+		if (wantedMask != PortalObject.WINDOW_MASK) {
+            return this.template.getChildren(wantedMask);
+        } else {
 
-			List<Window> windows = getWindows();
+			List<Window> windows = this.getWindows();
 
 			/*
 			 * for( Window window : windows) { logger.debug("cms.uri" +
 			 * window.getProperties().get("osivia.cms.uri")); }
 			 */
 
-			return getWindows();
+			return this.getWindows();
 
 		}
 	}
 
 	@Override
 	public PortalObject getChild(String name) {
-		Window child = getDynamicWindows().get(name);
+		Window child = this.getDynamicWindows().get(name);
 
-		if (child != null)
-			return child;
-		else {
-			PortalObject po = template.getChild(name);
+		if (child != null) {
+            return child;
+        } else {
+			PortalObject po = this.template.getChild(name);
 
-			if (po instanceof WindowImpl)
-				return new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(), containerContext,
-						dynamicContainer);
+			if (po instanceof WindowImpl) {
+                return new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(), this.containerContext,
+						this.dynamicContainer);
+            }
 
 			// TODO : template childs
 
@@ -174,9 +174,10 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 			 * dynamicContainer, pageBean);
 			 */
 
-			if (CMSTemplatePage.PAGE_NAME.equals(name))
-				return container
-						.getObject(new PortalObjectId("", getId().getPath().getChild(CMSTemplatePage.PAGE_NAME)));
+			if (CMSTemplatePage.PAGE_NAME.equals(name)) {
+                return this.container
+						.getObject(new PortalObjectId("", this.getId().getPath().getChild(CMSTemplatePage.PAGE_NAME)));
+            }
 
 			return null;
 		}
@@ -184,27 +185,27 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 	@Override
 	public boolean equals(Object arg0) {
-		return template.equals(arg0);
+		return this.template.equals(arg0);
 	}
 
 	@Override
 	public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
-		return template.getDisplayName();
+		return this.template.getDisplayName();
 	}
 
 	@Override
 	public Map getDisplayNames() {
-		return template.getDisplayNames();
+		return this.template.getDisplayNames();
 	}
 
 	@Override
 	public PortalObjectId getId() {
-		return id;
+		return this.id;
 	}
 
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	// TODO : pas forcement necessaire de précharger toutes les propriétés
@@ -215,25 +216,25 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 	@Override
 	public Map getProperties() {
 
-		if (properties == null) {
+		if (this.properties == null) {
 			// Les données de la page sont paratagées entre les threads
 
 			Map<String, String> sharedProperties = PageProperties.getProperties().getPagePropertiesMap();
 			
-			String pageId = getId().toString();
+			String pageId = this.getId().toString();
 			
 			String fetchedProperties = sharedProperties.get("osivia.fetchedPortalProperties");
 
 			if ( ! pageId.equals(fetchedProperties)) {
 
-				properties = new HashMap<String, String>();
+				this.properties = new HashMap<String, String>();
 
 				// Propriétés du template
 
-				Map templateProperties = template.getProperties();
+				Map templateProperties = this.template.getProperties();
 				if (templateProperties != null) {
 					for (Object key : templateProperties.keySet()) {
-						properties.put((String) key, (String) templateProperties.get(key));
+						this.properties.put((String) key, (String) templateProperties.get(key));
 					}
 				}
 				
@@ -241,53 +242,54 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 				// Le template est surchargé par les propriétés de la page parent
 
-				Map inheritedProperties = getParent().getProperties();
+				Map inheritedProperties = this.getParent().getProperties();
 				if (inheritedProperties != null) {
 					for (Object key : inheritedProperties.keySet()) {
-						if (!ThemeConstants.PORTAL_PROP_LAYOUT.equals(key) && !ThemeConstants.PORTAL_PROP_THEME.equals(key))
-							properties.put((String) key, (String) inheritedProperties.get(key));
-						else	{
+						if (!ThemeConstants.PORTAL_PROP_LAYOUT.equals(key) && !ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
+                            this.properties.put((String) key, (String) inheritedProperties.get(key));
+                        } else	{
 							if( ThemeConstants.PORTAL_PROP_THEME.equals(key))	{
 								// Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
-								if( template.getDeclaredProperty( (String) key) == null)
-									properties.put((String) key, (String) inheritedProperties.get(key));
+								if( this.template.getDeclaredProperty( (String) key) == null) {
+                                    this.properties.put((String) key, (String) inheritedProperties.get(key));
+                                }
 							}
 						}
 					}
 				}
 				
 				// Propriétés locales
-				for (Object key : localProperties.keySet()) {
-					properties.put((String) key, (String) localProperties.get(key));
+				for (Object key : this.localProperties.keySet()) {
+					this.properties.put((String) key, this.localProperties.get(key));
 				}
 			
 
-				properties.put("osivia.fetchedPortalProperties", pageId);
+				this.properties.put("osivia.fetchedPortalProperties", pageId);
 				
 				sharedProperties= new HashMap<String, String>();
-				sharedProperties.putAll(properties);
+				sharedProperties.putAll(this.properties);
 
 			} else   {
 			    // JSS 20130703-001
 			    // corrige le bug de mélange de propriétés entre les pages
-				properties = new HashMap<String, String>();
-				properties.putAll(sharedProperties);
+				this.properties = new HashMap<String, String>();
+				this.properties.putAll(sharedProperties);
 
 			}
 
 		}
 
-		return properties;
+		return this.properties;
 	}
 
 	public String getProperty(String name) {
 
-		return (String) (getProperties().get(name));
+		return (String) (this.getProperties().get(name));
 	}
 
 	@Override
 	public ObjectNode getObjectNode() {
-		return template.getObjectNode();
+		return this.template.getObjectNode();
 	}
 
 	@Override
@@ -296,7 +298,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 		 * if( ThemeConstants.PORTAL_PROP_REGION.equals(name) ||
 		 * ThemeConstants.PORTAL_PROP_ORDER.equals(name) )
 		 */
-		localProperties.put(name, value);
+		this.localProperties.put(name, value);
 		/*
 		 * else super.setDeclaredProperty(name, value);
 		 */
@@ -312,23 +314,25 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
 		String value = null;
 
-		value = localProperties.get(name);
+		value = this.localProperties.get(name);
 		
 		if (value == null)	{
-			if( getTemplateDeclaredPropertyByDefault( name))
-				return template.getDeclaredProperty(name);
-			else return null;
-		}
-		else
-			return value;
+			if( this.getTemplateDeclaredPropertyByDefault( name)) {
+                return this.template.getDeclaredProperty(name);
+            } else {
+                return null;
+            }
+		} else {
+            return value;
+        }
 	}
 
 	public String toString() {
-		return getId().toString();
+		return this.getId().toString();
 	}
 
 	public PortalObject getTemplate() {
-		return template;
+		return this.template;
 	}
 
 	public Page getEditablePage() {

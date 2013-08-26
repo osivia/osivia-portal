@@ -1,0 +1,61 @@
+/** Toolbar minimum style */
+
+.toolbar-menu {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.toolbar-menu a, .toolbar-menu p {
+	margin: 0;
+	padding: 0 5px;
+}
+
+.toolbar-menu ul {
+    position: absolute;
+    visibility: hidden;
+    border: 1px solid black;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+.toolbar-menu:HOVER ul, .toolbar-menu a:HOVER ul {
+    visibility: visible;
+}
+
+.toolbar-menu ul li {
+    display: block;
+}
+
+.toolbar-menu ul a, .toolbar-menu ul p {
+    display: block;
+    text-align: left;
+}
+
+.toolbar-menu ul a:HOVER {
+    text-decoration: none;
+}
+
+.toolbar-menu ul a.uncheck {
+    background-image: url('../images/toolbar/checkbox-uncheck.png');
+    background-repeat: no-repeat;
+    background-position: 5px 0;
+    padding-left: 25px;
+}
+
+.toolbar-menu ul a.check {
+    background-image: url('../images/toolbar/checkbox-check.png');
+    background-repeat: no-repeat;
+    background-position: 5px 0;
+    padding-left: 25px;
+}
+
+.toolbar-menu hr {
+    visibility: inherit;
+    background-color: black;
+    border: none;
+    height: 1px;
+    margin: 2px;
+}

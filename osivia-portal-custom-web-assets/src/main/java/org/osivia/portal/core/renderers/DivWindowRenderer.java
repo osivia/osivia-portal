@@ -59,7 +59,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             IInternationalizationService.MBEAN_NAME);
 
     /** Windows settings commands class. */
-    private static final String CLASS_COMMANDS = "commands";
+    private static final String CLASS_WINDOWS_COMMANDS = "osivia-portal-windows-commands";
+    /** Spacer commands class. */
+    private static final String CLASS_SPACER = "osivia-portal-spacer";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** Fancybox class, required for link. */
@@ -69,17 +71,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     /** Down move command link image source. */
     private static final String DOWN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_down.png";
     /** Previous region move command link image source. */
-    private static final String PREVIOUS_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_left.png";
+    private static final String PREVIOUS_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_previous.png";
     /** Next region move command link image source. */
-    private static final String NEXT_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_right.png";
+    private static final String NEXT_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_next.png";
     /** Display window settings command link image source. */
-    private static final String DISPLAY_SETTINGS_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/application_edit.png";
+    private static final String DISPLAY_SETTINGS_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_config_window.png";
     /** Display portlet administration command link image source. */
-    private static final String DISPLAY_ADMIN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/application_form.png";
+    private static final String DISPLAY_ADMIN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_parameters.png";
     /** Delete portlet command link image source. */
-    private static final String DELETE_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/cross.png";
-    /** Shading image source. */
-    private static final String SHADING_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/shading.png";
+    private static final String DELETE_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_delete_window.png";
 
 
     /**
@@ -278,7 +278,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
             // Commands container
             Element div = new DOMElement(QName.get(HTMLConstants.DIV));
-            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_COMMANDS);
+            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_WINDOWS_COMMANDS);
 
             // Up move command
             String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
@@ -290,6 +290,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             Element downLink = this.generatePortletCommandLink(downUrl, null, DOWN_LINK_IMAGE_SOURCE, null, null);
             div.add(downLink);
 
+            // Spacer
+            Element spacer = new DOMElement(QName.get(HTMLConstants.DIV));
+            spacer.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+            spacer.setText(HTMLConstants.TEXT_DEFAULT);
+            div.add(spacer);
+
             // Previous region move command
             String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
             Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, PREVIOUS_REGION_LINK_IMAGE_SOURCE, null, null);
@@ -300,10 +306,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, NEXT_REGION_LINK_IMAGE_SOURCE, null, null);
             div.add(nextRegionLink);
 
-            // Shading
-            Element imgShading = new DOMElement(QName.get(HTMLConstants.IMG));
-            imgShading.addAttribute(QName.get(HTMLConstants.SRC), SHADING_IMAGE_SOURCE);
-            div.add(imgShading);
+            // Spacer (can't reuse previous spacer node)
+            Element spacer2 = new DOMElement(QName.get(HTMLConstants.DIV));
+            spacer2.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+            spacer2.setText(HTMLConstants.TEXT_DEFAULT);
+            div.add(spacer2);
 
             // Window settings display command
             String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
@@ -330,10 +337,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 }
             }
 
-            // Shading (can't reuse first shading node)
-            Element imgShading2 = new DOMElement(QName.get(HTMLConstants.IMG));
-            imgShading2.addAttribute(QName.get(HTMLConstants.SRC), SHADING_IMAGE_SOURCE);
-            div.add(imgShading2);
+            // Spacer (can't reuse previous spacer node)
+            Element spacer3 = new DOMElement(QName.get(HTMLConstants.DIV));
+            spacer3.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+            spacer3.setText(HTMLConstants.TEXT_DEFAULT);
+            div.add(spacer3);
 
             // Delete portlet command
             String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
@@ -342,6 +350,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
             // Print
             HTMLWriter htmlWriter = new HTMLWriter(writer);
+            htmlWriter.setEscapeText(false);
             try {
                 htmlWriter.write(div);
             } catch (IOException e) {
@@ -356,18 +365,19 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param href link URL
      * @param onclick onclick action, may be null
      * @param imageSource image source
-     * @param fancybox true if the link must open a fancybox
+     * @param htmlClass HTML class, may be null
+     * @param title title, may be null
      * @return HTML "a" node
      */
-    private Element generatePortletCommandLink(String href, String onclick, String imageSource, String fancyboxClass, String title) {
+    private Element generatePortletCommandLink(String href, String onclick, String imageSource, String htmlClass, String title) {
         // HTML "a" node
         DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
         a.addAttribute(QName.get(HTMLConstants.HREF), href);
         if (onclick != null) {
             a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
         }
-        if (StringUtils.isNotEmpty(fancyboxClass)) {
-            a.addAttribute(QName.get(HTMLConstants.CLASS), fancyboxClass);
+        if (StringUtils.isNotEmpty(htmlClass)) {
+            a.addAttribute(QName.get(HTMLConstants.CLASS), htmlClass);
         }
         if (StringUtils.isNotEmpty(title)) {
             a.addAttribute(QName.get(HTMLConstants.TITLE), title);

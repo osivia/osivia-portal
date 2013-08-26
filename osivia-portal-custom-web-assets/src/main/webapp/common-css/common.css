@@ -1,7 +1,27 @@
 
+/* Commons */
+
+.osivia-portal-table {
+    display: table;
+}
+
+.osivia-portal-row {
+	display: table-row;
+}
+
+.osivia-portal-cell {
+    display: table-cell;
+}
+
+.osivia-portal-spacer {
+	display: inline-block;
+	width: 10px;
+}
+
+
 /* Regions and windows commands */
 
-.commands {
+.osivia-portal-regions-commands, .osivia-portal-windows-commands {
 	display: inline-block;
 	border-style: solid;
 	border-width: 1px;
@@ -11,77 +31,74 @@
     padding: 5px 10px 2px;
 }
 
+.osivia-portal-windows-commands {
+	border-left-width: 8px;
+	border-right-width: 8px;
+}
 
-/** Toolbar minimum style */
+.osivia-portal-regions-commands img {
+	height: 24px;
+	width: 24px;
+}
 
-.toolbar-menu a {
+.osivia-portal-windows-commands img {
+	height: 24px;
+	width: 24px;
+}
+
+.osivia-portal-windows-commands > div {
+	display: inline-block;
+}
+
+
+/* Menubar */
+
+.portlet-menuitem {
     display: inline-block;
+    margin: 5px 20px 10px 0;    
+}
+
+a.portlet-menuitem {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(125, 119, 96);
+    border-color: rgba(125, 119, 96, 0.2);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-color: #FCFCFC;
     line-height: 24px;
-    padding: 0 15px;
-    text-align: center;
+    padding: 2px 5px 2px 33px;
 }
 
-.toolbar-menu a:HOVER {
-    text-decoration: none;
-}
-
-.toolbar-menu {
-    display: inline-block;
-}
-
-.toolbar-menu a.toolbar-menu-title {
-    display: inline-block;
-    padding-right: 30px;
-    background-image: url('../images/fleche-menu.png');
-    background-repeat: no-repeat;
-    background-position: right -4px;
-}
-
-.toolbar-menu ul {
-    position: absolute;
-    margin: 0;
-    padding: 0;
+a.portlet-menuitem:HOVER {
     background-color: #FFFFFF;
-    visibility: hidden;
-    z-index: 3;
 }
 
-.toolbar-menu:HOVER ul, .toolbar-menu a:HOVER ul {
-    visibility: visible;
+a.portlet-menuitem.published {
+    background-image: url('../images/icons/icon_published_version.png');
+    background-size: 24px;
 }
 
-.toolbar-menu ul li {
-    display: block;
+a.portlet-menuitem.publish-action {
+    background-image: url('../images/icons/icon_publish.png');
+    background-size: 24px;
 }
 
-.toolbar-menu ul a, .toolbar-menu ul p {
-    display: block;
-    font-size: 10px;
-    line-height: 22px;
-    text-align: left;
+a.portlet-menuitem.live {
+    background-image: url('../images/icons/icon_live_version.png');
+    background-size: 24px;
 }
 
-.toolbar-menu ul a:HOVER {
-    text-decoration: none;
+a.portlet-menuitem.edition {
+    background-image: url('../images/icons/icon_edition.png');
+    background-size: 24px;
 }
 
-.toolbar-menu ul a.uncheck {
-    padding-left: 35px;
-    background-image: url('../images/checkbox-uncheck.png');
-    background-repeat: no-repeat;
-    background-position: 15px 0;
+a.portlet-menuitem.nuxeo {
+    background-image: url('../images/icons/icon_nuxeo.png');
+    background-size: 24px;
 }
 
-.toolbar-menu ul a.check {
-    padding-left: 35px;
-    background-image: url('../images/checkbox-check.png');
-    background-repeat: no-repeat;
-    background-position: 15px 0;
-}
-
-.toolbar-menu hr {
-    visibility:	inherit;
-}
 
 
 /* Fancybox */
@@ -94,6 +111,7 @@
     display: table;
     border-collapse: separate;
     border-spacing: 5px 3px;
+    width: 100%;
 }
 
 .fancybox-table-header {
@@ -114,6 +132,10 @@ form.fancybox-form {
     display: table-cell;
     margin: 2px;
     vertical-align: middle;
+}
+
+.fancybox-table-cell p {
+	margin: 0;
 }
 
 .fancybox-table-header .fancybox-table-cell {

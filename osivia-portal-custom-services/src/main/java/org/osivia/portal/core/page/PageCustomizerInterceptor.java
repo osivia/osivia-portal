@@ -92,6 +92,7 @@ import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.profils.IProfilManager;
 
 
@@ -513,8 +514,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
             // Force la valorisation dans le contexte
-            isAdministrator(controllerCtx);
+            boolean isAdmin = isAdministrator(controllerCtx);
 
+            // Check wizard mode
+            String mode = (String) controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+            if ((mode == null) && (isAdmin)) {
+                // Default : active
+                mode = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE;
+                controllerCtx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE, mode);
+            }
         }
 
 
@@ -1286,7 +1294,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         List<UserPage> mainPages = new ArrayList<UserPage>(10);
         siteMap.setUserPages(mainPages);
 
-        SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+        SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
             sortedPages.add((Page) po);
         }

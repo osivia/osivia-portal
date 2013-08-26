@@ -25,7 +25,6 @@ import org.osivia.portal.core.constants.InternalConstants;
  */
 public class PortalObjectUtils {
 
-
     /**
      * Default constructor.
      * PortalObjectUtils instances should NOT be constructed in standard programming.
@@ -34,6 +33,7 @@ public class PortalObjectUtils {
     public PortalObjectUtils() {
         super();
     }
+
 
     /**
      * Check if object "po1" is an ancestor of object "po2".
@@ -56,6 +56,7 @@ public class PortalObjectUtils {
             return isAncestor(po1, parent);
         }
     }
+
 
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
@@ -107,6 +108,7 @@ public class PortalObjectUtils {
         return po.getName();
     }
 
+
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
      *
@@ -127,6 +129,23 @@ public class PortalObjectUtils {
         Locale[] array = collection.toArray(new Locale[collection.size()]);
 
         return getDisplayName(po, array);
+    }
+
+
+    /**
+     * Return the display name of object "po", in the specified locale, otherwise the technical name.
+     *
+     * @param po portal object, may be null
+     * @param locale locale, may be null
+     * @return the display name
+     */
+    public static final String getDisplayName(PortalObject po, Locale locale) {
+        Locale[] locales = null;
+        if (locale != null) {
+            locales = new Locale[]{locale};
+        }
+
+        return getDisplayName(po, locales);
     }
 
 

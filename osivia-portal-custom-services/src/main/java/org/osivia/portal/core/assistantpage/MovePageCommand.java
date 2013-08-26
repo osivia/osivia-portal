@@ -19,7 +19,7 @@ import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.page.PageUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 
@@ -117,7 +117,7 @@ public class MovePageCommand extends AssistantCommand {
         }
 
         // Pages order access
-        SortedSet<Page> pages = new TreeSet<Page>(PageUtils.orderComparator);
+        SortedSet<Page> pages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         Collection<PortalObject> siblings = parentDestination.getChildren(PortalObject.PAGE_MASK);
         for (PortalObject sibling : siblings) {
             Page siblingPage = (Page) sibling;
@@ -131,12 +131,12 @@ public class MovePageCommand extends AssistantCommand {
         int orderValue = 1;
         for (Page reorderedPage : sortedPages) {
             if (reorderedPage.equals(destinationPage)) {
-                page.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+                page.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
             }
-            reorderedPage.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+            reorderedPage.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
         }
         if (destinationPage == null) {
-            page.setDeclaredProperty(PageUtils.TAB_ORDER, String.valueOf(orderValue++));
+            page.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
         }
 
         // Impact sur les caches du bandeau

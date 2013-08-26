@@ -11,7 +11,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 
 
@@ -71,7 +70,7 @@ public class DynamicTemplatePage extends TemplatePage implements ITemplatePortal
 		//localProperties = new HashMap<String, String>();
 		this.localProperties.putAll(pageBean.getPageProperties());
 
-		this.localProperties.put(PageUtils.TAB_ORDER, "" + pageBean.getOrder());
+        this.localProperties.put(InternalConstants.TAB_ORDER_PROPERTY_NAME, "" + pageBean.getOrder());
         this.localProperties.put(InternalConstants.PAGE_PROP_NAME_DYNAMIC, InternalConstants.PROP_VALUE_ON);
 
 

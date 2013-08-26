@@ -2,20 +2,14 @@ package org.osivia.portal.core.migration;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Context;
-import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.osivia.portal.core.dynamic.DynamicPageBean;
-import org.osivia.portal.core.page.PageUtils;
 
 /**
  * Migration manager
@@ -46,7 +40,7 @@ public class MigrationService implements IMigrationManager {
 	public PortalObjectContainer portalObjectContainer;
 
 	public PortalObjectContainer getPortalObjectContainer() {
-		return portalObjectContainer;
+		return this.portalObjectContainer;
 	}
 
 	public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
@@ -82,17 +76,18 @@ public class MigrationService implements IMigrationManager {
 		try	{
 	
 		
-		Context context = getPortalObjectContainer().getContext();
+		Context context = this.getPortalObjectContainer().getContext();
 		
 		String lastModuleId = context.getDeclaredProperty(LAST_MODULE_ID_PROP);
 		
 		int lastId = 0;
-		if( lastModuleId != null && lastModuleId.length() > 0)
-			lastId = Integer.parseInt(lastModuleId);
+		if( (lastModuleId != null) && (lastModuleId.length() > 0)) {
+            lastId = Integer.parseInt(lastModuleId);
+        }
 		
 		int nbMigration = 0;
 		
-		for (MigrationModule module: getModulesList()){
+		for (MigrationModule module: this.getModulesList()){
 			// Check if the module has alreay executed
 			
 			if( module.getModuleId() > lastId)	{
@@ -105,7 +100,7 @@ public class MigrationService implements IMigrationManager {
 				logger.info("Saving portal parameters " + module.getModuleId() + " to " + backupFile.getAbsolutePath()		);
 				nbMigration++;
 				
-				module.setPortalObjectContainer(portalObjectContainer);
+				module.setPortalObjectContainer(this.portalObjectContainer);
 				module.execute( );
 				
 				context.setDeclaredProperty(LAST_MODULE_ID_PROP, Integer.toString(module.getModuleId()));

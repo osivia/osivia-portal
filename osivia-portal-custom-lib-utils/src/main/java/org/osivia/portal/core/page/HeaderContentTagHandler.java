@@ -24,7 +24,6 @@ package org.osivia.portal.core.page;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,92 +43,87 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.w3c.dom.Element;
 
 /**
- * Ce tag a été modifié pour éviter les duplications de déclarations pour les différents portlets
+ * Ce tag a été modifié pour éviter les duplications de déclarations pour les différents portlets.
  */
-public class HeaderContentTagHandler extends SimpleTagSupport
-{
-   protected static final OutputFormat serializerOutputFormat = new OutputFormat() {
-	   {
-          setOmitXMLDeclaration(true);
-       }
-   };
+public class HeaderContentTagHandler extends SimpleTagSupport {
 
-   public void doTag() throws JspException, IOException
-   {
-      // Get page and region
-	  PageContext app = (PageContext) getJspContext();
-      HttpServletRequest request = (HttpServletRequest)app.getRequest();
+    protected static final OutputFormat serializerOutputFormat = new OutputFormat() {
+        {
+            this.setOmitXMLDeclaration(true);
+        }
+    };
 
-      //
-      PageResult page = (PageResult)request.getAttribute(LayoutConstants.ATTR_PAGE);
-      JspWriter out = this.getJspContext().getOut();
-      if (page == null)
-      {
-         out.write("<p bgcolor='red'>No page to render!</p>");
-         out.write("<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
-         out.flush();
-         return;
-      }
 
-      // JQuery 1.8.3 for fancybox 2.1.3 compatibility
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jquery/jquery-1.8.3.min.js\"></script>");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void doTag() throws JspException, IOException {
+        // Get page and region
+        PageContext app = (PageContext) this.getJspContext();
+        HttpServletRequest request = (HttpServletRequest) app.getRequest();
 
-      
-      //
-      Map results = page.getWindowContextMap();
-      Set<String> insertedRefs = new HashSet<String>();
-      for (Iterator i = results.values().iterator(); i.hasNext();)
-      {
-         WindowContext wc = (WindowContext)i.next();
-         WindowResult result = wc.getResult();
-         List<Element> headElements = result.getHeaderContent();
-         if (headElements != null)
-         {
-            XMLSerializer elementSerializer = new XMLSerializer(out, serializerOutputFormat); 
-            
-            
-            for (Element element : headElements)
-            {
-               if (!"title".equals(element.getNodeName().toLowerCase()))
-               {
-            	   String ref = element.toString();
-           	   
-            	   // PIA : Test d'insertion
-            	  if( !insertedRefs.contains(ref))
-                  try
-                  {
-                	  
-                		  elementSerializer.serialize(element);
-                  }
-                  catch(UnsupportedOperationException uoe)                   
-                  {
-                     //handle the pseudo-Elements org.jboss.portal.core.metadata.portlet classes 
-                     out.println(element);
-                  }
-                  if( ref != null)
-                	  insertedRefs.add(ref);
-               }
-            }            
-         }
-      }
-      
-      
-      
+        //
+        PageResult page = (PageResult) request.getAttribute(LayoutConstants.ATTR_PAGE);
+        JspWriter out = this.getJspContext().getOut();
+        if (page == null) {
+            out.write("<p bgcolor='red'>No page to render!</p>");
+            out.write("<p bgcolor='red'>The page to render (PageResult) must be set in the request attribute '" + LayoutConstants.ATTR_PAGE + "'</p>");
+            out.flush();
+            return;
+        }
+
+        // JQuery 1.8.3 for fancybox 2.1.3 compatibility
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jquery/jquery-1.8.3.min.js\"></script>");
+
+        //
+        Map<?, ?> results = page.getWindowContextMap();
+        Set<String> insertedRefs = new HashSet<String>();
+        for (Object name : results.values()) {
+            WindowContext wc = (WindowContext) name;
+            WindowResult result = wc.getResult();
+            List<Element> headElements = result.getHeaderContent();
+            if (headElements != null) {
+                XMLSerializer elementSerializer = new XMLSerializer(out, serializerOutputFormat);
+
+                for (Element element : headElements) {
+                    if (!"title".equals(element.getNodeName().toLowerCase())) {
+                        String ref = element.toString();
+
+                        // PIA : Test d'insertion
+                        if (!insertedRefs.contains(ref)) {
+                            try {
+
+                                elementSerializer.serialize(element);
+                            } catch (UnsupportedOperationException uoe) {
+                                // handle the pseudo-Elements org.jboss.portal.core.metadata.portlet classes
+                                out.println(element);
+                            }
+                        }
+                        if (ref != null) {
+                            insertedRefs.add(ref);
+                        }
+                    }
+                }
+            }
+        }
+
+        // CSS
         out.write("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
+        out.write("<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>");
         out.write("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
 
-      
-      out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");	 
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
-      
-      
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
+        // Fancybox
+        out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
 
-      // JSTree
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
-      out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
-      
-     // out.flush();
-   }
+        // JSTree
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
+
+        // out.flush();
+    }
+
 }

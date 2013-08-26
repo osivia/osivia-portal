@@ -10,7 +10,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 
 
@@ -24,36 +23,34 @@ public enum PageType {
     /** Static page. */
     STATIC_PAGE(false, true, false),
     /** Static CMS page. */
-    STATIC_CMS_PAGE(false, true, false),
+    STATIC_CMS_PAGE(true, true, false),
     /** Static CMS sub page. */
-    STATIC_CMS_SUB_PAGE(false, false, false),
-    /** Dynamic page (without CMS). */
-    DYNAMIC_PAGE(true, false, false),
-    /** Dynamic CMS page. */
-    DYNAMIC_CMS_PAGE(true, false, true),
-    /** Dynamic CMS page without portal page anchor. */
-    DYNAMIC_CMS_PAGE_WITHOUT_PORTAL_PAGE(true, false, false);
+    STATIC_CMS_SUB_PAGE(true, false, false),
+    /** Dynamic page. */
+    DYNAMIC_PAGE(false, false, true),
+    /** CMS templated page. */
+    CMS_TEMPLATED_PAGE(true, false, true);
 
 
-    /** Page templated indicator. */
-    private final boolean templated;
-    /** Page editable indicator. */
-    private final boolean editable;
-    /** Portal page available indicator. */
-    private final boolean portalPageAvailable;
+    /** Space indicator. */
+    private final boolean space;
+    /** Portal page indicator. */
+    private final boolean portalPage;
+    /** CMS templated page indicator. */
+    private final boolean cmsTemplated;
 
 
     /**
-     * Constructor using fields.
+     * Constructor.
      *
-     * @param templated page templated indicator
-     * @param editable page editable indicator
-     * @param portalPageAvailable portal page available indicator
+     * @param space is space indicator
+     * @param portalPage is portal page indicator
+     * @param cmsTemplated is CMS templated page indicator
      */
-    private PageType(boolean templated, boolean editable, boolean portalPageAvailable) {
-        this.templated = templated;
-        this.editable = editable;
-        this.portalPageAvailable = portalPageAvailable;
+    private PageType(boolean space, boolean portalPage, boolean cmsTemplated) {
+        this.space = space;
+        this.portalPage = portalPage;
+        this.cmsTemplated = cmsTemplated;
     }
 
 
@@ -82,10 +79,8 @@ public enum PageType {
             // Templated page
             if (ArrayUtils.isEmpty(statePath)) {
                 type = DYNAMIC_PAGE;
-            } else if (StringUtils.equals(InternalConstants.PROP_VALUE_ON, page.getProperty(InternalConstants.PAGE_PROP_NAME_DYNAMIC))) {
-                type = DYNAMIC_CMS_PAGE_WITHOUT_PORTAL_PAGE;
             } else {
-                type = DYNAMIC_CMS_PAGE;
+                type = CMS_TEMPLATED_PAGE;
             }
         } else {
             // Non-templated page
@@ -102,30 +97,30 @@ public enum PageType {
 
 
     /**
-     * Getter for templated.
+     * Getter for space.
      *
-     * @return the templated
+     * @return the space
      */
-    public boolean isTemplated() {
-        return this.templated;
+    public boolean isSpace() {
+        return this.space;
     }
 
     /**
-     * Getter for editable.
+     * Getter for portalPage.
      *
-     * @return the editable
+     * @return the portalPage
      */
-    public boolean isEditable() {
-        return this.editable;
+    public boolean isPortalPage() {
+        return this.portalPage;
     }
 
     /**
-     * Getter for portalPageAvailable.
-     * 
-     * @return the portalPageAvailable
+     * Getter for cmsTemplated.
+     *
+     * @return the cmsTemplated
      */
-    public boolean isPortalPageAvailable() {
-        return this.portalPageAvailable;
+    public boolean isCMSTemplated() {
+        return this.cmsTemplated;
     }
 
 }

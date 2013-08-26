@@ -86,14 +86,20 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
-import org.osivia.portal.core.page.PageUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.PortalObjectNameComparator;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
 
-
+/**
+ * Assistant page customizer interceptor.
+ *
+ * @see ControllerInterceptor
+ * @see IFormatter
+ */
 public class AssistantPageCustomizerInterceptor extends ControllerInterceptor implements IFormatter {
 
     /** Windows settings fancyboxes prefix. */
@@ -124,8 +130,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     private static final String DISPLAY_VIRTUAL_END_NODES = "display-virtual-end-nodes";
     /** Sort alphabetically option name. */
     private static final String SORT_ALPHABETICALLY = "sort-alphabetically";
-    /** Hide CMS pages option name. */
-    private static final String HIDE_CMS_PAGES = "hide-cms-pages";
+    /** Hide dynamic pages option name. */
+    private static final String HIDE_DYNAMIC_PAGES = "hide-dynamic-pages";
     /** Templated pages filter option name. */
     private static final String TEMPLATED_PAGES_FILTER = "templated-pages-filter";
     /** Non-templated pages filter option name. */
@@ -545,7 +551,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     public String formatHTMLTreePageParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
         Set<String> options = new TreeSet<String>();
         options.add(DISPLAY_ROOT);
-        options.add(HIDE_CMS_PAGES);
+        options.add(HIDE_DYNAMIC_PAGES);
         options.add(NON_TEMPLATED_PAGES_FILTER);
         return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
     }
@@ -555,7 +561,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      */
     public String formatHTMLTreeTemplateParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
         Set<String> options = new TreeSet<String>();
-        options.add(HIDE_CMS_PAGES);
+        options.add(HIDE_DYNAMIC_PAGES);
         options.add(TEMPLATED_PAGES_FILTER);
         return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
     }
@@ -585,7 +591,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * @param context controller context
      * @param idPrefix avoid multiples identifiers with this prefix
      * @param options format options
-     * @return
+     * @return HTML data
      */
     private String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, Set<String> options) throws IOException {
         if ((currentPage == null) || (context == null)) {
@@ -657,9 +663,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         SortedSet<Page> sortedPages;
         if (options.contains(SORT_ALPHABETICALLY)) {
-            sortedPages = new TreeSet<Page>(PageUtils.nameComparator);
+            PortalObjectNameComparator comparator = new PortalObjectNameComparator(locales);
+            sortedPages = new TreeSet<Page>(comparator);
         } else {
-            sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+            sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         }
 
         for (PortalObject child : children) {
@@ -667,15 +674,16 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
             if (authManager.checkPermission(permission)) {
                 Page page = (Page) child;
+                PageType pageType = PageType.getPageType(page, context);
 
-                // Check display if current page is a CMS page
-                boolean checkCMSDisplay = !(options.contains(HIDE_CMS_PAGES) && StringUtils.isNotEmpty(page.getProperty("osivia.cms.basePath")));
+                // Check display if current page is a dynamic page
+                boolean checkDynamicDisplay = !(options.contains(HIDE_DYNAMIC_PAGES) && !PageType.STATIC_PAGE.equals(pageType));
                 // Check display if current page is a template
                 boolean checkTemplateDisplay = !(options.contains(TEMPLATED_PAGES_FILTER) && !PortalObjectUtils.isTemplate(page));
                 // Check display if current page isn't a template
                 boolean checkNonTemplateDisplay = !(options.contains(NON_TEMPLATED_PAGES_FILTER) && PortalObjectUtils.isTemplate(page));
 
-                if (checkCMSDisplay && checkTemplateDisplay && checkNonTemplateDisplay) {
+                if (checkDynamicDisplay && checkTemplateDisplay && checkNonTemplateDisplay) {
                     sortedPages.add(page);
                 }
             }
@@ -1360,7 +1368,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
 
             PageType pageType = PageType.getPageType(page, context);
-            if (PageType.STATIC_PAGE.equals(pageType)) {
+            if (!pageType.isCMSTemplated()) {
                 // Portlets settings injection
                 this.injectPortletSettings(dispatcher, page, rendition, context);
             }

@@ -10,9 +10,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -36,8 +33,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
@@ -58,13 +53,12 @@ import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
@@ -205,8 +199,9 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
                     this.injectAdminHeaders(rpc, rendition);
                 } else {
                     PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-                    if( popupWindowId == null)
+                    if( popupWindowId == null) {
                         this.injectStandardHeaders(rpc, rendition);
+                    }
                 }
 
             }
@@ -300,7 +295,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-   
+
 
 
     public String injectAdminTabbedNav(PageCommand rpc) {
@@ -491,7 +486,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
         userPortal.setUserPages(mainPages);
 
 
-        SortedSet<Page> sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
+        SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
             sortedPages.add((Page) po);
         }
@@ -524,72 +519,72 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
             if (pam.checkPermission(perm) && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
 
 
-                    UserPage userPage = new UserPage();
-                    mainPages.add(userPage);
+                UserPage userPage = new UserPage();
+                mainPages.add(userPage);
 
-                    ViewPageCommand showPage = new ViewPageCommand(child.getId());
+                ViewPageCommand showPage = new ViewPageCommand(child.getId());
 
-                    userPage.setId(child.getId());
+                userPage.setId(child.getId());
 
-                    String url = new PortalURLImpl(showPage, controllerCtx, null, null).toString();
-                    userPage.setUrl(url + "?init-state=true");
+                String url = new PortalURLImpl(showPage, controllerCtx, null, null).toString();
+                userPage.setUrl(url + "?init-state=true");
 
-                    String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
-                    userPage.setName(name);
+                String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
+                userPage.setName(name);
 
 
-                    if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {
+                if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {
 
-                        String parentId = URLEncoder.encode(child.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-                        String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                    String parentId = URLEncoder.encode(child.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                    String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
 
-                        String closePageURL = this.urlFactory.getDestroyPageUrl(new PortalControllerContext(controllerCtx), parentId, pageId);
-                        userPage.setClosePageUrl(closePageURL);
+                    String closePageURL = this.urlFactory.getDestroyPageUrl(new PortalControllerContext(controllerCtx), parentId, pageId);
+                    userPage.setClosePageUrl(closePageURL);
 
+                }
+
+
+                List<UserPage> subPages = new ArrayList<UserPage>(10);
+                userPage.setChildren(subPages);
+
+                SortedSet<Page> sortedSubPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
+                for (PortalObject po : child.getChildren(PortalObject.PAGE_MASK)) {
+                    sortedSubPages.add((Page) po);
+
+                }
+
+
+                for (Page childChild : sortedSubPages) {
+
+                    PortalObjectId subpageIdToControl = childChild.getId();
+                    if (childChild instanceof ITemplatePortalObject) {
+                        // Dans le cas du template, il faut regarder les droits posées sur le template d'origine
+                        // De plus, il n'y a pas de personnalisation
+                        subpageIdToControl = ((ITemplatePortalObject) childChild).getTemplate().getId();
                     }
 
 
-                    List<UserPage> subPages = new ArrayList<UserPage>(10);
-                    userPage.setChildren(subPages);
+                    PortalObjectPermission permSubPage = new PortalObjectPermission(subpageIdToControl, PortalObjectPermission.VIEW_MASK);
 
-                    SortedSet<Page> sortedSubPages = new TreeSet<Page>(PageUtils.orderComparator);
-                    for (PortalObject po : child.getChildren(PortalObject.PAGE_MASK)) {
-                        sortedSubPages.add((Page) po);
+                    if (pam.checkPermission(permSubPage) && ((pageToHide == null) || (!childChild.getName().equals(pageToHide)))) {
 
-                    }
+                        UserPage userSubPage = new UserPage();
 
+                        ViewPageCommand showSubPage = new ViewPageCommand(childChild.getId());
 
-                    for (Page childChild : sortedSubPages) {
+                        userSubPage.setId(childChild.getId());
 
-                        PortalObjectId subpageIdToControl = childChild.getId();
-                        if (childChild instanceof ITemplatePortalObject) {
-                            // Dans le cas du template, il faut regarder les droits posées sur le template d'origine
-                            // De plus, il n'y a pas de personnalisation
-                            subpageIdToControl = ((ITemplatePortalObject) childChild).getTemplate().getId();
-                        }
+                        String subName = PortalObjectUtils.getDisplayName(childChild, request.getLocales());
+                        userSubPage.setName(subName);
 
+                        String subUrl = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
 
-                        PortalObjectPermission permSubPage = new PortalObjectPermission(subpageIdToControl, PortalObjectPermission.VIEW_MASK);
+                        userSubPage.setUrl(subUrl + "?init-state=true");
 
-                        if (pam.checkPermission(permSubPage) && ((pageToHide == null) || (!childChild.getName().equals(pageToHide)))) {
-
-                            UserPage userSubPage = new UserPage();
-
-                            ViewPageCommand showSubPage = new ViewPageCommand(childChild.getId());
-
-                            userSubPage.setId(childChild.getId());
-
-                            String subName = PortalObjectUtils.getDisplayName(childChild, request.getLocales());
-                            userSubPage.setName(subName);
-
-                            String subUrl = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
-
-                            userSubPage.setUrl(subUrl + "?init-state=true");
-
-                            subPages.add(userSubPage);
-                        }
+                        subPages.add(userSubPage);
                     }
                 }
+            }
         }
 
         // logger.debug("getPageBean 5" + System.currentTimeMillis());

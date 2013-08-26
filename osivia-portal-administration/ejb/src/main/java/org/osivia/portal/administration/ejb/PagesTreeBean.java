@@ -1,6 +1,5 @@
 package org.osivia.portal.administration.ejb;
 
-import java.util.Comparator;
 import java.util.Locale;
 import java.util.Observable;
 import java.util.SortedSet;
@@ -15,7 +14,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.osivia.portal.administration.util.PagesComparator;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.richfaces.model.TreeNode;
 import org.richfaces.model.TreeNodeImpl;
 
@@ -34,9 +33,6 @@ public class PagesTreeBean extends AbstractAdministrationBean {
 
     /** Page tree data root identifier and name. */
     private static final String PAGE_TREE_DATA_ROOT = "portal";
-
-    /** Pages comparator. */
-    private static final Comparator<Page> PAGES_COMPARATOR = new PagesComparator();
 
     /** Page. */
     private String page;
@@ -87,7 +83,7 @@ public class PagesTreeBean extends AbstractAdministrationBean {
             Portal portal = this.getPortal();
 
             if (portal != null) {
-                SortedSet<Page> sortedPages = new TreeSet<Page>(PAGES_COMPARATOR);
+                SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
                 for (PortalObject portalObject : portal.getChildren()) {
                     if (portalObject instanceof Page) {
                         Page page = (Page) portalObject;
@@ -125,7 +121,7 @@ public class PagesTreeBean extends AbstractAdministrationBean {
 
         parentNode.addChild(pageId, pageNode);
 
-        SortedSet<Page> sortedSubPages = new TreeSet<Page>(PAGES_COMPARATOR);
+        SortedSet<Page> sortedSubPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         for (PortalObject portalObject : page.getChildren()) {
             if (portalObject instanceof Page) {
                 Page subPage = (Page) portalObject;

@@ -16,7 +16,7 @@ public class DeletePageCommand extends AssistantCommand {
     private String pageId;
 
     public String getPageId() {
-        return pageId;
+        return this.pageId;
     }
 
     public DeletePageCommand() {
@@ -29,8 +29,8 @@ public class DeletePageCommand extends AssistantCommand {
     public ControllerResponse executeAssistantCommand() throws Exception {
 
         // Récupération page
-        PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-        PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
+        PortalObjectId poid = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
+        PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
         PortalObject parent = page.getParent();
 
         // Destruction window
@@ -39,10 +39,11 @@ public class DeletePageCommand extends AssistantCommand {
         // Redirection vers le parent, ou par défaut
         // vers la page par défaut du portail
         Page redirectPage = null;
-        if (parent instanceof Page)
+        if (parent instanceof Page) {
             redirectPage = (Page) parent;
-        else if (parent instanceof Portal)
-            redirectPage = (Page) ((Portal) parent).getDefaultPage();
+        } else if (parent instanceof Portal) {
+            redirectPage = ((Portal) parent).getDefaultPage();
+        }
 
         // Impact sur les caches du bandeau
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");

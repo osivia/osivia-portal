@@ -58,9 +58,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX = "fancybox_inline";
     /** Region commands class. */
-    private static final String CLASS_COMMANDS = "commands";
+    private static final String CLASS_REGIONS_COMMANDS = "osivia-portal-regions-commands";
     /** "Add" image source. */
-    private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/application_add.png";
+    private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/icons/icon_add_window.png";
 
     /**
      * Render region header.
@@ -82,7 +82,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         PrintWriter markup = rendererContext.getWriter();
-        
+
         markup.print("<div"); // Main DIV region
 
         if (rrc.getCSSId() != null) {
@@ -91,10 +91,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.print("'");
         }
         markup.print(">");
-        
+
 
         // in cms mode, create a new fragment on the top of this region
-        if (showCmsTools(rendererContext, rrc)) {
+        if (this.showCmsTools(rendererContext, rrc)) {
 
 
             markup.print("<div class=\"cms-commands\">");
@@ -127,7 +127,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
 
             DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
-            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_COMMANDS);
+            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
             DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
             a.addAttribute(QName.get(HTMLConstants.HREF), url);
@@ -150,14 +150,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
-     * 
+     *
      * @param rendererContext page context
      * @param rrc region context
      * @return
      */
     private Boolean showCmsTools(RendererContext rendererContext, RegionRendererContext rrc) {
         Boolean showCmsTools = false;
-        if (rrc.getRegionCms() != null && rrc.getRegionCms() == true
+        if ((rrc.getRegionCms() != null) && (rrc.getRegionCms() == true)
                 && InternalConstants.CMS_EDITION_MODE_ON.equals(rendererContext.getProperty(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
             showCmsTools = true;
         }
@@ -180,7 +180,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // End of DIV for Drag n drop
-        if (showCmsTools(rendererContext, rrc)) {
+        if (this.showCmsTools(rendererContext, rrc)) {
             markup.print("</div>");
         }
 

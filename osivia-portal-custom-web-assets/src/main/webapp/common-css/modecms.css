@@ -141,20 +141,20 @@ toggle-test {
 }
 
 .cms-commands .add {
-	background: #FCFCFC url(../images/icone_plus2.gif) center left
+	background: #FCFCFC url(../images/icons/icon_add.png) center left
 		no-repeat;
-	
+	background-size: 16px;
 }
 
 .cms-commands .edit {
-	background: #FCFCFC url(../images/icone_edition.gif) center left
+	background: #FCFCFC url(../images/icons/icon_edition.png) center left
 		no-repeat;
-	background-size: 16px 16px;
+	background-size: 16px;
 }
 
 .cms-commands .delete {
-	background: #FCFCFC url(../images/icone_suppression.gif) center left
+	background: #FCFCFC url(../images/icons/icon_delete.png) center left
 		no-repeat;
-	background-size: 16px 16px;
+	background-size: 16px;
 }
 
