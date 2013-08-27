@@ -76,8 +76,10 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
         cmsCtx.setControllerContext(getControllerContext());
 
         try {
+            // Test for notifications
             
             
+            /*
             String test =  (String) getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test");
             
             if( test == null)   {
@@ -92,6 +94,7 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
                 getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test","ko");
             }   else
                 getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test",null);
+                */
            
             if (!CMSEditionPageCustomizerInterceptor.checkWritePermission(context, pagePath))
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
