@@ -217,6 +217,9 @@
         <depends
             optional-attribute-name="InternationalizationService"
             proxy-type="attribute">osivia:service=InternationalizationService</depends>
+        <depends
+            optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject</depends>
     </mbean>
 
 

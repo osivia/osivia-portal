@@ -88,6 +88,7 @@ import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectNameComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -605,14 +606,20 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             virtualEndNodesText = this.internationalizationService.getString(InternationalizationConstants.KEY_VIRTUAL_END_NODES, locale);
         }
 
-        Portal portal = currentPage.getPortal();
 
-        Element ul;
+        IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
+        dynamicObjectContainer.startPersistentIteration();
+
+        Page page = (Page) this.portalObjectContainer.getObject(currentPage.getId());
+        Portal portal = page.getPortal();
 
         // Recursive tree generation
         Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, options);
+        dynamicObjectContainer.stopPersistentIteration();
+
 
         // Root generation
+        Element ul;
         if (options.contains(DISPLAY_ROOT) && (ulChildren != null)) {
             String portalId = this.formatHtmlSafeEncodingId(portal.getId());
 
@@ -1368,7 +1375,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
 
             PageType pageType = PageType.getPageType(page, context);
-            if (!pageType.isCMSTemplated()) {
+            if (!pageType.isTemplated()) {
                 // Portlets settings injection
                 this.injectPortletSettings(dispatcher, page, rendition, context);
             }

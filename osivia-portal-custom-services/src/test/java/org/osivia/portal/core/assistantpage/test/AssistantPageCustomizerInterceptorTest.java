@@ -33,6 +33,7 @@ import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
@@ -53,13 +54,19 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.portalobjects.DynamicPersistentPage;
+import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portalobjects.TemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 
 /**
@@ -68,6 +75,8 @@ import org.osivia.portal.core.profils.ProfilBean;
  * @author Cédric Krommenhoek
  * @see AssistantPageCustomizerInterceptor
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Locator.class)
 public class AssistantPageCustomizerInterceptorTest {
 
     private static final String ID_PREFIX = "IdPrefix";
@@ -84,17 +93,25 @@ public class AssistantPageCustomizerInterceptorTest {
     /** Controller context. */
     private ControllerContext context;
 
+    /** Portal. */
+    private Portal portalMock;
+
+
     /**
      * Set up.
      */
     @Before
     public void setUp() {
+        this.portalMock = EasyMock.createMock("Portal", Portal.class);
+
         // Formatter
         PortalAuthorizationManagerFactory factoryMock = EasyMock.createNiceMock(PortalAuthorizationManagerFactory.class);
         PortalAuthorizationManager managerMock = EasyMock.createNiceMock(PortalAuthorizationManager.class);
         InstanceContainer instanceContainerMock = EasyMock.createNiceMock(InstanceContainer.class);
         IProfilManager profilManagerMock = EasyMock.createNiceMock(IProfilManager.class);
         IInternationalizationService internationalizationServiceMock = EasyMock.createNiceMock(IInternationalizationService.class);
+        PortalObjectContainer portalObjectContainerMock = EasyMock.createNiceMock(PortalObjectContainer.class);
+        Page pageMock = EasyMock.createNiceMock(Page.class);
 
         EasyMock.expect(factoryMock.getManager()).andStubReturn(managerMock);
         EasyMock.expect(managerMock.checkPermission(EasyMock.anyObject(PortalObjectPermission.class))).andReturn(true).anyTimes();
@@ -102,12 +119,15 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.expect(profilManagerMock.getListeProfils()).andReturn(new ArrayList<ProfilBean>()).anyTimes();
         EasyMock.expect(internationalizationServiceMock.getString(EasyMock.anyObject(String.class), EasyMock.anyObject(Locale.class)))
                 .andReturn("LOCALIZED_STRING").anyTimes();
+        EasyMock.expect(portalObjectContainerMock.getObject(EasyMock.anyObject(PortalObjectId.class))).andStubReturn(pageMock);
+        EasyMock.expect(pageMock.getPortal()).andStubReturn(this.portalMock);
 
         AssistantPageCustomizerInterceptor assistant = new AssistantPageCustomizerInterceptor();
         assistant.setPortalAuthorizationManagerFactory(factoryMock);
         assistant.setInstanceContainer(instanceContainerMock);
         assistant.setProfilManager(profilManagerMock);
         assistant.setInternationalizationService(internationalizationServiceMock);
+        assistant.setPortalObjectContainer(portalObjectContainerMock);
         this.formatter = assistant;
 
         EasyMock.replay(factoryMock);
@@ -115,6 +135,9 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.replay(instanceContainerMock);
         EasyMock.replay(profilManagerMock);
         EasyMock.replay(internationalizationServiceMock);
+        EasyMock.replay(portalObjectContainerMock);
+        EasyMock.replay(pageMock);
+
 
         // Context
         this.context = EasyMock.createNiceMock("ControllerContext", ControllerContext.class);
@@ -150,6 +173,17 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.replay(httpRequestMock);
         EasyMock.replay(nsContextMock);
         EasyMock.replay(currentPageStateMock);
+
+
+        // Locator
+        PowerMock.mockStatic(Locator.class);
+        IDynamicObjectContainer dynamicObjectContainerMock = EasyMock.createNiceMock(IDynamicObjectContainer.class);
+
+        EasyMock.expect(Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer")).andStubReturn(
+                dynamicObjectContainerMock);
+
+        PowerMock.replayAll();
+        EasyMock.replay(dynamicObjectContainerMock);
     }
 
 
@@ -268,7 +302,7 @@ public class AssistantPageCustomizerInterceptorTest {
 
     /**
      * Test case for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePortalObjectsAlphaOrder(Page, ControllerContext, String)}.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -409,14 +443,12 @@ public class AssistantPageCustomizerInterceptorTest {
      */
     private Page generatePortalArborescence() {
         // Portal objects mocks
-        // Page currentPageMock = PowerMock.createNiceMock(CMSTemplatePage.class);
-        Page currentPageMock = EasyMock.createMock("CurrentPage", TemplatePage.class);
+        Page currentPageMock = EasyMock.createNiceMock("CurrentPage", TemplatePage.class);
         PortalObjectId currentPageIdMock = EasyMock.createNiceMock("CurrentPageId", PortalObjectId.class);
-        Portal portalMock = EasyMock.createMock("Portal", Portal.class);
         PortalObjectId portalIdMock = EasyMock.createNiceMock("PortalId", PortalObjectId.class);
-        Page siblingPageMock = EasyMock.createMock("SiblingPage", DynamicPersistentPage.class);
+        Page siblingPageMock = EasyMock.createNiceMock("SiblingPage", DynamicPersistentPage.class);
         PortalObjectId siblingPageIdMock = EasyMock.createNiceMock("SiblingPageId", PortalObjectId.class);
-        Page subPageMock = EasyMock.createMock("SubPage", TemplatePage.class);
+        Page subPageMock = EasyMock.createNiceMock("SubPage", TemplatePage.class);
         PortalObjectId subPageIdMock = EasyMock.createNiceMock("SubPageId", PortalObjectId.class);
 
         // Current page children
@@ -444,8 +476,8 @@ public class AssistantPageCustomizerInterceptorTest {
         LocalizedString subPageDisplay = new LocalizedString(subPageDisplayMap, Locale.ENGLISH);
 
         // Current page mock operations
-        EasyMock.expect(currentPageMock.getPortal()).andStubReturn(portalMock);
-        EasyMock.expect(currentPageMock.getParent()).andStubReturn(portalMock);
+        EasyMock.expect(currentPageMock.getPortal()).andStubReturn(this.portalMock);
+        EasyMock.expect(currentPageMock.getParent()).andStubReturn(this.portalMock);
         EasyMock.expect(currentPageMock.getChildren(EasyMock.anyInt())).andReturn(currentPageChildren).anyTimes();
         EasyMock.expect(currentPageMock.getId()).andStubReturn(currentPageIdMock);
         EasyMock.expect(currentPageMock.getName()).andReturn("current-page").anyTimes();
@@ -455,15 +487,15 @@ public class AssistantPageCustomizerInterceptorTest {
         // Current page ID mock operations
         EasyMock.expect(currentPageIdMock.toString(EasyMock.anyObject(Format.class))).andReturn(CURRENT_PAGE_ID).anyTimes();
         // Portal mock operations
-        EasyMock.expect(portalMock.getParent()).andReturn(null).anyTimes();
-        EasyMock.expect(portalMock.getChildren(EasyMock.anyInt())).andReturn(portalChildren).anyTimes();
-        EasyMock.expect(portalMock.getId()).andStubReturn(portalIdMock);
-        EasyMock.expect(portalMock.getDisplayName()).andReturn(portalDisplay).anyTimes();
-        EasyMock.expect(portalMock.getDeclaredProperty("osivia.liste_styles")).andReturn("PortalStyle1,PortalStyle2").anyTimes();
+        EasyMock.expect(this.portalMock.getParent()).andReturn(null).anyTimes();
+        EasyMock.expect(this.portalMock.getChildren(EasyMock.anyInt())).andReturn(portalChildren).anyTimes();
+        EasyMock.expect(this.portalMock.getId()).andStubReturn(portalIdMock);
+        EasyMock.expect(this.portalMock.getDisplayName()).andReturn(portalDisplay).anyTimes();
+        EasyMock.expect(this.portalMock.getDeclaredProperty("osivia.liste_styles")).andReturn("PortalStyle1,PortalStyle2").anyTimes();
         // Portal ID mock operations
         EasyMock.expect(portalIdMock.toString(EasyMock.anyObject(Format.class))).andReturn("/portal/").anyTimes();
         // Sibling page mock operations
-        EasyMock.expect(siblingPageMock.getParent()).andStubReturn(portalMock);
+        EasyMock.expect(siblingPageMock.getParent()).andStubReturn(this.portalMock);
         EasyMock.expect(siblingPageMock.getChildren(EasyMock.anyInt())).andReturn(new ArrayList<PortalObject>()).anyTimes();
         EasyMock.expect(siblingPageMock.getId()).andStubReturn(siblingPageIdMock);
         EasyMock.expect(siblingPageMock.getName()).andReturn("sibling-page").anyTimes();
@@ -485,7 +517,7 @@ public class AssistantPageCustomizerInterceptorTest {
         // Replay
         EasyMock.replay(currentPageMock);
         EasyMock.replay(currentPageIdMock);
-        EasyMock.replay(portalMock);
+        EasyMock.replay(this.portalMock);
         EasyMock.replay(portalIdMock);
         EasyMock.replay(siblingPageMock);
         EasyMock.replay(siblingPageIdMock);

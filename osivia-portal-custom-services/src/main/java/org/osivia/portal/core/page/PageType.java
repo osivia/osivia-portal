@@ -3,13 +3,13 @@ package org.osivia.portal.core.page;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 
 
@@ -24,8 +24,8 @@ public enum PageType {
     STATIC_PAGE(false, true, false),
     /** Static CMS page. */
     STATIC_CMS_PAGE(true, true, false),
-    /** Static CMS sub page. */
-    STATIC_CMS_SUB_PAGE(true, false, false),
+    /** Static CMS sub item. */
+    STATIC_CMS_SUB_ITEM(true, false, false),
     /** Dynamic page. */
     DYNAMIC_PAGE(false, false, true),
     /** CMS templated page. */
@@ -36,8 +36,8 @@ public enum PageType {
     private final boolean space;
     /** Portal page indicator. */
     private final boolean portalPage;
-    /** CMS templated page indicator. */
-    private final boolean cmsTemplated;
+    /** Templated page indicator. */
+    private final boolean templated;
 
 
     /**
@@ -45,12 +45,12 @@ public enum PageType {
      *
      * @param space is space indicator
      * @param portalPage is portal page indicator
-     * @param cmsTemplated is CMS templated page indicator
+     * @param templated is templated page indicator
      */
-    private PageType(boolean space, boolean portalPage, boolean cmsTemplated) {
+    private PageType(boolean space, boolean portalPage, boolean templated) {
         this.space = space;
         this.portalPage = portalPage;
-        this.cmsTemplated = cmsTemplated;
+        this.templated = templated;
     }
 
 
@@ -77,19 +77,19 @@ public enum PageType {
         PageType type;
         if (page instanceof ITemplatePortalObject) {
             // Templated page
-            if (ArrayUtils.isEmpty(statePath)) {
+            if (StringUtils.equals(InternalConstants.PROP_VALUE_ON, page.getProperty(InternalConstants.PAGE_PROP_NAME_DYNAMIC))) {
                 type = DYNAMIC_PAGE;
             } else {
                 type = CMS_TEMPLATED_PAGE;
             }
         } else {
             // Non-templated page
-            if (ArrayUtils.isEmpty(statePath)) {
+            if (StringUtils.isBlank(basePath)) {
                 type = STATIC_PAGE;
-            } else if (StringUtils.equals(basePath, statePath[0])) {
+            } else if ((statePath != null) && StringUtils.equals(basePath, statePath[0])) {
                 type = STATIC_CMS_PAGE;
             } else {
-                type = STATIC_CMS_SUB_PAGE;
+                type = STATIC_CMS_SUB_ITEM;
             }
         }
         return type;
@@ -115,12 +115,12 @@ public enum PageType {
     }
 
     /**
-     * Getter for cmsTemplated.
+     * Getter for templated.
      *
-     * @return the cmsTemplated
+     * @return the templated
      */
-    public boolean isCMSTemplated() {
-        return this.cmsTemplated;
+    public boolean isTemplated() {
+        return this.templated;
     }
 
 }
