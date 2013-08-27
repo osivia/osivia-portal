@@ -135,6 +135,12 @@ public final class InternalConstants {
     /** ECM mapped portal (ECM space) */
     public static final String PORTAL_TYPE_SPACE = "space";
 
+    
+    /* Request constants */
+    
+    public static final String ATTR_USER_NOTIFICATION = "osivia.userNotification";    
+    
+    
 
     /** Requests filtered by ECM references */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";

@@ -47,22 +47,30 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateResponse;
 import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.UserNotification;
 
 
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -435,10 +443,28 @@ public class AjaxResponseHandler implements ResponseHandler {
 	               }
 	            }
 
+                if (!fullRefresh)   {
+                    // Les notificationsne sont pas gérées en AJAX
+                    
+                    if( controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION ) != null)
+                        fullRefresh = true;
+
+                }
+	            
+	     
+	            
 	            //
 	            if (!fullRefresh)
 	            {
-	               return new AjaxResponse(updatePage);
+                // Add render to the page
+	                // Juste pour le test mais ca marche (récupérabel dans dyna.js sous forme de fragment)
+
+//	                 updatePage.addFragment("notification", "message");
+	                
+	                
+	                
+
+                 return new AjaxResponse(updatePage);
 	            }
 	         }
 

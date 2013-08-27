@@ -67,8 +67,12 @@ public class PageProperties {
 			this.refreshingPage = pageRefresh;
 	}
 
+	
 
-	public  Map<String, String> getPagePropertiesMap()	{
+	
+
+
+    public  Map<String, String> getPagePropertiesMap()	{
 		
 		Map<String, String> pageProperties;
 		if( parent == null)

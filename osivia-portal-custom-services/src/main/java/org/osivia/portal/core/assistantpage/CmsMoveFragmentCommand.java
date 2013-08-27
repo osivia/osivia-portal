@@ -4,12 +4,20 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
+import org.jboss.portal.core.impl.api.node.PageURL;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.error.UserNotificationException;
+import org.osivia.portal.core.page.UserNotification;
 
 /**
  * CMS command used when a fragment is dragged and dropped in other place in the page
@@ -68,15 +76,24 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
         cmsCtx.setControllerContext(getControllerContext());
 
         try {
+    
+           
             if (!CMSEditionPageCustomizerInterceptor.checkWritePermission(context, pagePath))
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
 
-
-            getCMSService().moveFragment(cmsCtx, pagePath, fromRegion, fromPos, toRegion, toPos, refUri);
+            try {
+                getCMSService().moveFragment(cmsCtx, pagePath, fromRegion, fromPos, toRegion, toPos, refUri);
+            } catch( CMSException e)    {
+                throw new UserNotificationException(new UserNotification(true, "Problème dans le copie/coller"));
+            }
+            
+            
         } catch (CMSException e) {
             throw new ControllerException(e);
         } catch (Exception e) {
-            throw new ControllerException(e);
+            if( ! (e instanceof ControllerException))
+                throw new ControllerException(e);
+            else throw (ControllerException) e;
         }
 
         return null;

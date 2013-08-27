@@ -1166,7 +1166,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append(toolbarSettings);
         }
 
-
+        
+        
 
         /* JSS20130610 : Injection path CMS pour Ajax */
 
@@ -1178,23 +1179,31 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
         PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
 
+        pageSettings.append("<script type='text/javascript'>\n");
+          
         String sPath[] = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
         }
 
-
-
+ 
         if ((sPath != null) && (sPath.length == 1)) {
 
-            pageSettings.append("<script type='text/javascript'>\n");
             pageSettings.append("cmsPath = \"");
             pageSettings.append(sPath[0]);
             pageSettings.append("\";\n");
-            pageSettings.append("</script>\n");
         }
 
-
+        
+        String commandPrefix =    rpc.getControllerContext().getServerInvocation().getServerContext().getPortalContextPath();
+        commandPrefix += "/pagemarker/" + PageMarkerUtils.getCurrentPageMarker(rpc.getControllerContext());
+        pageSettings.append("commandPrefix = \"");
+        pageSettings.append(commandPrefix);
+        pageSettings.append("\";\n");
+        
+        pageSettings.append("</script>\n");
+        
+        
 
         Map<String, String> windowProps = new HashMap<String, String>();
 
@@ -1208,6 +1217,39 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         Region region = rendition.getPageResult().getRegion2("pageSettings");
         DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+        
+        
+        /* Zone notification utilisateur */
+        
+        Map<String, String> windowNotifProps = new HashMap<String, String>();
+        windowNotifProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        windowNotifProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        windowNotifProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+        
+        StringBuffer notifBuffer = new StringBuffer();  
+        
+        UserNotification notification = (UserNotification) rpc.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
+        
+        if( notification != null)   {
+            notifBuffer.append("<div class=\"user-notification-"+(notification.isError()?"error":"info")+"\">");
+            notifBuffer.append(notification.getMsg());
+            notifBuffer.append("</div>");
+            
+            
+            //delete the msg
+            rpc.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , null);
+        }
+        
+        WindowResult notifResult = new WindowResult("Notification", notifBuffer.toString(), Collections.EMPTY_MAP, windowNotifProps, null, WindowState.NORMAL,
+                Mode.VIEW);
+      
+        WindowContext notifContext = new WindowContext("notification-window", "notification", "0", notifResult);
+        rendition.getPageResult().addWindowContext(notifContext);
+
+        Region notifRegion = rendition.getPageResult().getRegion2("notification");
+        DynaRenderOptions.NO_AJAX.setOptions(notifRegion.getProperties());
+        
+ 
     }
 
 

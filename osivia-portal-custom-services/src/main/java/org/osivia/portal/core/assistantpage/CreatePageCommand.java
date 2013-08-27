@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PageContainer;
@@ -13,6 +14,10 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.error.UserNotificationException;
+import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.UserNotification;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
@@ -66,7 +71,10 @@ public class CreatePageCommand extends AssistantCommand {
 
             // Le modèle ne doit pas être parent de la nouvelle page
             if ((modele.equals(parent)) || PortalObjectUtils.isAncestor(modele, parent)) {
-                throw new IllegalArgumentException(); // TODO : Gestion de l'erreur
+                //TODO : internationaliser
+                
+                throw new UserNotificationException(new UserNotification(true, "Le modèle ne doit pas être parent de la nouvelle page"));
+                     
             } else {
                 modele.copy(parent, this.name, true);
                 newPage = (Page) parent.getChild(this.name);
@@ -84,6 +92,11 @@ public class CreatePageCommand extends AssistantCommand {
         // Impact sur les caches du bandeau
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();
+        
+        //TODO : internationaliser
+        UserNotification okNotif = new UserNotification(false, "La page a été créée");
+        getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , okNotif);
+
 
         return new UpdatePageResponse(newPage.getId());
     }

@@ -40,14 +40,18 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
+import org.omg.PortableServer.REQUEST_PROCESSING_POLICY_ID;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.UserNotification;
 import org.osivia.portal.core.portalobjects.DynamicPersistentPage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -264,6 +268,12 @@ public class PageMarkerUtils {
 
 			markerInfo.setSelectionsMap(selectionsMap);
 		}
+		
+
+         UserNotification notification = (UserNotification) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
+         if( notification != null )
+             markerInfo.setNotification(notification);
+		
 
 		Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
 		if (selectionTs != null) {
@@ -593,6 +603,10 @@ public class PageMarkerUtils {
 								if (markerInfo.getSelectionTs() != null) {
 									controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());
 								}
+								
+                                if (markerInfo.getNotification() != null) {
+                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , markerInfo.getNotification());
+                                }
 
 								if (page != null) {
 									dumpPageState(controllerContext, page, "APRES restorePageState " + currentPageMarker);

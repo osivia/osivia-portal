@@ -13,6 +13,7 @@ import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.page.UserNotification;
 import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 
 
@@ -43,8 +44,20 @@ public class PageMarkerInfo implements Serializable {
     
     String popupMode;
     PortalObjectId popupModeWindowID;
+    
+    UserNotification notification;
 	
-	public PortalObjectId getPopupModeWindowID() {
+	
+    public UserNotification getNotification() {
+        return notification;
+    }
+
+    
+    public void setNotification(UserNotification notification) {
+        this.notification = notification;
+    }
+
+    public PortalObjectId getPopupModeWindowID() {
 		return popupModeWindowID;
 	}
 

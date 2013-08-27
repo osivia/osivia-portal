@@ -31,6 +31,23 @@ function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, re
       postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId+ "&refUri=" + refUri,
       onSuccess: function(t)
       {
+	var resp = "";
+
+	if( t.responseText != "")	{
+   
+        	try {
+            	eval("resp =" + t.responseText + ";");
+        	} catch (e) {
+            	window.location.reload();
+             	return;
+        	}
+
+        
+         	if (resp.type == "update_page") {
+            		document.location = resp.location;
+        	}
+	}
+
       },
       on404: function(t)
       {
@@ -45,7 +62,7 @@ function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, re
       }
    };
 // LBI : gestion de DND en mode CMS
-   new Ajax.Request(server_base_url + "/cmsAjax", options);
+   new Ajax.Request(commandPrefix + "/cmsAjax", options);
 }
 
 function snapshot()

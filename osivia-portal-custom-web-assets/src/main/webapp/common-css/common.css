@@ -198,3 +198,16 @@ input.inline-checkbox {
 	
 }
 
+/* Notification default styles */
+
+.user-notification-error {
+	background-color: red;
+	color :white;
+	font-weight: bold;
+}
+
+.user-notification-info {
+	background-color: green;
+	color :white;
+	font-weight: bold;
+}
