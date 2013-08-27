@@ -33,6 +33,8 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 		
 		try	{
 			resp = (ControllerResponse) cmd.invokeNext();
+			
+			
 		
 		} 
 		
@@ -54,7 +56,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 		catch( Exception e){
 			
 			// Les exceptions seront traitées dans la valve
-		    injectIntoValve (cmd, e);
+		    return injectIntoValve (cmd, e);
 		}
 
 		return resp;

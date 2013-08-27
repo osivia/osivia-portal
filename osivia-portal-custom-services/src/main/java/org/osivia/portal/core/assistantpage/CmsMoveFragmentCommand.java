@@ -76,7 +76,22 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
         cmsCtx.setControllerContext(getControllerContext());
 
         try {
-    
+            
+            
+            String test =  (String) getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test");
+            
+            if( test == null)   {
+                UserNotification okNotif = new UserNotification(false, "OK");
+                getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , okNotif);
+                 
+                getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test", "ok");
+            }   else  if( "ok".equals(test))  {
+                UserNotification okNotif = new UserNotification(true, "KO");
+                getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , okNotif);
+                
+                getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test","ko");
+            }   else
+                getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,"test",null);
            
             if (!CMSEditionPageCustomizerInterceptor.checkWritePermission(context, pagePath))
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
@@ -95,8 +110,10 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
                 throw new ControllerException(e);
             else throw (ControllerException) e;
         }
+        
+        PortalObjectId portalObjectId = (PortalObjectId) getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+        return new UpdatePageResponse(portalObjectId);
 
-        return null;
     }
 
     @Override

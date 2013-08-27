@@ -27,6 +27,7 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PageCommand;
@@ -740,8 +741,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     PageType pageType = PageType.getPageType(page, context);
                     Boolean templated = pageType.isTemplated();
                     if (!(pageType.isPortalPage() || PageType.DYNAMIC_PAGE.equals(pageType))) {
-                        page = (Page) page.getParent();
-                        pageType = PageType.getPageType(page, context);
+                        // Modif JSS pour éviter le classcast de page en portal
+                        // A valider avec Cédric
+                        // Cas fonctionnel sous-item page statique CMS
+                        //page = (Page) page.getParent();
+                        PortalObject po =  page.getParent();
+                        if( po instanceof Page)
+                            pageType = PageType.getPageType(page, context);
                     }
 
                     URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();

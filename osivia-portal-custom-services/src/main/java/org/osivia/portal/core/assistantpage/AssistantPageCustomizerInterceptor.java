@@ -610,8 +610,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
         dynamicObjectContainer.startPersistentIteration();
 
-        Page page = (Page) this.portalObjectContainer.getObject(currentPage.getId());
-        Portal portal = page.getPortal();
+
+        Portal portal =  (Portal) this.portalObjectContainer.getObject(currentPage.getPortal().getId());
 
         // Recursive tree generation
         Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, options);

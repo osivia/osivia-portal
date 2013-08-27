@@ -443,15 +443,69 @@ public class AjaxResponseHandler implements ResponseHandler {
 	               }
 	            }
 
+	            /*
                 if (!fullRefresh)   {
-                    // Les notificationsne sont pas gérées en AJAX
+                    // Les notifications ne sont pas gérées en AJAX
                     
                     if( controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION ) != null)
                         fullRefresh = true;
 
                 }
-	            
+	            */
 	     
+	            /* Notification */
+                if (!fullRefresh)   {
+
+                        try {
+
+                            WindowContext notifContext = PageCustomizerInterceptor.createNotificationWindowCtx(controllerContext);
+
+
+                            res.addWindowContext(notifContext);
+
+                            //
+                            MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
+
+                            // The buffer
+                            StringWriter buffer = new StringWriter();
+
+                            // Get a dispatcher
+                            ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(), invocation
+                                    .getServerContext().getClientResponse(), controllerContext.getServletContainer());
+
+                            // Not really used for now in that context, so we can pass null (need to change that of course)
+                            ThemeContext themeContext = new ThemeContext(null, null);
+
+                            // get render context
+                            RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
+
+                            // Push page
+                            rendererContext.pushObjectRenderContext(res);
+
+                            // Push region
+                            Region region = res.getRegion2(notifContext.getRegionName());
+                            rendererContext.pushObjectRenderContext(region);
+
+                            // Render
+                            rendererContext.render(notifContext);
+
+                            // Pop region
+                            rendererContext.popObjectRenderContext();
+
+                            // Pop page
+                            rendererContext.popObjectRenderContext();
+
+                            // Add render to the page
+                            updatePage.addFragment(notifContext.getId(), buffer.toString());
+
+
+                        } catch (Exception e) {
+                            log.error("An error occured during the computation of window markup", e);
+
+                            //
+                            fullRefresh = true;
+                        }
+                }
 	            
 	            //
 	            if (!fullRefresh)

@@ -23,14 +23,9 @@
 
 var currentSubmit;
 
-function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, refUri)
-{
-   var options = {
-      requestHeaders: ["ajax","true","bilto","toto"],
-      method: "post",
-      postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId+ "&refUri=" + refUri,
-      onSuccess: function(t)
-      {
+
+function onAjaxSuccess(t )		{
+
 	var resp = "";
 
 	if( t.responseText != "")	{
@@ -42,12 +37,59 @@ function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, re
              	return;
         	}
 
+		  if (resp.type == "update_markup") {
+			    // Iterate all changes
+			    for (var id in resp.fragments) {
+				var matchingElt = document.getElementById(id);
+
+				// Different than 1 is not good
+				if (matchingElt != null) {
+				    var dstContainer = document.getElementById(id);
+				    if (dstContainer != null) {
+				        // Get markup fragment
+				        var markup = resp.fragments[id];
+
+				        // Create a temporary element and paste the innerHTML in it
+				        var srcContainer = document.createElement("div");
+
+				        // Insert the markup in the div
+				        new Insertion.Bottom(srcContainer, markup);
+
+				        // Copy the region content
+				        copyInnerHTML(srcContainer, dstContainer, "dyna-window-content")
+				    } else {
+				        // Should log that somewhere
+				    }
+				} else {
+				    // Should log that somewhere
+				}
+			    }
+
+            		// update view state
+            		if (resp.view_state != null) {
+                		view_state = resp.view_state;
+            		} else {
+                		alert("No view state");
+           		 }
+		}
+
         
          	if (resp.type == "update_page") {
             		document.location = resp.location;
         	}
 	}
 
+}
+
+function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId, refUri)
+{
+   var options = {
+      requestHeaders: ["ajax","true","bilto","toto"],
+      method: "post",
+      postBody: "action=" + action + "&windowId="+windowId+"&fromPos=" + fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos + "&toRegion=" + toRegionId+ "&refUri=" + refUri,
+      onSuccess: function(t)
+      {
+	onAjaxSuccess(t);
       },
       on404: function(t)
       {
@@ -150,62 +192,9 @@ function directAjaxCall(container, options , url, eventToStop)
 	new Effect.Appear(ajaxWaitDiv, {duration: 0.3, from: 0, to: 0.9 , delay: 0.2});
 
     options.onSuccess = function(t) {
-        var resp = "";
+         ajaxWaitDiv.hide();
 
-        ajaxWaitDiv.hide();
-
-        try {
-            eval("resp =" + t.responseText + ";");
-        } catch (e) {
-            window.location.reload();
-            /*
-            var debugDiv = document.createElement("div");
-            debugDiv.className='debug'; 
-            debugDiv.style.visibility='hidden'; 
-            debugDiv.innerHTML = t.responseText;
-            var contentContainer = document.getElementById("content-container");
-            contentContainer.appendChild(debugDiv);
-             */
-            return;
-        }
-
-        if (resp.type == "update_markup") {
-            // Iterate all changes
-            for (var id in resp.fragments) {
-                var matchingElt = document.getElementById(id);
-
-                // Different than 1 is not good
-                if (matchingElt != null) {
-                    var dstContainer = document.getElementById(id);
-                    if (dstContainer != null) {
-                        // Get markup fragment
-                        var markup = resp.fragments[id];
-
-                        // Create a temporary element and paste the innerHTML in it
-                        var srcContainer = document.createElement("div");
-
-                        // Insert the markup in the div
-                        new Insertion.Bottom(srcContainer, markup);
-
-                        // Copy the region content
-                        copyInnerHTML(srcContainer, dstContainer, "dyna-window-content")
-                    } else {
-                        // Should log that somewhere
-                    }
-                } else {
-                    // Should log that somewhere
-                }
-            }
-
-            // update view state
-            if (resp.view_state != null) {
-                view_state = resp.view_state;
-            } else {
-                alert("No view state");
-            }
-        } else if (resp.type == "update_page") {
-            document.location = resp.location;
-        }
+  	onAjaxSuccess(t);
     };
 
     if( eventToStop != null) {

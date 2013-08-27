@@ -1221,6 +1221,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         
         /* Zone notification utilisateur */
         
+       
+        WindowContext notifContext = createNotificationWindowCtx(rpc.getControllerContext());
+        rendition.getPageResult().addWindowContext(notifContext);
+
+        Region notifRegion = rendition.getPageResult().getRegion2("notification");
+        DynaRenderOptions.NO_AJAX.setOptions(notifRegion.getProperties());
+    }
+
+    public static WindowContext createNotificationWindowCtx(ControllerContext controllerCtx)   {
+        
         Map<String, String> windowNotifProps = new HashMap<String, String>();
         windowNotifProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
         windowNotifProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
@@ -1228,30 +1238,34 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         
         StringBuffer notifBuffer = new StringBuffer();  
         
-        UserNotification notification = (UserNotification) rpc.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
+
+        notifBuffer.append("<div class=\"dyna-window\">");   
+        notifBuffer.append("<div id=\"notification-window\">");  
+        notifBuffer.append("<div class=\"dyna-window-content\">");        
+        UserNotification notification = (UserNotification) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
         
         if( notification != null)   {
+
             notifBuffer.append("<div class=\"user-notification-"+(notification.isError()?"error":"info")+"\">");
             notifBuffer.append(notification.getMsg());
+
             notifBuffer.append("</div>");
-            
-            
             //delete the msg
-            rpc.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , null);
+            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , null);
         }
+        
+        notifBuffer.append("</div>");
+        notifBuffer.append("</div>");
+        notifBuffer.append("</div>");
         
         WindowResult notifResult = new WindowResult("Notification", notifBuffer.toString(), Collections.EMPTY_MAP, windowNotifProps, null, WindowState.NORMAL,
                 Mode.VIEW);
       
-        WindowContext notifContext = new WindowContext("notification-window", "notification", "0", notifResult);
-        rendition.getPageResult().addWindowContext(notifContext);
-
-        Region notifRegion = rendition.getPageResult().getRegion2("notification");
-        DynaRenderOptions.NO_AJAX.setOptions(notifRegion.getProperties());
+        WindowContext notifContext = new WindowContext("notification-window", "notification", "0", notifResult);  
         
- 
+        return notifContext;
     }
-
+    
 
     void injectAdminHeaders(PageCommand rpc, PageRendition rendition) {
 
