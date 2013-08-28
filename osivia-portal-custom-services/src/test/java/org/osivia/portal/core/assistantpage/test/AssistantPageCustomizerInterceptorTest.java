@@ -111,7 +111,6 @@ public class AssistantPageCustomizerInterceptorTest {
         IProfilManager profilManagerMock = EasyMock.createNiceMock(IProfilManager.class);
         IInternationalizationService internationalizationServiceMock = EasyMock.createNiceMock(IInternationalizationService.class);
         PortalObjectContainer portalObjectContainerMock = EasyMock.createNiceMock(PortalObjectContainer.class);
-        Page pageMock = EasyMock.createNiceMock(Page.class);
 
         EasyMock.expect(factoryMock.getManager()).andStubReturn(managerMock);
         EasyMock.expect(managerMock.checkPermission(EasyMock.anyObject(PortalObjectPermission.class))).andReturn(true).anyTimes();
@@ -119,8 +118,7 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.expect(profilManagerMock.getListeProfils()).andReturn(new ArrayList<ProfilBean>()).anyTimes();
         EasyMock.expect(internationalizationServiceMock.getString(EasyMock.anyObject(String.class), EasyMock.anyObject(Locale.class)))
                 .andReturn("LOCALIZED_STRING").anyTimes();
-        EasyMock.expect(portalObjectContainerMock.getObject(EasyMock.anyObject(PortalObjectId.class))).andStubReturn(pageMock);
-        EasyMock.expect(pageMock.getPortal()).andStubReturn(this.portalMock);
+        EasyMock.expect(portalObjectContainerMock.getObject(EasyMock.anyObject(PortalObjectId.class))).andStubReturn(this.portalMock);
 
         AssistantPageCustomizerInterceptor assistant = new AssistantPageCustomizerInterceptor();
         assistant.setPortalAuthorizationManagerFactory(factoryMock);
@@ -136,7 +134,6 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.replay(profilManagerMock);
         EasyMock.replay(internationalizationServiceMock);
         EasyMock.replay(portalObjectContainerMock);
-        EasyMock.replay(pageMock);
 
 
         // Context
