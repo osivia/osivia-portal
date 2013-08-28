@@ -2,8 +2,8 @@ package org.osivia.portal.api.urls;
 
 import java.util.Map;
 
-
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 
@@ -58,5 +58,8 @@ public interface IPortalUrlFactory {
 
     public String getStopPortletUrl(PortalControllerContext ctx, String pageId, String windowId);
 
-
+    /**
+     * Return the current root portal url. e.g. : http://mydomain.com:8080/portal 
+     */
+    public String getBasePortalUrl(ServerInvocation invocation);
 }

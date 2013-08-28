@@ -100,7 +100,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.print("<div class=\"cms-commands\">");
 
             markup.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
-                    + "'\" href=\"" + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">"
+                    + "';setCallbackFromEcmParams('','" + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\""
+                    + rendererContext.getProperty("osivia.cmsCreateUrl")
+                    + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
 

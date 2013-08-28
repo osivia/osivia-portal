@@ -43,15 +43,25 @@ public interface ICMSService {
 	 */
 	public List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsCtx, String pagePath)  throws CMSException ;
 	
-	/**
-	 * Get urls used to access ECM specific views
-	 * @param cmsCtx context
-	 * @param command type of command acceded (ex : create, edit, etc.)
-	 * @param path  the path of the page
-	 * @param requestParameters GET params added in the URL 
-	 * @return url
-	 * @throws CMSException
-	 */
+	        /**
+     * Get base URL to access ECM
+     * 
+     * @param cmsCtx context
+     * @return url
+     * @throws CMSException
+     */
+    public String getEcmDomain(CMSServiceCtx cmsCtx) throws CMSException;
+
+    /**
+     * Get urls used to access ECM specific views
+     * 
+     * @param cmsCtx context
+     * @param command type of command acceded (ex : create, edit, etc.)
+     * @param path the path of the page
+     * @param requestParameters GET params added in the URL
+     * @return url
+     * @throws CMSException
+     */
 	public String getEcmUrl(CMSServiceCtx cmsCtx, EcmCommand command, String path, Map<String, String> requestParameters)  throws CMSException ;
 	
 	/**

@@ -504,7 +504,14 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
         String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+        
+        // the first time, edition mode is null, it will be ON when the user will see the live version of a document
         String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+        if (editionMode == null) {
+            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
+            context.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, editionMode);
+        }
+
         URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
         // CMS edition menu root element
@@ -532,11 +539,6 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         ChangeCMSEditionModeCommand changeEditionMode = null;
         String strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
         String cssChangeEditionMode = null;
-
-        // the first time, edition mode is null, it will be ON when the user will see the live version of the document
-        if (editionMode == null) {
-            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
-        }
 
 
         if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
@@ -579,11 +581,22 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(context.getServerInvocation());
+        cmsCtx.setControllerContext(context);
 
         // test si mode assistant activé
         if (InternalConstants.CMS_VERSION_PREVIEW.equals(context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
             cmsCtx.setDisplayLiveVersion("1");
         }
+
+        // prepare the callback url params
+        // ============
+        PortalControllerContext portalControllerContext = new PortalControllerContext(context);
+        
+        String closeUrl = urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
+
+        String ecmBaseUrl = getCMSService().getEcmDomain(cmsCtx);
+        // ============
+
 
         Map<String, String> requestParameters = new HashMap<String, String>();
 
@@ -597,6 +610,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsCreatePage.addAttribute(QName.get(HTMLConstants.HREF), createPageUrl);
         cmsCreatePage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "n");
         cmsCreatePage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsCreatePage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
+
         cmsCreatePage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage);
 
@@ -606,6 +621,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsEditPage.addAttribute(QName.get(HTMLConstants.HREF), editPageUrl);
         cmsEditPage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "e");
         cmsEditPage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '' , '" + ecmBaseUrl + "');");
         cmsEditPage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
 

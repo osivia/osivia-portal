@@ -21,6 +21,9 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.server.AbstractServerURL;
+import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerURL;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -471,6 +474,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
+    public String getBasePortalUrl(ServerInvocation invocation) {
+
+        ServerURL baseServerURL = new AbstractServerURL();
+        baseServerURL.setPortalRequestPath("");
+
+        URLContext urlContext = invocation.getServerContext().getURLContext();
+        urlContext = urlContext.withAuthenticated(false);
+        String portalURL = invocation.getResponse().renderURL(baseServerURL, urlContext, URLFormat.newInstance(false, false));
+
+        return portalURL;
+    }
 
 
 }

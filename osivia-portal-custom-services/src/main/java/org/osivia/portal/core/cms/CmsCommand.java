@@ -544,6 +544,12 @@ public class CmsCommand extends DynamicCommand {
 			//
 			// }
 
+            // LBI : refresh navigation when a cms page is created
+            if ("newPage".equals(displayContext)) {
+                PageProperties.getProperties().setRefreshingPage(true);
+            }
+
+
 			/*
 			 * Lecture de l'item
 			 * 
@@ -626,7 +632,9 @@ public class CmsCommand extends DynamicCommand {
 
                     if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) {
 
-                        if ("sitemap".equals(displayContext)) {
+                        // From sitemap or creation page wizard, force the preview mode navigation
+                        // in order to display the newly created documents
+                        if ("sitemap".equals(displayContext) || "newPage".equals(displayContext)) {
 
                             cmsReadItemContext.setDisplayLiveVersion("1");
                             try {

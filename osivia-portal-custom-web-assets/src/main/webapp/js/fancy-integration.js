@@ -3,6 +3,9 @@
 var callbackId = "";
 var callbackUrl = "";
 
+/**
+* manage callback after closing fancybox
+*/
 function callback( )	{
 
 	var divElt = document.getElementById(callbackId);
@@ -11,6 +14,22 @@ function callback( )	{
 	if( divElt != null)
 		// reload portlet
 		updatePortletContent( divElt, callbackUrl);
+	
+		// load a new page
+	else if (callbackUrlFromEcm) {
+		
+		var $f = jQuery('.fancybox-iframe');
+		
+		if($f && currentDocumentId) {
+
+			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
+			
+			if(redirectUrl) {
+				window.location.replace(redirectUrl);
+			}
+		}
+		
+	}
 	else
 		// reload full page
 		window.location.replace(callbackUrl);
@@ -18,12 +37,35 @@ function callback( )	{
     
 }
 
+var callbackUrlFromEcm = "";
+var currentDocumentId = "";
+var ecmBaseUrl ="";
+
+/**
+* Generic callback params
+*/
 function setCallbackParams( id, url)	{
 
 	callbackId = id;
 	callbackUrl = url;
 }
 
+/**
+* Specific callback params for ECM conversation
+*/
+function setCallbackFromEcmParams(url, ecm)	{
+
+	callbackUrlFromEcm = url;
+	ecmBaseUrl = ecm;
+	
+	//setup a callback to handle the dispatched MessageEvent. if window.postMessage is supported the passed
+	// event will have .data, .origin and .source properties. otherwise, it will only have the .data property.
+	XD.receiveMessage(function(message)
+			{
+				receiveMessageAction(message);
+			}
+	 , ecmBaseUrl);
+}
 
 function asyncUpdatePortlet( windowId, url)	{
  	var divElt = document.getElementById(windowId);
@@ -57,6 +99,7 @@ $JQry(document).ready(function() {
             callback();
 		}
 	});
+	
 
 	$JQry(".fancybox_inline").fancybox({
 		'titlePosition'     : 'inside',
@@ -87,6 +130,18 @@ $JQry(document).ready(function() {
 
 
 function closeFancybox() {
-	parent.jQuery.fancybox.close();
+	parent.$JQry.fancybox.close();
 }
 
+/**
+* Switch actions after recieving messages from ECM
+*/
+function receiveMessageAction(message) {
+	
+	if(message.data == 'closeFancyBox') {
+		parent.$JQry.fancybox.close();
+	}
+	else if (message.data.match('currentDocumentId')) {
+		currentDocumentId = message.data.replace('currentDocumentId=','');
+	}
+}

@@ -295,7 +295,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     String resfreshUrl= ctx.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(true, true));
                     regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
-
+                    String ecmBaseUrl = getCMSService().getEcmDomain(cmsContext);
+                    regionPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
 					// Le mode Ajax est incompatble avec le mode "edition cms"
 					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
@@ -328,6 +329,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 								requestParameters = new HashMap<String, String>();
 								requestParameters.put("belowURI", refURI);
+
+                                windowPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
+
 								String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
 								windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
 								windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
