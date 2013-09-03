@@ -194,7 +194,7 @@ function directAjaxCall(container, options , url, eventToStop)
     options.onSuccess = function(t) {
          ajaxWaitDiv.hide();
 
-  	onAjaxSuccess(t);
+         onAjaxSuccess(t);
     };
 
     if( eventToStop != null) {

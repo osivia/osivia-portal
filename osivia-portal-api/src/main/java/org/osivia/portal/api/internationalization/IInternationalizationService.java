@@ -23,12 +23,34 @@ public interface IInternationalizationService {
 
 
     /**
-     * Access to localized resource property, which can be customized.
+     * Get bundle factory
+     *
+     * @param classLoader class loader, may be null to access default portal resource
+     * @return bundle factory
+     */
+    IBundleFactory getBundleFactory(ClassLoader classLoader);
+
+
+    /**
+     * Access to portal localized resource property, which can be customized.
      *
      * @param key resource property key
      * @param locale locale
+     * @param args resource property arguments
      * @return localized resource property value
      */
-    String getString(String key, Locale locale);
+    String getString(String key, Locale locale, Object... args);
+
+
+    /**
+     * Access to class loader localized resource property, which can be customized.
+     * 
+     * @param key resource property key
+     * @param locale locale
+     * @param classLoader class loader, may be null to access default portal resource
+     * @param args resource property arguments
+     * @return localized resource property value
+     */
+    String getString(String key, Locale locale, ClassLoader classLoader, Object... args);
 
 }

@@ -9,54 +9,79 @@ import org.jboss.deployment.DeploymentException;
 import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.portal.core.deployment.jboss.PortletAppDeployment;
 import org.jboss.portal.core.deployment.jboss.PortletAppDeploymentFactory;
-
 import org.jboss.portal.portlet.container.managed.ManagedObjectRegistryEventListener;
 import org.jboss.portal.server.deployment.PortalWebApp;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.migration.IMigrationManager;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.status.IStatusService;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.formatters.IFormatter;
+import org.osivia.portal.core.profils.IProfilManager;
+
+/**
+ * Portlet application deployment.
+ *
+ * @see PortletAppDeployment
+ */
+public class PortletApplicationDeployment extends PortletAppDeployment {
+
+    /**
+     * Constructor.
+     *
+     * @param url URL
+     * @param pwa portal web app
+     * @param listener managed object registry event listener
+     * @param mbeanServer MBean server
+     * @param factory portlet app deployment factory
+     */
+    public PortletApplicationDeployment(URL url, PortalWebApp pwa, ManagedObjectRegistryEventListener listener, MBeanServer mbeanServer,
+            PortletAppDeploymentFactory factory) {
+        super(url, pwa, listener, mbeanServer, factory);
+    }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void start() throws DeploymentException {
+        // Inject services
+        this.injectStandardService(Constants.CACHE_SERVICE_NAME, ICacheService.class.getName(), "osivia:service=CacheServices");
+        this.injectStandardService(Constants.STATUS_SERVICE_NAME, IStatusService.class.getName(), "osivia:service=StatusServices");
+        this.injectStandardService(Constants.URL_SERVICE_NAME, IPortalUrlFactory.class.getName(), "osivia:service=UrlFactory");
+        this.injectStandardService(Constants.PROFILE_SERVICE_NAME, IProfilManager.class.getName(), "osivia:service=ProfilManager");
+        this.injectStandardService(Constants.FORMATTER_SERVICE_NAME, IFormatter.class.getName(),
+                "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+        this.injectStandardService(Constants.NOTIFICATIONS_SERVICE_NAME, INotificationsService.class.getName(), "osivia:service=NotificationsService");
+        this.injectStandardService(Constants.INTERNATIONALIZATION_SERVICE_NAME, IInternationalizationService.class.getName(),
+                "osivia:service=InternationalizationService");
 
-public class PortletApplicationDeployment extends PortletAppDeployment  {
-	
-	  public PortletApplicationDeployment(URL url, PortalWebApp pwa, ManagedObjectRegistryEventListener listener, MBeanServer mbeanServer, PortletAppDeploymentFactory factory)
-	   {
-	      super(url, pwa, listener, mbeanServer, factory);
-	   }
+        // FIXME à déplacer dans CMS
+        this.injectStandardService("NuxeoService", "fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService", "osivia:service=NuxeoService");
 
-	   public void start() throws DeploymentException
-	   {
-	      // Inject services if needed
-	      injectStandardService("CacheService","org.osivia.portal.api.cache.services.ICacheService","osivia:service=CacheServices");
-	      injectStandardService("StatusService","org.osivia.portal.api.status.IStatusService","osivia:service=StatusServices");
-	      injectStandardService("UrlService","org.osivia.portal.api.urls.IPortalUrlFactory","osivia:service=UrlFactory");
-	      injectStandardService("ProfilService","org.osivia.portal.core.profils.IProfilManager","osivia:service=ProfilManager");
-	      injectStandardService("NuxeoService","fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService","osivia:service=NuxeoService");
-	      injectStandardService("FormatterService","org.osivia.portal.core.formatters.IFormatter","osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+        //
+        super.start();
+    }
 
-	      //
-	      super.start();
-	      
 
-	   }
-	   
-	   protected void injectStandardService( String serviceName, String serviceClass,  String serviceRef)
-	   {
+    /**
+     * Utility method used to inject standard service.
+     *
+     * @param serviceName service name
+     * @param serviceClass service class
+     * @param serviceRef service reference
+     */
+    protected void injectStandardService(String serviceName, String serviceClass, String serviceRef) {
+        try {
+            Class<?> proxyClass = this.pwa.getClassLoader().loadClass(serviceClass);
+            ObjectName objectName = ObjectName.getInstance(serviceRef);
+            Object proxy = MBeanProxyExt.create(proxyClass, objectName, this.mbeanServer);
+            this.pwa.getServletContext().setAttribute(serviceName, proxy);
+        } catch (Exception e) {
+            this.log.error("Was not able to create service proxy", e);
+        }
+    }
 
-	            //
-	            try
-	            {
-	               Class proxyClass = pwa.getClassLoader().loadClass(serviceClass);
-	               ObjectName objectName = ObjectName.getInstance(serviceRef);
-	               Object proxy = MBeanProxyExt.create(proxyClass, objectName, mbeanServer);
-	               pwa.getServletContext().setAttribute(serviceName, proxy);
-	            }
-	            catch (Exception e)
-	            {
-	               log.error("Was not able to create service proxy", e);
-	            }
-	         }
-	      
-	   
-	   
 }

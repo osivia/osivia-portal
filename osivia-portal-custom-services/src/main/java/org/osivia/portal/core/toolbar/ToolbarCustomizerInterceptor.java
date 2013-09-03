@@ -27,7 +27,6 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PageCommand;
@@ -93,20 +92,25 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     /** Toolbar region name. */
     private static final String REGION_NAME_TOOLBAR = "toolbar";
 
+    /** HTML class "toolbar-administration". */
+    private static final String HTML_CLASS_TOOLBAR_ADMINISTRATION = "toolbar-administration";
     /** HTML class "toolbar-menu". */
     private static final String HTML_CLASS_TOOLBAR_MENU = "toolbar-menu";
-
     /** HTML class "toolbar-menu-title". */
     private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
     /** HTML class "preview-version". */
-    private static final String CLASSES_PREVIEW = "preview-version";
+    private static final String HTML_CLASS_PREVIEW = "preview-version";
     /** HTML class "online-version". */
-    private static final String CLASSES_ONLINE = "online-version";
-
+    private static final String HTML_CLASS_ONLINE = "online-version";
     /** HTML class "fancybox_inline". */
     private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** HTML class "fancybox_refresh". */
     private static final String HTML_CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
+
+    /** HTML identifier for configuration menu. */
+    private static final String HTML_ID_CONFIGURATION_MENU = "toolbar-administration-configuration";
+    /** HTML identifier for edition menu. */
+    private static final String HTML_ID_EDITION_MENU = "toolbar-administration-edition";
 
     /** Pages list URL. */
     private static final String URL_PAGES_LIST = "#pages-list";
@@ -287,7 +291,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // Administration root element
         Element administration = new DOMElement(QName.get(HTMLConstants.DIV));
-        administration.setText(HTMLConstants.TEXT_DEFAULT);
+        administration.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_ADMINISTRATION);
+        administration.setText(StringUtils.EMPTY);
 
         if (PageCustomizerInterceptor.isAdministrator(context)) {
             // Configuration menu
@@ -306,7 +311,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             this.generateAdministrationToggleVersion(context, page, administration);
         }
 
-        return this.writeHtmlData(administration);
+        return administration.asXML();
     }
 
 
@@ -324,6 +329,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // Configuration menu root element
         Element configurationMenu = new DOMElement(QName.get(HTMLConstants.DIV));
+        configurationMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_CONFIGURATION_MENU);
         configurationMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
         administration.add(configurationMenu);
 
@@ -425,6 +431,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // Edition menu root element
         Element editionMenu = new DOMElement(QName.get(HTMLConstants.DIV));
+        editionMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_EDITION_MENU);
         editionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
         administration.add(editionMenu);
 
@@ -681,22 +688,19 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // cmsToggleBtn2.add(cmsToggleBtn3);
 
         if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_PREVIEW);
-            cmsToggleBtn1.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
-                    InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale)));
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_PREVIEW);
+            cmsToggleBtn1.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale));
             cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn2.setText(HTMLConstants.TEXT_DEFAULT);
+            cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
                     editionMode);
 
         } else {
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), CLASSES_ONLINE);
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_ONLINE);
 
             cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn1.setText(HTMLConstants.TEXT_DEFAULT.concat(this.internationalizationService.getString(
-                    InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale)));
-
-            cmsToggleBtn2.setText(HTMLConstants.TEXT_DEFAULT);
+            cmsToggleBtn1.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale));
+            cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
                     editionMode);
 
@@ -756,14 +760,9 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                 try {
                     PageType pageType = PageType.getPageType(page, context);
                     Boolean templated = pageType.isTemplated();
-                    if (!(pageType.isPortalPage() || PageType.DYNAMIC_PAGE.equals(pageType))) {
-                        // Modif JSS pour éviter le classcast de page en portal
-                        // A valider avec Cédric
-                        // Cas fonctionnel sous-item page statique CMS
-                        //page = (Page) page.getParent();
-                        PortalObject po =  page.getParent();
-                        if( po instanceof Page)
-                            pageType = PageType.getPageType(page, context);
+                    if (PageType.CMS_TEMPLATED_PAGE.equals(pageType)) {
+                        page = (Page) page.getParent();
+                        pageType = PageType.getPageType(page, context);
                     }
 
                     URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
@@ -787,69 +786,72 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     // CMS templated indicator
                     dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED, templated);
 
-                    // Draft page indicator
-                    Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
+                    if (!PageType.DYNAMIC_PAGE.equals(pageType)) {
+                        // Draft page indicator
+                        Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
-                    // Layouts
-                    List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
-                    Collections.sort(layouts, new PortalLayoutComparator());
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
+                        // Layouts
+                        List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
+                        Collections.sort(layouts, new PortalLayoutComparator());
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
 
-                    // Current layout
-                    dispatcher
-                            .setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT, page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
+                        // Current layout
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT,
+                                page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
 
-                    // Themes
-                    List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
-                    Collections.sort(themes, new PortalThemeComparator());
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
+                        // Themes
+                        List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
+                        Collections.sort(themes, new PortalThemeComparator());
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
 
-                    // Current theme
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME, page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME));
+                        // Current theme
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME,
+                                page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME));
 
-                    // Roles
-                    List<Role> roles = this.profilManager.getFilteredRoles();
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES, roles);
+                        // Roles
+                        List<Role> roles = this.profilManager.getFilteredRoles();
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES, roles);
 
-                    // Actions for roles
-                    DomainConfigurator domainConfigurator = this.authorizationDomainRegistry.getDomain("portalobject").getConfigurator();
-                    Set<RoleSecurityBinding> constraints = domainConfigurator.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-                    Map<String, Set<String>> actionsForRoles = new HashMap<String, Set<String>>();
-                    if (CollectionUtils.isNotEmpty(constraints)) {
-                        for (RoleSecurityBinding roleSecurityBinding : constraints) {
-                            actionsForRoles.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
+                        // Actions for roles
+                        DomainConfigurator domainConfigurator = this.authorizationDomainRegistry.getDomain("portalobject").getConfigurator();
+                        Set<RoleSecurityBinding> constraints = domainConfigurator.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                        Map<String, Set<String>> actionsForRoles = new HashMap<String, Set<String>>();
+                        if (CollectionUtils.isNotEmpty(constraints)) {
+                            for (RoleSecurityBinding roleSecurityBinding : constraints) {
+                                actionsForRoles.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
+                            }
                         }
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES, actionsForRoles);
+
+                        // Page suppression
+                        DeletePageCommand deletePageCommand = new DeletePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                        String deletePageCommandUrl = context.renderURL(deletePageCommand, urlContext, URLFormat.newInstance(true, true));
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
+
+                        // CMS scope select
+                        String scope = page.getDeclaredProperty("osivia.cms.scope");
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT, this.formatScopeList(page, "scope", scope));
+
+                        // CMS display live version
+                        CMSServiceCtx cmsServiceCtx = new CMSServiceCtx();
+                        cmsServiceCtx.setControllerContext(context);
+                        String displayLiveVersion = page.getDeclaredProperty("osivia.cms.displayLiveVersion");
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION,
+                                this.formatDisplayLiveVersionList(cmsServiceCtx, page, "displayLiveVersion", displayLiveVersion));
+
+                        // CMS recontextualization support
+                        String outgoingRecontextualizationSupport = page.getDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport");
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT, this.formatInheritedCheckVakue(page,
+                                "outgoingRecontextualizationSupport", "osivia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport));
+
+                        // CMS base path
+                        String pageCmsBasePath = page.getDeclaredProperty("osivia.cms.basePath");
+                        if (pageCmsBasePath == null) {
+                            pageCmsBasePath = StringUtils.EMPTY;
+                        }
+                        dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
                     }
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES, actionsForRoles);
-
-                    // Page suppression
-                    DeletePageCommand deletePageCommand = new DeletePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-                    String deletePageCommandUrl = context.renderURL(deletePageCommand, urlContext, URLFormat.newInstance(true, true));
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
-
-                    // CMS scope select
-                    String scope = page.getDeclaredProperty("osivia.cms.scope");
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT, this.formatScopeList(page, "scope", scope));
-
-                    // CMS display live version
-                    CMSServiceCtx cmsServiceCtx = new CMSServiceCtx();
-                    cmsServiceCtx.setControllerContext(context);
-                    String displayLiveVersion = page.getDeclaredProperty("osivia.cms.displayLiveVersion");
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION,
-                            this.formatDisplayLiveVersionList(cmsServiceCtx, page, "displayLiveVersion", displayLiveVersion));
-
-                    // CMS recontextualization support
-                    String outgoingRecontextualizationSupport = page.getDeclaredProperty("osivia.cms.outgoingRecontextualizationSupport");
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT, this.formatInheritedCheckVakue(page,
-                            "outgoingRecontextualizationSupport", "osivia.cms.outgoingRecontextualizationSupport", outgoingRecontextualizationSupport));
-
-                    // CMS base path
-                    String pageCmsBasePath = page.getDeclaredProperty("osivia.cms.basePath");
-                    if (pageCmsBasePath == null) {
-                        pageCmsBasePath = StringUtils.EMPTY;
-                    }
-                    dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
                 } catch (PortalSecurityException e) {
                     logger.error(StringUtils.EMPTY, e);
                 }

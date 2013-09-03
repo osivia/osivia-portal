@@ -5,27 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.UserNotification;
 import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 
 
 /**
  * Permet de stocker l'état d'une page et facilite notamment la gestion des
  * backs
- * 
+ *
  * @author jeanseb
- * 
+ *
  */
 public class PageMarkerInfo implements Serializable {
-	
+
     /** Default serial version ID. */
     private static final long serialVersionUID = 1L;
 
@@ -35,30 +34,21 @@ public class PageMarkerInfo implements Serializable {
 		super();
 		this.pageMarker = pageMarker;
 	}
-	
+
 	Integer firstTab;
-	
+
 	PortalObjectId currentPageId;
 
     Long selectionTs;
-    
+
     String popupMode;
     PortalObjectId popupModeWindowID;
-    
-    UserNotification notification;
-	
-	
-    public UserNotification getNotification() {
-        return notification;
-    }
 
-    
-    public void setNotification(UserNotification notification) {
-        this.notification = notification;
-    }
+    /** Notifications. */
+    private List<Notifications> notificationsList;
 
     public PortalObjectId getPopupModeWindowID() {
-		return popupModeWindowID;
+		return this.popupModeWindowID;
 	}
 
 	public void setPopupModeWindowID(PortalObjectId popupModeWindowID) {
@@ -66,7 +56,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public String getPopupMode() {
-		return popupMode;
+		return this.popupMode;
 	}
 
 	public void setPopupMode(String popupMode) {
@@ -74,7 +64,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public PortalObjectId getCurrentPageId() {
-		return currentPageId;
+		return this.currentPageId;
 	}
 
 	public void setCurrentPageId(PortalObjectId currentPageId) {
@@ -82,7 +72,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public Integer getFirstTab() {
-		return firstTab;
+		return this.firstTab;
 	}
 
 	public void setFirstTab(Integer firstTab) {
@@ -93,7 +83,7 @@ public class PageMarkerInfo implements Serializable {
 
 
 	public String getPageMarker() {
-		return pageMarker;
+		return this.pageMarker;
 	}
 
 	public void setPageMarker(String pageMarker) {
@@ -102,7 +92,7 @@ public class PageMarkerInfo implements Serializable {
 
 	Long lastTimeStamp;
 	public Long getLastTimeStamp() {
-		return lastTimeStamp;
+		return this.lastTimeStamp;
 	}
 
 	public void setLastTimeStamp(Long lastTimeStamp) {
@@ -115,7 +105,7 @@ public class PageMarkerInfo implements Serializable {
 	List<DynamicPageBean> dynamicPages;
 	UserPortal tabbedNavHeaderUserPortal;
 	public Long getTabbedNavheaderCount() {
-		return tabbedNavheaderCount;
+		return this.tabbedNavheaderCount;
 	}
 
 	public void setTabbedNavheaderCount(Long tabbedNavheaderCount) {
@@ -123,7 +113,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public String getTabbedNavheaderUsername() {
-		return tabbedNavheaderUsername;
+		return this.tabbedNavheaderUsername;
 	}
 
 	public void setTabbedNavheaderUsername(String tabbedNavheaderUsername) {
@@ -131,7 +121,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public UserPortal getTabbedNavHeaderUserPortal() {
-		return tabbedNavHeaderUserPortal;
+		return this.tabbedNavHeaderUserPortal;
 	}
 
 	public void setTabbedNavHeaderUserPortal(UserPortal tabbedNavHeaderUserPortal) {
@@ -144,7 +134,7 @@ public class PageMarkerInfo implements Serializable {
 
 
 	public List<DynamicPageBean> getDynamicPages() {
-		return dynamicPages;
+		return this.dynamicPages;
 	}
 
 	public void setDynamicPages(List<DynamicPageBean> dynamicPages) {
@@ -156,7 +146,7 @@ public class PageMarkerInfo implements Serializable {
 	Breadcrumb breadcrumb = new Breadcrumb();
 
 	public Breadcrumb getBreadcrumb() {
-		return breadcrumb;
+		return this.breadcrumb;
 	}
 
 	public void setBreadcrumb(Breadcrumb breadcrumb) {
@@ -164,11 +154,11 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public List<DynamicWindowBean> getDynamicWindows() {
-		return dynamicWindows;
+		return this.dynamicWindows;
 	}
 
 	public Map<PortalObjectId, WindowStateMarkerInfo> getWindowInfos() {
-		return windowInfos;
+		return this.windowInfos;
 	}
 
 	public void setWindowInfos(Map<PortalObjectId, WindowStateMarkerInfo> windowInfos) {
@@ -180,7 +170,7 @@ public class PageMarkerInfo implements Serializable {
 	}
 
 	public PortalObjectId getPageId() {
-		return pageId;
+		return this.pageId;
 	}
 
 	public void setPageId(PortalObjectId pageId) {
@@ -190,36 +180,53 @@ public class PageMarkerInfo implements Serializable {
 	public void setPageNavigationState(PageNavigationalState pns) {
 		this.pns = pns;
 	}
-	
+
 	public PageNavigationalState getPageNavigationState() {
-		return pns;
+		return this.pns;
 	}
 
  /**
      * Getter.
-     * 
+     *
      * @return the selectionsMap
      */
     public Map<SelectionMapIdentifiers, Set<SelectionItem>> getSelectionsMap() {
-        return selectionsMap;
+        return this.selectionsMap;
     }
 
     /**
      * Setter.
-     * 
+     *
      * @param selectionsMap the selectionsMap to set
      */
     public void setSelectionsMap(Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap) {
         this.selectionsMap = selectionsMap;
     }
-    
+
     public Long getSelectionTs() {
-		return selectionTs;
+		return this.selectionTs;
 	}
 
 	public void setSelectionTs(Long selectionTs) {
 		this.selectionTs = selectionTs;
 	}
 
+    /**
+     * Getter for notificationsList.
+     * 
+     * @return the notificationsList
+     */
+    public List<Notifications> getNotificationsList() {
+        return this.notificationsList;
+    }
+
+    /**
+     * Setter for notificationsList.
+     * 
+     * @param notificationsList the notificationsList to set
+     */
+    public void setNotificationsList(List<Notifications> notificationsList) {
+        this.notificationsList = notificationsList;
+    }
 
 }

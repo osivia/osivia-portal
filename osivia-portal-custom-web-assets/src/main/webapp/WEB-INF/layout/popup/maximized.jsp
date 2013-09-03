@@ -26,6 +26,7 @@
 <div id="portal-container">
     <div id="sizer">
         <div id="expander">
+            <p:region regionName='notifications' regionID='notifications' />
             
             <div id="content-container">
             <table width="100%">

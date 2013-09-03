@@ -24,9 +24,13 @@
 <div id="portal-container">
     <div id="sizer">
         <div id="expander">
-            
             <div id="content-container">
             <table width="100%">
+              <tr>
+                <td>
+                  <p:region regionName='notifications' regionID='notifications' />
+                </td>
+              </tr>
               <tr>
                 <td valign="top" width="100%">
                    <p:region regionName='popup' regionID='popup'/>

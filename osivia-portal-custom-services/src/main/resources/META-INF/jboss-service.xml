@@ -560,6 +560,15 @@
             optional-attribute-name="CustomizationService"
             proxy-type="attribute">osivia:service=CustomizationService</depends>
     </mbean>
+    
+    <!-- Notifications service -->
+    <mbean
+        code="org.osivia.portal.core.notifications.NotificationsService"
+        name="osivia:service=NotificationsService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
 
     <!-- Manage AJAX actions used by the CMS edition mode -->
     <mbean

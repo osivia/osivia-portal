@@ -52,8 +52,6 @@ Locale locale = request.getLocale();
 %>
 
 
-<script type="text/javascript" src="/osivia-portal-custom-web-assets/js/modal-message.js"></script>
-
 <script type="text/javascript">
 
 // Variables filled when opening fancybox

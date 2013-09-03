@@ -1,10 +1,8 @@
 package org.osivia.portal.core.pagemarker;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -12,13 +10,12 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -31,32 +28,24 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalStateContext;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.StateString;
-import org.jboss.portal.server.ServerInvocation;
-import org.omg.PortableServer.REQUEST_PROCESSING_POLICY_ID;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
-import org.osivia.portal.core.page.UserNotification;
-import org.osivia.portal.core.portalobjects.DynamicPersistentPage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
-import org.osivia.portal.core.tracker.ITracker;
-import org.osivia.portal.core.tracker.TrackerBean;
 import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 import org.osivia.portal.core.selection.SelectionScope;
 import org.osivia.portal.core.selection.SelectionService;
@@ -161,7 +150,7 @@ public class PageMarkerUtils {
 
 	/**
 	 * Utility method used to save the page state.
-	 * 
+	 *
 	 * @param controllerCtx
 	 *            controller context
 	 * @param page
@@ -253,14 +242,14 @@ public class PageMarkerUtils {
 			markerInfo.setCurrentPageId(currentPageId);
 		}
 
-		
+
 		// Restauration mode popup
 		String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
 		markerInfo.setPopupMode(popupMode);
 		PortalObjectId popupModeWindowID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
 		markerInfo.setPopupModeWindowID(popupModeWindowID);
 
-		
+
 		// Sauvegarde de l'ensemble des sélections
 		Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
 				SelectionService.ATTR_SELECTIONS_MAP);
@@ -268,12 +257,15 @@ public class PageMarkerUtils {
 
 			markerInfo.setSelectionsMap(selectionsMap);
 		}
-		
 
-         UserNotification notification = (UserNotification) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
-         if( notification != null )
-             markerInfo.setNotification(notification);
-		
+
+        // Notifications list
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
+        List<Notifications> notificationsList = NotificationsUtils.getNotificationsService().getNotificationsList(portalControllerContext);
+        if (CollectionUtils.isNotEmpty(notificationsList)) {
+            markerInfo.setNotificationsList(notificationsList);
+        }
+
 
 		Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
 		if (selectionTs != null) {
@@ -363,7 +355,7 @@ public class PageMarkerUtils {
 
 	/**
 	 * Utility method used to restore the page state.
-	 * 
+	 *
 	 * @param controllerContext
 	 *            controller context
 	 * @param requestPath
@@ -384,7 +376,7 @@ public class PageMarkerUtils {
 				/**********************************************************************
 				 * Restauration de l'état des windows en fonction du marqueur de
 				 * page
-				 * 
+				 *
 				 * Permet de gérer les backs du navigateur
 				 **********************************************************************/
 
@@ -456,9 +448,9 @@ public class PageMarkerUtils {
 										 * pageChilds =
 										 * page.getChildren(PortalObject
 										 * .WINDOW_MASK);
-										 * 
-										 * 
-										 * 
+										 *
+										 *
+										 *
 										 * for (Object po : pageChilds) {
 										 */
 
@@ -471,14 +463,14 @@ public class PageMarkerUtils {
 											 * // Pour supprimer les oldNS et
 											 * forcer la // prise en compte du
 											 * nouvel état
-											 * 
+											 *
 											 * controllerContext.removeAttribute(
 											 * ControllerCommand
 											 * .PRINCIPAL_SCOPE, child.getId()
 											 * .toString
 											 * (PortalObjectPath.CANONICAL_FORMAT
 											 * ));
-											 * 
+											 *
 											 * WindowNavigationalState newNS =
 											 * new
 											 * WindowNavigationalState(wInfo.
@@ -486,8 +478,8 @@ public class PageMarkerUtils {
 											 * wInfo.getMode(),
 											 * wInfo.getContentState(),
 											 * wInfo.getPublicContentState());
-											 * 
-											 * 
+											 *
+											 *
 											 * controllerContext.setAttribute(
 											 * ControllerCommand
 											 * .NAVIGATIONAL_STATE_SCOPE, nsKey,
@@ -555,11 +547,11 @@ public class PageMarkerUtils {
 								if (markerInfo.getCurrentPageId() != null) {
 									controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
 								}
-								
+
 								// Restauration mode popup
 								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", markerInfo.getPopupMode());
-								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", markerInfo.getPopupModeWindowID());								
-								
+								controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", markerInfo.getPopupModeWindowID());
+
 
 								// Restauration de l'ensemble des sélection
 								Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();
@@ -570,8 +562,7 @@ public class PageMarkerUtils {
 
 									try {
 
-										// Parcours de tous les éléments de la
-										// map
+                                        // Parcours de tous les éléments de la map
 										Set<Entry<SelectionMapIdentifiers, Set<SelectionItem>>> entrySet = selectionsMap.entrySet();
 										for (Entry<SelectionMapIdentifiers, Set<SelectionItem>> entry : entrySet) {
 											SelectionMapIdentifiers selectionMapIdentifiers = entry.getKey();
@@ -579,22 +570,17 @@ public class PageMarkerUtils {
 
 											SelectionScope scope = selectionMapIdentifiers.getScope();
 											if ((SelectionScope.SCOPE_NAVIGATION.equals(scope)) || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
-												// Scope navigation ou scope
-												// page concernant la page
-												// courante
+                                                // Scope navigation ou scope page concernant la page courante
 												Set<SelectionItem> newSelectionSet = new LinkedHashSet<SelectionItem>(selectionSet);
 												newSelectionsMap.put(selectionMapIdentifiers, newSelectionSet);
 											} else {
-												// Scope session ou scope page
-												// ne concernant pas la page
-												// courante
+                                                // Scope session ou scope page ne concernant pas la page courante
 												newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
 											}
 										}
 
 									} catch (ClassCastException e) {
-										// Pb lie au reload du service, on
-										// ignore la map
+                                        // Pb lie au reload du service, on ignore la map
 									}
 
 									controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP, newSelectionsMap);
@@ -603,9 +589,11 @@ public class PageMarkerUtils {
 								if (markerInfo.getSelectionTs() != null) {
 									controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());
 								}
-								
-                                if (markerInfo.getNotification() != null) {
-                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , markerInfo.getNotification());
+
+                                if (CollectionUtils.isNotEmpty(markerInfo.getNotificationsList())) {
+                                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                                    NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext,
+                                            markerInfo.getNotificationsList());
                                 }
 
 								if (page != null) {
@@ -639,7 +627,6 @@ public class PageMarkerUtils {
 
 		if (controlledPageMarker != null) {
 			// Traitement lié au back du navigateur
-
 			Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
 			if (markers != null) {
 				try {

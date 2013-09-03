@@ -7,8 +7,11 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 
 
 public class DeletePageCommand extends AssistantCommand {
@@ -49,6 +52,10 @@ public class DeletePageCommand extends AssistantCommand {
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();
 
+        // Notification
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.getControllerContext());
+        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, "La page a bien été supprimée.",
+                NotificationsType.SUCCESS);
 
         return new UpdatePageResponse(redirectPage.getId());
 

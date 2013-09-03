@@ -88,6 +88,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -775,6 +776,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
                         cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
 
+
+                        cmd.getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupIgnoreNotifications", "1");
+
                     }
                 }
             }
@@ -1046,10 +1050,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // Insert navigation portlet in the page
         if (resp instanceof PageRendition) {
 
+            PageRendition rendition = (PageRendition) resp;
+
             if (cmd instanceof RenderPageCommand) {
                 RenderPageCommand rpc = (RenderPageCommand) cmd;
 
-                PageRendition rendition = (PageRendition) resp;
 
                 boolean admin = false;
                 if (cmd instanceof RenderPageCommand) {
@@ -1068,9 +1073,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     if( popupWindowId == null) {
                         this.injectStandardHeaders(rpc,  rendition);
                     }
+
+
                 }
 
             }
+
+
+            PortalControllerContext portalControllerContext = new PortalControllerContext(cmd.getControllerContext());
+            NotificationsUtils.injectNotificationsRegion(portalControllerContext, rendition);
+
 
             // A décommenter Juste pour inspecter les sessions dans le debugger
             /*
@@ -1086,6 +1098,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
              */
 
         }
+
 
 
         //
@@ -1166,8 +1179,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append(toolbarSettings);
         }
 
-        
-        
+
+
 
         /* JSS20130610 : Injection path CMS pour Ajax */
 
@@ -1180,13 +1193,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
 
         pageSettings.append("<script type='text/javascript'>\n");
-          
+
         String sPath[] = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
         }
 
- 
+
         if ((sPath != null) && (sPath.length == 1)) {
 
             pageSettings.append("cmsPath = \"");
@@ -1194,16 +1207,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             pageSettings.append("\";\n");
         }
 
-        
+
         String commandPrefix =    rpc.getControllerContext().getServerInvocation().getServerContext().getPortalContextPath();
         commandPrefix += "/pagemarker/" + PageMarkerUtils.getCurrentPageMarker(rpc.getControllerContext());
         pageSettings.append("commandPrefix = \"");
         pageSettings.append(commandPrefix);
         pageSettings.append("\";\n");
-        
+
         pageSettings.append("</script>\n");
-        
-        
+
+
 
         Map<String, String> windowProps = new HashMap<String, String>();
 
@@ -1217,55 +1230,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         Region region = rendition.getPageResult().getRegion2("pageSettings");
         DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        
-        
-        /* Zone notification utilisateur */
-        
-       
-        WindowContext notifContext = createNotificationWindowCtx(rpc.getControllerContext());
-        rendition.getPageResult().addWindowContext(notifContext);
 
-        Region notifRegion = rendition.getPageResult().getRegion2("notification");
-        DynaRenderOptions.NO_AJAX.setOptions(notifRegion.getProperties());
+
     }
 
-    public static WindowContext createNotificationWindowCtx(ControllerContext controllerCtx)   {
-        
-        Map<String, String> windowNotifProps = new HashMap<String, String>();
-        windowNotifProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-        windowNotifProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-        windowNotifProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-        
-        StringBuffer notifBuffer = new StringBuffer();  
-        
-
-        notifBuffer.append("<div class=\"dyna-window\">");   
-        notifBuffer.append("<div id=\"notification-window\">");  
-        notifBuffer.append("<div class=\"dyna-window-content\">");        
-        UserNotification notification = (UserNotification) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION);
-        
-        if( notification != null)   {
-
-            notifBuffer.append("<div class=\"user-notification-"+(notification.isError()?"error":"info")+"\">");
-            notifBuffer.append(notification.getMsg());
-
-            notifBuffer.append("</div>");
-            //delete the msg
-            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, InternalConstants.ATTR_USER_NOTIFICATION , null);
-        }
-        
-        notifBuffer.append("</div>");
-        notifBuffer.append("</div>");
-        notifBuffer.append("</div>");
-        
-        WindowResult notifResult = new WindowResult("Notification", notifBuffer.toString(), Collections.EMPTY_MAP, windowNotifProps, null, WindowState.NORMAL,
-                Mode.VIEW);
-      
-        WindowContext notifContext = new WindowContext("notification-window", "notification", "0", notifResult);  
-        
-        return notifContext;
-    }
-    
 
     void injectAdminHeaders(PageCommand rpc, PageRendition rendition) {
 

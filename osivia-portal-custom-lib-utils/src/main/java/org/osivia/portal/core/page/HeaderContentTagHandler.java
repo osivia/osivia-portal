@@ -126,6 +126,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
 
+        // Modernizr
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/modernizr.js\"></script>");
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/modernizr-integration.js\"></script>");
+
         // out.flush();
     }
 

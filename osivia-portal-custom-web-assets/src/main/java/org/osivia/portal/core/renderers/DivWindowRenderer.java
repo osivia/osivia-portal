@@ -295,7 +295,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Spacer
             Element spacer = new DOMElement(QName.get(HTMLConstants.DIV));
             spacer.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer.setText(HTMLConstants.TEXT_DEFAULT);
+            spacer.setText(StringUtils.EMPTY);
             div.add(spacer);
 
             // Previous region move command
@@ -311,7 +311,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Spacer (can't reuse previous spacer node)
             Element spacer2 = new DOMElement(QName.get(HTMLConstants.DIV));
             spacer2.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer2.setText(HTMLConstants.TEXT_DEFAULT);
+            spacer2.setText(StringUtils.EMPTY);
             div.add(spacer2);
 
             // Window settings display command
@@ -342,7 +342,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Spacer (can't reuse previous spacer node)
             Element spacer3 = new DOMElement(QName.get(HTMLConstants.DIV));
             spacer3.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer3.setText(HTMLConstants.TEXT_DEFAULT);
+            spacer3.setText(StringUtils.EMPTY);
             div.add(spacer3);
 
             // Delete portlet command

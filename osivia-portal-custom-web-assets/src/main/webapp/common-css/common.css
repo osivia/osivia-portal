@@ -15,7 +15,7 @@
 
 .osivia-portal-spacer {
 	display: inline-block;
-	width: 10px;
+	width: 6px;
 }
 
 
@@ -28,7 +28,7 @@
 	border-color: rgb(125, 119, 96);
 	border-color: rgba(125, 119, 96, 0.2);	
     margin-bottom: 8px;
-    padding: 5px 10px 2px;
+    padding: 5px 10px 0;
 }
 
 .osivia-portal-windows-commands {
@@ -36,14 +36,18 @@
 	border-right-width: 8px;
 }
 
+.osivia-portal-regions-commands a, .osivia-portal-windows-commands a {
+    text-decoration: none;
+}
+
 .osivia-portal-regions-commands img {
-	height: 24px;
-	width: 24px;
+	height: 16px;
+	width: 16px;
 }
 
 .osivia-portal-windows-commands img {
-	height: 24px;
-	width: 24px;
+	height: 16px;
+	width: 16px;
 }
 
 .osivia-portal-windows-commands > div {
@@ -198,16 +202,35 @@ input.inline-checkbox {
 	
 }
 
-/* Notification default styles */
+/* Notifications default style */
 
-.user-notification-error {
-	background-color: red;
-	color :white;
-	font-weight: bold;
+#notifications-window {
+	visibility: hidden;
 }
 
-.user-notification-info {
-	background-color: green;
-	color :white;
-	font-weight: bold;
+#notifications-window .notifications-list {
+	visibility: visible;
+}
+
+#notifications-window .notifications {
+	background-position: 10px center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	border-style: solid;
+	border-width: 1px;
+	margin: 0;
+	padding: 2px 10px 2px 44px;
+}
+
+#notifications-window .notifications.error {
+    background-image: url('../images/notifications-error.png');
+    background-color: #FF9D9A;
+    border-color: #D62103;
+    font-weight: bold;
+}
+
+#notifications-window .notifications.success {
+    background-image: url('../images/notifications-success.png');
+    background-color: #A7F478;
+    border-color: #378900;
 }

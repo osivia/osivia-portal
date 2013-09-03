@@ -3,10 +3,7 @@
  */
 package org.osivia.portal.core.assistantpage;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -610,7 +606,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
         dynamicObjectContainer.startPersistentIteration();
 
-
         Portal portal =  (Portal) this.portalObjectContainer.getObject(currentPage.getPortal().getId());
 
         // Recursive tree generation
@@ -641,8 +636,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Get HTML data
-        String resultat = this.writeHtmlData(ul);
-        return resultat;
+        if (ul == null) {
+            return StringUtils.EMPTY;
+        } else {
+            return ul.asXML();
+        }
     }
 
     /**
@@ -841,8 +839,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Get HTML data
-        String resultat = this.writeHtmlData(table);
-        return resultat;
+        return table.asXML();
     }
 
 
@@ -871,10 +868,9 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         // HTML "div" fancyboxes parent node
         Element divParent = new DOMElement(QName.get(HTMLConstants.DIV));
         divParent.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
+        divParent.setText(StringUtils.EMPTY);
 
-        if (CollectionUtils.isEmpty(windows)) {
-            divParent.setText(HTMLConstants.TEXT_DEFAULT);
-        } else {
+        if (CollectionUtils.isNotEmpty(windows)) {
             // Loop on each page window
             for (Window window : windows) {
                 boolean checkboxChecked;
@@ -1018,41 +1014,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         // Get HTML data
-        String resultat = this.writeHtmlData(divParent);
-        return resultat;
-    }
-
-
-    /**
-     * Utility method, used to write HTML data.
-     *
-     * @param htmlElement HTML element to write
-     * @return HTML data
-     * @throws IOException
-     */
-    protected String writeHtmlData(Element htmlElement) throws IOException {
-        if (htmlElement == null) {
-            return StringUtils.EMPTY;
-        }
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        OutputStream bufferedOutput = new BufferedOutputStream(output);
-        HTMLWriter htmlWriter = null;
-        String resultat = null;
-        try {
-            htmlWriter = new HTMLWriter(bufferedOutput);
-            htmlWriter.setEscapeText(false);
-            htmlWriter.write(htmlElement);
-
-            resultat = output.toString(CharEncoding.UTF_8);
-
-            bufferedOutput.close();
-            output.close();
-            htmlWriter.close();
-        } catch (IOException e) {
-            throw e;
-        }
-        return resultat;
+        return divParent.asXML();
     }
 
 
@@ -1111,7 +1073,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             // Styles display toggle empty left cell
             Element leftCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
             leftCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-            leftCellToggle.setText(HTMLConstants.TEXT_DEFAULT);
+            leftCellToggle.setText(StringUtils.EMPTY);
             rowToggle.add(leftCellToggle);
 
             // Styles display toggle right cell
