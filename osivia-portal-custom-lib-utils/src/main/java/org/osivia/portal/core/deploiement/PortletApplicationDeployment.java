@@ -54,9 +54,9 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
         this.injectStandardService(Constants.PROFILE_SERVICE_NAME, IProfilManager.class.getName(), "osivia:service=ProfilManager");
         this.injectStandardService(Constants.FORMATTER_SERVICE_NAME, IFormatter.class.getName(),
                 "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
-        this.injectStandardService(Constants.NOTIFICATIONS_SERVICE_NAME, INotificationsService.class.getName(), "osivia:service=NotificationsService");
+        this.injectStandardService(Constants.NOTIFICATIONS_SERVICE_NAME, INotificationsService.class.getName(), INotificationsService.MBEAN_NAME);
         this.injectStandardService(Constants.INTERNATIONALIZATION_SERVICE_NAME, IInternationalizationService.class.getName(),
-                "osivia:service=InternationalizationService");
+                IInternationalizationService.MBEAN_NAME);
 
         // FIXME à déplacer dans CMS
         this.injectStandardService("NuxeoService", "fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService", "osivia:service=NuxeoService");

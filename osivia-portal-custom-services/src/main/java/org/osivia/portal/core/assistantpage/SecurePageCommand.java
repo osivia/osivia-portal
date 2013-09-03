@@ -2,108 +2,129 @@ package org.osivia.portal.core.assistantpage;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.jboss.portal.identity.IdentityContext;
-import org.jboss.portal.identity.IdentityServiceController;
 import org.jboss.portal.identity.Role;
-import org.jboss.portal.identity.RoleModule;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternationalizationConstants;
+import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageType;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 
-
+/**
+ * Secure page command.
+ *
+ * @see AssistantCommand
+ */
 public class SecurePageCommand extends AssistantCommand {
 
-	private String pageId;
-	private List<String> viewActions;
-
-	public String getPageId() {
-		return pageId;
-	}
-
-	public SecurePageCommand() {
-	}
-
-	public SecurePageCommand(String pageId, List<String> viewActions) {
-		this.pageId = pageId;
-		this.viewActions = viewActions;
-	}
-
-	public ControllerResponse executeAssistantCommand() throws Exception {
-
-		// Récupération page
-		PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-		PortalObject page = getControllerContext().getController().getPortalObjectContainer().getObject(poid);
-
-		DomainConfigurator dc = getControllerContext().getController().getPortalObjectContainer()
-				.getAuthorizationDomain().getConfigurator();
-
-		// Recnosntruction des contraintes de la page
-
-		Set<RoleSecurityBinding> newConstraints = new HashSet<RoleSecurityBinding>();
-		Set<RoleSecurityBinding> oldConstraints = dc.getSecurityBindings(page.getId().toString(
-				PortalObjectPath.CANONICAL_FORMAT));
-
-		IdentityServiceController identityService = Locator.findMBean(IdentityServiceController.class,
-				"portal:service=Module,type=IdentityServiceController");
-
-		RoleModule roles = (RoleModule) identityService.getIdentityContext()
-				.getObject(IdentityContext.TYPE_ROLE_MODULE);
-		
-		IProfilManager profilManager = Locator.findMBean(IProfilManager.class,	"osivia:service=ProfilManager");
-		
-		// On remonte jusqu'au portail
-		PortalObject parent = page.getParent();
-		while (parent instanceof Page)	{
-			parent = parent.getParent();
-		}
-		
+    /** Page identifier. */
+    private final String pageId;
+    /** View actions. */
+    private final List<String> viewActions;
 
 
-		for (Role role : profilManager.getFilteredRoles()) {
+    /**
+     * Constructor.
+     *
+     * @param pageId page identifier
+     * @param viewActions view actions
+     */
+    public SecurePageCommand(String pageId, List<String> viewActions) {
+        this.pageId = pageId;
+        this.viewActions = viewActions;
+    }
 
-			RoleSecurityBinding sb = null;
-			Set<String> secureAction = new HashSet<String>();
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public ControllerResponse executeAssistantCommand() throws Exception {
+        // Get bundle
+        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        Bundle bundle = this.getBundleFactory().getBundle(locale);
 
-			// Récupération des anciens droits pour le rôle (pour ne pas écraser
-			// les autres droits que view)
-			for (RoleSecurityBinding sbItem : oldConstraints) {
-				if (sbItem.getRoleName().equals(role.getName())) {
-					for (Object action : sbItem.getActions()) {
-						secureAction.add(action.toString());
-					}
-				}
-			}
+        // Get page
+        PortalObjectId poid = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
+        Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-			// Mise à jour de l'action VIEW
-			secureAction.remove(PortalObjectPermission.VIEW_ACTION);
-			if (viewActions.contains(role.getName())) {
-				secureAction.add(PortalObjectPermission.VIEW_ACTION);
-			}
+        // Notification properties
+        String pageName = PortalObjectUtils.getDisplayName(page, locale);
+        String key;
+        if (PageType.getPageType(page, this.getControllerContext()).isSpace()) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE;
+        } else if (PortalObjectUtils.isTemplate(page)) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE;
+        } else {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_PAGE;
+        }
 
-			newConstraints.add(new RoleSecurityBinding(secureAction, role.getName()));
-		}
+        DomainConfigurator dc = this.getControllerContext().getController().getPortalObjectContainer().getAuthorizationDomain().getConfigurator();
 
-		dc.setSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newConstraints);
+        // Page constraints reconstruction
+        Set<RoleSecurityBinding> newConstraints = new HashSet<RoleSecurityBinding>();
+        Set<RoleSecurityBinding> oldConstraints = dc.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
 
-		//Impact sur les caches du bandeau
-		ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
-		cacheService.incrementHeaderCount();
+        IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
-		
-		return new UpdatePageResponse(page.getId());
+        for (Role role : profilManager.getFilteredRoles()) {
+            Set<String> secureAction = new HashSet<String>();
 
-	}
+            // Get old rights for not override other than view
+            for (RoleSecurityBinding sbItem : oldConstraints) {
+                if (sbItem.getRoleName().equals(role.getName())) {
+                    for (Object action : sbItem.getActions()) {
+                        secureAction.add(action.toString());
+                    }
+                }
+            }
+
+            // Update view actions
+            secureAction.remove(PortalObjectPermission.VIEW_ACTION);
+            if (this.viewActions.contains(role.getName())) {
+                secureAction.add(PortalObjectPermission.VIEW_ACTION);
+            }
+
+            newConstraints.add(new RoleSecurityBinding(secureAction, role.getName()));
+        }
+
+        dc.setSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newConstraints);
+
+        // Caches impact
+        ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+        cacheService.incrementHeaderCount();
+
+        // Notification
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.getControllerContext());
+        String message = bundle.getString(key, pageName);
+        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
+
+        return new UpdatePageResponse(page.getId());
+    }
+
+
+    /**
+     * Getter for pageId.
+     *
+     * @return the pageId
+     */
+    public String getPageId() {
+        return this.pageId;
+    }
 
 }

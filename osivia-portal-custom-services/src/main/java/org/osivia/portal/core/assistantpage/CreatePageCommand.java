@@ -12,9 +12,11 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -28,9 +30,9 @@ public class CreatePageCommand extends AssistantCommand {
 
     /** Page name. */
     private String name;
-    /** Parent page ID. */
+    /** Parent page identifier. */
     private String parentPageId;
-    /** Model ID. */
+    /** Model identifier. */
     private String modelId;
 
 
@@ -44,9 +46,9 @@ public class CreatePageCommand extends AssistantCommand {
     /**
      * Constructor.
      *
-     * @param name
-     * @param parentPageId
-     * @param modelId
+     * @param name page name
+     * @param parentPageId parent page identifier
+     * @param modelId model identifier
      */
     public CreatePageCommand(String name, String parentPageId, String modelId) {
         super();
@@ -61,41 +63,53 @@ public class CreatePageCommand extends AssistantCommand {
      */
     @Override
     public ControllerResponse executeAssistantCommand() throws Exception {
-        // Récupération de la page parent
+        // Get bundle
+        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        Bundle bundle = this.getBundleFactory().getBundle(locale);
+
+        // Get parent
         PortalObjectId portalObjectId = PortalObjectId.parse(this.parentPageId, PortalObjectPath.SAFEST_FORMAT);
         PageContainer parent = (PageContainer) this.getControllerContext().getController().getPortalObjectContainer().getObject(portalObjectId);
 
-        Page newPage;
-        // Mise à jour d'après le modèle
-        if (StringUtils.isNotEmpty(this.modelId)) {
-            PortalObjectId poModeleId = PortalObjectId.parse(this.modelId, PortalObjectPath.SAFEST_FORMAT);
-            Page modele = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poModeleId);
+        // Notification properties
+        String key;
+        if (PortalObjectUtils.isTemplate(parent)) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_TEMPLATE;
+        } else {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_PAGE;
+        }
 
-            // Le modèle ne doit pas être parent de la nouvelle page
-            if ((modele.equals(parent)) || PortalObjectUtils.isAncestor(modele, parent)) {
-                //TODO : internationaliser
-                throw new UserNotificationsException("Le modèle ne doit pas être parent de la nouvelle page");
+        Page newPage;
+        if (StringUtils.isNotEmpty(this.modelId)) {
+            // Update from model
+            PortalObjectId modelPortalObjectId = PortalObjectId.parse(this.modelId, PortalObjectPath.SAFEST_FORMAT);
+            Page model = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(modelPortalObjectId);
+
+            // Model should not be parent of the new page
+            if ((model.equals(parent)) || PortalObjectUtils.isAncestor(model, parent)) {
+                String message = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_CREATE_PAGE_COMMAND_PARENT_MODEL);
+                throw new UserNotificationsException(message);
             } else {
-                modele.copy(parent, this.name, true);
+                model.copy(parent, this.name, true);
                 newPage = (Page) parent.getChild(this.name);
             }
         } else {
             newPage = parent.createPage(this.name);
         }
 
-        // Initialisation du nom
-        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        // Name initialization
         Map<Locale, String> displayMap = createLocalizedStringMap(locale, null, this.name);
         LocalizedString localizedString = new LocalizedString(displayMap, Locale.ENGLISH);
         newPage.setDisplayName(localizedString);
 
-        // Impact sur les caches du bandeau
+        // Impact on header cache
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();
 
-        //TODO : internationaliser
+        // Notification
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.getControllerContext());
-        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, "La page a été créée", NotificationsType.SUCCESS);
+        String message = bundle.getString(key, this.name);
+        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
         return new UpdatePageResponse(newPage.getId());
     }

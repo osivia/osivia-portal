@@ -6,13 +6,20 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternationalizationConstants;
+import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageType;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Change page properties command.
@@ -63,12 +70,25 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
      */
     @Override
     public ControllerResponse executeAssistantCommand() throws Exception {
-        // Get page ID
+        // Get bundle
+        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        Bundle bundle = this.getBundleFactory().getBundle(locale);
+
+        // Get page
         PortalObjectId portalObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
-        PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(portalObjectId);
+        Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(portalObjectId);
+
+        // Notification properties
+        String key;
+        if (PageType.getPageType(page, this.getControllerContext()).isSpace()) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_SPACE;
+        } else if (PortalObjectUtils.isTemplate(page)) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_TEMPLATE;
+        } else {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_PAGE;
+        }
 
         // Display name
-        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
         Map<Locale, String> displayMap = createLocalizedStringMap(locale, page.getDisplayName(), this.displayName);
         LocalizedString newLocalizedString = new LocalizedString(displayMap, Locale.ENGLISH);
         page.setDisplayName(newLocalizedString);
@@ -97,6 +117,11 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
         // Caches impact
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();
+
+        // Notification
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.getControllerContext());
+        String message = bundle.getString(key, this.displayName);
+        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
         return new UpdatePageResponse(page.getId());
     }

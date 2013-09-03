@@ -3,6 +3,7 @@ package org.osivia.portal.core.assistantpage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -16,9 +17,16 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.security.RoleSecurityBinding;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
+import org.osivia.portal.core.error.UserNotificationsException;
+import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
@@ -31,22 +39,17 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
  */
 public class MovePageCommand extends AssistantCommand {
 
-    private String pageId;
-    private String destinationPageId;
+    /** Page identifier. */
+    private final String pageId;
+    /** Destination page identifier. */
+    private final String destinationPageId;
 
-
-    /**
-     * Default constructor.
-     */
-    public MovePageCommand() {
-        super();
-    }
 
     /**
      * Constructor.
      *
-     * @param pageId
-     * @param destinationPageId
+     * @param pageId page identifier
+     * @param destinationPageId destination page identifier
      */
     public MovePageCommand(String pageId, String destinationPageId) {
         super();
@@ -56,16 +59,18 @@ public class MovePageCommand extends AssistantCommand {
 
 
     /**
-     * Command execution
-     *
-     * @return response
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse executeAssistantCommand() throws Exception {
+        // Get bundle
+        Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+        Bundle bundle = this.getBundleFactory().getBundle(locale);
+
         // Pages recuperation
         PortalObjectId pagePortalObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
-        PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(pagePortalObjectId);
+        Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(pagePortalObjectId);
         PortalObject destinationPage = null;
         if (!StringUtils.endsWith(this.destinationPageId, InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID)) {
             PortalObjectId destinationPortalObjectId = PortalObjectId.parse(this.destinationPageId, PortalObjectPath.SAFEST_FORMAT);
@@ -75,6 +80,17 @@ public class MovePageCommand extends AssistantCommand {
         if (page.equals(destinationPage)) {
             // Do nothing
             return new UpdatePageResponse(page.getId());
+        }
+
+        // Notification properties
+        String pageName = PortalObjectUtils.getDisplayName(page, locale);
+        String key;
+        if (PageType.getPageType(page, this.getControllerContext()).isSpace()) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_SPACE;
+        } else if (PortalObjectUtils.isTemplate(page)) {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_TEMPLATE;
+        } else {
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_PAGE;
         }
 
         // Check parents
@@ -87,7 +103,8 @@ public class MovePageCommand extends AssistantCommand {
                 parentDestination = this.getControllerContext().getController().getPortalObjectContainer().getObject(parentDestinationPortalObjectId);
             } else {
                 // Unknow destination page
-                throw new IllegalArgumentException(); // TODO : Error management
+                String message = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_MOVE_PAGE_COMMAND_UNKNOW_DESTINATION);
+                throw new UserNotificationsException(message);
             }
         } else {
             parentDestination = destinationPage.getParent();
@@ -95,7 +112,8 @@ public class MovePageCommand extends AssistantCommand {
 
         if (page.equals(parentDestination) || PortalObjectUtils.isAncestor(page, parentDestination)) {
             // Destination page cannot be a descendant of the current page
-            throw new IllegalArgumentException(); // TODO : Error management
+            String message = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_MOVE_PAGE_COMMAND_DESCENDANT_DESTINATION);
+            throw new UserNotificationsException(message);
         }
 
         // Move
@@ -108,7 +126,7 @@ public class MovePageCommand extends AssistantCommand {
             Set<RoleSecurityBinding> securityBindings = domainConfigurator.getSecurityBindings(canonicalId);
 
             String oldName = page.getName();
-            page = page.copy(parentDestination, oldName, true);
+            page = (Page) page.copy(parentDestination, oldName, true);
             parentPage.destroyChild(oldName);
 
             // Restore security bindings
@@ -142,6 +160,11 @@ public class MovePageCommand extends AssistantCommand {
         // Impact sur les caches du bandeau
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();
+
+        // Notification
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.getControllerContext());
+        String message = bundle.getString(key, pageName);
+        NotificationsUtils.getNotificationsService().addSimpleNotification(portalControllerContext, message, NotificationsType.SUCCESS);
 
         return new UpdatePageResponse(page.getId());
     }

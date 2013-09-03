@@ -19,6 +19,9 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
 
 /**
  * Custom commands super class.
@@ -27,18 +30,30 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
  */
 public abstract class AssistantCommand extends ControllerCommand {
 
+    /** Command info. */
     private static final CommandInfo info = new ActionCommandInfo(false);
-    protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
+    /** Logger. */
+    private static final Log logger = LogFactory.getLog(AssistantCommand.class);
+    /** Admin portal object identifier. */
+    private static final PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
-    private static PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
+
 
     /**
      * Default constructor.
      */
     public AssistantCommand() {
+        IInternationalizationService internationalizationService = InternationalizationUtils.getInternationalizationService();
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public CommandInfo getInfo() {
         return info;
     }
@@ -59,7 +74,7 @@ public abstract class AssistantCommand extends ControllerCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         try {
-            // Contrôle droits
+            // Check permission
             PortalObjectPermission perm = new PortalObjectPermission(adminPortalId, PortalObjectPermission.VIEW_MASK);
             if (!this.getControllerContext().getController().getPortalAuthorizationManagerFactory().getManager().checkPermission(perm)) {
                 throw new SecurityException("Commande interdite");
@@ -103,6 +118,25 @@ public abstract class AssistantCommand extends ControllerCommand {
         }
         map.put(locale, name);
         return map;
+    }
+
+
+    /**
+     * Getter for logger.
+     *
+     * @return the logger
+     */
+    protected Log getLogger() {
+        return logger;
+    }
+
+    /**
+     * Getter for bundleFactory.
+     *
+     * @return the bundleFactory
+     */
+    protected IBundleFactory getBundleFactory() {
+        return this.bundleFactory;
     }
 
 }

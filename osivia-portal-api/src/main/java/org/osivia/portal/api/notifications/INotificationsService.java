@@ -11,9 +11,13 @@ import org.osivia.portal.api.context.PortalControllerContext;
  */
 public interface INotificationsService {
 
+    /** MBean name. */
+    static final String MBEAN_NAME = "osivia:service=NotificationsService";
+
+
     /**
      * Add a simple notification.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param message notification message
      * @param type notification type
@@ -23,7 +27,7 @@ public interface INotificationsService {
 
     /**
      * Add notifications.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param notifications notifications
      */
@@ -32,7 +36,7 @@ public interface INotificationsService {
 
     /**
      * Get notifications list.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return notifications list
      */
@@ -50,7 +54,7 @@ public interface INotificationsService {
 
     /**
      * Read and remove notifications.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return notifications list
      */

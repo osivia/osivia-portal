@@ -67,10 +67,10 @@ public class InternationalizationService implements IInternationalizationService
         // Customizer invocation
         this.customizationService.customize(IInternationalizationService.CUSTOMIZER_ID, context);
 
+        String pattern;
         if (attributes.containsKey(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT)) {
             // Custom result
-            String result = (String) attributes.get(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT);
-            return result;
+            pattern = (String) attributes.get(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT);
         } else {
             // Get resource bundle
             ResourceBundle resourceBundle = null;
@@ -83,19 +83,20 @@ public class InternationalizationService implements IInternationalizationService
             }
 
             try {
-                String pattern = resourceBundle.getString(key);
-                Object[] formattedArguments = this.formatArguments(args, locale);
-                return MessageFormat.format(pattern, formattedArguments);
+                pattern = resourceBundle.getString(key);
             } catch (MissingResourceException e) {
                 return "[Missing resource: " + key + "]";
             }
         }
+
+        Object[] formattedArguments = this.formatArguments(args, locale);
+        return MessageFormat.format(pattern, formattedArguments);
     }
 
 
     /**
      * Utility method used to format arguments.
-     * 
+     *
      * @param args arguments
      * @param locale locale
      * @return formatted arguments

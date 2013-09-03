@@ -72,6 +72,7 @@ public final class InternationalizationConstants {
 
 
     // CMS properties
+
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE = "MENU_CMS_PAGE";
     /** Bundle resource key for CMS edition */
@@ -92,6 +93,7 @@ public final class InternationalizationConstants {
     public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_SITEMAP = "SUBMENU_CMS_SITEMAP";
+
 
     // Window properties
 
@@ -135,6 +137,50 @@ public final class InternationalizationConstants {
     public static final String KEY_WINDOW_PROPERTIES_PROPERTIES_SUBMIT = "WINDOW_PROPERTIES_PROPERTIES_SUBMIT";
     /** Bundle resource key for window properties cancel. */
     public static final String KEY_WINDOW_PROPERTIES_PROPERTIES_CANCEL = "CANCEL";
+
+
+    // Messages
+
+    /** Bundle resource key for create page command error message. */
+    public static final String KEY_ERROR_MESSAGE_CREATE_PAGE_COMMAND_PARENT_MODEL = "ERROR_MESSAGE_CREATE_PAGE_COMMAND_PARENT_MODEL";
+    /** Bundle resource key for create page command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_PAGE = "SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_PAGE";
+    /** Bundle resource key for create page command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CREATE_PAGE_COMMAND_TEMPLATE";
+    /** Bundle resource key for delete page command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_PAGE = "SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_PAGE";
+    /** Bundle resource key for delete page command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_TEMPLATE";
+    /** Bundle resource key for delete page command success message for space. */
+    public static final String KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_SPACE = "SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_SPACE";
+    /** Bundle resource key for move page command error message. */
+    public static final String KEY_ERROR_MESSAGE_MOVE_PAGE_COMMAND_UNKNOW_DESTINATION = "ERROR_MESSAGE_MOVE_PAGE_COMMAND_UNKNOW_DESTINATION";
+    /** Bundle resource key for move page command error message. */
+    public static final String KEY_ERROR_MESSAGE_MOVE_PAGE_COMMAND_DESCENDANT_DESTINATION = "ERROR_MESSAGE_MOVE_PAGE_COMMAND_DESCENDANT_DESTINATION";
+    /** Bundle resource key for move page command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_PAGE = "SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_PAGE";
+    /** Bundle resource key for move page command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_TEMPLATE";
+    /** Bundle resource key for move page command success message for space. */
+    public static final String KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_SPACE = "SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_SPACE";
+    /** Bundle resource key for change properties command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_PAGE = "SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_PAGE";
+    /** Bundle resource key for change properties command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_TEMPLATE";
+    /** Bundle resource key for change properties command success message for space. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_PROPERTIES_COMMAND_SPACE";
+    /** Bundle resource key for change CMS properties command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_PAGE = "SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_PAGE";
+    /** Bundle resource key for change CMS properties command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_TEMPLATE";
+    /** Bundle resource key for change CMS properties command success message for space. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_CMS_PROPERTIES_COMMAND_SPACE";
+    /** Bundle resource key for change rights command success message for page. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_PAGE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_PAGE";
+    /** Bundle resource key for change rights command success message for template. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE";
+    /** Bundle resource key for change rights command success message for space. */
+    public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE";
 
 
     /**

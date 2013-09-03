@@ -300,19 +300,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         if (parameterMap.get("scope") != null) {
                             scope = URLDecoder.decode(parameterMap.get("scope")[0], CharEncoding.UTF_8);
                         }
-
                         if (parameterMap.get("navigationScope") != null) {
                             navigationScope = URLDecoder.decode(parameterMap.get("navigationScope")[0], CharEncoding.UTF_8);
                         }
-
                         if (parameterMap.get("pageContextualizationSupport") != null) {
                             pageContextualizationSupport = URLDecoder.decode(parameterMap.get("pageContextualizationSupport")[0], CharEncoding.UTF_8);
                         }
                         if (parameterMap.get("outgoingRecontextualizationSupport") != null) {
                             outgoingRecontextualizationSupport = URLDecoder.decode(parameterMap.get("outgoingRecontextualizationSupport")[0], CharEncoding.UTF_8);
                         }
-                        // if( parameterMap.get("incomingContextualizationSupport") != null)
-                        // incomingContextualizationSupport = URLDecoder.decode(((String[]) parameterMap.get("incomingContextualizationSupport"))[0], CharEncoding.UTF_8);
                         if (parameterMap.get("cmsNavigationMode") != null) {
                             cmsNavigationMode = URLDecoder.decode(parameterMap.get("cmsNavigationMode")[0], CharEncoding.UTF_8);
                         }

@@ -57,7 +57,7 @@ public class NotificationsUtils {
      * @return notifications service
      */
     public static final INotificationsService getNotificationsService() {
-        return Locator.findMBean(INotificationsService.class, "osivia:service=NotificationsService");
+        return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
 
