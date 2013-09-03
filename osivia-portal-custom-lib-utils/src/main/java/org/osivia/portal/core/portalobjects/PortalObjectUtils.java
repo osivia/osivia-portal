@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
 import org.jboss.portal.core.model.portal.Page;
@@ -207,6 +208,33 @@ public class PortalObjectUtils {
         }
 
         return templatesRoot;
+    }
+
+
+    /**
+     * Check if a portal object belongs to a portal type "space".
+     *
+     * @param po portal object to check, may be null
+     * @return true if portal object belongs to a space site
+     */
+    public static final boolean isSpaceSite(PortalObject po) {
+        if (po == null) {
+            return false;
+        }
+
+        // Get current portal
+        Portal portal;
+        if (po instanceof Portal) {
+            portal = (Portal) po;
+        } else if (po instanceof Page) {
+            Page page = (Page) po;
+            portal = page.getPortal();
+        } else {
+            return false;
+        }
+
+        String portalType = portal.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
+        return StringUtils.equals(InternalConstants.PORTAL_TYPE_SPACE, portalType);
     }
 
 }

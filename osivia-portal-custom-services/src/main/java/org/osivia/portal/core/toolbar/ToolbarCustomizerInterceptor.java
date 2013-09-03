@@ -298,8 +298,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             // Configuration menu
             this.generateAdministrationConfigurationMenu(context, page, administration);
 
-            if (!PageType.DYNAMIC_PAGE.equals(pageType)) {
-                // Template (or page) edition menu
+            if (!(PageType.DYNAMIC_PAGE.equals(pageType) || PortalObjectUtils.isSpaceSite(page))) {
+                // Edition menu
                 this.generateAdministrationEditionMenu(context, page, administration);
             }
         }
@@ -511,7 +511,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
         String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
-        
+
         // the first time, edition mode is null, it will be ON when the user will see the live version of a document
         String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
         if (editionMode == null) {
@@ -598,8 +598,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // prepare the callback url params
         // ============
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
-        
-        String closeUrl = urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
+
+        String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
 
         String ecmBaseUrl = getCMSService().getEcmDomain(cmsCtx);
         // ============
