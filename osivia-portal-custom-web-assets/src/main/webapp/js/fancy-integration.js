@@ -32,6 +32,9 @@ function callback( )	{
 	}
 	else
 		// reload full page
+		if(!callbackUrl) {
+			callbackUrl = document.URL; // if not specified, stay on the current page
+		}
 		window.location.replace(callbackUrl);
 
     
