@@ -19,17 +19,27 @@ $JQry(document).ready(function() {
 			"types" : {
 				"page" : {
 					"icon" : {
-						"image" : "/osivia-portal-custom-web-assets/jstree/types-icons/page.png"
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/page.png"
+					}
+				},
+				"template" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/template.png"
+					}
+				},
+				"space" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/space.png"
 					}
 				},
 				"pageOnline" : {
 					"icon" : {
-						"image" : "/osivia-portal-custom-web-assets/images/icone_doc_valide2.gif"
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/published_doc.png"
 					}
 				},
 				"pageOffline" : {
 					"icon" : {
-						"image" : "/osivia-portal-custom-web-assets/images/icone_doc_travail2.gif"
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/live_doc.png"
 					}
 				}
 			}
@@ -81,7 +91,17 @@ $JQry(document).ready(function() {
 			"types" : {
 				"page" : {
 					"icon" : {
-						"image" : "/osivia-portal-custom-web-assets/jstree/types-icons/page.png"
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/page.png"
+					}
+				},
+				"template" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/template.png"
+					}
+				},
+				"space" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/space.png"
 					}
 				}
 			}
@@ -116,91 +136,6 @@ $JQry(document).ready(function() {
 				var nodeId = selection.id;
 				var pageId = nodeId.substr(prefix.length, nodeId.length);				
 				input.value = pageId;				
-			}
-		}
-	);
-	
-	// Rename node JSTree
-	$JQry(".jstree-rename").jstree({
-		"core" : {
-			"animation" : 0,
-			"open_parents" : true
-		},
-		"themes" : {
-			"theme" : "default",
-			"dots" : false,
-			"icons" : true
-		},
-		"search" : {
-			"case_insensitive" : true,
-			"show_only_matches" : true
-		},
-		"ui" : {
-			"select_limit" : 1
-		},
-		"types" : {
-			"types" : {
-				"page" : {
-					"icon" : {
-						"image" : "/osivia-portal-custom-web-assets/jstree/types-icons/page.png"
-					}
-				}
-			}
-		},
-		"plugins" : [ "themes", "html_data", "search", "ui", "crrm", "types" ]
-	});
-	$JQry(".jstree-rename").bind(
-		"loaded.jstree", function(evt, data) {
-			var prefix = this.id;
-			
-			// Open portal node
-			if (undefined != portalId) {
-				var portalNode = $JQry("#" + prefix + portalId);
-				$JQry(this).jstree("open_node", portalNode);
-			}
-			
-			// Open current parent page node
-			if (undefined != currentPageId) {
-				// Get current page node
-				var currentPageNode = $JQry("#" + prefix + currentPageId);
-				if (undefined != currentPageNode) {
-					// Get current parent page node and open it to display current page node
-					var currentParentNode = currentPageNode.parents("li").first();
-					$JQry(this).jstree("open_node", currentParentNode);
-				}
-			}
-		}
-	);
-	$JQry(".jstree-rename").bind(
-		"select_node.jstree", function(evt, data) {
-			var selection = $JQry(this).jstree("get_selected")[0];
-			var formulaire = $JQry(this).parents("form");
-			var inputs = formulaire.find("input");
-			var inputSelect = inputs.siblings("[name=" + this.id + "]")[0];
-			var inputOldDisplayName = inputs.siblings("[name='oldDisplayName']")[0];
-			
-			if ((selection != null) && (inputSelect != null) && (inputOldDisplayName != null)) {
-				var prefix = this.id;
-				var nodeId = selection.id;
-				var pageId = nodeId.substr(prefix.length, nodeId.length);
-				inputSelect.value = pageId;
-				inputOldDisplayName.value = $JQry(this).jstree("get_text");
-				$JQry(this).jstree("rename");
-			}
-		}
-	);
-	$JQry(".jstree-rename").bind(
-		"rename_node.jstree", function(evt, data) {
-			var formulaire = $JQry(this).parents("form");
-			var inputs = formulaire.find("input");
-			var inputDisplayName = inputs.siblings("[name='displayName']")[0];
-			var inputOldDisplayName = inputs.siblings("[name='oldDisplayName']")[0];
-			
-			if ((inputDisplayName != null) && (inputOldDisplayName != null)) {
-				if (inputOldDisplayName.value != data.args[1]) {
-					inputDisplayName.value = data.args[1];
-					$JQry(this).jstree("lock");
-				}
 			}
 		}
 	);

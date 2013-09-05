@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PageCommand;
@@ -336,7 +338,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // Configuration menu title
         Element configurationMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
         configurationMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
-        configurationMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
+        configurationMenuTitle.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
         configurationMenu.add(configurationMenuTitle);
 
         // Configuration menu "ul" node
@@ -346,7 +348,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // Home
         Element home = new DOMElement(QName.get(HTMLConstants.A));
         home.addAttribute(QName.get(HTMLConstants.HREF), "/portal");
-        home.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_HOME, locale));
+        home.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_HOME, locale));
         this.addSubMenuElement(configurationMenuUl, home);
 
         // OSIVIA Portal administration
@@ -357,7 +359,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Element osiviaAdministration = new DOMElement(QName.get(HTMLConstants.A));
         osiviaAdministration.addAttribute(QName.get(HTMLConstants.HREF), osiviaAdministrationUrl);
         osiviaAdministration.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYFRAME);
-        osiviaAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION, locale));
+        osiviaAdministration.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION, locale));
         this.addSubMenuElement(configurationMenuUl, osiviaAdministration);
 
         // JBoss administration
@@ -366,12 +368,12 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         Element jbossAdministration = new DOMElement(QName.get(HTMLConstants.A));
         jbossAdministration.addAttribute(QName.get(HTMLConstants.HREF), jbossAdministrationUrl);
-        jbossAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
+        jbossAdministration.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
         this.addSubMenuElement(configurationMenuUl, jbossAdministration);
 
         // Pages list
         this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGES_LIST,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
 
         // HR
         this.addSubMenuElement(configurationMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
@@ -379,12 +381,12 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation
             this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGE_CREATION,
-                    this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CREATION, locale));
+                    this.getInternationalizationService().getString(InternationalizationConstants.KEY_PAGE_CREATION, locale));
         }
 
         // Template creation
         this.addSubMenuFancyboxLink(configurationMenuUl, URL_TEMPLATE_CREATION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_TEMPLATE_CREATION, locale));
 
         // Page template access
         if (pageType.isTemplated()) {
@@ -395,11 +397,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
             Element pageTemplateAccessLink = new DOMElement(QName.get(HTMLConstants.A));
             pageTemplateAccessLink.addAttribute(QName.get(HTMLConstants.HREF), pageTemplateAccessUrl);
-            pageTemplateAccessLink.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
+            pageTemplateAccessLink.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
             this.addSubMenuElement(configurationMenuUl, pageTemplateAccessLink);
         } else {
             Element pageTemplateAccessDisable = new DOMElement(QName.get(HTMLConstants.P));
-            pageTemplateAccessDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
+            pageTemplateAccessDisable.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
 
             this.addSubMenuElement(configurationMenuUl, pageTemplateAccessDisable);
         }
@@ -414,7 +416,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         Element cachesInitialization = new DOMElement(QName.get(HTMLConstants.A));
         cachesInitialization.addAttribute(QName.get(HTMLConstants.HREF), cachesInitializationUrl);
-        cachesInitialization.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
+        cachesInitialization.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
         this.addSubMenuElement(configurationMenuUl, cachesInitialization);
     }
 
@@ -439,11 +441,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Element editionMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
         editionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
         if (pageType.isSpace()) {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE, locale));
         } else if (PortalObjectUtils.isTemplate(page)) {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE, locale));
         } else {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE, locale));
         }
         editionMenu.add(editionMenuTitle);
 
@@ -469,7 +471,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             Element iconsDisplay = new DOMElement(QName.get(HTMLConstants.A));
             iconsDisplay.addAttribute(QName.get(HTMLConstants.HREF), changeModeUrl);
             iconsDisplay.addAttribute(QName.get(HTMLConstants.CLASS), modeHtmlClass);
-            iconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
+            iconsDisplay.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
             this.addSubMenuElement(editionMenuUl, iconsDisplay);
 
             // HR
@@ -478,26 +480,26 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // Page suppression
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_SUPPRESSION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
 
         // Page location
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_LOCATION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_LOCATION, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_LOCATION, locale));
 
         // HR
         this.addSubMenuElement(editionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
 
         // Page properties
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_PROPERTIES,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_PROPERTIES, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_PROPERTIES, locale));
 
         // Page CMS
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_CMS,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_CONFIGURATION, locale));
 
         // Page rights
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_RIGHTS,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_RIGHTS, locale));
+                this.getInternationalizationService().getString(InternationalizationConstants.KEY_RIGHTS, locale));
     }
 
     /**
@@ -530,7 +532,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Element cmsEditionMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
 
         cmsEditionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
-        cmsEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE, locale));
+        cmsEditionMenuTitle.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE, locale));
 
         cmsEditionMenu.add(cmsEditionMenuTitle);
 
@@ -544,7 +546,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // ChangeCMSEditionModeCommand changeVersion;
         ChangeCMSEditionModeCommand changeEditionMode = null;
-        String strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
+        String strChangeEditionMode = this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
         String cssChangeEditionMode = null;
 
 
@@ -619,7 +621,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsCreatePage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
         cmsCreatePage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
 
-        cmsCreatePage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
+        cmsCreatePage.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage);
 
         String editPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
@@ -629,7 +631,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsEditPage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "e");
         cmsEditPage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
         cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '' , '" + ecmBaseUrl + "');");
-        cmsEditPage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
+        cmsEditPage.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
 
         // Publish document
@@ -639,7 +641,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         Element cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.A));
         cmsPublishDoc.addAttribute(QName.get(HTMLConstants.HREF), publishURL);
-        cmsPublishDoc.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
+        cmsPublishDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc);
 
         // HR
@@ -657,7 +659,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Element cmsViewSitemap = new DOMElement(QName.get(HTMLConstants.A));
         cmsViewSitemap.addAttribute(QName.get(HTMLConstants.HREF), siteMapPopupURL);
         cmsViewSitemap.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-        cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
+        cmsViewSitemap.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
 
     }
@@ -689,7 +691,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_PREVIEW);
-            cmsToggleBtn1.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale));
+            cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale));
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
@@ -699,7 +701,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_ONLINE);
 
             cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn1.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale));
+            cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale));
             cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
                     editionMode);
@@ -768,7 +770,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                     URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
                     // Internationalization service
-                    dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
+                    dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.getInternationalizationService());
 
                     // Formatter
                     dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this);
@@ -792,7 +794,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
                         // Layouts
-                        List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
+                        List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.getLayoutService().getLayouts());
                         Collections.sort(layouts, new PortalLayoutComparator());
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
 
@@ -801,7 +803,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                                 page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_LAYOUT));
 
                         // Themes
-                        List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
+                        List<PortalTheme> themes = new ArrayList<PortalTheme>(this.getThemeService().getThemes());
                         Collections.sort(themes, new PortalThemeComparator());
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
 
@@ -810,11 +812,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                                 page.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME));
 
                         // Roles
-                        List<Role> roles = this.profilManager.getFilteredRoles();
+                        List<Role> roles = this.getProfilManager().getFilteredRoles();
                         dispatcher.setAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES, roles);
 
                         // Actions for roles
-                        DomainConfigurator domainConfigurator = this.authorizationDomainRegistry.getDomain("portalobject").getConfigurator();
+                        DomainConfigurator domainConfigurator = this.getAuthorizationDomainRegistry().getDomain("portalobject").getConfigurator();
                         Set<RoleSecurityBinding> constraints = domainConfigurator.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
                         Map<String, Set<String>> actionsForRoles = new HashMap<String, Set<String>>();
                         if (CollectionUtils.isNotEmpty(constraints)) {
@@ -863,6 +865,67 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         return null;
     }
+
+
+    private String formatInheritedCheckVakue(PortalObject po, String selectName, String propertyName, String selectedValue) throws Exception {
+        Map<String, String> supportedValue = new LinkedHashMap<String, String>();
+
+        supportedValue.put("0", "Non");
+        supportedValue.put("1", "Oui");
+
+
+        StringBuffer select = new StringBuffer();
+
+        String disabled = "";
+        if (StringUtils.isNotEmpty(po.getDeclaredProperty("osivia.cms.basePath"))) {
+            disabled = "disabled='disabled'";
+        }
+
+        select.append("<select name=\"" + selectName + "\"" + disabled + ">");
+
+        if (!supportedValue.isEmpty()) {
+
+            /* Héritage */
+
+            String parentScope = po.getParent().getProperty(propertyName);
+            String inheritedLabel = null;
+            if (parentScope != null) {
+                inheritedLabel = supportedValue.get(parentScope);
+            }
+            ;
+            if (inheritedLabel == null) {
+                inheritedLabel = "Non";
+            }
+            inheritedLabel = "Herité [" + inheritedLabel + "]";
+
+
+            if ((selectedValue == null) || (selectedValue.length() == 0)) {
+
+                select.append("<option selected=\"selected\" value=\"\">" + inheritedLabel + "</option>");
+
+            } else {
+
+                select.append("<option value=\"\">" + inheritedLabel + "</option>");
+
+            }
+            for (String possibleValue : supportedValue.keySet()) {
+                if ((selectedValue != null) && (selectedValue.length() != 0) && possibleValue.equals(selectedValue)) {
+
+                    select.append("<option selected=\"selected\" value=\"" + possibleValue + "\">" + supportedValue.get(possibleValue) + "</option>");
+
+                } else {
+
+                    select.append("<option value=\"" + possibleValue + "\">" + supportedValue.get(possibleValue) + "</option>");
+
+                }
+            }
+        }
+
+        select.append("</select>");
+
+        return select.toString();
+    }
+
 
     /**
      * Utility method used to access the target theme context path.
