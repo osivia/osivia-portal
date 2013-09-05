@@ -572,13 +572,16 @@ public class CmsCommand extends DynamicCommand {
 			}
 
 			/* Lecture des informations de publication */
-
+            Boolean published = Boolean.TRUE;
 			if (cmsPath != null) {
 
 				try {
 					// Attention, cet appel peut modifier si nécessaire le
 					// scope de cmsReadItemContext
 					pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, cmsPath.toString());
+
+                    // Test if page has already been published
+                    published = pubInfos.isPublished();
 
 					// Le path eventuellement en ID a été retranscrit en chemin
 					cmsPath = pubInfos.getDocumentPath();
@@ -604,69 +607,39 @@ public class CmsCommand extends DynamicCommand {
 			
 			// Lecture de la configuration de l'espace
 			
-			CMSItem pagePublishSpaceConfig = getPagePublishSpaceConfig(getControllerContext(), currentPage) ;
-			
-
-			/* Lecture de l'item */
-
-			// if (baseCMSPublicationPage != null) {
-
-			if (cmsPath != null) {
-
-				try {
-					// Attention, cet appel peut modifier si nécessaire le
-					// scope de cmsReadItemContext
-					cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
-					
-					
-					
-					
+            CMSItem pagePublishSpaceConfig = getPagePublishSpaceConfig(getControllerContext(), currentPage);
 
 
-				} catch (CMSException e) {
+            /* Lecture de l'item */
 
-                    boolean continueThrow = true;
+            if (cmsPath != null) {
+
+                try {
+                    // Attention, cet appel peut modifier si nécessaire le
+                    // scope de cmsReadItemContext
+
+                    // if page in not published and user come from the sitemap or after a webpage creation
+                    // force the preview mode.
+                    if (!published && ("sitemap".equals(displayContext) || "newPage".equals(displayContext))) {
+                        getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
+                                InternalConstants.CMS_VERSION_PREVIEW);
+                        cmsReadItemContext.setDisplayLiveVersion("1");
+                    }
+
+                    cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
+
+                } catch (CMSException e) {
+
 
                     if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
                         return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
 
                     if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) {
-
-                        // From sitemap or creation page wizard, force the preview mode navigation
-                        // in order to display the newly created documents
-                        if ("sitemap".equals(displayContext) || "newPage".equals(displayContext)) {
-
-                            cmsReadItemContext.setDisplayLiveVersion("1");
-                            try {
-                                cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
-
-                                continueThrow = false;
-
-                                getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
-                                        InternalConstants.CMS_VERSION_PREVIEW);
-
-                            } catch (CMSException e2) {
-                                if (e2.getErrorCode() == CMSException.ERROR_FORBIDDEN)
-                                    return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
-
-                                if (e2.getErrorCode() == CMSException.ERROR_NOTFOUND) {
-                                    return new UnavailableResourceResponse(cmsPath, false);
-                                }
-
-                                throw e2;
-
-                            }
-
-                        }
-
-                        // return new UnavailableResourceResponse(cmsPath, false);
+                        return new UnavailableResourceResponse(cmsPath, false);
 
                     }
 
-                    if (continueThrow) {
-                        throw e;
-                    }
-				}
+                }
 
 			}
 			

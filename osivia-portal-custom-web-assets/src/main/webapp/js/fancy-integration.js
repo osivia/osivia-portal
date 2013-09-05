@@ -8,14 +8,18 @@ var callbackUrl = "";
 */
 function callback( )	{
 
-	var divElt = document.getElementById(callbackId);
+	if(callbackId) {
+		var divElt = document.getElementById();	
+		
+		if( divElt != null) {
+			// reload portlet
+			//console.log("callback reload portlet " + callbackUrl);
+			
+			updatePortletContent( divElt, callbackUrl);
+		}
+	}
 	
-	
-	if( divElt != null)
-		// reload portlet
-		updatePortletContent( divElt, callbackUrl);
-	
-		// load a new page
+	// load a new page
 	else if (callbackUrlFromEcm) {
 		
 		var $f = jQuery('.fancybox-iframe');
@@ -25,19 +29,23 @@ function callback( )	{
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
 			
 			if(redirectUrl) {
+				//console.log("callback load a new page " + redirectUrl);
+				
 				window.location.replace(redirectUrl);
 			}
 		}
 		
 	}
-	else
+	else {
 		// reload full page
 		if(!callbackUrl) {
 			callbackUrl = document.URL; // if not specified, stay on the current page
 		}
+		
+		//console.log("callback reload full page " + callbackUrl);
 		window.location.replace(callbackUrl);
 
-    
+	}
 }
 
 var callbackUrlFromEcm = "";
@@ -140,6 +148,8 @@ function closeFancybox() {
 * Switch actions after recieving messages from ECM
 */
 function receiveMessageAction(message) {
+	
+	console.log("message : " + message.data);
 	
 	if(message.data == 'closeFancyBox') {
 		parent.$JQry.fancybox.close();
