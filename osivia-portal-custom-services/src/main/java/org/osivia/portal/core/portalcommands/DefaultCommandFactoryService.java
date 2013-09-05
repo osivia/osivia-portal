@@ -223,13 +223,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                 if ("changeCMSEditionMode".equals(action)) {
                     String pageId = null;
+                    String pagePath = null;
                     String version = null;
                     String editionMode = null;
                     if ((parameterMap.get("pageId") != null) && (parameterMap.get("version") != null) && (parameterMap.get("editionMode") != null)) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], CharEncoding.UTF_8);
                         version = URLDecoder.decode(parameterMap.get("version")[0], CharEncoding.UTF_8);
                         editionMode = URLDecoder.decode(parameterMap.get("editionMode")[0], CharEncoding.UTF_8);
-                        return new ChangeCMSEditionModeCommand(pageId, version, editionMode);
+                        return new ChangeCMSEditionModeCommand(pageId, pagePath, version, editionMode);
                     }
                 }
 

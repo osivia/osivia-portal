@@ -106,6 +106,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			AbstractServerURL asu = new AbstractServerURL();
 			asu.setPortalRequestPath(this.path);
 			String pageId = command.getPageId();
+            String pagePath = command.getPagePath();
             String version = command.getVersion();
             String editionMode = command.getEditionMode();
 
@@ -113,6 +114,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 				asu.setParameterValue("action", "changeCMSEditionMode");
 
 				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(pagePath, "UTF-8"));
                 asu.setParameterValue("version", URLEncoder.encode(version, "UTF-8"));
                 asu.setParameterValue("editionMode", URLEncoder.encode(editionMode, "UTF-8"));
 

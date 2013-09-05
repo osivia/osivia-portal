@@ -9,16 +9,18 @@ var callbackUrl = "";
 function callback( )	{
 
 	if(callbackId) {
-		var divElt = document.getElementById();	
-		
-		if( divElt != null) {
-			// reload portlet
-			//console.log("callback reload portlet " + callbackUrl);
-			
-			updatePortletContent( divElt, callbackUrl);
-		}
+		var divElt = document.getElementById(callbackId);	
 	}
 	
+	
+	
+	if(divElt) {
+		// reload portlet
+		//console.log("callback reload portlet " + callbackUrl);
+			
+		updatePortletContent( divElt, callbackUrl);
+		
+	}
 	// load a new page
 	else if (callbackUrlFromEcm) {
 		

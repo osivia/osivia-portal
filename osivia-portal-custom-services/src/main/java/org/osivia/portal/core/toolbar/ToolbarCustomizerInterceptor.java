@@ -521,6 +521,21 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             context.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, editionMode);
         }
 
+
+        Map<String, String> requestParameters = new HashMap<String, String>();
+
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(context.getServerInvocation());
+        cmsCtx.setControllerContext(context);
+
+        String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+        cmsCtx.setDisplayLiveVersion("1");
+        CMSItem liveDoc = getCMSService().getContent(cmsCtx, pagePath);
+
+        String path = liveDoc.getPath();
+
+
+
         URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
         // CMS edition menu root element
@@ -551,12 +566,14 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
 
         if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
-            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                    InternalConstants.CMS_VERSION_PREVIEW,
                     InternalConstants.CMS_EDITION_MODE_OFF);
 
             cssChangeEditionMode = HTMLConstants.CLASS_CHECK;
         } else {
-            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                    InternalConstants.CMS_VERSION_PREVIEW,
                     InternalConstants.CMS_EDITION_MODE_ON);
 
             cssChangeEditionMode = HTMLConstants.CLASS_UNCHECK;
@@ -588,9 +605,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // ========== create / modify doc
 
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(context.getServerInvocation());
-        cmsCtx.setControllerContext(context);
+
 
         // test si mode assistant activé
         if (InternalConstants.CMS_VERSION_PREVIEW.equals(context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
@@ -607,12 +622,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // ============
 
 
-        Map<String, String> requestParameters = new HashMap<String, String>();
 
-        String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
-        CMSItem liveDoc = getCMSService().getContent(cmsCtx, pagePath);
-
-        String path = liveDoc.getPath();
         String createPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
 
         Element cmsCreatePage = new DOMElement(QName.get(HTMLConstants.A));
@@ -669,6 +679,15 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Locale locale = context.getServerInvocation().getRequest().getLocale();
         String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
 
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(context.getServerInvocation());
+        cmsCtx.setControllerContext(context);
+
+        String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+        cmsCtx.setDisplayLiveVersion("1");
+        CMSItem liveDoc = getCMSService().getContent(cmsCtx, pagePath);
+
+        String path = liveDoc.getPath();
 
         // ---------------------
         String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
@@ -694,7 +713,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale));
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_ONLINE,
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_ONLINE,
                     editionMode);
 
         } else {
@@ -703,7 +722,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale));
             cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), InternalConstants.CMS_VERSION_PREVIEW,
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_PREVIEW,
                     editionMode);
 
         }
