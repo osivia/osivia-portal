@@ -9,6 +9,9 @@ import java.util.Locale;
  */
 public class Bundle {
 
+    /** Bundle request attribute name. */
+    public static final String ATTRIBUTE_NAME = "osivia.portal.internationalization.bundle";
+
     /** Internationalization service. */
     private final IInternationalizationService internationalizationService;
     /** Class loader. */
