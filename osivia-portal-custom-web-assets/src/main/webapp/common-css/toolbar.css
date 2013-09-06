@@ -51,14 +51,14 @@
     text-align: left;
 }
 
-#toolbar ul a.uncheck, .toolbar-menu ul a.uncheck {
+#toolbar ul a.uncheck, #toolbar ul p.uncheck {
     background-image: url('../images/toolbar/checkbox-uncheck.png');
     background-repeat: no-repeat;
     background-position: 15px 0;
     padding-left: 35px;
 }
 
-#toolbar ul a.check, .toolbar-menu ul a.check {
+#toolbar ul a.check, #toolbar ul p.check {
     background-image: url('../images/toolbar/checkbox-check.png');
     background-repeat: no-repeat;
     background-position: 15px 0;
