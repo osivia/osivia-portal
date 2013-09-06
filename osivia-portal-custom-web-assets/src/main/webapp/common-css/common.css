@@ -222,6 +222,10 @@ input.inline-checkbox {
 	padding: 2px 10px 2px 44px;
 }
 
+#notifications-window .notifications p, #notifications-window .notifications ul {
+	line-height: 22px;
+}
+
 #notifications-window .notifications.error {
     background-image: url('../images/notifications-error.png');
     background-color: #FF9D9A;
