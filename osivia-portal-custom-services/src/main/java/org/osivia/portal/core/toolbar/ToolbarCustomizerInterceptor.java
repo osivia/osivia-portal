@@ -300,7 +300,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             // Configuration menu
             this.generateAdministrationConfigurationMenu(context, page, administration);
 
-            if (!(PageType.DYNAMIC_PAGE.equals(pageType) || PortalObjectUtils.isSpaceSite(page))) {
+            if (!(PageType.DYNAMIC_PAGE.equals(pageType) || (PortalObjectUtils.isSpaceSite(page) && !PortalObjectUtils.isTemplate(page)))) {
                 // Edition menu
                 this.generateAdministrationEditionMenu(context, page, administration);
             }

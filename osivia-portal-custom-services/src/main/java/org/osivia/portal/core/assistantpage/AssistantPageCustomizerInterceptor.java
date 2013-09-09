@@ -680,12 +680,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             Element li = new DOMElement(QName.get(HTMLConstants.LI));
             li.addAttribute(QName.get(HTMLConstants.ID), idPrefix + pageId);
             li.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
-            if (PageType.getPageType(page, context).isSpace()) {
-                // Space
-                li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_SPACE);
-            } else if (PortalObjectUtils.isTemplate(page)) {
+            if (PortalObjectUtils.isTemplate(page)) {
                 // Template
                 li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_TEMPLATE);
+            } else if (PageType.getPageType(page, context).isSpace()) {
+                // Space
+                li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_SPACE);
             } else {
                 // Page
                 li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_PAGE);
@@ -1454,7 +1454,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /**
      * Synchronize context regions with layout.
      * if a region is not present in the context, creates a new one.
-     * 
+     *
      * @param rendition page rendition
      * @param page current page
      * @throws Exception
