@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +19,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpRequest;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -44,7 +42,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
-import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.WindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
@@ -74,7 +71,6 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
-import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.charte.Breadcrumb;
 import org.osivia.portal.api.charte.BreadcrumbItem;
@@ -93,13 +89,10 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.profils.IProfilManager;
-
-import bsh.Interpreter;
 
 
 
@@ -1047,7 +1040,6 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				portalURL = new PortalURLImpl(cmd, controllerCtx, Boolean.TRUE, null);
 				rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
 			}
-
 	
 			//
 			boolean admin = false;

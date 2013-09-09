@@ -59,6 +59,10 @@ public class SelectionPortlet extends GenericPortlet {
     private static final String REQUEST_PARAMETER_SAVE = "save";
     /** Selection identifier window property. */
     private static final String WINDOW_PROPERTY_SELECTION_ID = "osivia.selection.id";
+    /** DCH: Empty portlet indicator */
+    private static final String EMPTY_PORTLET = "osivia.emptyResponse";
+    /** DCH: True indicator */
+    private static final String TRUE = "1";
 
     /** Logger. */
     protected static final Log logger = LogFactory.getLog(SelectionPortlet.class);
@@ -140,7 +144,12 @@ public class SelectionPortlet extends GenericPortlet {
     protected void doView(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         String selectionId = this.getSelectionId(request);
         Set<SelectionItem> selectionItemsSet = this.getSelectionService().getSelectionItems(request, selectionId);
-        request.setAttribute(REQUEST_ATTRIBUTE_SELECTION, selectionItemsSet);
+        /** DCH: add of emtpy selection case: the portlet is hidden */
+        if(selectionItemsSet != null && selectionItemsSet.isEmpty()){
+        	request.setAttribute(EMPTY_PORTLET, TRUE);
+        }else{
+        	request.setAttribute(REQUEST_ATTRIBUTE_SELECTION, selectionItemsSet);
+        }
 
         response.setContentType(MediaType.TEXT_HTML.getValue());
         this.getPortletContext().getRequestDispatcher(PATH_PAGE_VIEW).include(request, response);

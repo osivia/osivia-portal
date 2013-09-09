@@ -2,6 +2,7 @@ package org.osivia.portal.api.menubar;
 
 public class MenubarItem {
 	
+	private String id;
 	private int order;
 	private String url;
 	private String title;
@@ -31,6 +32,7 @@ public class MenubarItem {
 	
 	public MenubarItem(String id, String title, int order, String url, String onClickEvent, String className, String target) {
 		super();
+		this.id = id;
 		this.order = order;
 		this.url = url;
 		this.onClickEvent = onClickEvent;
@@ -39,6 +41,14 @@ public class MenubarItem {
 		this.target = target;
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getOnClickEvent() {
 		return onClickEvent;
 	}
