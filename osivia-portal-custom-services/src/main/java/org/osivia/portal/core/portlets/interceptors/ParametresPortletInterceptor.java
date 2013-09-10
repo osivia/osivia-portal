@@ -260,6 +260,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 							StringBuffer topBar = new StringBuffer();
 							String bottomBar = "";
+							
+							StringBuffer associatedHTML = new StringBuffer();
 
 							topBar.append("<p class=\"portlet-action-link\">");
 							for (MenubarItem menuItem : sortedItems) {
@@ -286,6 +288,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 								if (className.length() > 0)
 									topBar.append(" class=\"" + "portlet-menuitem " + className + "\"");
+								
+								if( menuItem.getAssociatedHtml() != null)
+										associatedHTML.append( menuItem.getAssociatedHtml());
 
 								topBar.append(">");
 
@@ -294,6 +299,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 								topBar.append("</a>");
 							}
 							topBar.append("</p>");
+							
+							if( associatedHTML.length() > 0){
+								topBar.append("<div class=\"portlet-menu-html\">");
+								topBar.append(associatedHTML);
+								topBar.append("</div>");
+							}
+							
+							
 
 							if ("1".equals(printPortlet)) {
 								topBar.append("<div id=\"" + windowId + "_print\" class=\"portlet-print-box\">");

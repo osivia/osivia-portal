@@ -9,6 +9,7 @@ public class MenubarItem {
 	private String className;
 	private String onClickEvent;
 	private String target;
+	private String associatedHtml;
 	private boolean ajaxDisabled=false;
 
 	public static int ORDER_PORTLET_SPECIFIC = 0;
@@ -91,8 +92,14 @@ public class MenubarItem {
 		this.ajaxDisabled = ajaxDisabled;
 	}
 	
+	public String getAssociatedHtml() {
+		return associatedHtml;
+	}
 
-	
+	public void setAssociatedHtml(String associatedHtml) {
+		this.associatedHtml = associatedHtml;
+	}
+
 	public String getTarget() {
 		return target;
 	}

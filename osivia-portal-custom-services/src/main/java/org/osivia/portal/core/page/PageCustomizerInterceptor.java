@@ -1040,6 +1040,10 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				portalURL = new PortalURLImpl(cmd, controllerCtx, Boolean.TRUE, null);
 				rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
 			}
+			
+			//DCH: permet la récupération dans toolbar.jsp des informations de userDatas
+			Map<String, Object> userDatas = (Map<String, Object>) controllerCtx.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
+			rd.setAttribute("osivia.userDatas", userDatas);
 	
 			//
 			boolean admin = false;
