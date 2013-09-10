@@ -23,324 +23,431 @@ import org.osivia.portal.core.page.PortalObjectContainer;
 
 
 /**
- * Gestion des pages CMS dont le contenu est dynamique (CMS_LAYOUT)
- * 
+ * Gestion des pages CMS dont le contenu est dynamique (CMS_LAYOUT).
+ *
  * @author jeanseb
- * 
+ * @see DynamicPage
+ * @see ITemplatePortalObject
  */
 public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
-	PageImpl template;
-	PortalObject parent;
-	List<Window> windows;
-	List<PortalObject> children;
-	Map<String, String> localProperties = new HashMap<String, String>();
+    /** Template. */
+    private final PageImpl template;
+    /** Parent portal object. */
+    private PortalObject parent;
+    /** Windows. */
+    private List<Window> windows;
+    /** Children portal objects. */
+    private List<PortalObject> children;
+    /** Local properties. */
+    private final Map<String, String> localProperties = new HashMap<String, String>();
+    /** Portal object identifier. */
+    private PortalObjectId id = null;
+    /** Parent portal object identifier. */
+    private PortalObjectId parentId = null;
+    /** Name. */
+    private final String name;
 
-	protected PortalObjectId id = null;
-	protected PortalObjectId parentId = null;
-	String name;
 
-	protected TemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name,
-			PortalObjectImpl template, DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
-		super();
+    /**
+     * Constructor.
+     *
+     * @param container portal object container
+     * @param parentId parent portal object identifier
+     * @param name name
+     * @param template template portal object
+     * @param dynamicContainer dynamic portal object container
+     */
+    protected TemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, PortalObjectImpl template,
+            DynamicPortalObjectContainer dynamicContainer) {
+        super();
 
-		this.name = name;
-		this.container = container;
-		this.dynamicContainer = dynamicContainer;
+        this.name = name;
+        this.container = container;
+        this.dynamicContainer = dynamicContainer;
 
-		this.containerContext = template.getObjectNode().getContext();
-		this.setObjectNode(template.getObjectNode());
+        this.containerContext = template.getObjectNode().getContext();
+        this.setObjectNode(template.getObjectNode());
 
-		this.template = (PageImpl) template;
+        this.template = (PageImpl) template;
 
-		this.parentId = parentId;
+        this.parentId = parentId;
 
-		this.id = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name),
-				PortalObjectPath.CANONICAL_FORMAT));
+        this.id = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
 
-		// Optimisation : ajout cache
-		DynamicPortalObjectContainer.addToCache(this.id, this);
-	}
+        // Optimisation : ajout cache
+        DynamicPortalObjectContainer.addToCache(this.id, this);
+    }
 
-	public PortalObject getParent() {
-		if (this.parent == null) {
-			this.parent = this.container.getObject(this.parentId);
-		}
-		return this.parent;
-	}
 
-	DynamicWindow createSessionWindow(DynamicWindowBean dynamicWindowBean) {
-		return new DynamicTemplateWindow(this, dynamicWindowBean.getName(), this.containerContext, this.dynamicContainer,
-				dynamicWindowBean.getUri(), dynamicWindowBean.getProperties(), dynamicWindowBean);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PortalObject getParent() {
+        if (this.parent == null) {
+            this.parent = this.container.getObject(this.parentId);
+        }
+        return this.parent;
+    }
 
-	private List<Window> getWindows() {
 
-		if (this.windows == null) {
-			this.windows = new ArrayList<Window>();
-			if (this.template != null) {
-				Collection childs = this.template.getChildren(PortalObject.WINDOW_MASK);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    DynamicWindow createSessionWindow(DynamicWindowBean dynamicWindowBean) {
+        return new DynamicTemplateWindow(this, dynamicWindowBean.getName(), this.containerContext, this.dynamicContainer, dynamicWindowBean.getUri(),
+                dynamicWindowBean.getProperties(), dynamicWindowBean);
+    }
 
-				for (Object child : childs) {
-					if (child instanceof WindowImpl) {
-                        this.windows.add(new DynamicTemplateWindow(this, (WindowImpl) child, ((WindowImpl) child).getName(),
-								this.containerContext, this.dynamicContainer));
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = (prime * result) + ((this.template == null) ? 0 : this.template.hashCode());
+        return result;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        TemplatePage other = (TemplatePage) obj;
+        if (this.template == null) {
+            if (other.template != null) {
+                return false;
+            }
+        } else if (!this.template.equals(other.template)) {
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Access to windows list.
+     *
+     * @return windows list
+     */
+    private List<Window> getWindows() {
+        if (this.windows == null) {
+            this.windows = new ArrayList<Window>();
+            if (this.template != null) {
+                Collection<?> childs = this.template.getChildren(PortalObject.WINDOW_MASK);
+
+                for (Object child : childs) {
+                    if (child instanceof WindowImpl) {
+                        this.windows.add(new DynamicTemplateWindow(this, (WindowImpl) child, ((WindowImpl) child).getName(), this.containerContext,
+                                this.dynamicContainer));
                     }
 
-				}
-
-				// ajout fenetre dynamiques
-				this.windows.addAll(this.getDynamicWindows().values());
-			}
-
-			return this.windows;
-		}
-
-		return this.windows;
-	}
-
-	@Override
-	public Collection getChildren() {
-
-		if (this.children == null) {
-
-			this.children = new ArrayList<PortalObject>();
-
-			for (Object po : this.template.getChildren()) {
-
-				if (po instanceof WindowImpl) {
-                    this.children.add(new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(),
-							this.containerContext, this.dynamicContainer));
                 }
 
-				// TODO : childs
-				/*
-				 * if( po instanceof PageImpl) children.add( new
-				 * TemplatePage(container, this.getId(), ((PageImpl)
-				 * po).getName(), (PortalObjectImpl) po, dynamicContainer,
-				 * pageBean)); }
-				 */
+                // ajout fenetre dynamiques
+                this.windows.addAll(this.getDynamicWindows().values());
+            }
+        }
 
-				this.children.addAll(this.getDynamicWindows().values());
-			}
+        return this.windows;
+    }
 
-			// Indispensable ???
-			if (this.getDeclaredProperty("osivia.cms.layoutRules") != null) {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<PortalObject> getChildren() {
+        if (this.children == null) {
+            this.children = new ArrayList<PortalObject>();
+
+            for (Object po : this.template.getChildren()) {
+
+                if (po instanceof WindowImpl) {
+                    this.children.add(new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(), this.containerContext,
+                            this.dynamicContainer));
+                }
+
+                this.children.addAll(this.getDynamicWindows().values());
+            }
+
+            // Indispensable ???
+            if (this.getDeclaredProperty("osivia.cms.layoutRules") != null) {
                 this.children.add(CMSTemplatePage.createPage(this.container, this.parentId, this.template, this.dynamicContainer));
             }
-		}
+        }
 
-		return this.children;
-	}
+        return this.children;
+    }
 
-	@Override
-	public Collection getChildren(int wantedMask) {
 
-		if (wantedMask != PortalObject.WINDOW_MASK) {
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public Collection getChildren(int wantedMask) {
+        if (wantedMask != PortalObject.WINDOW_MASK) {
             return this.template.getChildren(wantedMask);
         } else {
+            return this.getWindows();
+        }
+    }
 
-			List<Window> windows = this.getWindows();
 
-			/*
-			 * for( Window window : windows) { logger.debug("cms.uri" +
-			 * window.getProperties().get("osivia.cms.uri")); }
-			 */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PortalObject getChild(String name) {
+        Window child = this.getDynamicWindows().get(name);
 
-			return this.getWindows();
-
-		}
-	}
-
-	@Override
-	public PortalObject getChild(String name) {
-		Window child = this.getDynamicWindows().get(name);
-
-		if (child != null) {
+        if (child != null) {
             return child;
         } else {
-			PortalObject po = this.template.getChild(name);
+            PortalObject po = this.template.getChild(name);
 
-			if (po instanceof WindowImpl) {
-                return new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(), this.containerContext,
-						this.dynamicContainer);
+            if (po instanceof WindowImpl) {
+                return new DynamicTemplateWindow(this, (WindowImpl) po, ((WindowImpl) po).getName(), this.containerContext, this.dynamicContainer);
             }
 
-			// TODO : template childs
-
-			/*
-			 * if( po instanceof PageImpl) return new TemplatePage(container,
-			 * this.getId(), po.getName(), (PortalObjectImpl) po,
-			 * dynamicContainer, pageBean);
-			 */
-
-			if (CMSTemplatePage.PAGE_NAME.equals(name)) {
-                return this.container
-						.getObject(new PortalObjectId("", this.getId().getPath().getChild(CMSTemplatePage.PAGE_NAME)));
+            if (CMSTemplatePage.PAGE_NAME.equals(name)) {
+                return this.container.getObject(new PortalObjectId("", this.getId().getPath().getChild(CMSTemplatePage.PAGE_NAME)));
             }
 
-			return null;
-		}
-	}
-
-	@Override
-	public boolean equals(Object arg0) {
-		return this.template.equals(arg0);
-	}
-
-	@Override
-	public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
-		return this.template.getDisplayName();
-	}
-
-	@Override
-	public Map getDisplayNames() {
-		return this.template.getDisplayNames();
-	}
-
-	@Override
-	public PortalObjectId getId() {
-		return this.id;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	// TODO : pas forcement necessaire de précharger toutes les propriétés
-	// peut-etre plus optimiser de modifier uniquement le getproperty
-	// (+performant)
-	// voir quand le getProperties est appelé
-
-	@Override
-	public Map getProperties() {
-
-		if (this.properties == null) {
-			// Les données de la page sont paratagées entre les threads
-
-			Map<String, String> sharedProperties = PageProperties.getProperties().getPagePropertiesMap();
-			
-			String pageId = this.getId().toString();
-			
-			String fetchedProperties = sharedProperties.get("osivia.fetchedPortalProperties");
-
-			if ( ! pageId.equals(fetchedProperties)) {
-
-				this.properties = new HashMap<String, String>();
-
-				// Propriétés du template
-
-				Map templateProperties = this.template.getProperties();
-				if (templateProperties != null) {
-					for (Object key : templateProperties.keySet()) {
-						this.properties.put((String) key, (String) templateProperties.get(key));
-					}
-				}
-				
+            return null;
+        }
+    }
 
 
-				// Le template est surchargé par les propriétés de la page parent
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
+        return this.template.getDisplayName();
+    }
 
-				Map inheritedProperties = this.getParent().getProperties();
-				if (inheritedProperties != null) {
-					for (Object key : inheritedProperties.keySet()) {
-						if (!ThemeConstants.PORTAL_PROP_LAYOUT.equals(key) && !ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<?, ?> getDisplayNames() {
+        return this.template.getDisplayNames();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PortalObjectId getId() {
+        return this.id;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, String> getProperties() {
+        // TODO : pas forcement necessaire de précharger toutes les propriétés
+        // peut-etre plus optimiser de modifier uniquement le getproperty
+        // (+performant)
+        // voir quand le getProperties est appelé
+
+        if (this.properties == null) {
+            // Les données de la page sont paratagées entre les threads
+
+            Map<String, String> sharedProperties = PageProperties.getProperties().getPagePropertiesMap();
+
+            String pageId = this.getId().toString();
+
+            String fetchedProperties = sharedProperties.get("osivia.fetchedPortalProperties");
+
+            if (!pageId.equals(fetchedProperties)) {
+
+                this.properties = new HashMap<String, String>();
+
+                // Propriétés du template
+
+                Map<String, String> templateProperties = this.template.getProperties();
+                if (templateProperties != null) {
+                    for (Object key : templateProperties.keySet()) {
+                        this.properties.put((String) key, templateProperties.get(key));
+                    }
+                }
+
+
+                // Le template est surchargé par les propriétés de la page parent
+
+                Map<?, ?> inheritedProperties = this.getParent().getProperties();
+                if (inheritedProperties != null) {
+                    for (Object key : inheritedProperties.keySet()) {
+                        if (!ThemeConstants.PORTAL_PROP_LAYOUT.equals(key) && !ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
                             this.properties.put((String) key, (String) inheritedProperties.get(key));
-                        } else	{
-							if( ThemeConstants.PORTAL_PROP_THEME.equals(key))	{
-								// Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
-								if( this.template.getDeclaredProperty( (String) key) == null) {
+                        } else {
+                            if (ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
+                                // Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
+                                if (this.template.getDeclaredProperty((String) key) == null) {
                                     this.properties.put((String) key, (String) inheritedProperties.get(key));
                                 }
-							}
-						}
-					}
-				}
-				
-				// Propriétés locales
-				for (Object key : this.localProperties.keySet()) {
-					this.properties.put((String) key, this.localProperties.get(key));
-				}
-			
+                            }
+                        }
+                    }
+                }
 
-				this.properties.put("osivia.fetchedPortalProperties", pageId);
-				
-				sharedProperties= new HashMap<String, String>();
-				sharedProperties.putAll(this.properties);
+                // Propriétés locales
+                for (Object key : this.localProperties.keySet()) {
+                    this.properties.put((String) key, this.localProperties.get(key));
+                }
 
-			} else   {
-			    // JSS 20130703-001
-			    // corrige le bug de mélange de propriétés entre les pages
-				this.properties = new HashMap<String, String>();
-				this.properties.putAll(sharedProperties);
 
-			}
+                this.properties.put("osivia.fetchedPortalProperties", pageId);
 
-		}
+                sharedProperties = new HashMap<String, String>();
+                sharedProperties.putAll(this.properties);
 
-		return this.properties;
-	}
+            } else {
+                // JSS 20130703-001
+                // corrige le bug de mélange de propriétés entre les pages
+                this.properties = new HashMap<String, String>();
+                this.properties.putAll(sharedProperties);
 
-	public String getProperty(String name) {
+            }
 
-		return (String) (this.getProperties().get(name));
-	}
+        }
 
-	@Override
-	public ObjectNode getObjectNode() {
-		return this.template.getObjectNode();
-	}
+        return this.properties;
+    }
 
-	@Override
-	public void setDeclaredProperty(String name, String value) {
-		/*
-		 * if( ThemeConstants.PORTAL_PROP_REGION.equals(name) ||
-		 * ThemeConstants.PORTAL_PROP_ORDER.equals(name) )
-		 */
-		this.localProperties.put(name, value);
-		/*
-		 * else super.setDeclaredProperty(name, value);
-		 */
-	}
-	
-	protected boolean getTemplateDeclaredPropertyByDefault( String name)	{
-		
-		return true;
-	}
 
-	@Override
-	public String getDeclaredProperty(String name) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProperty(String name) {
+        return (this.getProperties().get(name));
+    }
 
-		String value = null;
 
-		value = this.localProperties.get(name);
-		
-		if (value == null)	{
-			if( this.getTemplateDeclaredPropertyByDefault( name)) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ObjectNode getObjectNode() {
+        return this.template.getObjectNode();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDeclaredProperty(String name, String value) {
+        this.localProperties.put(name, value);
+    }
+
+
+    /**
+     * Access to template default declared property.
+     *
+     * @param name name
+     * @return default declared property
+     */
+    protected boolean getTemplateDeclaredPropertyByDefault(String name) {
+        return true;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDeclaredProperty(String name) {
+
+        String value = null;
+
+        value = this.localProperties.get(name);
+
+        if (value == null) {
+            if (this.getTemplateDeclaredPropertyByDefault(name)) {
                 return this.template.getDeclaredProperty(name);
             } else {
                 return null;
             }
-		} else {
+        } else {
             return value;
         }
-	}
+    }
 
-	public String toString() {
-		return this.getId().toString();
-	}
 
-	public PortalObject getTemplate() {
-		return this.template;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.getId().toString();
+    }
 
-	public Page getEditablePage() {
-		return null;
-	}
 
-	public boolean isClosable() {
-		return true;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public PortalObject getTemplate() {
+        return this.template;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public Page getEditablePage() {
+        return null;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isClosable() {
+        return true;
+    }
+
+
+    /**
+     * Getter for localProperties.
+     * 
+     * @return the localProperties
+     */
+    public Map<String, String> getLocalProperties() {
+        return this.localProperties;
+    }
 
 }

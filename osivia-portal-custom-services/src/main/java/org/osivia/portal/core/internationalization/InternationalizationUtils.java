@@ -11,12 +11,10 @@ import org.osivia.portal.api.locator.Locator;
 public class InternationalizationUtils {
 
     /**
-     * Default constructor.
-     * InternationalizationUtils instances should NOT be constructed in standard programming.
-     * This constructor is public to permit tools that require a JavaBean instance to operate.
+     * Private constructor : prevent instantiation.
      */
-    public InternationalizationUtils() {
-        super();
+    private InternationalizationUtils() {
+        throw new AssertionError();
     }
 
 

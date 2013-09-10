@@ -42,12 +42,10 @@ public class NotificationsUtils {
 
 
     /**
-     * Default constructor.
-     * NotificationsUtils instances should NOT be constructed in standard programming.
-     * This constructor is public to permit tools that require a JavaBean instance to operate.
+     * Private constructor : prevent instantiation.
      */
-    public NotificationsUtils() {
-        super();
+    private NotificationsUtils() {
+        throw new AssertionError();
     }
 
 

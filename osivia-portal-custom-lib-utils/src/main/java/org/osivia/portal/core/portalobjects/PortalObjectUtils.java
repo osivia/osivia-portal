@@ -27,12 +27,10 @@ import org.osivia.portal.core.constants.InternalConstants;
 public class PortalObjectUtils {
 
     /**
-     * Default constructor.
-     * PortalObjectUtils instances should NOT be constructed in standard programming.
-     * This constructor is public to permit tools that require a JavaBean instance to operate.
+     * Private constructor : prevent instantiation.
      */
-    public PortalObjectUtils() {
-        super();
+    private PortalObjectUtils() {
+        throw new AssertionError();
     }
 
 

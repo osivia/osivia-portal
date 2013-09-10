@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -213,7 +214,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (parentScope != null) {
             inheritedLabel = contextualization.get(parentScope);
         }
-        ;
+
         if (inheritedLabel == null) {
             inheritedLabel = "Mode portlet";
 
@@ -230,19 +231,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             select.append("<option value=\"\">" + inheritedLabel + "</option>");
 
         }
-        for (String possibleContextualization : contextualization.keySet()) {
-            if ((selectedValue != null) && (selectedValue.length() != 0) && possibleContextualization.equals(selectedValue)) {
 
-                select.append("<option selected=\"selected\" value=\"" + possibleContextualization + "\">" + contextualization.get(possibleContextualization)
-                        + "</option>");
-
+        for (Entry<String, String> entry : contextualization.entrySet()) {
+            if ((selectedValue != null) && (selectedValue.length() != 0) && entry.getKey().equals(selectedValue)) {
+                select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
             } else {
-
-                select.append("<option value=\"" + possibleContextualization + "\">" + contextualization.get(possibleContextualization) + "</option>");
-
+                select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
             }
         }
-
 
         select.append("</select>");
 
@@ -250,65 +246,51 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     }
 
+
     /**
      * {@inheritDoc}
      */
     public String formatRequestFilteringPolicyList(PortalObject po, String policyName, String selectedPolicy) throws Exception {
-
-
         Map<String, String> policies = new LinkedHashMap<String, String>();
 
-        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL, "Contenus du portail courant");
-        policies.put( InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER, "Tous les contenus");
-
+        policies.put(InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL, "Contenus du portail courant");
+        policies.put(InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER, "Tous les contenus");
 
         String inheritedFilteringPolicy = po.getParent().getProperty(InternalConstants.PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY);
 
         String inheritedLabel = null;
 
         if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL.equals(inheritedFilteringPolicy)) {
-             inheritedLabel = "Contenus du portail courant";
-         } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER.equals(inheritedFilteringPolicy)) {
-             inheritedLabel = "Tous les contenus";
-         } else {
-              String portalType =  po.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
-              if( InternalConstants.PORTAL_TYPE_SPACE.equals(portalType)) {
+            inheritedLabel = "Contenus du portail courant";
+        } else if (InternalConstants.PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER.equals(inheritedFilteringPolicy)) {
+            inheritedLabel = "Tous les contenus";
+        } else {
+            String portalType = po.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
+            if (InternalConstants.PORTAL_TYPE_SPACE.equals(portalType)) {
                 inheritedLabel = "Contenus du portail courant";
-              } else  {
-                  inheritedLabel = "Tous les contenus";
-              }
-       }
-
-
-
+            } else {
+                inheritedLabel = "Tous les contenus";
+            }
+        }
 
 
         inheritedLabel = "Hérité du portail [" + inheritedLabel + "]";
 
-
         StringBuffer select = new StringBuffer();
-
 
         select.append("<select name=\"" + policyName + "\">");
 
         if ((selectedPolicy == null) || (selectedPolicy.length() == 0)) {
-
             select.append("<option selected=\"selected\" value=\"\">" + inheritedLabel + "</option>");
-
         } else {
-
             select.append("<option value=\"\">" + inheritedLabel + "</option>");
-
         }
-        for (String possiblePolicy : policies.keySet()) {
-            if ((selectedPolicy != null) && (selectedPolicy.length() != 0) && possiblePolicy.equals(selectedPolicy)) {
 
-                select.append("<option selected=\"selected\" value=\"" + possiblePolicy + "\">" + policies.get(possiblePolicy) + "</option>");
-
+        for (Entry<String, String> entry : policies.entrySet()) {
+            if ((selectedPolicy != null) && (selectedPolicy.length() != 0) && selectedPolicy.equals(entry.getKey())) {
+                select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
             } else {
-
-                select.append("<option value=\"" + possiblePolicy + "\">" + policies.get(possiblePolicy) + "</option>");
-
+                select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
             }
         }
 
@@ -336,7 +318,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (parentScope != null) {
             inheritedLabel = scopes.get(parentScope);
         }
-        ;
+
         if (inheritedLabel == null) {
             inheritedLabel = "Pas de cache";
         }
@@ -362,25 +344,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         select.append("<select name=\"" + scopeName + "\"" + disabled + ">");
 
         if (!scopes.isEmpty()) {
-
             if ((selectedScope == null) || (selectedScope.length() == 0)) {
-
                 select.append("<option selected=\"selected\" value=\"\">Pas de cache</option>");
-
             } else {
-
                 select.append("<option value=\"\">Pas de cache</option>");
-
             }
-            for (String possibleScope : scopes.keySet()) {
-                if ((selectedScope != null) && (selectedScope.length() != 0) && possibleScope.equals(selectedScope)) {
 
-                    select.append("<option selected=\"selected\" value=\"" + possibleScope + "\">" + scopes.get(possibleScope) + "</option>");
-
+            for (Entry<String, String> entry : scopes.entrySet()) {
+                if ((selectedScope != null) && (selectedScope.length() != 0) && selectedScope.equals(entry.getKey())) {
+                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 } else {
-
-                    select.append("<option value=\"" + possibleScope + "\">" + scopes.get(possibleScope) + "</option>");
-
+                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 }
             }
         }
@@ -396,20 +370,15 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
      * {@inheritDoc}
      */
     public String formatDisplayLiveVersionList(CMSServiceCtx cmxCtx, PortalObject po, String versionName, String selectedVersion) throws Exception {
-
         Map<String, String> versions = new LinkedHashMap<String, String>();
 
         versions.put("1", "Live");
 
-
         String inheritedLabel = null;
 
-        /* Calcul du label hérité */
-
+        // Calcul du label hérité
 
         if (inheritedLabel == null) {
-
-
             Page page = null;
 
             if (po instanceof Page) {
@@ -432,10 +401,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     if (displayLiveVersion != null) {
                         inheritedLabel = versions.get(displayLiveVersion);
                     }
-
                 }
-
-
             } else {
                 // Heriatge page parent
                 String parentVersion = po.getParent().getProperty("osivia.cms.displayLiveVersion");
@@ -444,10 +410,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     inheritedLabel = versions.get(parentVersion);
 
                 }
-                ;
-
             }
-
         }
 
         if (inheritedLabel == null) {
@@ -470,25 +433,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         select.append("<select name=\"" + versionName + "\"" + disabled + ">");
 
         if (!versions.isEmpty()) {
-
             if ((selectedVersion == null) || (selectedVersion.length() == 0)) {
-
                 select.append("<option selected=\"selected\" value=\"\">Publiée</option>");
-
             } else {
-
                 select.append("<option value=\"\">Publiée</option>");
-
             }
-            for (String possibleVersion : versions.keySet()) {
-                if ((selectedVersion != null) && (selectedVersion.length() != 0) && possibleVersion.equals(selectedVersion)) {
 
-                    select.append("<option selected=\"selected\" value=\"" + possibleVersion + "\">" + versions.get(possibleVersion) + "</option>");
-
+            for (Entry<String, String> entry : versions.entrySet()) {
+                if ((selectedVersion != null) && (selectedVersion.length() != 0) && selectedVersion.equals(entry.getKey())) {
+                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 } else {
-
-                    select.append("<option value=\"" + possibleVersion + "\">" + versions.get(possibleVersion) + "</option>");
-
+                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 }
             }
         }
@@ -496,7 +451,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         select.append("</select>");
 
         return select.toString();
-
     }
 
 
@@ -1134,14 +1088,14 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                     InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_ALL_PROFILES, locale));
             select.add(optionAllProfiles);
 
-            for (String scope : scopes.keySet()) {
+            for (Entry<String, String> entry : scopes.entrySet()) {
                 // Scope option
                 Element optionScope = new DOMElement(QName.get(HTMLConstants.OPTION));
-                optionScope.addAttribute(QName.get(HTMLConstants.VALUE), scope);
-                if (StringUtils.equals(conditionalScope, scope)) {
+                optionScope.addAttribute(QName.get(HTMLConstants.VALUE), entry.getKey());
+                if (StringUtils.equals(conditionalScope, entry.getKey())) {
                     optionScope.addAttribute(QName.get(HTMLConstants.SELECTED), HTMLConstants.INPUT_SELECTED);
                 }
-                optionScope.setText(scopes.get(scope));
+                optionScope.setText(entry.getValue());
                 select.add(optionScope);
             }
         }

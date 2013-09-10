@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -927,15 +928,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
                 select.append("<option value=\"\">" + inheritedLabel + "</option>");
 
             }
-            for (String possibleValue : supportedValue.keySet()) {
-                if ((selectedValue != null) && (selectedValue.length() != 0) && possibleValue.equals(selectedValue)) {
-
-                    select.append("<option selected=\"selected\" value=\"" + possibleValue + "\">" + supportedValue.get(possibleValue) + "</option>");
-
+            for (Entry<String, String> entry : supportedValue.entrySet()) {
+                if ((selectedValue != null) && (selectedValue.length() != 0) && selectedValue.equals(entry.getKey())) {
+                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 } else {
-
-                    select.append("<option value=\"" + possibleValue + "\">" + supportedValue.get(possibleValue) + "</option>");
-
+                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
                 }
             }
         }

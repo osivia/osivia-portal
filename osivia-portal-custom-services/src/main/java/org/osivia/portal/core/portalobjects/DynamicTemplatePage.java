@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -13,117 +12,138 @@ import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PortalObjectContainer;
 
+/**
+ * Dynamic template page.
+ *
+ * @see TemplatePage
+ * @see ITemplatePortalObject
+ */
+@SuppressWarnings("unchecked")
+public final class DynamicTemplatePage extends TemplatePage implements ITemplatePortalObject {
 
-public class DynamicTemplatePage extends TemplatePage implements ITemplatePortalObject {
-
-
-
- Map localDisplayName;
-
-	public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name,  Map displayNames,PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid){
-		DynamicTemplatePage page = null;
-		try	{
-			 page = new DynamicTemplatePage(container, parentId, name, displayNames, template, dynamicContainer, pageBean);
-		} catch( Exception e){
-			PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString()
-					.concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
-
-			// Page non accessible, le template peut avoir été supprimé (auquel cas le template est null)
-			// On supprime la page dynamique pour ne plus rencontrer d'erreurs
+    /** Page bean. */
+    private final DynamicPageBean pageBean;
+    /** Local display name. */
+    private final Map<Locale, String> localDisplayName;
 
 
-			dynamicContainer.removeDynamicPage(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
+    /**
+     * Create dynamic template page.
+     *
+     * @param container portal object container
+     * @param parentId parent portal object identifier
+     * @param name name
+     * @param displayNames display names
+     * @param template template portal object
+     * @param dynamicContainer dynamic portal object container
+     * @param pageBean dynamic page bean
+     * @param poid portal object identifier
+     * @return dynamic template page
+     */
+    public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
+            PortalObjectImpl template, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
+        DynamicTemplatePage page = null;
+        try {
+            page = new DynamicTemplatePage(container, parentId, name, displayNames, template, dynamicContainer, pageBean);
+        } catch (Exception e) {
+            PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name),
+                    PortalObjectPath.CANONICAL_FORMAT));
 
-			throw new RuntimeException("Page "+ pageId + " has not be created. Exception = "+e.getMessage()+". Check the template " + poid.toString());
+            // Page non accessible, le template peut avoir été supprimé (auquel cas le template est null)
+            // On supprime la page dynamique pour ne plus rencontrer d'erreurs
+            dynamicContainer.removeDynamicPage(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
 
-		}
+            throw new RuntimeException("Page " + pageId + " has not be created. Exception = " + e.getMessage() + ". Check the template " + poid.toString());
 
-		return page;
-
-	}
-
-
-	DynamicPageBean pageBean;
-
-
-
-	public DynamicPageBean getPageBean() {
-		return this.pageBean;
-	}
-
-
-
-	public PortalObject getParent()	{
-		if (this.parent == null)	{
-			this.parent = this.container.getObject(this.parentId);
-		}
-		return this.parent;
-	}
-
-
-	private DynamicTemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, Map displayNames, PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) throws IllegalArgumentException {
-		super( container,  parentId,  name,  template,   dynamicContainer);
-
-		this.pageBean = pageBean;
-
-
-		//localProperties = new HashMap<String, String>();
-		this.localProperties.putAll(pageBean.getPageProperties());
-
-        this.localProperties.put(InternalConstants.TAB_ORDER_PROPERTY_NAME, "" + pageBean.getOrder());
-        this.localProperties.put(InternalConstants.PAGE_PROP_NAME_DYNAMIC, InternalConstants.PROP_VALUE_ON);
-
-
-		this.localDisplayName = displayNames;
-
-		/*
-
-		// TODO : analyser si on peut faire du lazy fetching sur les propriétés
-
-		properties = new HashMap<String, String>();
-
-		for( Object key : template.getProperties().keySet())	{
-			properties.put((String)key, (String)template.getProperties().get(key));
-		}
-
-		// Surcharge par les propriétés de la page
-
-		this.properties.putAll(pageBean.getPageProperties());
-		*/
-
-	}
-
-	public String getDeclaredProperty(String name) {
-		String value = this.localProperties.get(name);
-		if( value == null) {
-            value =  super.getDeclaredProperty(name);
         }
-		return value;
 
-	}
+        return page;
 
-	   public LocalizedString getDisplayName()
-	   {
-	      if (this.localDisplayName != null)
-	      {
-	         return new LocalizedString(this.localDisplayName, Locale.ENGLISH);
-	      }
-	      else
-	      {
-	         return super.getDisplayName();
-	      }
-	   }
-
-		public boolean isClosable() {
-			return this.pageBean.isClosable();
-		}
+    }
 
 
-	   public String toString()
-	   {
-	      return this.getId().toString();
-	   }
+    /**
+     * Constructor.
+     *
+     * @param container portal object container
+     * @param parentId parent portal object identifier
+     * @param name name
+     * @param displayNames display names
+     * @param template template portal object
+     * @param dynamicContainer dynamic portal object container
+     * @param pageBean dynamic page bean
+     */
+    private DynamicTemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
+            PortalObjectImpl template, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
+        super(container, parentId, name, template, dynamicContainer);
 
+        this.pageBean = pageBean;
+
+        this.getLocalProperties().putAll(pageBean.getPageProperties());
+
+        this.getLocalProperties().put(InternalConstants.TAB_ORDER_PROPERTY_NAME, "" + pageBean.getOrder());
+        this.getLocalProperties().put(InternalConstants.PAGE_PROP_NAME_DYNAMIC, InternalConstants.PROP_VALUE_ON);
+
+
+        this.localDisplayName = displayNames;
+
+        // TODO : analyser si on peut faire du lazy fetching sur les propriétés
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDeclaredProperty(String name) {
+        String value = this.getLocalProperties().get(name);
+        if (value == null) {
+            value = super.getDeclaredProperty(name);
+        }
+        return value;
+
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LocalizedString getDisplayName() {
+        if (this.localDisplayName != null) {
+            return new LocalizedString(this.localDisplayName, Locale.ENGLISH);
+        } else {
+            return super.getDisplayName();
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isClosable() {
+        return this.pageBean.isClosable();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.getId().toString();
+    }
+
+
+    /**
+     * Getter for pageBean.
+     *
+     * @return the pageBean
+     */
+    public DynamicPageBean getPageBean() {
+        return this.pageBean;
+    }
 
 
 }

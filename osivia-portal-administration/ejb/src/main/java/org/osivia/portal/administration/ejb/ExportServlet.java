@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.naming.InitialContext;
@@ -274,7 +275,7 @@ public class ExportServlet extends HttpServlet {
 
     /**
      * Utility method used to create DOM page.
-     * 
+     *
      * @param document DOM document
      * @param page page to export
      * @param filter filter
@@ -287,8 +288,9 @@ public class ExportServlet extends HttpServlet {
         // Display names
         LocalizedString displayName = page.getDisplayName();
         Map<Locale, Value> values = displayName.getValues();
-        for (Locale locale : values.keySet()) {
-            Value value = values.get(locale);
+        for (Entry<Locale, Value> entry : values.entrySet()) {
+            Locale locale = entry.getKey();
+            Value value = entry.getValue();
             Element displayNameElement = this.elementCreation(document, "display-name", value.getString());
             displayNameElement.setAttribute("xml:lang", locale.getLanguage());
             pageElement.appendChild(displayNameElement);
@@ -297,10 +299,10 @@ public class ExportServlet extends HttpServlet {
         // Properties
         Element propertiesElement = this.elementCreation(document, "properties");
         Map<String, String> properties = page.getDeclaredProperties();
-        for (String name : properties.keySet()) {
+        for (Entry<String, String> entry : properties.entrySet()) {
             Element propertyElement = this.elementCreation(document, "property");
-            propertyElement.appendChild(this.elementCreation(document, "name", name));
-            propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+            propertyElement.appendChild(this.elementCreation(document, "name", entry.getKey()));
+            propertyElement.appendChild(this.elementCreation(document, "value", entry.getValue()));
             propertiesElement.appendChild(propertyElement);
         }
         pageElement.appendChild(propertiesElement);
@@ -360,10 +362,10 @@ public class ExportServlet extends HttpServlet {
         // Properties
         Element propertiesElement = this.elementCreation(document, "properties");
         Map<String, String> properties = portal.getDeclaredProperties();
-        for (String name : properties.keySet()) {
+        for (Entry<String, String> entry : properties.entrySet()) {
             Element propertyElement = this.elementCreation(document, "property");
-            propertyElement.appendChild(this.elementCreation(document, "name", name));
-            propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+            propertyElement.appendChild(this.elementCreation(document, "name", entry.getKey()));
+            propertyElement.appendChild(this.elementCreation(document, "value", entry.getValue()));
             propertiesElement.appendChild(propertyElement);
         }
         portalElement.appendChild(propertiesElement);
@@ -461,14 +463,14 @@ public class ExportServlet extends HttpServlet {
         // Properties
         Element propertiesElement = this.elementCreation(document, "properties");
         Map<String, String> properties = window.getDeclaredProperties();
-        for (String name : properties.keySet()) {
-            if (name.equals("theme.region")) {
-                windowElement.appendChild(this.elementCreation(document, "region", properties.get(name)));
+        for (Entry<String, String> entry : properties.entrySet()) {
+            if ("theme.region".equals(entry.getKey())) {
+                windowElement.appendChild(this.elementCreation(document, "region", entry.getValue()));
             } else {
                 // Other properties
                 Element propertyElement = this.elementCreation(document, "property");
-                propertyElement.appendChild(this.elementCreation(document, "name", name));
-                propertyElement.appendChild(this.elementCreation(document, "value", properties.get(name)));
+                propertyElement.appendChild(this.elementCreation(document, "name", entry.getKey()));
+                propertyElement.appendChild(this.elementCreation(document, "value", entry.getValue()));
                 propertiesElement.appendChild(propertyElement);
             }
         }
