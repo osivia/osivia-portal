@@ -1,13 +1,17 @@
 package org.osivia.portal.core.security;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.jboss.portal.common.invocation.InvocationContext;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
@@ -17,6 +21,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
 public class CmsPermissionHelper {
@@ -30,21 +35,6 @@ public class CmsPermissionHelper {
 
     private static ICMSService icmsService = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator").getCMSService();
 
-    /**
-     * Get the current security level of a document.
-     * 
-     * @param ctx the controllerContext
-     * @return the current security level
-     */
-    public static Level getCurrentPageSecurityLevel(ControllerContext ctx) {
-
-        return (Level) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL);
-    }
-
-    public static Level getCurrentPageSecurityLevel(ServerInvocation ctx) {
-
-        return (Level) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL);
-    }
 
     /**
      * Define the current security level of a document.
@@ -53,11 +43,49 @@ public class CmsPermissionHelper {
      * @param poid the current page
      * @throws ControllerException
      */
-    public static void setCurrentPageSecurityLevel(ControllerContext ctx, PortalObjectId poid) throws ControllerException {
+    public static Level getCurrentPageSecurityLevel(PortalObjectId poid) throws ControllerException {
 
-        Level level;
+
+        Level level = null;
         Boolean editableByUser = Boolean.FALSE;
         Boolean published = Boolean.TRUE;
+
+        PortalObjectPath pagePath = poid.getPath();
+
+        // ============ Try to get a context
+        ServerInvocation invocation = RequestContextUtil.getServerInvocation();
+
+        HttpServletRequest request = invocation.getServerContext().getClientRequest();
+
+        PageNavigationalState pageState;
+
+        // Le controller context est le meme pour tous les threads, on le stocke dans la requete
+        InvocationContext ctx = (ControllerContext) request.getAttribute("osivia.controllerContext");
+
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+
+
+        if (ctx != null) {
+            // ControllerContext found
+            NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+            pageState = nsContext.getPageNavigationalState(poid.toString());
+
+            cmsContext.setControllerContext((ControllerContext) ctx);
+
+
+        } else {
+            // Otherwise use a serverContext
+            ctx = invocation.getServerContext();
+
+            PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation.getContext().getAttributeResolver(
+                    ControllerCommand.PRINCIPAL_SCOPE));
+
+            pageState = pnsCtx.getPageNavigationalState(pagePath.toString());
+
+            cmsContext.setServerInvocation(invocation);
+        }
+
 
         // ============ check current session settings
         String cmsVersion = (String) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
@@ -68,44 +96,56 @@ public class CmsPermissionHelper {
             ctx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, cmsVersion);
         }
 
+
         // ============ check publications info on this object
         // Get edit authorization
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setServerInvocation(ctx.getServerInvocation());
 
-        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-
-        PageNavigationalState pageState = nsContext.getPageNavigationalState(poid.toString());
-
-
-        String pagePath = null;
+        String cmsPath = null;
         String sPath[] = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
             if ((sPath != null) && (sPath.length == 1)) {
-                pagePath = sPath[0];
+                cmsPath = sPath[0];
             }
         }
 
 
-        if (pagePath != null) {
+        if (cmsPath != null) {
             // Get edit authorization
 
+            // ============ If var is yet defined
+            Object attribute = ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL.concat(cmsPath));
+            if (attribute != null) {
+                level = (Level) attribute;
 
-            CMSPublicationInfos pubInfos = null;
-            try {
-                pubInfos = icmsService.getPublicationInfos(cmsContext, pagePath);
-            } catch (CMSException e) {
-                throw new ControllerException(e);
+
+            } else {
+
+
+                CMSPublicationInfos pubInfos = null;
+                try {
+                    pubInfos = icmsService.getPublicationInfos(cmsContext, cmsPath);
+                } catch (CMSException e) {
+                    throw new ControllerException(e);
+                }
+
+                editableByUser = pubInfos.isEditableByUser();
+                published = pubInfos.isPublished();
+
+                level = definePermissions(editableByUser, published, cmsVersion);
+
+                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL.concat(cmsPath), level);
+
             }
-
-            editableByUser = pubInfos.isEditableByUser();
-            published = pubInfos.isPublished();
-
         }
+        // ============ store the result in the request
 
+        return level;
 
+    }
+
+    private static Level definePermissions(Boolean editableByUser, Boolean published, String cmsVersion) {
+        Level level;
         // ============ Permission management
 
         // online requested
@@ -118,7 +158,7 @@ public class CmsPermissionHelper {
                 level = Level.readWrite;
             } else {
                 // document is NEITHER published NOR editable
-                     // access is forbidden
+                // access is forbidden
                 level = Level.forbidden;
             }
         }
@@ -132,12 +172,10 @@ public class CmsPermissionHelper {
                 level = Level.readOnly;
             } else {
                 // document is NEITHER published NOR editable
-                    // access is forbidden
+                // access is forbidden
                 level = Level.forbidden;
             }
         }
-
-        // ============ store the result in the request
-        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL, level);
+        return level;
     }
 }
