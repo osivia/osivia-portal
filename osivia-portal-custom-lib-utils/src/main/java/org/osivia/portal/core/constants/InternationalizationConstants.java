@@ -93,7 +93,10 @@ public final class InternationalizationConstants {
     public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_SITEMAP = "SUBMENU_CMS_SITEMAP";
-
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_PREVIEW_MODE_REQUIRED = "PTITLE_PREVIEW_MODE_REQUIRED";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_TOGGLE_VERSION = "PTITLE_TOGGLE_VERSION";
 
     // Window properties
 

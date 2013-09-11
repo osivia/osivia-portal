@@ -78,6 +78,7 @@ import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.security.CmsPermissionHelper;
 
 /**
  * Toolbar customizer interceptor.
@@ -513,14 +514,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
      */
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
-        String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+        String version = CmsPermissionHelper.getCurrentCmsVersion(context);
 
         // the first time, edition mode is null, it will be ON when the user will see the live version of a document
-        String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
-        if (editionMode == null) {
-            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
-            context.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, editionMode);
-        }
+        String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
 
 
         Map<String, String> requestParameters = new HashMap<String, String>();
@@ -558,7 +555,9 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsEditionMenu.add(templateEditionMenuUl);
 
 
-        // ========== Switch live / online version
+        // ========== Switch edition mode on / off
+        String previewRequired = this.getInternationalizationService().getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED, locale);
+        
 
         // ChangeCMSEditionModeCommand changeVersion;
         ChangeCMSEditionModeCommand changeEditionMode = null;
@@ -596,6 +595,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             Element cmsChangeEditionMode = new DOMElement(QName.get(HTMLConstants.P));
             cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeEditionMode);
             cmsChangeEditionMode.setText(strChangeEditionMode);
+            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
 
             this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
         }
@@ -604,56 +604,81 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // HR
         this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
 
-        // ========== create / modify doc
+        
 
-
+        // ========== create new page
 
         // test si mode assistant activé
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
             cmsCtx.setDisplayLiveVersion("1");
         }
 
-        // prepare the callback url params
-        // ============
-        PortalControllerContext portalControllerContext = new PortalControllerContext(context);
-
-        String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
-
         String ecmBaseUrl = getCMSService().getEcmDomain(cmsCtx);
-        // ============
+
+        Element cmsCreatePage = null;
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            cmsCreatePage = new DOMElement(QName.get(HTMLConstants.A));
+
+            String createPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
+            cmsCreatePage.addAttribute(QName.get(HTMLConstants.HREF), createPageUrl);
+
+            cmsCreatePage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "n");
+            cmsCreatePage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+
+            // prepare the callback url params
+            // ============
+            PortalControllerContext portalControllerContext = new PortalControllerContext(context);
+
+            String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
 
 
-
-        String createPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
-
-        Element cmsCreatePage = new DOMElement(QName.get(HTMLConstants.A));
-        cmsCreatePage.addAttribute(QName.get(HTMLConstants.HREF), createPageUrl);
-        cmsCreatePage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "n");
-        cmsCreatePage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-        cmsCreatePage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
+            cmsCreatePage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
+        } else {
+            cmsCreatePage = new DOMElement(QName.get(HTMLConstants.P));
+            cmsCreatePage.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
+        }
 
         cmsCreatePage.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage);
 
-        String editPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
 
-        Element cmsEditPage = new DOMElement(QName.get(HTMLConstants.A));
-        cmsEditPage.addAttribute(QName.get(HTMLConstants.HREF), editPageUrl);
-        cmsEditPage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "e");
-        cmsEditPage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-        cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '' , '" + ecmBaseUrl + "');");
+        // ========== Edit current page
+        Element cmsEditPage = null;
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            String editPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
+
+            cmsEditPage = new DOMElement(QName.get(HTMLConstants.A));
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.HREF), editPageUrl);
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "e");
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '' , '" + ecmBaseUrl + "');");
+        } else {
+            cmsEditPage = new DOMElement(QName.get(HTMLConstants.P));
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
+        }
+
         cmsEditPage.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
 
-        // Publish document
+        // ========== Publish document
 
-        CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
-        String publishURL = context.renderURL(publish, urlContext, URLFormat.newInstance(true, true));
+        Element cmsPublishDoc = null;
 
-        Element cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.A));
-        cmsPublishDoc.addAttribute(QName.get(HTMLConstants.HREF), publishURL);
+        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+            CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+            String publishURL = context.renderURL(publish, urlContext, URLFormat.newInstance(true, true));
+
+            cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.A));
+            cmsPublishDoc.addAttribute(QName.get(HTMLConstants.HREF), publishURL);
+        } else {
+            cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.P));
+            cmsPublishDoc.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
+        }
+
+
         cmsPublishDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc);
+
 
         // HR
         this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
@@ -678,7 +703,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
-        String version = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+        String version = CmsPermissionHelper.getCurrentCmsVersion(context);
+        String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(context.getServerInvocation());
@@ -690,15 +716,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         String path = liveDoc.getPath();
 
+
         // ---------------------
-        String editionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+        String toggleTitle = this.getInternationalizationService().getString(InternationalizationConstants.KEY_PTITLE_TOGGLE_VERSION, locale);
+        String previewTxt = this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale);
+        String onlineTxt = this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale);
+
         ChangeCMSEditionModeCommand changeVersion;
-
-        // the first time, edition mode is null, it will be ON when the user will see the live version of the document
-        if (editionMode == null) {
-            editionMode = InternalConstants.CMS_EDITION_MODE_ON;
-        }
-
         Element cmsToggleVersion = new DOMElement(QName.get(HTMLConstants.A));
 
 
@@ -706,12 +730,13 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsToggleVersion.add(cmsToggleBtn1);
         Element cmsToggleBtn2 = new DOMElement(QName.get(HTMLConstants.SPAN));
 
-        // Element cmsToggleBtn3 = new DOMElement(QName.get(HTMLConstants.SPAN));
-        // cmsToggleBtn2.add(cmsToggleBtn3);
+
 
         if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_PREVIEW);
-            cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale));
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(onlineTxt));
+
+            cmsToggleBtn1.setText(previewTxt);
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_ONLINE,
@@ -719,9 +744,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         } else {
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_ONLINE);
+            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(previewTxt));
 
             cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn1.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale));
+            cmsToggleBtn1.setText(onlineTxt);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
             changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_PREVIEW,
                     editionMode);

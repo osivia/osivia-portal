@@ -87,14 +87,7 @@ public class CmsPermissionHelper {
 
 
         // ============ check current session settings
-        String cmsVersion = (String) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
-
-        if (cmsVersion == null) {
-            // first call, define the current cms version to "online".
-            cmsVersion = InternalConstants.CMS_VERSION_ONLINE;
-            ctx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, cmsVersion);
-        }
-
+        String cmsVersion = getCurrentCmsVersion(ctx);
 
         // ============ check publications info on this object
         // Get edit authorization
@@ -178,5 +171,29 @@ public class CmsPermissionHelper {
         return level;
     }
 
+    public static String getCurrentCmsVersion(InvocationContext context) {
 
+        String cmsVersion = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION);
+
+        if (cmsVersion == null) {
+            // first call, define the current cms version to "online".
+            cmsVersion = InternalConstants.CMS_VERSION_ONLINE;
+            context.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, cmsVersion);
+        }
+
+        return cmsVersion;
+    }
+
+    public static String getCurrentCmsEditionMode(InvocationContext context) {
+
+        String cmsEditionMode = (String) context.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE);
+
+        if (cmsEditionMode == null) {
+            // first call, define the current cms edition mode to "on".
+            cmsEditionMode = InternalConstants.CMS_EDITION_MODE_ON;
+            context.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, cmsEditionMode);
+        }
+
+        return cmsEditionMode;
+    }
 }
