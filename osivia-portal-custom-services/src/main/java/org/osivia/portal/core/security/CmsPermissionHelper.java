@@ -1,6 +1,5 @@
 package org.osivia.portal.core.security;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -43,7 +42,7 @@ public class CmsPermissionHelper {
      * @param poid the current page
      * @throws ControllerException
      */
-    public static Level getCurrentPageSecurityLevel(PortalObjectId poid) throws ControllerException {
+    public static Level getCurrentPageSecurityLevel(InvocationContext ctx, PortalObjectId poid) throws ControllerException {
 
 
         Level level = null;
@@ -52,20 +51,20 @@ public class CmsPermissionHelper {
 
         PortalObjectPath pagePath = poid.getPath();
 
-        // ============ Try to get a context
+        // // ============ Try to get a context
         ServerInvocation invocation = RequestContextUtil.getServerInvocation();
-
-        HttpServletRequest request = invocation.getServerContext().getClientRequest();
-
+        //
+        // HttpServletRequest request = invocation.getServerContext().getClientRequest();
+        //
         PageNavigationalState pageState;
-
-        // Le controller context est le meme pour tous les threads, on le stocke dans la requete
-        InvocationContext ctx = (ControllerContext) request.getAttribute("osivia.controllerContext");
+        //
+        // // Le controller context est le meme pour tous les threads, on le stocke dans la requete
+        // InvocationContext ctx = (ControllerContext) request.getAttribute("osivia.controllerContext");
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
 
 
-        if (ctx != null) {
+        if (ctx instanceof ControllerContext) {
             // ControllerContext found
             NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
@@ -76,7 +75,7 @@ public class CmsPermissionHelper {
 
         } else {
             // Otherwise use a serverContext
-            ctx = invocation.getServerContext();
+            // ctx = invocation.getServerContext();
 
             PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation.getContext().getAttributeResolver(
                     ControllerCommand.PRINCIPAL_SCOPE));
@@ -178,4 +177,6 @@ public class CmsPermissionHelper {
         }
         return level;
     }
+
+
 }
