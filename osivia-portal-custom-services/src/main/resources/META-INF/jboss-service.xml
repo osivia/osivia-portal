@@ -87,6 +87,29 @@
 
 
 
+	 <mbean code="org.osivia.portal.core.web.WebCommandFactoryService"
+          name="osivia:commandFactory=Web" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+   </mbean>
+    <mbean code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+          name="osivia:commandFactory=Delegate,path=web" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+      <attribute name="Path">/web</attribute>
+      <depends optional-attribute-name="DelegatingFactory" proxy-type="attribute">portal:commandFactory=Delegating
+      </depends>
+      <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">osivia:commandFactory=Web</depends>
+   </mbean>
+   
+     <mbean code="org.osivia.portal.core.web.WebURLFactory" name="osivia:urlFactory=Web"
+          xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+      <attribute name="Path">/web</attribute>
+      <depends optional-attribute-name="Factory" proxy-type="attribute">portal:urlFactory=Delegating</depends>
+   </mbean>
+
+
 
 
 

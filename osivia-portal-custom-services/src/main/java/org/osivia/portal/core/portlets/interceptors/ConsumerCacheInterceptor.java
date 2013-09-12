@@ -35,6 +35,7 @@ import org.jboss.portal.portlet.invocation.response.ResponseProperties;
 import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
 import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -584,6 +585,14 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
         			 fragmentUpdated = true;
 
         		  }
+        		 
+                 if( fr.getChars().indexOf(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER+"=") != -1)   {
+                     String pageMarker = PageMarkerUtils.getCurrentPageMarker(ctx);
+
+                     updatedFragment =  updatedFragment.replaceAll(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER+"=([0-9]*)",InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER+"="+pageMarker);
+                     fragmentUpdated = true;
+                  }
+
 
         		 if( fragmentUpdated) {
                     return new FragmentResponse(updateProperties,   fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment, fr.getTitle(), fr.getCacheControl(), fr.getNextModes());

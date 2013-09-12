@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
@@ -41,6 +42,7 @@ import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
@@ -364,14 +366,25 @@ public class PageMarkerUtils {
 	 */
 	public static String restorePageState(ControllerContext controllerContext, String requestPath) {
 		String newPath = requestPath;
+		
+
+		String currentPageMarker = null;
+		
 
 		if (requestPath.startsWith(PAGE_MARKER_PATH)) {
 			int beginMarker = PAGE_MARKER_PATH.length();
 			int endMarker = requestPath.indexOf('/', beginMarker);
 			if ((beginMarker != -1) && (endMarker != -1)) {
 
-				String currentPageMarker = requestPath.substring(beginMarker, endMarker);
+				currentPageMarker = requestPath.substring(beginMarker, endMarker);
 				newPath = requestPath.substring(endMarker);
+			}
+		} else    {
+		    ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
+		    String[] pagemarkers = parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER);
+		    if( pagemarkers != null && pagemarkers.length == 1)
+		    currentPageMarker = pagemarkers[ 0];
+		}
 
 				/**********************************************************************
 				 * Restauration de l'état des windows en fonction du marqueur de
@@ -607,8 +620,8 @@ public class PageMarkerUtils {
 				}
 
 				controllerContext.setAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker", currentPageMarker);
-			}
-		}
+			
+		
 
 		if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb") == null) {
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", new Breadcrumb());

@@ -36,6 +36,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.web.WebCommand;
 
 
 /**
@@ -212,6 +213,12 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((PortalObjectCommand) cmd).getTargetId());
 	        }	
+	    
+	       if( popupOpened && cmd instanceof WebCommand  ) {
+               controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
+               controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((WebCommand) cmd).getWindowId(controllerContext));
+            }   
+
 	    
 	    if( popupOpened && cmd instanceof StartDynamicWindowCommand ) {
 	        // Calcul du popupWindowID

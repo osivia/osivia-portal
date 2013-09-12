@@ -198,8 +198,9 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
                 if (admin) {
                     this.injectAdminHeaders(rpc, rendition);
                 } else {
-                    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-                    if( popupWindowId == null) {
+                    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                            "osivia.popupModeWindowID");
+                    if (popupWindowId == null) {
                         this.injectStandardHeaders(rpc, rendition);
                     }
                 }
@@ -214,21 +215,27 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
 
     void injectStandardHeaders(PageCommand rpc, PageRendition rendition) throws Exception {
-        String tabbedNav = this.injectTabbedNav(rpc, rendition);
-        if (tabbedNav != null) {
-            Map<String, String> windowProps = new HashMap<String, String>();
-            windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-            WindowResult res = new WindowResult("", tabbedNav, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-            WindowContext blah = new WindowContext("BLAH", "tabs", "0", res);
-            rendition.getPageResult().addWindowContext(blah);
 
-            //
-            Region region = rendition.getPageResult().getRegion2("tabs");
-            DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+        
+       
+        // Injection uniquement pour les portal
+        if (!PortalObjectUtils.isSpaceSite(rpc.getTarget())) {
+
+            String tabbedNav = this.injectTabbedNav(rpc, rendition);
+            if (tabbedNav != null) {
+                Map<String, String> windowProps = new HashMap<String, String>();
+                windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+                windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+                windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+                WindowResult res = new WindowResult("", tabbedNav, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+                WindowContext blah = new WindowContext("BLAH", "tabs", "0", res);
+                rendition.getPageResult().addWindowContext(blah);
+
+                //
+                Region region = rendition.getPageResult().getRegion2("tabs");
+                DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+            }
         }
-
 
     }
 
@@ -293,9 +300,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
             logger.error(e.getMessage());
         }
     }
-
-
-
 
 
     public String injectAdminTabbedNav(PageCommand rpc) {
@@ -429,8 +433,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
             rd.setAttribute(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
 
 
-
-
             rd.setAttribute(Constants.ATTR_PAGE_ID, mainPage.getId()); // Path page
 
 
@@ -461,7 +463,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Cette structure est générée pour simplifier l'intégration graphique et pour optimiser les performances
-     *
+     * 
      * @param rpc
      * @return
      */

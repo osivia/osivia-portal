@@ -29,6 +29,7 @@ import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -336,16 +337,25 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) throws Exception {
 
         String url = originalUrl;
-        int pageMarkerIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
-        if (pageMarkerIndex != -1) {
+
+        int insertIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+        if (insertIndex == -1) {
+            // Web command
+            insertIndex = originalUrl.indexOf("/web/");
+
+        }
+
+        if (insertIndex != -1) {
             if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) {
-                url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(pageMarkerIndex + 1);
+                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(insertIndex + 1);
             } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN) {
-                url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(pageMarkerIndex + 1);
+                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(insertIndex + 1);
             } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION) {
-                url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
+                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(insertIndex + 1);
             }
         }
+
+
         return url;
     }
 

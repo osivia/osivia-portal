@@ -132,6 +132,10 @@ public class CmsCommand extends DynamicCommand {
 	public String getCmsPath() {
 		return cmsPath;
 	}
+	
+	public void setCmsPath(String newCMSPath) {
+	         cmsPath = newCMSPath;
+	    }
 
 	public String getPagePath() {
 		return pagePath;

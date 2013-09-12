@@ -545,23 +545,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             ControllerContext controllerCtx = cmd.getControllerContext();
-            NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             Page page = rpc.getPage();
-
-            // contexte de navigation CMS ?
-
-            PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
-
-            String sPath[] = null;
-            if (pageState != null) {
-                sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-            }
-
-            String pathPublication = null;
-            if ((sPath != null) && (sPath.length > 0)) {
-                pathPublication = sPath[0];
-            }
+            
+            String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
             if (pathPublication != null) {
 

@@ -149,6 +149,14 @@ public final class InternalConstants {
 
     public static final String PORTAL_PROP_NAME_PORTAL_TYPE = "osivia.portal.portalType";
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
+    
+
+    /* Web URLs */
+    public static final String PORTAL_URL_POLICY_WEB = "web";
+    public static final String PORTAL_PROP_NAME_URL_POLICY = "osivia.urlPolicy";
+    
+    public static final String PORTAL_WEB_URL_PARAM_WINDOW = "_w";
+    public static final String PORTAL_WEB_URL_PARAM_PAGEMARKER = "_pm";    
 
     public static final String PROP_VALUE_ON = "1";
     public static final String PAGE_PROP_NAME_DYNAMIC = "osivia.page.dynamic";

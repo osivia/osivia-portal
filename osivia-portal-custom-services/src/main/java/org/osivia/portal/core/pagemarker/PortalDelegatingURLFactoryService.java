@@ -18,6 +18,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.DelegatingURLFactoryService;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.WindowCommand;
@@ -31,9 +32,14 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PermLinkCommand;
+import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.TrackerBean;
+import org.osivia.portal.core.web.WebCommand;
+import org.osivia.portal.core.web.WebURLFactory;
 
 
 
@@ -61,8 +67,24 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 
 
 	public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
-		
-		ServerURL url = super.doMapping(controllerContext, invocation, cmd);
+	    
+	    
+	 ServerURL url = super.doMapping(controllerContext, invocation, cmd);
+	    
+	 
+
+	 
+	 /* Adapt URL to Web navigation */
+	  ServerURL webURL = WebURLFactory.doWebMapping(controllerContext, invocation, cmd, url);
+	  if( webURL != null)
+	      return webURL;
+	 
+	  // No page marker for web urls
+      if( cmd instanceof WebCommand)
+          return url;	
+
+      
+      
 		
 		boolean pageMarkerInsertion = true;
 		
