@@ -21,9 +21,9 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.security.CmsPermissionHelper;
 
 /**
  * Command used to switch between cms modes
@@ -110,11 +110,6 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 		return this.pageId;
 	}
 
-    // public ChangeCMSEditionModeCommand() {
-    //
-    //
-    // }
-
     public ChangeCMSEditionModeCommand(String pageId, String pagePath, String version, String editionMode) {
 
 
@@ -141,7 +136,7 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
             boolean published = publicationInfos.isPublished();
 
             // If page is not published, user can not access the online version
-            if (!published && version.equals(InternalConstants.CMS_VERSION_ONLINE)) {
+            if (!published && version.equals(CmsPermissionHelper.CMS_VERSION_ONLINE)) {
 
                 Locale locale = getControllerContext().getServerInvocation().getRequest().getLocale();
                 String message = InternationalizationUtils.getInternationalizationService().getString(ERROR_MESSAGE_CHANGE_CMS_EDITION_MODE_COMMAND, locale);
@@ -158,9 +153,7 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
             throw new ControllerException(e);
         }
 
-
-        this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, this.version);
-        this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE, this.editionMode);
+        CmsPermissionHelper.changeCmsMode(getControllerContext(), pagePath, version, editionMode);
 
 		return new UpdatePageResponse(page.getId());
 

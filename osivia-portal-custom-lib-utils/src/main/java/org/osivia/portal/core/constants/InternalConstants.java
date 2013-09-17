@@ -48,9 +48,9 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_WIZARD_MODE = "osivia.toolbar.wizardMode";
 
     /** Edition CMS mode. */
-    public static final String ATTR_TOOLBAR_CMS_VERSION = "osivia.toolbar.cmsVersion";
+    // public static final String ATTR_TOOLBAR_CMS_VERSION = "osivia.toolbar.cmsVersion";
     /** Edition CMS mode. */
-    public static final String ATTR_TOOLBAR_CMS_EDITION_MODE = "osivia.toolbar.cmsEditionMode";
+    // public static final String ATTR_TOOLBAR_CMS_EDITION_MODE = "osivia.toolbar.cmsEditionMode";
 
     /** Toolbar settings content. */
     public static final String ATTR_TOOLBAR_SETTINGS_CONTENT = "osivia.toolbarSettings.settingsContent";
@@ -172,10 +172,10 @@ public final class InternalConstants {
 
 
     // CMS constants
-    public static final String CMS_VERSION_PREVIEW = "preview";
-    public static final String CMS_VERSION_ONLINE = "online";
-    public static final String CMS_EDITION_MODE_ON = "1";
-    public static final String CMS_EDITION_MODE_OFF = "0";
+    // public static final String CMS_VERSION_PREVIEW = "preview";
+    // public static final String CMS_VERSION_ONLINE = "online";
+    // public static final String CMS_EDITION_MODE_ON = "1";
+    // public static final String CMS_EDITION_MODE_OFF = "0";
 
 
     /**

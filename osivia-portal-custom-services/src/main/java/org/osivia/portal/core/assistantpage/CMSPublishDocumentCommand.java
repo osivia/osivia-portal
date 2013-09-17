@@ -17,7 +17,6 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * CMS command used when a document is published
@@ -102,7 +101,7 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
             getCMSService().publishDocument(cmsCtx, pagePath);
 
             // force online mode
-            this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, InternalConstants.CMS_VERSION_ONLINE);
+            // this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, InternalConstants.CMS_VERSION_ONLINE);
 
             // force reload page(editables windows)
             getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + pagePath,

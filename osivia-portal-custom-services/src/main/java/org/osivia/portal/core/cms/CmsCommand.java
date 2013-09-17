@@ -44,7 +44,6 @@ import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
@@ -54,6 +53,8 @@ import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 import bsh.Interpreter;
 
@@ -513,6 +514,7 @@ public class CmsCommand extends DynamicCommand {
 		try {
 
 			Page currentPage = null;
+            Level level = null;
 
 			// Récupération page
 			if (pagePath != null) {
@@ -525,6 +527,9 @@ public class CmsCommand extends DynamicCommand {
 					// (cas de la perte de session)
 					contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTAL;
 				}
+
+                // LBI : get the authorizations
+                level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
 			}
 
 			Page contextualizationPage = null;
@@ -554,6 +559,7 @@ public class CmsCommand extends DynamicCommand {
             }
 
 
+
 			/*
 			 * Lecture de l'item
 			 * 
@@ -567,8 +573,7 @@ public class CmsCommand extends DynamicCommand {
 				cmsReadItemContext.setControllerContext(getControllerContext());
 
                 // test si mode assistant activé
-                if (InternalConstants.CMS_VERSION_PREVIEW.equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-                        InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+                if (level == Level.allowPreviewVersion) {
                     cmsReadItemContext.setDisplayLiveVersion("1");
                 }
 
@@ -578,6 +583,15 @@ public class CmsCommand extends DynamicCommand {
 			/* Lecture des informations de publication */
             Boolean published = Boolean.TRUE;
 			if (cmsPath != null) {
+                level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
+
+                // if access is denied, continue with the path of the last page visited
+                // the user will see a notification
+                if (level == Level.deny) {
+
+                    cmsPath = CmsPermissionHelper.getLastAllowedPage(getControllerContext());
+                    level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
+                }
 
 				try {
 					// Attention, cet appel peut modifier si nécessaire le
@@ -624,9 +638,13 @@ public class CmsCommand extends DynamicCommand {
 
                     // if page in not published and user come from the sitemap or after a webpage creation
                     // force the preview mode.
-                    if (!published && ("sitemap".equals(displayContext) || "newPage".equals(displayContext))) {
-                        getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
-                                InternalConstants.CMS_VERSION_PREVIEW);
+                    // if (!published && ("sitemap".equals(displayContext) || "newPage".equals(displayContext))) {
+                    // getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
+                    // InternalConstants.CMS_VERSION_PREVIEW);
+                    // cmsReadItemContext.setDisplayLiveVersion("1");
+                    // }
+
+                    if (level == Level.allowPreviewVersion) {
                         cmsReadItemContext.setDisplayLiveVersion("1");
                     }
 
@@ -939,8 +957,7 @@ public class CmsCommand extends DynamicCommand {
 				portalSiteScope = baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
 				cmsReadNavContext.setControllerContext(getControllerContext());
 				cmsReadNavContext.setScope(portalSiteScope);
-                if (InternalConstants.CMS_VERSION_PREVIEW.equals(getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-                        InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+                if (level == Level.allowPreviewVersion) {
 	                cmsReadNavContext.setDisplayLiveVersion("1");
                 }
 			}
@@ -1226,6 +1243,9 @@ public class CmsCommand extends DynamicCommand {
 
 				if (layoutPath != null) {
 					DynamicPortalObjectContainer.clearCache();
+
+                    // TODO : remettre le cmsedition à null
+
 					PageProperties.getProperties().getPagePropertiesMap().remove("osivia.fetchedPortalProperties");
 				}
 			}

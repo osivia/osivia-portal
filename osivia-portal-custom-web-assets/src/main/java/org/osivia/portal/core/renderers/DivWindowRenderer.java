@@ -256,8 +256,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 regionCms = wc.getRegionCms();
             }
 
-            if (regionCms && InternalConstants.CMS_EDITION_MODE_ON.equals(wrc.getProperty(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
+            if (regionCms && wrc.getProperty("osivia.cmsShowTools") != null && Boolean.valueOf(wrc.getProperty("osivia.cmsShowTools"))) {
                 showCmsTools = true;
+            } else {
+                showCmsTools = false;
             }
         }
         return showCmsTools;

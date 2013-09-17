@@ -13,8 +13,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.common.invocation.InvocationContext;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.impl.model.portal.ContextImpl;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
@@ -37,7 +39,6 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -45,6 +46,8 @@ import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
@@ -317,7 +320,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			ServerInvocation invocation = null;
 
 			ControllerContext controllerContext = this.getCommandContext();
+            InvocationContext ctx = null;
 			if( controllerContext != null)	{
+                ctx = controllerContext;
 
 				NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(
 						ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
@@ -329,6 +334,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				invocation = controllerContext.getServerInvocation();
 			}	else	{
 				invocation = this.getInvocation();
+                ctx = invocation.getServerContext();
 
 				PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
 						.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
@@ -351,12 +357,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 					cmsReadItemContext.setDisplayLiveVersion("0");
-                    if (InternalConstants.CMS_VERSION_PREVIEW.equals(invocation.getAttribute(ControllerCommand.SESSION_SCOPE,
-                            InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
 
+
+                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, cmsPath[0]) == Level.allowPreviewVersion) {
 
 						cmsReadItemContext.setDisplayLiveVersion("1");
-					windowsEditableWindowsMode = "preview";}
+                        windowsEditableWindowsMode = "preview";
+
+                    }
 
 					// Pour performances
 					windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0]);
@@ -406,7 +414,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		} catch (CMSException e) {
 			throw new RuntimeException(e);
-		}
+        } catch (ControllerException e) {
+            throw new RuntimeException(e);
+        }
 
 		return windows;
 	}

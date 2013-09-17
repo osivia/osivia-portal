@@ -43,7 +43,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * Implementation of a Region renderer, based on div tags.
- *
+ * 
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @author <a href="mailto:roy@jboss.org>Roy Russo</a>
  * @version $LastChangedRevision: 8784 $, $LastChangedDate: 2007-10-27 19:01:46 -0400 (Sat, 27 Oct 2007) $
@@ -64,7 +64,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Render region header.
-     *
+     * 
      * @param rendererContext renderer context
      * @param rrc region renderer context
      * @throws RenderException
@@ -78,7 +78,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         } else {
             locale = Locale.US;
         }
-
 
 
         PrintWriter markup = rendererContext.getWriter();
@@ -101,9 +100,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
             markup.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
                     + "';setCallbackFromEcmParams('','" + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\""
-                    + rendererContext.getProperty("osivia.cmsCreateUrl")
-                    + "\">"
-                    + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
+                    + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
 
             markup.println("</div>");
@@ -121,7 +118,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             // Begin of DIV for Drag n drop
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
         }
-
 
 
         // Lien d'ajout de portlet
@@ -152,18 +148,25 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
-     *
+     * 
      * @param rendererContext page context
      * @param rrc region context
      * @return
      */
     private Boolean showCmsTools(RendererContext rendererContext, RegionRendererContext rrc) {
         Boolean showCmsTools = false;
-        if ((rrc.getRegionCms() != null) && (rrc.getRegionCms() == true)
-                && InternalConstants.CMS_EDITION_MODE_ON.equals(rendererContext.getProperty(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE))) {
-            showCmsTools = true;
+
+        String property = rrc.getProperty("osivia.cmsShowTools");
+        if (property != null) {
+            showCmsTools = Boolean.valueOf(property);
         }
-        return showCmsTools;
+
+        if ((rrc.getRegionCms() != null) && (rrc.getRegionCms() == true) && showCmsTools) {
+            return true;
+        } else
+            return false;
+
+
     }
 
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {

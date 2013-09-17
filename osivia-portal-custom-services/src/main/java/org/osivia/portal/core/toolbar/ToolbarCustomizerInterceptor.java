@@ -514,10 +514,9 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
      */
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
-        String version = CmsPermissionHelper.getCurrentCmsVersion(context);
 
-        // the first time, edition mode is null, it will be ON when the user will see the live version of a document
-        String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
+        boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
+        boolean editionModeOn = CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_ON);
 
 
         Map<String, String> requestParameters = new HashMap<String, String>();
@@ -565,22 +564,20 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         String cssChangeEditionMode = null;
 
 
-        if (InternalConstants.CMS_EDITION_MODE_ON.equals(editionMode)) {
+        if (editionModeOn) {
             changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    InternalConstants.CMS_VERSION_PREVIEW,
-                    InternalConstants.CMS_EDITION_MODE_OFF);
+                    CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_OFF);
 
             cssChangeEditionMode = HTMLConstants.CLASS_CHECK;
         } else {
             changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    InternalConstants.CMS_VERSION_PREVIEW,
-                    InternalConstants.CMS_EDITION_MODE_ON);
+                    CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_ON);
 
             cssChangeEditionMode = HTMLConstants.CLASS_UNCHECK;
         }
 
 
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
 
             String changeCmsEditionModeUrl = new PortalURLImpl(changeEditionMode, context, null, null).toString();
 
@@ -609,14 +606,14 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         // ========== create new page
 
         // test si mode assistant activé
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
             cmsCtx.setDisplayLiveVersion("1");
         }
 
         String ecmBaseUrl = getCMSService().getEcmDomain(cmsCtx);
 
         Element cmsCreatePage = null;
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
             cmsCreatePage = new DOMElement(QName.get(HTMLConstants.A));
 
             String createPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
@@ -644,7 +641,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         // ========== Edit current page
         Element cmsEditPage = null;
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
             String editPageUrl = getCMSService().getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
 
             cmsEditPage = new DOMElement(QName.get(HTMLConstants.A));
@@ -664,7 +661,7 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         Element cmsPublishDoc = null;
 
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
             CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
             String publishURL = context.renderURL(publish, urlContext, URLFormat.newInstance(true, true));
 
@@ -703,8 +700,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws Exception {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
-        String version = CmsPermissionHelper.getCurrentCmsVersion(context);
+
+        boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
         String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
+
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(context.getServerInvocation());
@@ -732,14 +731,15 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
 
 
-        if (InternalConstants.CMS_VERSION_PREVIEW.equals(version)) {
+        if (modePreview) {
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_PREVIEW);
             cmsToggleVersion.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(onlineTxt));
 
             cmsToggleBtn1.setText(previewTxt);
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_ONLINE,
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                    CmsPermissionHelper.CMS_VERSION_ONLINE,
                     editionMode);
 
         } else {
@@ -749,7 +749,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
             cmsToggleBtn1.add(cmsToggleBtn2);
             cmsToggleBtn1.setText(onlineTxt);
             cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path, InternalConstants.CMS_VERSION_PREVIEW,
+            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                    CmsPermissionHelper.CMS_VERSION_PREVIEW,
                     editionMode);
 
         }

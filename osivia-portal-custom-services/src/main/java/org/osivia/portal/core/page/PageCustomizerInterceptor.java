@@ -95,6 +95,8 @@ import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 
 public class PageCustomizerInterceptor extends ControllerInterceptor {
@@ -564,8 +566,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     cmxCtx.setScope(navigationScope);
 
                     // test si mode assistant activé
-                    if (InternalConstants.CMS_VERSION_PREVIEW.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-                            InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
                         cmxCtx.setDisplayLiveVersion("1");
                     }
 
@@ -1675,8 +1676,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmxCtx.setScope(navigationScope);
 
                         // test si mode assistant activé
-                        if (InternalConstants.CMS_VERSION_PREVIEW.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-                                InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
                             cmxCtx.setDisplayLiveVersion("1");
                         }
 

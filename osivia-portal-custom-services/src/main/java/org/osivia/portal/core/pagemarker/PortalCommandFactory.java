@@ -7,25 +7,15 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.Mode;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
-import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
-import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSItem;
@@ -33,7 +23,6 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
-import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.web.WebCommand;
@@ -180,6 +169,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		
 		String newPath = PageMarkerUtils.restorePageState(controllerContext, path);
 		
+
 		if( popupClosed) {
 		    controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed", "1");
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
@@ -188,10 +178,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		
 	    if( closePopup) {
 	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
-	       
-	       
 	    }
-
 
 		/*
 		 * Synchronisation des pages préchargées

@@ -56,12 +56,13 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
@@ -219,7 +220,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         if (pagePath != null) {
 
             // test display live version
-            if (InternalConstants.CMS_VERSION_PREVIEW.equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+            if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, pagePath) == Level.allowPreviewVersion) {
                 cmsContext.setDisplayLiveVersion("1");
             }
 
@@ -275,11 +276,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 					String regionId = renderCtx.getId();
 
-					Map regionPorperties = renderCtx.getProperties();
+                    Map<String, String> regionPorperties = renderCtx.getProperties();
 
                     // Set the current edition mode to the region
-                    regionPorperties.put(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE,
-                            ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE));
+                    regionPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
 
 
 					// build and set url for create fgt in region in CMS mode
@@ -306,7 +306,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 					for (Object windowCtx : renderCtx.getWindows()) {
 
 						WindowRendererContext wrc = (WindowRendererContext) windowCtx;
-						Map windowPorperties = wrc.getProperties();
+                        Map<String, String> windowPorperties = wrc.getProperties();
 						String windowId = wrc.getId();
 
 						if (!windowId.endsWith("PIA_EMPTY")) {
@@ -319,8 +319,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 							if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
 
                                 // Set the current edition mode to the window
-                                windowPorperties.put(InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE,
-                                        ctx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_EDITION_MODE));
+                                windowPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
 
 
 								// build and set urls for create/edit fgts in window in CMS mode
@@ -399,14 +398,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 			
-			// test si mode assistant activé
-            if (!InternalConstants.CMS_VERSION_PREVIEW.equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE,
-                    InternalConstants.ATTR_TOOLBAR_CMS_VERSION))) {
+            // if online mode, don't show cms tools
+            if (CmsPermissionHelper.getCurrentPageSecurityLevel(cmd.getControllerContext(), page.getId()) == Level.allowOnlineVersion) {
                 return resp;
             }
 
  
-
 			Portal portal = rpc.getPage().getPortal();
 			ControllerContext ctx = cmd.getControllerContext();
 			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
