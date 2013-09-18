@@ -90,6 +90,8 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_PUBLISH = "SUBMENU_CMS_PAGE_PUBLISH";
     /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_UNPUBLISH = "SUBMENU_CMS_PAGE_UNPUBLISH";
+    /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_SITEMAP = "SUBMENU_CMS_SITEMAP";
@@ -97,6 +99,8 @@ public final class InternationalizationConstants {
     public static final String KEY_PTITLE_PREVIEW_MODE_REQUIRED = "PTITLE_PREVIEW_MODE_REQUIRED";
     /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_TOGGLE_VERSION = "PTITLE_TOGGLE_VERSION";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_PUBLISH_REQUIRED = "PTITLE_PUBLISH_REQUIRED";
 
     // Window properties
 
@@ -184,6 +188,8 @@ public final class InternationalizationConstants {
     public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE";
     /** Bundle resource key for change rights command success message for space. */
     public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE";
+
+
 
 
     /**

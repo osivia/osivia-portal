@@ -65,6 +65,7 @@ import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
@@ -527,9 +528,10 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
         cmsCtx.setDisplayLiveVersion("1");
-        CMSItem liveDoc = getCMSService().getContent(cmsCtx, pagePath);
+        CMSPublicationInfos publicationInfos = getCMSService().getPublicationInfos(cmsCtx, pagePath);
 
-        String path = liveDoc.getPath();
+        String path = publicationInfos.getDocumentPath();
+        Boolean published = publicationInfos.isPublished();
 
 
 
@@ -554,10 +556,11 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsEditionMenu.add(templateEditionMenuUl);
 
 
-        // ========== Switch edition mode on / off
+        // messages
         String previewRequired = this.getInternationalizationService().getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED, locale);
-        
+        String publishRequired = this.getInternationalizationService().getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED, locale);
 
+        // ========== Switch edition mode on / off
         // ChangeCMSEditionModeCommand changeVersion;
         ChangeCMSEditionModeCommand changeEditionMode = null;
         String strChangeEditionMode = this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
@@ -662,7 +665,8 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         Element cmsPublishDoc = null;
 
         if (modePreview) {
-            CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+            CMSPublishDocumentCommand publish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                    CMSPublishDocumentCommand.PUBLISH);
             String publishURL = context.renderURL(publish, urlContext, URLFormat.newInstance(true, true));
 
             cmsPublishDoc = new DOMElement(QName.get(HTMLConstants.A));
@@ -675,6 +679,32 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
 
         cmsPublishDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc);
+
+
+        // ========== Unpublish document
+
+        Element cmsUnpublishDoc = null;
+
+        if (modePreview) {
+            if (published) {
+                CMSPublishDocumentCommand unpublish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                        CMSPublishDocumentCommand.UNPUBLISH);
+                String unpublishURL = context.renderURL(unpublish, urlContext, URLFormat.newInstance(true, true));
+
+                cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.A));
+                cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.HREF), unpublishURL);
+            } else {
+                cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.P));
+                cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.TITLE), publishRequired);
+            }
+        } else {
+            cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.P));
+            cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
+        }
+
+
+        cmsUnpublishDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsUnpublishDoc);
 
 
         // HR

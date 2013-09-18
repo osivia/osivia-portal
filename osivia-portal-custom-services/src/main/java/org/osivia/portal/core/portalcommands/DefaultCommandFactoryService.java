@@ -509,12 +509,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     String pageId = null;
                     String pagePath = null;
+                    String actionCms = null;
 
                     if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null)) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
                         pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+                        actionCms = URLDecoder.decode(parameterMap.get("actionCms")[0], "UTF-8");
 
-                        return new CMSPublishDocumentCommand(pageId, pagePath);
+                        return new CMSPublishDocumentCommand(pageId, pagePath, actionCms);
                     }
                 }
 

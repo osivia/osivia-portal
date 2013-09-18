@@ -106,4 +106,13 @@ public interface ICMSService {
      * @throws CMSException
      */
     public void publishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+
+    /**
+     * Unpublish the current online version
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    public void unpublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 }

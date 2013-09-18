@@ -13,17 +13,32 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 
 /**
  * CMS command used when a document is published
  */
 public class CMSPublishDocumentCommand extends ControllerCommand {
 
+    public static final String PUBLISH = "publish";
+    public static final String UNPUBLISH = "unpublish";
+
+    private static final String SUCCESS_MESSAGE_PUBLISH = "SUCCESS_MESSAGE_PUBLISH";
+    private static final String SUCCESS_MESSAGE_UNPUBLISH = "SUCCESS_MESSAGE_UNPUBLISH";
+
     ICMSService cmsService;
+
+    private static INotificationsService notifService = NotificationsUtils.getNotificationsService();
+    private static IInternationalizationService itlzService = InternationalizationUtils.getInternationalizationService();
 
     private static ICMSServiceLocator cmsServiceLocator;
 
@@ -46,6 +61,8 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
     /** page path used by the ECM */
     private String pagePath;
 
+    /** action (publish / unpublish) */
+    private String actionCms;
 
     /**
      * @return the pagePath
@@ -70,9 +87,25 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
         return pageId;
     }
 
-    public CMSPublishDocumentCommand(String pageId, String pagePath) {
+    /**
+     * @return the actionCms
+     */
+    public String getActionCms() {
+        return actionCms;
+    }
+
+    /**
+     * @param actionCms the actionCms to set
+     */
+    public void setActionCms(String actionCms) {
+        this.actionCms = actionCms;
+    }
+
+
+    public CMSPublishDocumentCommand(String pageId, String pagePath, String actionCms) {
         this.pageId = pageId;
         this.pagePath = pagePath;
+        this.actionCms = actionCms;
 
     }
 
@@ -98,14 +131,22 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
                 return new SecurityErrorResponse(SecurityErrorResponse.NOT_AUTHORIZED, false);
 
 
-            getCMSService().publishDocument(cmsCtx, pagePath);
+            PortalControllerContext pcc = new PortalControllerContext(getControllerContext());
 
-            // force online mode
-            // this.getControllerContext().setAttribute(SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION, InternalConstants.CMS_VERSION_ONLINE);
+            if (actionCms.equals(PUBLISH)) {
+                getCMSService().publishDocument(cmsCtx, pagePath);
+
+                String success = itlzService.getString(SUCCESS_MESSAGE_PUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
+                notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
+            } else if (actionCms.equals(UNPUBLISH)) {
+                getCMSService().unpublishDocument(cmsCtx, pagePath);
+
+                String success = itlzService.getString(SUCCESS_MESSAGE_UNPUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
+                notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
+            }
 
             // force reload page(editables windows)
-            getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + pagePath,
-                    null);
+            getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + pagePath, null);
 
             // Force reload of the navigation tree
             String navigationScope = page.getProperty("osivia.cms.navigationScope");
