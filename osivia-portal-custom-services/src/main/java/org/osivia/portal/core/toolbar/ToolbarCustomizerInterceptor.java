@@ -59,6 +59,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
+import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
@@ -706,6 +707,25 @@ public class ToolbarCustomizerInterceptor extends AssistantPageCustomizerInterce
         cmsUnpublishDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsUnpublishDoc);
 
+
+        // ========== Delete document
+
+        Element cmsDeleteDoc = null;
+
+        if (modePreview) {
+            CMSDeleteDocumentCommand delete = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+            String removeURL = context.renderURL(delete, urlContext, URLFormat.newInstance(true, true));
+
+            cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.A));
+            cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.HREF), removeURL);
+        } else {
+            cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.P));
+            cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
+        }
+
+
+        cmsDeleteDoc.setText(this.getInternationalizationService().getString(InternationalizationConstants.KEY_CMS_PAGE_DELETE, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsDeleteDoc);
 
         // HR
         this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));

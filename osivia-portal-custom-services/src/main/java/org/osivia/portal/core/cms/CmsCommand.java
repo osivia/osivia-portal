@@ -527,9 +527,6 @@ public class CmsCommand extends DynamicCommand {
 					// (cas de la perte de session)
 					contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTAL;
 				}
-
-                // LBI : get the authorizations
-                level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
 			}
 
 			Page contextualizationPage = null;

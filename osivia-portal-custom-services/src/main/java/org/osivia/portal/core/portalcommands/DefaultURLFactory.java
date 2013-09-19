@@ -9,6 +9,7 @@ import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
@@ -300,6 +301,27 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
                 asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
                 asu.setParameterValue("actionCms", URLEncoder.encode(command.getActionCms(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+
+
+        if (cmd instanceof CMSDeleteDocumentCommand) {
+            CMSDeleteDocumentCommand command = (CMSDeleteDocumentCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSDeleteDocumentCommand");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
 
             } catch (UnsupportedEncodingException e) {
                 // ignore
