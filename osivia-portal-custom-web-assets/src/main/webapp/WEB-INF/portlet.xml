@@ -7,7 +7,7 @@
 
     <portlet>
         <portlet-name>osivia-portal-custom-web-assets-selectionPortlet</portlet-name>
-        <portlet-class>org.osivia.portal.core.selection.portlet.SelectionPortlet</portlet-class>
+        <portlet-class>org.osivia.portal.core.portlets.selection.SelectionPortlet</portlet-class>
         <expiration-cache>180</expiration-cache>
 
         <supports>
@@ -43,6 +43,34 @@
             <short-title>Sitemap portlet</short-title>
             <keywords>Portlet,site,sitemap,map,CMS</keywords>
         </portlet-info>
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>osivia-portal-regions-customizerPortlet</portlet-name>
+        <portlet-class>org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet</portlet-class>
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+          
+        <portlet-info>
+            <title>Default regions customizer</title>
+        </portlet-info>
+        
+        <init-param>
+            <name>osivia.portal.customizer.regions.breadcrumb.path</name>
+            <value>/WEB-INF/jsp/default-regions/breadcrumb.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.toolbar.path</name>
+            <value>/WEB-INF/jsp/default-regions/toolbar.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.page.settings.path</name>
+            <value>/WEB-INF/jsp/fixed-regions/page-settings.jsp</value>
+        </init-param>
     </portlet>
 
 </portlet-app>

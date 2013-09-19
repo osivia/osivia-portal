@@ -87,6 +87,10 @@ public final class HTMLConstants {
     public static final String NAME = "name";
     /** HTML "onclick" attributes. */
     public static final String ONCLICK = "onclick";
+    /** HTML "onkeyup" attributes. */
+    public static final String ONKEYUP = "onkeyup";
+    /** HTML "placeholder" attributes. */
+    public static final String PLACEHOLDER = "placeholder";
     /** HTML "rel" attributes. */
     public static final String REL = "rel";
     /** HTML "rows" attributes. */

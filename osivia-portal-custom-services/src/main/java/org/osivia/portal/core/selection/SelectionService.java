@@ -14,15 +14,13 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
-import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.selection.ISelectionService;
 import org.osivia.portal.api.selection.SelectionItem;
 
 /**
  * Selection service implementation.
- * 
+ *
  * @see ISelectionService
  * @author Cédric Krommenhoek
  */
@@ -30,7 +28,7 @@ public class SelectionService implements ISelectionService {
 
     /** Selections map attribute. */
     public static final String ATTR_SELECTIONS_MAP = "osivia.selections";
-    
+    /** Selections timestamp attribute. */
     public static final String ATTR_SELECTIONS_TIMESTAMP = "osivia.selections.ts";
 
     /** Selection scope property prefixe. */
@@ -50,7 +48,7 @@ public class SelectionService implements ISelectionService {
             logger.debug("addItem");
         }
         Object request = portalCtx.getRequest();
-        
+
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
 
@@ -80,7 +78,7 @@ public class SelectionService implements ISelectionService {
         }
 
         Object request = portalCtx.getRequest();
-        
+
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
 
@@ -110,7 +108,7 @@ public class SelectionService implements ISelectionService {
         }
 
         Object request = portalCtx.getRequest();
-        
+
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
             return this.getSelectionItemsSet(portletRequest, selectionId);
@@ -130,7 +128,7 @@ public class SelectionService implements ISelectionService {
         }
 
         Object request = portalCtx.getRequest();
-        
+
         if (request instanceof PortletRequest) {
             PortletRequest portletRequest = (PortletRequest) request;
             ControllerContext context = this.getContext(portletRequest);
@@ -138,7 +136,7 @@ public class SelectionService implements ISelectionService {
             SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(portletRequest, selectionId);
             selectionsMap.remove(selectionIdentifiers);
             context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
-            
+
             // Portal notification timestamp
             context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
 
@@ -147,7 +145,7 @@ public class SelectionService implements ISelectionService {
 
     /**
      * Utility method used to access the current context.
-     * 
+     *
      * @param request generated request
      * @return the current context
      */
@@ -158,7 +156,7 @@ public class SelectionService implements ISelectionService {
 
     /**
      * Utility method used to access the session selection items set.
-     * 
+     *
      * @param httpSession session
      * @param selectionId specified selection identifier
      * @return the selection items set
@@ -183,7 +181,7 @@ public class SelectionService implements ISelectionService {
 
     /**
      * Utility method used to save the selection items set.
-     * 
+     *
      * @param context context
      * @param selectionId specified selection identifier
      * @param selectionItemsSet selection item set to save
@@ -194,7 +192,7 @@ public class SelectionService implements ISelectionService {
         SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(request, selectionId);
         selectionsMap.put(selectionIdentifiers, selectionItemsSet);
         context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
-        
+
         // Portal notification timestamp
         context.setAttribute(Scope.PRINCIPAL_SCOPE,ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
     }
@@ -202,7 +200,7 @@ public class SelectionService implements ISelectionService {
 
     /**
      * Utility method used to access the selections map.
-     * 
+     *
      * @param context context
      * @return the selections map
      */
@@ -226,7 +224,7 @@ public class SelectionService implements ISelectionService {
 
     /**
      * Utility method used to generate selection map identifiers.
-     * 
+     *
      * @param request generated request
      * @param selectionId selection identifier
      * @return selection map identifiers

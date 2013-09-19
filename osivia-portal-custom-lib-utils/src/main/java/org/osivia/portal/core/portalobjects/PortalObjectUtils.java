@@ -3,18 +3,23 @@
  */
 package org.osivia.portal.core.portalobjects;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
 
 
@@ -27,10 +32,12 @@ import org.osivia.portal.core.constants.InternalConstants;
 public class PortalObjectUtils {
 
     /**
-     * Private constructor : prevent instantiation.
+     * Default constructor.
+     * PortalObjectUtils instances should NOT be constructed in standard programming.
+     * This constructor is public to permit tools that require a JavaBean instance to operate.
      */
-    private PortalObjectUtils() {
-        throw new AssertionError();
+    public PortalObjectUtils() {
+        super();
     }
 
 
@@ -233,6 +240,26 @@ public class PortalObjectUtils {
 
         String portalType = portal.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
         return StringUtils.equals(InternalConstants.PORTAL_TYPE_SPACE, portalType);
+    }
+
+
+    /**
+     * Return HTML safe portal object identifier.
+     *
+     * @param id portal object identifier
+     * @return HTML safe identifier
+     */
+    public static String getHTMLSafeId(PortalObjectId id) {
+        if (id == null) {
+            return null;
+        }
+
+        String safestFormat = id.toString(PortalObjectPath.SAFEST_FORMAT);
+        try {
+            return URLEncoder.encode(safestFormat, CharEncoding.UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package org.osivia.portal.core.selection.portlet;
+package org.osivia.portal.core.portlets.selection;
 
 import java.io.IOException;
 import java.util.Set;

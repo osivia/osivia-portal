@@ -263,7 +263,7 @@
 
          <depends-list-element>osivia:service=Interceptor,type=Command,name=PageCustomizer</depends-list-element> 
 	     <depends-list-element>osivia:service=Interceptor,type=Command,name=TabsCustomizer </depends-list-element>
-	     <depends-list-element>osivia:service=Interceptor,type=Command,name=ToolbarCustomizer</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Command,name=RegionsCustomizer</depends-list-element>
 
          <depends-list-element>osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer</depends-list-element>
          <depends-list-element>osivia:service=Interceptor,type=Command,name=CMSEditionPageCustomizer</depends-list-element>

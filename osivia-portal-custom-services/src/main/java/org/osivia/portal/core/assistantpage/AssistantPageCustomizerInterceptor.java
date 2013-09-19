@@ -1272,35 +1272,35 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 return response;
             }
 
-            PageRendition rendition = (PageRendition) response;
-            PageCommand pageCommand = (PageCommand) command;
-            Page page = pageCommand.getPage();
-            ControllerContext context = command.getControllerContext();
-
-            // This is for inject the pageSettings
-            ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(this.getTargetContextPath(), this.getPageSettingPath());
-
-            // Internationalization service
-            dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
-            // Formatter
-            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_FORMATTER, this);
-            // Context
-            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CONTROLLER_CONTEXT, context);
-            // URL générique de commande
-            String portalContextPath = context.getServerInvocation().getServerContext().getPortalContextPath();
-            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_COMMAND_URL, portalContextPath + "/commands");
-            // Current page
-            dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
-
-            PageType pageType = PageType.getPageType(page, context);
-            if (!pageType.isTemplated()) {
-                // Portlets settings injection
-                this.injectPortletSettings(dispatcher, page, rendition, context);
-            }
-
-            dispatcher.include();
-
-            context.setAttribute(ControllerCommand.REQUEST_SCOPE, InternalConstants.ATTR_WINDOWS_SETTINGS_CONTENT, dispatcher.getMarkup());
+            // PageRendition rendition = (PageRendition) response;
+            // PageCommand pageCommand = (PageCommand) command;
+            // Page page = pageCommand.getPage();
+            // ControllerContext context = command.getControllerContext();
+            //
+            // // This is for inject the pageSettings
+            // ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(this.getTargetContextPath(), this.getPageSettingPath());
+            //
+            // // Internationalization service
+            // dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
+            // // Formatter
+            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_FORMATTER, this);
+            // // Context
+            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CONTROLLER_CONTEXT, context);
+            // // URL générique de commande
+            // String portalContextPath = context.getServerInvocation().getServerContext().getPortalContextPath();
+            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_COMMAND_URL, portalContextPath + "/commands");
+            // // Current page
+            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
+            //
+            // PageType pageType = PageType.getPageType(page, context);
+            // if (!pageType.isTemplated()) {
+            // // Portlets settings injection
+            // this.injectPortletSettings(dispatcher, page, rendition, context);
+            // }
+            //
+            // dispatcher.include();
+            //
+            // context.setAttribute(ControllerCommand.REQUEST_SCOPE, InternalConstants.ATTR_WINDOWS_SETTINGS_CONTENT, dispatcher.getMarkup());
         }
 
         return response;

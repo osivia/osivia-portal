@@ -107,9 +107,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     protected static final Log logger = LogFactory.getLog(PageCustomizerInterceptor.class);
 
     /** . */
-    private static final PortalObjectId defaultPortalId = PortalObjectId.parse("/", PortalObjectPath.CANONICAL_FORMAT);
-
-    /** . */
     private static PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
     /** . */
@@ -549,7 +546,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             ControllerContext controllerCtx = cmd.getControllerContext();
 
             Page page = rpc.getPage();
-            
+
             String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
             if (pathPublication != null) {
@@ -1096,20 +1093,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
     private void injectStandardHeaders(PageCommand rpc, PageRendition rendition) throws Exception {
         // Breadcrumb
-        String breadcrumb = this.injectBreadcrumb(rpc, rendition);
-        if (breadcrumb != null) {
-            Map windowProps = new HashMap();
-            windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-            WindowResult res = new WindowResult("", breadcrumb, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-            WindowContext bloh = new WindowContext("BLEH", "breadcrumb", "0", res);
-            rendition.getPageResult().addWindowContext(bloh);
-
-            //
-            Region region = rendition.getPageResult().getRegion2("breadcrumb");
-            DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        }
+        // String breadcrumb = this.injectBreadcrumb(rpc, rendition);
+        // if (breadcrumb != null) {
+        // Map windowProps = new HashMap();
+        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+        // WindowResult res = new WindowResult("", breadcrumb, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+        // WindowContext bloh = new WindowContext("BLEH", "breadcrumb", "0", res);
+        // rendition.getPageResult().addWindowContext(bloh);
+        //
+        // //
+        // Region region = rendition.getPageResult().getRegion2("breadcrumb");
+        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+        // }
 
         // Search
         String search = this.injectSearch(rpc);
@@ -1152,29 +1149,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
         }
 
-        // Page settings
-        StringBuffer pageSettings = new StringBuffer();
-
-        String assistantPageCustomizer = (String) rpc.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
-                InternalConstants.ATTR_WINDOWS_SETTINGS_CONTENT);
-        if (assistantPageCustomizer != null) {
-            pageSettings.append(assistantPageCustomizer);
-        }
-
-        String toolbarSettings = (String) rpc.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
-                InternalConstants.ATTR_TOOLBAR_SETTINGS_CONTENT);
-        if (toolbarSettings != null) {
-            pageSettings.append(toolbarSettings);
-        }
-
-
-
 
         /* JSS20130610 : Injection path CMS pour Ajax */
 
         // On determine le path de navigation cms
         // TODO : ajouter test uniquement en edition CMS
 
+        StringBuffer pageSettings = new StringBuffer();
 
         NavigationalStateContext nsContext = (NavigationalStateContext) rpc.getControllerContext().getAttributeResolver(
                 ControllerCommand.NAVIGATIONAL_STATE_SCOPE);

@@ -12,6 +12,11 @@
         </transaction>
     </portlet>
     
+    <portlet>
+        <portlet-name>osivia-portal-regions-customizerPortlet</portlet-name>
+    </portlet>
+    
+    
     <service>
         <service-name>SelectionService</service-name>
         <service-class>org.osivia.portal.api.selection.ISelectionService</service-class>
@@ -22,6 +27,12 @@
         <service-name>InternationalizationService</service-name>
         <service-class>org.osivia.portal.api.internationalization.IInternationalizationService</service-class>
         <service-ref>osivia:service=InternationalizationService</service-ref>
+    </service>
+    
+    <service>
+        <service-name>CustomizationModulesRepository</service-name>
+        <service-class>org.osivia.portal.api.customization.ICustomizationModulesRepository</service-class>
+        <service-ref>osivia:service=CustomizationService</service-ref>
     </service>
  
 </portlet-app>

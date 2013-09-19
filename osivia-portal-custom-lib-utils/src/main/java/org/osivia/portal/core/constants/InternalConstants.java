@@ -42,7 +42,7 @@ public final class InternalConstants {
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV = "div";
 
 
-    // Toolbar constants
+    // Administration constants
 
     /** Edition mode. */
     public static final String ATTR_TOOLBAR_WIZARD_MODE = "osivia.toolbar.wizardMode";

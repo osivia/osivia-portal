@@ -70,10 +70,12 @@ public class Constants {
 
 
     /**
-     * Private constructor : prevent instantiation.
+     * Default constructor.
+     * Constants instances should NOT be constructed in standard programming.
+     * This constructor is public to permit tools that require a JavaBean instance to operate.
      */
-    private Constants() {
-        throw new AssertionError();
+    public Constants() {
+        super();
     }
 
 }
