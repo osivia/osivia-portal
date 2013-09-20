@@ -49,6 +49,8 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
+import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
+import org.osivia.portal.core.assistantpage.PortalThemeComparator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -57,8 +59,6 @@ import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.profils.IProfilManager;
-import org.osivia.portal.core.toolbar.PortalLayoutComparator;
-import org.osivia.portal.core.toolbar.PortalThemeComparator;
 
 /**
  * Page settings attributes bundle.
@@ -186,7 +186,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // URL context
         URLContext urlContext = serverContext.getURLContext();
 
-        // Page
+        // Current page
         Page page = renderPageCommand.getPage();
         // Current page type
         PageType pageType = PageType.getPageType(page, controllerContext);
@@ -357,10 +357,13 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
 
+        // Current page
+        Page page = renderPageCommand.getPage();
+        // Current page type
+        PageType pageType = PageType.getPageType(page, controllerContext);
+
         Object windowSettingMode = controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
-        if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
-            // Current page
-            Page page = renderPageCommand.getPage();
+        if (!pageType.isTemplated() && InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
             // Locale
             Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
 
