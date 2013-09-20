@@ -47,7 +47,7 @@ public class RenderedRegions implements IRenderedRegions {
     /**
      * {@inheritDoc}
      */
-    public void defineRenderedRegion(String regionName, String regionPath) {
+    public boolean defineRenderedRegion(String regionName, String regionPath) {
         boolean customizable = true;
         if (this.renderedRegions.containsKey(regionName)) {
             customizable = this.renderedRegions.get(regionName).isCustomizable();
@@ -56,6 +56,24 @@ public class RenderedRegions implements IRenderedRegions {
         if (customizable) {
             this.renderedRegions.put(regionName, new RenderedRegionBean(regionName, regionPath));
         }
+        return customizable;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean removeRenderedRegion(String regionName) {
+        boolean customizable = true;
+        if (this.renderedRegions.containsKey(regionName)) {
+            customizable = this.renderedRegions.get(regionName).isCustomizable();
+        }
+
+        RenderedRegionBean region = null;
+        if (customizable) {
+            region = this.renderedRegions.remove(regionName);
+        }
+        return (region != null);
     }
 
 
@@ -82,7 +100,7 @@ public class RenderedRegions implements IRenderedRegions {
 
     /**
      * Get rendered regions.
-     * 
+     *
      * @return rendered regions list
      */
     public List<RenderedRegionBean> getRenderedRegions() {

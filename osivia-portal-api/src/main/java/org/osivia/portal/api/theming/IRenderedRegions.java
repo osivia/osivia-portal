@@ -28,11 +28,21 @@ public interface IRenderedRegions {
 
     /**
      * Define rendered region.
-     *
+     * 
      * @param regionName region name
      * @param regionPath region path
+     * @return true if the region was successfully added
      */
-    void defineRenderedRegion(String regionName, String regionPath);
+    boolean defineRenderedRegion(String regionName, String regionPath);
+
+
+    /**
+     * Remove rendered region.
+     * 
+     * @param regionName region name
+     * @return true if the region was successfully removed
+     */
+    boolean removeRenderedRegion(String regionName);
 
 
     /**

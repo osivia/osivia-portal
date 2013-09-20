@@ -14,6 +14,7 @@ import org.osivia.portal.api.theming.IRenderedRegions;
 import org.osivia.portal.api.theming.RenderedRegionBean;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Regions customizer interception.
@@ -44,24 +45,30 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
         ControllerResponse response = (ControllerResponse) command.invokeNext();
 
         if ((command instanceof RenderPageCommand) && (response instanceof PageRendition)) {
+            // Render page command
             RenderPageCommand renderPageCommand = (RenderPageCommand) command;
-            PageRendition pageRendition = (PageRendition) response;
-            String contextPath = this.regionsThemingService.getContextPath(renderPageCommand);
-            Boolean administrator = PageCustomizerInterceptor.isAdministrator(renderPageCommand.getControllerContext());
 
-            // Rendered regions
-            RenderedRegions renderedRegions = new RenderedRegions(renderPageCommand.getPage());
+            if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal())) {
+                // Page rendition
+                PageRendition pageRendition = (PageRendition) response;
 
-            Map<String, Object> customizerAttributes = new HashMap<String, Object>();
-            customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_CONTEXT_PATH, contextPath);
-            customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_ADMINISTATOR, administrator);
-            customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
-            CustomizationContext context = new CustomizationContext(customizerAttributes);
-            this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
+                String contextPath = this.regionsThemingService.getContextPath(renderPageCommand);
+                Boolean administrator = PageCustomizerInterceptor.isAdministrator(renderPageCommand.getControllerContext());
 
-            // Add regions
-            for (RenderedRegionBean renderedRegion : renderedRegions.getRenderedRegions()) {
-                this.regionsThemingService.addRegion(renderPageCommand, pageRendition, renderedRegion);
+                // Rendered regions
+                RenderedRegions renderedRegions = new RenderedRegions(renderPageCommand.getPage());
+
+                Map<String, Object> customizerAttributes = new HashMap<String, Object>();
+                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_CONTEXT_PATH, contextPath);
+                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_ADMINISTATOR, administrator);
+                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
+                CustomizationContext context = new CustomizationContext(customizerAttributes);
+                this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
+
+                // Add regions
+                for (RenderedRegionBean renderedRegion : renderedRegions.getRenderedRegions()) {
+                    this.regionsThemingService.addRegion(renderPageCommand, pageRendition, renderedRegion);
+                }
             }
         }
 

@@ -29,6 +29,12 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
 
     /** Breadcrumb path init parameter name. */
     private static final String BREADCRUMB_PATH_INIT_PARAM = "osivia.portal.customizer.regions.breadcrumb.path";
+    /** Footer path init parameter name. */
+    private static final String FOOTER_PATH_INIT_PARAM = "osivia.portal.customizer.regions.footer.path";
+    /** Search path init parameter name. */
+    private static final String SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.search.path";
+    /** Tabs path init parameter name. */
+    private static final String TABS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.tabs.path";
     /** Toolbar path init parameter name. */
     private static final String TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.toolbar.path";
     /** Page settings path init parameter name. */
@@ -96,11 +102,20 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
 
         // Breadcrumb default region
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
+        // Search default region
+        renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
         // Toolbar default region
         renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(TOOLBAR_PATH_INIT_PARAM));
 
+        if (!renderedRegions.isSpaceSite()) {
+            // Footer default region
+            renderedRegions.defineDefaultRenderedRegion("footer", this.getInitParameter(FOOTER_PATH_INIT_PARAM));
+            // Tabs default region
+            renderedRegions.defineDefaultRenderedRegion("tabs", this.getInitParameter(TABS_PATH_INIT_PARAM));
+        }
+
         if (BooleanUtils.isTrue(administrator)) {
-            // Administration settings fixed region
+            // Page settings fixed region
             renderedRegions.defineFixedRenderedRegion("pageSettings", this.getInitParameter(PAGE_SETTINGS_PATH_INIT_PARAM));
         }
     }

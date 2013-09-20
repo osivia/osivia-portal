@@ -58,7 +58,7 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
-public class BreadcrumbAttributesBundle implements IAttributesBundle {
+public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
     /** Singleton instance. */
     private static BreadcrumbAttributesBundle instance;
@@ -80,9 +80,12 @@ public class BreadcrumbAttributesBundle implements IAttributesBundle {
     private BreadcrumbAttributesBundle() {
         super();
 
+        // URL Factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        // CMS service
         ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         this.cmsService = cmsServiceLocator.getCMSService();
+        // Portal object container
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
 
         this.names = new TreeSet<String>();

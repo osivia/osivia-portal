@@ -64,6 +64,18 @@
             <value>/WEB-INF/jsp/default-regions/breadcrumb.jsp</value>
         </init-param>
         <init-param>
+            <name>osivia.portal.customizer.regions.footer.path</name>
+            <value>/WEB-INF/jsp/default-regions/footer.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.search.path</name>
+            <value>/WEB-INF/jsp/default-regions/search.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.tabs.path</name>
+            <value>/WEB-INF/jsp/default-regions/tabs.jsp</value>
+        </init-param>
+        <init-param>
             <name>osivia.portal.customizer.regions.toolbar.path</name>
             <value>/WEB-INF/jsp/default-regions/toolbar.jsp</value>
         </init-param>

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.osivia.portal.core.toolbar;
+package org.osivia.portal.core.assistantpage;
 
 import java.util.Comparator;
 

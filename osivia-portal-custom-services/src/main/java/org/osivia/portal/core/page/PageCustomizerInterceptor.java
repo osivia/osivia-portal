@@ -1109,45 +1109,45 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // }
 
         // Search
-        String search = this.injectSearch(rpc);
-        if (search != null) {
-            Map windowProps = new HashMap();
-            windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-            WindowResult res = new WindowResult("", search, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-            WindowContext bluh = new WindowContext("BLOH", "search", "0", res);
-            rendition.getPageResult().addWindowContext(bluh);
-
-            //
-            Region region = rendition.getPageResult().getRegion2("search");
-            DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        }
+        // String search = this.injectSearch(rpc);
+        // if (search != null) {
+        // Map windowProps = new HashMap();
+        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+        // WindowResult res = new WindowResult("", search, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+        // WindowContext bluh = new WindowContext("BLOH", "search", "0", res);
+        // rendition.getPageResult().addWindowContext(bluh);
+        //
+        // //
+        // Region region = rendition.getPageResult().getRegion2("search");
+        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+        // }
 
         // Footer
-        String footerNav = this.injectFooter(rpc);
-        if (footerNav != null) {
-            Map windowProps = new HashMap();
-            windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-            windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-
-
-
-            StringBuffer footer = new StringBuffer();
-
-            footer.append(footerNav);
-
-
-
-            WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-            WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
-            rendition.getPageResult().addWindowContext(bloh);
-
-            //
-            Region region = rendition.getPageResult().getRegion2("footer");
-            DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        }
+        // String footerNav = this.injectFooter(rpc);
+        // if (footerNav != null) {
+        // Map windowProps = new HashMap();
+        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+        //
+        //
+        //
+        // StringBuffer footer = new StringBuffer();
+        //
+        // footer.append(footerNav);
+        //
+        //
+        //
+        // WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+        // WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
+        // rendition.getPageResult().addWindowContext(bloh);
+        //
+        // //
+        // Region region = rendition.getPageResult().getRegion2("footer");
+        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
+        // }
 
 
         /* JSS20130610 : Injection path CMS pour Ajax */

@@ -197,13 +197,14 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
                 if (admin) {
                     this.injectAdminHeaders(rpc, rendition);
-                } else {
-                    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                            "osivia.popupModeWindowID");
-                    if (popupWindowId == null) {
-                        this.injectStandardHeaders(rpc, rendition);
-                    }
                 }
+                // else {
+                // PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                // "osivia.popupModeWindowID");
+                // if (popupWindowId == null) {
+                // this.injectStandardHeaders(rpc, rendition);
+                // }
+                // }
 
             }
         }
@@ -216,8 +217,8 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
     void injectStandardHeaders(PageCommand rpc, PageRendition rendition) throws Exception {
 
-        
-       
+
+
         // Injection uniquement pour les portal
         if (!PortalObjectUtils.isSpaceSite(rpc.getTarget())) {
 
@@ -463,7 +464,7 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Cette structure est générée pour simplifier l'intégration graphique et pour optimiser les performances
-     * 
+     *
      * @param rpc
      * @return
      */

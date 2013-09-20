@@ -31,6 +31,10 @@ import org.osivia.portal.core.constants.InternalConstants;
  */
 public class PortalObjectUtils {
 
+    /** JBoss portal administration name. */
+    public static final String JBOSS_PORTAL_ADMINISTRATION_NAME = "admin";
+
+
     /**
      * Default constructor.
      * PortalObjectUtils instances should NOT be constructed in standard programming.
@@ -240,6 +244,32 @@ public class PortalObjectUtils {
 
         String portalType = portal.getProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE);
         return StringUtils.equals(InternalConstants.PORTAL_TYPE_SPACE, portalType);
+    }
+
+
+    /**
+     * Check if a portal object is contained in JBoss Portal administration.
+     * 
+     * @param po portal object to check, may be null
+     * @return true if portal object is contained in JBoss Portal administration
+     */
+    public static boolean isJBossPortalAdministration(PortalObject po) {
+        if (po == null) {
+            return false;
+        }
+
+        // Get current portal
+        Portal portal;
+        if (po instanceof Portal) {
+            portal = (Portal) po;
+        } else if (po instanceof Page) {
+            Page page = (Page) po;
+            portal = page.getPortal();
+        } else {
+            return false;
+        }
+
+        return StringUtils.equalsIgnoreCase(JBOSS_PORTAL_ADMINISTRATION_NAME, portal.getName());
     }
 
 

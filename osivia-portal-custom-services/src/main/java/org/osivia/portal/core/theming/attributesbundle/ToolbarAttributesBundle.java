@@ -104,6 +104,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     /** Singleton instance. */
     private static ToolbarAttributesBundle instance;
 
+
     /** Internationalization service. */
     private final IInternationalizationService internationalizationService;
     /** Portal URL factory. */
@@ -124,8 +125,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private ToolbarAttributesBundle() {
         super();
 
+        // Internationalization service
         this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        // URL factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        // CMS service
         ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         this.cmsService = cmsServiceLocator.getCMSService();
 
