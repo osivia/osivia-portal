@@ -39,6 +39,7 @@ import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.EcmCommand;
@@ -436,6 +437,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
         boolean editionModeOn = CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_ON);
 
+        String basePath = page.getProperty("osivia.cms.basePath");
 
         Map<String, String> requestParameters = new HashMap<String, String>();
 
@@ -475,7 +477,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // messages
         String previewRequired = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED, locale);
-        String publishRequired = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED, locale);
 
         // ========== Switch edition mode on / off
         // ChangeCMSEditionModeCommand changeVersion;
@@ -604,13 +605,23 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         if (modePreview) {
             if (published) {
-                CMSPublishDocumentCommand unpublish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                        CMSPublishDocumentCommand.UNPUBLISH);
-                String unpublishURL = context.renderURL(unpublish, urlContext, URLFormat.newInstance(true, true));
 
-                cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.A));
-                cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.HREF), unpublishURL);
+                // if user is not at the root of the web site
+                if (!basePath.equals(pagePath)) {
+
+                    CMSPublishDocumentCommand unpublish = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                            CMSPublishDocumentCommand.UNPUBLISH);
+                    String unpublishURL = context.renderURL(unpublish, urlContext, URLFormat.newInstance(true, true));
+
+                    cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.A));
+                    cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.HREF), unpublishURL);
+                } else {
+                    String notRootPage = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_NOT_ROOTPAGE, locale);
+                    cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.P));
+                    cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.TITLE), notRootPage);
+                }
             } else {
+                String publishRequired = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED, locale);
                 cmsUnpublishDoc = new DOMElement(QName.get(HTMLConstants.P));
                 cmsUnpublishDoc.addAttribute(QName.get(HTMLConstants.TITLE), publishRequired);
             }
@@ -629,11 +640,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element cmsDeleteDoc = null;
 
         if (modePreview) {
-            CMSDeleteDocumentCommand delete = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
-            String removeURL = context.renderURL(delete, urlContext, URLFormat.newInstance(true, true));
 
-            cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.A));
-            cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.HREF), removeURL);
+            // user can only delete a document which its parent is editable.
+            CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
+            String parentPath = parent.toString();
+
+            CMSPublicationInfos parentPubInfos = this.cmsService.getPublicationInfos(cmsCtx, parentPath);
+            // if parent is editable and if user is not at the root of the web site 
+            if (parentPubInfos.isEditableByUser() && !(basePath.equals(pagePath))) {
+
+                CMSDeleteDocumentCommand delete = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+                String removeURL = context.renderURL(delete, urlContext, URLFormat.newInstance(true, true));
+
+                cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.A));
+                cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.HREF), removeURL);
+            } else {
+                String deleteForbidden = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_DELETE_FORBIDDEN, locale);
+                cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.P));
+                cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.TITLE), deleteForbidden);
+            }
         } else {
             cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.P));
             cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);

@@ -12,13 +12,14 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
@@ -116,12 +117,13 @@ public class CMSDeleteDocumentCommand extends ControllerCommand {
             notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
 
 
-            // force reload page(editables windows)
-            getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + pagePath, null);
 
             // Force reload of the navigation tree
             String navigationScope = page.getProperty("osivia.cms.navigationScope");
             String basePath = page.getProperty("osivia.cms.basePath");
+
+            // force reload page(editables windows)
+            getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + basePath, null);
 
             CMSServiceCtx cmxCtx = new CMSServiceCtx();
             cmxCtx.setControllerContext(getControllerContext());
@@ -130,8 +132,14 @@ public class CMSDeleteDocumentCommand extends ControllerCommand {
 
             getCMSService().getPortalNavigationItem(cmxCtx, basePath, basePath);
 
+            // Redirect to the parent window
+            CMSObjectPath parentPath = CMSObjectPath.parse(pagePath).getParent();
+            String redirectPath = parentPath.toString();
 
-            return new UpdatePageResponse(poid);
+            CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, null, null, null, null, null, null, null);
+            ControllerResponse execute = context.execute(redirect);
+
+            return execute;
 
 
         } catch (Exception e) {

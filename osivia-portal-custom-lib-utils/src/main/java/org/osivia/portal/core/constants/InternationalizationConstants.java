@@ -103,7 +103,10 @@ public final class InternationalizationConstants {
     public static final String KEY_PTITLE_TOGGLE_VERSION = "PTITLE_TOGGLE_VERSION";
     /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_PUBLISH_REQUIRED = "PTITLE_PUBLISH_REQUIRED";
-
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_NOT_ROOTPAGE = "PTITLE_NOT_ROOTPAGE";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_DELETE_FORBIDDEN = "PTITLE_DELETE_FORBIDDEN";
     // Window properties
 
     /** Bundle resource key for styles window properties label. */
