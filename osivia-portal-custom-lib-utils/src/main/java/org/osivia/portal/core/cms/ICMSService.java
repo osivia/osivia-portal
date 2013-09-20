@@ -96,7 +96,7 @@ public interface ICMSService {
      * @param type the type name
      * @return the permission
      */
-    public boolean isTypeAllowedForWebPages(CMSServiceCtx cmsCtx, String type) throws CMSException;
+    public boolean isCmsWebPage(CMSServiceCtx cmsCtx, String cmsPath) throws CMSException;
 
     /**
      * Publish the current live version of a document online

@@ -223,13 +223,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, pagePath) == Level.allowPreviewVersion) {
                 cmsContext.setDisplayLiveVersion("1");
             }
-
-            // ECM request for select the type
-            CMSItem content = getCMSService().getContent(cmsContext, pagePath);
-            String type = content.getProperties().get("type");
-
             // check if type is known as a web page type
-            return getCMSService().isTypeAllowedForWebPages(cmsContext, type);
+            return getCMSService().isCmsWebPage(cmsContext, pagePath);
 
         }
         return false;
