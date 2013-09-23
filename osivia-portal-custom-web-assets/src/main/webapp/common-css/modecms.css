@@ -112,6 +112,7 @@ toggle-test {
 	-webkit-box-shadow: 0 0 12px #5977BD;
 	-o-box-shadow: 0 0 12px #5977BD;
 	box-shadow: 0 0 12px #5977BD;
+	cursor: move;	
 }
 
 
