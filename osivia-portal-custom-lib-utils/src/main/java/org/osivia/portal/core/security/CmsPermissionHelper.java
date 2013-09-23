@@ -56,7 +56,7 @@ public class CmsPermissionHelper {
     private static final String ERROR_MESSAGE_ACCESS_DENIED = "ERROR_MESSAGE_ACCESS_DENIED";
 
 
-    private static ICMSService icmsService = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator").getCMSService();
+    private static ICMSServiceLocator icmsServiceLocactor = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
     private static IInternationalizationService itlzService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
 
@@ -163,13 +163,19 @@ public class CmsPermissionHelper {
 
                 CMSPublicationInfos pubInfos = null;
                 try {
-                    pubInfos = icmsService.getPublicationInfos(cmsContext, cmsPath);
+                    pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
                 } catch (CMSException e) {
                     throw new ControllerException(e);
                 }
 
                 editableByUser = pubInfos.isEditableByUser();
                 published = pubInfos.isPublished();
+                
+                
+                
+                if( pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace())   
+                    cmsVersion = CMS_VERSION_PREVIEW;
+
 
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion);
 

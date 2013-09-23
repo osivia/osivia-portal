@@ -31,8 +31,10 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
@@ -51,7 +53,7 @@ public class WebURLFactory extends URLFactoryDelegate {
 
     public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL) {
 
-        if (cmd instanceof InvokePortletWindowRenderCommand) {
+        if (cmd instanceof InvokePortletWindowRenderCommand || cmd instanceof InvokePortletWindowActionCommand) {
 
             InvokePortletWindowCommand invCmd = (InvokePortletWindowCommand) cmd;
 
@@ -70,6 +72,36 @@ public class WebURLFactory extends URLFactoryDelegate {
                     String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
                     webCommand.setCmsPath(pathNavigation);
                     webCommand.setWindowName(window.getName());
+
+
+                    ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
+                    serverURL.getParameterMap().append(standardURL.getParameterMap());
+
+                    return serverURL;
+                }
+            }
+        }
+        
+        if ( cmd instanceof InvokePortletWindowResourceCommand) {
+
+            InvokePortletWindowResourceCommand invCmd = (InvokePortletWindowResourceCommand) cmd;
+
+            PortalObjectId poid = invCmd.getTargetId();
+
+            Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
+
+            // if (PortalObjectUtils.isSpaceSite(window.getPage().getPortal())) {
+            if (InternalConstants.PORTAL_URL_POLICY_WEB.equals(window.getPage().getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
+
+                String basePath = window.getPage().getProperty("osivia.cms.basePath");
+
+                if (basePath != null) {
+
+                    WebCommand webCommand = new WebCommand();
+                    String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
+                    webCommand.setCmsPath(pathNavigation);
+                    webCommand.setWindowName(window.getName());
+                    webCommand.setSupportingPageMarker(false);
 
 
                     ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);

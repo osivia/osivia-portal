@@ -48,7 +48,8 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
             // Render page command
             RenderPageCommand renderPageCommand = (RenderPageCommand) command;
 
-            if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal())) {
+            if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal()) && renderPageCommand.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+            "osivia.popupModeWindowID") == null ) {
                 // Page rendition
                 PageRendition pageRendition = (PageRendition) response;
 

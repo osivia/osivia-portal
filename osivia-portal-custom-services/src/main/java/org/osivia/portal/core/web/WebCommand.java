@@ -42,6 +42,19 @@ public class WebCommand extends DynamicCommand {
 
     private String cmsPath;
     private String windowName;
+    private boolean supportingPageMarker = true;
+
+
+      
+    public boolean isSupportingPageMarker() {
+        return supportingPageMarker;
+    }
+
+
+    
+    public void setSupportingPageMarker(boolean supportingPageMarker) {
+        this.supportingPageMarker = supportingPageMarker;
+    }
 
 
     public String getWindowName() {
