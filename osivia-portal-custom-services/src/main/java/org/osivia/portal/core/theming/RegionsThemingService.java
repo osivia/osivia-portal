@@ -101,7 +101,7 @@ public class RegionsThemingService implements IRegionsThemingService {
 
             WindowResult windowResult = new WindowResult(renderedRegion.getName(), markup, MapUtils.EMPTY_MAP, windowProperties, null, WindowState.NORMAL,
                     Mode.VIEW);
-            WindowContext windowContext = new WindowContext(renderedRegion.getName(), renderedRegion.getName(), null, windowResult);
+            WindowContext windowContext = new WindowContext(renderedRegion.getName(), renderedRegion.getName(), "0", windowResult);
             pageRendition.getPageResult().addWindowContext(windowContext);
 
             Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());

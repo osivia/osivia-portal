@@ -549,7 +549,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
-            if (pathPublication != null) {
+            if (pathPublication != null &&  !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
                 // On est déja dans une cmscommand, auquel cas l'affichage est bon
 
