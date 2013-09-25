@@ -69,6 +69,78 @@ $JQry(document).ready(function() {
 		}
 	);
 	
+	
+	
+	// Display links JSTree for Sitemap
+	$JQry(".jstree-links-sitemap").jstree({
+		"core" : {
+			"animation" : 0,
+			"open_parents" : true,
+			"initially_open" : ["rootSitemap"]
+		},
+		"themes" : {
+			"theme" : "default",
+			"dots" : false,
+			"icons" : true
+		},
+		"search" : {
+			"case_insensitive" : true,
+			"show_only_matches" : true
+		},
+		"types" : {
+			"types" : {
+				"page" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/page.png"
+					}
+				},
+				"template" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/template.png"
+					}
+				},
+				"space" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/space.png"
+					}
+				},
+				"pageOnline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/published_doc.png"
+					}
+				},
+				"pageOffline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/live_doc.png"
+					}
+				}
+			}
+		},
+		"plugins" : [ "themes", "html_data", "search", "types" ]
+	});
+	$JQry(".jstree-links-sitemap").bind(
+		"loaded.jstree", function(evt, data) {
+			var prefix = this.id;
+			
+			// Open portal node
+			if (portalId) {
+				var portalNode = $JQry("#" + prefix + portalId);
+				$JQry(this).jstree("open_node", portalNode);
+			}
+			
+			// Open current parent page node
+			if (currentPageId) {
+				// Get current page node
+				var currentPageNode = $JQry("#" + prefix + currentPageId);
+				if (currentPageNode) {
+					// Get current parent page node and open it to display current page node
+					var currentParentNode = currentPageNode.parents("li").first();
+					$JQry(this).jstree("open_node", currentParentNode);
+				}
+			}
+		}
+	);
+	
 	// Unique selector JSTree
 	$JQry(".jstree-select-unique").jstree({
 		"core" : {

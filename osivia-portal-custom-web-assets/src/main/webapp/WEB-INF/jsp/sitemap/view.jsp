@@ -41,7 +41,7 @@
 		
 		<div class="fancybox-table-row">
 			<div class="fancybox-table-cell">
-				<div id="jstreeSitemap" class="jstree-links">
+				<div id="jstreeSitemap" class="jstree-links-sitemap">
 					<%=formatter.formatHtmlTreeSitemap(itemToDisplay)%>
 				</div>
 			</div>

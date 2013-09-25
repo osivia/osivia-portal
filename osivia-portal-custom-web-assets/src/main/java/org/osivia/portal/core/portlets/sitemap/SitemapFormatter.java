@@ -23,7 +23,6 @@ import org.dom4j.io.HTMLWriter;
 import org.osivia.portal.core.sitemap.Sitemap;
 
 
-
 public class SitemapFormatter {
 
     public String formatHtmlTreeSitemap(Sitemap rootSitemap) throws IOException {
@@ -36,12 +35,34 @@ public class SitemapFormatter {
         // Locale locale = context.getServerInvocation().getRequest().getLocale();
         // ResourceBundle resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_NAME, locale);
 
+        // Generate HTML node for each page
+        Element root = new DOMElement(UL);
+        root.addAttribute(CLASS, CLASS_NAVIGATION_ITEM);
+
+        String pageName = rootSitemap.getTitle();
+        String url = rootSitemap.getUrl();
+
+        Element li = new DOMElement(LI);
+        li.addAttribute(CLASS, CLASS_NAVIGATION_ITEM);
+        li.addAttribute("rel", "pageOnline");
+        li.addAttribute("id", "rootSitemap");
+
+        root.add(li);
+
+        Element a = new DOMElement(A);
+        a.addAttribute(HREF, url);
+        a.setText(pageName);
+        li.add(a);
+
 
         // Recursive tree generation
         Element ulChildren = this.generateRecursiveHtmlTreeSitemap(rootSitemap);
+        if (ulChildren != null) {
+            li.add(ulChildren);
+        }
 
         // Get HTML data
-        String resultat = this.writeHtmlData(ulChildren);
+        String resultat = this.writeHtmlData(root);
         return resultat;
     }
 
@@ -66,19 +87,10 @@ public class SitemapFormatter {
         // PortalAuthorizationManager authManager = this.portalAuthorizationManagerFactory.getManager();
         //
         List<Sitemap> sortedPages = new ArrayList<Sitemap>();
-        // if (sortAlphabetically) {
-        // sortedPages = new TreeSet<Page>(PageUtils.nameComparator);
-        // } else {
-        // sortedPages = new TreeSet<Page>(PageUtils.orderComparator);
-        // }
 
         for (Sitemap child : children) {
-            // PortalObjectPermission permission = new PortalObjectPermission(child.getId(), PortalObjectPermission.VIEW_MASK);
-            //
-            // if (authManager.checkPermission(permission)) {
             Sitemap page = (Sitemap) child;
             sortedPages.add(page);
-            // }
         }
 
         if (CollectionUtils.isEmpty(sortedPages)) {
@@ -90,16 +102,13 @@ public class SitemapFormatter {
         ul.addAttribute(CLASS, CLASS_NAVIGATION_ITEM);
 
         for (Sitemap page : sortedPages) {
-            // String pageId = this.formatHtmlSafeEncodingId(page.getId());
             String pageName = page.getTitle();
 
             String url = page.getUrl();
 
             Element li = new DOMElement(LI);
-            // li.addAttribute(QNAME_ATTRIBUTE_ID, idPrefix + pageId);
             li.addAttribute(CLASS, CLASS_NAVIGATION_ITEM);
 
-            // li.addAttribute("rel", page.getPublished() ? "pageOnline" : "pageOffline");
             li.addAttribute("rel", "pageOnline");
 
             ul.add(li);
