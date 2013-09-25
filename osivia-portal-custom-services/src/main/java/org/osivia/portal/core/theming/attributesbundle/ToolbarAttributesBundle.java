@@ -1,5 +1,7 @@
 package org.osivia.portal.core.theming.attributesbundle;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Locale;
@@ -641,6 +643,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // ========== Delete document
 
+
         Element cmsDeleteDoc = null;
 
         if (modePreview) {
@@ -655,9 +658,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
                 CMSDeleteDocumentCommand delete = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
                 String removeURL = context.renderURL(delete, urlContext, URLFormat.newInstance(true, true));
+                Element divDeleteFancyBox = generateDeleteFancyBox(locale, removeURL);
+                administration.add(divDeleteFancyBox);
 
                 cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.A));
-                cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.HREF), removeURL);
+                cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.HREF), "#delete_cms_page");
+                cmsDeleteDoc.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYBOX_INLINE);
             } else {
                 String deleteForbidden = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_DELETE_FORBIDDEN, locale);
                 cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.P));
@@ -761,6 +767,65 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         cmsToggleVersion.addAttribute(QName.get(HTMLConstants.HREF), changeCmsVersionUrl);
 
         administration.add(cmsToggleVersion);
+    }
+
+    /**
+     * Fancy box for delete page
+     * 
+     * @param locale user locale
+     * @param urlDelete the command for delete
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private Element generateDeleteFancyBox(Locale locale, String urlDelete) throws UnsupportedEncodingException {
+        String[] split = urlDelete.split("\\?");
+        String action = split[0];
+        String[] args = split[1].split("&");
+
+        DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+        div.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
+
+        DOMElement innerDiv = new DOMElement(QName.get(HTMLConstants.DIV));
+        innerDiv.addAttribute(QName.get(HTMLConstants.ID), "delete_cms_page");
+        div.add(innerDiv);
+
+        Element form = new DOMElement(QName.get(HTMLConstants.FORM));
+        form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
+        form.addAttribute(QName.get(HTMLConstants.ACTION), action);
+        form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
+        innerDiv.add(form);
+
+        Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
+        divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+        divMsg.setText(internationalizationService.getString("CMS_DELETE_CONFIRM_MESSAGE", locale));
+        form.add(divMsg);
+
+        Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
+        divButton.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+
+        for (int i = 0; i < args.length; i++) {
+            Element hiddenArg = new DOMElement(QName.get(HTMLConstants.INPUT));
+            hiddenArg.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
+            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), args[i].split("=")[0]);
+            String value = args[i].split("=")[1];
+            hiddenArg.addAttribute(QName.get(HTMLConstants.VALUE), URLDecoder.decode(value, "UTF-8"));
+            divButton.add(hiddenArg);
+        }
+
+        Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
+        btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
+        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), internationalizationService.getString("YES", locale));
+        divButton.add(btnOk);
+
+        Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
+        btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
+        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), internationalizationService.getString("NO", locale));
+        btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
+        divButton.add(btnQuit);
+
+        form.add(divButton);
+
+        return div;
     }
 
 

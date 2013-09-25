@@ -24,6 +24,8 @@ package org.osivia.portal.core.renderers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -80,6 +82,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     private static final String DISPLAY_ADMIN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_parameters.png";
     /** Delete portlet command link image source. */
     private static final String DELETE_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_delete_window.png";
+    /** Delete portlet message. */
+    private static final String CMS_DELETE_CONFIRM_MESSAGE = "CMS_DELETE_CONFIRM_MESSAGE";
+    private static final String YES = "YES";
+    private static final String NO = "NO";
 
 
     /**
@@ -91,7 +97,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         if (language != null) {
             locale = new Locale(language);
         } else {
-            locale = Locale.US;
+            locale = Locale.getDefault();
         }
 
         PrintWriter out = rendererContext.getWriter();
@@ -142,13 +148,22 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // edit / remove fragment actions
         if (this.showCmsTools(wrc)) {
 
+            Element divFancyBoxDelete;
+            try {
+                divFancyBoxDelete = generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RenderException(e);
+            }
+
+            out.println(divFancyBoxDelete.asXML());
+
             out.println("<div class=\"cms-commands\">");
 
             out.print("<a class=\"fancyframe_refresh cmd edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "';setCallbackFromEcmParams('','"
                     + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
-            out.print("<a href=\"" + wrc.getProperty("osivia.cmsDeleteUrl") + "\" class=\"cmd delete\">"
+            out.print("<a href=\"#delete_" + wrc.getProperty("osivia.windowId") + "\" class=\"cmd delete fancybox_inline\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
 
             out.print("</div>");
@@ -393,6 +408,62 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         a.add(img);
 
         return a;
+    }
+
+
+    /**
+     * Prepare a fancybox for deleting the fragment
+     */
+    private Element generateDeleteFancyBox(Locale locale, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
+        String[] split = urlDelete.split("\\?");
+        String action = split[0];
+        String[] args = split[1].split("&");
+
+        DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+        div.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
+
+        DOMElement innerDiv = new DOMElement(QName.get(HTMLConstants.DIV));
+        innerDiv.addAttribute(QName.get(HTMLConstants.ID), "delete_".concat(fragmentId));
+        div.add(innerDiv);
+        
+        Element form = new DOMElement(QName.get(HTMLConstants.FORM));
+        form.addAttribute(QName.get(HTMLConstants.ID), "formDelete_".concat(fragmentId));
+        form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
+        form.addAttribute(QName.get(HTMLConstants.ACTION), action);
+        form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
+        innerDiv.add(form);
+        
+        Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
+        divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+        divMsg.setText(INTERNATIONALIZATION_SERVICE.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
+        form.add(divMsg);
+
+        Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
+        divButton.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+
+        for (int i = 0; i < args.length; i++) {
+            Element hiddenArg = new DOMElement(QName.get(HTMLConstants.INPUT));
+            hiddenArg.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
+            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), args[i].split("=")[0]);
+            String value = args[i].split("=")[1];
+            hiddenArg.addAttribute(QName.get(HTMLConstants.VALUE), URLDecoder.decode(value, "UTF-8"));
+            divButton.add(hiddenArg);
+        }
+
+        Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
+        btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
+        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(YES, locale));
+        divButton.add(btnOk);
+
+        Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
+        btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
+        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(NO, locale));
+        btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
+        divButton.add(btnQuit);
+
+        form.add(divButton);
+        
+        return div;
     }
 
 }
