@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
 
     <groupId>org.osivia.portal.core.admin</groupId>
@@ -92,13 +92,13 @@
             <dependency>
                 <groupId>org.osivia.portal.core.admin</groupId>
                 <artifactId>osivia-portal-administration-web</artifactId>
-                <version>3.0-SNAPSHOT</version>
+                <version>3.0.0</version>
                 <type>war</type>
             </dependency>
             <dependency>
                 <groupId>org.osivia.portal.core.admin</groupId>
                 <artifactId>osivia-portal-administration-ejb</artifactId>
-                <version>3.0-SNAPSHOT</version>
+                <version>3.0.0</version>
                 <type>ejb</type>
             </dependency>
             <dependency>
@@ -294,14 +294,14 @@
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-custom-lib-utils</artifactId>
-            <version>3.0-SNAPSHOT</version>
+            <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osivia.portal</groupId>
             <artifactId>osivia-portal-api</artifactId>
-            <version>3.0-SNAPSHOT</version>
+            <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
 
