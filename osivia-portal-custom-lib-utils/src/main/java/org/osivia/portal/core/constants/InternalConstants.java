@@ -47,17 +47,10 @@ public final class InternalConstants {
     /** Edition mode. */
     public static final String ATTR_TOOLBAR_WIZARD_MODE = "osivia.toolbar.wizardMode";
 
-    /** Edition CMS mode. */
-    // public static final String ATTR_TOOLBAR_CMS_VERSION = "osivia.toolbar.cmsVersion";
-    /** Edition CMS mode. */
-    // public static final String ATTR_TOOLBAR_CMS_EDITION_MODE = "osivia.toolbar.cmsEditionMode";
-
     /** Toolbar settings content. */
     public static final String ATTR_TOOLBAR_SETTINGS_CONTENT = "osivia.toolbarSettings.settingsContent";
     /** Formatter. */
     public static final String ATTR_TOOLBAR_SETTINGS_FORMATTER = "osivia.toolbarSettings.formatter";
-    /** Controller context. */
-    public static final String ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT = "osivia.toolbarSettings.controllerContext";
     /** Generic command URL. */
     public static final String ATTR_TOOLBAR_SETTINGS_COMMAND_URL = "osivia.toolbarSettings.commandURL";
     /** Current page. */
@@ -130,9 +123,19 @@ public final class InternalConstants {
     /** Instance display name. */
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
 
-    /** Classical portal (static pages) */
+
+    // Transversal constants
+    /** Controller context. */
+    public static final String ATTR_CONTROLLER_CONTEXT = "osivia.controllerContext";
+    /** CMS path. */
+    public static final String ATTR_CMS_PATH = "osivia.cms.path";
+    /** Command prefix. */
+    public static final String ATTR_COMMAND_PREFIX = "osivia.command.prefix";
+
+
+    /** Classical portal (static pages). */
     public static final String PORTAL_TYPE_STATIC_PORTAL = "static";
-    /** ECM mapped portal (ECM space) */
+    /** ECM mapped portal (ECM space). */
     public static final String PORTAL_TYPE_SPACE = "space";
 
 
@@ -149,17 +152,18 @@ public final class InternalConstants {
 
     public static final String PORTAL_PROP_NAME_PORTAL_TYPE = "osivia.portal.portalType";
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
-    
+
 
     /* Web URLs */
     public static final String PORTAL_URL_POLICY_WEB = "web";
     public static final String PORTAL_PROP_NAME_URL_POLICY = "osivia.urlPolicy";
-    
+
     public static final String PORTAL_WEB_URL_PARAM_WINDOW = "_w";
-    public static final String PORTAL_WEB_URL_PARAM_PAGEMARKER = "_pm";    
+    public static final String PORTAL_WEB_URL_PARAM_PAGEMARKER = "_pm";
 
     public static final String PROP_VALUE_ON = "1";
     public static final String PAGE_PROP_NAME_DYNAMIC = "osivia.page.dynamic";
+
 
 
     // Various technical constants
@@ -169,13 +173,6 @@ public final class InternalConstants {
 
     /** Templates path name convention. */
     public static final String TEMPLATES_PATH_NAME = "templates";
-
-
-    // CMS constants
-    // public static final String CMS_VERSION_PREVIEW = "preview";
-    // public static final String CMS_VERSION_ONLINE = "online";
-    // public static final String CMS_EDITION_MODE_ON = "1";
-    // public static final String CMS_EDITION_MODE_OFF = "0";
 
 
     /**

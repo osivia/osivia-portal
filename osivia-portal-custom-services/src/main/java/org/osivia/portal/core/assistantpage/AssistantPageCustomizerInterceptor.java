@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,12 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
-import org.jboss.portal.Mode;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
-import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
@@ -46,31 +42,14 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.portlet.info.PortletIconInfo;
 import org.jboss.portal.core.portlet.info.PortletInfoInfo;
-import org.jboss.portal.core.theme.PageRendition;
-import org.jboss.portal.identity.IdentityContext;
-import org.jboss.portal.identity.IdentityServiceController;
-import org.jboss.portal.identity.RoleModule;
 import org.jboss.portal.portlet.Portlet;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.info.PortletInfo;
-import org.jboss.portal.security.AuthorizationDomainRegistry;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
-import org.jboss.portal.server.request.URLContext;
-import org.jboss.portal.server.request.URLFormat;
-import org.jboss.portal.theme.LayoutService;
-import org.jboss.portal.theme.PortalLayout;
-import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.ThemeService;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
-import org.jboss.portal.theme.page.WindowContext;
-import org.jboss.portal.theme.page.WindowResult;
-import org.jboss.portal.theme.render.renderer.RegionRendererContext;
-import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -84,7 +63,6 @@ import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectNameComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
@@ -145,26 +123,12 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
 
-    /** Target context path. */
-    private String targetContextPath;
-    /** Page setting path. */
-    private String pageSettingPath;
-    /** Layout service. */
-    private LayoutService layoutService;
-    /** Theme service. */
-    private ThemeService themeService;
     /** Instance container. */
     private InstanceContainer instanceContainer;
-    /** Identity service controller. */
-    private IdentityServiceController identityServiceController;
-    /** Role module. */
-    private RoleModule roleModule;
-    /** Authorization domain registry. */
-    private AuthorizationDomainRegistry authorizationDomainRegistry;
     /** Portal object container. */
     private PortalObjectContainer portalObjectContainer;
     /** Profile manager. */
-    private IProfilManager profilManager;
+    private IProfilManager profileManager;
     /** Portal authorization manager factory. */
     private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
     /** Internationalization service. */
@@ -307,7 +271,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     public String formatScopeList(PortalObject po, String scopeName, String selectedScope) throws Exception {
 
         // On sélectionne les profils ayant un utilisateur Nuxeo
-        List<ProfilBean> profils = this.getProfilManager().getListeProfils();
+        List<ProfilBean> profils = this.profileManager.getListeProfils();
 
         Map<String, String> scopes = new LinkedHashMap<String, String>();
 
@@ -338,7 +302,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         String disabled = "";
         if (StringUtils.isNotEmpty(po.getDeclaredProperty("osivia.cms.basePath"))) {
-            disabled = "disabled='disabled'";
+            disabled = " disabled='disabled'";
         }
 
         select.append("<select name=\"" + scopeName + "\"" + disabled + ">");
@@ -1050,7 +1014,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         String conditionalScope = window.getProperty("osivia.conditionalScope");
         Map<String, String> scopes = new LinkedHashMap<String, String>();
 
-        List<ProfilBean> profils = this.getProfilManager().getListeProfils();
+        List<ProfilBean> profils = this.profileManager.getListeProfils();
         for (ProfilBean profil : profils) {
             scopes.put(profil.getName(),
                     this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_PROFIL, locale) + " "
@@ -1264,260 +1228,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     public ControllerResponse invoke(ControllerCommand command) throws Exception {
         ControllerResponse response = (ControllerResponse) command.invokeNext();
 
-        if ((response instanceof PageRendition) && (command instanceof PageCommand)) {
-            // Teste si le mode assistant est activé
-            Object windowSettingMode = command.getControllerContext()
-                    .getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
-            if (!InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
-                return response;
-            }
-
-            // PageRendition rendition = (PageRendition) response;
-            // PageCommand pageCommand = (PageCommand) command;
-            // Page page = pageCommand.getPage();
-            // ControllerContext context = command.getControllerContext();
-            //
-            // // This is for inject the pageSettings
-            // ControllerRequestDispatcher dispatcher = context.getRequestDispatcher(this.getTargetContextPath(), this.getPageSettingPath());
-            //
-            // // Internationalization service
-            // dispatcher.setAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, this.internationalizationService);
-            // // Formatter
-            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_FORMATTER, this);
-            // // Context
-            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CONTROLLER_CONTEXT, context);
-            // // URL générique de commande
-            // String portalContextPath = context.getServerInvocation().getServerContext().getPortalContextPath();
-            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_COMMAND_URL, portalContextPath + "/commands");
-            // // Current page
-            // dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_PAGE, page);
-            //
-            // PageType pageType = PageType.getPageType(page, context);
-            // if (!pageType.isTemplated()) {
-            // // Portlets settings injection
-            // this.injectPortletSettings(dispatcher, page, rendition, context);
-            // }
-            //
-            // dispatcher.include();
-            //
-            // context.setAttribute(ControllerCommand.REQUEST_SCOPE, InternalConstants.ATTR_WINDOWS_SETTINGS_CONTENT, dispatcher.getMarkup());
-        }
-
         return response;
     }
 
 
     /**
-     * Utility method used to inject portlet settings.
-     *
-     * @param dispatcher dispatcher
-     * @param currentPage current page
-     * @param rendition page rendition
-     * @param context controller context
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    private void injectPortletSettings(ControllerRequestDispatcher dispatcher, Page currentPage, PageRendition rendition, ControllerContext context)
-            throws Exception {
-        HttpServletRequest request = context.getServerInvocation().getServerContext().getClientRequest();
-
-        List<Window> windows = new ArrayList<Window>();
-
-        String layoutId = currentPage.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-        PortalLayout pageLayout = this.layoutService.getLayout(layoutId, true);
-
-        this.synchronizeRegionContexts(rendition, currentPage);
-
-        for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
-            RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
-
-            // On vérifie que cette région fait partie du layout (elle contient des portlets)
-            if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
-                Map<String, String> regionProperties = renderCtx.getProperties();
-
-                PortalObjectId popupWindowId = (PortalObjectId) context.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-
-                if (popupWindowId == null) {
-                    regionProperties.put(InternalConstants.ATTR_WINDOWS_WIZARD_MODE, InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE);
-                    regionProperties.put(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL, "#add-portlet");
-                }
-
-                // Le mode Ajax est incompatble avec le mode "admin".
-                // Le passage du mode admin en mode normal n'est pas bien géré par le portail, quand il s'agit d'une requête Ajax.
-                DynaRenderOptions.NO_AJAX.setOptions(regionProperties);
-                for (Object windowCtx : renderCtx.getWindows()) {
-
-                    WindowRendererContext wrc = (WindowRendererContext) windowCtx;
-                    Map<String, String> windowProperties = wrc.getProperties();
-                    String windowId = wrc.getId();
-
-                    if (!windowId.endsWith("PIA_EMPTY")) {
-                        URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
-                        PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-                        DynamicWindow window = (DynamicWindow) this.getPortalObjectContainer().getObject(poid);
-
-                        if (!window.isSessionWindow() && (popupWindowId == null)) {
-                            // Window settings mode
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_SETTING_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
-
-                            // Commande suppression
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL, "#delete-portlet");
-
-                            // Commande paramètres
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL, "#" + PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId);
-
-                            windows.add(window);
-
-                            // Commandes de déplacement
-                            MoveWindowCommand upC = new MoveWindowCommand(windowId, MoveWindowCommand.UP);
-                            String upUrl = context.renderURL(upC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL, upUrl);
-
-                            MoveWindowCommand downC = new MoveWindowCommand(windowId, MoveWindowCommand.DOWN);
-                            String downUrl = context.renderURL(downC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL, downUrl);
-
-                            MoveWindowCommand previousC = new MoveWindowCommand(windowId, MoveWindowCommand.PREVIOUS_REGION);
-                            String previousRegionUrl = context.renderURL(previousC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL, previousRegionUrl);
-
-                            MoveWindowCommand nextRegionC = new MoveWindowCommand(windowId, MoveWindowCommand.NEXT_REGION);
-                            String nextRegionUrl = context.renderURL(nextRegionC, urlContext, URLFormat.newInstance(true, true));
-                            windowProperties.put(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL, nextRegionUrl);
-
-                            // Admin window title
-                            String instanceDisplayName = null;
-                            InstanceDefinition defInstance = this.getInstanceContainer().getDefinition(window.getContent().getURI());
-                            if (defInstance != null) {
-                                instanceDisplayName = defInstance.getDisplayName().getString(request.getLocale(), true);
-                            }
-                            if (instanceDisplayName != null) {
-                                windowProperties.put(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME, instanceDisplayName);
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        dispatcher.setAttribute(InternalConstants.ATTR_WINDOWS_CURRENT_LIST, windows);
-    }
-
-
-    /**
-     * Synchronize context regions with layout.
-     * if a region is not present in the context, creates a new one.
-     *
-     * @param rendition page rendition
-     * @param page current page
-     * @throws Exception
-     */
-    private void synchronizeRegionContexts(PageRendition rendition, Page page) throws Exception {
-
-        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-        PortalLayout layout = this.layoutService.getLayout(layoutId, true);
-
-        for (Object region : layout.getLayoutInfo().getRegionNames()) {
-
-            String regionName = (String) region;
-            RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
-            if (renderCtx == null) {
-                // Empty region - must create blank window
-                Map<String, String> windowProps = new HashMap<String, String>();
-                windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-                windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-                windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-
-                WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-                WindowContext settings = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", wr);
-                rendition.getPageResult().addWindowContext(settings);
-
-                renderCtx = rendition.getPageResult().getRegion2(regionName);
-            }
-        }
-    }
-
-
-    /**
-     * @return the pageSettingPath
-     */
-    public String getPageSettingPath() {
-        return this.pageSettingPath;
-    }
-
-    /**
-     * @param pageSettingPath
-     *            the pageSettingPath to set
-     */
-    public void setPageSettingPath(String pageSettingPath) {
-        this.pageSettingPath = pageSettingPath;
-    }
-
-    /**
-     * @return the roleModule
-     */
-    public RoleModule getRoleModule() throws Exception {
-        if (this.roleModule == null) {
-            this.roleModule = (RoleModule) this.getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
-        }
-        return this.roleModule;
-    }
-
-    /**
-     * @param roleModule
-     *            the roleModule to set
-     */
-    public void setRoleModule(RoleModule roleModule) {
-        this.roleModule = roleModule;
-    }
-
-    /**
-     * @return the authorizationDomainRegistry
-     */
-    public AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
-        return this.authorizationDomainRegistry;
-    }
-
-    /**
-     * @param authorizationDomainRegistry
-     *            the authorizationDomainRegistry to set
-     */
-    public void setAuthorizationDomainRegistry(AuthorizationDomainRegistry authorizationDomainRegistry) {
-        this.authorizationDomainRegistry = authorizationDomainRegistry;
-    }
-
-    /**
-     * @return the identityServiceController
-     */
-    public IdentityServiceController getIdentityServiceController() {
-        return this.identityServiceController;
-    }
-
-    /**
-     * @param identityServiceController
-     *            the identityServiceController to set
-     */
-    public void setIdentityServiceController(IdentityServiceController identityServiceController) {
-        this.identityServiceController = identityServiceController;
-    }
-
-    /**
-     * @return the targetContextPath
-     */
-    public String getTargetContextPath() {
-        return this.targetContextPath;
-    }
-
-    /**
-     * @param targetContextPath
-     *            the targetContextPath to set
-     */
-    public void setTargetContextPath(String targetContextPath) {
-        this.targetContextPath = targetContextPath;
-    }
-
-    /**
+     * Getter for instanceContainer.
+     * 
      * @return the instanceContainer
      */
     public InstanceContainer getInstanceContainer() {
@@ -1525,17 +1242,17 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     }
 
     /**
-     * @param instanceContainer
-     *            the instanceContainer to set
+     * Setter for instanceContainer.
+     * 
+     * @param instanceContainer the instanceContainer to set
      */
     public void setInstanceContainer(InstanceContainer instanceContainer) {
         this.instanceContainer = instanceContainer;
     }
 
-
     /**
      * Getter for portalObjectContainer.
-     *
+     * 
      * @return the portalObjectContainer
      */
     public PortalObjectContainer getPortalObjectContainer() {
@@ -1544,7 +1261,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalObjectContainer.
-     *
+     * 
      * @param portalObjectContainer the portalObjectContainer to set
      */
     public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
@@ -1552,8 +1269,26 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     }
 
     /**
+     * Getter for profileManager.
+     * 
+     * @return the profileManager
+     */
+    public IProfilManager getProfileManager() {
+        return this.profileManager;
+    }
+
+    /**
+     * Setter for profileManager.
+     * 
+     * @param profileManager the profileManager to set
+     */
+    public void setProfileManager(IProfilManager profileManager) {
+        this.profileManager = profileManager;
+    }
+
+    /**
      * Getter for portalAuthorizationManagerFactory.
-     *
+     * 
      * @return the portalAuthorizationManagerFactory
      */
     public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
@@ -1562,7 +1297,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalAuthorizationManagerFactory.
-     *
+     * 
      * @param portalAuthorizationManagerFactory the portalAuthorizationManagerFactory to set
      */
     public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
@@ -1570,62 +1305,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     }
 
     /**
-     * Getter for layoutService.
-     *
-     * @return the layoutService
-     */
-    public LayoutService getLayoutService() {
-        return this.layoutService;
-    }
-
-    /**
-     * Setter for layoutService.
-     *
-     * @param layoutService the layoutService to set
-     */
-    public void setLayoutService(LayoutService layoutService) {
-        this.layoutService = layoutService;
-    }
-
-    /**
-     * Getter for themeService.
-     *
-     * @return the themeService
-     */
-    public ThemeService getThemeService() {
-        return this.themeService;
-    }
-
-    /**
-     * Setter for themeService.
-     *
-     * @param themeService the themeService to set
-     */
-    public void setThemeService(ThemeService themeService) {
-        this.themeService = themeService;
-    }
-
-    /**
-     * Getter for profilManager.
-     *
-     * @return the profilManager
-     */
-    public IProfilManager getProfilManager() {
-        return this.profilManager;
-    }
-
-    /**
-     * Setter for profilManager.
-     *
-     * @param profilManager the profilManager to set
-     */
-    public void setProfilManager(IProfilManager profilManager) {
-        this.profilManager = profilManager;
-    }
-
-    /**
      * Getter for internationalizationService.
-     *
+     * 
      * @return the internationalizationService
      */
     public IInternationalizationService getInternationalizationService() {
@@ -1634,7 +1315,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for internationalizationService.
-     *
+     * 
      * @param internationalizationService the internationalizationService to set
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {

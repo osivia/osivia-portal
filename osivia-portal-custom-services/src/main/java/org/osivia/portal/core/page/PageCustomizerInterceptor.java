@@ -7,11 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
@@ -23,7 +19,6 @@ import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.Controller;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
@@ -57,9 +52,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
-import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
-import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.server.config.ServerConfig;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
@@ -70,18 +63,12 @@ import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
-import org.osivia.portal.api.theming.Breadcrumb;
-import org.osivia.portal.api.theming.BreadcrumbItem;
-import org.osivia.portal.api.theming.UserPage;
-import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
@@ -91,139 +78,85 @@ import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
-import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
-import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
-import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
-
+/**
+ * Page customizer interceptor.
+ *
+ * @see ControllerInterceptor
+ */
 public class PageCustomizerInterceptor extends ControllerInterceptor {
 
-    protected static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
-
-    /** . */
-    protected static final Log logger = LogFactory.getLog(PageCustomizerInterceptor.class);
-
-    /** . */
+    /** Window logger. */
+    private static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
+    /** Logger. */
+    private static final Log logger = LogFactory.getLog(PageCustomizerInterceptor.class);
+    /** JBoss administration portal identifier. */
     private static PortalObjectId adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
-
-    /** . */
-    private String toolbarPath;
-
-
-    private String footerPath;
+    /** Import running indicator. */
+    private static boolean isImportRunning = false;
 
 
-    private String breadcrumbPath;
-
-    private String searchPath;
-
-
-    /** . */
+    /** Login namespace. */
     private String loginNamespace;
 
-    /** . */
+    /** Server config. */
     private ServerConfig config;
-
-    /** . */
-    private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
-
-    /** . */
+    /** Portal object container. */
     private PortalObjectContainer portalObjectContainer;
-
-    protected IPortalUrlFactory urlFactory;
-
-    private ICacheService cacheService;
-
-    private org.osivia.portal.api.cache.services.ICacheService servicesCacheService;
-
+    /** URL factory. */
+    private IPortalUrlFactory urlFactory;
+    /** Services cache service. */
+    private ICacheService servicesCacheService;
+    /** Profiler service. */
     private transient IProfilerService profiler;
-
-    private IProfilManager profilManager;
-
-    public static boolean isImportRunning = false;
+    /** CMS service locator. */
+    private static ICMSServiceLocator cmsServiceLocator;
 
 
-    public IProfilerService getProfiler() {
-        return this.profiler;
-    }
-
-    public void setProfiler(IProfilerService profiler) {
-        this.profiler = profiler;
+    /**
+     * Default constructor.
+     */
+    public PageCustomizerInterceptor() {
+        super();
     }
 
 
-    public org.osivia.portal.api.cache.services.ICacheService getServicesCacheService() {
-        return this.servicesCacheService;
-    }
-
-    public void setServicesCacheService(org.osivia.portal.api.cache.services.ICacheService cacheService) {
-        this.servicesCacheService = cacheService;
-    }
-
-    public ICacheService getCacheService() {
-        return this.cacheService;
-    }
-
-    public void setCacheService(ICacheService cacheService) {
-        this.cacheService = cacheService;
-    }
-
-    public IPortalUrlFactory getUrlFactory() {
-        return this.urlFactory;
-    }
-
-    public void setUrlFactory(IPortalUrlFactory urlFactory) {
-        this.urlFactory = urlFactory;
-    }
-
-    public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
-        return this.portalAuthorizationManagerFactory;
-    }
-
-    public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
-        this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
-    }
-
-    public PortalObjectContainer getPortalObjectContainer() {
-        return this.portalObjectContainer;
-    }
-
-    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
-        this.portalObjectContainer = portalObjectContainer;
-    }
-
-    public IProfilManager getProfilManager() {
-        return this.profilManager;
-    }
-
-    public void setProfilManager(IProfilManager profilManager) {
-        this.profilManager = profilManager;
-    }
-
-
-    public static boolean isAdministrator(ControllerContext controllerCtx) {
-
-        // On teste si l'utilisateur est un administrateur
-        // (ie. autorisé à voir le portal d'administration)
-
-        Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
-        if (isAdmin == null) {
-            PortalObjectPermission perm = new PortalObjectPermission(adminPortalId, PortalObjectPermission.VIEW_MASK);
-            if (controllerCtx.getController().getPortalAuthorizationManagerFactory().getManager().checkPermission(perm)) {
-                isAdmin = new Boolean(true);
-            } else {
-                isAdmin = new Boolean(false);
-            }
-            controllerCtx.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin", isAdmin);
+    /**
+     * Static access to CMS service.
+     *
+     * @return CMS service
+     */
+    private static ICMSService getCMSService() {
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
-        return isAdmin;
+        return cmsServiceLocator.getCMSService();
     }
 
 
-    public static boolean initShowMenuBarItem(ControllerContext controllerCtx, Portal portal) {
+    /**
+     * Check if current user is an administrator.
+     *
+     * @param controllerContext controller context
+     * @return true if current user is an administrator
+     */
+    public static boolean isAdministrator(ControllerContext controllerContext) {
+        Boolean isAdministrator = (Boolean) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
+        if (isAdministrator == null) {
+            PortalAuthorizationManager portalAuthorizationManager = controllerContext.getController().getPortalAuthorizationManagerFactory().getManager();
+            PortalObjectPermission permission = new PortalObjectPermission(adminPortalId, PortalObjectPermission.VIEW_MASK);
+            isAdministrator = portalAuthorizationManager.checkPermission(permission);
+
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin", isAdministrator);
+        }
+        return isAdministrator;
+    }
+
+
+    private static boolean initShowMenuBarItem(ControllerContext controllerCtx, Portal portal) {
 
         // Uniquement en mode wizzard
 
@@ -242,19 +175,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem", showMenuBar);
         }
         return showMenuBar;
-    }
-
-
-    private static ICMSServiceLocator cmsServiceLocator;
-
-    public static ICMSService getCMSService() throws Exception {
-
-        if (cmsServiceLocator == null) {
-            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        }
-
-        return cmsServiceLocator.getCMSService();
-
     }
 
 
@@ -291,7 +211,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    public static void unsetMaxMode(Collection windows, ControllerContext controllerCtx) {
+    public static void unsetMaxMode(Collection<PortalObject> windows, ControllerContext controllerCtx) {
 
         // Maj du breadcrumb
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", null);
@@ -299,7 +219,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // Reinitialtion du path CMS
 
 
-        Iterator i = windows.iterator();
+        Iterator<PortalObject> i = windows.iterator();
 
         while (i.hasNext()) {
 
@@ -341,7 +261,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
      * @param controllerCtx
      * @return
      */
-    public static boolean controlDefaultPageCache(PortalObjectContainer portalObjectContainer, ControllerCommand cmd, ControllerContext controllerCtx) {
+    private static boolean controlDefaultPageCache(PortalObjectContainer portalObjectContainer, ControllerCommand cmd, ControllerContext controllerCtx) {
 
         boolean isDefaultPageCache = false;
 
@@ -373,6 +293,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
@@ -474,7 +398,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     if (!"true".equals(request.getParameter("edit-template-mode"))) {
                         // Redirection en mode CMS
 
-                        String url = this.getUrlFactory().getCMSUrl(new PortalControllerContext(controllerCtx),
+                        String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), rpc.getPage().getDeclaredProperty("osivia.cms.basePath"),
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
@@ -505,7 +429,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ("true".equals(request.getParameter("init-cache"))) {
                 if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
-                    this.getServicesCacheService().initCache();
+                    this.servicesCacheService.initCache();
                 }
             }
 
@@ -549,7 +473,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
-            if (pathPublication != null &&  !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
+            if ((pathPublication != null) &&  !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
                 // On est déja dans une cmscommand, auquel cas l'affichage est bon
 
@@ -579,7 +503,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                             // On regarde l'état des fenetres
 
-                            Iterator i = ((RenderPageCommand) cmd).getPage().getChildren(PortalObject.WINDOW_MASK).iterator();
+                            Iterator<?> i = ((RenderPageCommand) cmd).getPage().getChildren(PortalObject.WINDOW_MASK).iterator();
 
                             boolean normalState = true;
                             while (i.hasNext()) {
@@ -600,7 +524,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                                 // Redirection en mode CMS
                                 HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
 
-                                String url = this.getUrlFactory().getCMSUrl(new PortalControllerContext(controllerCtx),
+                                String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                         rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), pathPublication, null,
                                         IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
@@ -743,7 +667,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     popupContent.append(" </script>");
 
-                    Map windowProps = new HashMap();
+                    Map<String, String> windowProps = new HashMap<String, String>();
                     windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
                     windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
                     windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
@@ -778,7 +702,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
 
-                Collection windows = new ArrayList<PortalObject>(window.getPage().getChildren(PortalObject.WINDOW_MASK));
+                Collection<PortalObject> windows = new ArrayList<PortalObject>(window.getPage().getChildren(PortalObject.WINDOW_MASK));
 
                 unsetMaxMode(windows, controllerCtx);
             }
@@ -804,7 +728,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 List<Window> windowsToUpdate = new ArrayList<Window>();
 
-                for (Iterator i = stateCtx.getChanges(); i.hasNext();) {
+                for (Iterator<?> i = stateCtx.getChanges(); i.hasNext();) {
                     NavigationalStateChange change = (NavigationalStateChange) i.next();
 
                     NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
@@ -813,7 +737,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     NavigationalStateKey key = update.getKey();
 
                     // We consider only portal object types
-                    Class type = key.getType();
+                    Class<?> type = key.getType();
                     if (type == WindowNavigationalState.class) {
                         // Get old window state
                         WindowNavigationalState oldNS = (WindowNavigationalState) update.getOldValue();
@@ -969,7 +893,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         properties.setWindowProperty(
                                 windowId,
                                 "osivia.closeUrl",
-                                this.getUrlFactory().getStopPortletUrl(new PortalControllerContext(controllerCtx),
+                                this.urlFactory.getStopPortletUrl(new PortalControllerContext(controllerCtx),
                                         rwc.getWindow().getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
                     }
                 }
@@ -1052,16 +976,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 if (admin) {
                     this.injectAdminHeaders(rpc, rendition);
-                } else {
-                    PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-
-                    if( popupWindowId == null) {
-                        this.injectStandardHeaders(rpc,  rendition);
-                    }
-
-
                 }
-
             }
 
 
@@ -1085,132 +1000,22 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
-
         //
         return resp;
     }
 
 
-    private void injectStandardHeaders(PageCommand rpc, PageRendition rendition) throws Exception {
-        // Breadcrumb
-        // String breadcrumb = this.injectBreadcrumb(rpc, rendition);
-        // if (breadcrumb != null) {
-        // Map windowProps = new HashMap();
-        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-        // WindowResult res = new WindowResult("", breadcrumb, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-        // WindowContext bloh = new WindowContext("BLEH", "breadcrumb", "0", res);
-        // rendition.getPageResult().addWindowContext(bloh);
-        //
-        // //
-        // Region region = rendition.getPageResult().getRegion2("breadcrumb");
-        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        // }
-
-        // Search
-        // String search = this.injectSearch(rpc);
-        // if (search != null) {
-        // Map windowProps = new HashMap();
-        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-        // WindowResult res = new WindowResult("", search, Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-        // WindowContext bluh = new WindowContext("BLOH", "search", "0", res);
-        // rendition.getPageResult().addWindowContext(bluh);
-        //
-        // //
-        // Region region = rendition.getPageResult().getRegion2("search");
-        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        // }
-
-        // Footer
-        // String footerNav = this.injectFooter(rpc);
-        // if (footerNav != null) {
-        // Map windowProps = new HashMap();
-        // windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-        // windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-        //
-        //
-        //
-        // StringBuffer footer = new StringBuffer();
-        //
-        // footer.append(footerNav);
-        //
-        //
-        //
-        // WindowResult res = new WindowResult("", footer.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-        // WindowContext bloh = new WindowContext("BLUH", "footer", "0", res);
-        // rendition.getPageResult().addWindowContext(bloh);
-        //
-        // //
-        // Region region = rendition.getPageResult().getRegion2("footer");
-        // DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-        // }
-
-
-        /* JSS20130610 : Injection path CMS pour Ajax */
-
-        // On determine le path de navigation cms
-        // TODO : ajouter test uniquement en edition CMS
-
-        StringBuffer pageSettings = new StringBuffer();
-
-        NavigationalStateContext nsContext = (NavigationalStateContext) rpc.getControllerContext().getAttributeResolver(
-                ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        PageNavigationalState pageState = nsContext.getPageNavigationalState(rpc.getPage().getId().toString());
-
-        pageSettings.append("<script type='text/javascript'>\n");
-
-        String sPath[] = null;
-        if (pageState != null) {
-            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-        }
-
-
-        if ((sPath != null) && (sPath.length == 1)) {
-
-            pageSettings.append("cmsPath = \"");
-            pageSettings.append(sPath[0]);
-            pageSettings.append("\";\n");
-        }
-
-
-        String commandPrefix =    rpc.getControllerContext().getServerInvocation().getServerContext().getPortalContextPath();
-        commandPrefix += "/pagemarker/" + PageMarkerUtils.getCurrentPageMarker(rpc.getControllerContext());
-        pageSettings.append("commandPrefix = \"");
-        pageSettings.append(commandPrefix);
-        pageSettings.append("\";\n");
-
-        pageSettings.append("</script>\n");
-
-
-
-        Map<String, String> windowProps = new HashMap<String, String>();
-
-        windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-        windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-        windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-        WindowResult result = new WindowResult("Page settings", pageSettings.toString(), Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL,
-                Mode.VIEW);
-        WindowContext settings = new WindowContext("PageSettings", "pageSettings", "0", result);
-        rendition.getPageResult().addWindowContext(settings);
-
-        Region region = rendition.getPageResult().getRegion2("pageSettings");
-        DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-
-
-    }
-
-
-    void injectAdminHeaders(PageCommand rpc, PageRendition rendition) {
-
-
+    /**
+     * Utility method used to inject JBoss administration headers.
+     *
+     * @param rpc render page command
+     * @param rendition page rendition
+     */
+    private void injectAdminHeaders(PageCommand rpc, PageRendition rendition) {
         //
         String dashboardNav = this.injectAdminDashboardNav(rpc);
         if (dashboardNav != null) {
-            Map windowProps = new HashMap();
+            Map<String, String> windowProps = new HashMap<String, String>();
             windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
             windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
             windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
@@ -1222,192 +1027,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Region region = rendition.getPageResult().getRegion2("dashboardnav");
             DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
         }
-
-
     }
 
 
-    public void addSubpagesToSiteMap(CMSServiceCtx cmsCtx, IPortalUrlFactory urlFactory, PortalControllerContext portalCtx, Page page, String basePath,
-            CMSItem navItem, List<UserPage> pageList) {
-
-
-
-        try {
-            // CMSItem cmsItem = getCMSService().getContent(cmsCtx, path);
-
-            UserPage userPage = new UserPage();
-
-            userPage.setName(navItem.getProperties().get("displayName"));
-            userPage.setId(navItem.getPath());
-            Map<String, String> pageParams = new HashMap<String, String>();
-            String url = urlFactory.getCMSUrl(portalCtx, page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), navItem.getPath(), pageParams, null, null,
-                    null, null, null, null);
-            userPage.setUrl(url);
-
-
-            List<UserPage> subPages = new ArrayList<UserPage>(10);
-            userPage.setChildren(subPages);
-
-            List<CMSItem> navItems = getCMSService().getPortalNavigationSubitems(cmsCtx, basePath, navItem.getPath());
-
-            if (navItems.size() > 0) {
-
-                for (CMSItem navSubItem : navItems) {
-                    if ("1".equals(navSubItem.getProperties().get("menuItem"))) {
-                        this.addSubpagesToSiteMap(cmsCtx, urlFactory, portalCtx, page, basePath, navSubItem, subPages);
-                    }
-                }
-            }
-
-            pageList.add(userPage);
-
-
-        } catch (Exception e) {
-            // May be a security issue, don't block footer
-            logger.error(e.getMessage());
-        }
-    }
-
-
-    public UserPortal getPageSiteMap(PageCommand cc) {
-        ControllerContext controllerCtx = cc.getControllerContext();
-
-        PortalAuthorizationManager pam = this.portalAuthorizationManagerFactory.getManager();
-        Portal portal = cc.getPortal();
-        PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
-
-        Locale locale = Locale.FRENCH;
-
-        CMSServiceCtx cmxCtx = new CMSServiceCtx();
-        cmxCtx.setControllerContext(controllerCtx);
-        cmxCtx.setScope("anonymous");
-
-        UserPortal siteMap = new UserPortal();
-        siteMap.setName(portal.getName());
-        List<UserPage> mainPages = new ArrayList<UserPage>(10);
-        siteMap.setUserPages(mainPages);
-
-        SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
-        for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
-            sortedPages.add((Page) po);
-        }
-
-        // Add anonymous portal pages
-
-        for (Page page : sortedPages) {
-            PortalObjectPermission perm = new PortalObjectPermission(page.getId(), PortalObjectPermission.VIEW_MASK);
-            if (pam.checkPermission(null, perm)) {
-
-                if (page.getDeclaredProperty("osivia.cms.basePath") != null) {
-
-                    try {
-
-
-                        CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
-
-
-                        if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
-                            this.addSubpagesToSiteMap(cmxCtx, this.urlFactory, portalCtx, page, page.getDeclaredProperty("osivia.cms.basePath"),
-                                    pagePublishSpaceConfig, mainPages);
-
-
-                        }
-
-
-                    } catch (Exception e) {
-                        // May be a security issue, don't block footer
-                        logger.error(e.getMessage());
-
-                    }
-
-
-                } else {
-
-                    try {
-
-
-                            // Page statique sans espace de publication
-
-                            UserPage userPage = new UserPage();
-                            mainPages.add(userPage);
-
-
-                            ViewPageCommand showSubPage = new ViewPageCommand(page.getId());
-
-                            userPage.setId(page.getId());
-                            String subName = page.getDisplayName().getString(locale, true);
-                            if (subName == null) {
-                                subName = page.getName();
-                            }
-                            userPage.setName(subName);
-
-                            List<UserPage> childrens = new ArrayList<UserPage>(10);
-                            userPage.setChildren(childrens);
-
-
-                            String url = new PortalURLImpl(showSubPage, controllerCtx, null, null).toString();
-                            userPage.setUrl(url + "?init-state=true");
-
-                    } catch (Exception e) {
-                        // May be a security issue, don't block footer
-                        logger.error(e.getMessage());
-
-                    }
-
-
-                }
-            }
-        }
-
-        return siteMap;
-    }
-
-
-
-    public UserPortal getSiteMap(PageCommand cc) throws Exception {
-
-        UserPortal userPortal;
-
-        userPortal = this.getPageSiteMap(cc);
-
-        return userPortal;
-    }
-
-
-    public String injectFooter(PageCommand cc) throws Exception {
-
-        ControllerContext controllerCtx = cc.getControllerContext();
-        ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(cc), this.footerPath);
-
-        //
-        if (rd != null) {
-
-            UserPortal siteMap = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_SITE_MAP + "."
-                    + cc.getPortal().getName());
-
-            if (siteMap == null) {
-                siteMap = this.getSiteMap(cc);
-
-
-                controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_SITE_MAP + "." + cc.getPortal().getName(), siteMap);
-
-            }
-
-            rd.setAttribute(Constants.ATTR_SITE_MAP, siteMap);
-            rd.setAttribute(Constants.ATTR_URL_FACTORY, this.getUrlFactory());
-            rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx));
-
-            //
-            rd.include();
-            return rd.getMarkup();
-        }
-
-        //
-        return null;
-    }
-
-
-    public String injectAdminDashboardNav(PageCommand cc) {
+    private String injectAdminDashboardNav(PageCommand cc) {
         ControllerContext controllerCtx = cc.getControllerContext();
         ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(cc), "/WEB-INF/jsp/header/header.jsp");
 
@@ -1415,7 +1038,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         //
         if (rd != null) {
             // Get user
-            Controller controller = controllerCtx.getController();
             User user = controllerCtx.getUser();
             rd.setAttribute("org.jboss.portal.header.USER", user);
 
@@ -1443,15 +1065,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 rd.setAttribute("org.jboss.portal.header.LOGIN_URL", portalURL);
             }
 
-
-            //
-            boolean admin = false;
-            if (cc instanceof RenderPageCommand) {
-                RenderPageCommand rpc = (RenderPageCommand) cc;
-                PortalObject portalObject = rpc.getPage().getPortal();
-                admin = "admin".equalsIgnoreCase(portalObject.getName());
-            }
-
             // Link to default page of default portal
             // Cannot use defaultPortalId in 2.6.x because the default context doesn't have the view right.
             // Upgrading from 2.6.1 to 2.6.2 would break.
@@ -1472,470 +1085,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         return null;
     }
 
-
-    public String injectSearch(PageCommand rpc) throws Exception {
-
-        ControllerContext controllerCtx = rpc.getControllerContext();
-        ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(rpc), this.searchPath);
-
-        // if( true)
-        // return "test";
-
-        //
-        if (rd != null) {
-            // Pour déterminer la page courante (premier niveau)
-
-
-            /* Lien de recherche */
-
-            Map<String, String> props = new HashMap<String, String>();
-            props.put("osivia.cms.uri", "/");
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("osivia.keywords", "__REPLACE_KEYWORDS__");
-
-            // v1.0.13 : on ouvre tout le temp la meme page
-
-            String searchUrl = this.urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search",
-                    "/default/templates/search", props, params);
-            // String searchUrl = urlFactory.getStartPageUrl(new PortalControllerContext(controllerCtx), rpc.getPortal().getId().toString(), "search" +
-            // System.currentTimeMillis(), "/default/templates/search", props, params);
-            rd.setAttribute(Constants.ATTR_SEARCH_URL, searchUrl);
-
-
-            rd.setAttribute(Constants.ATTR_URL_FACTORY, this.getUrlFactory());
-            rd.setAttribute(Constants.ATTR_PORTAL_CTX, new PortalControllerContext(controllerCtx));
-
-
-            rd.include();
-
-
-            return rd.getMarkup();
-
-        }
-
-        //
-        return null;
-    }
-
-
-    public String injectBreadcrumb(PageCommand rpc, PageRendition rendition) throws Exception {
-
-        ControllerContext controllerCtx = rpc.getControllerContext();
-        ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getTargetContextPath(rpc), this.breadcrumbPath);
-
-
-        if (rd != null) {
-
-
-            /******************************/
-            /* Maj du breadcrumb */
-            /******************************/
-
-
-            Map winsCtx = rendition.getPageResult().getWindowContextMap();
-
-            Breadcrumb breadcrumbMemo = (Breadcrumb) rpc.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
-            if (breadcrumbMemo == null) {
-                breadcrumbMemo = new Breadcrumb();
-                rpc.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumbMemo);
-            }
-
-            Breadcrumb breadcrumbDisplay = new Breadcrumb();
-
-
-            // Ajout de la page courante en premier élément
-
-            Page page = ((RenderPageCommand) rpc).getPage();
-
-
-            // On determine le path de navigation cms
-
-            NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-
-            PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
-
-            String basePath = page.getProperty("osivia.cms.basePath");
-
-            String sPath[] = null;
-            if (pageState != null) {
-                sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
-            }
-
-            String pathPublication = null;
-            if ((sPath != null) && (sPath.length > 0)) {
-                pathPublication = sPath[0];
-            }
-
-
-            // Dnas le cas d'une publication correcte, on n'affiche pas les pages filles
-            boolean publication = false;
-            if (pathPublication != null) {
-                if ((basePath != null) && pathPublication.startsWith(basePath)) {
-                    publication = true;
-                }
-            }
-
-
-            do {
-                boolean displayPage = true;
-
-                // TODO JSSCMS1: on ne devrait pas avoir à faire ce test ....
-                // le osivia.cms.basePath devrait etre renseigné dans ce cas (mode puublication)
-                // Mais ce n'est pas le cas quand on est dans la page de tete
-                // Cas : blog : mode editon > le breadcrum compren la page dynamiqeu
-
-                // Pas d'affichage des pages cms dynamiques en mode édition
-                if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))
-                        && (page instanceof CMSTemplatePage)) {
-                    displayPage = false;
-                }
-
-
-                if (publication) {
-
-                    // String basePath = page.getProperty("osivia.cms.basePath");
-                    if (basePath != null) {
-                        displayPage = false;
-                    } else {
-                        if ("1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
-                            displayPage = false;
-                        }
-                    }
-
-                }
-
-                if (displayPage) {
-                    ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
-                    String name = page.getDisplayName().getString(Locale.FRENCH, true);
-                    if (name == null) {
-                        name = page.getName();
-                    }
-
-                    String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString() + "?init-state=true";
-                    BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), page.getId(), false);
-                    breadcrumbDisplay.getChilds().add(0, item);
-
-                }
-
-                PortalObject parent = page.getParent();
-
-                // Récupération du parent
-                if (parent instanceof Page) {
-                    page = (Page) parent;
-                } else {
-                    page = null;
-                }
-            } while (page != null);
-
-
-            /*
-             * Ajout du path CMS
-             */
-
-
-            page = ((RenderPageCommand) rpc).getPage();
-
-            if (!"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
-
-                // On identifie la page de tete de publication
-
-                PortalObject po = page;
-                while ((po instanceof Page) && (po.getDeclaredProperty("osivia.cms.basePath") == null)) {
-                    po = po.getParent();
-                }
-
-                if (pageState != null) {
-
-                    String navigationScope = page.getProperty("osivia.cms.navigationScope");
-
-                    if ((pathPublication != null) && (basePath != null) && pathPublication.startsWith(basePath)) {
-
-
-                        CMSServiceCtx cmxCtx = new CMSServiceCtx();
-                        cmxCtx.setControllerContext(controllerCtx);
-                        cmxCtx.setScope(navigationScope);
-
-                        // test si mode assistant activé
-                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
-                            cmxCtx.setDisplayLiveVersion("1");
-                        }
-
-
-
-                        while (pathPublication.contains(basePath)) {
-
-                            Map<String, String> pageParams = new HashMap<String, String>();
-
-
-                            String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
-                                    po.getId().toString(PortalObjectPath.CANONICAL_FORMAT), pathPublication, pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
-
-
-                            CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
-
-
-                            BreadcrumbItem item = new BreadcrumbItem(navItem.getProperties().get("displayName"), url, null, false);
-                            breadcrumbDisplay.getChilds().add(0, item);
-
-
-                            // Get the navigation parent
-
-                            CMSObjectPath parent = CMSObjectPath.parse(pathPublication).getParent();
-                            pathPublication = parent.toString();
-
-
-                        }
-
-
-                    }
-                }
-
-
-            }
-
-
-            /*
-             * Synchronisation du breadcrum avec l'état de la page
-             * (un item est crée automatiquement en vue max)
-             *
-             * Il s'agit ici de traiter les portlets maximisés manuellement par l'utilisateur
-             */
-
-            // Find first non navigation portlet
-
-            int firstPortlet = -1;
-            int iPortlet = 0;
-            for (BreadcrumbItem item : breadcrumbMemo.getChilds()) {
-
-                if (!item.isNavigationPlayer()) {
-                    firstPortlet = iPortlet;
-                    break;
-                }
-
-                iPortlet++;
-            }
-
-
-            // Si la page courante devient MAXIMIZED, on l'ajoute au breadcrumb
-
-            for (Object winCtx : winsCtx.values()) {
-                WindowContext wctx = (WindowContext) winCtx;
-                if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-
-                    PortalObjectId targetWindowId = PortalObjectId.parse(wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
-                    Window window = (Window) this.getPortalObjectContainer().getObject(targetWindowId);
-
-                    // Le fenetres dynamiques sont déja ajoutés lors du startDynamicCommand
-                    if (!"1".equals(window.getDeclaredProperty("osisia.dynamicStarted"))) {
-
-                        // Les portlets CMS sont dejà enregistrés dans le
-                        // breadcrumb
-                        if (!"1".equals(window.getDeclaredProperty("osivia.cms.contextualization"))) {
-
-                            // On supprimer les items courants
-                            if (firstPortlet != -1) {
-                                while (breadcrumbMemo.getChilds().size() > firstPortlet) {
-                                    breadcrumbMemo.getChilds().remove(firstPortlet);
-                                }
-                            }
-
-                            String title = wctx.getProperty("osivia.title");
-
-                            if (title == null) {
-                                title = wctx.getResult().getTitle();
-                            }
-                            page = rpc.getPage();
-                            ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
-                            String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
-                            BreadcrumbItem newItem = new BreadcrumbItem(title, url, wctx.getId(), true);
-                            breadcrumbMemo.getChilds().add(newItem);
-                        }
-                    }
-                }
-            }
-
-
-            // else if (breadcrumbMemo.getChilds().size() == 1) {
-            // Si le premier item était lié à une maximisattion et qu'on repasse
-            // en mode NORMAL, il faut le supprimer
-
-            if (firstPortlet != -1) {
-
-                // if( firstItem.isUserMaximized()){
-                boolean isWindowMaximized = false;
-
-                for (Object winCtx : winsCtx.values()) {
-                    WindowContext wctx = (WindowContext) winCtx;
-                    if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-
-                        isWindowMaximized = true;
-                    }
-
-
-                }
-                if (!isWindowMaximized) {
-
-                    while (breadcrumbMemo.getChilds().size() > firstPortlet) {
-                        breadcrumbMemo.getChilds().remove(firstPortlet);
-                    }
-
-                }
-            }
-
-
-            // Mise à jour et mémorisation de l'item courant
-            // (titre, url, path, ...)
-
-
-            if ((breadcrumbMemo != null) && (breadcrumbMemo.getChilds().size() > 0)) {
-
-                for (Object winCtx : winsCtx.values()) {
-
-                    WindowContext wctx = (WindowContext) winCtx;
-
-                    if (WindowState.MAXIMIZED.equals(wctx.getWindowState())) {
-
-                        BreadcrumbItem last = breadcrumbMemo.getChilds().get(breadcrumbMemo.getChilds().size() - 1);
-
-                        // Maj du path
-                        List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,
-                                "osivia.portletPath");
-                        if (portletPath == null) {
-
-
-                            // Maj du titre
-                            // Dans l'ordre, titre de la window, titre du path, titre du portlet
-                            String title = wctx.getProperty("osivia.title");
-                            if (title == null) {
-                                title = wctx.getResult().getTitle();
-                            }
-
-                            // Maj de l'url
-                            page = rpc.getPage();
-                            ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
-                            String url = new PortalURLImpl(viewCmd, rpc.getControllerContext(), null, null).toString();
-
-                            last.setName(title);
-                            last.setUrl(url);
-                        } else {
-
-                            // Valorise les labels et les urls liés au path
-
-                            int indicePathItem = 0;
-
-                            for (PortletPathItem pathItem : portletPath) {
-
-                                // Set the content as a render parameter
-                                ParametersStateString parameters = ParametersStateString.create();
-
-                                for (Entry<String, String> name : pathItem.getRenderParams().entrySet()) {
-                                    parameters.setValue(name.getKey(), name.getValue());
-                                }
-
-
-                                // Add public parameters
-                                Map<QName, String[]> ps = pageState.getParameters();
-                                for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
-                                    if (parameters.getValue(pageEntry.getKey().toString()) == null) {
-                                        if (pageEntry.getValue().length > 0) {
-                                            parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
-                                        }
-                                    }
-                                }
-
-
-                                PortalObjectId targetWindowId = PortalObjectId.parse(wctx.getId(), PortalObjectPath.SAFEST_FORMAT);
-
-                                ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(targetWindowId, Mode.VIEW, null, parameters);
-
-                                // Perform a render URL on the target window
-                                String url = new PortalURLImpl(renderCmd, rpc.getControllerContext(), null, null).toString();
-                                pathItem.setUrl(url);
-
-                                String label = pathItem.getLabel();
-                                if ((indicePathItem == 0) && (wctx.getProperty("osivia.title") != null)) {
-                                    label = wctx.getProperty("osivia.title");
-                                }
-                                pathItem.setLabel(label);
-
-                                last.setPortletPath(portletPath);
-
-                                indicePathItem++;
-                            }
-
-                        }
-
-
-                    }
-                }
-            }
-
-            // Ajout des éléments mémorisés
-            if (breadcrumbMemo != null) {
-                for (BreadcrumbItem itemMemo : breadcrumbMemo.getChilds()) {
-
-                    if (!itemMemo.isNavigationPlayer()) {
-                        if (itemMemo.getPortletPath() != null) {
-
-                            // Ajout des items correspondant au path du portlet
-
-                            int indicePathItem = 0;
-                            for (PortletPathItem pathItem : itemMemo.getPortletPath()) {
-
-                                BreadcrumbItem pathDisplayItem = new BreadcrumbItem(pathItem.getLabel(), pathItem.getUrl(), itemMemo.getId(), true);
-                                breadcrumbDisplay.getChilds().add(pathDisplayItem);
-
-
-                                indicePathItem++;
-                            }
-
-                        } else {
-                            // Pas de path
-                            // Ajout de l'item correspondant au titre du portlet
-
-                            breadcrumbDisplay.getChilds().add(itemMemo);
-                        }
-                    }
-                }
-            }
-
-
-            rd.setAttribute(Constants.ATTR_BREADCRUMB, breadcrumbDisplay);
-
-            PortalControllerContext portalCtx = new PortalControllerContext(controllerCtx);
-
-
-            rd.setAttribute(Constants.ATTR_URL_FACTORY, this.getUrlFactory());
-            rd.setAttribute(Constants.ATTR_PORTAL_CTX, portalCtx);
-
-            // v1.0.17
-            if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE,
-                    InternalConstants.ATTR_WINDOWS_SETTING_MODE))) {
-                rd.setAttribute(InternalConstants.ATTR_TOOLBAR_WIZARD_MODE, "1");
-            }
-
-
-            rd.include();
-
-
-            return rd.getMarkup();
-
-        }
-
-        //
-        return null;
-    }
-
-
-    public String getFooterPath() {
-        return this.footerPath;
-    }
-
-    public void setFooterPath(String footerPath) {
-        this.footerPath = footerPath;
-    }
 
     public static String getTargetContextPath(PortalCommand pc) {
         // String themeId = getPortalObjectContainer().getContext().getDefaultPortal().getProperty(ThemeConstants.PORTAL_PROP_THEME);
@@ -1963,44 +1112,94 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    public String getLoginNamespace() {
-        return this.loginNamespace;
-    }
-
-    public void setLoginNamespace(String loginNamespace) {
-        this.loginNamespace = loginNamespace;
-    }
-
+    /**
+     * Getter for config.
+     *
+     * @return the config
+     */
     public ServerConfig getConfig() {
         return this.config;
     }
 
+    /**
+     * Setter for config.
+     *
+     * @param config the config to set
+     */
     public void setConfig(ServerConfig config) {
         this.config = config;
     }
 
-    public String getBreadcrumbPath() {
-        return this.breadcrumbPath;
+    /**
+     * Getter for portalObjectContainer.
+     *
+     * @return the portalObjectContainer
+     */
+    public PortalObjectContainer getPortalObjectContainer() {
+        return this.portalObjectContainer;
     }
 
-    public void setBreadcrumbPath(String breadcrumbPath) {
-        this.breadcrumbPath = breadcrumbPath;
+    /**
+     * Setter for portalObjectContainer.
+     *
+     * @param portalObjectContainer the portalObjectContainer to set
+     */
+    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
     }
 
-    public String getSearchPath() {
-        return this.searchPath;
+    /**
+     * Getter for urlFactory.
+     *
+     * @return the urlFactory
+     */
+    public IPortalUrlFactory getUrlFactory() {
+        return this.urlFactory;
     }
 
-    public void setSearchPath(String searchPath) {
-        this.searchPath = searchPath;
+    /**
+     * Setter for urlFactory.
+     *
+     * @param urlFactory the urlFactory to set
+     */
+    public void setUrlFactory(IPortalUrlFactory urlFactory) {
+        this.urlFactory = urlFactory;
     }
 
-
-    public String getToolbarPath() {
-        return this.toolbarPath;
+    /**
+     * Getter for servicesCacheService.
+     *
+     * @return the servicesCacheService
+     */
+    public ICacheService getServicesCacheService() {
+        return this.servicesCacheService;
     }
 
-    public void setToolbarPath(String toolbarPath) {
-        this.toolbarPath = toolbarPath;
+    /**
+     * Setter for servicesCacheService.
+     *
+     * @param servicesCacheService the servicesCacheService to set
+     */
+    public void setServicesCacheService(ICacheService servicesCacheService) {
+        this.servicesCacheService = servicesCacheService;
     }
+
+    /**
+     * Getter for profiler.
+     *
+     * @return the profiler
+     */
+    public IProfilerService getProfiler() {
+        return this.profiler;
+    }
+
+    /**
+     * Setter for profiler.
+     *
+     * @param profiler the profiler to set
+     */
+    public void setProfiler(IProfilerService profiler) {
+        this.profiler = profiler;
+    }
+
 }

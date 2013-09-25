@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Locale;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
@@ -43,7 +44,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * Implementation of a Region renderer, based on div tags.
- * 
+ *
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @author <a href="mailto:roy@jboss.org>Roy Russo</a>
  * @version $LastChangedRevision: 8784 $, $LastChangedDate: 2007-10-27 19:01:46 -0400 (Sat, 27 Oct 2007) $
@@ -64,7 +65,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Render region header.
-     * 
+     *
      * @param rendererContext renderer context
      * @param rrc region renderer context
      * @throws RenderException
@@ -119,36 +120,37 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
         }
 
+        if (BooleanUtils.isNotTrue(rrc.getRegionCms())) {
+            // Lien d'ajout de portlet
+            if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
+                String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
 
-        // Lien d'ajout de portlet
-        if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
-            String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
+                DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+                div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
-            DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
-            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
+                DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
+                a.addAttribute(QName.get(HTMLConstants.HREF), url);
+                a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
+                a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + rrc.getId() + "'");
+                div.add(a);
 
-            DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
-            a.addAttribute(QName.get(HTMLConstants.HREF), url);
-            a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
-            a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + rrc.getId() + "'");
-            div.add(a);
+                DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
+                img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
+                a.add(img);
 
-            DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
-            img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
-            a.add(img);
-
-            HTMLWriter htmlWriter = new HTMLWriter(markup);
-            try {
-                htmlWriter.write(div);
-            } catch (IOException e) {
-                throw new RenderException(e);
+                HTMLWriter htmlWriter = new HTMLWriter(markup);
+                try {
+                    htmlWriter.write(div);
+                } catch (IOException e) {
+                    throw new RenderException(e);
+                }
             }
         }
     }
 
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
-     * 
+     *
      * @param rendererContext page context
      * @param rrc region context
      * @return
@@ -161,10 +163,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             showCmsTools = Boolean.valueOf(property);
         }
 
-        if ((rrc.getRegionCms() != null) && (rrc.getRegionCms() == true) && showCmsTools) {
-            return true;
-        } else
-            return false;
+        return BooleanUtils.isTrue(rrc.getRegionCms()) && showCmsTools;
 
 
     }
@@ -178,11 +177,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         PrintWriter markup = rendererContext.getWriter();
-
-        Boolean regionCms = false;
-        if (rrc.getRegionCms() != null) {
-            regionCms = rrc.getRegionCms();
-        }
 
         // End of DIV for Drag n drop
         if (this.showCmsTools(rendererContext, rrc)) {

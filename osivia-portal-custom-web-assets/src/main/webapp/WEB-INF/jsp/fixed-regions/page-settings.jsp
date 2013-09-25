@@ -30,7 +30,7 @@ IInternationalizationService is = (IInternationalizationService) request.getAttr
 // Formatter
 IFormatter formatter = (IFormatter) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
 // Controller context
-ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CONTROLLER_CONTEXT);
+ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
 
 // Generic command URL
 String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
@@ -99,6 +99,17 @@ String currentPageName = PortalObjectUtils.getDisplayName(currentPage, locales);
 
 <script type="text/javascript">
 
+var cmsPath = '<%=request.getAttribute(InternalConstants.ATTR_CMS_PATH) %>';
+var commandPrefix = '<%=request.getAttribute(InternalConstants.ATTR_COMMAND_PREFIX) %>';
+
+var portalId = '<%=portalId %>';
+var currentPageId = '<%=currentPageId %>';
+
+// Variables filled when opening fancybox
+var regionId;
+var windowId;
+
+
 function disableOrNotPreviousFormValues(cmsPathInput){
     var cmsForm = document.forms["formCMSProperties"];
     if(cmsPathInput.value != ''){
@@ -111,13 +122,6 @@ function disableOrNotPreviousFormValues(cmsPathInput){
         cmsForm.elements["outgoingRecontextualizationSupport"].disabled = false;
     }
 }
-
-var portalId = '<%=portalId %>';
-var currentPageId = '<%=currentPageId %>';
-
-// Variables filled when opening fancybox
-var regionId;
-var windowId;
 
 // Onclick action for add portlet formulaire submit
 function selectPortlet(instanceId, formulaire) {
