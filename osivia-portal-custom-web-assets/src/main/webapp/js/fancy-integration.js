@@ -72,4 +72,18 @@ function asyncUpdatePortlet( windowId, url)	{
             'transitionOut'     : 'none'	 		
 		});
 	});
+	
+	// Affichage d'une fancybox inline sans titre
+	$JQry(document).ready(function() {
+		var fancybox_no_title = $JQry(".fancybox-no-title");
+		if(typeof(fancybox_no_title) != 'undefined'){	
+			$JQry(".fancybox_inline").fancybox({
+				helpers: { 
+			        title: null
+			    },
+	            'transitionIn'      : 'none',
+	            'transitionOut'     : 'none'	 		
+			});
+		}
+	});
 
