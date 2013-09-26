@@ -19,6 +19,7 @@ import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
@@ -33,6 +34,10 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long intervalleTest = 60L * 1000L;
+	
+	private static final String NUXEO_RUNNINGSTATUS_URL = "/runningstatus";
+	private static final String NUXEO_RUNNINGSTATUS_OK = "Ok";
+
 
 	private static Log statutLog = LogFactory.getLog("PORTAL_STATUS");
 
@@ -139,12 +144,24 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 				// sauf au démarrage ...
 				timeOut = 60;
 			}
+			String url = service.getUrl();
+			
+			if( url.endsWith("/nuxeo"))
+			    url += NUXEO_RUNNINGSTATUS_URL;
+			
 			
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Future<String> future = executor.submit(new URLTesteur(service.getUrl(), timeOut));
-
+			Future<String> future = executor.submit(new URLTesteur(url, timeOut));
 			
-			future.get(timeOut, TimeUnit.SECONDS);
+			String response = future.get(timeOut, TimeUnit.SECONDS);
+			
+			if( url.endsWith(NUXEO_RUNNINGSTATUS_URL))   {
+			    if( !StringUtils.containsIgnoreCase(response, NUXEO_RUNNINGSTATUS_OK))    {
+			        throw new ServeurIndisponible(response);
+			    }
+			}
+			
+
 		} catch (Exception e) {
 			if (e.getCause() instanceof ServeurIndisponible)
 				throw (ServeurIndisponible) e.getCause();
@@ -167,6 +184,9 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 		}
 
 		public String call() throws Exception {
+		    
+		    String responseBody;
+		    
 			try {
 				HttpClient client = new HttpClient();
 
@@ -207,6 +227,8 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 				statutLog.debug("testerDisponibilite ");
 				int rc = client.executeMethod(get);
 				statutLog.debug("rc= " + rc);
+				
+				responseBody = get.getResponseBodyAsString();
 
 				if (rc != HttpStatus.SC_OK) {
 					ServeurIndisponible e = new ServeurIndisponible(rc);
@@ -223,7 +245,7 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 
 			}
 
-			return "ok";
+			return responseBody;
 		}
 	}
 
