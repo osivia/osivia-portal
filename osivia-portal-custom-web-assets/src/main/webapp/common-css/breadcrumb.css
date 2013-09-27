@@ -1,0 +1,22 @@
+#breadcrumb ul {
+    padding-left: 0;
+}
+
+#breadcrumb li {
+    display: inline-block;
+    margin-left: 0;
+    margin-right: 0;
+    white-space: nowrap;
+}
+
+#breadcrumb li:BEFORE {
+    content: "> ";
+}
+
+#breadcrumb a {
+    text-decoration: none;
+}
+
+#breadcrumb a:HOVER {
+    text-decoration: underline;
+}
