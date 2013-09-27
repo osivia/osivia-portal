@@ -227,14 +227,32 @@ input.inline-checkbox {
 }
 
 #notifications-window .notifications.error {
-    background-image: url('../images/notifications-error.png');
+    background-image: url('../images/notifications/notifications-error.png');
     background-color: #FF9D9A;
     border-color: #D62103;
     font-weight: bold;
 }
 
+#notifications-window .notifications.info {
+    background-image: url('../images/notifications/notifications-info.png');
+    background-color: #96ECF6;
+    border-color: #56ACDC;
+}
+
 #notifications-window .notifications.success {
-    background-image: url('../images/notifications-success.png');
+    background-image: url('../images/notifications/notifications-success.png');
     background-color: #A7F478;
-    border-color: #378900;
+    border-color: #4C9E15;
+}
+
+#notifications-window .notifications.advice {
+    background-image: url('../images/notifications/notifications-advice.png');
+    background-color: #FFF3B5;
+    border-color: #D7C98B;
+}
+
+#notifications-window .notifications.warning {
+    background-image: url('../images/notifications/notifications-warning.png');
+    background-color: #FEDB80;
+    border-color: #F6AB50;
 }

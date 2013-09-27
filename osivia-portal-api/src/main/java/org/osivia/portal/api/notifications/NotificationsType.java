@@ -9,10 +9,14 @@ public enum NotificationsType {
 
     /** Information notifications type. */
     INFO("info", 1),
+    /** Advice notifications type. */
+    ADVICE("advice", 1),
     /** Success notifications type. */
     SUCCESS("success", 2),
+    /** Warning notifications type. */
+    WARNING("warning", 3),
     /** Error notifications type. */
-    ERROR("error", 3);
+    ERROR("error", 4);
 
 
     /** HTML class. */
