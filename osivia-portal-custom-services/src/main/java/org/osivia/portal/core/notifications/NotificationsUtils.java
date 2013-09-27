@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +41,15 @@ public class NotificationsUtils {
     private static final String WINDOW_ID = "notifications-window";
     /** Notifications region name. */
     private static final String REGION_NAME = "notifications";
+
+    /** Message links pattern. */
+    private static final Pattern MESSAGE_LINKS_PATTERN = Pattern.compile("^(.*)\\[\\[(.*)\\]\\](.*)$");
+    /** Message beginning regex group number. */
+    private static final int REGEX_GROUP_BEGINNING = 1;
+    /** Message link regex group number. */
+    private static final int REGEX_GROUP_LINK = 2;
+    /** Message continuation group number. */
+    private static final int REGEX_GROUP_CONTINUATION = 3;
 
 
     /**
@@ -103,7 +114,6 @@ public class NotificationsUtils {
      * @param pageRendition page rendition
      */
     public static final void injectNotificationsRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
-
         WindowContext windowContext = createNotificationsWindowContext(portalControllerContext);
         pageRendition.getPageResult().addWindowContext(windowContext);
 
@@ -151,7 +161,8 @@ public class NotificationsUtils {
                         // Single message
                         String message = messages.get(0);
                         Element p = new DOMElement(QName.get(HTMLConstants.P));
-                        p.setText(message);
+                        // p.setText(message);
+                        messageHandling(p, message);
                         divNotifications.add(p);
                     } else {
                         // Multiple messages
@@ -160,11 +171,12 @@ public class NotificationsUtils {
 
                         for (String message : messages) {
                             Element li = new DOMElement(QName.get(HTMLConstants.LI));
-                            if (StringUtils.isEmpty(message)) {
-                                li.setText(StringUtils.EMPTY);
-                            } else {
-                                li.setText(message);
-                            }
+                            // if (StringUtils.isEmpty(message)) {
+                            // li.setText(StringUtils.EMPTY);
+                            // } else {
+                            // li.setText(message);
+                            // }
+                            messageHandling(li, message);
                             ul.add(li);
                         }
                     }
@@ -173,6 +185,45 @@ public class NotificationsUtils {
         }
 
         return div1.asXML();
+    }
+
+
+    /**
+     * Utility method used to handle message.
+     *
+     * @param parent DOM4J parent element
+     * @param message message
+     */
+    private static void messageHandling(Element parent, String message) {
+        String beginning;
+        String link;
+        String continuation = message;
+
+        Matcher matcher = MESSAGE_LINKS_PATTERN.matcher(continuation);
+
+        while (matcher.matches()) {
+            beginning = matcher.group(REGEX_GROUP_BEGINNING);
+            link = matcher.group(REGEX_GROUP_LINK);
+            continuation = matcher.group(REGEX_GROUP_CONTINUATION);
+
+            // Message beginning
+            parent.addText(beginning);
+
+            // Link
+            Element a = new DOMElement(QName.get(HTMLConstants.A));
+            String[] split = StringUtils.split(link, "|");
+            a.addAttribute(QName.get(HTMLConstants.HREF), split[0]);
+            if (split.length > 1) {
+                a.setText(split[1]);
+            } else {
+                a.setText(split[0]);
+            }
+            parent.add(a);
+
+            matcher = MESSAGE_LINKS_PATTERN.matcher(continuation);
+        }
+
+        parent.addText(continuation);
     }
 
 }
