@@ -267,7 +267,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Home
         Element home = new DOMElement(QName.get(HTMLConstants.A));
-        home.addAttribute(QName.get(HTMLConstants.HREF), "/portal");
+        home.addAttribute(QName.get(HTMLConstants.HREF), context.getServerInvocation().getServerContext().getPortalContextPath());
         home.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_HOME, locale));
         this.addSubMenuElement(configurationMenuUl, home);
 
