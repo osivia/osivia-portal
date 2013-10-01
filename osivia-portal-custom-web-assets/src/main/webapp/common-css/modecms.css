@@ -1,95 +1,88 @@
 /* ============ Toolbar  ===================== */
-#toolbar .online-version,#toolbar .preview-version {
-	display: -moz-inline-box;
-	display: inline-block;
-	margin: 0;
-	padding: 0;
-	text-transform: none;
-	white-space: nowrap;
-	text-align: center;
+
+#toolbar .cmsSwitches {
+	padding: 2px 3px;
+	border-radius: 3px;
+	background-color: rgb(200, 200, 200);
+	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;
+}
+
+#toolbar .cmsSwitch {
+	padding: 0px 5px;
+}
+#toolbar .cmsSwitch:hover {
+	background: transparent;
+}
+
+
+#toolbar img {
+	margin: 0px;
+	padding: 0px 2px;
 	vertical-align: middle;
-	cursor: pointer;
-	border: 0;
-	background: none;
-	color: white;
+	height: 20px;
 }
-
-#toolbar .preview-version:hover,#toolbar .online-version:hover {
-	background-color: transparent;
-}
-
-#toolbar .online-version span {
-	padding: 0px 3px 0px 0px;
+#toolbar img.imgActive, #toolbar img:hover {
+	padding: 0px 0px;
 	height: 24px;
-	line-height: 2;
+}
+
+#toolbar .online-label {
+	width: 42px;
+	
+	/*height: 24px;
+	line-height: 2;*/
 	background-color: rgb(110, 183, 53);
 	border: 1px solid #BBBBBB;
 	border-radius: 3px;
-	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
-		black inset;
+	/*box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;*/
+	color: white;
 }
 
-#toolbar .online-version span span {
-	padding: 0 0 0 40px;
-	background-color: #CCCCCC;
+#toolbar .preview-label {
+	width: 42px;
+	/*height: 24px;
+	line-height: 2;*/
+	background-color: #35b7ac; 
 	border: 1px solid #BBBBBB;
-	box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
+	border-radius: 3px;
+	/*box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;*/
+	color: white;
 }
 
-#toolbar .online-version:hover span span {
-	background-color: #DDDDDD;
-}
-
-#toolbar .preview-version span {
-	padding: 0px 0px 0px 3px;
-	height: 24px;
-	line-height: 2;
+#toolbar .edition-label {
+	width: 42px;
+	/*height: 24px;
+	line-height: 2;*/
 	background-color: rgb(89, 119, 189);
 	border: 1px solid #BBBBBB;
 	border-radius: 3px;
-	box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
-		black inset;
-}
-
-#toolbar .preview-version span span {
-	padding: 0 40px 0 0;
-	background-color: #CCCCCC;
-	border: 1px solid #BBBBBB;
-	border-radius: 3px;
-	box-shadow: 1px 5px 8px white inset, -1px -2px 4px black inset;
-}
-
-#toolbar .preview-version:hover span span {
-	background-color: #DDDDDD;
-}
-
-toggle-test {
-	display: inline-block;
-}
-
-.toggle-test .text {
-	background-color: green;
-	border: 1px solid grey;
-	border-radius: 10px 10px 10px 10px;
-	box-shadow: -1px -4px 8px rgba(255, 255, 255, 0.6) inset, 1px 3px 5px
-		black inset;
+	/*box-shadow: 2px -1px 8px rgba(255, 255, 255, 0.6) inset, 0px 1px 2px
+		black inset;*/
 	color: white;
-	display: inline-block;
-	line-height: 50px;
-	padding: 0 15px 0 90px;
 }
 
-.toggle-test .button {
-	background-color: gray;
-	border: 1px solid gray;
-	border-radius: 10px 10px 10px 10px;
-	box-shadow: 1px 4px 8px white inset, -1px -4px 8px black inset;
-	display: inline-block;
-	height: 56px;
-	margin: -3px;
-	position: absolute;
-	width: 75px;
+
+#toolbar .cmsSwitchOnline {
+	background: #FCFCFC url(../images/icons/icon_published_version.png) center left
+		no-repeat;
+	background-size: 16px;
 }
+#toolbar .cmsSwitchPreview {
+	background: #FCFCFC url(../images/icons/icon_live_version.png) center left
+		no-repeat;
+	background-size: 16px;
+}
+#toolbar .cmsSwitchEdition {
+	background: #FCFCFC url(../images/icons/icon_live_version.png) center left
+		no-repeat;
+	background-size: 16px;
+}
+
+
+
 
 /* ============= Mode Edition CMS ===================== */
 .regionPreview {

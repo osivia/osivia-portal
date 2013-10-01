@@ -80,6 +80,8 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_PREVIEW = "MENU_CMS_PAGE_PREVIEW";
     /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_PAGE_EDITION = "MENU_CMS_PAGE_EDITION";
+    /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_EDITION_MODE = "SUBMENU_CMS_DISPLAY_EDITION_MODE";
@@ -193,6 +195,7 @@ public final class InternationalizationConstants {
     public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_TEMPLATE";
     /** Bundle resource key for change rights command success message for space. */
     public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE";
+
 
 
 

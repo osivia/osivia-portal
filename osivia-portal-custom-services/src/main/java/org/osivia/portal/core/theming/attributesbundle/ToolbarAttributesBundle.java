@@ -441,7 +441,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
 
         boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
-        boolean editionModeOn = CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_ON);
 
         String basePath = page.getProperty("osivia.cms.basePath");
 
@@ -483,52 +482,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // messages
         String previewRequired = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED, locale);
-
-        // ========== Switch edition mode on / off
-        // ChangeCMSEditionModeCommand changeVersion;
-        ChangeCMSEditionModeCommand changeEditionMode = null;
-        String strChangeEditionMode = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_DISPLAY_EDITION_MODE, locale);
-        String cssChangeEditionMode = null;
-
-
-        if (editionModeOn) {
-            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_OFF);
-
-            cssChangeEditionMode = HTMLConstants.CLASS_CHECK;
-        } else {
-            changeEditionMode = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_ON);
-
-            cssChangeEditionMode = HTMLConstants.CLASS_UNCHECK;
-        }
-
-
-        if (modePreview) {
-
-            String changeCmsEditionModeUrl = new PortalURLImpl(changeEditionMode, context, null, null).toString();
-
-            Element cmsChangeEditionMode = new DOMElement(QName.get(HTMLConstants.A));
-            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.HREF), changeCmsEditionModeUrl);
-            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "m");
-            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeEditionMode);
-            cmsChangeEditionMode.setText(strChangeEditionMode);
-            this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
-
-        } else {
-            Element cmsChangeEditionMode = new DOMElement(QName.get(HTMLConstants.P));
-            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.CLASS), cssChangeEditionMode);
-            cmsChangeEditionMode.setText(strChangeEditionMode);
-            cmsChangeEditionMode.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
-
-            this.addSubMenuElement(templateEditionMenuUl, cmsChangeEditionMode);
-        }
-
-
-        // HR
-        this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
-
-
 
         // ========== create new page
 
@@ -710,9 +663,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws CMSException {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
 
-        boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
         String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
-
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(context.getServerInvocation());
@@ -727,46 +678,88 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // ---------------------
         String toggleTitle = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_TOGGLE_VERSION, locale);
+        String editionTxt = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_EDITION, locale);
         String previewTxt = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PREVIEW, locale);
         String onlineTxt = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale);
 
-        ChangeCMSEditionModeCommand changeVersion;
-        Element cmsToggleVersion = new DOMElement(QName.get(HTMLConstants.A));
 
+        Element switches = new DOMElement(QName.get(HTMLConstants.SPAN));
+        switches.addAttribute(QName.get(HTMLConstants.CLASS), "cmsSwitches");
 
-        Element cmsToggleBtn1 = new DOMElement(QName.get(HTMLConstants.SPAN));
-        cmsToggleVersion.add(cmsToggleBtn1);
-        Element cmsToggleBtn2 = new DOMElement(QName.get(HTMLConstants.SPAN));
+        Element swOnline = new DOMElement(QName.get(HTMLConstants.A));
+        swOnline.addAttribute(QName.get(HTMLConstants.CLASS), "cmsSwitch");
 
+        // Go online
+        Element swOnlineImg = new DOMElement(QName.get(HTMLConstants.IMG));
+        swOnlineImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_published_version.png");
+        swOnline.add(swOnlineImg);
 
-        if (modePreview) {
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_PREVIEW);
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(onlineTxt));
+        swOnline.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(onlineTxt));
+        ChangeCMSEditionModeCommand changeVersionOnline = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                CmsPermissionHelper.CMS_VERSION_ONLINE, editionMode);
+        String onlineUrl = new PortalURLImpl(changeVersionOnline, context, null, null).toString();
+        swOnline.addAttribute(QName.get(HTMLConstants.HREF), onlineUrl);
+        switches.add(swOnline);
 
-            cmsToggleBtn1.setText(previewTxt);
-            cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    CmsPermissionHelper.CMS_VERSION_ONLINE,
-                    editionMode);
+        // Go preview
+        Element swPreview = new DOMElement(QName.get(HTMLConstants.A));
+        swPreview.addAttribute(QName.get(HTMLConstants.CLASS), "cmsSwitch");
 
+        Element swPreviewImg = new DOMElement(QName.get(HTMLConstants.IMG));
+        swPreviewImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_preview_live_version.png");
+        swPreview.add(swPreviewImg);
+
+        swPreview.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(previewTxt));
+        ChangeCMSEditionModeCommand changeVersionPreview = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_OFF);
+        String previewUrl = new PortalURLImpl(changeVersionPreview, context, null, null).toString();
+        swPreview.addAttribute(QName.get(HTMLConstants.HREF), previewUrl);
+        switches.add(swPreview);
+
+        // Go Edition
+        Element swEdition = new DOMElement(QName.get(HTMLConstants.A));
+        swEdition.addAttribute(QName.get(HTMLConstants.CLASS), "cmsSwitch");
+
+        Element swEditionImg = new DOMElement(QName.get(HTMLConstants.IMG));
+        swEditionImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_live_version.png");
+        swEdition.add(swEditionImg);
+
+        swEdition.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(editionTxt));
+        ChangeCMSEditionModeCommand changeVersionEdition = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
+                CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_ON);
+        String editionUrl = new PortalURLImpl(changeVersionEdition, context, null, null).toString();
+        swEdition.addAttribute(QName.get(HTMLConstants.HREF), editionUrl);
+        switches.add(swEdition);
+
+        // Status label
+        Element lbl = new DOMElement(QName.get(HTMLConstants.SPAN));
+
+        if (CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)) {
+
+            swOnlineImg.addAttribute(QName.get(HTMLConstants.CLASS), "imgActive");
+            swOnlineImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_published_version_hover.png");
+
+            lbl.addAttribute(QName.get(HTMLConstants.CLASS), "online-label");
+            lbl.setText(onlineTxt);
         } else {
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_ONLINE);
-            cmsToggleVersion.addAttribute(QName.get(HTMLConstants.TITLE), toggleTitle.concat(previewTxt));
 
-            cmsToggleBtn1.add(cmsToggleBtn2);
-            cmsToggleBtn1.setText(onlineTxt);
-            cmsToggleBtn2.setText(StringUtils.EMPTY);
-            changeVersion = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
-                    CmsPermissionHelper.CMS_VERSION_PREVIEW,
-                    editionMode);
-
+            if (CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_OFF)) {
+                swPreviewImg.addAttribute(QName.get(HTMLConstants.CLASS), "imgActive");
+                swPreviewImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_preview_live_version_hover.png");
+                lbl.addAttribute(QName.get(HTMLConstants.CLASS), "preview-label");
+                lbl.setText(previewTxt);
+            } else {
+                swEditionImg.addAttribute(QName.get(HTMLConstants.CLASS), "imgActive");
+                swEditionImg.addAttribute(QName.get(HTMLConstants.SRC), "/osivia-portal-custom-web-assets/images/icons/icon_live_version_hover.png");
+                lbl.addAttribute(QName.get(HTMLConstants.CLASS), "edition-label");
+                lbl.setText(editionTxt);
+            }
         }
 
-        String changeCmsVersionUrl = new PortalURLImpl(changeVersion, context, null, null).toString();
-        cmsToggleVersion.addAttribute(QName.get(HTMLConstants.HREF), changeCmsVersionUrl);
 
-        administration.add(cmsToggleVersion);
+        switches.add(lbl);
+
+        administration.add(switches);
     }
 
     /**
