@@ -75,6 +75,8 @@ public class CmsCommand extends DynamicCommand {
 	public static final String LAYOUT_TYPE_CURRENT_PAGE = "0";
 	public static final String LAYOUT_TYPE_SCRIPT = "1";
 
+    public static final String DISPLAYCTX_REFRESH = "refreshPageAndNavigation";
+
 	@Override
 	public CommandInfo getInfo() {
 		return info;
@@ -550,12 +552,10 @@ public class CmsCommand extends DynamicCommand {
 			//
 			// }
 
-            // LBI : refresh navigation when a cms page is created
-            if ("newPage".equals(displayContext)) {
+            // LBI : refresh navigation when a cms page is created or edited
+            if (DISPLAYCTX_REFRESH.equals(displayContext)) {
                 PageProperties.getProperties().setRefreshingPage(true);
             }
-
-
 
 			/*
 			 * Lecture de l'item
@@ -632,14 +632,6 @@ public class CmsCommand extends DynamicCommand {
                 try {
                     // Attention, cet appel peut modifier si nécessaire le
                     // scope de cmsReadItemContext
-
-                    // if page in not published and user come from the sitemap or after a webpage creation
-                    // force the preview mode.
-                    // if (!published && ("sitemap".equals(displayContext) || "newPage".equals(displayContext))) {
-                    // getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_TOOLBAR_CMS_VERSION,
-                    // InternalConstants.CMS_VERSION_PREVIEW);
-                    // cmsReadItemContext.setDisplayLiveVersion("1");
-                    // }
 
                     if (level == Level.allowPreviewVersion) {
                         cmsReadItemContext.setDisplayLiveVersion("1");

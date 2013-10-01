@@ -24,6 +24,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageProperties;
 
 /**
  * CMS command used to remove a document
@@ -117,20 +118,9 @@ public class CMSDeleteDocumentCommand extends ControllerCommand {
             notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
 
 
+            // relaod navigation tree
+            PageProperties.getProperties().setRefreshingPage(true);
 
-            // Force reload of the navigation tree
-            String navigationScope = page.getProperty("osivia.cms.navigationScope");
-            String basePath = page.getProperty("osivia.cms.basePath");
-
-            // force reload page(editables windows)
-            getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + basePath, null);
-
-            CMSServiceCtx cmxCtx = new CMSServiceCtx();
-            cmxCtx.setControllerContext(getControllerContext());
-            cmxCtx.setScope(navigationScope);
-            cmxCtx.setForceReload(true);
-
-            getCMSService().getPortalNavigationItem(cmxCtx, basePath, basePath);
 
             // Redirect to the parent window
             CMSObjectPath parentPath = CMSObjectPath.parse(pagePath).getParent();

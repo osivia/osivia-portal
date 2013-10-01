@@ -23,6 +23,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 
 /**
@@ -44,7 +45,7 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
     /**
      * Logger.
      */
-	protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
+    protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
 
     ICMSService cmsService;
 
@@ -84,12 +85,11 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
     }
 
 
-
-	public CommandInfo getInfo() {
+    public CommandInfo getInfo() {
         return INFO;
-	}
+    }
 
-	private String pageId;
+    private String pageId;
 
     /** Display the given version, ex : preview, online, ... */
     private String version;
@@ -99,25 +99,25 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 
     public String getVersion() {
         return this.version;
-	}
+    }
 
     public String getEditionMode() {
         return this.editionMode;
     }
 
 
-	public String getPageId() {
-		return this.pageId;
-	}
+    public String getPageId() {
+        return this.pageId;
+    }
 
     public ChangeCMSEditionModeCommand(String pageId, String pagePath, String version, String editionMode) {
 
 
-		this.pageId = pageId;
+        this.pageId = pageId;
         this.pagePath = pagePath;
         this.version = version;
         this.editionMode = editionMode;
-	}
+    }
 
 
     public ControllerResponse execute() throws ControllerException {
@@ -147,16 +147,24 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
                 return new UpdatePageResponse(page.getId());
             }
 
+
+            String currentCmsVersion = CmsPermissionHelper.getCurrentCmsVersion(context);
+            CmsPermissionHelper.changeCmsMode(getControllerContext(), pagePath, version, editionMode);
+
+            // if current version is changed, reload the navigation tree and page
+            if (!currentCmsVersion.equals(version)) {
+                PageProperties.getProperties().setRefreshingPage(true);
+            }
+
+
         } catch (CMSException e) {
             throw new ControllerException(e);
         } catch (Exception e) {
             throw new ControllerException(e);
         }
 
-        CmsPermissionHelper.changeCmsMode(getControllerContext(), pagePath, version, editionMode);
+        return new UpdatePageResponse(page.getId());
 
-		return new UpdatePageResponse(page.getId());
-
-	}
+    }
 
 }

@@ -44,6 +44,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -72,10 +73,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private static final String HTML_CLASS_TOOLBAR_MENU = "toolbar-menu";
     /** HTML class "toolbar-menu-title". */
     private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
-    /** HTML class "preview-version". */
-    private static final String HTML_CLASS_PREVIEW = "preview-version";
-    /** HTML class "online-version". */
-    private static final String HTML_CLASS_ONLINE = "online-version";
     /** HTML class "fancybox_inline". */
     private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** HTML class "fancybox_refresh". */
@@ -490,6 +487,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             cmsCtx.setDisplayLiveVersion("1");
         }
 
+        // prepare the callback url params
+        // ============
+        PortalControllerContext portalControllerContext = new PortalControllerContext(context);
+        String closeUrl = this.urlFactory
+                .getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, CmsCommand.DISPLAYCTX_REFRESH, null, null, null, null);
+
         String ecmBaseUrl = this.cmsService.getEcmDomain(cmsCtx);
 
         Element cmsCreatePage = null;
@@ -501,13 +504,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
             cmsCreatePage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "n");
             cmsCreatePage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-
-            // prepare the callback url params
-            // ============
-            PortalControllerContext portalControllerContext = new PortalControllerContext(context);
-
-            String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, "newPage", null, null, null, null);
-
 
             cmsCreatePage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
         } else {
@@ -528,7 +524,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             cmsEditPage.addAttribute(QName.get(HTMLConstants.HREF), editPageUrl);
             cmsEditPage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "e");
             cmsEditPage.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
-            cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '' , '" + ecmBaseUrl + "');");
+            cmsEditPage.addAttribute(QName.get(HTMLConstants.ONCLICK), "javascript:setCallbackFromEcmParams( '" + closeUrl + "' , '" + ecmBaseUrl + "');");
         } else {
             cmsEditPage = new DOMElement(QName.get(HTMLConstants.P));
             cmsEditPage.addAttribute(QName.get(HTMLConstants.TITLE), previewRequired);
