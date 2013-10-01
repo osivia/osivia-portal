@@ -76,7 +76,12 @@ function asyncUpdatePortlet( windowId, url)	{
 	// Affichage d'une fancybox inline sans titre
 	$JQry(document).ready(function() {
 		var fancybox_no_title = $JQry(".fancybox-no-title");
-		if(typeof(fancybox_no_title) != 'undefined'){	
+		var fntDefined = typeof(fancybox_no_title) != 'undefined';
+		var fancybox_inline = $JQry(".fancybox_inline");
+		var fDefined = typeof(fancybox_inline) != 'undefined';
+		/* Trouver autre critère d'égalité */
+		var equals = fancybox_no_title.context == fancybox_inline.context;
+		if(fntDefined && fDefined && equals){	
 			$JQry(".fancybox_inline").fancybox({
 				helpers: { 
 			        title: null
