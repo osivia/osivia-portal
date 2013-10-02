@@ -580,17 +580,19 @@ public class CmsCommand extends DynamicCommand {
 			/* Lecture des informations de publication */
             Boolean published = Boolean.TRUE;
 			if (cmsPath != null) {
-                level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
+                try {
 
-                // if access is denied, continue with the path of the last page visited
-                // the user will see a notification
-                if (level == Level.deny) {
-
-                    cmsPath = CmsPermissionHelper.getLastAllowedPage(getControllerContext());
                     level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
-                }
 
-				try {
+                    // if access is denied, continue with the path of the last page visited
+                    // the user will see a notification
+                    if (level == Level.deny) {
+
+                        cmsPath = CmsPermissionHelper.getLastAllowedPage(getControllerContext());
+                        level = CmsPermissionHelper.getCurrentPageSecurityLevel(getControllerContext(), cmsPath);
+                    }
+
+
 					// Attention, cet appel peut modifier si nécessaire le
 					// scope de cmsReadItemContext
 					pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, cmsPath.toString());

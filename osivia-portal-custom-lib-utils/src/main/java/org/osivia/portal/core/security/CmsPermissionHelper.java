@@ -23,7 +23,6 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
@@ -69,7 +68,7 @@ public class CmsPermissionHelper {
      * @param poid the current page
      * @throws ControllerException
      */
-    public static Level getCurrentPageSecurityLevel(InvocationContext ctx, PortalObjectId poid) throws ControllerException {
+    public static Level getCurrentPageSecurityLevel(InvocationContext ctx, PortalObjectId poid) throws CMSException {
 
         PortalObjectPath pagePath = poid.getPath();
 
@@ -125,7 +124,7 @@ public class CmsPermissionHelper {
 
     }
 
-    public static Level getCurrentPageSecurityLevel(InvocationContext ctx, String cmsPath) throws ControllerException {
+    public static Level getCurrentPageSecurityLevel(InvocationContext ctx, String cmsPath) throws CMSException {
         Level level = null;
         Boolean editableByUser = Boolean.FALSE;
         Boolean published = Boolean.TRUE;
@@ -162,11 +161,9 @@ public class CmsPermissionHelper {
 
 
                 CMSPublicationInfos pubInfos = null;
-                try {
-                    pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
-                } catch (CMSException e) {
-                    throw new ControllerException(e);
-                }
+
+                pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
+
 
                 editableByUser = pubInfos.isEditableByUser();
                 published = pubInfos.isPublished();

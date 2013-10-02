@@ -16,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationContext;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.impl.model.portal.ContextImpl;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
@@ -414,8 +413,6 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		} catch (CMSException e) {
 			throw new RuntimeException(e);
-        } catch (ControllerException e) {
-            throw new RuntimeException(e);
         }
 
 		return windows;
