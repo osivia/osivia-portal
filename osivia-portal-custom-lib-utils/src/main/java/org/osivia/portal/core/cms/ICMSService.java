@@ -21,7 +21,6 @@ public interface ICMSService {
 	
 	public CMSItem getSpaceConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
 
-	
 	public CMSItem getPortalNavigationItem( CMSServiceCtx ctx, String publishSpacePath, String path) throws CMSException;
 
 	public List<CMSItem> getPortalNavigationSubitems( CMSServiceCtx ctx, String publishSpacePath, String path)  throws CMSException;	
@@ -32,6 +31,8 @@ public interface ICMSService {
 	
 	public Map<String, String> parseCMSURL(CMSServiceCtx cmsCtx, String requestPath, Map<String, String> requestParameters)  throws CMSException ;
 
+	public String adaptCMSPathToWeb(CMSServiceCtx cmsCtx, String basePath, String requestPath, boolean webPath)  throws CMSException ;
+	
 	public List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx)  throws CMSException ;
 	
 	/**

@@ -78,6 +78,9 @@ public class WebCommandFactoryService extends AbstractCommandFactory  {
 
             }
 
+            // Remove implicit parameters
+            parameterMap.remove(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW);
+            parameterMap.remove(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER);
 
             return cmsCommand;
 

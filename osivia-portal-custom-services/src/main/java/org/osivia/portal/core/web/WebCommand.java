@@ -18,8 +18,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.page.PagePathUtils;
+import org.osivia.portal.core.page.PageProperties;
 
 /**
  * 
@@ -40,7 +42,7 @@ public class WebCommand extends DynamicCommand {
     }
 
 
-    private String cmsPath;
+    private String webPath;
     private String windowName;
     private boolean supportingPageMarker = true;
 
@@ -66,20 +68,20 @@ public class WebCommand extends DynamicCommand {
         this.windowName = windowName;
     }
 
-    public void setCmsPath(String cmsPath) {
-        this.cmsPath = cmsPath;
+    public void setWebPath(String webPath) {
+        this.webPath = webPath;
     }
 
-    public String getCmsPath() {
-        return cmsPath;
+    public String getWebPath() {
+        return webPath;
     }
 
     public WebCommand() {
     }
 
-    public WebCommand(String cmsPath) {
+    public WebCommand(String webPath) {
 
-        this.cmsPath = cmsPath;
+        this.webPath = webPath;
     }
 
 
@@ -118,6 +120,8 @@ public class WebCommand extends DynamicCommand {
            
            // Transformation du requestpath
            CmsCommand cmsCmd = new CmsCommand();
+           
+           String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, webPath);
            cmsCmd.setCmsPath(cmsPath);
       
            pageResponse = (UpdatePageResponse) controllerCtx.execute(cmsCmd);
@@ -133,6 +137,9 @@ public class WebCommand extends DynamicCommand {
         
        // Transformation du requestpath
        CmsCommand cmsCmd = new CmsCommand();
+       
+       
+       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, webPath);
        cmsCmd.setCmsPath(cmsPath);
        
        
@@ -190,17 +197,19 @@ public class WebCommand extends DynamicCommand {
 
                 // create original command
 
-                // TODO : bodouiller les paramètres invocation.getServerContext().getBodyParameterMap()
-                // Pour ne pas interférer avec les portlets
-                // invocation.getServerContext().getPortalRequestPath()
+                // remove non specific parameters
 
                 ServerInvocation invocation = getControllerContext().getServerInvocation();
-
+                
+                 
                 ControllerCommand originalCmd = getControllerContext()
                         .getController()
                         .getCommandFactory()
                         .doMapping(getControllerContext(), invocation, invocation.getServerContext().getPortalHost(),
                                 invocation.getServerContext().getPortalContextPath(), originalPath);
+              
+
+
 
                 return context.execute(originalCmd);
 

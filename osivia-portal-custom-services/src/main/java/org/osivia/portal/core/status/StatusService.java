@@ -19,11 +19,13 @@ import org.apache.commons.httpclient.NoHttpResponseException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.net.ProxyUtils;
 import org.osivia.portal.api.status.UnavailableServer;
+
 
 
 public class StatusService extends ServiceMBeanSupport implements StatusServiceMBean, Serializable {
@@ -33,6 +35,10 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long intervalleTest = 60L * 1000L;
+	
+	private static final String NUXEO_RUNNINGSTATUS_URL = "/runningstatus";
+	private static final String NUXEO_RUNNINGSTATUS_OK = "Ok";
+
 
 	private static Log statutLog = LogFactory.getLog("PORTAL_STATUS");
 
@@ -139,12 +145,24 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 				// sauf au démarrage ...
 				timeOut = 60;
 			}
+			String url = service.getUrl();
+			
+			if( url.endsWith("/nuxeo"))
+			    url += NUXEO_RUNNINGSTATUS_URL;
+			
 			
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			Future<String> future = executor.submit(new URLTesteur(service.getUrl(), timeOut));
-
+			Future<String> future = executor.submit(new URLTesteur(url, timeOut));
 			
-			future.get(timeOut, TimeUnit.SECONDS);
+			String response = future.get(timeOut, TimeUnit.SECONDS);
+			
+			if( url.endsWith(NUXEO_RUNNINGSTATUS_URL))   {
+			    if( !StringUtils.containsIgnoreCase(response, NUXEO_RUNNINGSTATUS_OK))    {
+			        throw new UnavailableServer(response);
+			    }
+			}
+			
+			
 		} catch (Exception e) {
 			if (e.getCause() instanceof UnavailableServer)
 				throw (UnavailableServer) e.getCause();
@@ -167,9 +185,12 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 		}
 
 		public String call() throws Exception {
+		    
+		    String responseBody;
+		    
 			try {
 				HttpClient client = new HttpClient();
-
+				
 				// Set the timeout in milliseconds until a connection is
 				// established.
 				client.getParams().setParameter(HttpClientParams.CONNECTION_MANAGER_TIMEOUT, new Long(timeOut * 1000));
@@ -207,6 +228,8 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 				statutLog.debug("testerDisponibilite ");
 				int rc = client.executeMethod(get);
 				statutLog.debug("rc= " + rc);
+				
+				responseBody = get.getResponseBodyAsString();
 
 				if (rc != HttpStatus.SC_OK) {
 					UnavailableServer e = new UnavailableServer(rc);
@@ -223,7 +246,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 			}
 
-			return "ok";
+			return responseBody;
 		}
 	}
 

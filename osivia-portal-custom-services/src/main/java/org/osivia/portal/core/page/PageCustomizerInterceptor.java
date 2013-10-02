@@ -403,7 +403,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
-                            url += "&firstTab=" + request.getParameter("firstTab");
+                            if( url.indexOf('?') == -1)
+                                url += "?";
+                            else
+                                url += "&";
+                            url += "firstTab=" + request.getParameter("firstTab");
                         }
                         return new RedirectionResponse(url.toString());
                     }

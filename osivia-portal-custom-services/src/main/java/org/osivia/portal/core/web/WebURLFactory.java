@@ -26,11 +26,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
@@ -38,8 +45,15 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowReso
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PagePathUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
@@ -50,69 +64,159 @@ public class WebURLFactory extends URLFactoryDelegate {
     /** . */
     private String path;
 
+    
+    private static ICMSServiceLocator cmsServiceLocator ;
 
-    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL) {
+    public static ICMSService getCMSService() throws Exception {
+        
+        if( cmsServiceLocator == null){
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
+    
+        return cmsServiceLocator.getCMSService();
 
-        if (cmd instanceof InvokePortletWindowRenderCommand || cmd instanceof InvokePortletWindowActionCommand) {
+    }
 
-            InvokePortletWindowCommand invCmd = (InvokePortletWindowCommand) cmd;
+    private static String getWebPortalBasePath(ControllerContext controllerContext) {
 
-            PortalObjectId poid = invCmd.getTargetId();
+        Portal webPortal = null;
+        String basePath = null;
+        
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
 
-            Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
+        if (portalName != null) {
 
-            // if (PortalObjectUtils.isSpaceSite(window.getPage().getPortal())) {
-            if (InternalConstants.PORTAL_URL_POLICY_WEB.equals(window.getPage().getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
+            webPortal = (Portal) controllerContext.getController().getPortalObjectContainer()
+                    .getObject(PortalObjectId.parse("", "/" + portalName, PortalObjectPath.CANONICAL_FORMAT));
 
-                String basePath = window.getPage().getProperty("osivia.cms.basePath");
+            if (InternalConstants.PORTAL_URL_POLICY_WEB.equals(webPortal.getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
 
-                if (basePath != null) {
-
-                    WebCommand webCommand = new WebCommand();
-                    String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
-                    webCommand.setCmsPath(pathNavigation);
-                    webCommand.setWindowName(window.getName());
-
-
-                    ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
-                    serverURL.getParameterMap().append(standardURL.getParameterMap());
-
-                    return serverURL;
+                if (webPortal != null) {
+                    basePath = webPortal.getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
                 }
             }
         }
-        
-        if ( cmd instanceof InvokePortletWindowResourceCommand) {
 
-            InvokePortletWindowResourceCommand invCmd = (InvokePortletWindowResourceCommand) cmd;
+        return basePath;
+    }
+
+
+    public static String adaptCMSPathToWebURL(ControllerContext controllerContext, String cmsPath)  {
+
+        String basePath = getWebPortalBasePath(controllerContext);
+        String webPath = null;
+
+        if (basePath != null && cmsPath != null) {
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setControllerContext(controllerContext);
+            
+            try {
+                webPath = getCMSService().adaptCMSPathToWeb(cmsContext,basePath, cmsPath, false);
+            } catch( Exception e)   {
+                // TODO : logger
+            }
+        }
+
+        return webPath;
+    }
+
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) {
+
+        String basePath = getWebPortalBasePath(controllerContext);
+
+        if (StringUtils.isNotEmpty(webPath))    {
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setControllerContext(controllerContext);
+            
+            try {
+                return getCMSService().adaptCMSPathToWeb(cmsContext,basePath, webPath, true);
+            } catch( Exception e)   {
+                // TODO : logger
+            }
+            
+            return null;
+        } else
+            return basePath;
+    }
+ 
+
+
+    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL)  {
+
+        if (getWebPortalBasePath(controllerContext) == null)
+            return null;
+
+
+        if (cmd instanceof CmsCommand) {
+
+            CmsCommand cmsCmd = (CmsCommand) cmd;
+
+            // Exclude non standards urls
+            if (cmsCmd.getPortalPersistentName() != null)
+                return null;
+            if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext()))
+                return null;
+            if (!StringUtils.isEmpty(cmsCmd.getDisplayLiveVersion()))
+                return null;
+
+
+            String webPath = adaptCMSPathToWebURL(controllerContext, cmsCmd.getCmsPath());
+
+            if (webPath != null) {
+                WebCommand webCommand = new WebCommand();
+                webCommand.setWebPath(webPath);
+                webCommand.setSupportingPageMarker(false);
+
+
+                ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
+
+                return serverURL;
+
+            }
+        }
+
+
+        if (cmd instanceof PortalObjectCommand) {
+
+            PortalObjectCommand invCmd = (PortalObjectCommand) cmd;
 
             PortalObjectId poid = invCmd.getTargetId();
 
-            Window window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
+            PortalObject po = (PortalObject) controllerContext.getController().getPortalObjectContainer().getObject(poid);
 
-            // if (PortalObjectUtils.isSpaceSite(window.getPage().getPortal())) {
-            if (InternalConstants.PORTAL_URL_POLICY_WEB.equals(window.getPage().getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
+            if (po instanceof Window) {
+                Window window = (Window) po;
 
-                String basePath = window.getPage().getProperty("osivia.cms.basePath");
 
-                if (basePath != null) {
+                WebCommand webCommand = new WebCommand();
+                String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
+                
+                if( pathNavigation == null)
+                    return null;
 
-                    WebCommand webCommand = new WebCommand();
-                    String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
-                    webCommand.setCmsPath(pathNavigation);
-                    webCommand.setWindowName(window.getName());
+
+                String webPath = adaptCMSPathToWebURL(controllerContext, pathNavigation);
+
+
+                webCommand.setWebPath(webPath);
+                webCommand.setWindowName(window.getName());
+
+                if (cmd instanceof InvokePortletWindowResourceCommand) {
                     webCommand.setSupportingPageMarker(false);
-
-
-                    ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
-                    serverURL.getParameterMap().append(standardURL.getParameterMap());
-
-                    return serverURL;
                 }
+
+
+                ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
+                serverURL.getParameterMap().append(standardURL.getParameterMap());
+
+                return serverURL;
             }
+
+
         }
 
         return null;
+
     }
 
 
@@ -129,7 +233,7 @@ public class WebURLFactory extends URLFactoryDelegate {
             //
             AbstractServerURL asu = new AbstractServerURL();
             // asu.setPortalRequestPath(path);
-            String cmsPath = webCmmand.getCmsPath();
+            String cmsPath = webCmmand.getWebPath();
 
             String portalRequestPath = path;
 
@@ -152,7 +256,8 @@ public class WebURLFactory extends URLFactoryDelegate {
                 }
             }
 
-            asu.setParameterValue(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER, PageMarkerUtils.getCurrentPageMarker(controllerContext));
+            if (webCmmand.isSupportingPageMarker())
+                asu.setParameterValue(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER, PageMarkerUtils.getCurrentPageMarker(controllerContext));
 
             return asu;
         }
