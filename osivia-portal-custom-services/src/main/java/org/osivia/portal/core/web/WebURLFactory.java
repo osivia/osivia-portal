@@ -24,29 +24,22 @@ package org.osivia.portal.core.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
-import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
-import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
-import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
@@ -55,8 +48,6 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
-import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
 public class WebURLFactory extends URLFactoryDelegate {
@@ -112,6 +103,11 @@ public class WebURLFactory extends URLFactoryDelegate {
             
             try {
                 webPath = getCMSService().adaptCMSPathToWeb(cmsContext,basePath, cmsPath, false);
+
+                // Si webPath vide, pas de suffixe .proxy seul
+                if (".proxy".equals(webPath)) {
+                    return "";
+                }
             } catch( Exception e)   {
                 // TODO : logger
             }
