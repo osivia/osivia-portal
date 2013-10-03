@@ -26,7 +26,25 @@ public class PortalURLImpl implements PortalURL{
 	/** . */
 	private String value;
 
-	public PortalURLImpl(ControllerCommand command, ControllerContext context, Boolean wantAuthenticated,
+    private boolean initState = false;
+
+
+    /**
+     * @return the initState
+     */
+    public boolean isInitState() {
+        return initState;
+    }
+
+
+    /**
+     * @param initState the initState to set
+     */
+    public void setInitState(boolean initState) {
+        this.initState = initState;
+    }
+
+    public PortalURLImpl(ControllerCommand command, ControllerContext context, Boolean wantAuthenticated,
 			Boolean wantSecure) {
 		this.command = command;
 		this.context = context;
@@ -56,6 +74,10 @@ public class PortalURLImpl implements PortalURL{
 			URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 			urlContext = urlContext.withAuthenticated(wantAuthenticated).withSecured(wantSecure);
 			value = context.renderURL(command, urlContext, URLFormat.newInstance(relative, true));
+
+            if (initState) {
+                value += "?init-state=true";
+            }
 		}
 		return value;
 	}	

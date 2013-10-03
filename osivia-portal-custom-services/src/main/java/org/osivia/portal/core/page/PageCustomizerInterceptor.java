@@ -1073,7 +1073,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             // Cannot use defaultPortalId in 2.6.x because the default context doesn't have the view right.
             // Upgrading from 2.6.1 to 2.6.2 would break.
             ViewPageCommand vpc = new ViewPageCommand(this.portalObjectContainer.getContext().getDefaultPortal().getId());
-            rd.setAttribute("org.jboss.portal.header.DEFAULT_PORTAL_URL", new PortalURLImpl(vpc, controllerCtx, null, null));
+
+            PortalURLImpl portalURL = new PortalURLImpl(vpc, controllerCtx, null, null);
+            portalURL.setInitState(true);
+            rd.setAttribute("org.jboss.portal.header.DEFAULT_PORTAL_URL", portalURL);
 
 
             //
