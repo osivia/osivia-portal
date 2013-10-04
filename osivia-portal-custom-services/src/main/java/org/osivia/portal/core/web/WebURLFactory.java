@@ -26,8 +26,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -45,6 +48,7 @@ import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -57,7 +61,15 @@ public class WebURLFactory extends URLFactoryDelegate {
 
     
     private static ICMSServiceLocator cmsServiceLocator ;
+    
+    private static final Log logger = LogFactory.getLog(WebURLFactory.class);    
 
+    /**
+     * Get The CMS Service
+     * 
+     * @return
+     * @throws Exception
+     */
     public static ICMSService getCMSService() throws Exception {
         
         if( cmsServiceLocator == null){
@@ -68,6 +80,12 @@ public class WebURLFactory extends URLFactoryDelegate {
 
     }
 
+    /**
+     * Returns the defaut CMS path for current portalSite
+     * 
+     * @param controllerContext
+     * @return null if not a URL Policy is disabled
+     */
     private static String getWebPortalBasePath(ControllerContext controllerContext) {
 
         Portal webPortal = null;
@@ -92,6 +110,13 @@ public class WebURLFactory extends URLFactoryDelegate {
     }
 
 
+    /**
+     * Conversion from CMS path to web path
+     * 
+     * @param controllerContext
+     * @param cmsPath
+     * @return
+     */
     public static String adaptCMSPathToWebURL(ControllerContext controllerContext, String cmsPath)  {
 
         String basePath = getWebPortalBasePath(controllerContext);
@@ -109,14 +134,21 @@ public class WebURLFactory extends URLFactoryDelegate {
                     return "";
                 }
             } catch( Exception e)   {
-                // TODO : logger
+                // Dont' block link conversions
+                logger.error("Error in conversion to web url. Keeping CMS URL" + cmsPath, e);
             }
         }
 
         return webPath;
     }
 
-    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) {
+    /**
+     * @param controllerContext
+     * @param webPath
+     * @return
+     * @throws ControllerException
+     */
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) throws ControllerException {
 
         String basePath = getWebPortalBasePath(controllerContext);
 
@@ -127,16 +159,25 @@ public class WebURLFactory extends URLFactoryDelegate {
             try {
                 return getCMSService().adaptCMSPathToWeb(cmsContext,basePath, webPath, true);
             } catch( Exception e)   {
-                // TODO : logger
-            }
-            
-            return null;
+
+                throw new ControllerException("Error in conversion to CMS url. WEB URL is" + webPath, e);
+                     }
         } else
             return basePath;
     }
  
 
 
+    /**
+     * Converts Classic portal urls to web urls
+     * 
+     * 
+     * @param controllerContext
+     * @param invocation
+     * @param cmd
+     * @param standardURL
+     * @return the Web URL
+     */
     public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL)  {
 
         if (getWebPortalBasePath(controllerContext) == null)
@@ -216,11 +257,19 @@ public class WebURLFactory extends URLFactoryDelegate {
     }
 
 
+
+    
+    /**
+     * Generate Web URLS as expectec by factory pattern
+     * 
+     * @see org.jboss.portal.core.controller.command.mapper.URLFactory#doMapping(org.jboss.portal.core.controller.ControllerContext, org.jboss.portal.server.ServerInvocation, org.jboss.portal.core.controller.ControllerCommand)
+     */
+    
+    
     public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
         if (cmd == null) {
             throw new IllegalArgumentException("No null command accepted");
         }
-
 
         if (cmd instanceof WebCommand) {
 
@@ -260,10 +309,16 @@ public class WebURLFactory extends URLFactoryDelegate {
         return null;
     }
 
+    /**
+     * @return
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * @param path
+     */
     public void setPath(String path) {
         this.path = path;
     }
