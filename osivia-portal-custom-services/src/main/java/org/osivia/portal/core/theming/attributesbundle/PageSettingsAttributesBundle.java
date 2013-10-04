@@ -349,8 +349,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to fill toolbar attributes.
-     *
+     * 
      * @param renderPageCommand render page command
+     * @param pageRendition page rendition
      * @param attributes attributes map
      */
     @SuppressWarnings("unchecked")

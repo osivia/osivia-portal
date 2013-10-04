@@ -9,6 +9,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchResult;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.identity.CachedUserImpl;
 import org.jboss.portal.identity.IdentityException;
 import org.jboss.portal.identity.NoSuchUserException;
@@ -24,6 +26,10 @@ import org.jboss.portal.identity.ldap.LDAPUserImpl;
  * @see LDAPStaticGroupMembershipModuleImpl
  */
 public class HierarchicalLDAPGroupMembership extends LDAPStaticGroupMembershipModuleImpl {
+
+    /** Logger. */
+    private static final Log logger = LogFactory.getLog(HierarchicalLDAPGroupMembership.class);
+
 
     /**
      * Default constructor.
@@ -92,11 +98,16 @@ public class HierarchicalLDAPGroupMembership extends LDAPStaticGroupMembershipMo
         String[] names = StringUtils.split(resultHierarchy.getName(), ",");
         for (String name : names) {
             List<SearchResult> results = this.getRoleModule().searchRoles(name, null);
-            for (SearchResult result : results) {
+
+            // LDAP request must return a single result
+            if (results.size() == 1) {
+                SearchResult result = results.get(0);
                 DirContext dirContext = (DirContext) result.getObject();
                 Role role = this.getRoleModule().createRoleInstance(result.getAttributes(), dirContext.getNameInNamespace());
                 roles.add(role);
                 dirContext.close();
+            } else {
+                logger.warn("LDAP request must return a single result for filter '" + name + "'.");
             }
         }
     }

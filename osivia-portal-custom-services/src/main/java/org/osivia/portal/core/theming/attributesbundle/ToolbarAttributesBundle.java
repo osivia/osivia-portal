@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -220,8 +221,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             }
         }
 
+        // Check if layout contains CMS
+        Boolean layoutCMS = (Boolean) context.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         try {
-            if (CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)
+            if (BooleanUtils.isTrue(layoutCMS) && CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)
                     && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(context, page)) {
                 // Web page menu
                 this.generateAdministrationWebPageMenu(context, page, administration);
@@ -602,12 +605,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String parentPath = parent.toString();
 
             CMSPublicationInfos parentPubInfos = this.cmsService.getPublicationInfos(cmsCtx, parentPath);
-            // if parent is editable and if user is not at the root of the web site 
+            // if parent is editable and if user is not at the root of the web site
             if (parentPubInfos.isEditableByUser() && !(basePath.equals(pagePath))) {
 
                 CMSDeleteDocumentCommand delete = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
                 String removeURL = context.renderURL(delete, urlContext, URLFormat.newInstance(true, true));
-                Element divDeleteFancyBox = generateDeleteFancyBox(locale, removeURL);
+                Element divDeleteFancyBox = this.generateDeleteFancyBox(locale, removeURL);
                 administration.add(divDeleteFancyBox);
 
                 cmsDeleteDoc = new DOMElement(QName.get(HTMLConstants.A));
@@ -760,7 +763,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Fancy box for delete page
-     * 
+     *
      * @param locale user locale
      * @param urlDelete the command for delete
      * @return
@@ -786,29 +789,29 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
         divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
-        divMsg.setText(internationalizationService.getString("CMS_DELETE_CONFIRM_MESSAGE", locale));
+        divMsg.setText(this.internationalizationService.getString("CMS_DELETE_CONFIRM_MESSAGE", locale));
         form.add(divMsg);
 
         Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
         divButton.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
 
-        for (int i = 0; i < args.length; i++) {
+        for (String arg : args) {
             Element hiddenArg = new DOMElement(QName.get(HTMLConstants.INPUT));
             hiddenArg.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
-            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), args[i].split("=")[0]);
-            String value = args[i].split("=")[1];
+            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), arg.split("=")[0]);
+            String value = arg.split("=")[1];
             hiddenArg.addAttribute(QName.get(HTMLConstants.VALUE), URLDecoder.decode(value, "UTF-8"));
             divButton.add(hiddenArg);
         }
 
         Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), internationalizationService.getString("YES", locale));
+        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString("YES", locale));
         divButton.add(btnOk);
 
         Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
-        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), internationalizationService.getString("NO", locale));
+        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString("NO", locale));
         btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
         divButton.add(btnQuit);
 

@@ -27,7 +27,6 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Locale;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
@@ -41,6 +40,7 @@ import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.theming.IRegionRendererContext;
 
 /**
  * Implementation of a Region renderer, based on div tags.
@@ -120,7 +120,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
         }
 
-        if (BooleanUtils.isNotTrue(rrc.getRegionCms())) {
+        if ((rrc instanceof IRegionRendererContext) && (((IRegionRendererContext) rrc).isCMS())) {
             // Lien d'ajout de portlet
             if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
                 String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
@@ -163,7 +163,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             showCmsTools = Boolean.valueOf(property);
         }
 
-        return BooleanUtils.isTrue(rrc.getRegionCms()) && showCmsTools;
+        return (rrc instanceof IRegionRendererContext) && (((IRegionRendererContext) rrc).isCMS()) && showCmsTools;
 
 
     }

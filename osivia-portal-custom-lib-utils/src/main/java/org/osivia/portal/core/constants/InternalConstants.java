@@ -144,6 +144,11 @@ public final class InternalConstants {
     /** Notification attribute name. */
     public static final String ATTR_NOTIFICATIONS = "osivia.notifications";
 
+    /** Layout parsing attribute name. */
+    public static final String ATTR_LAYOUT_PARSING = "osivia.layout.parsing";
+
+    /** Layout CMS indicator attribute name. */
+    public static final String ATTR_LAYOUT_CMS_INDICATOR = "osivia.layout.cms";
 
 
     /** Requests filtered by ECM references */

@@ -7,8 +7,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -19,8 +22,11 @@ import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.common.servlet.BufferingRequestWrapper;
+import org.jboss.portal.common.servlet.BufferingResponseWrapper;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -53,8 +59,13 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
+import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.config.ServerConfig;
+import org.jboss.portal.theme.LayoutInfo;
+import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
+import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
@@ -79,6 +90,7 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
@@ -322,14 +334,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
         if (cmd instanceof RenderPageCommand) {
+            RenderPageCommand rpc = (RenderPageCommand) cmd;
+            Portal portal = rpc.getPortal();
+
+            // Check layout
+            if (!PortalObjectUtils.isJBossPortalAdministration(portal)) {
+                this.checkLayout(rpc);
+            }
+
 
             // v1.0.10 : réinitialisation des propriétes des windows
             // PageProperties.getProperties().init();
 
 
             /* Controle du host */
-
-            Portal portal = ((RenderPageCommand) cmd).getPortal();
             String host = portal.getDeclaredProperty("osivia.site.hostName");
             String reqHost = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getServerName();
 
@@ -342,7 +360,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            RenderPageCommand rpc = (RenderPageCommand) cmd;
             ControllerContext controllerCtx = cmd.getControllerContext();
             HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
 
@@ -477,7 +494,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
-            if ((pathPublication != null) &&  !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
+            if ((pathPublication != null) && !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
                 // On est déja dans une cmscommand, auquel cas l'affichage est bon
 
@@ -961,29 +978,18 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
         // Insert navigation portlet in the page
-        if (resp instanceof PageRendition) {
-
+        if ((cmd instanceof RenderPageCommand) && (resp instanceof PageRendition)) {
+            RenderPageCommand rpc = (RenderPageCommand) cmd;
             PageRendition rendition = (PageRendition) resp;
 
-            if (cmd instanceof RenderPageCommand) {
-                RenderPageCommand rpc = (RenderPageCommand) cmd;
 
-
-                boolean admin = false;
-                if (cmd instanceof RenderPageCommand) {
-
-                    PortalObject portalObject = rpc.getPage().getPortal();
-                    admin = "admin".equalsIgnoreCase(portalObject.getName());
-                }
-
-                //
-
-                if (admin) {
-                    this.injectAdminHeaders(rpc, rendition);
-                }
+            // Admin headers
+            if (PortalObjectUtils.isJBossPortalAdministration(rpc.getPortal())) {
+                this.injectAdminHeaders(rpc, rendition);
             }
 
 
+            // Notifications
             PortalControllerContext portalControllerContext = new PortalControllerContext(cmd.getControllerContext());
             NotificationsUtils.injectNotificationsRegion(portalControllerContext, rendition);
 
@@ -1000,9 +1006,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
              * }
              * }
              */
-
         }
-
 
         //
         return resp;
@@ -1090,6 +1094,51 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         //
         return null;
+    }
+
+
+    /**
+     * Utility method used to check layout attributes.
+     *
+     * @param renderPageCommand render page command
+     * @throws ControllerException
+     */
+    private void checkLayout(RenderPageCommand renderPageCommand) throws ControllerException {
+        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
+        String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+        PortalLayout layout = layoutService.getLayoutById(layoutId);
+        LayoutInfo layoutInfo = layout.getLayoutInfo();
+        String uri = layoutInfo.getURI();
+
+        // Context path
+        String contextPath = getTargetContextPath(renderPageCommand);
+
+        // Server invocation
+        ServerInvocation serverInvocation = renderPageCommand.getControllerContext().getServerInvocation();
+        // Server context
+        ServerInvocationContext serverContext = serverInvocation.getServerContext();
+        // Servlet context
+        ServletContext servletContext = serverContext.getClientRequest().getSession().getServletContext().getContext(contextPath);
+        // Locales
+        Locale[] locales = serverInvocation.getRequest().getLocales();
+
+        // Request
+        BufferingRequestWrapper request = new BufferingRequestWrapper(serverContext.getClientRequest(), contextPath, locales);
+        request.setAttribute(InternalConstants.ATTR_LAYOUT_PARSING, true);
+        // Response
+        BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
+
+        // Request dispatcher
+        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(uri);
+        try {
+            requestDispatcher.include(request, response);
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+
+        Boolean layoutCMS = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
+        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, layoutCMS);
     }
 
 

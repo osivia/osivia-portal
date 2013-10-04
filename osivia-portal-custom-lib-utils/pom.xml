@@ -23,6 +23,13 @@
         </dependency>
         
         <dependency>
+            <groupId>org.osivia.portal.core</groupId>
+            <artifactId>osivia-portal-jbp-theme-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
         </dependency>
