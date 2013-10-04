@@ -36,7 +36,7 @@
 	border-right-width: 8px;
 }
 
-.osivia-portal-regions-commands a, .osivia-portal-windows-commands a {
+.osivia-portal-regions-commands a, .osivia-portal-regions-commands a:HOVER, .osivia-portal-windows-commands a, .osivia-portal-windows-commands a:HOVER {
     text-decoration: none;
 }
 
