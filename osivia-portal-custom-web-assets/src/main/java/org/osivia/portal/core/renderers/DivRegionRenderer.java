@@ -120,7 +120,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
         }
 
-        if ((rrc instanceof IRegionRendererContext) && (((IRegionRendererContext) rrc).isCMS())) {
+        if (!((rrc instanceof IRegionRendererContext) && ((IRegionRendererContext) rrc).isCMS())) {
             // Lien d'ajout de portlet
             if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
                 String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
