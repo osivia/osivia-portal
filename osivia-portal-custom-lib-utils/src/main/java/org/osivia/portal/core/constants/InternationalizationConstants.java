@@ -197,8 +197,12 @@ public final class InternationalizationConstants {
     public static final String KEY_SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE = "SUCCESS_MESSAGE_CHANGE_RIGHTS_COMMAND_SPACE";
 
 
-
-
+    /** Bundle resource key for forbidden access. */
+    public static final String KEY_ERROR_MESSAGE_FORBIDDEN = "ERROR_MESSAGE_FORBIDDEN";
+    /** Bundle resource key for resource not found . */    
+    public static final String KEY_ERROR_MESSAGE_NOT_FOUND = "ERROR_MESSAGE_NOT_FOUND";
+    /** Bundle resource key for various errors . */    
+    public static final String KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED = "ERROR_MESSAGE_ERROR_HAS_OCCURED";
 
 
     /**

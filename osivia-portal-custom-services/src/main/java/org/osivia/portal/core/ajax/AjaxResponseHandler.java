@@ -149,7 +149,6 @@ public class AjaxResponseHandler implements ResponseHandler {
             // Page page = (Page)window.getParent();
             final Page page = (Page) this.portalObjectContainer.getObject(upw.getPageId());
 
-
             //
             NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
@@ -158,6 +157,14 @@ public class AjaxResponseHandler implements ResponseHandler {
 
             // Whether we need a full refresh or not
             boolean fullRefresh = false;
+
+            
+            // If the page has changed, need a full refresh
+            // It's useful for error pages
+            PortalObjectId portalObjectId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+            if( !page.getId().equals(portalObjectId))   {
+                fullRefresh = true;
+            }
 
             //
 
@@ -459,6 +466,10 @@ public class AjaxResponseHandler implements ResponseHandler {
             }
 
             // We perform a full refresh
+            
+            PageMarkerUtils.savePageState(controllerContext, page);
+
+            
             ViewPageCommand rpc = new ViewPageCommand(page.getId());
             String url = controllerContext.renderURL(rpc, null, null);
             UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);

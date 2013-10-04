@@ -340,10 +340,23 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 								// To reload only current window on backup
 			                    InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
 			                    String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
-			                    int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
-			                    if (pageMarkerIndex != -1) {
-			                        url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_REFRESH_PATH + url.substring(pageMarkerIndex + 1);
-			                    }
+			                    
+			                    
+			                    // 20131004JSS : prise en compte des urls web
+			                    int insertIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+			                    if (insertIndex == -1) {
+			                        // Web command
+			                        insertIndex = url.indexOf("/web?");
+			                        if (insertIndex == -1) {
+	                                    insertIndex = url.indexOf("/web/");
+	                               }			                        
+			                   }
+			                   
+                                if (insertIndex != -1) {			                    
+                                    url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_REFRESH_PATH + url.substring(insertIndex + 1);
+                                }
+			                    
+			                    
                                 windowPorperties.put("osivia.cmsEditCallbackUrl", url);
                                 // Sera ignoré car on n'est pas en ajax
                                 windowPorperties.put("osivia.cmsEditCallbackId", windowId);

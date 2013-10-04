@@ -479,6 +479,9 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
 
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
     </mbean>
 
     <mbean

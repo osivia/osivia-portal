@@ -109,12 +109,12 @@ public class WebCommand extends DynamicCommand {
     }
 
     
-    UpdatePageResponse pageResponse;
+    ControllerResponse pageResponse;
    
     
    
     
-   private UpdatePageResponse getPageResponse(ControllerContext controllerCtx)  throws InvocationException, ControllerException {
+   private ControllerResponse getPageResponse(ControllerContext controllerCtx)  throws InvocationException, ControllerException {
        
        if( pageResponse == null){
            
@@ -124,7 +124,9 @@ public class WebCommand extends DynamicCommand {
            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, webPath);
            cmsCmd.setCmsPath(cmsPath);
       
-           pageResponse = (UpdatePageResponse) controllerCtx.execute(cmsCmd);
+           
+           
+           pageResponse = controllerCtx.execute(cmsCmd);
 
        }
        
@@ -155,7 +157,10 @@ public class WebCommand extends DynamicCommand {
             
         if( pageId == null ){
                 // Pour obtenir la page de contextualisation courante
-                pageId = getPageResponse(controllerCtx).getPageId();
+            ControllerResponse ctrlResp = getPageResponse(controllerCtx);
+            
+            if( ctrlResp instanceof UpdatePageResponse)
+                pageId = ((UpdatePageResponse) ctrlResp).getPageId();
         }
         
         return pageId;
