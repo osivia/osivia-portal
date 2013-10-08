@@ -11,7 +11,7 @@
     <min-pool-size>20</min-pool-size>
     <max-pool-size>100</max-pool-size>
     <idle-timeout-minutes>5</idle-timeout-minutes>
-    <check-valid-connection-sql>select count(*) from TEST_CONNECTION</check-valid-connection-sql>
+    <check-valid-connection-sql>SELECT 1 FROM DUAL</check-valid-connection-sql>
     <metadata>
        <type-mapping>mySQL</type-mapping>
     </metadata>
@@ -26,7 +26,7 @@
     <min-pool-size>20</min-pool-size>
     <max-pool-size>100</max-pool-size>
     <idle-timeout-minutes>5</idle-timeout-minutes>
-    <check-valid-connection-sql>select count(*) from TEST_CONNECTION</check-valid-connection-sql>
+    <check-valid-connection-sql>SELECT 1 FROM DUAL</check-valid-connection-sql>
     <metadata>
        <type-mapping>mySQL</type-mapping>
     </metadata>
