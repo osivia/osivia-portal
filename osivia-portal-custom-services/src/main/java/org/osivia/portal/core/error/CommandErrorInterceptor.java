@@ -87,7 +87,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                             String errorLabel ;
                             
                             if(resp instanceof UnavailableResourceResponse)
-                                errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN, locale);
+                                errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_NOT_FOUND, locale);
                             else if(resp instanceof SecurityErrorResponse)
                                 errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN, locale);
                             else 
