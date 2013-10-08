@@ -3,6 +3,8 @@ package org.osivia.portal.core.constants;
 
 public final class InternalConstants {
 
+    // Environnement variables
+
     /** JBoss administration portal name. */
     public static final String JBOSS_ADMINISTRATION_PORTAL_NAME = "admin";
 
@@ -14,6 +16,24 @@ public final class InternalConstants {
 
     /** Window title property name. */
     public static final String PROP_WINDOW_TITLE = "osivia.title";
+
+
+    // LDAP
+
+    /** LDAP context factory. */
+    public static final String ENV_LDAP_CONTEXT_FACTORY = "ldap.context.factory";
+    /** LDAP host. */
+    public static final String ENV_LDAP_HOST = "ldap.host";
+    /** LDAP port. */
+    public static final String ENV_LDAP_PORT = "ldap.port";
+    /** LDAP principal DN. */
+    public static final String ENV_LDAP_PRINCIPAL = "ldap.manager.dn";
+    /** LDAP principal password. */
+    public static final String ENV_LDAP_CREDENTIALS = "ldap.manager.pswd";
+    /** LDAP users base DN. */
+    public static final String ENV_LDAP_USERS_BASE_DN = "ldap.users.base.dn";
+    /** LDAP groups base DN. */
+    public static final String ENV_LDAP_GROUPS_BASE_DN = "ldap.groups.base.dn";
 
 
     // Session attributes
