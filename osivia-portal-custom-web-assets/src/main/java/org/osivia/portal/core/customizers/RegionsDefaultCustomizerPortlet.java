@@ -22,6 +22,9 @@ import org.osivia.portal.api.theming.IRenderedRegions;
  */
 public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements ICustomizationModule {
 
+    /** Region : Header metadatas. */
+    public static final String REGION_HEADER_METADATA = "header-metadata";
+
     /** Customizer name. */
     private static final String CUSTOMIZER_NAME = "osivia.portal.regions.customizer";
     /** Customization modules repository attribute name. */
@@ -35,10 +38,13 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.search.path";
     /** Tabs path init parameter name. */
     private static final String TABS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.tabs.path";
+    /** SEO path init parameter name. */
+    private static final String HEADER_METADATA_PATH_INIT_PARAM = "osivia.portal.customizer.regions.header.metadata.path";
     /** Toolbar path init parameter name. */
     private static final String TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.toolbar.path";
     /** Page settings path init parameter name. */
     private static final String PAGE_SETTINGS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.page.settings.path";
+
 
 
     /** Customization modules repository. */
@@ -106,6 +112,8 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
         // Toolbar default region
         renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(TOOLBAR_PATH_INIT_PARAM));
+        // metadata default region
+        renderedRegions.defineDefaultRenderedRegion(REGION_HEADER_METADATA, this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
 
         if (!renderedRegions.isSpaceSite()) {
             // Footer default region

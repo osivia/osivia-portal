@@ -56,6 +56,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -198,20 +199,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
      */
     public static boolean checkWebPagePermission(ControllerContext ctx, Page page) throws Exception {
 
-        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-        PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
-
-        // Get the full content path
-        String pagePath = null;
-        String sPath[] = null;
-        if (pageState != null) {
-            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"));
-            if ((sPath != null) && (sPath.length == 1)) {
-                pagePath = sPath[0];
-            }
-        }
-
+        String pagePath = PagePathUtils.getContentPath(ctx, page.getId());
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setServerInvocation(ctx.getServerInvocation());

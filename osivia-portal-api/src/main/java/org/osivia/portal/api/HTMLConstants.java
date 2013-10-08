@@ -45,6 +45,8 @@ public final class HTMLConstants {
     public static final String LABEL = "label";
     /** HTML "li" nodes. */
     public static final String LI = "li";
+    /** HTML "meta" nodes. */
+    public static final String META = "meta";
     /** HTML "ol" nodes. */
     public static final String OL = "ol";
     /** HTML "option" nodes. */
@@ -75,6 +77,8 @@ public final class HTMLConstants {
     public static final String CLASS = "class";
     /** HTML "cols" attributes. */
     public static final String COLS = "cols";
+    /** HTML "content" attributes. */
+    public static final String CONTENT = "content";
     /** HTML "for" attributes. */
     public static final String FOR = "for";
     /** HTML "href" attributes. */
@@ -168,6 +172,7 @@ public final class HTMLConstants {
     public static final String CLASS_CHECK = "check";
     /** HTML uncheck class. */
     public static final String CLASS_UNCHECK = "uncheck";
+
 
 
 

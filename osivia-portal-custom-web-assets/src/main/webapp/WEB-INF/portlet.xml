@@ -72,6 +72,10 @@
             <value>/WEB-INF/jsp/default-regions/search.jsp</value>
         </init-param>
         <init-param>
+            <name>osivia.portal.customizer.regions.header.metadata.path</name>
+            <value>/WEB-INF/jsp/default-regions/header-metadata.jsp</value>
+        </init-param>        
+        <init-param>
             <name>osivia.portal.customizer.regions.tabs.path</name>
             <value>/WEB-INF/jsp/default-regions/tabs.jsp</value>
         </init-param>

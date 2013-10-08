@@ -52,6 +52,8 @@ public class Constants {
     /** Search URL attribute name. */
     public static final String ATTR_SEARCH_URL = "osivia.search.url";
 
+    // SEO
+    public static final String ATTR_HEADER_METADATA_CONTENT = "osivia.header.metadata.content";
 
     // Toolbar
 
@@ -68,6 +70,11 @@ public class Constants {
     /** Administration HTML content attribute name. */
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
 
+    // SEO
+    public static final String HEADER_TITLE = "osivia.header.title";
+
+    public static final String HEADER_META = "osivia.header.meta";
+
 
     /**
      * Default constructor.
@@ -79,3 +86,4 @@ public class Constants {
     }
 
 }
+

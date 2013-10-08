@@ -24,7 +24,9 @@ package org.osivia.portal.core.renderers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.dom4j.QName;
@@ -40,6 +42,7 @@ import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 
 /**
@@ -63,6 +66,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /** "Add" image source. */
     private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/icons/icon_add_window.png";
 
+    /** list of regions in head. */
+    private final List<String> headerRegions;
+
+    /**
+     * Default constructor.
+     */
+    public DivRegionRenderer() {
+        headerRegions = new ArrayList<String>();
+        headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
+    }
+
     /**
      * Render region header.
      *
@@ -83,15 +97,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         PrintWriter markup = rendererContext.getWriter();
 
-        markup.print("<div"); // Main DIV region
+        // Main DIV region (not shown in <head> tag)
+        if (!headerRegions.contains(rrc.getCSSId())) {
+            markup.print("<div");
 
-        if (rrc.getCSSId() != null) {
-            markup.print(" id='");
-            markup.print(rrc.getCSSId());
-            markup.print("'");
+            if (rrc.getCSSId() != null) {
+                markup.print(" id='");
+                markup.print(rrc.getCSSId());
+                markup.print("'");
+            }
+            markup.print(">");
         }
-        markup.print(">");
-
 
         // in cms mode, create a new fragment on the top of this region
         if (this.showCmsTools(rendererContext, rrc)) {
@@ -117,7 +133,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             }
 
             // Begin of DIV for Drag n drop
-            markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">"); // each cms region is a drag n drop zone
+            // each cms region is a drag n drop zone
+            markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
         }
 
         if (!((rrc instanceof IRegionRendererContext) && ((IRegionRendererContext) rrc).isCMS())) {
@@ -183,6 +200,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.print("</div>");
         }
 
-        markup.print("</div>"); // End of Main DIV region
+        // End of Main DIV region (not shown in <head> tag)
+        if (!headerRegions.contains(rrc.getCSSId())) {
+            markup.print("</div>");
+        }
     }
 }
