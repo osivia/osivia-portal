@@ -76,6 +76,7 @@ $JQry(document).ready(function() {
 		"core" : {
 			"animation" : 0,
 			"open_parents" : true,
+			"initially_loaded" : ["rootSitemap"],
 			"initially_open" : ["rootSitemap"]
 		},
 		"themes" : {
@@ -118,28 +119,7 @@ $JQry(document).ready(function() {
 		},
 		"plugins" : [ "themes", "html_data", "search", "types" ]
 	});
-	$JQry(".jstree-links-sitemap").bind(
-		"loaded.jstree", function(evt, data) {
-			var prefix = this.id;
-			
-			// Open portal node
-			if (portalId) {
-				var portalNode = $JQry("#" + prefix + portalId);
-				$JQry(this).jstree("open_node", portalNode);
-			}
-			
-			// Open current parent page node
-			if (currentPageId) {
-				// Get current page node
-				var currentPageNode = $JQry("#" + prefix + currentPageId);
-				if (currentPageNode) {
-					// Get current parent page node and open it to display current page node
-					var currentParentNode = currentPageNode.parents("li").first();
-					$JQry(this).jstree("open_node", currentParentNode);
-				}
-			}
-		}
-	);
+
 	
 	// Unique selector JSTree
 	$JQry(".jstree-select-unique").jstree({
