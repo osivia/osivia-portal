@@ -109,8 +109,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IInternationalizationService internationalizationService;
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
-    /** CMS service. */
-    private final ICMSService cmsService;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
 
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
@@ -129,9 +129,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
         // URL factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
-        // CMS service
-        ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        this.cmsService = cmsServiceLocator.getCMSService();
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
@@ -438,6 +437,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @throws Exception
      */
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         Locale locale = context.getServerInvocation().getRequest().getLocale();
 
         boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
@@ -452,7 +452,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
         cmsCtx.setDisplayLiveVersion("1");
-        CMSPublicationInfos publicationInfos = this.cmsService.getPublicationInfos(cmsCtx, pagePath);
+        CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsCtx, pagePath);
 
         String path = publicationInfos.getDocumentPath();
         Boolean published = publicationInfos.isPublished();
@@ -496,13 +496,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String closeUrl = this.urlFactory
                 .getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, CmsCommand.DISPLAYCTX_REFRESH, null, null, null, null);
 
-        String ecmBaseUrl = this.cmsService.getEcmDomain(cmsCtx);
+        String ecmBaseUrl = cmsService.getEcmDomain(cmsCtx);
 
         Element cmsCreatePage = null;
         if (modePreview) {
             cmsCreatePage = new DOMElement(QName.get(HTMLConstants.A));
 
-            String createPageUrl = this.cmsService.getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
+            String createPageUrl = cmsService.getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
             cmsCreatePage.addAttribute(QName.get(HTMLConstants.HREF), createPageUrl);
 
             cmsCreatePage.addAttribute(QName.get(HTMLConstants.ACCESSKEY), "n");
@@ -521,7 +521,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // ========== Edit current page
         Element cmsEditPage = null;
         if (modePreview) {
-            String editPageUrl = this.cmsService.getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
+            String editPageUrl = cmsService.getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
 
             cmsEditPage = new DOMElement(QName.get(HTMLConstants.A));
             cmsEditPage.addAttribute(QName.get(HTMLConstants.HREF), editPageUrl);
@@ -604,7 +604,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
             String parentPath = parent.toString();
 
-            CMSPublicationInfos parentPubInfos = this.cmsService.getPublicationInfos(cmsCtx, parentPath);
+            CMSPublicationInfos parentPubInfos = cmsService.getPublicationInfos(cmsCtx, parentPath);
             // if parent is editable and if user is not at the root of the web site
             if (parentPubInfos.isEditableByUser() && !(basePath.equals(pagePath))) {
 
@@ -660,6 +660,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @throws CMSException
      */
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws CMSException {
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         Locale locale = context.getServerInvocation().getRequest().getLocale();
 
         String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
@@ -670,7 +671,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         String pagePath = (String) context.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
         cmsCtx.setDisplayLiveVersion("1");
-        CMSItem liveDoc = this.cmsService.getContent(cmsCtx, pagePath);
+        CMSItem liveDoc = cmsService.getContent(cmsCtx, pagePath);
 
         String path = liveDoc.getPath();
 

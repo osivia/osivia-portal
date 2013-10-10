@@ -44,7 +44,6 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -65,8 +64,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
-    /** CMS service. */
-    private final ICMSService cmsService;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
 
@@ -82,9 +81,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
         // URL Factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
-        // CMS service
-        ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        this.cmsService = cmsServiceLocator.getCMSService();
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         // Portal object container
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
 
@@ -220,7 +218,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                     try {
-                        CMSItem cmsItem = this.cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                        CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
 
                         BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
                         breadcrumb.getChilds().add(0, breadcrumbItem);

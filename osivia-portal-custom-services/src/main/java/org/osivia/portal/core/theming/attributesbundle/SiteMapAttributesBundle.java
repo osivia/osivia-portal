@@ -33,7 +33,6 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
@@ -54,8 +53,8 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
     private final PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
-    /** CMS service. */
-    private final ICMSService cmsService;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -71,9 +70,8 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
         this.portalAuthorizationManagerFactory = Locator.findMBean(PortalAuthorizationManagerFactory.class, "portal:service=PortalAuthorizationManagerFactory");
         // URL factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
-        // CMS service
-        ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        this.cmsService = cmsServiceLocator.getCMSService();
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_SITE_MAP);
@@ -215,7 +213,7 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
         List<UserPage> subPages = new ArrayList<UserPage>(10);
         userPage.setChildren(subPages);
 
-        List<CMSItem> navItems = this.cmsService.getPortalNavigationSubitems(cmsServiceContext, basePath, navItem.getPath());
+        List<CMSItem> navItems = this.cmsServiceLocator.getCMSService().getPortalNavigationSubitems(cmsServiceContext, basePath, navItem.getPath());
         if (navItems.size() > 0) {
             for (CMSItem navSubItem : navItems) {
                 if ("1".equals(navSubItem.getProperties().get("menuItem"))) {
