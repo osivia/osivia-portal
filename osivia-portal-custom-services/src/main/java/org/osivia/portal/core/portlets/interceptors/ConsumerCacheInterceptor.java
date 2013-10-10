@@ -8,6 +8,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -18,7 +20,9 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.portlet.WindowContextImpl;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
@@ -215,6 +219,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
         // pour plus de cohérence, le cache partagé est priorisé par rapport au cache portlet
 
         boolean skipNavigationCheck = false;
+        
+        boolean sharedCache = false;
 
         if (window != null)	{
 			String sharedCacheID = window.getDeclaredProperty("osivia.cacheID");
@@ -234,6 +240,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 					cachedEntry = (CacheEntry) userContext
 							.getAttribute("sharedcache." + sharedCacheID);
 					skipNavigationCheck = true;
+					sharedCache = true;
 				}
 			}
 
@@ -573,6 +580,45 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
         					 }
         				 }
 
+        			 }
+        			 
+        			 if( sharedCache){
+
+                            // update navigation path
+        			     
+                            NavigationalStateContext nsContext = (NavigationalStateContext) ctx
+                                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                            PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
+                            
+                            String navigationPath = "";
+                            String contentPath = "";
+                            String itemRelPath = "";
+
+                            String sPath[] = null;
+                            if (pageState != null)  {
+                               sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+                               if ((sPath != null) && (sPath.length > 0)) {
+                                    navigationPath = sPath[0];
+                                }
+                               
+                               sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"));
+                               if ((sPath != null) && (sPath.length > 0)) {
+                                   contentPath = sPath[0];
+                                }
+                               
+                               
+                               sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"));
+                               if ((sPath != null) && (sPath.length > 0)) {
+                                   itemRelPath = sPath[0];
+                                }
+                            }
+                            
+
+                            updatedFragment = updatedFragment.replaceAll("osivia.cms.path=([a-zA-Z0-9%\\-.]*)", "osivia.cms.path=" + navigationPath);
+                            updatedFragment = updatedFragment.replaceAll("osivia.cms.contentPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.contentPath=" + contentPath);
+                            updatedFragment = updatedFragment.replaceAll("osivia.cms.itemRelPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.itemRelPath=" + itemRelPath);
+
+      			     
         			 }
 
             	// Actualisation des markers de page
