@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
