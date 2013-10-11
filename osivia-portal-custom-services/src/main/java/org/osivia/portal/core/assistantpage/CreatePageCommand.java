@@ -97,9 +97,9 @@ public class CreatePageCommand extends AssistantCommand {
             newPage = parent.createPage(this.name);
         }
 
-        // Name initialization
+        // Display name initialization
         Map<Locale, String> displayMap = createLocalizedStringMap(locale, null, this.name);
-        LocalizedString localizedString = new LocalizedString(displayMap, Locale.ENGLISH);
+        LocalizedString localizedString = new LocalizedString(displayMap, locale);
         newPage.setDisplayName(localizedString);
 
         // Impact on header cache

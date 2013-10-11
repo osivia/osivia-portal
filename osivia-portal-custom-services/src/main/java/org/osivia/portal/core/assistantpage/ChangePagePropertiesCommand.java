@@ -90,7 +90,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 
         // Display name
         Map<Locale, String> displayMap = createLocalizedStringMap(locale, page.getDisplayName(), this.displayName);
-        LocalizedString newLocalizedString = new LocalizedString(displayMap, Locale.ENGLISH);
+        LocalizedString newLocalizedString = new LocalizedString(displayMap, locale);
         page.setDisplayName(newLocalizedString);
 
         // Draft mode
