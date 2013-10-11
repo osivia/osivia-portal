@@ -149,12 +149,12 @@ public class MovePageCommand extends AssistantCommand {
         int orderValue = 1;
         for (Page reorderedPage : sortedPages) {
             if (reorderedPage.equals(destinationPage)) {
-                page.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
+                page.setDeclaredProperty(InternalConstants.TABS_ORDER_PROPERTY, String.valueOf(orderValue++));
             }
-            reorderedPage.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
+            reorderedPage.setDeclaredProperty(InternalConstants.TABS_ORDER_PROPERTY, String.valueOf(orderValue++));
         }
         if (destinationPage == null) {
-            page.setDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME, String.valueOf(orderValue++));
+            page.setDeclaredProperty(InternalConstants.TABS_ORDER_PROPERTY, String.valueOf(orderValue++));
         }
 
         // Impact sur les caches du bandeau

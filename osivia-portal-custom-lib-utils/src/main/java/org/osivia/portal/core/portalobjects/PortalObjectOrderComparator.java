@@ -44,8 +44,8 @@ public class PortalObjectOrderComparator implements Comparator<PortalObject> {
      * {@inheritDoc}
      */
     public int compare(PortalObject po1, PortalObject po2) {
-        String orderPage1 = po1.getDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME);
-        String orderPage2 = po2.getDeclaredProperty(InternalConstants.TAB_ORDER_PROPERTY_NAME);
+        String orderPage1 = po1.getDeclaredProperty(InternalConstants.TABS_ORDER_PROPERTY);
+        String orderPage2 = po2.getDeclaredProperty(InternalConstants.TABS_ORDER_PROPERTY);
 
         int order1 = 0;
         int order2 = 0;

@@ -11,8 +11,11 @@ public final class InternalConstants {
     /** Admin action name. */
     public static final String ACTION_ADMIN = "admin";
 
-    /** Tab order property name. */
-    public static final String TAB_ORDER_PROPERTY_NAME = "order";
+    /** Tabs order property name. */
+    public static final String TABS_ORDER_PROPERTY = "order";
+    /** Hide default page in tabs property name. */
+    public static final String TABS_HIDE_DEFAULT_PAGE_PROPERTY = "osivia.tabs.hideDefaultPage";
+
 
     /** Window title property name. */
     public static final String PROP_WINDOW_TITLE = "osivia.title";

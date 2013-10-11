@@ -9,6 +9,7 @@
 
 #tabs ul li {
     display: inline-block;
+    line-height: 52px;
 }
 
 #tabs a {

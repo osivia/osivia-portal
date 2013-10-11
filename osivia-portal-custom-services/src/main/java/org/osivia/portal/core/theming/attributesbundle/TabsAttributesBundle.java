@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -35,6 +37,7 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.UserPage;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -215,6 +218,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         // Portal
         Portal portal = renderPageCommand.getPortal();
 
+        // Hide default page indicator
+        boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
+        // Default page name
+        String defaultPageName = portal.getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME);
+
         // User portal
         UserPortal userPortal = new UserPortal();
         userPortal.setName(portal.getName());
@@ -245,6 +253,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
 
         for (Page child : sortedPages) {
+            // Check if child must be hidden
+            if (hideDefaultPage && StringUtils.equals(defaultPageName, child.getName())) {
+                continue;
+            }
+
             PortalObjectId pageIdToControl = child.getId();
             if (child instanceof ITemplatePortalObject) {
                 // In case of template, check original template rights ; moreover, there is no customization
@@ -282,7 +295,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
 
 
-                List<UserPage> subPages = new ArrayList<UserPage>(10);
+                List<UserPage> subPages = new ArrayList<UserPage>();
                 userPage.setChildren(subPages);
 
                 SortedSet<Page> sortedSubPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());

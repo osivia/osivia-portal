@@ -32,5 +32,7 @@
             
             <c:remove var="className" />
         </c:if>
-    </c:forEach>        
+    </c:forEach>
+    
+    <li>&nbsp;</li>
 </ul>

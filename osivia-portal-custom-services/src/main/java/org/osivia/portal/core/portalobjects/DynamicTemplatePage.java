@@ -81,7 +81,7 @@ public final class DynamicTemplatePage extends TemplatePage implements ITemplate
 
         this.getLocalProperties().putAll(pageBean.getPageProperties());
 
-        this.getLocalProperties().put(InternalConstants.TAB_ORDER_PROPERTY_NAME, "" + pageBean.getOrder());
+        this.getLocalProperties().put(InternalConstants.TABS_ORDER_PROPERTY, "" + pageBean.getOrder());
         this.getLocalProperties().put(InternalConstants.PAGE_PROP_NAME_DYNAMIC, InternalConstants.PROP_VALUE_ON);
 
 
