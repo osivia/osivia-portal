@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationContext;
@@ -298,16 +299,17 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			PortalObjectPath pagePath = pageId.getPath();
 
 
-			
-			
+
+
 			// Hors requete (ex : au deploiement d'une webapp)
-			if (pagePath == null || this.getInvocation() == null ) 
-			    return windows;
+			if ((pagePath == null) || (this.getInvocation() == null) ) {
+                return windows;
+            }
 
 	         // JSS : on peut avoir des EditableWindows sur des pages statiques
             // TODO : a optimiser ( 1 seul appel à cette méthode)
 
-			
+
 //			if ((pagePath == null) || !pagePath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
 //                return windows;
 //            }
@@ -564,10 +566,25 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			String layoutPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"));
 
 			if (layoutPath != null) {
+                String currentPortalName = StringUtils.split(cmsPagePath.toString(), "/")[0];
+                String layoutPortalName = StringUtils.split(layoutPath[0], "/")[0];
+                String currentTemplatePath = StringUtils.replace(layoutPath[0], layoutPortalName, currentPortalName, 1);
 
-				PortalObjectPath layoutObjectPath = PortalObjectPath.parse(layoutPath[0], PortalObjectPath.CANONICAL_FORMAT);
-				PortalObjectId layoutId = new PortalObjectId("", layoutObjectPath);
-				return (PortalObjectImpl) container.getNonDynamicObject(layoutId);
+                PortalObjectPath currentTemplateObjectPath = PortalObjectPath.parse(currentTemplatePath, PortalObjectPath.CANONICAL_FORMAT);
+                PortalObjectId currentTemplateId = new PortalObjectId("", currentTemplateObjectPath);
+                PortalObjectImpl portalObject = (PortalObjectImpl) container.getNonDynamicObject(currentTemplateId);
+
+                if ((portalObject == null) && !StringUtils.equals(currentPortalName, layoutPortalName)) {
+                    PortalObjectPath layoutObjectPath = PortalObjectPath.parse(layoutPath[0], PortalObjectPath.CANONICAL_FORMAT);
+                    PortalObjectId layoutId = new PortalObjectId("", layoutObjectPath);
+                    portalObject = (PortalObjectImpl) container.getNonDynamicObject(layoutId);
+                }
+
+				if( portalObject == null) {
+                    throw new IllegalArgumentException("Template " + layoutPath[0] + " doesn't exist");
+                }
+
+                return portalObject;
 			}
 		}
 

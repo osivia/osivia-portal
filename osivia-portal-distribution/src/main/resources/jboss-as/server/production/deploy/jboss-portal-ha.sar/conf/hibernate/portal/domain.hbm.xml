@@ -129,6 +129,7 @@
             column="NAME"/>
          <element
             type="org.jboss.portal.jems.hibernate.OracleStringUserType"
+            length="65535"
             column="jbp_VALUE"
             not-null="false"/>
       </map>
