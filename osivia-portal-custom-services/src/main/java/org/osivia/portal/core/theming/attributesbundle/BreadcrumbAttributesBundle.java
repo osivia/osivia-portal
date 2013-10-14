@@ -12,6 +12,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -19,6 +20,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -124,6 +126,22 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
      */
     @SuppressWarnings("unchecked")
     private Breadcrumb computeBreadcrumb(RenderPageCommand renderPageCommand, PageRendition pageRendition) throws ControllerException {
+        // Current page
+        Page page = renderPageCommand.getPage();
+        // Current portal
+        Portal portal = renderPageCommand.getPortal();
+
+        // Hide default page indicator
+        boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
+        // Default page
+        Page defaultPage = portal.getDefaultPage();
+
+        // Check if breadcrumb for this page must be hidden
+        if (hideDefaultPage && page.equals(defaultPage)) {
+            return null;
+        }
+
+
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         // State context
@@ -134,8 +152,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
         // Edition mode
         String mode = (String) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
-        // Current page
-        Page page = renderPageCommand.getPage();
+
         // Current page state
         PageNavigationalState pageState = stateContext.getPageNavigationalState(page.getId().toString());
         // Current CMS base path
@@ -380,6 +397,15 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 }
             }
         }
+
+        if (hideDefaultPage) {
+            // Add default page to breadcrumb
+            String name = PortalObjectUtils.getDisplayName(defaultPage, locale);
+            String url = controllerContext.getServerInvocation().getServerContext().getPortalContextPath();
+            BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), defaultPage.getId(), false);
+            breadcrumb.getChilds().add(0, item);
+        }
+
         return breadcrumb;
     }
 
@@ -392,7 +418,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
      * @return publication path
      */
     private String getPublicationPath(PageNavigationalState pageState, Page page) {
-        String sPath[] = null;
+        String[] sPath = null;
         if (pageState != null) {
             sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
         }

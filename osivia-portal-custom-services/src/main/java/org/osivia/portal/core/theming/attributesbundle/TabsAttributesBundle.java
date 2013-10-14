@@ -11,7 +11,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -220,8 +219,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         // Hide default page indicator
         boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
-        // Default page name
-        String defaultPageName = portal.getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME);
+        // Default page
+        Page defaultPage = portal.getDefaultPage();
 
         // User portal
         UserPortal userPortal = new UserPortal();
@@ -254,7 +253,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         for (Page child : sortedPages) {
             // Check if child must be hidden
-            if (hideDefaultPage && StringUtils.equals(defaultPageName, child.getName())) {
+            if (hideDefaultPage && child.equals(defaultPage)) {
                 continue;
             }
 
