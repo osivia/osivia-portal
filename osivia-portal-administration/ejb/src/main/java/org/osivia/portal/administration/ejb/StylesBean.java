@@ -1,5 +1,6 @@
 package org.osivia.portal.administration.ejb;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
@@ -128,11 +129,12 @@ public class StylesBean extends AbstractAdministrationBean {
     public void refreshStyles() {
         Portal portal = this.getPortal();
         String property = portal.getDeclaredProperty(PORTAL_STYLES_DECLARED_PROPERTY);
-        if (property == null) {
-            property = StringUtils.EMPTY;
+        if (StringUtils.isBlank(property)) {
+            this.styles = new ArrayList<String>();
+        } else {
+            String[] stringsArray = StringUtils.split(property, SEPARATOR);
+            this.styles = Arrays.asList(stringsArray);
         }
-        String[] stringsArray = StringUtils.split(property, SEPARATOR);
-        this.styles = Arrays.asList(stringsArray);
     }
 
 
