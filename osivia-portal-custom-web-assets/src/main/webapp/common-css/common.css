@@ -78,6 +78,16 @@ a.portlet-menuitem:HOVER {
     background-color: #FFFFFF;
 }
 
+a.portlet-menuitem.portlet-menuitem-permalink {
+    background-image: url('../images/icons/icon_permalink.png');
+    background-size: 24px;
+}
+
+a.portlet-menuitem.portlet-menuitem-print {
+    background-image: url('../images/icons/icon_print.png');
+    background-size: 24px;
+}
+
 a.portlet-menuitem.published {
     background-image: url('../images/icons/icon_published_version.png');
     background-size: 24px;
