@@ -16,16 +16,15 @@ import org.jboss.portal.identity.IdentityException;
 import org.jboss.portal.identity.NoSuchUserException;
 import org.jboss.portal.identity.Role;
 import org.jboss.portal.identity.User;
-import org.jboss.portal.identity.ldap.LDAPStaticGroupMembershipModuleImpl;
 import org.jboss.portal.identity.ldap.LDAPUserImpl;
 
 /**
  * LDAP static group membership module super-implementation for hierarchical LDAP.
- *
+ * 
  * @author Cédric Krommenhoek
- * @see LDAPStaticGroupMembershipModuleImpl
+ * @see AbstractLDAPGroupMembership
  */
-public class HierarchicalLDAPGroupMembership extends LDAPStaticGroupMembershipModuleImpl {
+public class HierarchicalLDAPGroupMembership extends AbstractLDAPGroupMembership {
 
     /** Logger. */
     private static final Log logger = LogFactory.getLog(HierarchicalLDAPGroupMembership.class);
@@ -44,7 +43,7 @@ public class HierarchicalLDAPGroupMembership extends LDAPStaticGroupMembershipMo
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Set<Role> getRoles(User user) throws IdentityException {
+    protected Set<Role> searchRolesFromLDAP(User user) throws IdentityException {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
@@ -111,6 +110,5 @@ public class HierarchicalLDAPGroupMembership extends LDAPStaticGroupMembershipMo
             }
         }
     }
-
 
 }

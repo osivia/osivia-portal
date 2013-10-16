@@ -48,7 +48,7 @@ public class FilteredRoleModule extends HibernateRoleModuleImpl {
 			
 			
 			if( System.getProperty("ldap.groupes_profils_obligatoires") != null)
-				filteredRoles.add(new FilteredRole(FilteredRole.AUCUN_PROFIL_ROLE_NAME,FilteredRole.AUCUN_PROFIL_ROLE_DISPLAY_NAME));
+				filteredRoles.add(new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME,FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME));
 			
 
 		} catch (Exception e) {
@@ -66,8 +66,8 @@ public class FilteredRoleModule extends HibernateRoleModuleImpl {
 	public Role findRoleByName(String name) throws IdentityException {
 		if (SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(name))
 			return new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME);
-		else if (FilteredRole.AUCUN_PROFIL_ROLE_NAME.equals(name))
-			return new FilteredRole(FilteredRole.AUCUN_PROFIL_ROLE_NAME, FilteredRole.AUCUN_PROFIL_ROLE_DISPLAY_NAME);
+		else if (FilteredRole.UNCHECKED_ROLE_NAME.equals(name))
+			return new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME, FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME);
 		else
 			return super.findRoleByName(name);
 

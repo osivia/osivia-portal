@@ -7,9 +7,10 @@ public final class InternalConstants {
 
     /** JBoss administration portal name. */
     public static final String JBOSS_ADMINISTRATION_PORTAL_NAME = "admin";
-
     /** Admin action name. */
     public static final String ACTION_ADMIN = "admin";
+    /** Administrators LDAP group name. */
+    public static final String ADMINISTRATORS_LDAP_GROUP_NAME = "osivia.ldap.defaultAdminRole";
 
     /** Tabs order property name. */
     public static final String TABS_ORDER_PROPERTY = "order";

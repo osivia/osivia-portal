@@ -149,7 +149,7 @@ public class NoProfilLDAPLoginModule extends LdapLoginModule {
 								Group destinationGroup = destinationRolesGroup[i];
 								if (destinationGroup.getName().equals("Roles")) {
 
-									Principal role = createIdentity(FilteredRole.AUCUN_PROFIL_ROLE_NAME);
+									Principal role = createIdentity(FilteredRole.UNCHECKED_ROLE_NAME);
 									if (!destinationGroup.isMember(role)) {
 										destinationGroup.addMember(role);
 									}
