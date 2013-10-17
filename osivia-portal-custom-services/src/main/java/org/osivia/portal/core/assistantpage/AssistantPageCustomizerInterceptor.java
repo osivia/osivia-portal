@@ -865,6 +865,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         // Hide empty portlet
         String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
         checkboxChecked = "1".equals(hideEmptyPortlet);
+        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_HIDE_EMPTY, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked));
 
         // Conditional scope
         this.insertConditionalScopeRow(table, locale, window);
@@ -1234,7 +1236,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for instanceContainer.
-     * 
+     *
      * @return the instanceContainer
      */
     public InstanceContainer getInstanceContainer() {
@@ -1243,7 +1245,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for instanceContainer.
-     * 
+     *
      * @param instanceContainer the instanceContainer to set
      */
     public void setInstanceContainer(InstanceContainer instanceContainer) {
@@ -1252,7 +1254,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for portalObjectContainer.
-     * 
+     *
      * @return the portalObjectContainer
      */
     public PortalObjectContainer getPortalObjectContainer() {
@@ -1261,7 +1263,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalObjectContainer.
-     * 
+     *
      * @param portalObjectContainer the portalObjectContainer to set
      */
     public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
@@ -1270,7 +1272,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for profileManager.
-     * 
+     *
      * @return the profileManager
      */
     public IProfilManager getProfileManager() {
@@ -1279,7 +1281,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for profileManager.
-     * 
+     *
      * @param profileManager the profileManager to set
      */
     public void setProfileManager(IProfilManager profileManager) {
@@ -1288,7 +1290,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for portalAuthorizationManagerFactory.
-     * 
+     *
      * @return the portalAuthorizationManagerFactory
      */
     public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
@@ -1297,7 +1299,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for portalAuthorizationManagerFactory.
-     * 
+     *
      * @param portalAuthorizationManagerFactory the portalAuthorizationManagerFactory to set
      */
     public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
@@ -1306,7 +1308,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Getter for internationalizationService.
-     * 
+     *
      * @return the internationalizationService
      */
     public IInternationalizationService getInternationalizationService() {
@@ -1315,7 +1317,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
     /**
      * Setter for internationalizationService.
-     * 
+     *
      * @param internationalizationService the internationalizationService to set
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {
