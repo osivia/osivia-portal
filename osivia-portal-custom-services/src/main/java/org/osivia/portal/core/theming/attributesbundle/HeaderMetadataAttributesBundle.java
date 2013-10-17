@@ -21,7 +21,6 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -29,43 +28,42 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 /**
- * 
  * Generator of the <head> meta datas informations as title, meta:author, meta:description...
- * 
+ *
+ * @see IAttributesBundle
  */
 public class HeaderMetadataAttributesBundle implements IAttributesBundle {
 
     /** Singleton instance. */
     private static HeaderMetadataAttributesBundle instance;
 
-    /** CMS service. */
-    private final ICMSService cmsService;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
 
-    /** params. */
+    /** Header metadata attributes names. */
     private final Set<String> names;
+
 
     /**
      * Default constructor.
      */
     private HeaderMetadataAttributesBundle() {
-        // CMS service
-        ICMSServiceLocator cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        this.cmsService = cmsServiceLocator.getCMSService();
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
         // Properties
-        names = new TreeSet<String>();
-        names.add(Constants.ATTR_HEADER_METADATA_CONTENT);
-
+        this.names = new TreeSet<String>();
+        this.names.add(Constants.ATTR_HEADER_METADATA_CONTENT);
     }
 
 
     /**
      * Generate html.
-     * 
+     *
      * @param renderPageCommand command
      * @param pageRendition ..
      * @param attributes attributes
-     * 
+     *
      */
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
@@ -77,9 +75,10 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
 
     }
 
+
     /**
      * Generate html.
-     * 
+     *
      * @param context context
      * @param page the page
      * @return html output
@@ -99,7 +98,7 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 cmsCtx.setDisplayLiveVersion("1");
             }
 
-            doc = this.cmsService.getContent(cmsCtx, contentPath);
+            doc = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
 
         } catch (CMSException e) {
             // Do nothing
@@ -139,19 +138,20 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
         return result;
     }
 
+
     /**
      * Public attributes for this bundle.
-     * 
+     *
      * @return Public attributes for this bundle
      */
     public Set<String> getAttributeNames() {
-        return names;
+        return this.names;
     }
 
 
     /**
      * Singleton instance access.
-     * 
+     *
      * @return singleton instance
      */
     public static HeaderMetadataAttributesBundle getInstance() {
