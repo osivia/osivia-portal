@@ -13,11 +13,11 @@
         <description>Get property with internationalization service "getString" call.</description>
         <display-name>Get property</display-name>
         <name>getProperty</name>
-        <tag-class>org.osivia.portal.core.tags.InternationalizationServiceTag</tag-class>
+        <tag-class>org.osivia.portal.core.tag.InternationalizationServiceTagHandler</tag-class>
         <body-content>empty</body-content>
         
         <attribute>
-            <description>Property key.</description>
+            <description>Property key</description>
             <name>key</name>
             <required>true</required>
         </attribute>

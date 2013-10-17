@@ -22,7 +22,12 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 import org.osivia.portal.core.theming.RegionRendererContextImpl;
 
-
+/**
+ * Region tag handler.
+ * 
+ * @author Cédric Krommenhoek
+ * @see SimpleTagSupport
+ */
 public class RegionTagHandler extends SimpleTagSupport {
 
     /** Logger. */

@@ -1,4 +1,4 @@
-package org.osivia.portal.core.tags;
+package org.osivia.portal.core.tag;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -14,15 +14,15 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 
 /**
- * Internationalization service tag.
+ * Internationalization service tag handler.
  *
  * @author Cédric Krommenhoek
  * @see SimpleTagSupport
  */
-public class InternationalizationServiceTag extends SimpleTagSupport {
+public class InternationalizationServiceTagHandler extends SimpleTagSupport {
 
-    /** Bundle factory. */
-    private static IBundleFactory bundleFactory;
+    /** Bundle factory attribute name. */
+    private static final String BUNDLE_FACTORY_ATTRIBUTE_NAME = "osivia.internationalization.bundleFactory";
 
     /** Resource property key. */
     private String key;
@@ -31,15 +31,8 @@ public class InternationalizationServiceTag extends SimpleTagSupport {
     /**
      * Default constructor.
      */
-    public InternationalizationServiceTag() {
+    public InternationalizationServiceTagHandler() {
         super();
-
-        if (bundleFactory == null) {
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
-                    IInternationalizationService.MBEAN_NAME);
-            bundleFactory = internationalizationService.getBundleFactory(classLoader);
-        }
     }
 
 
@@ -51,10 +44,24 @@ public class InternationalizationServiceTag extends SimpleTagSupport {
         PageContext pageContext = (PageContext) this.getJspContext();
         Locale locale = pageContext.getRequest().getLocale();
 
+        IBundleFactory bundleFactory = (IBundleFactory) pageContext.getAttribute(BUNDLE_FACTORY_ATTRIBUTE_NAME, PageContext.APPLICATION_SCOPE);
+        if (bundleFactory == null) {
+            // Internationalization service
+            IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                    IInternationalizationService.MBEAN_NAME);
+            // Current class loader
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+            // Set bundle factory
+            bundleFactory = internationalizationService.getBundleFactory(classLoader);
+            pageContext.setAttribute(BUNDLE_FACTORY_ATTRIBUTE_NAME, PageContext.APPLICATION_SCOPE);
+        }
+
         // Internationalization service invocation
         Bundle bundle = bundleFactory.getBundle(locale);
         String property = bundle.getString(this.key);
 
+        // Write property into JSP
         JspWriter out = pageContext.getOut();
         out.write(property);
         out.flush();

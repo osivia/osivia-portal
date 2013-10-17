@@ -1,4 +1,4 @@
-<%@ taglib uri="/WEB-INF/tld/internationalization.tld" prefix="is" %>
+<%@ taglib uri="internationalization" prefix="is" %>
 
 <script type="text/javascript">
 
