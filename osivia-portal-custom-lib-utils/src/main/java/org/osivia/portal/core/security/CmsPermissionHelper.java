@@ -170,9 +170,14 @@ public class CmsPermissionHelper {
                 
                 
                 
-                if( pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace())   
+                if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
                     cmsVersion = CMS_VERSION_PREVIEW;
+                }
 
+                // Document non publié et non rattaché à un espace : usage collaboratif
+                if (!pubInfos.isPublished() && pubInfos.getPublishSpacePath() == null) {
+                    cmsVersion = CMS_VERSION_PREVIEW;
+                }
 
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion);
 
