@@ -108,7 +108,7 @@ a.portlet-menuitem.edition {
     background-size: 24px;
 }
 
-a.portlet-menuitem.nuxeo {
+a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
     background-image: url('../images/icons/icon_nuxeo.png');
     background-size: 24px;
 }
@@ -234,6 +234,7 @@ input.inline-checkbox {
 
 #notifications-window .notifications p, #notifications-window .notifications ul {
 	line-height: 22px;
+	margin: 3px;
 }
 
 #notifications-window .notifications.error {
