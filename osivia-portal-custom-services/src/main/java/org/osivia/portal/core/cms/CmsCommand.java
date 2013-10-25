@@ -663,16 +663,19 @@ public class CmsCommand extends DynamicCommand {
 			// Le path du contenu est le cmsPath
 			contentPath = cmsPath;
 			String itemPublicationPath = cmsPath;
+            String virtualNavigationPath = null;
 			
+
 			if( cmsItem != null){
-				String navigationPath = cmsItem.getProperties().get("navigationPath");
-				if( navigationPath != null)	{
+                virtualNavigationPath = cmsItem.getProperties().get("navigationPath");
+                if (virtualNavigationPath != null) {
 					//Le pub infos devient celui de la navigation
 					try {
-						pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, navigationPath);
+                        pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, virtualNavigationPath);
+
 
 						// Le path eventuellement en ID a été retranscrit en chemin
-						itemPublicationPath = pubInfos.getDocumentPath();
+                        itemPublicationPath = pubInfos.getDocumentPath() + "/" + StringUtils.substringAfterLast(cmsPath, "/");
 					} catch (CMSException e) {
 
 						if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)
@@ -733,7 +736,11 @@ public class CmsCommand extends DynamicCommand {
 						searchPage = (Page) po;
 
 					if (searchPage != null) {
-						PortalObject publicationPage = searchPublicationPage(getControllerContext(), searchPage, itemPublicationPath, getProfilManager());
+                        String searchPath = itemPublicationPath;
+                        if (virtualNavigationPath != null)
+                            searchPath = virtualNavigationPath;
+
+                        PortalObject publicationPage = searchPublicationPage(getControllerContext(), searchPage, searchPath, getProfilManager());
 
 						if (publicationPage != null)
 							contextualizationPage = (Page) publicationPage;
@@ -829,7 +836,11 @@ public class CmsCommand extends DynamicCommand {
 						 portal = getControllerContext().getController().getPortalObjectContainer().getContext().getDefaultPortal();
 					}
 
-					PortalObject publicationPage = searchPublicationPage(getControllerContext(), portal, itemPublicationPath, getProfilManager());
+                    String searchPath = itemPublicationPath;
+                    if (virtualNavigationPath != null)
+                        searchPath = virtualNavigationPath;
+
+                    PortalObject publicationPage = searchPublicationPage(getControllerContext(), portal, searchPath, getProfilManager());
 					
 					
 					
