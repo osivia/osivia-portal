@@ -128,6 +128,7 @@ public class CmsPermissionHelper {
         Level level = null;
         Boolean editableByUser = Boolean.FALSE;
         Boolean published = Boolean.TRUE;
+        Boolean belongToPublishSpace = Boolean.TRUE;
         Locale locale;
         // ============ check current session settings
         String cmsVersion = getCurrentCmsVersion(ctx);
@@ -167,19 +168,14 @@ public class CmsPermissionHelper {
 
                 editableByUser = pubInfos.isEditableByUser();
                 published = pubInfos.isPublished();
-                
+                belongToPublishSpace = pubInfos.getPublishSpacePath() != null;
                 
                 
                 if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
                     cmsVersion = CMS_VERSION_PREVIEW;
                 }
 
-                // Document non publié et non rattaché à un espace : usage collaboratif
-                if (!pubInfos.isPublished() && pubInfos.getPublishSpacePath() == null) {
-                    cmsVersion = CMS_VERSION_PREVIEW;
-                }
-
-                level = definePermissions(ctx, locale, editableByUser, published, cmsVersion);
+                level = definePermissions(ctx, locale, editableByUser, published, cmsVersion, belongToPublishSpace);
 
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL.concat(cmsPath), level);
 
@@ -194,7 +190,8 @@ public class CmsPermissionHelper {
         return level;
     }
 
-    private static Level definePermissions(InvocationContext ctx, Locale locale, Boolean editableByUser, Boolean published, String cmsVersion) {
+    private static Level definePermissions(InvocationContext ctx, Locale locale, Boolean editableByUser, Boolean published, String cmsVersion,
+            Boolean belongToPublishSpace) {
         Level level;
         // ============ Permission management
 
@@ -216,6 +213,9 @@ public class CmsPermissionHelper {
                 notifService.addSimpleNotification(pcc, message, NotificationsType.ERROR);
 
 
+            } else if (!belongToPublishSpace) {
+                // document is not in publish space, force preview to access nuxeo objects
+                level = Level.allowPreviewVersion;
             } else {
                 // document is NEITHER published NOR editable
                 // access is forbidden
