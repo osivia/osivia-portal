@@ -18,10 +18,8 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.page.PagePathUtils;
-import org.osivia.portal.core.page.PageProperties;
 
 /**
  * 
@@ -149,9 +147,13 @@ public class WebCommand extends DynamicCommand {
         PortalObjectId pageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
         if( pageId != null){
             String currentNavPath = PagePathUtils.getNavigationPath(controllerCtx, pageId);
-            if( !currentNavPath.equals(cmsPath)) {
-                // Le path de navigation a changé, il faut recréer la page technique
-                pageId = null;
+
+            // for resources, there is no currentNavPath. otherwise test that navpath = cmspath
+            if (currentNavPath != null) {
+                if (!currentNavPath.equals(cmsPath)) {
+                    // Le path de navigation a changé, il faut recréer la page technique
+                    pageId = null;
+                }
             }
          }
             
