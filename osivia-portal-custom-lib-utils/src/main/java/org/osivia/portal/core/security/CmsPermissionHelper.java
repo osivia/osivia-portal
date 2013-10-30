@@ -201,6 +201,9 @@ public class CmsPermissionHelper {
                 // document is published and can be access in online mode
                 level = Level.allowOnlineVersion;
 
+            } else if (!belongToPublishSpace) {
+                // document is not in publish space, force preview to access nuxeo objects
+                level = Level.allowPreviewVersion;
 
             } else if (editableByUser) {
                 // document is NOT published, user can see the preview version
@@ -212,10 +215,6 @@ public class CmsPermissionHelper {
                 // Show a notification
                 notifService.addSimpleNotification(pcc, message, NotificationsType.ERROR);
 
-
-            } else if (!belongToPublishSpace) {
-                // document is not in publish space, force preview to access nuxeo objects
-                level = Level.allowPreviewVersion;
             } else {
                 // document is NEITHER published NOR editable
                 // access is forbidden
