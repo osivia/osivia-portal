@@ -56,7 +56,7 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId);
 		
 		if( errDescriptor != null) {			
-			long errId = GlobalErrorHandler.getInstance().registerError(errDescriptor);
+			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 
 			controlContext.setResponse(new RedirectionResponse(getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?err=" + errId+ "&httpCode=" + errDescriptor.getHttpErrCode()));
 		}

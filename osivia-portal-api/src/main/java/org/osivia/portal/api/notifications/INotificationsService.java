@@ -24,6 +24,15 @@ public interface INotificationsService {
      */
     void addSimpleNotification(PortalControllerContext portalControllerContext, String message, NotificationsType type);
 
+    /**
+     * Add a simple notification.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param message notification message
+     * @param type notification type
+     * @param errorCode errorCode
+     */
+    void addSimpleNotification(PortalControllerContext portalControllerContext, String message, NotificationsType type, Long errorCode);
 
     /**
      * Add notifications.

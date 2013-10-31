@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
@@ -153,6 +154,13 @@ public class NotificationsUtils {
                 // Notifications
                 Element divNotifications = new DOMElement(QName.get(HTMLConstants.DIV));
                 divNotifications.addAttribute(QName.get(HTMLConstants.CLASS), "notifications " + notifications.getType().getHtmlClass());
+
+
+                if (notifications.getErrorCode() != null) {
+                    divNotifications.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
+                }
+
+
                 divNotificationsList.add(divNotifications);
 
                 List<String> messages = notifications.getMessages();
@@ -164,6 +172,9 @@ public class NotificationsUtils {
                         // p.setText(message);
                         messageHandling(p, message);
                         divNotifications.add(p);
+
+
+
                     } else {
                         // Multiple messages
                         Element ul = new DOMElement(QName.get(HTMLConstants.UL));

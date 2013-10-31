@@ -38,6 +38,15 @@ public class NotificationsService implements INotificationsService {
         this.addNotifications(portalControllerContext, notifications);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void addSimpleNotification(PortalControllerContext portalControllerContext, String message, NotificationsType type, Long errorCode) {
+        Notifications notifications = new Notifications(type);
+        notifications.addMessage(message);
+        notifications.setErrorCode(errorCode);
+        this.addNotifications(portalControllerContext, notifications);
+    }
 
     /**
      * {@inheritDoc}

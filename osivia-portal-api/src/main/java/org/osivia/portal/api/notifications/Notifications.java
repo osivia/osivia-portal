@@ -19,7 +19,8 @@ public final class Notifications {
     private final long creationTime;
     /** Expiration timestamp. */
     private final long expirationTime;
-
+    /** Error code (if exceptions occured). */
+    private Long errorCode;
 
     /**
      * Constructor.
@@ -104,5 +105,26 @@ public final class Notifications {
     public long getExpirationTime() {
         return this.expirationTime;
     }
+
+
+    /**
+     * Getter for errorCode.
+     * 
+     * @return the errorCode
+     */
+    public Long getErrorCode() {
+        return errorCode;
+    }
+
+
+    /**
+     * Setter for errorCode.
+     * 
+     * @param errorCode the errorCode to set
+     */
+    public void setErrorCode(Long errorCode) {
+        this.errorCode = errorCode;
+    }
+
 
 }

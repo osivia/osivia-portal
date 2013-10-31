@@ -32,7 +32,7 @@ public class GlobalErrorHandler {
 	}
 	
 	// v.1.0.21 : desynchronisation
-	public long registerError(ErrorDescriptor error) {
+	public long logError(ErrorDescriptor error) {
 		currentErrorId++;
 		error.setErrorId(currentErrorId);
 		log.error(asString(error));

@@ -73,7 +73,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId);
 
 		if (errDescriptor != null) {
-			long errId = GlobalErrorHandler.getInstance().registerError(errDescriptor);
+			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 			boolean affichage = false;
 
 			try {

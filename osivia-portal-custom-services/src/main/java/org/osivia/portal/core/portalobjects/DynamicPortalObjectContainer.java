@@ -34,6 +34,7 @@ import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalState
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.system.ServiceMBeanSupport;
+import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cms.CMSEditableWindow;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -774,7 +775,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			dynamicPortal = true;
 		}
 
-		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand))
+		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand) || (cmd instanceof AssistantCommand))
 				&& (object instanceof ContextImpl)) {
 			dynamicContext = true;
 		}
@@ -809,13 +810,6 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			return new DynamicContext(container, (ContextImpl) object, this);
 		}
 
-		/*
-		 * if( object instanceof PageImpl) { return new DynamicPersistentPage(
-		 * (PageImpl) object, this); }
-		 *
-		 * if( object instanceof PortalImpl) { return new
-		 * DynamicPortal(container, (PortalImpl) object, this); }
-		 */
 
 		if (object instanceof WindowImpl) {
 			return new DynamicPersistentWindow(container, (WindowImpl) object, this);

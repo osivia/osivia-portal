@@ -74,7 +74,7 @@ public class ErrorValve extends ValveBase {
 
 			if (response.getStatus() == 500 || response.getStatus() == 404 ) {
 				
-				long errId = GlobalErrorHandler.getInstance().registerError(errDescriptor);
+				long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 	
 
 				URL url = new URL("http", httpRequest.getServerName(), httpRequest.getServerPort(), errorPageUri);
