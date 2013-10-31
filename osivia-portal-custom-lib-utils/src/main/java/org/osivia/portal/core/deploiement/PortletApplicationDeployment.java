@@ -1,5 +1,7 @@
 package org.osivia.portal.core.deploiement;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import javax.management.MBeanServer;
@@ -7,6 +9,7 @@ import javax.management.ObjectName;
 
 import org.jboss.deployment.DeploymentException;
 import org.jboss.mx.util.MBeanProxyExt;
+import org.jboss.portal.common.io.IOTools;
 import org.jboss.portal.core.deployment.jboss.PortletAppDeployment;
 import org.jboss.portal.core.deployment.jboss.PortletAppDeploymentFactory;
 import org.jboss.portal.portlet.container.managed.ManagedObjectRegistryEventListener;
@@ -60,6 +63,19 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
 
         // FIXME à déplacer dans CMS
         this.injectStandardService("NuxeoService", "fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService", "osivia:service=NuxeoService");
+
+
+        // internationalization.tld
+        InputStream source = null;
+        try {
+            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("conf/theme/internationalization.tld"));
+            this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
+        } catch (IOException e) {
+            throw new DeploymentException("Cannot import internationalization.tld", e);
+        } finally {
+            IOTools.safeClose(source);
+        }
 
         //
         super.start();

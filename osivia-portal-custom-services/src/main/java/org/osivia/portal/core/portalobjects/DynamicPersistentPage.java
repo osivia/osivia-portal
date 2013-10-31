@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.core.impl.model.portal.ObjectNode;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
@@ -25,230 +24,233 @@ public class DynamicPersistentPage extends DynamicPage {
 	List<Window> windows;
 	PortalObject parent;
 	Portal portal;
-	
+
 	public DynamicPersistentPage(PortalObjectContainer container, PageImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
-		
+
 		this.container = container;
 		this.dynamicContainer = dynamicContainer;
-		
-		containerContext = orig.getObjectNode().getContext();
-		setObjectNode(orig.getObjectNode());	
-		
-		this.orig = (PageImpl) orig;
-		
-		
+
+		this.containerContext = orig.getObjectNode().getContext();
+		this.setObjectNode(orig.getObjectNode());
+
+		this.orig = orig;
+
+
 		// Optimisation  : ajout cache
 		DynamicPortalObjectContainer.addToCache(orig.getId(), this);
-	
+
 	}
-	
+
 	DynamicWindow createSessionWindow ( DynamicWindowBean dynamicWindowBean)	{
-		return new DynamicPersistentWindow( container, this, dynamicWindowBean.getName(), containerContext, dynamicContainer,  dynamicWindowBean.getUri(), dynamicWindowBean.getProperties(), dynamicWindowBean)	;
+		return new DynamicPersistentWindow( this.container, this, dynamicWindowBean.getName(), this.containerContext, this.dynamicContainer,  dynamicWindowBean.getUri(), dynamicWindowBean.getProperties(), dynamicWindowBean)	;
 	}
-	
+
 	public PortalObject getParent()	{
-		if (parent == null)	{
-			// TODO :verifier que  ne pas passer par le container optimise réellement les perfs 
-			
+		if (this.parent == null)	{
+			// TODO :verifier que  ne pas passer par le container optimise réellement les perfs
+
 			//parent = container.getObject(new PortalObjectId("", orig.getId().getPath().getParent()));
-			
-			parent = orig.getParent();
-			
-			if( parent instanceof PageImpl)
-				return new DynamicPersistentPage( container, (PageImpl) parent,   dynamicContainer);
-			if( parent instanceof PortalImpl)
-				return new DynamicPortal( container, (PortalImpl) parent,   dynamicContainer);
-			
-			return container.getObject(new PortalObjectId("", orig.getId().getPath().getParent()));
-			
-				
+
+			this.parent = this.orig.getParent();
+
+			if( this.parent instanceof PageImpl) {
+                this.parent = new DynamicPersistentPage( this.container, (PageImpl) this.parent,   this.dynamicContainer);
+            } else if (this.parent instanceof PortalImpl) {
+                this.parent =  new DynamicPortal( this.container, (PortalImpl) this.parent,   this.dynamicContainer);
+            } else {
+                this.parent = this.container.getObject(new PortalObjectId("", this.orig.getId().getPath().getParent()));
+            }
+
+
 		}
-		return parent;	
+		return this.parent;
 	}
-	
-	
+
+
 	// Ajout v.0.13 : correction perte fenetres dynamiques au login
 	   public Portal getPortal()
 	   {
-		if (portal == null) {
-			PortalObject object = orig.getParent();
-			while (object != null && !(object instanceof Portal)) {
+		if (this.portal == null) {
+			PortalObject object = this.orig.getParent();
+			while ((object != null) && !(object instanceof Portal)) {
 				object = object.getParent();
 			}
-			
-			if( object instanceof PortalImpl)
-				portal = new DynamicPortal(container, (PortalImpl) object, dynamicContainer);
+
+			if( object instanceof PortalImpl) {
+                this.portal = new DynamicPortal(this.container, (PortalImpl) object, this.dynamicContainer);
+            }
 		}
 
-		return portal;
+		return this.portal;
 	   }
 
-	
+
 	private List<Window> getWindows() {
-		
-		if( windows == null)	{
-			Collection childs = orig.getChildren( PortalObject.WINDOW_MASK);
-			windows = new ArrayList<Window>();
+
+		if( this.windows == null)	{
+			Collection childs = this.orig.getChildren( PortalObject.WINDOW_MASK);
+			this.windows = new ArrayList<Window>();
 			for( Object child : childs)	{
-				windows.add( new DynamicPersistentWindow(container, (WindowImpl)child, dynamicContainer));
+				this.windows.add( new DynamicPersistentWindow(this.container, (WindowImpl)child, this.dynamicContainer));
 			}
-			
+
 			//ajout fenetre dynamiques
-			windows.addAll(getDynamicWindows ().values());
-			
-			return windows;
+			this.windows.addAll(this.getDynamicWindows ().values());
+
+			return this.windows;
 		}
 
 
-		return windows;
+		return this.windows;
 	}
 
-	
+
 	@Override
 	public Collection getChildren() {
-		
-		if( windows == null)	{
-		
-		windows = new ArrayList<Window>();
-		
-		for( Object po: orig.getChildren())	{
+
+		if( this.windows == null)	{
+
+		this.windows = new ArrayList<Window>();
+
+		for( Object po: this.orig.getChildren())	{
 			if( po instanceof Window)	{
 				Window window = (Window) po;
-				windows.add( window);
+				this.windows.add( window);
 			}
 			}
-		
-		windows.addAll(getDynamicWindows ().values());
+
+		this.windows.addAll(this.getDynamicWindows ().values());
 		}
 
 
-		return windows;
+		return this.windows;
 	}
 
-	
+
 	List<Window> notFetchedWindows;
 	public List<Window> getNotFetchedWindows () {
-		
-		if( notFetchedWindows == null)	{
-		
-			Collection childs = orig.getChildren( PortalObject.WINDOW_MASK);
-			notFetchedWindows = new ArrayList<Window>();
+
+		if( this.notFetchedWindows == null)	{
+
+			Collection childs = this.orig.getChildren( PortalObject.WINDOW_MASK);
+			this.notFetchedWindows = new ArrayList<Window>();
 			for( Object child : childs)	{
-				notFetchedWindows.add( new NotFetchedPersistentWindow(getId(), (WindowImpl)child, ((WindowImpl)child).getName(),  dynamicContainer));
+				this.notFetchedWindows.add( new NotFetchedPersistentWindow(this.getId(), (WindowImpl)child, ((WindowImpl)child).getName(),  this.dynamicContainer));
 			}
-			
+
 			//ajout fenetre dynamiques
-			notFetchedWindows.addAll(getDynamicWindows ().values());
-			
-			return notFetchedWindows;
+			this.notFetchedWindows.addAll(this.getDynamicWindows ().values());
+
+			return this.notFetchedWindows;
 		}
 
 
-		return notFetchedWindows;
+		return this.notFetchedWindows;
 	}
-	
 
-	
+
+
 	@Override
 	public Collection getChildren(int wantedMask) {
-		
-		if( wantedMask != PortalObject.WINDOW_MASK)
-			return orig.getChildren( wantedMask);
-		else	{
-			
+
+		if( wantedMask != PortalObject.WINDOW_MASK) {
+            return this.orig.getChildren( wantedMask);
+        } else	{
+
 //			List<Window> windows = getWindows();
-			
+
 			/*
 			 for( Window window : windows)	{
 				 logger.debug("cms.uri" + window.getProperties().get("osivia.cms.uri"));
 			 }
 */
-				
-				return getWindows();
-			
+
+				return this.getWindows();
+
 		}
 	}
 
-  
-	
+
+
 	@Override
 	public PortalObject getChild(String name) {
-		Window child = getDynamicWindows().get(name);
-		
-		if( child != null)
-			return child;
-		else 
-			return orig.getChild(name);
+		Window child = this.getDynamicWindows().get(name);
+
+		if( child != null) {
+            return child;
+        } else {
+            return this.orig.getChild(name);
+        }
 	}
 
-	
 
-	
+
+
 
 	@Override
 	public boolean equals(Object arg0) {
-		return orig.equals(arg0);
+		return this.orig.equals(arg0);
 	}
 
-	
 
-	
+
+
 
 	@Override
 	public org.jboss.portal.common.i18n.LocalizedString getDisplayName() {
-		return orig.getDisplayName();
+		return this.orig.getDisplayName();
 	}
 
 	@Override
 	public Map getDisplayNames() {
-		return orig.getDisplayNames();
+		return this.orig.getDisplayNames();
 	}
 
 	@Override
 	public PortalObjectId getId() {
-		return orig.getId();
+		return this.orig.getId();
 	}
 
 	@Override
 	public String getName() {
-		return orig.getName();
+		return this.orig.getName();
 	}
-	
+
 	@Override
 	public Map getProperties() {
-		return orig.getProperties();
+		return this.orig.getProperties();
 	}
 
 
 	@Override
 	public ObjectNode getObjectNode() {
-		return orig.getObjectNode();
+		return this.orig.getObjectNode();
 	}
 
 	@Override
 	public void setDeclaredProperty(String name, String value) {
-				
-			orig.setDeclaredProperty(name, value);
-		
+
+			this.orig.setDeclaredProperty(name, value);
+
 	}
 
 	@Override
 	public String getDeclaredProperty(String name) {
-			return orig.getDeclaredProperty(name);
+			return this.orig.getDeclaredProperty(name);
 
 	}
 
-	
+
 	@Override
 	public Map<String, String> getDeclaredProperties() {
-		return orig.getDeclaredProperties();
+		return this.orig.getDeclaredProperties();
 	}
-	
-	
+
+
 	   public void setDisplayName(LocalizedString displayName){
-		   orig.setDisplayName(displayName);
+		   this.orig.setDisplayName(displayName);
 	   }
-	   
-	  
+
+
 }
