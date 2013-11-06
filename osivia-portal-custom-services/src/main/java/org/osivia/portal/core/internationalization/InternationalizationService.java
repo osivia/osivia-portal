@@ -67,7 +67,7 @@ public class InternationalizationService implements IInternationalizationService
         // Customizer invocation
         this.customizationService.customize(IInternationalizationService.CUSTOMIZER_ID, context);
 
-        String pattern;
+        String pattern = null;
         if (attributes.containsKey(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT)) {
             // Custom result
             pattern = (String) attributes.get(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT);
@@ -76,16 +76,23 @@ public class InternationalizationService implements IInternationalizationService
             ResourceBundle resourceBundle = null;
             if (classLoader != null) {
                 resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
-            }
-            if (resourceBundle == null) {
-                // Portal default result
-                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
+                if (resourceBundle != null) {
+                    try {
+                        pattern = resourceBundle.getString(key);
+                    } catch (MissingResourceException e) {
+                        // Do nothing
+                    }
+                }
             }
 
-            try {
-                pattern = resourceBundle.getString(key);
-            } catch (MissingResourceException e) {
-                return "[Missing resource: " + key + "]";
+            if (pattern == null) {
+                // Portal default result
+                try {
+                    resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
+                    pattern = resourceBundle.getString(key);
+                } catch (MissingResourceException e) {
+                    return "[Missing resource: " + key + "]";
+                }
             }
         }
 
