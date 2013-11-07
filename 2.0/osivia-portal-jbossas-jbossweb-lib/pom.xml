@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	
+	<parent>
+		<groupId>org.osivia.portal.core</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.0.21</version>
+	</parent>
+
+	<groupId>org.osivia.portal.core</groupId>
+	<artifactId>osivia-portal-jbossas-jbossweb-lib</artifactId>
+	<version>2.0.21</version>
+	<packaging>jar</packaging>
+	<name>Portal core lib library</name>
+	
+ 
+ 	<dependencies>
+	 	<dependency>
+			<groupId>org.osivia.portal.core</groupId>
+	     		<artifactId>osivia-portal-custom-lib-utils</artifactId>
+	     		<version>2.0.21</version>
+	     		<scope>provided</scope>
+		</dependency>
+	 	<dependency>
+			<groupId>org.osivia.portal</groupId>
+	     		<artifactId>osivia-portal-api</artifactId>
+	     		<version>2.0.21</version>
+	     		<scope>provided</scope>
+		</dependency>
+	 	<dependency>
+			<groupId>jboss</groupId>
+	     		<artifactId>jbossweb</artifactId>
+	     		<version>4.2.3.GA</version>
+	     		<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+ 
+ 
+ 	<build>   		
+   
+    <plugins>
+       
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+        
+          <execution>
+          <id>make-jar</id>
+          <goals>
+            <goal>run</goal>
+          </goals>        
+          <configuration>
+            <tasks>
+                  <unzip src="${basedir}/original-file/jbossweb.jar" dest="${basedir}/target/classes" overwrite="true" />            
+             </tasks>
+          </configuration>
+          <phase>generate-resources</phase>
+        </execution>
+        </executions>
+      </plugin>
+		</plugins>
+
+	</build>    
+
+
+
+</project>
+
