@@ -70,7 +70,7 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 			service = listeServices.get(url);
 		}
 
-		if (service.isServiceUp())
+		if (service.isServiceUp() && !service.isMustBeChecked())
 			return true;
 		
 		synchronized (service) {
@@ -88,25 +88,30 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 	
 		// On assure la périodicité des tests
 		
-		if (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest) {
-
-			statutLog.debug("Test du service " + service.getUrl());
+		if (service.isMustBeChecked() || (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest)) {
+			
+			service.setMustBeChecked(false);
 
 			service.setLastCheckTimestamp(System.currentTimeMillis());
 
 			try {
+				
+				statutLog.info("Checking " + service.getUrl() );
+				
 				testerService(service);
 
 				service.setServiceUp(true);
 
-				statutLog.info("Le service " + service.getUrl() + " est UP");
+				statutLog.info("Service " + service.getUrl() + " UP");
 			}
 
 			catch (ServeurIndisponible e) {
 				
+				// v 2.0.21 : la mise en DOWN est explicite (erreur runningstatus)
+				
 				service.setServiceUp(false);
 				
-				statutLog.info("Service " + service.getUrl() + " DOWN . Raison : " + e.toString());
+				statutLog.info("Service " + service.getUrl() + " DOWN . Reason : " + e.toString());
 
 			}
 
@@ -116,11 +121,13 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 
 	public void notifyError(String serviceCode, ServeurIndisponible e) {
 
-		statutLog.error("Erreur " + serviceCode + " : " + e.toString());
+		statutLog.error("Error notification for service " + serviceCode + " : " + e.toString());
+		
 
 		ServiceState service = listeServices.get(serviceCode);
 		if (service != null) {
-			service.setServiceUp(false);
+			service.setMustBeChecked(true);
+
 		}
 	}
 
@@ -165,9 +172,15 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 		} catch (Exception e) {
 			if (e.getCause() instanceof ServeurIndisponible)
 				throw (ServeurIndisponible) e.getCause();
-			else	
-				throw new ServeurIndisponible("Probleme controle url : " + e.getClass().getName() + " "
-						+ e.getMessage() + e.getCause());
+			else	{
+				String msg = "Error during check : " + e.getClass().getName();
+				if( e.getMessage() != null)
+					msg += " " + e.getMessage();
+				if(  e.getCause() != null)
+					msg += " " + e.getCause();
+				
+				throw new ServeurIndisponible(msg);
+			}
 		}
 
 	}
@@ -199,7 +212,10 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 				HttpMethodRetryHandler myretryhandler = new HttpMethodRetryHandler() {
 
 					public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
-						if (executionCount >= 1) {
+						// v2.0.21 : 3 tries
+						if (executionCount >= 3) {
+//						
+//						if (executionCount >= 1) {
 							// Do not retry if over max retry count
 							return false;
 						}
@@ -207,6 +223,8 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 							// Retry if the server dropped connection on us
 							return true;
 						}
+						
+						
 						if (!method.isRequestSent()) {
 							// Retry if the request has not been sent fully or
 							// if it's OK to retry methods that have been sent
@@ -237,7 +255,7 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 
 			} catch (Exception e) {
 				if( ! (e instanceof ServeurIndisponible))	{
-					ServeurIndisponible exc = new ServeurIndisponible(e.getMessage());
+					ServeurIndisponible exc = new ServeurIndisponible("url " + url + " " +e.getMessage());
 					throw exc;
 					}
 				else 

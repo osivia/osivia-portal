@@ -6,6 +6,17 @@ public class ServiceState {
 	private long lastCheckTimestamp = 0L;
 	private boolean serviceUp = true;
 	
+	// v2.0.21
+	private boolean mustBeChecked = false;
+	
+	public boolean isMustBeChecked() {
+		return mustBeChecked;
+	}
+
+	public void setMustBeChecked(boolean mustBeChecked) {
+		this.mustBeChecked = mustBeChecked;
+	}
+
 	private String url = "";
 	
 
