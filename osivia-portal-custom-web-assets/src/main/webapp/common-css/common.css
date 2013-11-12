@@ -1,8 +1,15 @@
 
 /* Commons */
 
+fieldset {
+	margin: 10px 0;
+}
+
+
 .osivia-portal-table {
     display: table;
+    border-collapse: separate;
+    border-spacing: 5px 1px;
 }
 
 .osivia-portal-row {
@@ -12,6 +19,16 @@
 .osivia-portal-cell {
     display: table-cell;
 }
+
+.osivia-portal-cell.label {
+	text-align: right;
+}
+
+.osivia-portal-cell.label.required:BEFORE {
+	content: "* ";
+    color: #FF0000 !important;
+}
+
 
 .osivia-portal-spacer {
 	display: inline-block;
@@ -135,8 +152,7 @@ a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
 
 .fancybox-table {
     display: table;
-    border-collapse: separate;
-    border-spacing: 5px 3px;
+    border-collapse: collapse;
     width: 100%;
 }
 
@@ -156,7 +172,7 @@ form.fancybox-form {
 
 .fancybox-table-cell {
     display: table-cell;
-    margin: 2px;
+    padding: 2px 0;
     vertical-align: middle;
 }
 
@@ -169,7 +185,7 @@ form.fancybox-form {
 }
 
 .fancybox-label {
-    margin-right: 5px;
+    padding-right: 5px;
     text-align: right;
 }
 
@@ -184,6 +200,7 @@ form.fancybox-form .small-input {
 }
 
 form.fancybox-form .fancybox-center-content {
+	margin-top: 10px;
     text-align: center;
 }
 
