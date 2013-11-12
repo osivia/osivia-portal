@@ -45,6 +45,18 @@
 	width: 16px;
 }
 
+
+.osivia-portal-regions-template-name-span {
+	background: rgb(155, 155, 155);
+	color: white;
+}
+.osivia-portal-regions-cms-name-span {
+	background: rgb(182, 182, 182);
+	color: white;
+}
+
+
+
 .osivia-portal-windows-commands img {
 	height: 16px;
 	width: 16px;

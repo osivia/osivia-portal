@@ -47,7 +47,7 @@ import org.osivia.portal.core.theming.IRegionRendererContext;
 
 /**
  * Implementation of a Region renderer, based on div tags.
- *
+ * 
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @author <a href="mailto:roy@jboss.org>Roy Russo</a>
  * @version $LastChangedRevision: 8784 $, $LastChangedDate: 2007-10-27 19:01:46 -0400 (Sat, 27 Oct 2007) $
@@ -63,6 +63,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     private static final String CLASS_FANCYBOX = "fancybox_inline";
     /** Region commands class. */
     private static final String CLASS_REGIONS_COMMANDS = "osivia-portal-regions-commands";
+    /** Region commands class. */
+
+    private static final String CLASS_REGIONS_NAME_TPL_SPAN = "osivia-portal-regions-template-name-span";
+    private static final String CLASS_REGIONS_NAME_CMS_SPAN = "osivia-portal-regions-cms-name-span";
     /** "Add" image source. */
     private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/icons/icon_add_window.png";
 
@@ -79,7 +83,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Render region header.
-     *
+     * 
      * @param rendererContext renderer context
      * @param rrc region renderer context
      * @throws RenderException
@@ -93,7 +97,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         } else {
             locale = Locale.US;
         }
-
 
         PrintWriter markup = rendererContext.getWriter();
 
@@ -137,12 +140,29 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
         }
 
-        if (!((rrc instanceof IRegionRendererContext) && ((IRegionRendererContext) rrc).isCMS())) {
-            // Lien d'ajout de portlet
-            if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
-                String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
 
-                DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+        IRegionRendererContext irrc = (IRegionRendererContext) rrc;
+
+        // Lien d'ajout de portlet
+        if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
+
+
+            DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+            if (irrc.isCMS()) {
+
+                div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
+
+                // region id
+                DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
+                span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_CMS_SPAN);
+                span.addAttribute(QName.get(HTMLConstants.TITLE), INTERNATIONALIZATION_SERVICE.getString("REGION_CMS_TITLE", locale));
+                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_CMS", locale).concat(rrc.getId()));
+                div.add(span);
+
+
+            } else {
+
+                String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
                 div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
                 DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
@@ -155,19 +175,27 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
                 a.add(img);
 
-                HTMLWriter htmlWriter = new HTMLWriter(markup);
-                try {
-                    htmlWriter.write(div);
-                } catch (IOException e) {
-                    throw new RenderException(e);
-                }
+                // region id
+                DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
+                span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_TPL_SPAN);
+                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_TEMPLATE", locale).concat(rrc.getId()));
+                div.add(span);
             }
+
+            HTMLWriter htmlWriter = new HTMLWriter(markup);
+            try {
+                htmlWriter.write(div);
+            } catch (IOException e) {
+                throw new RenderException(e);
+            }
+
         }
     }
 
+
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
-     *
+     * 
      * @param rendererContext page context
      * @param rrc region context
      * @return
