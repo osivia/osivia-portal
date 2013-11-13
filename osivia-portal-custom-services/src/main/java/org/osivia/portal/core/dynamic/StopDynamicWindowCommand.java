@@ -85,6 +85,10 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 			
 			Window window = (Window) getControllerContext().getController().getPortalObjectContainer().getObject( PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT));
 			
+			// 2.0.22 : fixes NPE if session has expired
+			if( window != null)	{
+				
+			
 			String closeUrl = window.getProperty("osivia.dynamic.close_url");
 			
 			if( closeUrl != null)	{
@@ -103,6 +107,8 @@ public class StopDynamicWindowCommand extends DynamicCommand  {
 				// Renvoi vers l'item precedent
 				BreadcrumbItem lastItem = breadcrumb.getChilds().get(breadcrumb.getChilds().size() - 2);
 				return new RedirectionResponse(lastItem.getUrl());
+			}
+			
 			}
 				
 			

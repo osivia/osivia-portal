@@ -1,10 +1,16 @@
 package org.osivia.portal.core.login;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.security.auth.Subject;
+import javax.security.jacc.PolicyContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,15 +18,18 @@ import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.identity.User;
+import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
+import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.spi.ICMSIntegration;
+import org.osivia.portal.core.profils.ProfilBean;
 
 
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
@@ -72,6 +81,36 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 			String userPagesPreloaded = (String) invocation.getAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone");
 
 			if (!"1".equals(userPagesPreloaded)) {
+				
+				
+				/* JSS 20131113 : ajout HACK JSS suite à problème de prod
+				 * 
+				 * pas de preload pour les eleves et les parents
+				 * 
+				 * */
+				
+				boolean noPreload = false;
+				
+		         // Get the current authenticated subject through the JACC contract
+		         Subject subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+
+		 		// utilisation mapping standard du portail
+		 		JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
+
+
+		 			Iterator iter = pp.getRoles().iterator();
+		 			while (iter.hasNext()) {
+		 				Principal principal = (Principal) iter.next();
+		 				if (principal.getName().equals("eleve-tous") || principal.getName().equals("parent-tous")) {
+		 					noPreload = true;
+		 				}
+		 			}
+		 			
+		 		if( noPreload)	{
+		 			
+		 			invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", new ArrayList<CMSPage>());
+		 			
+		 		}	else	{
 
 				/* Appel pages préchargées */
 
@@ -87,6 +126,8 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 					// Don't block login
 					logger.error("Can't compute cms pages for user " + user.getUserName());
 				}
+				
+		 		}
 
 				/* Appel module userdatas */
 
