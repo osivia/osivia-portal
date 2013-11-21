@@ -254,9 +254,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     windowlogger.debug("initPageState " + window.getId() + ": maximized -> normal");
                 }
 
-
-                // On force le rafrachissement de la page (requete Ajax)
-                controllerCtx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
+                /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
+                /*
+                 * // On force le rafrachissement de la page (requete Ajax)
+                 * controllerCtx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
+                 */
 
             }
         }
@@ -420,10 +422,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
-                            if( url.indexOf('?') == -1)
+                            if( url.indexOf('?') == -1) {
                                 url += "?";
-                            else
+                            } else {
                                 url += "&";
+                            }
                             url += "firstTab=" + request.getParameter("firstTab");
                         }
                         return new RedirectionResponse(url.toString());

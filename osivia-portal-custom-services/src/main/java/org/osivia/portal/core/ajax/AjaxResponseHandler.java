@@ -39,7 +39,6 @@ import org.jboss.portal.core.model.portal.command.response.PortletWindowActionRe
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateChange;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -140,7 +139,9 @@ public class AjaxResponseHandler implements ResponseHandler {
         // }
         // else if (controllerResponse instanceof UpdateWindowResponse)
         {
-            boolean reloadAjaxWindows = false;
+
+            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
+            // boolean reloadAjaxWindows = false;
 
             UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
 
@@ -158,7 +159,7 @@ public class AjaxResponseHandler implements ResponseHandler {
             // Whether we need a full refresh or not
             boolean fullRefresh = false;
 
-            
+
             // If the page has changed, need a full refresh
             // It's useful for error pages
             PortalObjectId portalObjectId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
@@ -216,21 +217,32 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                         // Collect the dirty window id
                         dirtyWindowIds.add(key.getId());
-                    } else if (type == PageNavigationalState.class) {
-
-                        // Pas de rechargement de la page si les parametres publics sont modifies
-
-                        // force full refresh for now...
-                        // fullRefresh = true;
-
-                        // A la place, on recharge les windows
-                        reloadAjaxWindows = true;
-
-                        // On peut vérifier que les paramètres publics on bien été modifiés
-                        // PageNavigationalState pp = (PageNavigationalState) update.getNewValue();
                     }
+                    /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
+
+                    /*
+                     * else if (type == PageNavigationalState.class) {
+                     *
+                     * // Pas de rechargement de la page si les parametres publics sont modifies
+                     *
+                     * // force full refresh for now...
+                     * // fullRefresh = true;
+                     *
+                     * // A la place, on recharge les windows
+                     * reloadAjaxWindows = true;
+                     *
+                     * // On peut vérifier que les paramètres publics on bien été modifiés
+                     * // PageNavigationalState pp = (PageNavigationalState) update.getNewValue();
+                     * }
+                     */
                 }
             }
+
+
+            if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
+                fullRefresh = true;
+            }
+
 
             // TODO : rechargement systématique des windows supportant le mode Ajax
             /*
@@ -248,7 +260,10 @@ public class AjaxResponseHandler implements ResponseHandler {
              */
 
             // v2.0.8 : gestion des evenements de selection
-            if (!reloadAjaxWindows && !fullRefresh) {
+
+            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
+//            if (!reloadAjaxWindows && !fullRefresh) {
+                if (!fullRefresh) {
                 Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
 
@@ -268,25 +283,29 @@ public class AjaxResponseHandler implements ResponseHandler {
 
 
             // Le rafraichissment de la page doit etre explicitement demandé par le portlet
-            if (reloadAjaxWindows) {
-                if (!"true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
 
-                    Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
 
+            // if (reloadAjaxWindows) {
+            // if (!"true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
+            //
+            // Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+            //
+            //
+            // for (PortalObject window : windows) {
+            //
+            // if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
+            // if (!dirtyWindowIds.contains(window.getId())) {
+            // dirtyWindowIds.add(window.getId());
+            // }
+            // }
+            // }
+            // } else {
+            // fullRefresh = true;
+            // }
+            //
+            // }
 
-                    for (PortalObject window : windows) {
-
-                        if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
-                            if (!dirtyWindowIds.contains(window.getId())) {
-                                dirtyWindowIds.add(window.getId());
-                            }
-                        }
-                    }
-                } else {
-                    fullRefresh = true;
-                }
-
-            }
 
 
             // Commit changes
@@ -466,10 +485,10 @@ public class AjaxResponseHandler implements ResponseHandler {
             }
 
             // We perform a full refresh
-            
+
             PageMarkerUtils.savePageState(controllerContext, page);
 
-            
+
             ViewPageCommand rpc = new ViewPageCommand(page.getId());
             String url = controllerContext.renderURL(rpc, null, null);
             UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
