@@ -66,9 +66,7 @@ import org.jboss.portal.theme.LayoutInfo;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
-import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
@@ -1163,11 +1161,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             throw new IllegalArgumentException("target path not accessible");
         }
 
-        String themeId = page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+        // [v3.0.2] context is found in the current layout 
+        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PageService pageService = pc.getControllerContext().getController().getPageService();
-        ThemeService themeService = pageService.getThemeService();
-        PortalTheme theme = themeService.getThemeById(themeId);
-        return theme.getThemeInfo().getContextPath();
+        LayoutService layoutService = pageService.getLayoutService();
+        PortalLayout layout = layoutService.getLayoutById(layoutId);
+        return layout.getLayoutInfo().getContextPath();
     }
 
 
