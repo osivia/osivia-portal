@@ -7,7 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
@@ -23,13 +25,13 @@ import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.ServerURL;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -264,65 +266,59 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
-    /*
-     * Ajout du page marker
-     *
-     * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
+    public String adaptPortalUrlToNavigation(PortalControllerContext portalCtx, String orginalUrl) {
+        // Pattern
+        Pattern pattern = Pattern.compile("(http://([^/:]*)(:[0-9]*)?)?/([^/]*)(/auth)?/(pagemarker/[0-9]+/)?(.*)");
 
-    public String adaptPortalUrlToNavigation(PortalControllerContext portalCtx, String orginalUrl) throws Exception {
-        // Les urls portail sont toutes absolues
+        Matcher matcher = pattern.matcher(orginalUrl);
+        if (matcher.matches()) {
+            // Controller context
+            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
+            // Server context
+            ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+            // Client request
+            HttpServletRequest request = serverContext.getClientRequest();
+            // Context path
+            String contextPath = serverContext.getPortalContextPath();
+            contextPath = StringUtils.removeEnd(contextPath, "/auth");
+            // Server name
+            String serverName = request.getServerName();
 
-        Pattern expOrginial = Pattern.compile("http://([^/:]*)(:[0-9]*)?/([^/]*)(/auth/|/)((pagemarker/[0-9]*/)?)(.*)");
+            // Absolute or relative request indicator
+            boolean absolute = (matcher.group(1) != null);
 
-        try {
-
-            Matcher mResOriginal = expOrginial.matcher(orginalUrl);
-
-            if (mResOriginal.matches() && (mResOriginal.groupCount() == 7)) {
-                // Not the current host ?
-                ControllerContext ctx = ControllerContextAdapter.getControllerContext(portalCtx);
-
-
-                String contextPath = ctx.getServerInvocation().getServerContext().getPortalContextPath();
-
-                if (contextPath.endsWith("/auth")) {
-                    contextPath = contextPath.substring(0, contextPath.length() - 5);
-                }
-
-
-                String serverName = ctx.getServerInvocation().getServerContext().getClientRequest().getServerName();
-
-
-                if (!serverName.equals(mResOriginal.group(1)) || !contextPath.substring(1).equals(mResOriginal.group(3))) {
-                    return orginalUrl;
-                }
-
-                StringBuffer transformedUrl = new StringBuffer();
-                transformedUrl.append("http://" + mResOriginal.group(1));
-
-                int port = ctx.getServerInvocation().getServerContext().getClientRequest().getServerPort();
-
-                if (port != 80) {
-                    transformedUrl.append(":" + port);
-                }
-
-
-                // context
-                transformedUrl.append("/" + mResOriginal.group(3));
-                transformedUrl.append(mResOriginal.group(4));
-
-                // add pagemarker
-                transformedUrl.append("pagemarker/");
-                transformedUrl.append(PageMarkerUtils.getCurrentPageMarker(ctx) + '/');
-                transformedUrl.append(mResOriginal.group(7));
-
-                return transformedUrl.toString();
-
+            // Check server name and context path
+            if (absolute && !(serverName.equals(matcher.group(2)) && contextPath.substring(1).equals(matcher.group(4)))) {
+                return orginalUrl;
             }
 
-        } catch (Exception e) {
-            // Do nothing
+            // Server port
+            int port = request.getServerPort();
+            // Current page marker
+            String pageMarker = PageMarkerUtils.getCurrentPageMarker(controllerContext);
+
+
+            // Transformed URL
+            StringBuffer transformedUrl = new StringBuffer();
+            if (absolute) {
+                transformedUrl.append("http://");
+                transformedUrl.append(serverName);
+                if (port != 80) {
+                    transformedUrl.append(":");
+                    transformedUrl.append(port);
+                }
+            }
+            transformedUrl.append(contextPath);
+            transformedUrl.append(StringUtils.trimToEmpty(matcher.group(5)));
+            transformedUrl.append("/pagemarker/");
+            transformedUrl.append(pageMarker);
+            transformedUrl.append("/");
+            transformedUrl.append(matcher.group(7));
+
+            return transformedUrl.toString();
         }
 
         return orginalUrl;

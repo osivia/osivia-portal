@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.osivia.portal.core.assistantpage.test;
+package org.osivia.portal.core.assistantpage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
