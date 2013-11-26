@@ -178,6 +178,7 @@ public final class InternalConstants {
     /** Requests filtered by ECM references */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER = "none";
+    public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_GLOBAL = "global";
 
     public static final String PORTAL_PROP_NAME_PORTAL_TYPE = "osivia.portal.portalType";
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
