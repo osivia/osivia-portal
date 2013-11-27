@@ -117,7 +117,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -136,7 +135,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         // FIXME old regions attributes
         this.names.add(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE);
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
     }
 
 
@@ -204,9 +202,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Generic command URL
         String commandUrl = serverContext.getPortalContextPath() + "/commands";
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
-
-        // Current page
-        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
 
         // CMS templated page indicator
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED, templated);
@@ -287,7 +282,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         // FIXME old regions attributes
         attributes.put(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, InternationalizationUtils.getInternationalizationService());
-        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this.formatter);
     }
 
 
@@ -349,7 +343,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to fill toolbar attributes.
-     * 
+     *
      * @param renderPageCommand render page command
      * @param pageRendition page rendition
      * @param attributes attributes map

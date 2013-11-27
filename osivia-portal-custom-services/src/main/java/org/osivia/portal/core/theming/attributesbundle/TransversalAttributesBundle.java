@@ -22,6 +22,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 /**
@@ -36,6 +37,8 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
     private static TransversalAttributesBundle instance;
 
 
+    /** Formatter. */
+    private final IFormatter formatter;
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
 
@@ -49,12 +52,17 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
     private TransversalAttributesBundle() {
         super();
 
+        // Formatter
+        this.formatter = Locator.findMBean(IFormatter.class, "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+        // URL factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
 
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_CONTROLLER_CONTEXT);
         this.names.add(InternalConstants.ATTR_CMS_PATH);
         this.names.add(InternalConstants.ATTR_COMMAND_PREFIX);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
         this.names.add(Constants.ATTR_PORTAL_CTX);
         this.names.add(Constants.ATTR_URL_FACTORY);
     }
@@ -89,6 +97,10 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         // Command prefix
         String commandPrefix = this.computeCommandPrefix(controllerContext);
         attributes.put(InternalConstants.ATTR_COMMAND_PREFIX, commandPrefix);
+        // Current page
+        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
+        // Formatter
+        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this.formatter);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
