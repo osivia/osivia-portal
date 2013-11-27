@@ -27,22 +27,33 @@ public interface IRenderedRegions {
 
 
     /**
-     * Define rendered region.
+     * Customize rendered region.
      * 
      * @param regionName region name
      * @param regionPath region path
-     * @return true if the region was successfully added
+     * @return true if the region was successfully customized
      */
-    boolean defineRenderedRegion(String regionName, String regionPath);
+    boolean customizeRenderedRegion(String regionName, String regionPath);
 
 
     /**
      * Remove rendered region.
-     * 
+     *
      * @param regionName region name
      * @return true if the region was successfully removed
      */
     boolean removeRenderedRegion(String regionName);
+
+
+    /**
+     * Decorate portlets region with header and/or footer.
+     *
+     * @param regionName portlets region name
+     * @param headerPath header path, may be null
+     * @param footerPath footer path, may be null
+     * @return true if the region was successfully decorated
+     */
+    boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath);
 
 
     /**

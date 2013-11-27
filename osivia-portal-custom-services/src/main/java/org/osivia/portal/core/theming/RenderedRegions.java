@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.portal.core.model.portal.Page;
+import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRenderedRegions;
+import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
@@ -20,8 +22,8 @@ public class RenderedRegions implements IRenderedRegions {
 
     /** Current page. */
     private final Page page;
-    /** Rendered regions map. */
-    private final Map<String, RenderedRegionBean> renderedRegions;
+    /** Regions map. */
+    private final Map<String, AbstractRegionBean> renderedRegions;
 
 
     /**
@@ -32,7 +34,7 @@ public class RenderedRegions implements IRenderedRegions {
     public RenderedRegions(Page page) {
         super();
         this.page = page;
-        this.renderedRegions = new HashMap<String, RenderedRegionBean>();
+        this.renderedRegions = new HashMap<String, AbstractRegionBean>();
     }
 
 
@@ -47,7 +49,7 @@ public class RenderedRegions implements IRenderedRegions {
     /**
      * {@inheritDoc}
      */
-    public boolean defineRenderedRegion(String regionName, String regionPath) {
+    public boolean customizeRenderedRegion(String regionName, String regionPath) {
         boolean customizable = true;
         if (this.renderedRegions.containsKey(regionName)) {
             customizable = this.renderedRegions.get(regionName).isCustomizable();
@@ -69,11 +71,30 @@ public class RenderedRegions implements IRenderedRegions {
             customizable = this.renderedRegions.get(regionName).isCustomizable();
         }
 
-        RenderedRegionBean region = null;
+        AbstractRegionBean region = null;
         if (customizable) {
             region = this.renderedRegions.remove(regionName);
         }
         return (region != null);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath) {
+        boolean decoratable = true;
+        if (this.renderedRegions.containsKey(regionName)) {
+            AbstractRegionBean region = this.renderedRegions.get(regionName);
+            if (!(region instanceof PortletsRegionBean)) {
+                decoratable = false;
+            }
+        }
+
+        if (decoratable) {
+            this.renderedRegions.put(regionName, new PortletsRegionBean(regionName, headerPath, footerPath));
+        }
+        return decoratable;
     }
 
 
@@ -103,8 +124,8 @@ public class RenderedRegions implements IRenderedRegions {
      *
      * @return rendered regions list
      */
-    public List<RenderedRegionBean> getRenderedRegions() {
-        return new ArrayList<RenderedRegionBean>(this.renderedRegions.values());
+    public List<AbstractRegionBean> getRenderedRegions() {
+        return new ArrayList<AbstractRegionBean>(this.renderedRegions.values());
     }
 
 }

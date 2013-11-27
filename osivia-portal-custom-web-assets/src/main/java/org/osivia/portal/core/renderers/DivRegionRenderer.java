@@ -44,10 +44,11 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 import org.osivia.portal.core.theming.IRegionRendererContext;
+import org.osivia.portal.core.theming.RegionDecorator;
 
 /**
  * Implementation of a Region renderer, based on div tags.
- * 
+ *
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @author <a href="mailto:roy@jboss.org>Roy Russo</a>
  * @version $LastChangedRevision: 8784 $, $LastChangedDate: 2007-10-27 19:01:46 -0400 (Sat, 27 Oct 2007) $
@@ -61,11 +62,11 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX = "fancybox_inline";
-    /** Region commands class. */
+    /** Regions commands class. */
     private static final String CLASS_REGIONS_COMMANDS = "osivia-portal-regions-commands";
-    /** Region commands class. */
-
+    /** Regions template name class. */
     private static final String CLASS_REGIONS_NAME_TPL_SPAN = "osivia-portal-regions-template-name-span";
+    /** Regions CMS name class. */
     private static final String CLASS_REGIONS_NAME_CMS_SPAN = "osivia-portal-regions-cms-name-span";
     /** "Add" image source. */
     private static final String SRC_IMG_ADD = "/osivia-portal-custom-web-assets/images/icons/icon_add_window.png";
@@ -73,22 +74,21 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /** list of regions in head. */
     private final List<String> headerRegions;
 
+
     /**
      * Default constructor.
      */
     public DivRegionRenderer() {
-        headerRegions = new ArrayList<String>();
-        headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
+        this.headerRegions = new ArrayList<String>();
+        this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
     }
 
+
     /**
-     * Render region header.
-     * 
-     * @param rendererContext renderer context
-     * @param rrc region renderer context
-     * @throws RenderException
+     * {@inheritDoc}
      */
     public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
+        IRegionRendererContext irrc = (IRegionRendererContext) rrc;
 
         String language = rrc.getProperty("osivia.language");
         Locale locale = null;
@@ -101,7 +101,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         PrintWriter markup = rendererContext.getWriter();
 
         // Main DIV region (not shown in <head> tag)
-        if (!headerRegions.contains(rrc.getCSSId())) {
+        if (!this.headerRegions.contains(rrc.getCSSId())) {
             markup.print("<div");
 
             if (rrc.getCSSId() != null) {
@@ -113,9 +113,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // in cms mode, create a new fragment on the top of this region
-        if (this.showCmsTools(rendererContext, rrc)) {
-
-
+        if (this.showCmsTools(rendererContext, irrc)) {
             markup.print("<div class=\"cms-commands\">");
 
             markup.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
@@ -140,26 +138,94 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
         }
 
+        // Add portlet link
+        this.addPortletLink(rendererContext, irrc, locale, markup);
 
+        // Add header decorator
+        RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
+        if ((decorator != null) && (decorator.getHeaderContent() != null)) {
+            markup.println(decorator.getHeaderContent());
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
+        for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
+            WindowRendererContext wrc = (WindowRendererContext) i.next();
+            rendererContext.render(wrc);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         IRegionRendererContext irrc = (IRegionRendererContext) rrc;
+        PrintWriter markup = rendererContext.getWriter();
 
+        // Add footer decorator
+        RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
+        if ((decorator != null) && (decorator.getFooterContent() != null)) {
+            markup.println(decorator.getFooterContent());
+        }
+
+        // End of DIV for Drag n drop
+        if (this.showCmsTools(rendererContext, irrc)) {
+            markup.print("</div>");
+        }
+
+        // End of Main DIV region (not shown in <head> tag)
+        if (!this.headerRegions.contains(rrc.getCSSId())) {
+            markup.print("</div>");
+        }
+    }
+
+
+    /**
+     * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session.
+     *
+     * @param rendererContext page context
+     * @param irrc region renderer context
+     * @return true if CMS tools must be shown
+     */
+    private Boolean showCmsTools(RendererContext rendererContext, IRegionRendererContext irrc) {
+        Boolean showCmsTools = false;
+
+        String property = irrc.getProperty("osivia.cmsShowTools");
+        if (property != null) {
+            showCmsTools = Boolean.valueOf(property);
+        }
+
+        return irrc.isCMS() && showCmsTools;
+    }
+
+
+    /**
+     * Utility method used to add portlet link.
+     *
+     * @param rendererContext renderer context
+     * @param irrc region renderer context
+     * @param locale current locale
+     * @param markup markup
+     * @throws RenderException
+     */
+    private void addPortletLink(RendererContext rendererContext, IRegionRendererContext irrc, Locale locale, PrintWriter markup) throws RenderException {
         // Lien d'ajout de portlet
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
-
-
             DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
             if (irrc.isCMS()) {
-
                 div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
                 // region id
                 DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
                 span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_CMS_SPAN);
                 span.addAttribute(QName.get(HTMLConstants.TITLE), INTERNATIONALIZATION_SERVICE.getString("REGION_CMS_TITLE", locale));
-                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_CMS", locale).concat(rrc.getId()));
+                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_CMS", locale).concat(irrc.getId()));
                 div.add(span);
-
-
             } else {
 
                 String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
@@ -168,7 +234,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
                 a.addAttribute(QName.get(HTMLConstants.HREF), url);
                 a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
-                a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + rrc.getId() + "'");
+                a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + irrc.getId() + "'");
                 div.add(a);
 
                 DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
@@ -178,7 +244,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 // region id
                 DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
                 span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_TPL_SPAN);
-                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_TEMPLATE", locale).concat(rrc.getId()));
+                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_TEMPLATE", locale).concat(irrc.getId()));
                 div.add(span);
             }
 
@@ -188,49 +254,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             } catch (IOException e) {
                 throw new RenderException(e);
             }
-
         }
     }
 
-
-    /**
-     * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session
-     * 
-     * @param rendererContext page context
-     * @param rrc region context
-     * @return
-     */
-    private Boolean showCmsTools(RendererContext rendererContext, RegionRendererContext rrc) {
-        Boolean showCmsTools = false;
-
-        String property = rrc.getProperty("osivia.cmsShowTools");
-        if (property != null) {
-            showCmsTools = Boolean.valueOf(property);
-        }
-
-        return (rrc instanceof IRegionRendererContext) && (((IRegionRendererContext) rrc).isCMS()) && showCmsTools;
-
-
-    }
-
-    public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
-        for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
-            WindowRendererContext wrc = (WindowRendererContext) i.next();
-            rendererContext.render(wrc);
-        }
-    }
-
-    public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
-        PrintWriter markup = rendererContext.getWriter();
-
-        // End of DIV for Drag n drop
-        if (this.showCmsTools(rendererContext, rrc)) {
-            markup.print("</div>");
-        }
-
-        // End of Main DIV region (not shown in <head> tag)
-        if (!headerRegions.contains(rrc.getCSSId())) {
-            markup.print("</div>");
-        }
-    }
 }

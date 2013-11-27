@@ -45,6 +45,7 @@ import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
@@ -84,8 +85,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     private static final String DELETE_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_delete_window.png";
     /** Delete portlet message. */
     private static final String CMS_DELETE_CONFIRM_MESSAGE = "CMS_DELETE_CONFIRM_MESSAGE";
-    private static final String YES = "YES";
-    private static final String NO = "NO";
+
+
+    /**
+     * Default constructor.
+     */
+    public DivWindowRenderer() {
+        super();
+    }
 
 
     /**
@@ -110,6 +117,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
 
         if ("1".equals(hidePortlet)) {
+            // v2.0.22 : portlet vide non rafraichi en ajax
+            out.println("<div class=\"dyna-window-content\" ></div>");
+
             return;
         }
 
@@ -150,7 +160,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
             Element divFancyBoxDelete;
             try {
-                divFancyBoxDelete = generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
+                divFancyBoxDelete = this.generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
             } catch (UnsupportedEncodingException e) {
                 throw new RenderException(e);
             }
@@ -227,8 +237,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print("</table>");
         }
 
-        out.print("</div>"); // portlet-container
-        out.print("</div>"); // dyna-window-content
+        // portlet-container
+        out.print("</div>");
+        // dyna-window-content
+        out.print("</div>");
 
         // in cms mode, create a new fragment below the current window
         if (this.showCmsTools(wrc)) {
@@ -255,10 +267,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     }
 
     /**
-     * Display CMS Tools if window is marked "CMS" (dynamic window) and if the tools are enabled in the session
+     * Display CMS Tools if window is marked "CMS" (dynamic window) and if the tools are enabled in the session.
      *
      * @param wrc window context
-     * @return
+     * @return true if CMS tools must be shown
      */
     private Boolean showCmsTools(WindowRendererContext wrc) {
         // Déterminer si la window appartient à une région CMS
@@ -271,7 +283,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 regionCms = wc.getRegionCms();
             }
 
-            if (regionCms && wrc.getProperty("osivia.cmsShowTools") != null && Boolean.valueOf(wrc.getProperty("osivia.cmsShowTools"))) {
+            if (regionCms && (wrc.getProperty("osivia.cmsShowTools") != null) && Boolean.valueOf(wrc.getProperty("osivia.cmsShowTools"))) {
                 showCmsTools = true;
             } else {
                 showCmsTools = false;
@@ -283,9 +295,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /**
      * Utility method used to print portlet commands.
-     *
+     * 
      * @param writer renderer writer
      * @param windowRendererContext window renderer context
+     * @param properties properties
      * @throws RenderException
      */
     @SuppressWarnings("unchecked")
@@ -412,7 +425,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
     /**
-     * Prepare a fancybox for deleting the fragment
+     * Prepare a fancybox for deleting the fragment.
+     *
+     * @param locale current locale
+     * @param urlDelete delete fragment URL
+     * @param fragmentId fragment identifier
+     * @return fancybox div
+     * @throws UnsupportedEncodingException
      */
     private Element generateDeleteFancyBox(Locale locale, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
         String[] split = urlDelete.split("\\?");
@@ -425,14 +444,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         DOMElement innerDiv = new DOMElement(QName.get(HTMLConstants.DIV));
         innerDiv.addAttribute(QName.get(HTMLConstants.ID), "delete_".concat(fragmentId));
         div.add(innerDiv);
-        
+
         Element form = new DOMElement(QName.get(HTMLConstants.FORM));
         form.addAttribute(QName.get(HTMLConstants.ID), "formDelete_".concat(fragmentId));
         form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
         form.addAttribute(QName.get(HTMLConstants.ACTION), action);
         form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
         innerDiv.add(form);
-        
+
         Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
         divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
         divMsg.setText(INTERNATIONALIZATION_SERVICE.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
@@ -441,28 +460,28 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
         divButton.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
 
-        for (int i = 0; i < args.length; i++) {
+        for (String arg : args) {
             Element hiddenArg = new DOMElement(QName.get(HTMLConstants.INPUT));
             hiddenArg.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
-            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), args[i].split("=")[0]);
-            String value = args[i].split("=")[1];
+            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), arg.split("=")[0]);
+            String value = arg.split("=")[1];
             hiddenArg.addAttribute(QName.get(HTMLConstants.VALUE), URLDecoder.decode(value, "UTF-8"));
             divButton.add(hiddenArg);
         }
 
         Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(YES, locale));
+        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(InternationalizationConstants.KEY_YES, locale));
         divButton.add(btnOk);
 
         Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
-        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(NO, locale));
+        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(InternationalizationConstants.KEY_NO, locale));
         btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
         divButton.add(btnQuit);
 
         form.add(divButton);
-        
+
         return div;
     }
 

@@ -2,6 +2,7 @@ package org.osivia.portal.core.tag;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -20,11 +21,12 @@ import org.jboss.portal.theme.render.renderer.PageRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.theming.IRegionRendererContext;
+import org.osivia.portal.core.theming.RegionDecorator;
 import org.osivia.portal.core.theming.RegionRendererContextImpl;
 
 /**
  * Region tag handler.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see SimpleTagSupport
  */
@@ -89,6 +91,7 @@ public class RegionTagHandler extends SimpleTagSupport {
      * @throws JspException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     private void renderRegion(HttpServletRequest request) throws JspException, IOException {
         if (this.regionID == null) {
             this.regionID = this.regionName;
@@ -114,6 +117,13 @@ public class RegionTagHandler extends SimpleTagSupport {
         IRegionRendererContext regionRendererContext = new RegionRendererContextImpl(currentRegion, this.regionName, this.regionID, this.cms, this.orientation);
         // JSP renderer context
         JSPRendererContext renderContext = (JSPRendererContext) request.getAttribute(LayoutConstants.ATTR_RENDERCONTEXT);
+
+        // Decorator
+        Map<String, RegionDecorator> decorators = (Map<String, RegionDecorator>) request.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
+        RegionDecorator decorator = decorators.get(this.regionName);
+        renderContext.setAttribute(InternalConstants.ATTR_REGIONS_DECORATORS, decorator);
+
+
         try {
             PrintWriter writer = new PrintWriter(out);
             renderContext.setWriter(writer);

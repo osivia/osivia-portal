@@ -16,14 +16,23 @@ public interface IRegionsThemingService {
 
 
     /**
-     * Add region.
-     * 
+     * Add rendered region.
+     *
      * @param renderPageCommand render page command
      * @param pageRendition page rendition
      * @param renderedRegion rendered region bean
      * @throws ControllerException
      */
     void addRegion(RenderPageCommand renderPageCommand, PageRendition pageRendition, RenderedRegionBean renderedRegion) throws ControllerException;
+
+
+    /**
+     * Decorate portlets region.
+     *
+     * @param renderPageCommand render page command
+     * @param portletsRegion portlets region bean
+     */
+    void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion);
 
 
     /**

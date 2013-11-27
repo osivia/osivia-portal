@@ -35,6 +35,7 @@ import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -292,7 +293,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String outgoingRecontextualizationSupport = null;
                     // String incomingContextualizationSupport = null;
                     String navigationScope = null;
-                    String cmsNavigationMode = null;
                     String displayLiveVersion = null;
 
                     if (parameterMap.get("pageId") != null) {
@@ -311,9 +311,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         }
                         if (parameterMap.get("outgoingRecontextualizationSupport") != null) {
                             outgoingRecontextualizationSupport = URLDecoder.decode(parameterMap.get("outgoingRecontextualizationSupport")[0], CharEncoding.UTF_8);
-                        }
-                        if (parameterMap.get("cmsNavigationMode") != null) {
-                            cmsNavigationMode = URLDecoder.decode(parameterMap.get("cmsNavigationMode")[0], CharEncoding.UTF_8);
                         }
                         if (parameterMap.get("displayLiveVersion") != null) {
                             displayLiveVersion = URLDecoder.decode(parameterMap.get("displayLiveVersion")[0], CharEncoding.UTF_8);
@@ -487,6 +484,16 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     return new PermLinkCommand(permMlinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
 
+                }
+
+                // Advanced search
+                if ("advancedSearch".equals(action)) {
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("search") != null)) {
+                        String pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        String search = URLDecoder.decode(parameterMap.get("search")[0], CharEncoding.UTF_8);
+
+                        return new AdvancedSearchCommand(pageId, search);
+                    }
                 }
 
 				/* CMS commands */

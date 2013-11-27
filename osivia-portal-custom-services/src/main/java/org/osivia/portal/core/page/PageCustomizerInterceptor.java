@@ -75,6 +75,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
@@ -616,6 +617,38 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                             ((InvokePortletWindowRenderCommand) cmd).getTargetId());
                 }
             }
+        }
+
+
+        if (cmd instanceof RenderPageCommand) {
+
+            ControllerContext controllerCtx = cmd.getControllerContext();
+            NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+            Page page = ((RenderPageCommand) cmd).getPage();
+
+            PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
+
+            String sSelector[] = null;
+            if (pageState != null) {
+                sSelector = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+            }
+
+            if ((sSelector != null) && (sSelector.length > 0)) {
+                Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
+                boolean hideAdvancedSearch = true;
+                for (String selectorId : selectors.keySet()) {
+                    if (!"search".equals(selectorId)) {
+                        hideAdvancedSearch = false;
+                        break;
+                    }
+                }
+                if (hideAdvancedSearch) {
+                    cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
+                }
+            }
+
+
         }
 
 

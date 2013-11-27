@@ -9,8 +9,10 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.theming.AbstractRegionBean;
 import org.osivia.portal.api.theming.IRegionsThemingService;
 import org.osivia.portal.api.theming.IRenderedRegions;
+import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
@@ -48,8 +50,8 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
             // Render page command
             RenderPageCommand renderPageCommand = (RenderPageCommand) command;
 
-            if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal()) && renderPageCommand.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-            "osivia.popupModeWindowID") == null ) {
+            if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal()) && (renderPageCommand.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+            "osivia.popupModeWindowID") == null) ) {
                 // Page rendition
                 PageRendition pageRendition = (PageRendition) response;
 
@@ -67,8 +69,16 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
                 this.customizationService.customize(IRenderedRegions.CUSTOMIZER_ID, context);
 
                 // Add regions
-                for (RenderedRegionBean renderedRegion : renderedRegions.getRenderedRegions()) {
-                    this.regionsThemingService.addRegion(renderPageCommand, pageRendition, renderedRegion);
+                for (AbstractRegionBean region : renderedRegions.getRenderedRegions()) {
+                    if (region instanceof RenderedRegionBean) {
+                        // Rendered region
+                        RenderedRegionBean renderedRegion = (RenderedRegionBean) region;
+                        this.regionsThemingService.addRegion(renderPageCommand, pageRendition, renderedRegion);
+                    } else if (region instanceof PortletsRegionBean) {
+                        // Portlets region
+                        PortletsRegionBean portletsRegion = (PortletsRegionBean) region;
+                        this.regionsThemingService.decorateRegion(renderPageCommand, portletsRegion);
+                    }
                 }
             }
         }

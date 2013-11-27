@@ -174,6 +174,8 @@ public final class InternalConstants {
     /** Layout CMS indicator attribute name. */
     public static final String ATTR_LAYOUT_CMS_INDICATOR = "osivia.layout.cms";
 
+    /** Regions decorators attribute name. */
+    public static final String ATTR_REGIONS_DECORATORS = "osivia.regions.decorators";
 
     /** Requests filtered by ECM references */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";

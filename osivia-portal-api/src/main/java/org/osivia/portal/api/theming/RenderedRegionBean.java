@@ -2,13 +2,12 @@ package org.osivia.portal.api.theming;
 
 /**
  * Rendered region java bean.
- *
+ * 
  * @author Cédric Krommenhoek
+ * @see AbstractRegionBean
  */
-public class RenderedRegionBean {
+public class RenderedRegionBean extends AbstractRegionBean {
 
-    /** Rendered region name. */
-    private final String name;
     /** Rendered region path. */
     private final String path;
     /** Default region indicator (default value is false). */
@@ -24,22 +23,21 @@ public class RenderedRegionBean {
      * @param path rendered region path
      */
     public RenderedRegionBean(String name, String path) {
-        super();
-        this.name = name;
+        super(name);
         this.path = path;
         this.defaultRegion = false;
         this.customizable = true;
     }
 
-
+    
     /**
-     * Getter for name.
-     *
-     * @return the name
+     * {@inheritDoc}
      */
-    public String getName() {
-        return this.name;
+    @Override
+    public boolean isCustomizable() {
+        return this.customizable;
     }
+    
 
     /**
      * Getter for path.
@@ -66,15 +64,6 @@ public class RenderedRegionBean {
      */
     public void setDefaultRegion(boolean defaultRegion) {
         this.defaultRegion = defaultRegion;
-    }
-
-    /**
-     * Getter for customizable.
-     *
-     * @return the customizable
-     */
-    public boolean isCustomizable() {
-        return this.customizable;
     }
 
     /**

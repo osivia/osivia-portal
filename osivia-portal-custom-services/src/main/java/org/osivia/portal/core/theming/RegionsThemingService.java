@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.MapUtils;
 import org.jboss.portal.Mode;
@@ -14,6 +15,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.servlet.BufferingResponseWrapper;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
+import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocation;
@@ -28,7 +30,9 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.IRegionsThemingService;
+import org.osivia.portal.api.theming.PortletsRegionBean;
 import org.osivia.portal.api.theming.RenderedRegionBean;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
 
 /**
@@ -107,6 +111,48 @@ public class RegionsThemingService implements IRegionsThemingService {
             Region region = pageRendition.getPageResult().getRegion2(renderedRegion.getName());
             DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    public void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion) {
+        // Context path
+        String contextPath = this.getContextPath(renderPageCommand);
+
+        // Controller context
+        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Request
+        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+
+        // Header content
+        String headerContent = null;
+        if (portletsRegion.getHeaderPath() != null) {
+            ControllerRequestDispatcher requestDispatcher = controllerContext.getRequestDispatcher(contextPath, portletsRegion.getHeaderPath());
+            requestDispatcher.include();
+            headerContent = requestDispatcher.getMarkup();
+        }
+
+        // Footer content
+        String footerContent = null;
+        if (portletsRegion.getFooterPath() != null) {
+            ControllerRequestDispatcher requestDispatcher = controllerContext.getRequestDispatcher(contextPath, portletsRegion.getFooterPath());
+            requestDispatcher.include();
+            footerContent = requestDispatcher.getMarkup();
+        }
+
+        // Decorator
+        RegionDecorator decorator = new RegionDecorator(headerContent, footerContent);
+
+        // Put into decorators map
+        Map<String, RegionDecorator> decorators = (Map<String, RegionDecorator>) request.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
+        if (decorators == null) {
+            decorators = new HashMap<String, RegionDecorator>();
+            request.setAttribute(InternalConstants.ATTR_REGIONS_DECORATORS, decorators);
+        }
+        decorators.put(portletsRegion.getName(), decorator);
     }
 
 
