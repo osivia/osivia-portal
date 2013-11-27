@@ -119,8 +119,11 @@ public class RegionTagHandler extends SimpleTagSupport {
         JSPRendererContext renderContext = (JSPRendererContext) request.getAttribute(LayoutConstants.ATTR_RENDERCONTEXT);
 
         // Decorator
+        RegionDecorator decorator = null;
         Map<String, RegionDecorator> decorators = (Map<String, RegionDecorator>) request.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
-        RegionDecorator decorator = decorators.get(this.regionName);
+        if (decorators != null) {
+            decorator = decorators.get(this.regionName);
+        }
         renderContext.setAttribute(InternalConstants.ATTR_REGIONS_DECORATORS, decorator);
 
 
