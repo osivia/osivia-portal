@@ -36,6 +36,9 @@
 	String url = (String)request.getAttribute("osivia.setting.URL");
 	String currentLayout = (String)request.getAttribute("osivia.setting.layout.NAME");
 	String defaultPage = (String)request.getAttribute("osivia.setting.page.DEFAULT_PAGE");
+	Map<String, String> categories = (Map<String, String>) request.getAttribute("osivia.setting.page.CATEGORIES");
+	String category = (String) request.getAttribute("osivia.setting.page.CATEGORY");
+	
 	String draftPage = (String)request.getAttribute("osivia.setting.page.DRAFT_PAGE");
 	Collection<PortalLayout> listLayout = (Collection<PortalLayout>)request.getAttribute("osivia.setting.LAYOUT_LIST");
 	List<Role> roleAvaible = (List<Role>)request.getAttribute("osivia.setting.ROLE_AVAIBLE");
@@ -181,7 +184,43 @@ if( "1".equals(pageCMSNavigationMode))
 								<td>
 									<input type="checkbox" name="draftPage" value="1" <%=checkDraft%>/>
 								</td>
+							</tr>			
+							
+										
+						
+<% 
+// v2.0.22 : catégories
+if( categories != null) { %>						
+						
+					<tr>
+								<td>
+									Catégorie
+								</td>
+								<td>
+						
+						
+						<select name="pageCategory">
+<%
+				for(String possibleCategory : categories.keySet()){
+					
+					String selected = "";
+					
+					if( possibleCategory.equals( category))	{
+						selected = "selected=\"selected\"";
+					}
+
+%>
+							<option  <%=selected %> value="<%= possibleCategory %>"><%= categories.get(possibleCategory) %></option>
+
+<%						
+				}
+%>
+
+
+					</select>
+								</td>
 							</tr>						
+<%	} %>												
 						
 						
 							<tr>

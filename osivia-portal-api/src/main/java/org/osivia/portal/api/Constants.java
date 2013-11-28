@@ -15,4 +15,9 @@ public class Constants {
 	public static String ATTR_WIZZARD_URL = "osivia.WIZZARD_URL";
 	public static String ATTR_WIZZARD_MODE = "osivia.WIZZARD_MODE";
 	public static String ATTR_REFRESH_PAGE_URL = "osivia.REFRESH_URL";
+	
+	
+	public static String ATTR_PAGE_CATEGORY = "osivia.pageCategory";
+	public static String ATTR_USER_DATAS = "osivia.userDatas";
+	public static String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
 }

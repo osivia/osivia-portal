@@ -68,8 +68,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer
       
       String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
       
-      if( "1".equals(hidePortlet))
+      if( "1".equals(hidePortlet))	{
+    	  // v2.0.22 : portlet vide non rafraichi en ajax
+          out.println("<div class=\"dyna-window-content\" ></div>");
+          
     	  return;
+      }
       
 
       

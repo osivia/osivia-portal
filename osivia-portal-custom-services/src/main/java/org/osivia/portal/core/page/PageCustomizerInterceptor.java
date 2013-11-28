@@ -1378,6 +1378,16 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 				controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_SITE_MAP+"."+cc.getPortal().getName(), siteMap);
 
 			}
+			
+			//JSS v2.0.22 : injection des datas pour le marquage
+			Map<String, Object> userDatas = (Map<String, Object>) controllerCtx.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
+			rd.setAttribute(Constants.ATTR_USER_DATAS, userDatas);
+			rd.setAttribute(Constants.ATTR_PAGE_CATEGORY, cc.getPage().getProperty("osivia.pageCategory"));
+			CMSItem spaceItem = CmsCommand.getPagePublishSpaceConfig(controllerCtx, cc.getPage());
+			if( spaceItem != null)
+				rd.setAttribute(Constants.ATTR_SPACE_CONFIG, spaceItem.getNativeItem());
+
+			
 
 			rd.setAttribute(Constants.ATTR_SITE_MAP, siteMap);
 			rd.setAttribute(Constants.ATTR_URL_FACTORY, getUrlFactory());

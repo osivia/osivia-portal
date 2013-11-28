@@ -17,6 +17,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 
 	private String pageId;
 	private String draftPage;
+	private String category;
 
 
 	public String getPageId() {
@@ -26,9 +27,10 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 	public ChangePagePropertiesCommand() {
 	}
 
-	public ChangePagePropertiesCommand(String pageId, String draftPage) {
+	public ChangePagePropertiesCommand(String pageId, String draftPage, String category) {
 		this.pageId = pageId;
 		this.draftPage = draftPage;
+		this.category = category;
 	}
 
 	public ControllerResponse executeAssistantCommand() throws Exception {
@@ -41,6 +43,16 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 			page.setDeclaredProperty("osivia.draftPage", "1");
 		else if (page.getDeclaredProperty("osivia.draftPage") != null)
 			page.setDeclaredProperty("osivia.draftPage", null);
+		
+		// v2.0.22 : catégories
+		if( "1".equals(System.getProperty("page.category.activation")))	{
+			if (category != null && category.length() != 0) {
+				page.setDeclaredProperty("osivia.pageCategory", category);
+			} else {
+				page.setDeclaredProperty("osivia.pageCategory", null);
+			}
+			
+		}
 
 		return new UpdatePageResponse(page.getId());
 

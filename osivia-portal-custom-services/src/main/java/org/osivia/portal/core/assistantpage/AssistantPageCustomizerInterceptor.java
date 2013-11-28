@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -723,6 +725,45 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	else
 		rd.setAttribute("osivia.setting.page.DRAFT_PAGE", "0");
 	
+	
+	// v2.0.22 : catégories
+	if( "1".equals(System.getProperty("page.category.activation")))	{
+		
+		String category = page.getDeclaredProperty("osivia.pageCategory");
+		if( category == null)
+			category = "";
+		
+		rd.setAttribute("osivia.setting.page.CATEGORY", category);
+		
+		Map<String, String> categories = new LinkedHashMap<String, String>();
+		categories.put("", "Aucune");
+		
+		TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<OrderedPageCategory>();
+
+		Properties properties = System.getProperties();
+		Enumeration<Object>props = properties.keys();
+		while(props.hasMoreElements()){
+			
+			String key = (String) props.nextElement();
+			
+			if( key.startsWith("page.category.item.") &&  key.endsWith(".label"))	{
+				String curCategory = key.substring("page.category.item.".length(),  key.indexOf(".label"));
+				String curOrder = (String) properties.get("page.category.item."+curCategory+".order");
+				String curLabel = (String) properties.get( key);
+
+				orderedCategories.add(new OrderedPageCategory(curOrder != null ? Integer.parseInt(curOrder) : 100, curCategory, curLabel));
+			}
+		}
+		
+		
+		for(OrderedPageCategory pageCategory : orderedCategories)	{
+			categories.put(pageCategory.getCode(),pageCategory.getLabel());		
+		}
+	
+		
+		rd.setAttribute("osivia.setting.page.CATEGORIES", categories);	
+	}
+		
 
 	/* Sécurité */
 

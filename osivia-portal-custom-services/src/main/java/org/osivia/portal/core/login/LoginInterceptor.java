@@ -2,9 +2,11 @@ package org.osivia.portal.core.login;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -83,28 +85,34 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 			if (!"1".equals(userPagesPreloaded)) {
 				
 				
-				/* JSS 20131113 : ajout HACK JSS suite à problème de prod
+				/* JSS 20131113 : pas de preload pour certains groupes
 				 * 
-				 * pas de preload pour les eleves et les parents
 				 * 
 				 * */
 				
 				boolean noPreload = false;
 				
-		         // Get the current authenticated subject through the JACC contract
-		         Subject subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+				String preloadingDisabledDGroups = System.getProperty("preloading.disabledGroups");
+				
+				if( preloadingDisabledDGroups != null){
+					List<String> groups = Arrays.asList(preloadingDisabledDGroups.split(","));
 
-		 		// utilisation mapping standard du portail
-		 		JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
+					// Get the current authenticated subject through the JACC
+					// contract
+					Subject subject = (Subject) PolicyContext.getContext("javax.security.auth.Subject.container");
 
+					// utilisation mapping standard du portail
+					JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
 
-		 			Iterator iter = pp.getRoles().iterator();
-		 			while (iter.hasNext()) {
-		 				Principal principal = (Principal) iter.next();
-		 				if (principal.getName().equals("eleve-tous") || principal.getName().equals("parent-tous")) {
-		 					noPreload = true;
-		 				}
-		 			}
+					Iterator iter = pp.getRoles().iterator();
+					while (iter.hasNext()) {
+						Principal principal = (Principal) iter.next();
+						if (groups.contains(principal.getName())) {
+							noPreload = true;
+							break;
+						}
+					}
+				}
 		 			
 		 		if( noPreload)	{
 		 			

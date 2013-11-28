@@ -267,9 +267,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 						if (parameterMap.get("draftPage") != null)
 							draftPage = URLDecoder.decode(((String[]) parameterMap.get("draftPage"))[0], "UTF-8");
 						
+						 String category = null;						
+							if (parameterMap.get("pageCategory") != null)
+								category = URLDecoder.decode(((String[]) parameterMap.get("pageCategory"))[0], "UTF-8");
 
 
-						return new ChangePagePropertiesCommand(pageId,draftPage);
+						return new ChangePagePropertiesCommand(pageId,draftPage, category);
 					}
 				}
 		
