@@ -31,14 +31,17 @@
         }
         %>
     </ul>
-    <%
-    }
-    %>
+
+    
     
     <div class="delete-all">
         <a href="<portlet:actionURL>
                     <portlet:param name="action" value="deleteAll" />
-                </portlet:actionURL>">Tout supprimer</a>
+                </portlet:actionURL>">Vider la sélection</a>
     </div>
+    
+    <%
+    }
+    %>
 
 </div>
