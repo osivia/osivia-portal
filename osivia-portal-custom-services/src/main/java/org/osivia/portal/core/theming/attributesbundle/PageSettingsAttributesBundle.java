@@ -116,7 +116,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
 
         this.names = new TreeSet<String>();
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -198,10 +197,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             page = (Page) page.getParent();
             pageType = PageType.getPageType(page, controllerContext);
         }
-
-        // Generic command URL
-        String commandUrl = serverContext.getPortalContextPath() + "/commands";
-        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
 
         // CMS templated page indicator
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED, templated);

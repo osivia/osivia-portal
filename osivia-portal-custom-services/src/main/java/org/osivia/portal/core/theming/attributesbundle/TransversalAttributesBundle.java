@@ -16,6 +16,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
@@ -63,6 +64,7 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_COMMAND_PREFIX);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
         this.names.add(Constants.ATTR_PORTAL_CTX);
         this.names.add(Constants.ATTR_URL_FACTORY);
     }
@@ -91,6 +93,8 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         attributes.put(InternalConstants.ATTR_CONTROLLER_CONTEXT, controllerContext);
+        // Server context
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // CMS path
         String cmsPath = this.computeCMSPath(controllerContext, page);
         attributes.put(InternalConstants.ATTR_CMS_PATH, cmsPath);
@@ -101,6 +105,9 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE, page);
         // Formatter
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER, this.formatter);
+        // Generic command URL
+        String commandUrl = serverContext.getPortalContextPath() + "/commands";
+        attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
