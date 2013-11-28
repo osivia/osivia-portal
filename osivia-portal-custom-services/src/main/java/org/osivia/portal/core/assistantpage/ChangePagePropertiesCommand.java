@@ -45,13 +45,12 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
 			page.setDeclaredProperty("osivia.draftPage", null);
 		
 		// v2.0.22 : catégories
-		if( "1".equals(System.getProperty("page.category.activation")))	{
+		if( System.getProperty("page.category.prefix") != null)	{
 			if (category != null && category.length() != 0) {
 				page.setDeclaredProperty("osivia.pageCategory", category);
 			} else {
 				page.setDeclaredProperty("osivia.pageCategory", null);
 			}
-			
 		}
 
 		return new UpdatePageResponse(page.getId());

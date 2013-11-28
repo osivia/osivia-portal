@@ -727,7 +727,9 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	
 	
 	// v2.0.22 : catégories
-	if( "1".equals(System.getProperty("page.category.activation")))	{
+	String pageCategoryPrefix = System.getProperty("page.category.prefix");
+	
+	if( System.getProperty("page.category.prefix") != null)	{
 		
 		String category = page.getDeclaredProperty("osivia.pageCategory");
 		if( category == null)
@@ -746,12 +748,20 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 			
 			String key = (String) props.nextElement();
 			
-			if( key.startsWith("page.category.item.") &&  key.endsWith(".label"))	{
-				String curCategory = key.substring("page.category.item.".length(),  key.indexOf(".label"));
-				String curOrder = (String) properties.get("page.category.item."+curCategory+".order");
+			if( key.startsWith(pageCategoryPrefix))	{
+				String curCategory = key.substring(pageCategoryPrefix.length());
+				
+				int curOrder = 100;
+				
+				try	{
+				 curOrder = Integer.parseInt(curCategory);
+				} catch( NumberFormatException e)	{
+					// non orderable
+				}
 				String curLabel = (String) properties.get( key);
 
-				orderedCategories.add(new OrderedPageCategory(curOrder != null ? Integer.parseInt(curOrder) : 100, curCategory, curLabel));
+				orderedCategories.add(new OrderedPageCategory(curOrder, curCategory, curLabel));
+
 			}
 		}
 		
