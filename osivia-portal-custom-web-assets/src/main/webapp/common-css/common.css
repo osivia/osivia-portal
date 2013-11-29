@@ -117,6 +117,11 @@ a.portlet-menuitem.portlet-menuitem-print {
     background-size: 24px;
 }
 
+a.portlet-menuitem.portlet-menuitem-rss {
+    background-image: url('../images/icons/icon_rss.png');
+    background-size: 24px;
+}
+
 a.portlet-menuitem.published {
     background-image: url('../images/icons/icon_published_version.png');
     background-size: 24px;
