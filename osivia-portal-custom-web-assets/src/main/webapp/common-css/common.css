@@ -142,6 +142,11 @@ a.portlet-menuitem.edition {
     background-size: 24px;
 }
 
+a.portlet-menuitem-contextualize {
+	background-image: url('../images/icons/icon_published_version.png');
+    background-size: 24px;
+}
+
 a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
     background-image: url('../images/icons/icon_nuxeo.png');
     background-size: 24px;
