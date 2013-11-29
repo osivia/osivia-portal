@@ -22,6 +22,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.Notifications;
@@ -60,7 +61,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
      */
     public ControllerResponse displayError(ControllerCommand cmd, ControllerResponse resp, long errorCode) throws Exception {
     
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
 
         if (portalName != null) {
 

@@ -204,6 +204,9 @@ public final class InternationalizationConstants {
     /** Bundle resource key for various errors . */    
     public static final String KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED = "ERROR_MESSAGE_ERROR_HAS_OCCURED";
 
+    /** ADV_PORTAL_DEFAULT */
+    public static final String KEY_ADV_PORTAL_DEFAULT = "ADV_PORTAL_DEFAULT";
+
 
     /**
      * Private constructor : prevent instantiation.

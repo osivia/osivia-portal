@@ -1,34 +1,22 @@
 package org.osivia.portal.core.tracker;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Iterator;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.jboss.portal.server.ServerException;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
-import org.osivia.portal.core.tracker.ITracker;
 
 
 public class ServerTrackerInterceptor extends ServerInterceptor {
@@ -109,7 +97,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         if( portalName == null)
             portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
         
-        PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
+        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
 
 		
 		

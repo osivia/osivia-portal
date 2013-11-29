@@ -24,6 +24,11 @@ public class Constants {
     /** Internationalization service name. */
     public static final String INTERNATIONALIZATION_SERVICE_NAME = "InternationalizationService";
 
+    // JBoss portal objects
+    /** JBP key portalName. */
+    public static final String PORTAL_NAME = "portalName";
+    /** name of the default portal. */
+    public static final String PORTAL_NAME_DEFAULT = "default";
 
     // Footer
 
@@ -53,6 +58,7 @@ public class Constants {
     public static final String ATTR_SEARCH_URL = "osivia.search.url";
 
     // SEO
+    /** content of meta tags. */
     public static final String ATTR_HEADER_METADATA_CONTENT = "osivia.header.metadata.content";
 
     // Toolbar
@@ -71,8 +77,9 @@ public class Constants {
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
 
     // SEO
+    /** title of the document. */
     public static final String HEADER_TITLE = "osivia.header.title";
-
+    /** metas of the document. */
     public static final String HEADER_META = "osivia.header.meta";
 
 

@@ -42,13 +42,13 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowReso
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -91,7 +91,7 @@ public class WebURLFactory extends URLFactoryDelegate {
         Portal webPortal = null;
         String basePath = null;
         
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
 
         if (portalName != null) {
 

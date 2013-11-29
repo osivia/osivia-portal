@@ -15,6 +15,7 @@ import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.page.PageProperties;
 
 
@@ -81,7 +82,7 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 		}	else	{
 			portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
 		}
-		PageProperties.getProperties().getPagePropertiesMap().put("portalName", portalName);
+        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
 
 
 		 resp = (ControllerResponse) cmd.invokeNext();

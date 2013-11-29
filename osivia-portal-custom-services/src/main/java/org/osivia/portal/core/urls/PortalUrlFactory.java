@@ -29,6 +29,7 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.ServerURL;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
@@ -376,7 +377,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String getStartPageUrl(PortalControllerContext ctx, String pageName, String templateName, Map<String, String> props, Map<String, String> params)
             throws Exception {
 
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
         // if (portalName == null)
         // portalName = "default";
 

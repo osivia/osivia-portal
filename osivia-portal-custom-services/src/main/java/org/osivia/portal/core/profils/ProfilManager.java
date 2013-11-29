@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
@@ -20,18 +17,15 @@ import javax.servlet.http.HttpSession;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.identity.IdentityContext;
 import org.jboss.portal.identity.IdentityServiceController;
 import org.jboss.portal.identity.Role;
 import org.jboss.portal.identity.RoleModule;
 import org.jboss.portal.security.SecurityConstants;
 import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.profils.FilteredRole;
-import org.osivia.portal.core.profils.IProfilManager;
-import org.osivia.portal.core.profils.ProfilBean;
 import org.osivia.portal.core.tracker.ITracker;
 
 
@@ -152,7 +146,7 @@ public class ProfilManager implements IProfilManager {
 		//  v2.MS Get current portal name
 		// TODO factoriser dans un portal manager
 		
-		String portalName = PageProperties.getProperties().getPagePropertiesMap().get("portalName");
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
 //		if (portalName == null)
 //			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
 		
