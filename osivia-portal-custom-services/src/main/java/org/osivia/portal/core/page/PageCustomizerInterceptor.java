@@ -694,7 +694,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
                     if (endPopupCMD == null) {
-                        endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
+                        endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, null);
                     }
 
                     String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
@@ -1194,7 +1194,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             throw new IllegalArgumentException("target path not accessible");
         }
 
-        // [v3.0.2] context is found in the current layout 
+        // [v3.0.2] context is found in the current layout
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PageService pageService = pc.getControllerContext().getController().getPageService();
         LayoutService layoutService = pageService.getLayoutService();
