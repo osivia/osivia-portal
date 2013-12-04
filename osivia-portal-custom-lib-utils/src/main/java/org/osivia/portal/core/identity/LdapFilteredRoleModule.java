@@ -67,17 +67,19 @@ public class LdapFilteredRoleModule extends LDAPRoleModuleImpl {
 
     /**
      * {@inheritDoc}
+     * 
+     * Roles "Authenticated", "Unchecked" et "Administrators" are added by overloading.
      */
-    @Override
     public Role findRoleByName(String name) throws IdentityException {
         if (SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(name)) {
             return new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME);
-        } else if ("role-aucun-profil".equals(name)) {
+        } else if (FilteredRole.UNCHECKED_ROLE_NAME.equals(name)) {
             return new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME, FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME);
+        } else if (FilteredRole.ADMINISTRATORS_ROLE_NAME.equals(name)) {
+            return new FilteredRole(FilteredRole.ADMINISTRATORS_ROLE_NAME, FilteredRole.ADMINISTRATORS_ROLE_NAME);
         } else {
             return super.findRoleByName(name);
         }
-
     }
 
 }

@@ -14,63 +14,64 @@ import org.osivia.portal.core.profils.ProfilBean;
 
 
 /**
- * Ce module permet de filtrer les rôles qui peuvent être présent en grand nombre dans l'annuaire
- * 
- * En plus, le rôle Athenticated est ajouté
- * 
- * @author jeanseb
+ * Ce module permet de filtrer les rôles qui peuvent être présent en grand nombre dans l'annuaire.
+ * En plus, le rôle Athenticated est ajouté.
  *
+ * @author jeanseb
  */
 public class FilteredRoleModule extends HibernateRoleModuleImpl {
-	
 
 
-	public Set findRoles() throws IdentityException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Role> findRoles() throws IdentityException {
+        HashSet<Role> filteredRoles = new HashSet<Role>();
 
-		HashSet<Role> filteredRoles = new HashSet<Role>();
+        try {
+            IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
-		try {
-			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
+            // Lrs rôles sont filtrés par rapport aux profils
+            for (ProfilBean profil : profilManager.getListeProfils()) {
 
-			// Lrs rôles sont filtrés par rapport aux profils
-			for (ProfilBean profil : profilManager.getListeProfils()) {
+                try {
+                    Role role = super.findRoleByName(profil.getRoleName());
+                    filteredRoles.add(role);
 
-				try {
-					Role role = super.findRoleByName(profil.getRoleName());
-					filteredRoles.add(role);
+                } catch (Exception e) {
+                    // le role n'est pas défini : passage au role suivant
+                }
+            }
 
-				} catch (Exception e) {
-					// le role n'est pas défini : passage au role suivant
-				}
-			}
+            filteredRoles.add(new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME));
 
-			filteredRoles.add(new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME));
-			
-			
-			if( System.getProperty("ldap.groupes_profils_obligatoires") != null)
-				filteredRoles.add(new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME,FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME));
-			
+            if (System.getProperty("ldap.groupes_profils_obligatoires") != null) {
+                filteredRoles.add(new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME, FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME));
+            }
+        } catch (Exception e) {
+            throw new IdentityException("No profil service defined");
+        }
 
-		} catch (Exception e) {
-			throw new IdentityException("No profil service defined");
-		}
+        return filteredRoles;
+    }
 
-		return filteredRoles;
 
-	}
-
-	/* Le role Authenticated est ajouté par surcharge
-	 * Sans cela, les portlets de back-office JBoss Portal plantent
-	 * @see org.jboss.portal.identity.db.HibernateRoleModuleImpl#findRoleByName(java.lang.String)
-	 */
-	public Role findRoleByName(String name) throws IdentityException {
-		if (SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(name))
-			return new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME);
-		else if (FilteredRole.UNCHECKED_ROLE_NAME.equals(name))
-			return new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME, FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME);
-		else
-			return super.findRoleByName(name);
-
-	}
+    /**
+     * {@inheritDoc}
+     *
+     * Roles "Authenticated", "Unchecked" et "Administrators" are added by overloading.
+     */
+    public Role findRoleByName(String name) throws IdentityException {
+        if (SecurityConstants.AUTHENTICATED_ROLE_NAME.equals(name)) {
+            return new FilteredRole(SecurityConstants.AUTHENTICATED_ROLE_NAME, FilteredRole.AUTHENTICATED_ROLE_DISPLAY_NAME);
+        } else if (FilteredRole.UNCHECKED_ROLE_NAME.equals(name)) {
+            return new FilteredRole(FilteredRole.UNCHECKED_ROLE_NAME, FilteredRole.UNCHECKED_ROLE_DISPLAY_NAME);
+        } else if (FilteredRole.ADMINISTRATORS_ROLE_NAME.equals(name)) {
+            return new FilteredRole(FilteredRole.ADMINISTRATORS_ROLE_NAME, FilteredRole.ADMINISTRATORS_ROLE_NAME);
+        } else {
+            return super.findRoleByName(name);
+        }
+    }
 
 }

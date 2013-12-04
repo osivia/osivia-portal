@@ -42,7 +42,7 @@ public abstract class AbstractLDAPGroupMembership extends LDAPStaticGroupMembers
             }
 
             if (virtualAdminRole != null) {
-                if ((adminRole == null) || !FilteredRole.ADMINISTRATORS_ROLE_NAME.equals(virtualAdminRoleName)) {
+                if (adminRole == null) {
                     // Add administrator role
                     roles.add(this.getRoleModule().findRoleByName(FilteredRole.ADMINISTRATORS_ROLE_NAME));
                 }
