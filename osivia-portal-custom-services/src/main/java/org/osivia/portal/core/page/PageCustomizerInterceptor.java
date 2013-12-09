@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -74,7 +75,9 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -84,6 +87,7 @@ import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -125,6 +129,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     private transient IProfilerService profiler;
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
+    /** Internationalization service. */
+    private IInternationalizationService internationalizationService;
 
 
     /**
@@ -410,8 +416,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                 if (((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))
-
-                || ("1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.directContentPublisher")))) {
+                        || ("1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.directContentPublisher")))) {
 
                     if (!"true".equals(request.getParameter("edit-template-mode"))) {
                         // Redirection en mode CMS
@@ -421,7 +426,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
-                            if( url.indexOf('?') == -1) {
+                            if (url.indexOf('?') == -1) {
                                 url += "?";
                             } else {
                                 url += "&";
@@ -444,6 +449,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 // logger.debug("init page");
                 // Récupération des fenêtres de la page
                 initPageState(rpc.getPage(), controllerCtx);
+            }
+
+            if (BooleanUtils.toBoolean(request.getParameter("init-state")) && BooleanUtils.toBoolean(request.getParameter("edit-template-mode"))) {
+                String originalPortalName = request.getParameter("original-portal");
+                if (!rpc.getPage().getPortal().getName().equals(originalPortalName)) {
+                    // For template page, warn if the current portal does not match the main domain
+                    String portalDefaultAdviceLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ADV_PORTAL_DEFAULT,
+                            request.getLocale());
+                    NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(rpc.getControllerContext()),
+                            portalDefaultAdviceLabel, NotificationsType.WARNING, null);
+                }
             }
 
             if (request.getParameter("firstTab") != null) {
@@ -1291,6 +1307,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
      */
     public void setProfiler(IProfilerService profiler) {
         this.profiler = profiler;
+    }
+
+    /**
+     * Setter for internationalizationService.
+     *
+     * @param internationalizationService the internationalizationService to set
+     */
+    public void setInternationalizationService(IInternationalizationService internationalizationService) {
+        this.internationalizationService = internationalizationService;
     }
 
 }

@@ -239,6 +239,9 @@
         <depends
             optional-attribute-name="ServicesCacheService"
             proxy-type="attribute">osivia:service=CacheServices</depends>
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
     </mbean>
 
 

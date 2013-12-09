@@ -33,7 +33,6 @@ import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
@@ -53,10 +52,8 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
-import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -250,6 +247,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private void generateAdministrationConfigurationMenu(ControllerContext context, Page page, Element administration) {
         Locale locale = context.getServerInvocation().getRequest().getLocale();
         PageType pageType = PageType.getPageType(page, context);
+        String portalName = page.getPortal().getName();
 
         // Configuration menu root element
         Element configurationMenu = new DOMElement(QName.get(HTMLConstants.DIV));
@@ -320,7 +318,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             ITemplatePortalObject templatePortalObject = (ITemplatePortalObject) page;
             ViewPageCommand pageTemplateAccessCommand = new ViewPageCommand(templatePortalObject.getTemplate().getId());
             String pageTemplateAccessUrl = new PortalURLImpl(pageTemplateAccessCommand, context, null, null).toString();
-            pageTemplateAccessUrl += "?init-state=true&edit-template-mode=true";
+            pageTemplateAccessUrl += "?init-state=true&edit-template-mode=true&original-portal=" + portalName;
 
             Element pageTemplateAccessLink = new DOMElement(QName.get(HTMLConstants.A));
             pageTemplateAccessLink.addAttribute(QName.get(HTMLConstants.HREF), pageTemplateAccessUrl);
@@ -428,16 +426,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Page rights
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_RIGHTS,
                 this.internationalizationService.getString(InternationalizationConstants.KEY_RIGHTS, locale));
-        
-        // For template page, warn if the current portal does not match the main domain
-        if (PortalObjectUtils.isTemplate(page)) {
-            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-            if (Constants.PORTAL_NAME_DEFAULT.equals(portalName)) {
-                String portalDefaultAdviceLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ADV_PORTAL_DEFAULT, locale);
-                NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(context), portalDefaultAdviceLabel,
-                        NotificationsType.ADVICE, null);
-            }
-        }
     }
 
 
