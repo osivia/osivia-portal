@@ -109,7 +109,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             }
         }
 
-        return null;
+        return resp;
     }
 
     /**
