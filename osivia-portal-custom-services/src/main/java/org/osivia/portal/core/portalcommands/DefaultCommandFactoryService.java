@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -38,18 +39,30 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
-
+/**
+ * Default command factory service.
+ *
+ * @see AbstractCommandFactory
+ */
 public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
+    /**
+     * Default constructor.
+     */
+    public DefaultCommandFactoryService() {
+        super();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
-
         try {
-
             ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
 
-
             if (parameterMap != null) {
-                String action = parameterMap.getValue("action");
+                String action = parameterMap.getValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);
 
                 if ("deleteWindow".equals(action)) {
                     String windowId = null;
@@ -78,15 +91,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 
                     if (parameterMap.get("windowId") != null) {
-
                         windowId = URLDecoder.decode(parameterMap.get("windowId")[0], CharEncoding.UTF_8);
-
 
                         style = new ArrayList<String>();
                         if (parameterMap.getValues("style") != null) {
                             style.addAll(Arrays.asList(parameterMap.getValues("style")));
                         }
-
 
                         if (parameterMap.get("displayTitle") != null) {
                             displayTitle = URLDecoder.decode(parameterMap.get("displayTitle")[0], CharEncoding.UTF_8);
@@ -100,13 +110,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             title = "";
                         }
 
-
                         if (parameterMap.get("displayDecorators") != null) {
                             displayDecorators = URLDecoder.decode(parameterMap.get("displayDecorators")[0], CharEncoding.UTF_8);
                         } else {
                             displayDecorators = "0";
                         }
-
 
                         if (parameterMap.get("idPerso") != null) {
                             idPerso = URLDecoder.decode(parameterMap.get("idPerso")[0], CharEncoding.UTF_8);
@@ -161,7 +169,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectionDep = "";
                         }
 
-
                         return new ChangeWindowSettingsCommand(windowId, style, displayTitle, title, displayDecorators, idPerso, ajaxLink, hideEmptyPortlet,
                                 printPortlet, conditionalScope, bshActivation, bshScript, cacheID, selectionDep);
                     }
@@ -187,7 +194,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 
                 if ("securePage".equals(action)) {
-
                     String pageId = null;
 
                     List<String> viewAction = new ArrayList<String>();
@@ -240,7 +246,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 if ("refreshPage".equals(action)) {
                     String pageId = null;
 
-
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
                         return new RefreshPageCommand(pageId);
@@ -283,9 +288,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
-
                 if ("changeCMSProperties".equals(action)) {
-
                     String pageId = null;
                     String cmsBasePath = null;
                     String scope = null;
@@ -366,7 +369,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("startDynamicWindow".equals(action)) {
-
                     String pageId = null;
                     String instanceId = null;
                     String regionId = null;
@@ -404,7 +406,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("startDynamicPage".equals(action)) {
-
                     String parentId = null;
                     String pageName = null;
                     String templateId = null;
@@ -424,8 +425,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("destroyDynamicPage".equals(action)) {
-
-
                     String pageId = null;
 
                     if (parameterMap.get("pageId") != null) {
@@ -433,7 +432,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new StopDynamicPageCommand(pageId);
                     }
                 }
-
 
                 if ("moveWindow".equals(action)) {
 
@@ -447,7 +445,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new MoveWindowCommand(windowId, moveAction);
                     }
                 }
-
 
                 if ("permLink".equals(action)) {
                     String permMlinkRef = null;
@@ -483,18 +480,27 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
 
                     return new PermLinkCommand(permMlinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
-
                 }
 
-                // Advanced search
-                if ("advancedSearch".equals(action)) {
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("search") != null)) {
-                        String pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        String search = URLDecoder.decode(parameterMap.get("search")[0], CharEncoding.UTF_8);
+                // Advanced search command
+                if (AdvancedSearchCommand.COMMAND_ACTION_VALUE.equals(action)) {
+                    String[] pageIdParameterMap = parameterMap.get(AdvancedSearchCommand.PAGE_ID_PARAMETER_NAME);
+                    String[] searchParameterMap = parameterMap.get(AdvancedSearchCommand.SEARCH_PARAMETER_NAME);
+                    String[] advancedSearchParameterMap = parameterMap.get(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME);
 
-                        return new AdvancedSearchCommand(pageId, search);
+                    if ((pageIdParameterMap != null) && (searchParameterMap != null)) {
+                        String pageId = URLDecoder.decode(pageIdParameterMap[0], CharEncoding.UTF_8);
+                        String search = URLDecoder.decode(searchParameterMap[0], CharEncoding.UTF_8);
+
+                        boolean advancedSearch = false;
+                        if (advancedSearchParameterMap != null) {
+                            advancedSearch = BooleanUtils.toBoolean(URLDecoder.decode(advancedSearchParameterMap[0], CharEncoding.UTF_8));
+                        }
+
+                        return new AdvancedSearchCommand(pageId, search, advancedSearch);
                     }
                 }
+
 
 				/* CMS commands */
 
@@ -549,5 +555,4 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
         return null;
     }
-
 }

@@ -3,6 +3,7 @@ package org.osivia.portal.core.portalcommands;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.apache.commons.lang.CharEncoding;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
@@ -23,269 +24,295 @@ import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.search.AdvancedSearchCommand;
 
 
-
-
-
+/**
+ * Default URL factory.
+ *
+ * @see URLFactoryDelegate
+ */
 public class DefaultURLFactory extends URLFactoryDelegate {
 
-	/** . */
-	private String path;
+    /** Generic command action parameter name. */
+    public static final String COMMAND_ACTION_PARAMETER_NAME = "action";
 
-	public ServerURL doMapping(ControllerContext controllerContext,
-			ServerInvocation invocation, ControllerCommand cmd) {
-		if (cmd == null) {
-			throw new IllegalArgumentException("No null command accepted");
-		}
+    /** Path. */
+    private String path;
 
-		if (cmd instanceof DeleteWindowCommand) {
-			DeleteWindowCommand command = (DeleteWindowCommand) cmd;
 
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String windowId = command.getWindowId();
+    /**
+     * Default constructor.
+     */
+    public DefaultURLFactory() {
+        super();
+    }
 
-			try {
-				asu.setParameterValue("action", "deleteWindow");
 
-				asu.setParameterValue("windowId", URLEncoder.encode(windowId,
-						"UTF-8"));
+    /**
+     * {@inheritDoc}
+     */
+    public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
+        if (cmd == null) {
+            throw new IllegalArgumentException("No null command accepted");
+        }
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+        if (cmd instanceof DeleteWindowCommand) {
+            DeleteWindowCommand command = (DeleteWindowCommand) cmd;
 
-		if (cmd instanceof DeletePageCommand) {
-			DeletePageCommand command = (DeletePageCommand) cmd;
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String windowId = command.getWindowId();
 
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String pageId = command.getPageId();
+            try {
+                asu.setParameterValue("action", "deleteWindow");
 
-			try {
-				asu.setParameterValue("action", "deletePage");
+                asu.setParameterValue("windowId", URLEncoder.encode(windowId, "UTF-8"));
 
-				asu.setParameterValue("pageId", URLEncoder.encode(pageId,
-						"UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+        if (cmd instanceof DeletePageCommand) {
+            DeletePageCommand command = (DeletePageCommand) cmd;
 
-		if (cmd instanceof ChangeModeCommand) {
-			ChangeModeCommand command = (ChangeModeCommand) cmd;
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String pageId = command.getPageId();
 
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String pageId = command.getPageId();
-			String mode = command.getMode();
+            try {
+                asu.setParameterValue("action", "deletePage");
 
-			try {
-				asu.setParameterValue("action", "changeMode");
+                asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
 
-				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
-				asu.setParameterValue("mode", URLEncoder.encode(mode,"UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+        if (cmd instanceof ChangeModeCommand) {
+            ChangeModeCommand command = (ChangeModeCommand) cmd;
 
-		if (cmd instanceof ChangeCMSEditionModeCommand) {
-			ChangeCMSEditionModeCommand command = (ChangeCMSEditionModeCommand) cmd;
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String pageId = command.getPageId();
+            String mode = command.getMode();
 
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String pageId = command.getPageId();
+            try {
+                asu.setParameterValue("action", "changeMode");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
+                asu.setParameterValue("mode", URLEncoder.encode(mode, "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+
+        if (cmd instanceof ChangeCMSEditionModeCommand) {
+            ChangeCMSEditionModeCommand command = (ChangeCMSEditionModeCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String pageId = command.getPageId();
             String pagePath = command.getPagePath();
             String version = command.getVersion();
             String editionMode = command.getEditionMode();
 
-			try {
-				asu.setParameterValue("action", "changeCMSEditionMode");
+            try {
+                asu.setParameterValue("action", "changeCMSEditionMode");
 
-				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
+                asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
                 asu.setParameterValue("pagePath", URLEncoder.encode(pagePath, "UTF-8"));
                 asu.setParameterValue("version", URLEncoder.encode(version, "UTF-8"));
                 asu.setParameterValue("editionMode", URLEncoder.encode(editionMode, "UTF-8"));
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
 
+        if (cmd instanceof RefreshPageCommand) {
+            RefreshPageCommand command = (RefreshPageCommand) cmd;
 
-		if (cmd instanceof RefreshPageCommand) {
-			RefreshPageCommand command = (RefreshPageCommand) cmd;
-
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String pageId = command.getPageId();
-
-
-			try {
-				asu.setParameterValue("action", "refreshPage");
-
-				asu.setParameterValue("pageId", URLEncoder.encode(pageId,"UTF-8"));
-
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
-
-		if (cmd instanceof MoveWindowCommand) {
-			MoveWindowCommand command = (MoveWindowCommand) cmd;
-
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-			String windowId = command.getWindowId();
-			String moveAction = command.getMoveAction();
-
-			try {
-				asu.setParameterValue("action", "moveWindow");
-
-				asu.setParameterValue("windowId", URLEncoder.encode(windowId,
-						"UTF-8"));
-				asu.setParameterValue("moveAction", URLEncoder.encode(moveAction,
-				"UTF-8"));
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String pageId = command.getPageId();
 
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+            try {
+                asu.setParameterValue("action", "refreshPage");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+
+        if (cmd instanceof MoveWindowCommand) {
+            MoveWindowCommand command = (MoveWindowCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            String windowId = command.getWindowId();
+            String moveAction = command.getMoveAction();
+
+            try {
+                asu.setParameterValue("action", "moveWindow");
+
+                asu.setParameterValue("windowId", URLEncoder.encode(windowId, "UTF-8"));
+                asu.setParameterValue("moveAction", URLEncoder.encode(moveAction, "UTF-8"));
 
 
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
 
-		if (cmd instanceof StartDynamicWindowCommand) {
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
+        if (cmd instanceof StartDynamicWindowCommand) {
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
 
-				asu.setParameterValue("action", "startDynamicWindow");
-				return asu;
-
-
-		}
-
-		if (cmd instanceof StartDynamicPageCommand) {
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-
-				asu.setParameterValue("action", "startDynamicPage");
-				return asu;
-		}
+            asu.setParameterValue("action", "startDynamicWindow");
+            return asu;
 
 
-		if (cmd instanceof StopDynamicWindowCommand) {
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
+        }
 
-			asu.setParameterValue("action", "destroyDynamicWindow");
-			return asu;
-		}
+        if (cmd instanceof StartDynamicPageCommand) {
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
 
-		if (cmd instanceof StopDynamicPageCommand) {
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
+            asu.setParameterValue("action", "startDynamicPage");
+            return asu;
+        }
 
-			asu.setParameterValue("action", "destroyDynamicPage");
-			return asu;
-		}
 
-		if( cmd instanceof PermLinkCommand){
+        if (cmd instanceof StopDynamicWindowCommand) {
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
 
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
+            asu.setParameterValue("action", "destroyDynamicWindow");
+            return asu;
+        }
 
-            PermLinkCommand vpCmd = (PermLinkCommand)cmd;
+        if (cmd instanceof StopDynamicPageCommand) {
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
 
-			try {
+            asu.setParameterValue("action", "destroyDynamicPage");
+            return asu;
+        }
 
-				asu.setParameterValue("action", "permLink");
+        if (cmd instanceof PermLinkCommand) {
 
-				if( vpCmd.getPermLinkRef() != null) {
-                    asu.setParameterValue("permLinkRef", URLEncoder.encode(vpCmd.getPermLinkRef(),
-                    "UTF-8"));
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            PermLinkCommand vpCmd = (PermLinkCommand) cmd;
+
+            try {
+
+                asu.setParameterValue("action", "permLink");
+
+                if (vpCmd.getPermLinkRef() != null) {
+                    asu.setParameterValue("permLinkRef", URLEncoder.encode(vpCmd.getPermLinkRef(), "UTF-8"));
                 }
 
-				if (vpCmd.getTemplateInstanciationParentId() != null) {
-                    asu.setParameterValue("templateInstanciationParentId", URLEncoder.encode(vpCmd.getTemplateInstanciationParentId(),
-					"UTF-8"));
+                if (vpCmd.getTemplateInstanciationParentId() != null) {
+                    asu.setParameterValue("templateInstanciationParentId", URLEncoder.encode(vpCmd.getTemplateInstanciationParentId(), "UTF-8"));
                 }
 
-				if( vpCmd.getParameters() != null){
-					for(String paramName :  vpCmd.getParameters().keySet())	{
-						asu.setParameterValue( paramName, URLEncoder.encode(vpCmd.getParameters().get(paramName),	"UTF-8"));
-					}
-				}
-
-	            if (vpCmd.getCmsPath()!= null) {
-                    asu.setParameterValue("cmsPath", URLEncoder.encode(vpCmd.getCmsPath(),
-                    "UTF-8"));
+                if (vpCmd.getParameters() != null) {
+                    for (String paramName : vpCmd.getParameters().keySet()) {
+                        asu.setParameterValue(paramName, URLEncoder.encode(vpCmd.getParameters().get(paramName), "UTF-8"));
+                    }
                 }
 
-	            if (vpCmd.getPermLinkType()!= null) {
-                    asu.setParameterValue("permLinkType", URLEncoder.encode(vpCmd.getPermLinkType(),
-                    "UTF-8"));
+                if (vpCmd.getCmsPath() != null) {
+                    asu.setParameterValue("cmsPath", URLEncoder.encode(vpCmd.getCmsPath(), "UTF-8"));
                 }
 
-	            if (vpCmd.getPortalPersistentName() != null) {
-                    asu.setParameterValue("portalPersistentName", URLEncoder.encode(vpCmd.getPortalPersistentName(),
-					"UTF-8"));
+                if (vpCmd.getPermLinkType() != null) {
+                    asu.setParameterValue("permLinkType", URLEncoder.encode(vpCmd.getPermLinkType(), "UTF-8"));
                 }
 
-	            return asu;
+                if (vpCmd.getPortalPersistentName() != null) {
+                    asu.setParameterValue("portalPersistentName", URLEncoder.encode(vpCmd.getPortalPersistentName(), "UTF-8"));
+                }
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
+                return asu;
 
-
-
-		}
-
-		/* CMS commands */
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
 
 
-		if (cmd instanceof CMSDeleteFragmentCommand) {
-			CMSDeleteFragmentCommand command = (CMSDeleteFragmentCommand) cmd;
-
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
+        }
 
 
-			try {
-				asu.setParameterValue("action", "CMSDeleteFragment");
+        // Advanced search command
+        if (cmd instanceof AdvancedSearchCommand) {
+            AdvancedSearchCommand advancedSearchCommand = (AdvancedSearchCommand) cmd;
 
-				asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(),"UTF-8"));
-				asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(),"UTF-8"));
-				asu.setParameterValue("refURI", URLEncoder.encode(command.getRefURI(),"UTF-8"));
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
 
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
-		}
+            // Parameters
+            try {
+                asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);
+                asu.setParameterValue(AdvancedSearchCommand.PAGE_ID_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getPageId(), CharEncoding.UTF_8));
+                asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getSearch(), CharEncoding.UTF_8));
+                asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME,
+                        URLEncoder.encode(String.valueOf(advancedSearchCommand.isAdvancedSearch()), CharEncoding.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+            return asu;
+        }
+
+
+        /* CMS commands */
+
+
+        if (cmd instanceof CMSDeleteFragmentCommand) {
+            CMSDeleteFragmentCommand command = (CMSDeleteFragmentCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSDeleteFragment");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
+                asu.setParameterValue("refURI", URLEncoder.encode(command.getRefURI(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
         if (cmd instanceof CMSPublishDocumentCommand) {
             CMSPublishDocumentCommand command = (CMSPublishDocumentCommand) cmd;
@@ -329,15 +356,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             return asu;
         }
 
-		return null;
-	}
+        return null;
+    }
 
-	public String getPath() {
-		return this.path;
-	}
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+    /**
+     * Getter for path.
+     *
+     * @return the path
+     */
+    public String getPath() {
+        return this.path;
+    }
+
+    /**
+     * Setter for path.
+     *
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
 
 }

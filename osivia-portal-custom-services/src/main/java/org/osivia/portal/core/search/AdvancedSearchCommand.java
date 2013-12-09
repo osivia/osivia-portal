@@ -29,8 +29,20 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
  */
 public class AdvancedSearchCommand extends ControllerCommand {
 
-    /** Search keywords identifier. */
-    private static final String KEYWORDS_ID = "search";
+    /** Generic command action value. */
+    public static final String COMMAND_ACTION_VALUE = "advancedSearch";
+    /** Current page identifier parameter name. */
+    public static final String PAGE_ID_PARAMETER_NAME = "pageId";
+    /** Search keywords parameter name. */
+    public static final String SEARCH_PARAMETER_NAME = "search";
+    /** Advanced search indicator parameter name. */
+    public static final String ADVANCED_SEARCH_PARAMETER_NAME = "advancedSearch";
+
+
+    /** Search keywords selector identifier. */
+    private static final String KEYWORDS_SELECTOR_ID = "search";
+    /** Dummy selector identifier. */
+    private static final String DUMMY_SELECTOR_ID = "dummy-selector";
     /** Advanced search page name. */
     private static final String PAGE_NAME = "AdvancedSearch";
     /** Advanced search template path. */
@@ -43,6 +55,8 @@ public class AdvancedSearchCommand extends ControllerCommand {
     private final String pageId;
     /** Search content. */
     private final String search;
+    /** Advanced search indicator. */
+    private final boolean advancedSearch;
 
 
     /**
@@ -50,10 +64,12 @@ public class AdvancedSearchCommand extends ControllerCommand {
      *
      * @param pageId current page identifier
      * @param search search content
+     * @param advancedSearch advanced search indicator
      */
-    public AdvancedSearchCommand(String pageId, String search) {
+    public AdvancedSearchCommand(String pageId, String search, boolean advancedSearch) {
         this.pageId = pageId;
         this.search = search;
+        this.advancedSearch = advancedSearch;
     }
 
 
@@ -68,8 +84,13 @@ public class AdvancedSearchCommand extends ControllerCommand {
         String portalId = page.getPortal().getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
         // Search keywords
-        Map<String, List<String>> keywords = new HashMap<String, List<String>>();
-        keywords.put(KEYWORDS_ID, Arrays.asList(StringUtils.split(this.search)));
+        Map<String, List<String>> selectors = new HashMap<String, List<String>>();
+        selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
+
+        // Dummy selector
+        if (this.advancedSearch) {
+            selectors.put(DUMMY_SELECTOR_ID, Arrays.asList(new String[]{DUMMY_SELECTOR_ID}));
+        }
 
         // Template identifier
         PortalObjectId templatePortalObjectId = PortalObjectId.parse(TEMPLATE_PATH, PortalObjectPath.CANONICAL_FORMAT);
@@ -80,11 +101,10 @@ public class AdvancedSearchCommand extends ControllerCommand {
 
         // Parameters
         Map<String, String> parameters = new HashMap<String, String>(1);
-        parameters.put("selectors", PageParametersEncoder.encodeProperties(keywords));
+        parameters.put("selectors", PageParametersEncoder.encodeProperties(selectors));
 
         // Command execution
-        StartDynamicPageCommand command = new StartDynamicPageCommand(portalId, PAGE_NAME, null, templateId, properties,
-                parameters);
+        StartDynamicPageCommand command = new StartDynamicPageCommand(portalId, PAGE_NAME, null, templateId, properties, parameters);
         return this.getControllerContext().execute(command);
     }
 
@@ -95,6 +115,33 @@ public class AdvancedSearchCommand extends ControllerCommand {
     @Override
     public CommandInfo getInfo() {
         return commandInfo;
+    }
+
+    /**
+     * Getter for pageId.
+     *
+     * @return the pageId
+     */
+    public String getPageId() {
+        return this.pageId;
+    }
+
+    /**
+     * Getter for search.
+     *
+     * @return the search
+     */
+    public String getSearch() {
+        return this.search;
+    }
+
+    /**
+     * Getter for advancedSearch.
+     *
+     * @return the advancedSearch
+     */
+    public boolean isAdvancedSearch() {
+        return this.advancedSearch;
     }
 
 }

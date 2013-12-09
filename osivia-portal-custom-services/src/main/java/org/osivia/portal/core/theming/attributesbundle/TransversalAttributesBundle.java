@@ -24,6 +24,7 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.formatters.IFormatter;
+import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 /**
@@ -87,14 +88,19 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
      * {@inheritDoc}
      */
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
-        // Current page
-        Page page = renderPageCommand.getPage();
-
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         attributes.put(InternalConstants.ATTR_CONTROLLER_CONTEXT, controllerContext);
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+        // Current page
+        Page page = renderPageCommand.getPage();
+        PageType pageType = PageType.getPageType(page, controllerContext);
+        if (PageType.CMS_TEMPLATED_PAGE.equals(pageType)) {
+            page = (Page) page.getParent();
+        }
+
         // CMS path
         String cmsPath = this.computeCMSPath(controllerContext, page);
         attributes.put(InternalConstants.ATTR_CMS_PATH, cmsPath);
