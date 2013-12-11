@@ -25,6 +25,18 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.net.ProxyUtils;
 import org.osivia.portal.api.statut.ServeurIndisponible;
+import java.util.Date;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import com.sun.mail.smtp.SMTPTransport;
 
 
 public class StatutService extends ServiceMBeanSupport implements StatutServiceMBean, Serializable {
@@ -119,17 +131,88 @@ public class StatutService extends ServiceMBeanSupport implements StatutServiceM
 
 	}
 
+	
+	
+	
+	public void sendMail(String from, String to, String subject, String content) {
+
+		// Récupération des propriétés systemes (configurés dans le portal.properties).
+		Properties props = System.getProperties();
+
+		Session mailSession = Session.getInstance(props, null);
+
+		// Nouveau message
+		final MimeMessage msg = new MimeMessage(mailSession);
+
+		// -- Set the FROM and TO fields --
+		try {
+			
+			msg.setFrom(new InternetAddress(from));
+			
+			String mailDestinataire = to;
+			msg.setRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(mailDestinataire, false));
+			
+			msg.setSubject(subject,"UTF-8");
+
+			Multipart mp = new MimeMultipart();
+	        MimeBodyPart htmlPart = new MimeBodyPart();
+	        htmlPart.setContent(content, "text/html; charset=UTF-8");
+	        mp.addBodyPart(htmlPart);
+
+	        msg.setContent(mp);
+			
+			msg.setSentDate(new Date());
+
+			SMTPTransport t = (SMTPTransport) mailSession.getTransport(System.getProperty("portal.mail.transport"));
+
+			t.connect(System.getProperty("portal.mail.host"),
+					System.getProperty("portal.mail.login"),
+					System.getProperty("portal.mail.password"));
+			t.sendMessage(msg, msg.getAllRecipients());
+			t.close();
+		} catch (AddressException e) {
+			log.info(e.getMessage());
+		} catch (MessagingException e) {
+			log.info(e.getMessage());
+		}
+
+
+	}
+	
+	
+	
+	
 	public void notifyError(String serviceCode, ServeurIndisponible e) {
 
 		statutLog.error("Error notification for service " + serviceCode + " : " + e.toString());
 		
 
 		ServiceState service = listeServices.get(serviceCode);
+		
 		if (service != null) {
-			service.setMustBeChecked(true);
-
+			String msg =  e.toString();
+			
+			
+			// Le DOWN peut être forcé par l'appelant
+			
+			if( msg != null &&  msg.indexOf("[DOWN]") != -1)	{
+				if( System.getProperty("portal.status.mail.to") != null){
+					sendMail(System.getProperty("portal.status.mail.from"), System.getProperty("portal.status.mail.to"), "Gestionnaire de statut toutatice", msg);
+				}
+				service.setServiceUp(false);
+				service.setLastCheckTimestamp( System.currentTimeMillis());
+			}
+			else
+				service.setMustBeChecked(true);
 		}
+		
 	}
+	
+	
+	
+	
+	
 
 	/**
 	 * Teste l'état d'un service . Un thread est lancé pour s'assurer qu'on ne bloquera pas

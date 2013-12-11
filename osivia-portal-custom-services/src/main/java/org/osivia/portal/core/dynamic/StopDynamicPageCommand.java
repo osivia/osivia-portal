@@ -101,8 +101,11 @@ public class StopDynamicPageCommand extends DynamicCommand {
 					PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
 					
 					// Impact sur les caches du bandeau
-					ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
-					cacheService.incrementHeaderCount();
+//					ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+//					cacheService.incrementHeaderCount();
+					
+					// V2.0.22 : pas besoin de rafaichir tous les bandeaux ...
+					getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1");	
 
 					//TODO : ajouter last pagemarker de la page
 					
@@ -172,10 +175,11 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
 			
 			// Impact sur les caches du bandeau
-			ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
-			cacheService.incrementHeaderCount();
+//			ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+//			cacheService.incrementHeaderCount();
 			
-			
+			// V2.0.22 : pas besoin de rafaichir tous les bandeaux ...
+			getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1");	
 
 			if( redirectPage instanceof CMSTemplatePage)	{
 				redirectPage = (Page) redirectPage.getParent();

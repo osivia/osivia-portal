@@ -159,10 +159,12 @@ public class StartDynamicPageCommand extends DynamicCommand {
 				// Maj du breadcrumb
 				getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
 			
-			//Impact sur les caches du bandeau
-			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
-			cacheService.incrementHeaderCount();
+//			//Impact sur les caches du bandeau
+//			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
+//			cacheService.incrementHeaderCount();
 			
+			// V2.0.22 : pas besoin de rafaichir tous les bandeaux ...
+			getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1");	
 			
 			return new UpdatePageResponse(pageId);
 

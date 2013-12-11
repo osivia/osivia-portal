@@ -539,10 +539,22 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 						} while (headerCount.longValue() > getCacheService().getHeaderCount());
 					}
 				}
+				
+				
+				if( refreshUserPortal == false){
+					// V2.0.22 : pas besoin de rafaichir tous les bandeaux ...
+					if( "1".equals(controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh")))
+							refreshUserPortal = true;
+				}
+			
+				
 
 				if (refreshUserPortal) {
 
 					tabbedNavUserPortal = getPageBean(rpc);
+					
+					// V2.0.22 : pas besoin de rafaichir tous les bandeaux ...
+					controllerCtx.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh");	
 
 					controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal",
 							tabbedNavUserPortal);

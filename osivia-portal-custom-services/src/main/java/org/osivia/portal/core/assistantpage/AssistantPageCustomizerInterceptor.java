@@ -729,7 +729,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 	// v2.0.22 : catégories
 	String pageCategoryPrefix = System.getProperty("page.category.prefix");
 	
-	if( System.getProperty("page.category.prefix") != null)	{
+	if( pageCategoryPrefix != null)	{
 		
 		String category = page.getDeclaredProperty("osivia.pageCategory");
 		if( category == null)
