@@ -31,6 +31,7 @@ import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
@@ -388,6 +389,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 	
 	
 	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
+
 		
 		// v1.0.16 : lock during import
 		if( isImportRunning == true){
