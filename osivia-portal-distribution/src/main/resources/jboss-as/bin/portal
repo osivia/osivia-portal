@@ -97,8 +97,7 @@ echo JBOSS_CMD_START = $JBOSS_CMD_START
 
 function procrunning() {
    procid=0
-   JBOSSSCRIPT=$(echo $JBOSSSH | awk '{print $1}' | sed 's/\//\\\//g')
-   for procid in `/sbin/pidof -x "$JBOSSSCRIPT"`; do
+   for procid in `/sbin/pidof sh`; do
        ps -fp $procid | grep "${JBOSSSH% *}" > /dev/null && pid=$procid
    done
 }
