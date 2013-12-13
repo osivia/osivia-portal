@@ -138,6 +138,9 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			dynamicCOntainer.addDynamicPage(pageBean);
 			
 			PortalObject page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(pageId);	
+			
+			
+
 
 			
 			
@@ -154,6 +157,10 @@ public class StartDynamicPageCommand extends DynamicCommand {
 	                  
 				for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
 					getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, po.getId().toString());
+					
+					// et des anciens caches
+					// Suppression du cache
+					getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,	"cached_markup." + po.getId().toString());
 				}
 	
 				// Maj du breadcrumb
