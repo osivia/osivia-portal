@@ -50,6 +50,11 @@ String currentLayout = (String) request.getAttribute(InternalConstants.ATTR_TOOL
 List<PortalTheme> themesList = (List<PortalTheme>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
 // Current theme
 String currentTheme = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME);
+//Current category
+String currentCategory = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY);
+//Categories list
+@SuppressWarnings("unchecked")
+Map<String, String> categoriesList = (Map<String, String>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);
 // Roles
 @SuppressWarnings("unchecked")
 List<Role> roles = (List<Role>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES);
@@ -372,6 +377,31 @@ function toggleRow(link, divClass) {
                         </select>                        
                     </div>
                 </div>
+                
+                              <!-- Sélection de la catégorie -->
+                <div class="fancybox-table-row">
+                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_CATEGORY", locale) %></div>
+                    <div class="fancybox-table-cell">
+                        <select name="pageCategory" <%=disabledCMSTemplated %>>
+                            <%
+                            if (categoriesList != null) {
+                                for (String possibleCategory : categoriesList.keySet()) {
+                                    String selected = "";
+                                    
+                					if( possibleCategory.equals( currentCategory))	{
+                						selected = "selected=\"selected\"";
+                					}
+                			%>		
+
+                             <option  <%=selected %> value="<%= possibleCategory %>"><%= categoriesList.get(possibleCategory) %></option>
+                                        <%
+                                }
+                            }
+                            %>
+                        </select>                        
+                    </div>
+                </div>
+  
   
             </div>
             

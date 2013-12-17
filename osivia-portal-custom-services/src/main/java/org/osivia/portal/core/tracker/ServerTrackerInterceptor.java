@@ -2,6 +2,7 @@ package org.osivia.portal.core.tracker;
 
 import java.util.Iterator;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -47,8 +48,24 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		
 		
 		//TODO : déplacer dans intercepteur spécifique
-		
-		// v1.0.10 : réinitialisation des propriétes des windows
+       // TODO : paramétrer les googlebot dans environnement_portail.properties
+        // prevent google unwanted request (if pagemarker not empty)
+
+        HttpServletRequest request = invocation.getServerContext().getClientRequest();
+
+        String header = request.getHeader("User-Agent");
+        String uri = request.getRequestURI();
+
+        // logger.info("header:" + header + "uri:"+ uri);
+
+        if (request.getRemoteUser() == null && header != null && uri != null && header.toLowerCase().indexOf("googlebot/2.1") != -1 && uri.contains("/pagemarker/")) {
+            invocation.getServerContext().getClientResponse().setStatus(403);
+            return;
+        }
+
+
+	    
+		// réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();
 		
 		

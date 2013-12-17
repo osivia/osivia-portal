@@ -39,6 +39,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -48,7 +49,7 @@ import org.osivia.portal.core.profils.ProfilManager;
 
 /**
  * Tabs attributes bundle.
- *
+ * 
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
@@ -98,7 +99,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
     /**
      * Singleton instance access.
-     *
+     * 
      * @return singleton instance
      */
     public static TabsAttributesBundle getInstance() {
@@ -136,7 +137,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     && (cmsTs != null)) {
                 if ((user == null) || (headerUsername != null)) {
                     // Check header and services caches validity
-                    if ((headerCount.longValue() == this.globalCacheService.getHeaderCount()) && (cmsTs > this.servicesCacheService.getCacheInitialisationTs())) {
+                    if ((headerCount.longValue() == this.globalCacheService.getHeaderCount())
+                            && (cmsTs > this.servicesCacheService.getCacheInitialisationTs() && !PageProperties.getProperties().isRefreshingPage())) {
                         refreshUserPortal = false;
                     }
                 }
@@ -204,7 +206,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to get user portal pages.
-     *
+     * 
      * @param renderPageCommand render page command
      * @return user portal pages
      * @throws ControllerException

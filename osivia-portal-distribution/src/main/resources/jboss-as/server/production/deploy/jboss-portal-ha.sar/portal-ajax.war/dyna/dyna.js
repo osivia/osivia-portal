@@ -23,6 +23,7 @@
 
 
 var currentSubmit;
+var fancyContainerDivId = null;
 
 
 function onAjaxSuccess(t, callerId) {
@@ -267,6 +268,12 @@ function bilto(event) {
 	}
 
 	var container = Element.up(source, "div.dyna-window");
+	
+    var container = null;
+	if( fancyContainerDivId != null)
+		container = document.getElementById(fancyContainerDivId);
+	if( container == null)
+		container = Element.up(source, "div.dyna-window");	    
 
 	// We found the window
 	if (container != null) {
@@ -340,6 +347,9 @@ function bilto(event) {
 		if (url != null) {
 			directAjaxCall(container, options, url, event, null);
 		}
+		
+		if( fancyContainerDivId)
+			parent.jQuery.fancybox.close();
 	}
 }
 

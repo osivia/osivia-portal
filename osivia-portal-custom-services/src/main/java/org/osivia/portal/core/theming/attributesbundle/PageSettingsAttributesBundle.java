@@ -2,14 +2,18 @@ package org.osivia.portal.core.theming.attributesbundle;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +49,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
@@ -53,6 +58,7 @@ import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
 import org.osivia.portal.core.assistantpage.PortalThemeComparator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
@@ -89,6 +95,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final PortalObjectContainer portalObjectContainer;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
+    
+    /** Internationalization service. */
+    private IInternationalizationService internationalizationService;
+    
+
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -114,10 +125,17 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        
+         // Internationalization service
+         this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        
+
 
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY); 
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);   
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
@@ -186,6 +204,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // URL context
         URLContext urlContext = serverContext.getURLContext();
+        
+        Locale locale = serverContext.getClientRequest().getLocale();
+        
 
         // Current page
         Page page = renderPageCommand.getPage();
@@ -206,6 +227,59 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
+            
+            
+            // categories (optional)
+            String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
+            
+            if( pageCategoryPrefix != null) {
+                
+                String category = page.getDeclaredProperty("osivia.pageCategory");
+                if( category == null)
+                    category = "";
+                
+                attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY, category);
+                
+                Map<String, String> categories = new LinkedHashMap<String, String>();
+                
+
+                categories.put("", this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_NO_CATEGORY, locale));
+                
+                TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<OrderedPageCategory>();
+
+                Properties properties = System.getProperties();
+                Enumeration<Object>props = properties.keys();
+                while(props.hasMoreElements()){
+                    
+                    String key = (String) props.nextElement();
+                    
+                    if( key.startsWith(pageCategoryPrefix)) {
+                        String curCategory = key.substring(pageCategoryPrefix.length());
+                        
+                        int curOrder = 100;
+                        
+                        try {
+                         curOrder = Integer.parseInt(curCategory);
+                        } catch( NumberFormatException e)   {
+                            // non orderable
+                        }
+                        String curLabel = (String) properties.get( key);
+
+                        orderedCategories.add(new OrderedPageCategory(curOrder, curCategory, curLabel));
+
+                    }
+                }
+                
+                
+                for(OrderedPageCategory pageCategory : orderedCategories)   {
+                    categories.put(pageCategory.getCode(),pageCategory.getLabel());     
+                }
+            
+                
+                attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES, categories);  
+            }
+                
+            
             // Layouts
             List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
             Collections.sort(layouts, new PortalLayoutComparator());

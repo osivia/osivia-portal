@@ -1,13 +1,15 @@
 package org.osivia.portal.api.menubar;
 
 public class MenubarItem {
-	
+    
+    private String id;
 	private int order;
 	private String url;
 	private String title;
 	private String className;
 	private String onClickEvent;
 	private String target;
+    private String associatedHtml;	
 	private boolean ajaxDisabled=false;
 
 	public static int ORDER_PORTLET_SPECIFIC = 0;
@@ -31,6 +33,7 @@ public class MenubarItem {
 	
 	public MenubarItem(String id, String title, int order, String url, String onClickEvent, String className, String target) {
 		super();
+	      this.id = id;
 		this.order = order;
 		this.url = url;
 		this.onClickEvent = onClickEvent;
@@ -81,6 +84,14 @@ public class MenubarItem {
 		this.ajaxDisabled = ajaxDisabled;
 	}
 	
+    public String getAssociatedHtml() {
+        return associatedHtml;
+    }
+
+    public void setAssociatedHtml(String associatedHtml) {
+        this.associatedHtml = associatedHtml;
+    }
+
 
 	
 	public String getTarget() {

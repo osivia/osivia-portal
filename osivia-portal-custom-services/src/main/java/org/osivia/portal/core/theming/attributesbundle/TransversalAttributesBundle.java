@@ -8,6 +8,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
@@ -22,6 +23,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
@@ -66,6 +69,9 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
+        this.names.add(Constants.ATTR_PAGE_CATEGORY);   
+        this.names.add(Constants.ATTR_USER_DATAS); 
+        this.names.add(Constants.ATTR_SPACE_CONFIG);         
         this.names.add(Constants.ATTR_PORTAL_CTX);
         this.names.add(Constants.ATTR_URL_FACTORY);
     }
@@ -115,6 +121,28 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         String commandUrl = serverContext.getPortalContextPath() + "/commands";
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
         // Portal controller context
+        
+        
+        this.names.add(Constants.ATTR_PAGE_CATEGORY);   
+        this.names.add(Constants.ATTR_USER_DATAS); 
+        this.names.add(Constants.ATTR_SPACE_CONFIG); 
+        
+       
+        @SuppressWarnings("unchecked")
+        Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
+        attributes.put(Constants.ATTR_USER_DATAS, userDatas);
+
+        attributes.put(Constants.ATTR_PAGE_CATEGORY, renderPageCommand.getPage().getProperty("osivia.pageCategory"));
+        CMSItem spaceItem;
+        try {
+            spaceItem = CmsCommand.getPagePublishSpaceConfig(controllerContext, renderPageCommand.getPage());
+        } catch (Exception e) {
+           throw new ControllerException(e);
+        }
+        if( spaceItem != null)
+            attributes.put(Constants.ATTR_SPACE_CONFIG, spaceItem.getNativeItem());
+
+        
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
         // URL factory

@@ -9,6 +9,17 @@ public class ServiceState {
 	private String url = "";
 	
 
+    private boolean mustBeChecked = false;
+    
+    public boolean isMustBeChecked() {
+        return mustBeChecked;
+    }
+
+    public void setMustBeChecked(boolean mustBeChecked) {
+        this.mustBeChecked = mustBeChecked;
+    }	
+	
+
 	public long getLastCheckTimestamp() {
 		return lastCheckTimestamp;
 	}

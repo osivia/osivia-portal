@@ -2,10 +2,11 @@ package org.osivia.portal.core.status;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -25,6 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.net.ProxyUtils;
 import org.osivia.portal.api.status.UnavailableServer;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import com.sun.mail.smtp.SMTPTransport;
 
 
 
@@ -71,7 +83,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			service = listeServices.get(url);
 		}
 
-		if (service.isServiceUp())
+		if (service.isServiceUp()  && !service.isMustBeChecked())
 			return true;
 		
 		synchronized (service) {
@@ -88,41 +100,114 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 	
 		// On assure la périodicité des tests
+
 		
-		if (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest) {
+ 
+        
+        if (service.isMustBeChecked() || (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest)) {
+            
+            service.setMustBeChecked(false);
 
-			statutLog.debug("Test du service " + service.getUrl());
+            service.setLastCheckTimestamp(System.currentTimeMillis());
 
-			service.setLastCheckTimestamp(System.currentTimeMillis());
+            try {
+                
+                statutLog.info("Checking " + service.getUrl() );
+                
+                testerService(service);
 
-			try {
-				testerService(service);
+                service.setServiceUp(true);
 
-				service.setServiceUp(true);
+                statutLog.info("Service " + service.getUrl() + " UP");
+            }
 
-				statutLog.info("Le service " + service.getUrl() + " est UP");
-			}
+            catch (UnavailableServer e) {
+                
+                // v 2.0.21 : la mise en DOWN est explicite (erreur runningstatus)
+                
+                service.setServiceUp(false);
+                
+                statutLog.info("Service " + service.getUrl() + " DOWN . Reason : " + e.toString());
 
-			catch (UnavailableServer e) {
-				
-				service.setServiceUp(false);
-				
-				statutLog.info("Service " + service.getUrl() + " DOWN . Raison : " + e.toString());
+            }
 
-			}
-
-		}
+        }
 
 	}
 
+
+    
+    public void sendMail(String from, String to, String subject, String content) {
+
+        // Récupération des propriétés systemes (configurés dans le portal.properties).
+        Properties props = System.getProperties();
+
+        Session mailSession = Session.getInstance(props, null);
+
+        // Nouveau message
+        final MimeMessage msg = new MimeMessage(mailSession);
+
+        // -- Set the FROM and TO fields --
+        try {
+            
+            msg.setFrom(new InternetAddress(from));
+            
+            String mailDestinataire = to;
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(mailDestinataire, false));
+            
+            msg.setSubject(subject,"UTF-8");
+
+            Multipart mp = new MimeMultipart();
+            MimeBodyPart htmlPart = new MimeBodyPart();
+            htmlPart.setContent(content, "text/html; charset=UTF-8");
+            mp.addBodyPart(htmlPart);
+
+            msg.setContent(mp);
+            
+            msg.setSentDate(new Date());
+
+            SMTPTransport t = (SMTPTransport) mailSession.getTransport(System.getProperty("portal.mail.transport"));
+
+            t.connect(System.getProperty("portal.mail.host"),
+                    System.getProperty("portal.mail.login"),
+                    System.getProperty("portal.mail.password"));
+            t.sendMessage(msg, msg.getAllRecipients());
+            t.close();
+        } catch (AddressException e) {
+            log.info(e.getMessage());
+        } catch (MessagingException e) {
+            log.info(e.getMessage());
+        }
+
+
+    }
+    
+    
+	
 	public void notifyError(String serviceCode, UnavailableServer e) {
+        statutLog.error("Error notification for service " + serviceCode + " : " + e.toString());
+        
 
-		statutLog.error("Erreur " + serviceCode + " : " + e.toString());
-
-		ServiceState service = listeServices.get(serviceCode);
-		if (service != null) {
-			service.setServiceUp(false);
-		}
+        ServiceState service = listeServices.get(serviceCode);
+        
+        if (service != null) {
+            String msg =  e.toString();
+            
+            
+            // Le DOWN peut être forcé par l'appelant
+            //TOD0 : notion de DOWN forcé à intégrer dans l'API
+            
+            if( msg != null &&  msg.indexOf("[DOWN]") != -1)    {
+                if( System.getProperty("portal.status.mail.to") != null){
+                    sendMail(System.getProperty("portal.status.mail.from"), System.getProperty("portal.status.mail.to"), "Gestionnaire de statut toutatice", msg);
+                }
+                service.setServiceUp(false);
+                service.setLastCheckTimestamp( System.currentTimeMillis());
+            }
+            else
+                service.setMustBeChecked(true);
+        }
 	}
 
 	/**
@@ -147,6 +232,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			}
 			String url = service.getUrl();
 			
+			// TODO : externaliser dans l'API status (utl d'appel différente de url service)
 			if( url.endsWith("/nuxeo"))
 			    url += NUXEO_RUNNINGSTATUS_URL;
 			
@@ -166,9 +252,18 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 		} catch (Exception e) {
 			if (e.getCause() instanceof UnavailableServer)
 				throw (UnavailableServer) e.getCause();
-			else	
-				throw new UnavailableServer("Probleme controle url : " + e.getClass().getName() + " "
-						+ e.getMessage() + e.getCause());
+			else	    {
+			    {
+	                String msg = "Error during check : " + e.getClass().getName();
+	                if( e.getMessage() != null)
+	                    msg += " " + e.getMessage();
+	                if(  e.getCause() != null)
+	                    msg += " " + e.getCause();
+	                
+	                throw new UnavailableServer(msg);
+	            }			    
+
+			}
 		}
 
 	}
@@ -200,7 +295,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 				HttpMethodRetryHandler myretryhandler = new HttpMethodRetryHandler() {
 
 					public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
-						if (executionCount >= 1) {
+						if (executionCount >= 3) {
 							// Do not retry if over max retry count
 							return false;
 						}
@@ -238,7 +333,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 			} catch (Exception e) {
 				if( ! (e instanceof UnavailableServer))	{
-					UnavailableServer exc = new UnavailableServer(e.getMessage());
+					UnavailableServer exc = new UnavailableServer("url " + url + " " + e.getMessage());
 					throw exc;
 					}
 				else 

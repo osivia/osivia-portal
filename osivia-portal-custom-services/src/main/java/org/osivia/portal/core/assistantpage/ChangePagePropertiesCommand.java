@@ -16,6 +16,7 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageType;
@@ -38,6 +39,8 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
     private String layout;
     /** Page theme. */
     private String theme;
+    /** Page category. */    
+    private String category;
 
 
     /**
@@ -55,13 +58,14 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
      * @param layout page layout
      * @param theme page theme
      */
-    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme) {
+    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme,  String category) {
         super();
         this.pageId = pageId;
         this.displayName = displayName;
         this.draftPage = draftPage;
         this.layout = layout;
         this.theme = theme;
+        this.category = category;
     }
 
 
@@ -114,6 +118,16 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
             page.setDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME, this.theme);
         }
 
+        
+        // Page category
+        if( System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX) != null) {
+            if (category != null && category.length() != 0) {
+                page.setDeclaredProperty("osivia.pageCategory", category);
+            } else {
+                page.setDeclaredProperty("osivia.pageCategory", null);
+            }
+        }
+        
         // Caches impact
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
         cacheService.incrementHeaderCount();

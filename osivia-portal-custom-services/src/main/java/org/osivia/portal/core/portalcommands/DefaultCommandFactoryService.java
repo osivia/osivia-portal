@@ -284,7 +284,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             theme = URLDecoder.decode(parameterMap.get("newTheme")[0], CharEncoding.UTF_8);
                         }
 
-                        return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme);
+                        String category = null;                        
+                        if (parameterMap.get("pageCategory") != null)
+                            category = URLDecoder.decode(((String[]) parameterMap.get("pageCategory"))[0], "UTF-8");
+
+                        
+                        return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme, category);
                     }
                 }
 

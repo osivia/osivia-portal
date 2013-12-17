@@ -30,7 +30,7 @@ public class Constants {
     /** name of the default portal. */
     public static final String PORTAL_NAME_DEFAULT = "default";
 
-    // Footer
+    // Header and footer
 
     /** Site map attribute name. */
     public static final String ATTR_SITE_MAP = "osivia.siteMap";
@@ -44,8 +44,16 @@ public class Constants {
     public static final String ATTR_PAGE_ID = "osivia.currentPageId";
     /** First tab attribute name. */
     public static final String ATTR_FIRST_TAB = "osivia.firstTab";
-
-
+    /** Page category attribute name. */
+    
+    // Generic
+    
+    public static String ATTR_PAGE_CATEGORY = "osivia.pageCategory";
+    /** User session data attribute name. */
+    public static String ATTR_USER_DATAS = "osivia.userDatas";
+    /** Native space object attribute name. */    
+    public static String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
+    
     // Breadcrumb
 
     /** Breadcrumb content attribute name. */

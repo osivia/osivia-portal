@@ -149,16 +149,21 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 				for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
 					this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, po.getId().toString());
+					
+	                   // et des anciens caches
+                    // Suppression du cache
+                    getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,   "cached_markup." + po.getId().toString());
+
 				}
 
 				// Maj du breadcrumb
 				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
 
-			//Impact sur les caches du bandeau
-			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
-			cacheService.incrementHeaderCount();
 
+		        // rafaichir la bandeau
+	            getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1"); 
 
+				
 			return new UpdatePageResponse(pageId);
 
 

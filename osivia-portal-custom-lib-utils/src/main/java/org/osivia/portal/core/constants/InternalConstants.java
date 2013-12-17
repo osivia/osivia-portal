@@ -64,7 +64,8 @@ public final class InternalConstants {
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING = "portlets.rendering";
     /** Portlets div rendering. */
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV = "div";
-
+    /** Page categories PREFIX */
+    public static final String SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX = "page.category.prefix";
 
     // Administration constants
 
@@ -83,6 +84,12 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED = "osivia.toolbarSettings.cmsTemplated";
     /** Draft page indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
+    /** Page currentcategory. */
+    public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY = "osivia.toolbarSettings.pageCategory";
+    
+    /** Page category list */
+    public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES = "osivia.toolbarSettings.pageCategories";
+
     /** Layouts list. */
     public static final String ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST = "osivia.toolbarSettings.layoutsList";
     /** Current layout. */
