@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portal-renderSet>
+	<renderSet name="OsiviaDefaultRenderer">
+   		<set content-type="text/html">
+   			<ajax-enabled>true</ajax-enabled>
+   			<decoration-renderer>org.osivia.portal.core.renderers.DivDecorationRenderer</decoration-renderer>
+   			<portlet-renderer>org.osivia.portal.core.renderers.DivPortletRenderer</portlet-renderer>
+   			<region-renderer>org.osivia.portal.core.renderers.DivRegionRenderer</region-renderer>
+   			<window-renderer>org.osivia.portal.core.renderers.DivWindowRenderer</window-renderer>
+   		</set>
+	</renderSet>
+
+</portal-renderSet>
