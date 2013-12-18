@@ -3,7 +3,12 @@ package org.osivia.portal.api.menubar;
 public class MenubarItem {
     
     private String id;
-	private int order;
+	
+    public String getId() {
+        return id;
+    }
+
+    private int order;
 	private String url;
 	private String title;
 	private String className;
