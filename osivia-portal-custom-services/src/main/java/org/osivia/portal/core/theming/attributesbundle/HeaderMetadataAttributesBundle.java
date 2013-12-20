@@ -93,15 +93,18 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
 
         // Get ECM object
         CMSItem doc = null;
-        try {
-            if (CmsPermissionHelper.getCurrentPageSecurityLevel(context, contentPath) == Level.allowPreviewVersion) {
-                cmsCtx.setDisplayLiveVersion("1");
+        
+        if( contentPath != null)    {
+            try {
+                if (CmsPermissionHelper.getCurrentPageSecurityLevel(context, contentPath) == Level.allowPreviewVersion) {
+                    cmsCtx.setDisplayLiveVersion("1");
+                }
+
+                doc = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
+
+            } catch (CMSException e) {
+                // Do nothing
             }
-
-            doc = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
-
-        } catch (CMSException e) {
-            // Do nothing
         }
         String result = "";
 

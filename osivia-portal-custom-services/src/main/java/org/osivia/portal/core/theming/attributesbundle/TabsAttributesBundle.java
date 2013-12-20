@@ -149,10 +149,19 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         this.globalCacheService.incrementHeaderCount();
                     } while (headerCount.longValue() > this.globalCacheService.getHeaderCount());
                 }
+                
+                
+                if( refreshUserPortal == false){
+                    if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh")))
+                            refreshUserPortal = true;
+                }
+                
             }
 
             if (refreshUserPortal) {
                 tabbedNavUserPortal = this.getPageBean(renderPageCommand);
+                
+                controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh");    
 
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal", tabbedNavUserPortal);
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount",
