@@ -44,7 +44,6 @@ import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
-import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
@@ -284,7 +283,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 					// Le mode Ajax est incompatble avec le mode "edition cms"
 					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
                     // - sur le close, la requete n'est pas traitée en AJAX
-					DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
+                    // DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
 
 					for (Object windowCtx : renderCtx.getWindows()) {
 

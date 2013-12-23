@@ -130,13 +130,16 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Windows setting mode
         String windowsSettingMode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
 
-        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
-            out.print("<div ");
-            if (wrc.getProperty("osivia.windowId") != null) {
-                out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
-            }
-            out.print("class=\"no-ajax-link\"> ");
+        out.print("<div ");
+        if (wrc.getProperty("osivia.windowId") != null) {
+
+            out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
         }
+        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
+            out.print("class=\"no-ajax-link\" ");
+
+        }
+        out.print("/> ");
 
 
         String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
@@ -257,11 +260,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
 
-        // Activation des liens Ajax
-        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
-            // out.print("</div></div>");
-            out.print("</div>");
-        }
+        // End of DIV for osivia.windowID or no ajax link
+        out.print("</div>");
 
 
     }

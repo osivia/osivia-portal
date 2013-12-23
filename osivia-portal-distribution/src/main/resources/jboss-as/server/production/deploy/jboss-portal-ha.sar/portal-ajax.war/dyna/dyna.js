@@ -423,8 +423,9 @@ function footer() {
 			snapshot();
 			var toRegionId = elt["regionId"];
 			var toPos = elt["pos"];
-
-			var refUri = document.getElementById(toRegionId).childNodes[toPos].id;
+			
+			// Ajaxmode : The refURI is under 2 DIV elements
+			var refUri = document.getElementById(toRegionId).childNodes[toPos].children[0].children[0].id;
 
 			// Perform request
 			sendData("windowmove", windowId, fromPos, fromRegionId, toPos,
