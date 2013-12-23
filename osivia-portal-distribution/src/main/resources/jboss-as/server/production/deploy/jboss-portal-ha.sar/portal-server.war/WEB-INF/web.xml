@@ -93,25 +93,42 @@
       <servlet-name>PortalServletWithPathMapping</servlet-name>
       <url-pattern>/*</url-pattern>
    </servlet-mapping>
+   
 
    <!-- Provide secure access to unauthenticated users -->
+   <!-- 
+   <servlet-mapping>
+      <servlet-name>PortalServletWithPathMapping</servlet-name>
+      <url-pattern>/sec</url-pattern>
+   </servlet-mapping>
    <servlet-mapping>
       <servlet-name>PortalServletWithPathMapping</servlet-name>
       <url-pattern>/sec/*</url-pattern>
-   </servlet-mapping>
-
+   </servlet-mapping>   
+ -->
    <!-- Provide access to authenticated users -->
+   <!-- 
+   <servlet-mapping>
+      <servlet-name>PortalServletWithPathMapping</servlet-name>
+      <url-pattern>/auth</url-pattern>
+   </servlet-mapping>
    <servlet-mapping>
       <servlet-name>PortalServletWithPathMapping</servlet-name>
       <url-pattern>/auth/*</url-pattern>
-   </servlet-mapping>
-
+   </servlet-mapping>   
+    -->
    <!-- Provide secure access to authenticated users -->
+   <!-- 
+   <servlet-mapping>
+      <servlet-name>PortalServletWithPathMapping</servlet-name>
+      <url-pattern>/authsec</url-pattern>
+   </servlet-mapping>
    <servlet-mapping>
       <servlet-name>PortalServletWithPathMapping</servlet-name>
       <url-pattern>/authsec/*</url-pattern>
-   </servlet-mapping>
-
+   </servlet-mapping>   
+ -->
+ 
    <!-- Force the mapping of the jsp and images because of the default servlet replacement -->
    <servlet-mapping>
       <servlet-name>jsp</servlet-name>
@@ -169,6 +186,7 @@
       <web-resource-collection>
          <web-resource-name>Authenticated</web-resource-name>
          <description></description>
+         <url-pattern>/auth</url-pattern>
          <url-pattern>/auth/*</url-pattern>
       </web-resource-collection>
       <auth-constraint>
@@ -179,6 +197,7 @@
    <security-constraint>
      <web-resource-collection>
        <web-resource-name>Secure</web-resource-name>
+       <url-pattern>/sec</url-pattern>
        <url-pattern>/sec/*</url-pattern>
      </web-resource-collection>
      <user-data-constraint>
@@ -189,6 +208,7 @@
    <security-constraint>
      <web-resource-collection>
        <web-resource-name>Secure+Authenticated</web-resource-name>
+       <url-pattern>/authsec</url-pattern>
        <url-pattern>/authsec/*</url-pattern>
      </web-resource-collection>
      <auth-constraint>
