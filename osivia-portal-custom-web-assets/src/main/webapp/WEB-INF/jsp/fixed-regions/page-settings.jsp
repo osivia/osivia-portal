@@ -157,12 +157,6 @@ function toggleRow(link, divClass) {
     }   
 }
 
-// Lock model trees
-window.onload = function() {
-	jstreeToggleLock('jstreePageModelSelect', true);
-	jstreeToggleLock('jstreeTemplateModelSelect', true);
-}
-
 </script>
 
 
@@ -204,8 +198,8 @@ window.onload = function() {
                     </div>
                     
                     <div class="fancybox-table-cell">
-                        <div id="jstreePageModelSelect" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreePortalObjects(currentPage, context, "jstreePageModelSelect") %>
+                        <div id="jstreePageModelSelect" class="jstree-select-unique locked">
+                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreePageModelSelect") %>
                         </div>
                     </div>
                 
@@ -265,8 +259,8 @@ window.onload = function() {
                     </div>
                     
                     <div class="fancybox-table-cell">
-                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreePortalObjects(currentPage, context, "jstreeTemplateModelSelect") %>
+                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique locked">
+                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreeTemplateModelSelect") %>
                         </div>
                     </div>
                 

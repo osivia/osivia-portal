@@ -162,19 +162,20 @@ $JQry(document).ready(function() {
 	});
 	$JQry(".jstree-select-unique").bind(
 		"loaded.jstree", function(evt, data) {
-			var prefix = this.id;
-			
-			// Open portal node
-			if (undefined != portalId) {
-				var portalNode = $JQry("#" + prefix + portalId);
-				$JQry(this).jstree("open_node", portalNode);
-			}
-			
-			// Select current page node
-			if (undefined != currentPageId) {
-				// Get current page node
-				var currentPageNode = $JQry("#" + prefix + currentPageId);
-				$JQry(this).jstree("select_node", currentPageNode);
+			if ($JQry(this).hasClass("locked")) {
+				$JQry(this).jstree("lock");
+			} else {
+				var prefix = this.id;
+				
+				// Open portal node
+				if (undefined != portalId) {
+					var portalNode = $JQry("#" + prefix + portalId);
+					$JQry(this).jstree("open_node", portalNode);
+				}
+				
+				// Select node
+				var firstNode = $JQry(this).find("li").first();
+				$JQry(this).jstree("select_node", firstNode);
 			}
 		}
 	);
