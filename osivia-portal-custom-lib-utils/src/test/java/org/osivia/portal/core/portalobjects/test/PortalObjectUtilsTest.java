@@ -30,7 +30,7 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * PortalObjectUtils tests.
- *
+ * 
  * @author Cédric Krommenhoek
  * @see PortalObjectUtils
  */
@@ -44,17 +44,17 @@ public class PortalObjectUtilsTest {
     private static final String SUB_PAGE_NAME = "Sub page name";
 
     /** Portal object mock. */
-    PortalObject portalObjectMock;
+    private PortalObject portalObjectMock;
     /** Portal object mock. */
-    Portal portalMock;
+    private Portal portalMock;
     /** Page object mock. */
-    Page pageMock;
+    private Page pageMock;
     /** Sub page object mock. */
-    Page subPageMock;
+    private Page subPageMock;
     /** Templates root mock. */
-    Page templatesRootMock;
+    private Page templatesRootMock;
     /** Template mock. */
-    Page templateMock;
+    private Page templateMock;
 
 
     /**
@@ -69,10 +69,12 @@ public class PortalObjectUtilsTest {
         // Portal
         this.portalMock = EasyMock.createMock("Portal", Portal.class);
         EasyMock.expect(this.portalMock.getParent()).andReturn(null).anyTimes();
+        EasyMock.expect(this.portalMock.getDeclaredProperty(PortalObject.PORTAL_PROP_DEFAULT_OBJECT_NAME)).andReturn(PAGE_NAME).anyTimes();
 
         // Page
         this.pageMock = EasyMock.createMock("Page", Page.class);
         EasyMock.expect(this.pageMock.getParent()).andStubReturn(this.portalMock);
+        EasyMock.expect(this.pageMock.getPortal()).andStubReturn(this.portalMock);
         Map<Locale, String> pageDisplayNames = new HashMap<Locale, String>();
         pageDisplayNames.put(Locale.FRENCH, FRENCH_PAGE_NAME);
         pageDisplayNames.put(Locale.ENGLISH, ENGLISH_PAGE_NAME);
@@ -95,6 +97,7 @@ public class PortalObjectUtilsTest {
         // Templates root
         this.templatesRootMock = EasyMock.createMock("TemplatesRoot", Page.class);
         EasyMock.expect(this.templatesRootMock.getParent()).andStubReturn(this.portalMock);
+        EasyMock.expect(this.templatesRootMock.getPortal()).andStubReturn(this.portalMock);
         EasyMock.expect(this.templatesRootMock.getName()).andReturn(InternalConstants.TEMPLATES_PATH_NAME).anyTimes();
 
         EasyMock.expect(this.portalMock.getChild(InternalConstants.TEMPLATES_PATH_NAME)).andStubReturn(this.templatesRootMock);
@@ -331,6 +334,21 @@ public class PortalObjectUtilsTest {
         EasyMock.verify(this.subPageMock);
         EasyMock.verify(this.templatesRootMock);
         EasyMock.verify(this.templateMock);
+    }
+
+
+    /**
+     * Test case for {@link PortalObjectUtils#isPortalDefaultPage(PortalObject)}
+     */
+    @Test
+    public final void testIsPortalDefaultPage() {
+        assertTrue(PortalObjectUtils.isPortalDefaultPage(this.pageMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(this.subPageMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(this.portalObjectMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(this.portalMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(this.templatesRootMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(this.templateMock));
+        assertFalse(PortalObjectUtils.isPortalDefaultPage(null));
     }
 
 }

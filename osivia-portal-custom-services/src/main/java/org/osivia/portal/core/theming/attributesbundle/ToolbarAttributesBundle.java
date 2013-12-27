@@ -405,8 +405,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         // Page suppression
-        this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_SUPPRESSION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
+        if (PortalObjectUtils.isPortalDefaultPage(page)) {
+            Element suppressionDisable = new DOMElement(QName.get(HTMLConstants.P));
+            suppressionDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
+            this.addSubMenuElement(editionMenuUl, suppressionDisable);
+        } else {
+            this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_SUPPRESSION,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
+        }
 
         // Page location
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_LOCATION,
