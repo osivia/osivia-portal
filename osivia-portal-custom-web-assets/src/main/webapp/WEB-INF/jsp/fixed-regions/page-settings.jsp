@@ -87,6 +87,12 @@ if (BooleanUtils.isTrue(draftPage)) {
     checkDraft = "checked";
 }
 
+// Template disabled configurations
+String disabledTemplate = StringUtils.EMPTY;
+if (PortalObjectUtils.isTemplate(currentPage)) {
+    disabledTemplate = "disabled";
+}
+
 
 // Locales
 Locale locale = request.getLocale();
@@ -99,6 +105,7 @@ String portalId = formatter.formatHtmlSafeEncodingId(currentPage.getPortal().get
 String currentPageId = formatter.formatHtmlSafeEncodingId(currentPage.getId());
 // Current page name
 String currentPageName = PortalObjectUtils.getDisplayName(currentPage, locales);
+
 %>
 
 
@@ -137,11 +144,6 @@ function selectPortlet(instanceId, formulaire) {
 // Onclick action for delete portlet formulaire submit
 function selectWindow(formulaire) {
     formulaire.windowId.value = windowId;
-}
-
-// Onclick action for display window settings
-function insertWindowSettingsContent() {
-    
 }
 
 // Toggle row display
@@ -520,7 +522,7 @@ function toggleRow(link, divClass) {
                         <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
                     </div>
                     <div class="fancybox-table-cell">
-                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" />
+                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" <%=disabledTemplate %> />
                     </div>
                 </div>
             
