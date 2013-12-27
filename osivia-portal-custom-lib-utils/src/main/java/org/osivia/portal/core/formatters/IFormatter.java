@@ -25,19 +25,19 @@ public interface IFormatter {
     String formatContextualization(PortalObject po, String selectedScope) throws Exception;
 
     /**
-     * Format hierarchical tree pages objects into HTML data, with UL and LI nodes
-     *
+     * Format hierarchical tree models into HTML data, with UL and LI nodes
+     * 
      * @param currentPage current page
      * @param context controller context, which contains locales and URL generation data
      * @param idPrefix avoid multiples identifiers with this prefix
      * @return HTML data
      * @throws IOException
      */
-    String formatHTMLTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
+    String formatHTMLTreeModels(Page currentPage, ControllerContext context, String idPrefix) throws IOException;
 
     /**
      * Format hierarchical tree pages (without templates) into HTML data, with UL and LI nodes
-     *
+     * 
      * @param currentPage current page
      * @param context controller context, which contains locales and URL generation data
      * @param idPrefix avoid multiples identifiers with this prefix

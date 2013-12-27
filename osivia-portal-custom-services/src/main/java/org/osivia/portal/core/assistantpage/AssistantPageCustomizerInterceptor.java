@@ -421,8 +421,9 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
     /**
      * {@inheritDoc}
      */
-    public String formatHTMLTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
+    public String formatHTMLTreeModels(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
         Set<String> options = new TreeSet<String>();
+        options.add(HIDE_DYNAMIC_PAGES);
         return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
     }
 

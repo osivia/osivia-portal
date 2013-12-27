@@ -727,15 +727,6 @@
             proxy-type="attribute">portal:commandFactory=cmsAjax</depends>
     </mbean>
 
-    <!-- Formatter -->
-    <mbean
-        code="org.osivia.portal.core.assistantpage.Formatter"
-        name="osivia:service=Formatter"
-        xmbean-dd=""
-        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-        <xmbean />
-    </mbean>
-
     <!-- Regions theming service -->
     <mbean
         code="org.osivia.portal.core.theming.RegionsThemingService"

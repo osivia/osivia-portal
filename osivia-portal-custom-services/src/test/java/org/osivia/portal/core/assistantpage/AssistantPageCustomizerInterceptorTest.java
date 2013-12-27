@@ -57,7 +57,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.portalobjects.DynamicPersistentPage;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -117,7 +116,7 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.expect(instanceContainerMock.getDefinitions()).andReturn(this.generateInstanceDefinitions()).anyTimes();
         EasyMock.expect(profileManagerMock.getListeProfils()).andReturn(new ArrayList<ProfilBean>()).anyTimes();
         EasyMock.expect(internationalizationServiceMock.getString(EasyMock.anyObject(String.class), EasyMock.anyObject(Locale.class)))
-                .andReturn("LOCALIZED_STRING").anyTimes();
+        .andReturn("LOCALIZED_STRING").anyTimes();
         EasyMock.expect(portalObjectContainerMock.getObject(EasyMock.anyObject(PortalObjectId.class))).andStubReturn(this.portalMock);
 
         AssistantPageCustomizerInterceptor assistant = new AssistantPageCustomizerInterceptor();
@@ -185,31 +184,31 @@ public class AssistantPageCustomizerInterceptorTest {
 
 
     /**
-     * Test method for {@link AssistantPageCustomizerInterceptor#formatHTMLTreePortalObjects(Page, ControllerContext, String)}.
-     *
+     * Test method for {@link AssistantPageCustomizerInterceptor#formatHTMLTreeModels(Page, ControllerContext, String)}.
+     * 
      * @throws IOException
      */
     @Test
-    public final void testFormatHTMLTreePortalObjects() throws IOException {
+    public final void testFormatHTMLTreeModels() throws IOException {
         Page currentPageMock = this.generatePortalArborescence();
 
         String htmlData;
 
         // Test 1 : null current page
-        htmlData = this.formatter.formatHTMLTreePortalObjects(null, this.context, ID_PREFIX);
+        htmlData = this.formatter.formatHTMLTreeModels(null, this.context, ID_PREFIX);
         assertNull(htmlData);
 
         // Test 2 : null context
-        htmlData = this.formatter.formatHTMLTreePortalObjects(currentPageMock, null, ID_PREFIX);
+        htmlData = this.formatter.formatHTMLTreeModels(currentPageMock, null, ID_PREFIX);
         assertNull(htmlData);
 
         // Test 3 : nominal case
-        htmlData = this.formatter.formatHTMLTreePortalObjects(currentPageMock, this.context, ID_PREFIX);
+        htmlData = this.formatter.formatHTMLTreeModels(currentPageMock, this.context, ID_PREFIX);
         assertNotNull(htmlData);
-        assertEquals(2, StringUtils.countMatches(htmlData, "<ul"));
-        assertEquals(3, StringUtils.countMatches(htmlData, "<li"));
-        assertEquals(3, StringUtils.countMatches(htmlData, "<a"));
-        assertEquals(3, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
+        assertEquals(1, StringUtils.countMatches(htmlData, "<ul"));
+        assertEquals(1, StringUtils.countMatches(htmlData, "<li"));
+        assertEquals(1, StringUtils.countMatches(htmlData, "<a"));
+        assertEquals(1, StringUtils.countMatches(htmlData, "id=\"" + ID_PREFIX));
     }
 
 
