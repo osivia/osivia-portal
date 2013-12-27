@@ -157,6 +157,12 @@ function toggleRow(link, divClass) {
     }   
 }
 
+// Lock model trees
+window.onload = function() {
+	jstreeToggleLock('jstreePageModelSelect', true);
+	jstreeToggleLock('jstreeTemplateModelSelect', true);
+}
+
 </script>
 
 
@@ -194,7 +200,7 @@ function toggleRow(link, divClass) {
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label fancybox-upper">
                         <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
-                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" class="inline-checkbox" />
+                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
                     </div>
                     
                     <div class="fancybox-table-cell">
@@ -255,7 +261,7 @@ function toggleRow(link, divClass) {
                 <div class="fancybox-table-row">
                     <div class="fancybox-table-cell fancybox-label fancybox-upper">
                         <label for="checkboxNoModel"><%=is.getString("NEW_TEMPLATE_NO_MODEL", locale) %></label>                        
-                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" class="inline-checkbox" />
+                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
                     </div>
                     
                     <div class="fancybox-table-cell">
