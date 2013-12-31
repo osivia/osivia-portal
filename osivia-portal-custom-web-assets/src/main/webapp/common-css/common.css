@@ -139,7 +139,12 @@ a.portlet-menuitem.live {
 
 a.portlet-menuitem.edition {
     background-image: url('../images/icons/icon_edition.png');
-    background-size: 24px;
+    background-size: 18px;
+}
+
+a.portlet-menuitem.download {
+    background-image: url('../images/icons/icon_download.png');
+    background-size: 18px;
 }
 
 a.portlet-menuitem-contextualize {
