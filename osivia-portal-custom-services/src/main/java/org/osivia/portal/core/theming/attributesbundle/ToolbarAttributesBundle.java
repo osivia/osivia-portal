@@ -501,7 +501,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // ============
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
         String closeUrl = this.urlFactory
-                .getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, CmsCommand.DISPLAYCTX_REFRESH, null, null, null, null);
+                .getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
 
         String ecmBaseUrl = cmsService.getEcmDomain(cmsCtx);
 

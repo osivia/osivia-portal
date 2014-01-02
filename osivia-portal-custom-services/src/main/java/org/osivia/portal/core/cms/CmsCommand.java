@@ -75,7 +75,6 @@ public class CmsCommand extends DynamicCommand {
 	public static final String LAYOUT_TYPE_CURRENT_PAGE = "0";
 	public static final String LAYOUT_TYPE_SCRIPT = "1";
 
-    public static final String DISPLAYCTX_REFRESH = "refreshPageAndNavigation";
 
 	@Override
 	public CommandInfo getInfo() {
@@ -553,7 +552,7 @@ public class CmsCommand extends DynamicCommand {
 			// }
 
             // LBI : refresh navigation when a cms page is created or edited
-            if (DISPLAYCTX_REFRESH.equals(displayContext)) {
+            if (IPortalUrlFactory.DISPLAYCTX_REFRESH.equals(displayContext)) {
                 PageProperties.getProperties().setRefreshingPage(true);
             }
 

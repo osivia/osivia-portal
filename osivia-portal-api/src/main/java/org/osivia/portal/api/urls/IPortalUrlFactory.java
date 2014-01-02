@@ -22,6 +22,8 @@ public interface IPortalUrlFactory {
     public static final int POPUP_URL_ADAPTER_OPEN = 0;
     public static final int POPUP_URL_ADAPTER_CLOSE = 1;
     public static final int POPUP_URL_ADAPTER_CLOSED_NOTIFICATION = 2;
+    
+    public static final String DISPLAYCTX_REFRESH = "refreshPageAndNavigation";
 
 
     /* Portal level API */
