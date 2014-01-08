@@ -26,9 +26,32 @@ public class CMSServiceCtx {
 	private String hideMetaDatas;
 	private String displayContext;
 	private String contextualizationBasePath; 
-	 
 
-	private PortletRequest request;
+    private String creationType;	 
+    private String creationPath;    
+	
+    
+    public String getCreationPath() {
+        return creationPath;
+    }
+
+
+    
+    public void setCreationPath(String creationPath) {
+        this.creationPath = creationPath;
+    }
+
+
+    public String getCreationType() {
+        return creationType;
+    }
+
+    
+    public void setCreationType(String creationType) {
+        this.creationType = creationType;
+    }
+
+    private PortletRequest request;
 	private PortletContext portletCtx;	
 	private RenderResponse response;
 	private String pageId;

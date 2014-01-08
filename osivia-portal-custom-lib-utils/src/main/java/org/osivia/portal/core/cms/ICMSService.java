@@ -125,4 +125,14 @@ public interface ICMSService {
      * @throws CMSException
      */
     public void deleteDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    
+    
+    /**
+     * put the document in a deleted state
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    public void putDocumentInTrash(CMSServiceCtx cmsCtx, String docId) throws CMSException;
 }

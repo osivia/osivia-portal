@@ -64,4 +64,9 @@ public interface IPortalUrlFactory {
      * Return the current root portal url. e.g. : http://mydomain.com:8080/portal 
      */
     public String getBasePortalUrl(ServerInvocation invocation);
+    
+    
+    public String getRefreshPageUrl(PortalControllerContext ctx) ;
+    
+    public String getPutDocumentInTrashUrl(PortalControllerContext ctx, String docId, String docPath);
 }

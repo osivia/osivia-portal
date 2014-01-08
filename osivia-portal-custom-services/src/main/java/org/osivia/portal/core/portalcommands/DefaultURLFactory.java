@@ -18,6 +18,7 @@ import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
+import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -307,6 +308,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
                 asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
                 asu.setParameterValue("refURI", URLEncoder.encode(command.getRefURI(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+        
+        if (cmd instanceof CMSPutDocumentInTrashCommand) {
+            CMSPutDocumentInTrashCommand command = (CMSPutDocumentInTrashCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSPutDocumentInTrashCommand");
+
+                asu.setParameterValue("docId", URLEncoder.encode(command.getDocId(), "UTF-8"));
+                asu.setParameterValue("docPath", URLEncoder.encode(command.getDocPath(), "UTF-8"));
 
             } catch (UnsupportedEncodingException e) {
                 // ignore

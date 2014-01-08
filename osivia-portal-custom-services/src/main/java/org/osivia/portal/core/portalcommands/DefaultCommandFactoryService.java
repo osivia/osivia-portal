@@ -30,6 +30,7 @@ import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
 import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
+import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -549,6 +550,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
 
                         return new CMSDeleteDocumentCommand(pageId, pagePath);
+                    }
+                }
+                
+                if ("CMSPutDocumentInTrashCommand".equals(action)) {
+
+                    String docId = null;
+                    String docPath = null;
+
+                    if ((parameterMap.get("docId") != null) && (parameterMap.get("docPath") != null)) {
+                        docId = URLDecoder.decode(parameterMap.get("docId")[0], "UTF-8");
+                        docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
+
+                        return new CMSPutDocumentInTrashCommand(docId, docPath);
                     }
                 }
 
