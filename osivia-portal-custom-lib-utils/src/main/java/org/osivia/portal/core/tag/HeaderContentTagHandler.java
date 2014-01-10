@@ -134,6 +134,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // post messages API (must be loaded before fancy integration)
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>");
 
+        // Print
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/print/print.js\"></script>");
+
         // Fancybox
         out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");

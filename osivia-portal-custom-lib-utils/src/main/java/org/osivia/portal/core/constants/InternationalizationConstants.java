@@ -21,6 +21,12 @@ public final class InternationalizationConstants {
     public static final String KEY_YES = "YES";
 
 
+    // Menubar
+
+    /** Menubar item permalink. */
+    public static final String KEY_PERMALINK = "PERMALINK";
+
+
     // Formatter
 
     /** Bundle resource key for root node display text. */
@@ -70,8 +76,8 @@ public final class InternationalizationConstants {
     /** Bundle resource key for rights. */
     public static final String KEY_RIGHTS = "SUBMENU_RIGHTS";
 
-    
-    
+
+
 
     // CMS properties
 
@@ -111,13 +117,13 @@ public final class InternationalizationConstants {
     public static final String KEY_PTITLE_NOT_ROOTPAGE = "PTITLE_NOT_ROOTPAGE";
     /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_DELETE_FORBIDDEN = "PTITLE_DELETE_FORBIDDEN";
-    
-    
+
+
     // Page properties
     public static final String KEY_PAGE_NO_CATEGORY = "PAGE_NO_CATEGORY";
-       
-    
-    
+
+
+
     // Window properties
 
     /** Bundle resource key for styles window properties label. */
@@ -208,9 +214,9 @@ public final class InternationalizationConstants {
 
     /** Bundle resource key for forbidden access. */
     public static final String KEY_ERROR_MESSAGE_FORBIDDEN = "ERROR_MESSAGE_FORBIDDEN";
-    /** Bundle resource key for resource not found . */    
+    /** Bundle resource key for resource not found . */
     public static final String KEY_ERROR_MESSAGE_NOT_FOUND = "ERROR_MESSAGE_NOT_FOUND";
-    /** Bundle resource key for various errors . */    
+    /** Bundle resource key for various errors . */
     public static final String KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED = "ERROR_MESSAGE_ERROR_HAS_OCCURED";
 
     /** ADV_PORTAL_DEFAULT */
