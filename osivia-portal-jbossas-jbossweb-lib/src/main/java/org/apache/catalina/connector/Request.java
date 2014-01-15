@@ -1,3 +1,10 @@
+/* PIA : 
+ * 
+ * synchronisation des attributs
+ * renommage du JSESSIONID en PORTALSESSIONID
+ */
+
+
 /*      */ package org.apache.catalina.connector;
 /*      */ 
 /*      */ import java.io.BufferedReader;
@@ -424,7 +431,7 @@
 /*  862 */     this.coyoteRequest.setServerPort(port);
 /*      */   }
 /*      */ 
-/*      */   public Object getAttribute(String name)
+/*      */   public synchronized Object getAttribute(String name)
 /*      */   {
 /*  877 */     if (name.equals("org.apache.catalina.core.DISPATCHER_TYPE")) {
 /*  878 */       return this.dispatcherType == null ? ApplicationFilterFactory.REQUEST_INTEGER : this.dispatcherType;
@@ -471,7 +478,7 @@
 /*  924 */     return ("javax.servlet.request.X509Certificate".equals(name)) || ("javax.servlet.request.cipher_suite".equals(name)) || ("javax.servlet.request.key_size".equals(name)) || ("javax.servlet.request.ssl_session".equals(name));
 /*      */   }
 /*      */ 
-/*      */   public Enumeration getAttributeNames()
+/*      */   public synchronized Enumeration getAttributeNames()
 /*      */   {
 /*  935 */     if (isSecure()) {
 /*  936 */       getAttribute("javax.servlet.request.X509Certificate");
@@ -729,7 +736,7 @@
 /* 1320 */     return this.secure;
 /*      */   }
 /*      */ 
-/*      */   public void removeAttribute(String name)
+/*      */   public synchronized void removeAttribute(String name)
 /*      */   {
 /* 1330 */     Object value = null;
 /* 1331 */     boolean found = false;
@@ -770,7 +777,7 @@
 /*      */     }
 /*      */   }
 /*      */ 
-/*      */   public void setAttribute(String name, Object value)
+/*      */   public synchronized void setAttribute(String name, Object value)
 /*      */   {
 /* 1385 */     if (name == null) {
 /* 1386 */       throw new IllegalArgumentException(sm.getString("coyoteRequest.setAttribute.namenull"));
