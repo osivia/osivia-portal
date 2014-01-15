@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>osivia-portal-distribution</name>
+  <comment>NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>osivia-portal-custom-services</project>
+    <project>osivia-portal-custom-web-assets</project>
+    <project>osivia-portal-administration</project>
+    <project>osivia-portal-api</project>
+    <project>osivia-portal-custom-lib-utils</project>
+    <project>osivia-portal-jbp-core-lib</project>
+    <project>osivia-portal-jbp-portlet-lib</project>
+    <project>osivia-portal-jbp-server-lib</project>
+    <project>osivia-portal-jbossas-jbossweb-lib</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
