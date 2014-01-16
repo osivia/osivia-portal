@@ -40,28 +40,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 		
-		
-		// TODO : déplacer dans un intercepteur
-		// TODO : paramétrer les googlebot dans environnement_portail.properties
-		
-		// prevent google unwanted request (pagemarker)
-
-		HttpServletRequest request = invocation.getServerContext().getClientRequest();
-
-		String header = request.getHeader("User-Agent");
-		String uri = request.getRequestURI();
-
-		// logger.info("header:" + header + "uri:"+ uri);
-
-		if (request.getRemoteUser() == null && header != null && uri != null && header.toLowerCase().indexOf("googlebot/2.1") != -1 && uri.contains("/pagemarker/")) {
-			invocation.getServerContext().getClientResponse().setStatus(403);
-			return;
-		}
-
-
-		
-		//TODO : déplacer dans intercepteur spécifique
-		
+			
 		// v1.0.10 : réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();
 
@@ -85,6 +64,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		try {
 				// Continue invocation
 			invocation.invokeNext();
+	
 		}
 		
 		finally {
