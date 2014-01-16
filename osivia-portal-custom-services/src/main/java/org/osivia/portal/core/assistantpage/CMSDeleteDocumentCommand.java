@@ -112,7 +112,8 @@ public class CMSDeleteDocumentCommand extends ControllerCommand {
             PortalControllerContext pcc = new PortalControllerContext(getControllerContext());
 
 
-            getCMSService().deleteDocument(cmsCtx, pagePath);
+//            getCMSService().deleteDocument(cmsCtx, pagePath);
+            getCMSService().putDocumentInTrash(cmsCtx, pagePath);
 
             String success = itlzService.getString(SUCCESS_MESSAGE_DELETE, getControllerContext().getServerInvocation().getRequest().getLocale());
             notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
