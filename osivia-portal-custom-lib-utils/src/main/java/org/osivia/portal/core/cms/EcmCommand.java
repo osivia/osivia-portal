@@ -12,5 +12,7 @@ public enum EcmCommand {
 
     createFgtBelowWindow,
 
-    editFgt;
+    editFgt,
+
+    gotoMediaLibrary;
 }

@@ -117,11 +117,13 @@ public final class InternationalizationConstants {
     public static final String KEY_PTITLE_NOT_ROOTPAGE = "PTITLE_NOT_ROOTPAGE";
     /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_DELETE_FORBIDDEN = "PTITLE_DELETE_FORBIDDEN";
-
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_CMS_MEDIA_LIB = "SUBMENU_CMS_MEDIA_LIB";
+    /** Bundle resource key for CMS edition */
+    public static final String KEY_PTITLE_NO_MEDIA_LIB = "PTITLE_NO_MEDIA_LIB";
 
     // Page properties
     public static final String KEY_PAGE_NO_CATEGORY = "PAGE_NO_CATEGORY";
-
 
 
     // Window properties
@@ -221,6 +223,7 @@ public final class InternationalizationConstants {
 
     /** ADV_PORTAL_DEFAULT */
     public static final String KEY_ADV_PORTAL_DEFAULT = "ADV_PORTAL_DEFAULT";
+
 
 
     /**

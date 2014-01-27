@@ -45,7 +45,6 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.EcmCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -655,6 +654,26 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
         this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
 
+
+        // ========== Go to the media library
+
+
+        Element cmsGotoMediaLib;
+
+        String mediaLibUrl = cmsService.getEcmUrl(cmsCtx, EcmCommand.gotoMediaLibrary, basePath, requestParameters);
+
+        if (mediaLibUrl.length() > 0) {
+            cmsGotoMediaLib = new DOMElement(QName.get(HTMLConstants.A));
+            cmsGotoMediaLib.addAttribute(QName.get(HTMLConstants.HREF), mediaLibUrl);
+            cmsGotoMediaLib.addAttribute(QName.get(HTMLConstants.TARGET), HTMLConstants.TARGET_NEW_WINDOW);
+        } else {
+            String noMediaLib = this.internationalizationService.getString(InternationalizationConstants.KEY_PTITLE_NO_MEDIA_LIB, locale);
+            cmsGotoMediaLib = new DOMElement(QName.get(HTMLConstants.P));
+            cmsGotoMediaLib.addAttribute(QName.get(HTMLConstants.TITLE), noMediaLib);
+        }
+
+        cmsGotoMediaLib.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_MEDIA_LIB, locale));
+        this.addSubMenuElement(templateEditionMenuUl, cmsGotoMediaLib);
     }
 
 
