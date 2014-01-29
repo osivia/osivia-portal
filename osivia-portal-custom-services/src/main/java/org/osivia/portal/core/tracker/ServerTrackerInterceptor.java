@@ -2,7 +2,6 @@ package org.osivia.portal.core.tracker;
 
 import java.util.Iterator;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -28,109 +27,110 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	public PortalObjectContainer portalObjectContainer;
 
 	public ITracker getTracker() {
-		return tracker;
+		return this.tracker;
 	}
 
 	public void setTracker(ITracker tracker) {
 		this.tracker = tracker;
 	}
 
-	
+
 	public PortalObjectContainer getPortalObjectContainer() {
 
-		if (portalObjectContainer == null)
-			portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+		if (this.portalObjectContainer == null) {
+            this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+        }
 
-		return portalObjectContainer;
+		return this.portalObjectContainer;
 	}
-	
+
 	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
-		
-		
-		//TODO : déplacer dans intercepteur spécifique
-       // TODO : paramétrer les googlebot dans environnement_portail.properties
+
         // prevent google unwanted request (if pagemarker not empty)
 
-        HttpServletRequest request = invocation.getServerContext().getClientRequest();
+        // HttpServletRequest request = invocation.getServerContext().getClientRequest();
 
-        String header = request.getHeader("User-Agent");
-        String uri = request.getRequestURI();
+        // String header = request.getHeader("User-Agent");
+        // String uri = request.getRequestURI();
 
         // logger.info("header:" + header + "uri:"+ uri);
 
-        if (request.getRemoteUser() == null && header != null && uri != null && header.toLowerCase().indexOf("googlebot/2.1") != -1 && uri.contains("/pagemarker/")) {
-            invocation.getServerContext().getClientResponse().setStatus(403);
-            return;
-        }
+        // if (request.getRemoteUser() == null && header != null && uri != null && header.toLowerCase().indexOf("googlebot/2.1") != -1 &&
+        // uri.contains("/pagemarker/")) {
+        // invocation.getServerContext().getClientResponse().setStatus(403);
+        // return;
+        // }
 
 
-	    
+
 		// réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();
-		
-		
-	    DynamicPortalObjectContainer.clearCache();
-	      
-	
-	
-		
-		
-		
 
-		
-		invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.portalObjectContainer", getPortalObjectContainer());
-		
-		getTracker().init();
-			
-		getTracker().pushState(invocation);
-		
+
+	    DynamicPortalObjectContainer.clearCache();
+
+
+
+
+
+
+
+
+		invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.portalObjectContainer", this.getPortalObjectContainer());
+
+		this.getTracker().init();
+
+		this.getTracker().pushState(invocation);
+
 	    ServerInvocationContext context = invocation.getServerContext();
-	    
-	    getTracker().setHttpRequest( context.getClientRequest());
-	    
+
+	    this.getTracker().setHttpRequest( context.getClientRequest());
+
 	    HttpSession session = context.getClientRequest().getSession( true);
-	 
-		getTracker().setHttpSession(session);
-		
-		
-		
-		
+
+		this.getTracker().setHttpSession(session);
+
+
+
+
 		  // TODO : il faut reussir à préinitialiser le host avant le LoginInterceptor
         // car le prechargement des pages doit tenir compte de la policy du host courant
         // actuellement, génération d'une exception
-        
+
         // Par défaut, le portail est calculé en fonction de l'url
         // Ensuite, il sera ajusté en fonction de la commande Jboss Portal (PageMarkerInterceptor)
         // Ce traitement sert pour le calcul des pages au login
         String reqHost = invocation.getServerContext().getClientRequest().getServerName();
         String portalName = null;
-        Iterator<PortalObject> portals = getPortalObjectContainer().getContext("").getChildren().iterator();
+        Iterator<PortalObject> portals = this.getPortalObjectContainer().getContext("").getChildren().iterator();
         while(portals.hasNext())    {
             PortalObject portal =  portals.next();
             String host = portal.getDeclaredProperty("osivia.site.hostName");
-            if( reqHost.equals(host))
+            if( reqHost.equals(host)) {
                 portalName = portal.getName();
+            }
         }
-        if( portalName == null)
-            portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
-        
+        if( portalName == null) {
+            portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
+        }
+
         PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
 
-		
-		
-		
-		
+
+
+
+
 		try {
 				// Continue invocation
 			invocation.invokeNext();
 		}
-		
+
 		finally {
-			getTracker().popState();
+			this.getTracker().popState();
 
 		}
 
 	}
 
-	
+
 }
