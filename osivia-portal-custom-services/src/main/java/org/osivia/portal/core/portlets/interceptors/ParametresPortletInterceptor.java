@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -164,6 +165,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 attributes.put("osivia.userDatas", userDatas);
             }
 
+            // HTTP Request
+            HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
+            attributes.put("osivia.httpRequest", httpRequest);
+
+            // Set attributes
 			invocation.setRequestAttributes(attributes);
 		}
 
