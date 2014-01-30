@@ -86,6 +86,7 @@ public abstract class AssistantCommand extends ControllerCommand {
                 // On transforme en redirection pour commiter la transaction pour que les threads associés aux windows voient les données directement dès
                 // l'affichage de la page
                 PageURL url = new PageURL(((UpdatePageResponse) res).getPageId(), this.getControllerContext());
+                url.setRelative(false);
                 res = new RedirectionResponse(url.toString() + "?init-state=true");
             }
             return res;

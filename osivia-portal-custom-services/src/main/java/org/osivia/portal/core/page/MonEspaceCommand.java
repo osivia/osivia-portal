@@ -9,7 +9,6 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
-import org.jboss.portal.core.controller.command.response.SignOutResponse;
 import org.jboss.portal.core.impl.api.node.PageURL;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -17,93 +16,98 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
-import org.osivia.portal.core.profils.ProfilManager;
 
 
 public class MonEspaceCommand extends ControllerCommand {
 
-	/** . */
-	private static final CommandInfo info = new ActionCommandInfo(false);
-	protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
+    /** . */
+    private static final CommandInfo info = new ActionCommandInfo(false);
+    protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
 
-	/** . */
-	private String portalName;
+    /** . */
+    private String portalName;
 
-	public MonEspaceCommand() {
-		this(null);
-	}
+    public MonEspaceCommand() {
+        this(null);
+    }
 
-	public MonEspaceCommand(String portalName) {
-		this.portalName = portalName;
-	}
+    public MonEspaceCommand(String portalName) {
+        this.portalName = portalName;
+    }
 
-	public CommandInfo getInfo() {
-		return info;
-	}
+    @Override
+    public CommandInfo getInfo() {
+        return info;
+    }
 
-	public String getPortalName() {
-		return portalName;
-	}
+    public String getPortalName() {
+        return this.portalName;
+    }
 
-	public ControllerResponse execute() throws ControllerException {
-		try {
+    @Override
+    public ControllerResponse execute() throws ControllerException {
+        try {
 
-			Portal portal = null;
+            Portal portal = null;
 
-			String portalName = getPortalName();
+            String portalName = this.getPortalName();
 
-			if (portalName != null)
-				portal = getControllerContext().getController().getPortalObjectContainer().getContext().getPortal(
-						portalName);
-			else
-				portal = getControllerContext().getController().getPortalObjectContainer().getContext()
-						.getDefaultPortal();
+            if (portalName != null) {
+                portal = this.getControllerContext().getController().getPortalObjectContainer().getContext().getPortal(
+                        portalName);
+            } else {
+                portal = this.getControllerContext().getController().getPortalObjectContainer().getContext()
+                        .getDefaultPortal();
+            }
 
-			IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
+            IProfilManager profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
 
-			/* Calcul de la page d'accueil personnalisée */
+            /* Calcul de la page d'accueil personnalisée */
 
 
-			
-			ProfilBean profil = profilManager.getProfilPrincipalUtilisateur();
 
-			if (profil == null) 
-				return new SecurityErrorResponse("Vous devez être connecté", SecurityErrorResponse.NOT_AUTHORIZED,
-						false);
-				
+            ProfilBean profil = profilManager.getProfilPrincipalUtilisateur();
 
-			// Accès page profil
-			if( profil.getDefaultPageName().length() == 0){
-				// Pas de profil
-				PageURL url = new PageURL(portal.getId(), getControllerContext());
-				return new RedirectionResponse(url.toString()+ "?init-state=true");
-			}
-			
-			PortalObject child = portal.getChild(profil.getDefaultPageName());
-			
-			
+            if (profil == null) {
+                return new SecurityErrorResponse("Vous devez être connecté", SecurityErrorResponse.NOT_AUTHORIZED,
+                        false);
+            }
 
-			if (child != null) {
-				PageURL url = new PageURL(child.getId(), getControllerContext());
 
-				logger.debug("Redirection page : " + url.toString());
-				// Redirection
-				return new RedirectionResponse(url.toString() + "?init-state=true");
-			} else {
-				// Page inexistante, on redirige vers la page par defaut du
-				// portail
+            // Accès page profil
+            if( profil.getDefaultPageName().length() == 0){
+                // Pas de profil
+                PageURL url = new PageURL(portal.getId(), this.getControllerContext());
+                url.setRelative(false);
+                return new RedirectionResponse(url.toString()+ "?init-state=true");
+            }
 
-				logger.error(" Page : " + profil.getDefaultPageName() + "inexistante");
-				PageURL url = new PageURL(portal.getId(), getControllerContext());
-				return new RedirectionResponse(url.toString()+ "?init-state=true");
-			}
+            PortalObject child = portal.getChild(profil.getDefaultPageName());
 
-		} catch (Exception e) {
-			if (!(e instanceof ControllerException))
-				throw new ControllerException(e);
-			else
-				throw (ControllerException) e;
-		}
 
-	}
+
+            if (child != null) {
+                PageURL url = new PageURL(child.getId(), this.getControllerContext());
+
+                logger.debug("Redirection page : " + url.toString());
+                // Redirection
+                return new RedirectionResponse(url.toString() + "?init-state=true");
+            } else {
+                // Page inexistante, on redirige vers la page par defaut du
+                // portail
+
+                logger.error(" Page : " + profil.getDefaultPageName() + "inexistante");
+                PageURL url = new PageURL(portal.getId(), this.getControllerContext());
+                return new RedirectionResponse(url.toString()+ "?init-state=true");
+            }
+
+        } catch (Exception e) {
+            if (!(e instanceof ControllerException)) {
+                throw new ControllerException(e);
+            } else {
+                throw (ControllerException) e;
+            }
+        }
+
+    }
 }

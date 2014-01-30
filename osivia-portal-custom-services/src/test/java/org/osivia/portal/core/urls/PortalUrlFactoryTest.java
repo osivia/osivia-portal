@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easymock.EasyMock;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.utils.URLUtils;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -30,12 +32,14 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(PageMarkerUtils.class)
 public class PortalUrlFactoryTest {
 
+    /** HTTP scheme. */
+    private static final String SCHEME_HTTP = "http";
+    /** HTTPS scheme. */
+    private static final String SCHEME_HTTPS = "https";
     /** Server name. */
     private static final String SERVER_NAME = "www.osivia.com";
     /** Server port. */
     private static final int SERVER_PORT = 8080;
-    /** Server default port. */
-    private static final int SERVER_DEFAULT_PORT = 80;
     /** Portal context. */
     private static final String PORTAL_CONTEXT = "/portal";
     /** Portal auth. */
@@ -96,51 +100,64 @@ public class PortalUrlFactoryTest {
             for (boolean auth : predicates) {
                 for (boolean pageMarker : predicates) {
                     for (boolean port : predicates) {
-                        StringBuffer url = new StringBuffer();
-                        StringBuffer expected = new StringBuffer();
+                        for (boolean https : predicates) {
+                            StringBuffer url = new StringBuffer();
+                            StringBuffer expected = new StringBuffer();
 
-                        if (absolute) {
-                            url.append("http://");
-                            url.append(SERVER_NAME);
+                            if (absolute) {
+                                String scheme;
+                                int serverPort;
 
-                            if (port) {
-                                this.resetRequestMock(SERVER_NAME, SERVER_PORT);
-                                url.append(":").append(SERVER_PORT);
-                            } else {
-                                this.resetRequestMock(SERVER_NAME, SERVER_DEFAULT_PORT);
+                                if (https) {
+                                    url.append("https://");
+                                    scheme = SCHEME_HTTPS;
+                                } else {
+                                    url.append("http://");
+                                    scheme = SCHEME_HTTP;
+                                }
+                                url.append(SERVER_NAME);
+
+                                if (port && !https) {
+                                    url.append(":").append(SERVER_PORT);
+                                    serverPort = SERVER_PORT;
+                                } else {
+                                    serverPort = -1;
+                                }
+
+                                this.resetRequestMock(scheme, SERVER_NAME, serverPort);
                             }
-                        }
 
-                        url.append(PORTAL_CONTEXT);
+                            url.append(PORTAL_CONTEXT);
 
-                        if (auth) {
-                            url.append(PORTAL_AUTH);
-                        }
+                            if (auth) {
+                                url.append(PORTAL_AUTH);
+                            }
 
-                        expected.append(url.toString());
+                            expected.append(url.toString());
 
-                        if (pageMarker) {
-                            url.append("/pagemarker/12");
-                        }
-                        expected.append("/pagemarker/").append(CURRENT_PAGE_MARKER);
+                            if (pageMarker) {
+                                url.append("/pagemarker/12");
+                            }
+                            expected.append("/pagemarker/").append(CURRENT_PAGE_MARKER);
 
-                        url.append(REQUEST_DATA);
-                        expected.append(REQUEST_DATA);
+                            url.append(REQUEST_DATA);
+                            expected.append(REQUEST_DATA);
 
 
-                        try {
-                            String actual = this.portalUrlFactory.adaptPortalUrlToNavigation(this.portalControllerContextMock, url.toString());
+                            try {
+                                String actual = this.portalUrlFactory.adaptPortalUrlToNavigation(this.portalControllerContextMock, url.toString());
 
-                            assertEquals(expected.toString(), actual);
+                                assertEquals(expected.toString(), actual);
 
-                            assertTrue(StringUtils.contains(actual, "/pagemarker/" + CURRENT_PAGE_MARKER));
+                                assertTrue(StringUtils.contains(actual, "/pagemarker/" + CURRENT_PAGE_MARKER));
 
-                            assertEquals(port && absolute, StringUtils.contains(actual, String.valueOf(SERVER_PORT)));
-                            assertEquals(auth, StringUtils.contains(actual, PORTAL_AUTH));
-                            assertEquals(!absolute, StringUtils.startsWith(actual, "/"));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            fail(e.getMessage());
+                                assertEquals(port && !https && absolute, StringUtils.contains(actual, String.valueOf(SERVER_PORT)));
+                                assertEquals(auth, StringUtils.contains(actual, PORTAL_AUTH));
+                                assertEquals(!absolute, StringUtils.startsWith(actual, "/"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                fail(e.getMessage());
+                            }
                         }
                     }
                 }
@@ -157,11 +174,43 @@ public class PortalUrlFactoryTest {
             e.printStackTrace();
             fail(e.getMessage());
         }
+
+        // External HTTPS URL
+        String httpsUrl = "https://www.example.com/portal/test";
+        try {
+            String actual = this.portalUrlFactory.adaptPortalUrlToNavigation(this.portalControllerContextMock, httpsUrl);
+            assertEquals(httpsUrl, actual);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
 
-    private void resetRequestMock(String serverName, int serverPort) {
+    @Test
+    public final void testGetHttpErrorUrl() {
+        String url;
+
+        // Nominal case
+        this.resetRequestMock(SCHEME_HTTP, SERVER_NAME, SERVER_PORT);
+        url = this.portalUrlFactory.getHttpErrorUrl(this.portalControllerContextMock, HttpServletResponse.SC_FORBIDDEN);
+        assertEquals(SCHEME_HTTP + "://" + SERVER_NAME + ":" + SERVER_PORT + "?httpCode=403", url);
+
+        this.resetRequestMock(SCHEME_HTTPS, SERVER_NAME, 0);
+        url = this.portalUrlFactory.getHttpErrorUrl(this.portalControllerContextMock, HttpServletResponse.SC_FORBIDDEN);
+        assertEquals(SCHEME_HTTPS + "://" + SERVER_NAME + "?httpCode=403", url);
+
+    }
+
+
+    private void resetRequestMock(String scheme, String serverName, int serverPort) {
         EasyMock.reset(this.requestMock);
+        EasyMock.expect(this.requestMock.getScheme()).andReturn(scheme).anyTimes();
+        if (SCHEME_HTTP.equals(scheme)) {
+            EasyMock.expect(this.requestMock.getHeader(URLUtils.VIRTUAL_HOST_REQUEST_HEADER)).andReturn(null).anyTimes();
+        } else {
+            EasyMock.expect(this.requestMock.getHeader(URLUtils.VIRTUAL_HOST_REQUEST_HEADER)).andReturn(scheme + "://" + serverName).anyTimes();
+        }
         EasyMock.expect(this.requestMock.getServerName()).andReturn(serverName).anyTimes();
         EasyMock.expect(this.requestMock.getServerPort()).andReturn(serverPort).anyTimes();
         EasyMock.replay(this.requestMock);

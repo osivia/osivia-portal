@@ -66,58 +66,58 @@ import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
-	private String targetContextPath;
+    private String targetContextPath;
 
-	private String pageSettingPath;
+    private String pageSettingPath;
 
-	private LayoutService serviceLayout;
+    private LayoutService serviceLayout;
 
-	private ThemeService serviceTheme;
+    private ThemeService serviceTheme;
 
-	private InstanceContainer instanceContainer;
+    private InstanceContainer instanceContainer;
 
-	private IdentityServiceController identityServiceController;
+    private IdentityServiceController identityServiceController;
 
-	private RoleModule roleModule;
+    private RoleModule roleModule;
 
-	private AuthorizationDomainRegistry authorizationDomainRegistry;
+    private AuthorizationDomainRegistry authorizationDomainRegistry;
 
-	private PortalObjectContainer portalObjectContainer;
+    private PortalObjectContainer portalObjectContainer;
 
-	private IProfilManager profilManager;
+    private IProfilManager profilManager;
 
-	private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+    private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
 
-	ICMSService cmsService;
+    ICMSService cmsService;
 
-	private static ICMSServiceLocator cmsServiceLocator;
+    private static ICMSServiceLocator cmsServiceLocator;
 
-	public static ICMSService getCMSService() throws Exception {
+    public static ICMSService getCMSService() throws Exception {
 
-		if (cmsServiceLocator == null) {
-			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-		}
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
 
-		return cmsServiceLocator.getCMSService();
+        return cmsServiceLocator.getCMSService();
 
-	}
+    }
 
 
-	public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
-		return this.portalAuthorizationManagerFactory;
-	}
+    public PortalAuthorizationManagerFactory getPortalAuthorizationManagerFactory() {
+        return this.portalAuthorizationManagerFactory;
+    }
 
-	public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
-		this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
-	}
+    public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
+        this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
+    }
 
-	public IProfilManager getProfilManager() {
-		return this.profilManager;
-	}
+    public IProfilManager getProfilManager() {
+        return this.profilManager;
+    }
 
-	public void setProfilManager(IProfilManager profilManager) {
-		this.profilManager = profilManager;
-	}
+    public void setProfilManager(IProfilManager profilManager) {
+        this.profilManager = profilManager;
+    }
 
 
     /**
@@ -225,38 +225,38 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         Locale locale = ctx.getServerInvocation().getRequest().getLocale();
 
 
-		HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
+        HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
 
-		List<Window> windows = new ArrayList<Window>();
+        List<Window> windows = new ArrayList<Window>();
 
-		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-		PortalLayout pageLayout = this.getServiceLayout().getLayout(layoutId, true);
+        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+        PortalLayout pageLayout = this.getServiceLayout().getLayout(layoutId, true);
 
-		this.synchronizeRegionContexts(rendition, page);
+        this.synchronizeRegionContexts(rendition, page);
 
-		// Get edit authorization
-		CMSServiceCtx cmsContext = new CMSServiceCtx();
-		cmsContext.setServerInvocation(ctx.getServerInvocation());
+        // Get edit authorization
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(ctx);
 
-		String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+        String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
 
-		CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
+        CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
 
-		if (pubInfos.isEditableByUser()) {
+        if (pubInfos.isEditableByUser()) {
 
-			// Get live document
-			cmsContext.setDisplayLiveVersion("1");
-			CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
+            // Get live document
+            cmsContext.setDisplayLiveVersion("1");
+            CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
 
-			for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
+            for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
 
-				RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
+                RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
 
-				// on vérifie que cette réion fait partie du layout
-				// (elle contient des portlets)
-				if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
+                // on vérifie que cette réion fait partie du layout
+                // (elle contient des portlets)
+                if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
 
-					String regionId = renderCtx.getId();
+                    String regionId = renderCtx.getId();
 
                     Map<String, String> regionPorperties = renderCtx.getProperties();
 
@@ -264,12 +264,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     regionPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
 
 
-					// build and set url for create fgt in region in CMS mode
-					Map<String, String> requestParameters = new HashMap<String, String>();
-					requestParameters.put("region", regionId);
+                    // build and set url for create fgt in region in CMS mode
+                    Map<String, String> requestParameters = new HashMap<String, String>();
+                    requestParameters.put("region", regionId);
 
-					String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
-					regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
+                    String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
+                    regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
                     regionPorperties.put("osivia.language", locale.getLanguage());
 
                     URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
@@ -280,70 +280,70 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     String ecmBaseUrl = getCMSService().getEcmDomain(cmsContext);
                     regionPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
-					// Le mode Ajax est incompatble avec le mode "edition cms"
-					// - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
+                    // Le mode Ajax est incompatble avec le mode "edition cms"
+                    // - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
                     // - sur le close, la requete n'est pas traitée en AJAX
                     // DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
 
-					for (Object windowCtx : renderCtx.getWindows()) {
+                    for (Object windowCtx : renderCtx.getWindows()) {
 
-						WindowRendererContext wrc = (WindowRendererContext) windowCtx;
+                        WindowRendererContext wrc = (WindowRendererContext) windowCtx;
                         Map<String, String> windowPorperties = wrc.getProperties();
-						String windowId = wrc.getId();
+                        String windowId = wrc.getId();
 
-						if (!windowId.endsWith("PIA_EMPTY")) {
+                        if (!windowId.endsWith("PIA_EMPTY")) {
 
 
 
-							PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
-							Window window = (Window) this.getPortalObjectContainer().getObject(poid);
+                            PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
+                            Window window = (Window) this.getPortalObjectContainer().getObject(poid);
 
-							if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
+                            if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
 
                                 // Set the current edition mode to the window
                                 windowPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
 
 
-								// build and set urls for create/edit fgts in window in CMS mode
-								String refURI = window.getProperty("osivia.refURI");
-								windowPorperties.put("osivia.windowId", refURI);
+                                // build and set urls for create/edit fgts in window in CMS mode
+                                String refURI = window.getProperty("osivia.refURI");
+                                windowPorperties.put("osivia.windowId", refURI);
 
-								requestParameters = new HashMap<String, String>();
-								requestParameters.put("belowURI", refURI);
+                                requestParameters = new HashMap<String, String>();
+                                requestParameters.put("belowURI", refURI);
 
                                 windowPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
-								String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
-								windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
-								windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
+                                String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
+                                windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
+                                windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
 
 
-								requestParameters.put("refURI", refURI);
-								String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
-								windowPorperties.put("osivia.cmsEditUrl", cmsEditUrl);
+                                requestParameters.put("refURI", refURI);
+                                String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
+                                windowPorperties.put("osivia.cmsEditUrl", cmsEditUrl);
 
 
-								// To reload only current window on backup
-			                    InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
-			                    String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
-			                    
-			                    
-			                    // 20131004JSS : prise en compte des urls web
-			                    int insertIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
-			                    if (insertIndex == -1) {
-			                        // Web command
-			                        insertIndex = url.indexOf("/web?");
-			                        if (insertIndex == -1) {
-	                                    insertIndex = url.indexOf("/web/");
-	                               }			                        
-			                   }
-			                   
-                                if (insertIndex != -1) {			                    
+                                // To reload only current window on backup
+                                InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
+                                String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
+
+
+                                // 20131004JSS : prise en compte des urls web
+                                int insertIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+                                if (insertIndex == -1) {
+                                    // Web command
+                                    insertIndex = url.indexOf("/web?");
+                                    if (insertIndex == -1) {
+                                        insertIndex = url.indexOf("/web/");
+                                    }
+                                }
+
+                                if (insertIndex != -1) {
                                     url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_REFRESH_PATH + url.substring(insertIndex + 1);
                                 }
-			                    
-			                    
+
+
                                 windowPorperties.put("osivia.cmsEditCallbackUrl", url);
                                 // Sera ignoré car on n'est pas en ajax
                                 windowPorperties.put("osivia.cmsEditCallbackId", windowId);
@@ -353,236 +353,237 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 
 
-								CMSDeleteFragmentCommand deleteCMD = new CMSDeleteFragmentCommand(window.getPage().getId().toString(PortalObjectPath.SAFEST_FORMAT), liveDoc.getPath(), refURI);
-								String deleteFragmentUrl = ctx.renderURL(deleteCMD, urlContext,	URLFormat.newInstance(true, true));
-								windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
+                                CMSDeleteFragmentCommand deleteCMD = new CMSDeleteFragmentCommand(window.getPage().getId().toString(PortalObjectPath.SAFEST_FORMAT), liveDoc.getPath(), refURI);
+                                String deleteFragmentUrl = ctx.renderURL(deleteCMD, urlContext,	URLFormat.newInstance(true, true));
+                                windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
 
 
                                 windowPorperties.put("osivia.language", locale.getLanguage());
 
-							}
+                            }
 
-						}
-					}
-				}
-			}
-		}
+                        }
+                    }
+                }
+            }
+        }
 
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
+    @Override
+    @SuppressWarnings("unchecked")
+    public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
-		ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
+        ControllerResponse resp = (ControllerResponse) cmd.invokeNext();
 
-		if ((resp instanceof PageRendition) && (cmd instanceof PageCommand)) {
-
-
-			PageRendition rendition = (PageRendition) resp;
-			PageCommand rpc = (PageCommand) cmd;
-			Page page = rpc.getPage();
+        if ((resp instanceof PageRendition) && (cmd instanceof PageCommand)) {
 
 
-             // TODO JSS : test trop restrictif (page statique CMS)
-//            if( !(page instanceof CMSTemplatePage)) {
-//                return resp;
-//            }
-            
+            PageRendition rendition = (PageRendition) resp;
+            PageCommand rpc = (PageCommand) cmd;
+            Page page = rpc.getPage();
+
+
+            // TODO JSS : test trop restrictif (page statique CMS)
+            //            if( !(page instanceof CMSTemplatePage)) {
+            //                return resp;
+            //            }
+
             if( !checkWritePermission( cmd.getControllerContext() , page))  {
                 return resp;
             }
 
-			
+
             // if online mode, don't show cms tools
             if (CmsPermissionHelper.getCurrentPageSecurityLevel(cmd.getControllerContext(), page.getId()) == Level.allowOnlineVersion) {
                 return resp;
             }
 
- 
-			Portal portal = rpc.getPage().getPortal();
-			ControllerContext ctx = cmd.getControllerContext();
-			HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+
+            Portal portal = rpc.getPage().getPortal();
+            ControllerContext ctx = cmd.getControllerContext();
+            HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
             // TODO JSS : test trop restrictif (page statique CMS)
-			//if (page instanceof ITemplatePortalObject) {
+            //if (page instanceof ITemplatePortalObject) {
 
-				this.injectCMSPortletSetting( portal, page, rendition, ctx);
+            this.injectCMSPortletSetting( portal, page, rendition, ctx);
 
-			//}
+            //}
 
-		}
+        }
 
-		return resp;
-	}
+        return resp;
+    }
 
-	/**
-	 * Synchronize context regions with layout
-	 *
-	 * if a region is not present in the context, creates a new one
-	 *
-	 * @param rendition
-	 * @param page
-	 * @throws Exception
-	 */
+    /**
+     * Synchronize context regions with layout
+     *
+     * if a region is not present in the context, creates a new one
+     *
+     * @param rendition
+     * @param page
+     * @throws Exception
+     */
 
-	// TODO : mutualiser avec mode EDITION PAGE (AssistantPageCustomizer)
-	private void synchronizeRegionContexts(PageRendition rendition, Page page) throws Exception {
+    // TODO : mutualiser avec mode EDITION PAGE (AssistantPageCustomizer)
+    private void synchronizeRegionContexts(PageRendition rendition, Page page) throws Exception {
 
-		String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-		PortalLayout layout = this.getServiceLayout().getLayout(layoutId, true);
+        String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
+        PortalLayout layout = this.getServiceLayout().getLayout(layoutId, true);
 
-		for (Object region : layout.getLayoutInfo().getRegionNames()) {
+        for (Object region : layout.getLayoutInfo().getRegionNames()) {
 
-			String regionName = (String) region;
-			RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
-			if (renderCtx == null) {
-				/* Empty region - must create blank window */
+            String regionName = (String) region;
+            RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
+            if (renderCtx == null) {
+                /* Empty region - must create blank window */
 
-				Map<String, String> windowProps = new HashMap<String, String>();
-				windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-				windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-				windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+                Map<String, String> windowProps = new HashMap<String, String>();
+                windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+                windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+                windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
-				WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-				WindowContext settings = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", wr);
-				rendition.getPageResult().addWindowContext(settings);
+                WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+                WindowContext settings = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", wr);
+                rendition.getPageResult().addWindowContext(settings);
 
-				renderCtx = rendition.getPageResult().getRegion2(regionName);
+                renderCtx = rendition.getPageResult().getRegion2(regionName);
 
-			}
+            }
 
-		}
-	}
+        }
+    }
 
-	/**
-	 * @return the serviceLayout
-	 */
-	public LayoutService getServiceLayout() {
-		return this.serviceLayout;
-	}
+    /**
+     * @return the serviceLayout
+     */
+    public LayoutService getServiceLayout() {
+        return this.serviceLayout;
+    }
 
-	/**
-	 * @param serviceLayout
-	 *            the serviceLayout to set
-	 */
-	public void setServiceLayout(LayoutService serviceLayout) {
-		this.serviceLayout = serviceLayout;
-	}
+    /**
+     * @param serviceLayout
+     *            the serviceLayout to set
+     */
+    public void setServiceLayout(LayoutService serviceLayout) {
+        this.serviceLayout = serviceLayout;
+    }
 
-	/**
-	 * @return the pageSettingPath
-	 */
-	public String getPageSettingPath() {
-		return this.pageSettingPath;
-	}
+    /**
+     * @return the pageSettingPath
+     */
+    public String getPageSettingPath() {
+        return this.pageSettingPath;
+    }
 
-	/**
-	 * @param pageSettingPath
-	 *            the pageSettingPath to set
-	 */
-	public void setPageSettingPath(String pageSettingPath) {
-		this.pageSettingPath = pageSettingPath;
-	}
+    /**
+     * @param pageSettingPath
+     *            the pageSettingPath to set
+     */
+    public void setPageSettingPath(String pageSettingPath) {
+        this.pageSettingPath = pageSettingPath;
+    }
 
-	/**
-	 * @return the roleModule
-	 */
-	public RoleModule getRoleModule() throws Exception {
-		if (this.roleModule == null) {
-			this.roleModule = (RoleModule) this.getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
-		}
-		return this.roleModule;
-	}
+    /**
+     * @return the roleModule
+     */
+    public RoleModule getRoleModule() throws Exception {
+        if (this.roleModule == null) {
+            this.roleModule = (RoleModule) this.getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
+        }
+        return this.roleModule;
+    }
 
-	/**
-	 * @param roleModule
-	 *            the roleModule to set
-	 */
-	public void setRoleModule(RoleModule roleModule) {
-		this.roleModule = roleModule;
-	}
+    /**
+     * @param roleModule
+     *            the roleModule to set
+     */
+    public void setRoleModule(RoleModule roleModule) {
+        this.roleModule = roleModule;
+    }
 
-	/**
-	 * @return the authorizationDomainRegistry
-	 */
-	public AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
-		return this.authorizationDomainRegistry;
-	}
+    /**
+     * @return the authorizationDomainRegistry
+     */
+    public AuthorizationDomainRegistry getAuthorizationDomainRegistry() {
+        return this.authorizationDomainRegistry;
+    }
 
-	/**
-	 * @param authorizationDomainRegistry
-	 *            the authorizationDomainRegistry to set
-	 */
-	public void setAuthorizationDomainRegistry(AuthorizationDomainRegistry authorizationDomainRegistry) {
-		this.authorizationDomainRegistry = authorizationDomainRegistry;
-	}
+    /**
+     * @param authorizationDomainRegistry
+     *            the authorizationDomainRegistry to set
+     */
+    public void setAuthorizationDomainRegistry(AuthorizationDomainRegistry authorizationDomainRegistry) {
+        this.authorizationDomainRegistry = authorizationDomainRegistry;
+    }
 
-	/**
-	 * @return the identityServiceController
-	 */
-	public IdentityServiceController getIdentityServiceController() {
-		return this.identityServiceController;
-	}
+    /**
+     * @return the identityServiceController
+     */
+    public IdentityServiceController getIdentityServiceController() {
+        return this.identityServiceController;
+    }
 
-	/**
-	 * @param identityServiceController
-	 *            the identityServiceController to set
-	 */
-	public void setIdentityServiceController(IdentityServiceController identityServiceController) {
-		this.identityServiceController = identityServiceController;
-	}
+    /**
+     * @param identityServiceController
+     *            the identityServiceController to set
+     */
+    public void setIdentityServiceController(IdentityServiceController identityServiceController) {
+        this.identityServiceController = identityServiceController;
+    }
 
-	/**
-	 * @return the targetContextPath
-	 */
-	public String getTargetContextPath() {
-		return this.targetContextPath;
-	}
+    /**
+     * @return the targetContextPath
+     */
+    public String getTargetContextPath() {
+        return this.targetContextPath;
+    }
 
-	/**
-	 * @param targetContextPath
-	 *            the targetContextPath to set
-	 */
-	public void setTargetContextPath(String targetContextPath) {
-		this.targetContextPath = targetContextPath;
-	}
+    /**
+     * @param targetContextPath
+     *            the targetContextPath to set
+     */
+    public void setTargetContextPath(String targetContextPath) {
+        this.targetContextPath = targetContextPath;
+    }
 
-	/**
-	 * @return the instanceContainer
-	 */
-	public InstanceContainer getInstanceContainer() {
-		return this.instanceContainer;
-	}
+    /**
+     * @return the instanceContainer
+     */
+    public InstanceContainer getInstanceContainer() {
+        return this.instanceContainer;
+    }
 
-	/**
-	 * @param instanceContainer
-	 *            the instanceContainer to set
-	 */
-	public void setInstanceContainer(InstanceContainer instanceContainer) {
-		this.instanceContainer = instanceContainer;
-	}
+    /**
+     * @param instanceContainer
+     *            the instanceContainer to set
+     */
+    public void setInstanceContainer(InstanceContainer instanceContainer) {
+        this.instanceContainer = instanceContainer;
+    }
 
-	/**
-	 * @return the serviceTheme
-	 */
-	public ThemeService getServiceTheme() {
-		return this.serviceTheme;
-	}
+    /**
+     * @return the serviceTheme
+     */
+    public ThemeService getServiceTheme() {
+        return this.serviceTheme;
+    }
 
-	/**
-	 * @param serviceTheme
-	 *            the serviceTheme to set
-	 */
-	public void setServiceTheme(ThemeService serviceTheme) {
-		this.serviceTheme = serviceTheme;
-	}
+    /**
+     * @param serviceTheme
+     *            the serviceTheme to set
+     */
+    public void setServiceTheme(ThemeService serviceTheme) {
+        this.serviceTheme = serviceTheme;
+    }
 
-	public PortalObjectContainer getPortalObjectContainer() {
-		return this.portalObjectContainer;
-	}
+    public PortalObjectContainer getPortalObjectContainer() {
+        return this.portalObjectContainer;
+    }
 
-	public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
-		this.portalObjectContainer = portalObjectContainer;
-	}
+    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
+    }
 
 }
