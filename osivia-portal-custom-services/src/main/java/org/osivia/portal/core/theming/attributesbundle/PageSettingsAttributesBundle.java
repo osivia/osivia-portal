@@ -217,6 +217,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             pageType = PageType.getPageType(page, controllerContext);
         }
 
+        // is current user administrator ?
+        Boolean administrator = PageCustomizerInterceptor.isAdministrator(renderPageCommand.getControllerContext());
+        attributes.put(InternalConstants.ATTR_USER_ADMIN, administrator);
+
+
         // CMS templated page indicator
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED, templated);
 

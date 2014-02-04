@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
@@ -122,10 +121,10 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
             renderedRegions.defineDefaultRenderedRegion("tabs", this.getInitParameter(TABS_PATH_INIT_PARAM));
         }
 
-        if (BooleanUtils.isTrue(administrator)) {
-            // Page settings fixed region
-            renderedRegions.defineFixedRenderedRegion("pageSettings", this.getInitParameter(PAGE_SETTINGS_PATH_INIT_PARAM));
-        }
+
+        // Page settings fixed region
+        renderedRegions.defineFixedRenderedRegion("pageSettings", this.getInitParameter(PAGE_SETTINGS_PATH_INIT_PARAM));
+
     }
 
 }

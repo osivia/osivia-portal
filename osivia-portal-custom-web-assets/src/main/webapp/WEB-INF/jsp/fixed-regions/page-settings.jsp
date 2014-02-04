@@ -32,6 +32,13 @@ IFormatter formatter = (IFormatter) request.getAttribute(InternalConstants.ATTR_
 // Controller context
 ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
 
+
+// user is admin ?
+Boolean admin = (Boolean) request.getAttribute(InternalConstants.ATTR_USER_ADMIN);
+if(admin == null) {
+    admin = Boolean.FALSE;
+}
+
 // Generic command URL
 String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
 // Current page
@@ -162,481 +169,482 @@ function toggleRow(link, divClass) {
 </script>
 
 
-
-<!-- Fancybox de création de page -->
-<div class="fancybox-content">
-    <div id="page-creation">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="createPage" />
-            <input type="hidden" name="jstreePageParentSelect" value="<%=portalId %>" />
-            <input type="hidden" name="jstreePageModelSelect" />
-
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="name" required />
-                    </div>
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                </div>
-
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
-                    </div>
-                
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
-                    </div>                    
-                </div>
-                
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
-                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
-                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
-                    </div>
-                    
-                    <div class="fancybox-table-cell">
-                        <div id="jstreePageModelSelect" class="jstree-select-unique locked">
-                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreePageModelSelect") %>
-                        </div>
-                    </div>
-                
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                    
-                    <div class="fancybox-table-cell">
-                        <div id="jstreePageParentSelect" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreePageParent(currentPage, context, "jstreePageParentSelect") %>
-                        </div>                        
-                    </div>
-                </div>
-            </div>
-
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de création de template -->
-<div class="fancybox-content">
-    <div id="template-creation">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="createTemplate" />
-            <input type="hidden" name="jstreeTemplateParentSelect" value="<%=portalId %>" />
-            <input type="hidden" name="jstreeTemplateModelSelect" />
-
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_NAME", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="name" required />
-                    </div>
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                </div>
-
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_TEMPLATE_MODEL", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
-                    </div>
-                
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_PARENT", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
-                    </div>                    
-                </div>
-                
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
-                        <label for="checkboxNoModel"><%=is.getString("NEW_TEMPLATE_NO_MODEL", locale) %></label>                        
-                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
-                    </div>
-                    
-                    <div class="fancybox-table-cell">
-                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique locked">
-                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreeTemplateModelSelect") %>
-                        </div>
-                    </div>
-                
-                    <div class="fancybox-table-cell">&nbsp;</div>
-                    
-                    <div class="fancybox-table-cell">
-                        <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreeTemplateParent(currentPage, context, "jstreeTemplateParentSelect") %>
-                        </div>                        
-                    </div>
-                </div>
-            </div>
-
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("NEW_TEMPLATE_SUBMIT", locale) %>' />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de propriétés de la page -->
-<div class="fancybox-content">
-    <div id="page-properties">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changePageProperties" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-        
-            <div class="fancybox-table">
-                        
-                <!-- Renommer la page -->
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("PAGE_NAME", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="displayName" value="<%=currentPageName %>" required />                    
-                    </div>
-                </div>
-            
-                <!-- Mode brouillon -->
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> <%=disabledCMSTemplated %> class="small-input" />                        
-                    </div>
-                </div>
-                
-                <!-- Sélection du layout -->
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <select name="newLayout" <%=disabledCMSTemplated %>>
-                            <%
-                            if (CollectionUtils.isNotEmpty(layoutsList)) {
-                                if (StringUtils.isEmpty(currentLayout)) {
-                                    %>
-                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
-                                    <%
-                                } else {
-                                    %>
-                            <option value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
-                                    <%
-                                }
-                                
-                                for (PortalLayout portalLayout : layoutsList) {
-                                    String portalLayoutName = portalLayout.getLayoutInfo().getName();
-                                    if (StringUtils.isNotEmpty(currentLayout) && StringUtils.equals(currentLayout, portalLayoutName)) {
-                                        %>
-                            <option selected="selected" value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
-                                        <%
-                                    } else {
-                                        %>
-                            <option value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
-                                        <%
-                                    }
-                                }
-                            }
-                            %>
-                        </select>                        
-                    </div>
-                </div>
-                
-                <!-- Sélection du thème -->
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_THEME", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <select name="newTheme" <%=disabledCMSTemplated %>>
-                            <%
-                            if (CollectionUtils.isNotEmpty(themesList)) {
-                                if (StringUtils.isEmpty(currentTheme)) {
-                                    %>
-                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
-                                    <%
-                                } else {
-                                    %>
-                            <option value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
-                                    <%
-                                }
-                                
-                                for (PortalTheme theme : themesList) {
-                                    String themeName = theme.getThemeInfo().getName();
-                                    if (StringUtils.isNotEmpty(currentTheme) && StringUtils.equals(currentTheme, themeName)) {
-                                        %>
-                            <option selected="selected" value="<%=themeName %>"><%=themeName %></option>
-                                        <%
-                                    } else {
-                                        %>
-                            <option value="<%=themeName %>"><%=themeName %></option>
-                                        <%
-                                    }
-                                }
-                            }
-                            %>
-                        </select>                        
-                    </div>
-                </div>
-                
-                              <!-- Sélection de la catégorie -->
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_CATEGORY", locale) %></div>
-                    <div class="fancybox-table-cell">
-                        <select name="pageCategory" <%=disabledCMSTemplated %>>
-                            <%
-                            if (categoriesList != null) {
-                                for (String possibleCategory : categoriesList.keySet()) {
-                                    String selected = "";
-                                    
-                					if( possibleCategory.equals( currentCategory))	{
-                						selected = "selected=\"selected\"";
-                					}
-                			%>		
-
-                             <option  <%=selected %> value="<%= possibleCategory %>"><%= categoriesList.get(possibleCategory) %></option>
-                                        <%
-                                }
-                            }
-                            %>
-                        </select>                        
-                    </div>
-                </div>
-  
-  
-            </div>
-            
-            <!-- CMS templated message -->
-            <%
-            if (BooleanUtils.isTrue(cmsTemplated)) {
-                %>
-                <div class="fancybox-center-content">
-                    <p><%=is.getString("PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED", locale) %></p>
-                </div>
-                <%
-            }
-            %>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("CHANGE", locale) %>' />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de déplacement de la page -->
-<div class="fancybox-content">
-    <div id="page-location">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changePageOrder" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-            <input type="hidden" name="jstreePageOrder" />
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">                
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ORDER", locale) %></div>
-                </div>
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <input type="text" onkeyup="jstreeSearch('jstreePageOrder', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
-                    </div>
-                </div>
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell">
-                        <div id="jstreePageOrder" class="jstree-select-unique">
-                            <%=formatter.formatHTMLTreePortalObjectsMove(currentPage, context, "jstreePageOrder") %>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("PAGE_ORDER_SUBMIT", locale) %>' />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de configuration des droits de la page -->
-<div class="fancybox-content">
-    <div id="page-rights">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="securePage" />
-            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-header">
-                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ROLES", locale) %></div>
-                    <div class="fancybox-table-cell"><%=is.getString("PAGE_ACCESS", locale) %></div>
-                </div>
-                <%
-                if (CollectionUtils.isNotEmpty(roles)) {
-                    for (Role role : roles) {
-                        Set<String> actions = null;
-                        if (actionsForRoles.containsKey(role.getName())){
-                            actions = actionsForRoles.get(role.getName());
-                        }
-                        String checked = StringUtils.EMPTY;
-                        if (CollectionUtils.isNotEmpty(actions) && actions.contains("view")) {
-                            checked = "checked=\"checked\"";
-                        }
-                        %>
-                        <div class="fancybox-table-row">
-                            <div class="fancybox-table-cell fancybox-label">
-                                <p><%=role.getDisplayName() %></p>
-                            </div>
-                            <div class="fancybox-table-cell">
-                                <input type="checkbox" name="view" value="<%=role.getName() %>" class="small-input" <%=checked %> />
-                            </div>
-                        </div>
-                        <%
-                    }
-                }
-                %>
-            </div>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("PAGE_RIGHTS_SUBMIT", locale) %>' />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de configuration CMS -->
-<div class="fancybox-content">
-    <div id="page-cms">
-        <form id="formCMSProperties" action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="changeCMSProperties" />
-            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
-            
-            <div class="fancybox-table">
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label">
-                        <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" <%=disabledTemplate %> />
-                    </div>
-                </div>
-            
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label">
-                        <p><%=is.getString("PAGE_CMS_SCOPE", locale) %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <p><%=cmsScopeSelect %></p>
-                    </div>
-                </div>
-                
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label">
-                        <p><%=is.getString("PAGE_CMS_VERSION", locale) %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <p><%=cmsDisplayLiveVersion %></p>
-                    </div>
-                </div>
-                
-                <div class="fancybox-table-row">
-                    <div class="fancybox-table-cell fancybox-label">
-                        <p><%=is.getString("PAGE_CMS_CONTEXTUALIZATION", locale) %></p>
-                    </div>
-                    <div class="fancybox-table-cell">
-                        <p><%=cmsRecontextualizationSupport %></p>
-                    </div>
-                </div>
-            
-            </div>
-            
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("PAGE_CMS_SUBMIT", locale) %>' onMouseOver="disableOrNotPreviousFormValues(this.form['cmsBasePath']);" />
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de suppression de la page -->
-<div class="fancybox-content">
-    <div id="page-suppression">
-        <form action="<%=deletePageCommandUrl %>" method="post" class="fancybox-form">
-            <div class="fancybox-center-content">
-                <p><%=is.getString("PAGE_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
-            </div>
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("YES", locale) %>' />
-                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancybox de liste des pages -->
-<div class="fancybox-content">
-    <div id="pages-list">
-        <div class="fancybox-table">
-            <div class="fancybox-table-row">
-                <div class="fancybox-table-cell">
-                    <input type="text" onkeyup="jstreeSearch('jstreePagesList', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
-                </div>
-            </div>
-            <div class="fancybox-table-row">
-                <div class="fancybox-table-cell">
-                    <div id="jstreePagesList" class="jstree-links">
-                        <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePagesList") %>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Fancybox d'ajout de portlet -->
-<div class="fancybox-content">
-    <div id="add-portlet">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="addPortlet" />
-            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-            <input type="hidden" name="regionId" />
-            <input type="hidden" name="instanceId" />
-
-            <%=formatter.formatHtmlPortletsList(context) %>
-            
-            <div class="fancybox-center-content">
-                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<!-- Fancyboxes d'affichage des paramètres des fenêtres -->
-<%=formatter.formatHtmlWindowsSettings(currentPage, windows, context) %>
-
-
-<!-- Fancybox de suppression de portlet -->
-<div class="fancybox-content">
-    <div id="delete-portlet">
-        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-            <input type="hidden" name="action" value="deleteWindow" />
-            <input type="hidden" name="windowId" />
-            
-            <div class="fancybox-center-content">
-                <p><%=is.getString("PORTLET_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
-            </div>
-            <div class="fancybox-center-content">
-                <input type="submit" value='<%=is.getString("YES", locale) %>' onclick="selectWindow(this.form)" />
-                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
-            </div>
-        </form>
-    </div>
-</div>
+<% if(admin) { %>
+	<!-- Fancybox de création de page -->
+	<div class="fancybox-content">
+	    <div id="page-creation">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="createPage" />
+	            <input type="hidden" name="jstreePageParentSelect" value="<%=portalId %>" />
+	            <input type="hidden" name="jstreePageModelSelect" />
+	
+	            <div class="fancybox-table">
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" name="name" required />
+	                    </div>
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                </div>
+	
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
+	                    </div>
+	                
+	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
+	                    </div>                    
+	                </div>
+	                
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
+	                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
+	                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
+	                    </div>
+	                    
+	                    <div class="fancybox-table-cell">
+	                        <div id="jstreePageModelSelect" class="jstree-select-unique locked">
+	                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreePageModelSelect") %>
+	                        </div>
+	                    </div>
+	                
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                    
+	                    <div class="fancybox-table-cell">
+	                        <div id="jstreePageParentSelect" class="jstree-select-unique">
+	                            <%=formatter.formatHTMLTreePageParent(currentPage, context, "jstreePageParentSelect") %>
+	                        </div>                        
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de création de template -->
+	<div class="fancybox-content">
+	    <div id="template-creation">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="createTemplate" />
+	            <input type="hidden" name="jstreeTemplateParentSelect" value="<%=portalId %>" />
+	            <input type="hidden" name="jstreeTemplateModelSelect" />
+	
+	            <div class="fancybox-table">
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_NAME", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" name="name" required />
+	                    </div>
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                </div>
+	
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_TEMPLATE_MODEL", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
+	                    </div>
+	                
+	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_PARENT", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
+	                    </div>                    
+	                </div>
+	                
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
+	                        <label for="checkboxNoModel"><%=is.getString("NEW_TEMPLATE_NO_MODEL", locale) %></label>                        
+	                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
+	                    </div>
+	                    
+	                    <div class="fancybox-table-cell">
+	                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique locked">
+	                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreeTemplateModelSelect") %>
+	                        </div>
+	                    </div>
+	                
+	                    <div class="fancybox-table-cell">&nbsp;</div>
+	                    
+	                    <div class="fancybox-table-cell">
+	                        <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
+	                            <%=formatter.formatHTMLTreeTemplateParent(currentPage, context, "jstreeTemplateParentSelect") %>
+	                        </div>                        
+	                    </div>
+	                </div>
+	            </div>
+	
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("NEW_TEMPLATE_SUBMIT", locale) %>' />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de propriétés de la page -->
+	<div class="fancybox-content">
+	    <div id="page-properties">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="changePageProperties" />
+	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
+	        
+	            <div class="fancybox-table">
+	                        
+	                <!-- Renommer la page -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("PAGE_NAME", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" name="displayName" value="<%=currentPageName %>" required />                    
+	                    </div>
+	                </div>
+	            
+	                <!-- Mode brouillon -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> <%=disabledCMSTemplated %> class="small-input" />                        
+	                    </div>
+	                </div>
+	                
+	                <!-- Sélection du layout -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <select name="newLayout" <%=disabledCMSTemplated %>>
+	                            <%
+	                            if (CollectionUtils.isNotEmpty(layoutsList)) {
+	                                if (StringUtils.isEmpty(currentLayout)) {
+	                                    %>
+	                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
+	                                    <%
+	                                } else {
+	                                    %>
+	                            <option value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
+	                                    <%
+	                                }
+	                                
+	                                for (PortalLayout portalLayout : layoutsList) {
+	                                    String portalLayoutName = portalLayout.getLayoutInfo().getName();
+	                                    if (StringUtils.isNotEmpty(currentLayout) && StringUtils.equals(currentLayout, portalLayoutName)) {
+	                                        %>
+	                            <option selected="selected" value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
+	                                        <%
+	                                    } else {
+	                                        %>
+	                            <option value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
+	                                        <%
+	                                    }
+	                                }
+	                            }
+	                            %>
+	                        </select>                        
+	                    </div>
+	                </div>
+	                
+	                <!-- Sélection du thème -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_THEME", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <select name="newTheme" <%=disabledCMSTemplated %>>
+	                            <%
+	                            if (CollectionUtils.isNotEmpty(themesList)) {
+	                                if (StringUtils.isEmpty(currentTheme)) {
+	                                    %>
+	                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
+	                                    <%
+	                                } else {
+	                                    %>
+	                            <option value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
+	                                    <%
+	                                }
+	                                
+	                                for (PortalTheme theme : themesList) {
+	                                    String themeName = theme.getThemeInfo().getName();
+	                                    if (StringUtils.isNotEmpty(currentTheme) && StringUtils.equals(currentTheme, themeName)) {
+	                                        %>
+	                            <option selected="selected" value="<%=themeName %>"><%=themeName %></option>
+	                                        <%
+	                                    } else {
+	                                        %>
+	                            <option value="<%=themeName %>"><%=themeName %></option>
+	                                        <%
+	                                    }
+	                                }
+	                            }
+	                            %>
+	                        </select>                        
+	                    </div>
+	                </div>
+	                
+	                              <!-- Sélection de la catégorie -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_CATEGORY", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <select name="pageCategory" <%=disabledCMSTemplated %>>
+	                            <%
+	                            if (categoriesList != null) {
+	                                for (String possibleCategory : categoriesList.keySet()) {
+	                                    String selected = "";
+	                                    
+	                					if( possibleCategory.equals( currentCategory))	{
+	                						selected = "selected=\"selected\"";
+	                					}
+	                			%>		
+	
+	                             <option  <%=selected %> value="<%= possibleCategory %>"><%= categoriesList.get(possibleCategory) %></option>
+	                                        <%
+	                                }
+	                            }
+	                            %>
+	                        </select>                        
+	                    </div>
+	                </div>
+	  
+	  
+	            </div>
+	            
+	            <!-- CMS templated message -->
+	            <%
+	            if (BooleanUtils.isTrue(cmsTemplated)) {
+	                %>
+	                <div class="fancybox-center-content">
+	                    <p><%=is.getString("PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED", locale) %></p>
+	                </div>
+	                <%
+	            }
+	            %>
+	            
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("CHANGE", locale) %>' />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de déplacement de la page -->
+	<div class="fancybox-content">
+	    <div id="page-location">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="changePageOrder" />
+	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
+	            <input type="hidden" name="jstreePageOrder" />
+	            
+	            <div class="fancybox-table">
+	                <div class="fancybox-table-row">                
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ORDER", locale) %></div>
+	                </div>
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" onkeyup="jstreeSearch('jstreePageOrder', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
+	                    </div>
+	                </div>
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell">
+	                        <div id="jstreePageOrder" class="jstree-select-unique">
+	                            <%=formatter.formatHTMLTreePortalObjectsMove(currentPage, context, "jstreePageOrder") %>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	            
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("PAGE_ORDER_SUBMIT", locale) %>' />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de configuration des droits de la page -->
+	<div class="fancybox-content">
+	    <div id="page-rights">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="securePage" />
+	            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
+	            
+	            <div class="fancybox-table">
+	                <div class="fancybox-table-header">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ROLES", locale) %></div>
+	                    <div class="fancybox-table-cell"><%=is.getString("PAGE_ACCESS", locale) %></div>
+	                </div>
+	                <%
+	                if (CollectionUtils.isNotEmpty(roles)) {
+	                    for (Role role : roles) {
+	                        Set<String> actions = null;
+	                        if (actionsForRoles.containsKey(role.getName())){
+	                            actions = actionsForRoles.get(role.getName());
+	                        }
+	                        String checked = StringUtils.EMPTY;
+	                        if (CollectionUtils.isNotEmpty(actions) && actions.contains("view")) {
+	                            checked = "checked=\"checked\"";
+	                        }
+	                        %>
+	                        <div class="fancybox-table-row">
+	                            <div class="fancybox-table-cell fancybox-label">
+	                                <p><%=role.getDisplayName() %></p>
+	                            </div>
+	                            <div class="fancybox-table-cell">
+	                                <input type="checkbox" name="view" value="<%=role.getName() %>" class="small-input" <%=checked %> />
+	                            </div>
+	                        </div>
+	                        <%
+	                    }
+	                }
+	                %>
+	            </div>
+	            
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("PAGE_RIGHTS_SUBMIT", locale) %>' />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de configuration CMS -->
+	<div class="fancybox-content">
+	    <div id="page-cms">
+	        <form id="formCMSProperties" action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="changeCMSProperties" />
+	            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
+	            
+	            <div class="fancybox-table">
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label">
+	                        <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
+	                    </div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" <%=disabledTemplate %> />
+	                    </div>
+	                </div>
+	            
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label">
+	                        <p><%=is.getString("PAGE_CMS_SCOPE", locale) %></p>
+	                    </div>
+	                    <div class="fancybox-table-cell">
+	                        <p><%=cmsScopeSelect %></p>
+	                    </div>
+	                </div>
+	                
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label">
+	                        <p><%=is.getString("PAGE_CMS_VERSION", locale) %></p>
+	                    </div>
+	                    <div class="fancybox-table-cell">
+	                        <p><%=cmsDisplayLiveVersion %></p>
+	                    </div>
+	                </div>
+	                
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label">
+	                        <p><%=is.getString("PAGE_CMS_CONTEXTUALIZATION", locale) %></p>
+	                    </div>
+	                    <div class="fancybox-table-cell">
+	                        <p><%=cmsRecontextualizationSupport %></p>
+	                    </div>
+	                </div>
+	            
+	            </div>
+	            
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("PAGE_CMS_SUBMIT", locale) %>' onMouseOver="disableOrNotPreviousFormValues(this.form['cmsBasePath']);" />
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de suppression de la page -->
+	<div class="fancybox-content">
+	    <div id="page-suppression">
+	        <form action="<%=deletePageCommandUrl %>" method="post" class="fancybox-form">
+	            <div class="fancybox-center-content">
+	                <p><%=is.getString("PAGE_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
+	            </div>
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("YES", locale) %>' />
+	                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancybox de liste des pages -->
+	<div class="fancybox-content">
+	    <div id="pages-list">
+	        <div class="fancybox-table">
+	            <div class="fancybox-table-row">
+	                <div class="fancybox-table-cell">
+	                    <input type="text" onkeyup="jstreeSearch('jstreePagesList', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
+	                </div>
+	            </div>
+	            <div class="fancybox-table-row">
+	                <div class="fancybox-table-cell">
+	                    <div id="jstreePagesList" class="jstree-links">
+	                        <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePagesList") %>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Fancybox d'ajout de portlet -->
+	<div class="fancybox-content">
+	    <div id="add-portlet">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="addPortlet" />
+	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
+	            <input type="hidden" name="regionId" />
+	            <input type="hidden" name="instanceId" />
+	
+	            <%=formatter.formatHtmlPortletsList(context) %>
+	            
+	            <div class="fancybox-center-content">
+	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+	
+	
+	<!-- Fancyboxes d'affichage des paramètres des fenêtres -->
+	<%=formatter.formatHtmlWindowsSettings(currentPage, windows, context) %>
+	
+	
+	<!-- Fancybox de suppression de portlet -->
+	<div class="fancybox-content">
+	    <div id="delete-portlet">
+	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
+	            <input type="hidden" name="action" value="deleteWindow" />
+	            <input type="hidden" name="windowId" />
+	            
+	            <div class="fancybox-center-content">
+	                <p><%=is.getString("PORTLET_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
+	            </div>
+	            <div class="fancybox-center-content">
+	                <input type="submit" value='<%=is.getString("YES", locale) %>' onclick="selectWindow(this.form)" />
+	                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
+	            </div>
+	        </form>
+	    </div>
+	</div>
+<% } %>
