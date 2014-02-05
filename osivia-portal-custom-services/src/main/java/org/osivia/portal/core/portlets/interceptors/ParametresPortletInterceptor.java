@@ -388,6 +388,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 			if ("true".equals((String) attributes.get("osivia.unsetMaxMode")))
 				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
+			
+			
+	         if ("true".equals(attributes.get("osivia.refreshPortletsAndContent")))
+	                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPortletsAndContent", "true");
 
 		}
 
