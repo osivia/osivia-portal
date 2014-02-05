@@ -331,6 +331,9 @@
           name="osivia:service=ProfilerService" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
+      
+			<depends optional-attribute-name="Tracker" proxy-type="attribute">osivia:service=Tracker</depends>		
+      
    </mbean>
 	
    

@@ -1,6 +1,8 @@
 package org.osivia.portal.core.cms;
 
 import java.io.File;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 
@@ -9,6 +11,11 @@ import org.osivia.portal.api.cache.services.ICacheDataListener;
 public class CMSBinaryContent implements ICacheDataListener {
 
 	private static final long serialVersionUID = -3209402949942533453L;
+	
+	// 2.0.22 : to stream big files
+	public static final Map<String, CMSBinaryContent> largeFile = new Hashtable<String, CMSBinaryContent>();
+	
+	
 
 	private String name;
 

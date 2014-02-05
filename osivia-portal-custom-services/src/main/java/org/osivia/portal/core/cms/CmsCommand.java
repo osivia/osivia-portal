@@ -501,6 +501,12 @@ public class CmsCommand extends DynamicCommand {
 	public ControllerResponse execute() throws ControllerException {
 
 		try {
+		    //2.0.22 : log profiler
+	          if( cmsPath != null)  {
+                  getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.profiler.cmsPath", cmsPath);
+	          }    
+           
+		    
 
 			Page currentPage = null;
 
