@@ -1,6 +1,7 @@
 package org.osivia.portal.core.cache.services;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 
@@ -13,7 +14,9 @@ import java.util.Map;
  */
 public class CacheSynchronizer {
 
-	private static Map<String, CacheSynchronizer> synchronizers = new HashMap<String, CacheSynchronizer>(500);
+    private static Map<String, CacheSynchronizer> synchronizers = new Hashtable<String, CacheSynchronizer>(500);
+    // v2.0.2-RC5.1 synchronization
+	//private static Map<String, CacheSynchronizer> synchronizers = new HashMap<String, CacheSynchronizer>(500);
 
 	public static CacheSynchronizer getSynchronizer(String key) {
 

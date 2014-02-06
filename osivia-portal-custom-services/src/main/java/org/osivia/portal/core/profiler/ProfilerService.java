@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.profiler.IProfilerService;
@@ -36,7 +38,13 @@ public class ProfilerService implements IProfilerService {
 
         if (logger.isInfoEnabled()) {
             
-            String cmsPath = (String) getTracker().getHttpRequest().getAttribute("osivia.profiler.cmsPath");
+            String cmsPath = null;
+            
+            
+            HttpServletRequest servletRequest = getTracker().getHttpRequest();
+            
+            if( servletRequest != null)
+                cmsPath = (String) getTracker().getHttpRequest().getAttribute("osivia.profiler.cmsPath");
             
             if( cmsPath == null)
                 cmsPath = "";

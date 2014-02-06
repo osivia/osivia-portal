@@ -389,7 +389,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 			if ("true".equals((String) attributes.get("osivia.unsetMaxMode")))
 				ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
 			
-		       // v2.0.22-RC6 Force to reload resources
+		       // v2.0.22-RC6 Force to reload portlets and CMS resources
 	         if ("true".equals(attributes.get("osivia.updateContents")))
 	                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
 
