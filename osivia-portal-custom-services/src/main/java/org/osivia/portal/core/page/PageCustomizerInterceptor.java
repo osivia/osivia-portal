@@ -410,6 +410,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 		
 		
 
+        // v2.0.22-RC6 Force to reload resources
+	      if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
+	          
+	          
+	          if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
+	              PageProperties.getProperties().setRefreshingPage(true);
+	              
+	              cmd.getControllerContext().removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
+
+	          }
+
+
+	      }
 		
 
 		
@@ -418,7 +431,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			// v1.0.10 : réinitialisation des propriétes des windows
 			//PageProperties.getProperties().init();
 			
-			
+		    
+         
+	          
 
 			RenderPageCommand rpc = (RenderPageCommand) cmd;
 			ControllerContext controllerCtx = cmd.getControllerContext();
@@ -639,7 +654,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 		}
 		
-		
+
 	
 		
 		ControllerResponse resp;
@@ -680,6 +695,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 				unsetMaxMode(windows, controllerCtx);
 			}
+
+	          // v2.0.22-RC6 Force to reload resources
+            if( "true".equals( cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents"))) {
+                
+                cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
+
+            }
+			
 		}
 
 		
