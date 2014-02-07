@@ -139,11 +139,17 @@ function isURLAccepted(url) {
 				- ";jsessionid".length - 1);
 	}
 
+	var scheme = "";
 	if (url.indexOf("http://") == 0) {
-		var indexOfSlash = url.indexOf("/", "http://".length);
+		scheme = "http://";
+	} else if (url.indexOf("https://") == 0) {
+		scheme = "https://";
+	}
+	if (scheme) {
+		var indexOfSlash = url.indexOf("/", scheme.length);		
 		if (indexOfSlash < 0) {
 			return false;
-		} else if (indexOfSlash > 0) {
+		} else {
 			var path = url.substring(indexOfSlash);
 			if (path.indexOf(server_base_url) != 0) {
 				return false;
