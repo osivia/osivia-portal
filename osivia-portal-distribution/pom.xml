@@ -5,13 +5,12 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.3</version>
+        <version>3.0.4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.portal</groupId>
     <artifactId>osivia-portal-distribution</artifactId>
     <name>OSIVIA Portal - Distribution</name>
-    <version>3.0.3-SNAPSHOT</version>
 
 
     <prerequisites>
