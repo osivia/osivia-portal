@@ -3,13 +3,13 @@
     <parent>
   	<groupId>org.osivia.portal.core.admin</groupId>
 	<artifactId>osivia-portal-administration-parent</artifactId>
-         <version>3.0.4-SNAPSHOT</version>
+         <version>3.0.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.osivia.portal.core.admin</groupId>
     <artifactId>osivia-portal-administration</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>3.0.3</version>
     <packaging>ear</packaging>
     <name>${name}</name>
 
@@ -176,13 +176,13 @@
          <groupId>org.osivia.portal.core.admin</groupId>
          <artifactId>osivia-portal-administration-ejb</artifactId>
          <type>jar</type>
-	 <version>3.0.4-SNAPSHOT</version>
+	 <version>3.0.3</version>
       </dependency>
       <dependency>
          <groupId>org.osivia.portal.core.admin</groupId>
          <artifactId>osivia-portal-administration-web</artifactId>
          <type>war</type>
-   	 <version>3.0.4-SNAPSHOT</version>
+   	 <version>3.0.3</version>
       </dependency>
    </dependencies>
 
