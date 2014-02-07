@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+          version="2.0">
+
+    <description>Formatter taglib.</description>
+    <display-name>Formatter</display-name>
+    <tlib-version>2.0</tlib-version>
+    <short-name>f</short-name>
+    
+    <tag>
+        <description>Set HTML safe identifier with PortalObjectUtils "getHTMLSafeId" call.</description>
+        <display-name>Set HTML safe identifier</display-name>
+        <name>setSafeId</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLSafeIdTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Name of the exported variable to hold the value specified in the action.</description>
+            <name>var</name>
+            <required>true</required>
+        </attribute>
+        
+        <attribute>
+            <description>Portal object identifier.</description>
+            <name>portalObjectId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.jboss.portal.core.model.portal.PortalObjectId</type>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>Generate portal objects JSTree HTML data</description>
+        <display-name>Generate JSTree HTML data</display-name>
+        <name>tree</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLTreeTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Tree identifier.</description>
+            <name>treeId</name>
+            <required>true</required>
+        </attribute>
+        
+        <attribute>
+            <description>Tree HTML class.</description>
+            <name>htmlClass</name>
+            <required>false</required>
+        </attribute>
+        
+        <attribute>
+            <description>Tree filter indicator.</description>
+            <name>filter</name>
+            <required>false</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
+    </tag>
+
+</taglib>

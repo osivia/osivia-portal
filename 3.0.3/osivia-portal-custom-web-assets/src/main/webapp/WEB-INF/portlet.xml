@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app
+    xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+    version="2.0">
+
+    <portlet>
+        <portlet-name>osivia-portal-custom-web-assets-selectionPortlet</portlet-name>
+        <portlet-class>org.osivia.portal.core.portlets.selection.SelectionPortlet</portlet-class>
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>admin</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Simple selection</title>
+        </portlet-info>
+    </portlet>
+
+
+    <portlet>
+        <description>Sitemap Portlet</description>
+        <portlet-name>osivia-portal-custom-web-assets-sitemapPortlet</portlet-name>
+        <display-name>Osivia Sitemap Portlet</display-name>
+
+        <portlet-class>org.osivia.portal.core.portlets.sitemap.SitemapPortlet</portlet-class>
+
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+        </supports>
+
+        <supported-locale>en</supported-locale>
+        <supported-locale>fr</supported-locale>
+
+        <portlet-info>
+            <title>Sitemap portlet</title>
+            <short-title>Sitemap portlet</short-title>
+            <keywords>Portlet,site,sitemap,map,CMS</keywords>
+        </portlet-info>
+    </portlet>
+    
+    
+    <portlet>
+        <portlet-name>osivia-portal-regions-customizerPortlet</portlet-name>
+        <portlet-class>org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet</portlet-class>
+        <expiration-cache>180</expiration-cache>
+
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+          
+        <portlet-info>
+            <title>Default regions customizer</title>
+        </portlet-info>
+        
+        <init-param>
+            <name>osivia.portal.customizer.regions.breadcrumb.path</name>
+            <value>/WEB-INF/jsp/default-regions/breadcrumb.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.footer.path</name>
+            <value>/WEB-INF/jsp/default-regions/footer.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.search.path</name>
+            <value>/WEB-INF/jsp/default-regions/search.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.header.metadata.path</name>
+            <value>/WEB-INF/jsp/default-regions/header-metadata.jsp</value>
+        </init-param>        
+        <init-param>
+            <name>osivia.portal.customizer.regions.tabs.path</name>
+            <value>/WEB-INF/jsp/default-regions/tabs.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.toolbar.path</name>
+            <value>/WEB-INF/jsp/default-regions/toolbar.jsp</value>
+        </init-param>
+        <init-param>
+            <name>osivia.portal.customizer.regions.page.settings.path</name>
+            <value>/WEB-INF/jsp/fixed-regions/page-settings.jsp</value>
+        </init-param>
+    </portlet>
+
+</portlet-app>
