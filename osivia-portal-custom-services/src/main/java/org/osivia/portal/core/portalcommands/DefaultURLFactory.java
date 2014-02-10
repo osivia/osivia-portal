@@ -19,6 +19,8 @@ import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
+import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
+import org.osivia.portal.core.contribution.PublishContributionCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -376,6 +378,51 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             }
             return asu;
         }
+        
+        
+        if (cmd instanceof ChangeContributionModeCommand) {
+            ChangeContributionModeCommand command = (ChangeContributionModeCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSChangeContributionMode");
+
+                asu.setParameterValue("windowID", URLEncoder.encode(command.getWindowID(), "UTF-8"));
+                asu.setParameterValue("contributionMode", URLEncoder.encode(command.getNewContributionMode(), "UTF-8"));
+                asu.setParameterValue("docPath", URLEncoder.encode(command.getDocPath(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+        
+        
+        if (cmd instanceof PublishContributionCommand) {
+            PublishContributionCommand command = (PublishContributionCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "PublishContribution");
+
+                asu.setParameterValue("windowId", URLEncoder.encode(command.getWindowId(), "UTF-8"));
+                asu.setParameterValue("docPath", URLEncoder.encode(command.getDocPath(), "UTF-8"));
+                asu.setParameterValue("actionCms", URLEncoder.encode(command.getActionCms(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+
 
         return null;
     }

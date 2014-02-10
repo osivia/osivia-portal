@@ -34,6 +34,7 @@ import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalState
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -43,6 +44,7 @@ import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
@@ -192,9 +194,8 @@ public class PageMarkerUtils {
 				ws = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
 			}
 
-			if (ws != null) {
-				windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState()));
-			}
+		    ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+			windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams));
 		}
 
 		// Sauvegarde etat page
@@ -508,6 +509,9 @@ public class PageMarkerUtils {
 											WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
 
 											controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newNS);
+											
+											StateString additionnalState = ParametersStateString.create(wInfo.getAdditionnalState());
+					                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), additionnalState);
 										}
 									}
 								}

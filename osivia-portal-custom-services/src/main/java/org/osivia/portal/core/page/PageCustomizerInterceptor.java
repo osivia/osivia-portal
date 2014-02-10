@@ -75,23 +75,30 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSHandlerProperties;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
+import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
+import org.osivia.portal.core.portalobjects.DynamicTemplateWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
@@ -335,6 +342,64 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             logger.debug("PageCustomizerInterceptor test2 commande " + cmd.getClass().getName());
         }
 
+        
+        
+        /* Le player d'un item CMS doit être rejoué en cas de refresh
+         * 
+         * (mais on garde les render parameters et l'état)
+         *  
+         * */
+        
+        
+        
+        if (cmd instanceof RenderWindowCommand) {
+            Window window = ((RenderWindowCommand) cmd).getWindow();
+            
+            // Only concerns player window
+            if ("CMSPlayerWindow".equals(window.getName())) {
+                if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
+                    
+                    // original window path
+                    String cmsPath = window.getDeclaredProperty("osivia.cms.uri");
+                    
+                    
+                    CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
+                    cmsReadItemContext.setControllerContext(cmd.getControllerContext());
+                    
+                    
+                    // Force live version in EDITION mode
+                    EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
+                    if( state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && cmsPath.equals(state.getDocPath())) {
+                        cmsReadItemContext.setDisplayLiveVersion("1");
+                    }
+
+                    
+                    CMSItem cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
+                    
+                    CMSServiceCtx handlerCtx = new CMSServiceCtx();
+                    handlerCtx.setControllerContext(cmd.getControllerContext());
+                    handlerCtx.setDoc(cmsItem.getNativeItem());
+                    
+                    // Restore handle properties
+                    CMSPlayHandlerUtils.restoreHandlerProperties(window, handlerCtx);
+
+                    // Invoke handler to get player
+                    CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
+                    
+                    Map<String,String> windowProps = ((DynamicTemplateWindow) window).getDynamicWindowBean().getProperties();
+               
+                    for (String propName : contentProperties.getWindowProperties().keySet())
+                        windowProps.put(propName, contentProperties.getWindowProperties().get(propName));
+                     
+                    DynamicPortalObjectContainer.clearCache();
+                   
+                    // Reload the window
+                    ((RenderWindowCommand) cmd).acquireResources();
+               }
+            }
+        }     
+        
+        
         if (cmd instanceof RenderPageCommand) {
             begin = System.currentTimeMillis();
         }
@@ -349,9 +414,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 this.checkLayout(rpc);
             }
 
-
-            // v1.0.10 : réinitialisation des propriétes des windows
-            // PageProperties.getProperties().init();
 
 
             /* Controle du host */

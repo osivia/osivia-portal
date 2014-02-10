@@ -12,12 +12,18 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 
 
 public class RefreshPageCommand extends ControllerCommand {
 
+
+    
 	private String pageId;
 	private static final CommandInfo info = new ActionCommandInfo(false);
 

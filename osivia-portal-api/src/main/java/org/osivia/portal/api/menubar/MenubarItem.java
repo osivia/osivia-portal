@@ -15,7 +15,34 @@ public class MenubarItem {
 	private String onClickEvent;
 	private String target;
     private String associatedHtml;	
-	private boolean ajaxDisabled=false;
+    private boolean stateItem;
+    private boolean dropdownItem;
+
+
+ 
+
+
+    
+    public boolean isStateItem() {
+        return stateItem;
+    }
+
+    
+    public void setStateItem(boolean stateItem) {
+        this.stateItem = stateItem;
+    }
+
+    
+    public boolean isDropdownItem() {
+        return dropdownItem;
+    }
+
+    
+    public void setDropdownItem(boolean dropdownItem) {
+        this.dropdownItem = dropdownItem;
+    }
+
+    private boolean ajaxDisabled=false;
 
 	public static int ORDER_PORTLET_SPECIFIC = 0;
 	

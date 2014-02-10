@@ -1425,8 +1425,11 @@ public class CmsCommand extends DynamicCommand {
 					return new RedirectionResponse(contentProperties.getExternalUrl());
 
 				Map<String, String> windowProperties = contentProperties.getWindowProperties();
-
-
+				
+				
+				// Copy handler context for ulterior refreshes
+				CMSPlayHandlerUtils.saveHandlerProperties(handlerCtx, windowProperties);
+				
 
 				// No page params
 
@@ -1451,7 +1454,7 @@ public class CmsCommand extends DynamicCommand {
 
 				StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(
 						PortalObjectPath.SAFEST_FORMAT), "virtual", contentProperties.getPortletInstance(),
-						"serviceWindow", windowProperties, params, addPortletToBreadcrumb);
+						"CMSPlayerWindow", windowProperties, params, addPortletToBreadcrumb);
 
 				return context.execute(cmd);
 			}

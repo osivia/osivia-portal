@@ -53,6 +53,7 @@ import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
@@ -309,6 +310,8 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 			getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,
 					"cached_markup." + vindowId.toString());
 
+			
+			ContributionService.initWindowEditionStates(getControllerContext(), vindowId);
 			
 			// Maj du breadcrumb
 			Breadcrumb breadcrumb = (Breadcrumb) getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,

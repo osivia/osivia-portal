@@ -35,10 +35,12 @@ import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -124,6 +126,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 					}
 				}
+				
+				
+	            EditionState editionState = ContributionService.getWindowEditionState(ctx, window.getId());
+                attributes.put("osivia.editionState", editionState);
+				
 
 			}
 
@@ -164,6 +171,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 			if (userDatas != null) {
                 attributes.put("osivia.userDatas", userDatas);
             }
+			
+			
+
 
             // HTTP Request
             HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
@@ -262,6 +272,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 						}
 
+						
+						
 
 						if (menuBar.size() > 0) {
 
@@ -274,34 +286,59 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 								}
 							});
 
+
 							StringBuffer topBar = new StringBuffer();
-							String bottomBar = "";
+							StringBuffer topMenu = new StringBuffer();
+							StringBuffer stateBar = new StringBuffer();
+							
+							boolean emptyMenu = true;
+							
+							String portletPre = "";
+                            String portletPost = "";
 	                         
                             StringBuffer associatedHTML = new StringBuffer();
+ 
 
+                            
+							topMenu.append("<a href=\"#\" class=\"portlet-dropdown-menu no-ajax-link\" data-dropdown=\"#"+window.getName()+"dropdown-1\"></a> <div id=\""+window.getName()+"dropdown-1\" class=\"dropdown dropdown-tip\" style=\"display: none;\"><ul class=\"dropdown-menu\">");
+	
+                            topBar.append("<p class=\"portlet-action-link\">");
 
-							topBar.append("<p class=\"portlet-action-link\">");
+							
 							for (MenubarItem menuItem : sortedItems) {
+							    
+							    StringBuffer curBuffer = topBar;
+							    
+							    if( menuItem.isStateItem()){
+							        curBuffer = stateBar;
+							    } else 
+							    if( menuItem.isDropdownItem())  {
+							        emptyMenu = false;
+							        curBuffer = topMenu;
+							        curBuffer.append("<li>");
+							    } 
+								    
+							    
                                 if (StringUtils.isNotBlank(menuItem.getUrl())) {
                                     // Link
-                                    topBar.append("<a");
+                                    curBuffer.append("<a");
 
                                     // Onclick action
                                     if (menuItem.getOnClickEvent() != null) {
-                                        topBar.append(" onclick=\"" + menuItem.getOnClickEvent() + "\"");
+                                        curBuffer.append(" onclick=\"" + menuItem.getOnClickEvent() + "\"");
                                     }
 
                                     // HREF
-                                    topBar.append(" href=\"" + menuItem.getUrl() + "\"");
-
-                                    // Target
+                                    curBuffer.append(" href=\"" + menuItem.getUrl() + "\"");
+                                    
+                                   // Target
                                     if (menuItem.getTarget() != null) {
-                                        topBar.append(" target=\"" + menuItem.getTarget() + "\"");
+                                        curBuffer.append(" target=\"" + menuItem.getTarget() + "\"");
                                     }
 
                                     // Title
                                     if (menuItem.getTitle() != null) {
-                                        topBar.append(" title=\"" + menuItem.getTitle() + "\"");
+                                        curBuffer.append(" title=\"" + menuItem.getTitle() + "\"");
                                     }
                                     
                                     
@@ -312,7 +349,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     
                                 } else {
                                     // Text display
-                                    topBar.append("<span");
+                                    curBuffer.append("<span");
                                 }
 
                                 // HTML class
@@ -324,22 +361,31 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     className += " no-ajax-link";
                                 }
                                 if (StringUtils.isNotBlank(className)) {
-                                    topBar.append(" class=\"" + "portlet-menuitem " + className + "\"");
+                                    curBuffer.append(" class=\"" + "portlet-menuitem " + className + "\"");
                                 }
 
-								topBar.append(">");
+								curBuffer.append(">");
 
 								if (menuItem.getTitle() != null) {
-                                    topBar.append(" " + menuItem.getTitle());
+                                    curBuffer.append(" " + menuItem.getTitle());
                                 }
 
                                 // Closing tag
                                 if (StringUtils.isNotBlank(menuItem.getUrl())) {
-                                    topBar.append("</a>");
+                                    curBuffer.append("</a>");
                                 } else {
-                                    topBar.append("</span>");
+                                    curBuffer.append("</span>");
                                 }
+                                
+                                if( menuItem.isDropdownItem())  {
+                                    curBuffer = topMenu;
+                                    curBuffer.append("</li>");
+                                }
+                                
 							}
+
+	                        topMenu.append("</ul></div>");
+	                         
 							topBar.append("</p>");
 							
                             
@@ -353,12 +399,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 							
 
 							if ("1".equals(printPortlet)) {
-								topBar.append("<div id=\"" + windowId + "_print\" class=\"portlet-print-box\">");
+							    portletPre = "<div id=\"" + windowId + "_print\" class=\"portlet-print-box\">";
 
-								bottomBar = "</div>";
+								portletPost = "</div>";
 							}
 
-							updatedFragment = topBar.toString() + updatedFragment + bottomBar;
+							updatedFragment = "<div class=\"portlet-bar\">" + (!emptyMenu ? topMenu.toString():"") + stateBar.toString() + topBar.toString() +"</div>"+ portletPre + updatedFragment + portletPost;
 						}
 					}
 

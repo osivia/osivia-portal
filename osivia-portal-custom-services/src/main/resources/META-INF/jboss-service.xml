@@ -679,6 +679,16 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
     </mbean>
+    
+    
+    <!-- Contribution service -->
+    <mbean
+        code="org.osivia.portal.core.contribution.ContributionService"
+        name="osivia:service=ContributionService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
 
     <!-- Internationalization service -->
     <mbean

@@ -86,6 +86,32 @@ fieldset {
 
 /* Menubar */
 
+
+#menu .dropdown	{
+	/* Compensation position absulute du menu */
+	 margin: -155px 0 -130px -50px;
+}
+
+
+
+a.portlet-dropdown-menu {
+	
+ 	background-image: url("../images/icons/icon_dropdown.png");
+    background-repeat: no-repeat;
+    padding: 12px;
+    margin: 12px;
+    outline: none; 
+    background-position: 5px 15px;
+}
+
+.portlet-bar	{
+	line-height: 35px;	
+}
+
+.portlet-action-link	{ 
+	float:right
+}
+
 .portlet-menuitem {
     display: inline-block;
     margin: 5px 20px 10px 0;    
@@ -156,6 +182,19 @@ a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
     background-image: url('../images/icons/icon_nuxeo.png');
     background-size: 24px;
 }
+
+
+span.portlet-menuitem-edition {
+	color: #FFFFFF;
+	padding: 0 5px;
+}
+
+
+span.portlet-menuitem-edition.live {
+	background-color: #5977BD;
+	margin-left: 12px;
+}
+
 
 
 

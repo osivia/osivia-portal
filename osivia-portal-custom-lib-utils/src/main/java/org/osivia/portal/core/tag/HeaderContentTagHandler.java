@@ -130,6 +130,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         out.write("<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>");
         out.write("<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>");
         out.write("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
+        out.write("<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>");
 
         // post messages API (must be loaded before fancy integration)
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>");
@@ -143,10 +144,15 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
 
-        // JSTree
+        // Dropdown menu
+        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/dropdown/jquery.dropdown.js\"></script>");
+
+        
+        // JSTree D
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
 
+        
         // Modernizr
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/modernizr.js\"></script>");
         out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/modernizr-integration.js\"></script>");

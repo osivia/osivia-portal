@@ -61,6 +61,8 @@ import java.util.Map;
 
       /** . */
       public final Map<String, String[]> publicNavigationalState;
+      
+      public final StateString additionalState;
 
       /** The timed content. */
       public final ContentRef contentRef;
@@ -81,6 +83,7 @@ import java.util.Map;
          StateString navigationalState,
          Map<String, String[]> publicNavigationalState,
          WindowState windowState,
+         StateString additionalState,
          Mode mode,
          ContentResponse content,
          long expirationTimeMillis,
@@ -94,6 +97,7 @@ import java.util.Map;
          }
          this.navigationalState = navigationalState;
          this.windowState = windowState;
+         this.additionalState = additionalState;
          this.mode = mode;
          this.publicNavigationalState = publicNavigationalState;
          this.contentRef = new StrongContentRef(content);

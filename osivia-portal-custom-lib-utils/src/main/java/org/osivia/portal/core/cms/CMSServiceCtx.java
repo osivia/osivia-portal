@@ -29,8 +29,21 @@ public class CMSServiceCtx {
 
     private String creationType;	 
     private String creationPath;    
-	
     
+    private String previewVersion;
+	
+     
+    public String getPreviewVersion() {
+        return previewVersion;
+    }
+
+
+    
+    public void setPreviewVersion(String previewVersion) {
+        this.previewVersion = previewVersion;
+    }
+
+
     public String getCreationPath() {
         return creationPath;
     }

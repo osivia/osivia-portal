@@ -39,7 +39,9 @@ import org.jboss.portal.portlet.invocation.response.ResponseProperties;
 import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
 import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -209,6 +211,12 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
          WindowState windowState = renderInvocation.getWindowState();
          Mode mode = renderInvocation.getMode();
+         ParametersStateString additionnalState =  null;
+         
+         if( window != null)
+             additionnalState = ContributionService.getWindowStatesMap(ctx, window.getId());
+         
+         
 
          //
          CacheEntry cachedEntry = null;
@@ -351,6 +359,27 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             }
 
 
+
+            // Check additional state
+            // Then check nav state equality
+            if( useEntry && window != null) {
+                   if (additionnalState == null) {
+                        if (cachedEntry.additionalState == null) {
+                            useEntry = true;
+                        } else if (cachedEntry.additionalState instanceof ParametersStateString) {
+                            // We consider a parameters state string empty equivalent to a null value
+                            useEntry = ((ParametersStateString) cachedEntry.additionalState).getSize() == 0;
+                        }
+                    } else if (cachedEntry.additionalState == null) {
+                        if (additionnalState instanceof ParametersStateString) {
+                            useEntry = ((ParametersStateString) additionnalState).getSize() == 0;
+                        }
+                    } else {
+                        useEntry = additionnalState.equals(cachedEntry.additionalState);
+                    }
+            }
+            
+            
             if (useEntry)
             {
             	// Avoid dynamic windows with same name
@@ -456,10 +485,13 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             	}
 
 
+            StateString cacheAdditionnalState = ParametersStateString.create(additionnalState);	
+            	
                CacheEntry cacheEntry = new CacheEntry(
                   navigationalState,
                   publicNavigationalState,
                   windowState,
+                  cacheAdditionnalState,
                   mode,
                   cacheFragment,
                   expirationTimeMillis,
@@ -489,6 +521,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
             				   , window, publicNavigationalState);
 
             		   CacheEntry sharedCacheEntry = new CacheEntry(
+                           null,
                            null,
                            null,
                            null,
@@ -525,6 +558,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            navigationalState,
                            publicNavigationalState,
                            windowState,
+                           cacheAdditionnalState,
                            mode,
                            fragment,
                            System.currentTimeMillis() + (30 * 1000), // 10 sec.

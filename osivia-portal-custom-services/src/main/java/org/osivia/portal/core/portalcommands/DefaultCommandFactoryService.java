@@ -31,6 +31,8 @@ import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
+import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
+import org.osivia.portal.core.contribution.PublishContributionCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
@@ -565,6 +567,36 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new CMSPutDocumentInTrashCommand(docId, docPath);
                     }
                 }
+                
+                if ("CMSChangeContributionMode".equals(action)) {
+
+                    String windowID = null;
+                    String contributionMode = null;
+                    String docPath = null;
+
+                    if ((parameterMap.get("windowID") != null) && (parameterMap.get("contributionMode") != null)&& (parameterMap.get("docPath") != null)) {
+                        windowID = URLDecoder.decode(parameterMap.get("windowID")[0], "UTF-8");
+                        contributionMode = URLDecoder.decode(parameterMap.get("contributionMode")[0], "UTF-8");
+                        docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
+                        return new ChangeContributionModeCommand(windowID, contributionMode, docPath);
+                    }
+                }
+                
+                if ("PublishContribution".equals(action)) {
+
+                    String windowId = null;
+                    String docPath = null;
+                    String actionCms = null;
+
+                    if ((parameterMap.get("windowId") != null) && (parameterMap.get("docPath") != null)) {
+                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], "UTF-8");
+                        docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
+                        actionCms = URLDecoder.decode(parameterMap.get("actionCms")[0], "UTF-8");
+
+                        return new PublishContributionCommand(windowId, docPath, actionCms);
+                    }
+                }
+
 
             }
         } catch (Exception e) {

@@ -349,6 +349,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             }
 
                             // Add public parameters
+                            if( pageState != null){
                             Map<QName, String[]> ps = pageState.getParameters();
                             for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
                                 if (parameters.getValue(pageEntry.getKey().toString()) == null) {
@@ -356,6 +357,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                                         parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
                                     }
                                 }
+                            }
                             }
 
                             PortalObjectId targetWindowId = PortalObjectId.parse(windowContext.getId(), PortalObjectPath.SAFEST_FORMAT);
