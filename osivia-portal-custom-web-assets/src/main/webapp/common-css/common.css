@@ -86,35 +86,17 @@ fieldset {
 
 /* Menubar */
 
-
-#menu .dropdown	{
-	/* Compensation position absulute du menu */
-	 margin: -155px 0 -130px -50px;
-}
-
-
-
-a.portlet-dropdown-menu {
-	
- 	background-image: url("../images/icons/icon_dropdown.png");
-    background-repeat: no-repeat;
-    padding: 12px;
-    margin: 12px;
-    outline: none; 
-    background-position: 5px 15px;
-}
-
-.portlet-bar	{
-	line-height: 35px;	
+.portlet-bar {
+	overflow: hidden;
 }
 
 .portlet-action-link	{ 
-	float:right
+	float:right;
 }
 
 .portlet-menuitem {
     display: inline-block;
-    margin: 5px 20px 10px 0;    
+    margin: 5px 20px 10px 0;
 }
 
 a.portlet-menuitem {
@@ -125,62 +107,60 @@ a.portlet-menuitem {
     background-repeat: no-repeat;
     background-position: 5px center;
     background-color: #FCFCFC;
+    background-size: 24px;
     line-height: 24px;
     padding: 2px 5px 2px 33px;
+    outline: none;
 }
 
 a.portlet-menuitem:HOVER {
     background-color: #FFFFFF;
+    text-decoration: none;
 }
 
 a.portlet-menuitem.portlet-menuitem-permalink {
     background-image: url('../images/icons/icon_permalink.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.portlet-menuitem-print {
     background-image: url('../images/icons/icon_print.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.portlet-menuitem-rss {
     background-image: url('../images/icons/icon_rss.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.published {
     background-image: url('../images/icons/icon_published_version.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.publish-action {
     background-image: url('../images/icons/icon_publish.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.live {
     background-image: url('../images/icons/icon_live_version.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.edition {
     background-image: url('../images/icons/icon_edition.png');
-    background-size: 18px;
 }
 
 a.portlet-menuitem.download {
     background-image: url('../images/icons/icon_download.png');
-    background-size: 18px;
 }
 
 a.portlet-menuitem-contextualize {
 	background-image: url('../images/icons/icon_published_version.png');
-    background-size: 24px;
 }
 
 a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
     background-image: url('../images/icons/icon_nuxeo.png');
-    background-size: 24px;
+}
+
+a.portlet-menuitem.portlet-dropdown-menu {
+    background-image: url("../images/icons/icon_dropdown.png");
+    background-size: 16px;
 }
 
 

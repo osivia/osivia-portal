@@ -52,127 +52,127 @@ import org.osivia.portal.core.portalobjects.DynamicWindow;
  */
 public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
-	private static Log logger = LogFactory.getLog(ParametresPortletInterceptor.class);
+    private static Log logger = LogFactory.getLog(ParametresPortletInterceptor.class);
 
-	public ICustomizationService customizationService;
-
-
-	public ICustomizationService getCustomizationService() {
-		return this.customizationService;
-	}
+    public ICustomizationService customizationService;
 
 
-	public void setCustomizationService(ICustomizationService customizationService) {
-		this.customizationService = customizationService;
-	}
+    public ICustomizationService getCustomizationService() {
+        return this.customizationService;
+    }
 
 
-	public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
-
-		ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
-
-		Window window = null;
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
+    }
 
 
-		if (ctx != null) {
+    @Override
+    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
 
-			Map<String, Object> attributes = invocation.getRequestAttributes();
-			if (attributes == null) {
+        ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+
+        Window window = null;
+
+
+        if (ctx != null) {
+
+            Map<String, Object> attributes = invocation.getRequestAttributes();
+            if (attributes == null) {
                 attributes = new HashMap<String, Object>();
             }
 
-			// Ajout de la window
-			String windowId = invocation.getWindowContext().getId();
-			if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
-				PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+            // Ajout de la window
+            String windowId = invocation.getWindowContext().getId();
+            if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
+                PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
 
-				window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
 
-				attributes.put("osivia.window", window);
+                attributes.put("osivia.window", window);
 
-				attributes.put("osivia.window.ID", window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                attributes.put("osivia.window.ID", window.getId().toString(PortalObjectPath.SAFEST_FORMAT));
 
-				logger.debug("windowId " + windowId);
+                logger.debug("windowId " + windowId);
 
-				if (window.getDeclaredProperty("osivia.cms.uri") != null) {
-					logger.debug("osivia.cms.uri " + window.getDeclaredProperty("osivia.cms.uri"));
-				}
-				if (window.getDeclaredProperty("osivia.cms.scope") != null) {
-					logger.debug("osivia.cms.scope " + window.getDeclaredProperty("osivia.cms.scope"));
-				}
-
-
-				if( window instanceof DynamicWindow)	{
-					String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
-					if( (uniqueID != null) && (uniqueID.length() > 1))	{
-						invocation.setAttribute("osivia.window.path", windowId);
+                if (window.getDeclaredProperty("osivia.cms.uri") != null) {
+                    logger.debug("osivia.cms.uri " + window.getDeclaredProperty("osivia.cms.uri"));
+                }
+                if (window.getDeclaredProperty("osivia.cms.scope") != null) {
+                    logger.debug("osivia.cms.scope " + window.getDeclaredProperty("osivia.cms.scope"));
+                }
 
 
-						/* Le path CMS identifie de manière unique la session */
+                if (window instanceof DynamicWindow) {
+                    String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
+                    if ((uniqueID != null) && (uniqueID.length() > 1)) {
+                        invocation.setAttribute("osivia.window.path", windowId);
 
-						NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-					   PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
 
-						String cmsUniqueID[] = null;
-						if (pageState != null) {
+                        /* Le path CMS identifie de manière unique la session */
+
+                        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                        PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
+
+                        String cmsUniqueID[] = null;
+                        if (pageState != null) {
                             cmsUniqueID = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"));
                         }
 
 
-						if( (cmsUniqueID != null) && (cmsUniqueID.length == 1)) {
+                        if ((cmsUniqueID != null) && (cmsUniqueID.length == 1)) {
                             uniqueID += "_cms_" + cmsUniqueID[0];
                         }
-						invocation.setAttribute("osivia.window.uniqueID", uniqueID);
+                        invocation.setAttribute("osivia.window.uniqueID", uniqueID);
 
-					}
-				}
-				
-				
-	            EditionState editionState = ContributionService.getWindowEditionState(ctx, window.getId());
+                    }
+                }
+
+
+                EditionState editionState = ContributionService.getWindowEditionState(ctx, window.getId());
                 attributes.put("osivia.editionState", editionState);
-				
 
-			}
 
-			if ("wizzard".equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
+            }
+
+            if ("wizzard".equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
                 attributes.put("osivia.window.wizzard", "true");
             }
 
-			// Ajout de l'identifiant CMS
-			String contentId = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.content.id");
-			if (contentId != null) {
+            // Ajout de l'identifiant CMS
+            String contentId = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.content.id");
+            if (contentId != null) {
                 attributes.put("osivia.content.id", contentId);
             }
 
-			// Ajout du controleur
-			attributes.put("osivia.controller", ctx);
+            // Ajout du controleur
+            attributes.put("osivia.controller", ctx);
 
-			// Ajout du mode admin
-			if (PageCustomizerInterceptor.isAdministrator(ctx)) {
+            // Ajout du mode admin
+            if (PageCustomizerInterceptor.isAdministrator(ctx)) {
                 attributes.put(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME, true);
             }
 
-			// Pour l'instant les pages markers ne sont pas gérés pour les
-			// ressources
-			if (!(invocation instanceof ResourceInvocation)) {
+            // Pour l'instant les pages markers ne sont pas gérés pour les
+            // ressources
+            if (!(invocation instanceof ResourceInvocation)) {
                 attributes.put("osivia.pageMarker", PageMarkerUtils.getCurrentPageMarker(ctx));
             }
 
-			// v 1.0.14 : gestion de la barre de menu
-			if (!(invocation instanceof ResourceInvocation)) {
+            // v 1.0.14 : gestion de la barre de menu
+            if (!(invocation instanceof ResourceInvocation)) {
 
-				List<MenubarItem> menuBar = new ArrayList<MenubarItem>();
+                List<MenubarItem> menuBar = new ArrayList<MenubarItem>();
 
-				attributes.put("osivia.menuBar", menuBar);
-			}
+                attributes.put("osivia.menuBar", menuBar);
+            }
 
-			// v2.0 : user datas
-			Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
-			if (userDatas != null) {
+            // v2.0 : user datas
+            Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
+            if (userDatas != null) {
                 attributes.put("osivia.userDatas", userDatas);
             }
-			
-			
+
 
 
             // HTTP Request
@@ -180,145 +180,149 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             attributes.put("osivia.httpRequest", httpRequest);
 
             // Set attributes
-			invocation.setRequestAttributes(attributes);
-		}
+            invocation.setRequestAttributes(attributes);
+        }
 
 
 
 
-		PortletInvocationResponse response = super.invoke(invocation);
+        PortletInvocationResponse response = super.invoke(invocation);
 
 
 
 
 
 
-		if (response instanceof FragmentResponse) {
+        if (response instanceof FragmentResponse) {
 
-			String windowId = invocation.getWindowContext().getId();
-
-
-			if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
+            String windowId = invocation.getWindowContext().getId();
 
 
-
-				FragmentResponse fr = (FragmentResponse) response;
-
-				String updatedFragment = fr.getChars();
-
-				Map<String, Object> attributes = ((FragmentResponse) response).getAttributes();
-
-				/* breadcrumb path set by portlet */
-
-				List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("osivia.portletPath");
-				if (portletPath != null) {
-					if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
-						ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);
-					}
-				}
+            if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
 
 
-				/* v 1.0.14 : affichage d'une barre de menu */
 
-				if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
+                FragmentResponse fr = (FragmentResponse) response;
 
-					ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get("osivia.menuBar");
+                String updatedFragment = fr.getChars();
 
-					if (menuBar != null) {
+                Map<String, Object> attributes = ((FragmentResponse) response).getAttributes();
 
-						String title = window.getDeclaredProperty("osivia.title");
-						if (title == null) {
+                /* breadcrumb path set by portlet */
+
+                List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("osivia.portletPath");
+                if (portletPath != null) {
+                    if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
+                        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);
+                    }
+                }
+
+
+                /* v 1.0.14 : affichage d'une barre de menu */
+
+                if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
+
+                    ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get("osivia.menuBar");
+
+                    if (menuBar != null) {
+
+                        String title = window.getDeclaredProperty("osivia.title");
+                        if (title == null) {
                             title = fr.getTitle();
                         }
 
 
-						PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+                        PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
 
-						String printPortlet = null;
+                        String printPortlet = null;
 
-						if( popupWindowId == null){
+                        if (popupWindowId == null) {
 
 
-						// v1.0.14 : ajout impression
-						printPortlet = window.getDeclaredProperty("osivia.printPortlet");
-						if (printPortlet == null) {
-                            if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-                                printPortlet = "1";
+                            // v1.0.14 : ajout impression
+                            printPortlet = window.getDeclaredProperty("osivia.printPortlet");
+                            if (printPortlet == null) {
+                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+                                    printPortlet = "1";
+                                }
                             }
                         }
-						}
 
 
-						if ("1".equals(printPortlet)) {
+                        if ("1".equals(printPortlet)) {
 
-							// Appel module custom PRINT
-							Map<String, Object> customAttrMap = new HashMap<String, Object>();
-							customAttrMap.put("title", title);
-							customAttrMap.put("menuBar", menuBar);
-							customAttrMap.put("windowId", windowId);
-							customAttrMap.put("themePath", ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
+                            // Appel module custom PRINT
+                            Map<String, Object> customAttrMap = new HashMap<String, Object>();
+                            customAttrMap.put("title", title);
+                            customAttrMap.put("menuBar", menuBar);
+                            customAttrMap.put("windowId", windowId);
+                            customAttrMap.put("themePath", ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
-							CustomizationContext customCtx = new CustomizationContext(customAttrMap);
-							this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
+                            CustomizationContext customCtx = new CustomizationContext(customAttrMap);
+                            this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
 
-							MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
-							if( printItem == null){
-							String jsTitle = StringEscapeUtils.escapeJavaScript(title);
+                            MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
+                            if (printItem == null) {
+                                String jsTitle = StringEscapeUtils.escapeJavaScript(title);
 
-							 printItem =  new MenubarItem("PRINT", "Imprimer", 100, "#", "popup2print('" + jsTitle + "', '" + windowId + "_print');",	"portlet-menuitem-print", null);
-							}
+                                printItem = new MenubarItem("PRINT", "Imprimer", 100, "#", "popup2print('" + jsTitle + "', '" + windowId + "_print');",
+                                        "portlet-menuitem-print", null);
+                            }
 
-							menuBar.add(printItem);
+                            menuBar.add(printItem);
 
-						}
-
-						
-						
-
-						if (menuBar.size() > 0) {
-
-							ArrayList<MenubarItem> sortedItems = (ArrayList<MenubarItem>) menuBar.clone();
-							Collections.sort(sortedItems, new Comparator<MenubarItem>() {
-
-								public int compare(MenubarItem e1, MenubarItem e2) {
-
-									return e1.getOrder() > e2.getOrder() ? 1 : -1;
-								}
-							});
+                        }
 
 
-							StringBuffer topBar = new StringBuffer();
-							StringBuffer topMenu = new StringBuffer();
-							StringBuffer stateBar = new StringBuffer();
-							
-							boolean emptyMenu = true;
-							
-							String portletPre = "";
+
+                        if (menuBar.size() > 0) {
+
+                            ArrayList<MenubarItem> sortedItems = (ArrayList<MenubarItem>) menuBar.clone();
+                            Collections.sort(sortedItems, new Comparator<MenubarItem>() {
+
+                                public int compare(MenubarItem e1, MenubarItem e2) {
+
+                                    return e1.getOrder() > e2.getOrder() ? 1 : -1;
+                                }
+                            });
+
+
+                            StringBuffer topBar = new StringBuffer();
+                            StringBuffer topMenu = new StringBuffer();
+                            StringBuffer stateBar = new StringBuffer();
+
+                            boolean emptyMenu = true;
+
+                            String portletPre = "";
                             String portletPost = "";
-	                         
-                            StringBuffer associatedHTML = new StringBuffer();
- 
 
-                            
-							topMenu.append("<a href=\"#\" class=\"portlet-dropdown-menu no-ajax-link\" data-dropdown=\"#"+window.getName()+"dropdown-1\"></a> <div id=\""+window.getName()+"dropdown-1\" class=\"dropdown dropdown-tip\" style=\"display: none;\"><ul class=\"dropdown-menu\">");
-	
+                            StringBuffer associatedHTML = new StringBuffer();
+
+
+
+                            topMenu.append("<a href=\"#\" class=\"portlet-dropdown-menu portlet-menuitem no-ajax-link\" data-dropdown=\"#");
+                            topMenu.append(window.getName());
+                            topMenu.append("dropdown-1\" title=\"Afficher ou masquer le menu d'édition\">Menu d'édition</a>");
+                            topMenu.append("<div id=\"");
+                            topMenu.append(window.getName());
+                            topMenu.append("dropdown-1\" class=\"dropdown dropdown-tip\" style=\"display: none;\"><ul class=\"dropdown-menu\">");
+
                             topBar.append("<p class=\"portlet-action-link\">");
 
-							
-							for (MenubarItem menuItem : sortedItems) {
-							    
-							    StringBuffer curBuffer = topBar;
-							    
-							    if( menuItem.isStateItem()){
-							        curBuffer = stateBar;
-							    } else 
-							    if( menuItem.isDropdownItem())  {
-							        emptyMenu = false;
-							        curBuffer = topMenu;
-							        curBuffer.append("<li>");
-							    } 
-								    
-							    
+
+                            for (MenubarItem menuItem : sortedItems) {
+
+                                StringBuffer curBuffer = topBar;
+
+                                if (menuItem.isStateItem()) {
+                                    curBuffer = stateBar;
+                                } else if (menuItem.isDropdownItem()) {
+                                    emptyMenu = false;
+                                    curBuffer = topMenu;
+                                    curBuffer.append("<li>");
+                                }
+
+
                                 if (StringUtils.isNotBlank(menuItem.getUrl())) {
                                     // Link
                                     curBuffer.append("<a");
@@ -330,8 +334,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                     // HREF
                                     curBuffer.append(" href=\"" + menuItem.getUrl() + "\"");
-                                    
-                                   // Target
+
+                                    // Target
                                     if (menuItem.getTarget() != null) {
                                         curBuffer.append(" target=\"" + menuItem.getTarget() + "\"");
                                     }
@@ -340,13 +344,13 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     if (menuItem.getTitle() != null) {
                                         curBuffer.append(" title=\"" + menuItem.getTitle() + "\"");
                                     }
-                                    
-                                    
+
+
                                     if( menuItem.getAssociatedHtml() != null)   {
-                                            associatedHTML.append( menuItem.getAssociatedHtml());
+                                        associatedHTML.append(menuItem.getAssociatedHtml());
                                     }
-                                 
-                                    
+
+
                                 } else {
                                     // Text display
                                     curBuffer.append("<span");
@@ -354,19 +358,19 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                 // HTML class
                                 String className = StringUtils.EMPTY;
-								if (menuItem.getClassName() != null) {
+                                if (menuItem.getClassName() != null) {
                                     className += menuItem.getClassName();
                                 }
-								if (menuItem.isAjaxDisabled() == true) {
+                                if (menuItem.isAjaxDisabled() == true) {
                                     className += " no-ajax-link";
                                 }
                                 if (StringUtils.isNotBlank(className)) {
                                     curBuffer.append(" class=\"" + "portlet-menuitem " + className + "\"");
                                 }
 
-								curBuffer.append(">");
+                                curBuffer.append(">");
 
-								if (menuItem.getTitle() != null) {
+                                if (menuItem.getTitle() != null) {
                                     curBuffer.append(" " + menuItem.getTitle());
                                 }
 
@@ -376,114 +380,111 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 } else {
                                     curBuffer.append("</span>");
                                 }
-                                
+
                                 if( menuItem.isDropdownItem())  {
                                     curBuffer = topMenu;
                                     curBuffer.append("</li>");
                                 }
-                                
-							}
 
-	                        topMenu.append("</ul></div>");
-	                         
-							topBar.append("</p>");
-							
-                            
+                            }
+
+                            topMenu.append("</ul></div>");
+
+                            topBar.append("</p>");
+
+
                             if( associatedHTML.length() > 0){
                                 topBar.append("<div class=\"portlet-menu-html\">");
                                 topBar.append(associatedHTML);
                                 topBar.append("</div>");
                             }
-                            
-                            
-							
 
-							if ("1".equals(printPortlet)) {
-							    portletPre = "<div id=\"" + windowId + "_print\" class=\"portlet-print-box\">";
 
-								portletPost = "</div>";
-							}
+                            if ("1".equals(printPortlet)) {
+                                portletPre = "<div id=\"" + windowId + "_print\" class=\"portlet-print-box\">";
 
-							updatedFragment = "<div class=\"portlet-bar\">" + (!emptyMenu ? topMenu.toString():"") + stateBar.toString() + topBar.toString() +"</div>"+ portletPre + updatedFragment + portletPost;
-						}
-					}
+                                portletPost = "</div>";
+                            }
 
-				}// if showbar
+                            updatedFragment = "<div class=\"portlet-bar\">" + (!emptyMenu ? topMenu.toString() : "") + stateBar.toString() + topBar.toString()
+                                    + "</div>" + portletPre + updatedFragment + portletPost;
+                        }
+                    }
 
+                }// if showbar
 
 
 
 
-				if( attributes.get("osivia.asyncReloading.ajaxId") != null)	{
+
+                if (attributes.get("osivia.asyncReloading.ajaxId") != null) {
 
 
-					Map<String, String[]> newNS = new HashMap<String, String[]>();
+                    Map<String, String[]> newNS = new HashMap<String, String[]>();
 
-					StateString navState = invocation.getNavigationalState();
+                    StateString navState = invocation.getNavigationalState();
 
-					if (navState != null) {
+                    if (navState != null) {
 
-						Map<String, String[]> oldNS = StateString.decodeOpaqueValue(invocation.getNavigationalState().getStringValue());
+                        Map<String, String[]> oldNS = StateString.decodeOpaqueValue(invocation.getNavigationalState().getStringValue());
 
-						for (String key : oldNS.keySet()) {
-							newNS.put(key, oldNS.get(key));
-						}
-					}
+                        for (String key : oldNS.keySet()) {
+                            newNS.put(key, oldNS.get(key));
+                        }
+                    }
 
-					// Ajout ajaxId dans etat navigation
+                    // Ajout ajaxId dans etat navigation
 
-					newNS.put("ajaxId", new String[] { (String) attributes.get("osivia.asyncReloading.ajaxId") });
+                    newNS.put("ajaxId", new String[]{(String) attributes.get("osivia.asyncReloading.ajaxId")});
 
-					// To pass cache
-					newNS.put("ajaxTs", new String[] { "" + System.currentTimeMillis() });
+                    // To pass cache
+                    newNS.put("ajaxTs", new String[]{"" + System.currentTimeMillis()});
 
-					navState = StateString.create(StateString.encodeAsOpaqueValue(newNS));
+                    navState = StateString.create(StateString.encodeAsOpaqueValue(newNS));
 
-					ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
-							PortalObjectPath.CANONICAL_FORMAT), invocation.getMode(), invocation.getWindowState(), navState);
+                    ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT),
+                            invocation.getMode(), invocation.getWindowState(), navState);
 
-					PortalURL portalURL = new PortalURLImpl(renderCmd, ctx, null, null);
+                    PortalURL portalURL = new PortalURLImpl(renderCmd, ctx, null, null);
 
-					StringBuffer reloadingCode = new StringBuffer();
+                    StringBuffer reloadingCode = new StringBuffer();
 
-					reloadingCode.append("<script type=\"text/javascript\">");
+                    reloadingCode.append("<script type=\"text/javascript\">");
 
-					String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(
-							PortalObjectPath.SAFEST_FORMAT);
+                    String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 
-					reloadingCode.append("setTimeout( \"asyncUpdatePortlet('" + safestWindowId + "', '" + portalURL.toString()
-							+ "')\", 2000); \n");
+                    reloadingCode.append("setTimeout( \"asyncUpdatePortlet('" + safestWindowId + "', '" + portalURL.toString() + "')\", 2000); \n");
 
-					reloadingCode.append("</script>");
+                    reloadingCode.append("</script>");
 
-					updatedFragment = updatedFragment + reloadingCode.toString();
+                    updatedFragment = updatedFragment + reloadingCode.toString();
 
-				}
+                }
 
-				return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment,
-						fr.getTitle(), fr.getCacheControl(), fr.getNextModes());
+                return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment, fr.getTitle(),
+                        fr.getCacheControl(), fr.getNextModes());
 
-			}
-		}
+            }
+        }
 
-		// On teste si le portlet fait un modification d'état de la page en mode
-		// AJAX
-		if (response instanceof UpdateNavigationalStateResponse) {
+        // On teste si le portlet fait un modification d'état de la page en mode
+        // AJAX
+        if (response instanceof UpdateNavigationalStateResponse) {
 
-			Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
-			String synchro = (String) attributes.get("osivia.refreshPage");
+            Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
+            String synchro = (String) attributes.get("osivia.refreshPage");
 
-			if ("true".equals(synchro)) {
+            if ("true".equals(synchro)) {
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
             }
 
-			if ("true".equals(attributes.get("osivia.unsetMaxMode"))) {
+            if ("true".equals(attributes.get("osivia.unsetMaxMode"))) {
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
 
-		}
+        }
 
-		return response;
-	}
+        return response;
+    }
 
 }
