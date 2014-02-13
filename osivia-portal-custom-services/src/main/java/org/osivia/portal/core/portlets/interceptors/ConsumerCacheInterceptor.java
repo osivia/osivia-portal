@@ -385,7 +385,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
 
 
                     CacheEntry cacheEntry = new CacheEntry(navigationalState, publicNavigationalState, windowState, mode, cacheFragment, expirationTimeMillis,
-                            validationToken, windowCreationPageMarker, selectionTs);
+                            validationToken, windowCreationPageMarker, selectionTs, null);
 
 
                     userContext.setAttribute(scopeKey, cacheEntry);
@@ -403,7 +403,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                                 && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
                             sharedID = computedCacheID(sharedID, window, publicNavigationalState);
 
-                            CacheEntry sharedCacheEntry = new CacheEntry(null, null, null, null, fragment, expirationTimeMillis, null, null, selectionTs);
+                            CacheEntry sharedCacheEntry = new CacheEntry(null, null, null, null, fragment, expirationTimeMillis, null, null, selectionTs, invocation.getWindowContext().getId());
                             userContext.setAttribute("sharedcache." + sharedID, sharedCacheEntry);
                         }
                     }
@@ -425,7 +425,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
 
                             CacheEntry initCacheEntry = new CacheEntry(navigationalState, publicNavigationalState, windowState, mode, fragment,
                                     System.currentTimeMillis() + (30 * 1000), // 10 sec.
-                                    null, null, selectionTs);
+                                    null, null, selectionTs, null);
                             // v2.0.2 -JSS20130318 - déja fait !!!
                             // userContext.setAttribute(scopeKey, cacheEntry);
 
@@ -507,6 +507,14 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.path=([a-zA-Z0-9%\\-.]*)", "osivia.cms.path=" + navigationPath);
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.contentPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.contentPath=" + contentPath);
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.itemRelPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.itemRelPath=" + itemRelPath);
+                           
+                            //JSS 2.0.22-RC6 : mise à jour des windows sur les caches partagés
+                            updatedFragment = updatedFragment.replace(cachedEntry.originalWindowID + "?", invocation.getWindowContext().getId() + "?");
+
+                            
+                            
+                            // Rename windowID (can change between templates)
+                            
 
 
                         }

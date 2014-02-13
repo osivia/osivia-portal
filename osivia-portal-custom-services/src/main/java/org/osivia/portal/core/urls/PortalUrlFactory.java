@@ -349,7 +349,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#adaptPortalUrl(org.osivia.portal.api.contexte.PortalControllerContext, java.lang.String)
 	 */
 	
-	public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception	{
+	public String adaptAbsolutePortalUrlToNavigation( PortletRequest request, String orginalUrl)	throws Exception	{
 		// Les urls portail sont toutes absolues
 
 		Pattern expOrginial = Pattern.compile("http://([^/:]*)(:[0-9]*)?/([^/]*)(/auth/|/)((pagemarker/[0-9]*/)?)(.*)");
@@ -404,5 +404,55 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
 		return orginalUrl;
 	}
+	
+	
+	/* HACK pour correction téléchargement fichier 
+	 * 
+	 * -> Un traitement a été ajouté pour les urls relatives
+	 * 
+	 * NE PAS REPORTER EN V3 
+	 */
+	
+	   public String adaptPortalUrlToNavigation( PortletRequest request, String orginalUrl)    throws Exception    {
+	       if( orginalUrl.startsWith("http"))
+	           return adaptAbsolutePortalUrlToNavigation( request,  orginalUrl);
+	       
+	       // Pattern
+	        Pattern pattern = Pattern.compile("/([^/]*)(/auth)?/(pagemarker/[0-9]+/)?(.*)");
+
+	        Matcher matcher = pattern.matcher(orginalUrl);
+            if (matcher.matches() && matcher.groupCount() == 4) {
+	            // Controller context
+	            ControllerContext controllerContext = (ControllerContext) request.getAttribute("osivia.controller");
+	            // Server context
+	            ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+	            // Client request
+
+	            // Context path
+	            String contextPath = serverContext.getPortalContextPath();
+	            contextPath = StringUtils.removeEnd(contextPath, "/auth");
+
+
+	            // Current page marker
+	            String pageMarker = PageMarkerUtils.getCurrentPageMarker(controllerContext);
+
+	            // Transformed URL
+	            StringBuffer transformedUrl = new StringBuffer();
+	            transformedUrl.append(contextPath);
+	            transformedUrl.append(StringUtils.trimToEmpty(matcher.group(2)));
+	            transformedUrl.append("/pagemarker/");
+	            transformedUrl.append(pageMarker);
+	            transformedUrl.append("/");
+	            transformedUrl.append(matcher.group(4));
+
+	            return transformedUrl.toString();
+	        }
+
+	        return orginalUrl;
+	   }
+	   
+
+	
+	
 
 }
