@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.InitialContext;
 import javax.servlet.ServletException;
@@ -42,7 +44,6 @@ public class SSOIntraAuthenticationValve extends ValveBase {
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(SSOIntraAuthenticationValve.class);
 
 
-
     private String authType = "FORM";
 
 
@@ -75,8 +76,8 @@ public class SSOIntraAuthenticationValve extends ValveBase {
 
         StringBuffer sb = new StringBuffer();
         sb.append("<body style=\"font-family: Verdana,Arial,Helvetica,Sans-Serif,sans-serif;\"><html>");
-        if( errorMsg!= null){
-            sb.append("<span style=\"color: #FF0000;\">"+errorMsg + "</span>"  );
+        if (errorMsg != null) {
+            sb.append("<span style=\"color: #FF0000;\">" + errorMsg + "</span>");
         }
         sb.append("<form method=\"post\" action=\"/portail/intra-admin/check\" name=\"loginform\" id=\"loginForm\" target=\"_parent\" style=\"margin:0;padding:0\">");
         sb.append("      <div class=\"form-field\">");
@@ -119,9 +120,9 @@ public class SSOIntraAuthenticationValve extends ValveBase {
 
         String uri = request.getDecodedRequestURI();
 
- //       if (StringUtils.contains(host, "8080") && StringUtils.indexOf(uri, "/portail/intra_admin") == 0) {
-        
-        if ( StringUtils.indexOf(uri, "/portail/intra-admin") == 0) {
+        // if (StringUtils.contains(host, "8080") && StringUtils.indexOf(uri, "/portail/intra_admin") == 0) {
+
+        if (StringUtils.indexOf(uri, "/portail/intra-admin") == 0) {
 
             // System.err.println("host" + host);
 
@@ -164,11 +165,11 @@ public class SSOIntraAuthenticationValve extends ValveBase {
 
 
                         }
-                    }   else    {
+                    } else {
                         response.getOutputStream().write(displayLoginForm("Login/mot de passe incorrect"));
                         response.getOutputStream().flush();
 
-                        return;                      
+                        return;
                     }
                 } else {
 
@@ -193,11 +194,64 @@ public class SSOIntraAuthenticationValve extends ValveBase {
             return;
 
 
-
         }
 
         // continue processing the request
         this.getNext().invoke(request, response);
+
+
+        HttpSession session = httpRequest.getSession();
+
+        if (session.getAttribute("intranet_user") != null && response.getStatus() == 302) {
+ 
+            // Redirect to original host in admin mode
+            String location = response.getHeader("Location");
+            
+//            System.err.println("redirection" + location);
+//            
+            if (StringUtils.isNotEmpty(location)) {
+
+                Pattern expOrginial = Pattern.compile("http://(([^/:]*)(:[0-9]*)?)?/portail/(.*)");
+                Matcher mResrTest = expOrginial.matcher(location);
+
+                if (mResrTest.matches()) {
+                    if (mResrTest.groupCount() == 4) {
+                        for (int i = 0; i <= mResrTest.groupCount(); i++) {
+                            location = "http://" + host + "/portail/" + mResrTest.group(4);
+                            response.setHeader("Location", location);
+                            
+//                            System.err.println("new redirection" + location);
+                        }
+                    }
+                }
+
+                
+                
+                
+            }
+        }
+
+        /*
+         * 
+         * String h[] = response.getHeaderNames();
+         * 
+         * for( int i=0; i< h.length; i++){
+         * System.err.println("header " + h[i] + " " + response.getHeader(h[i]));
+         * }
+         * 
+         * String location = response.getHeader("Location");
+         * if( StringUtils.isNotEmpty(location)) {
+         * //response.setHeader("Location", location.replace("toutatice.vm", "test.vm"));
+         * System.err.println("location " + location);
+         * // response.setHeader("Location", "http://www.google.fr");
+         * 
+         * location = location.replace("toutatice.vm", "test.vm");
+         * 
+         * System.err.println("New location " + location);
+         * 
+         * response.setHeader("Location", location);
+         * }
+         */
 
     }
 
