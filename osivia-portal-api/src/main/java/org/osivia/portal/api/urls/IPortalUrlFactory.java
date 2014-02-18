@@ -145,9 +145,8 @@ public interface IPortalUrlFactory {
      * @param orginalUrl original URL
      * @param adapter adapter status code
      * @return popup URL
-     * @throws Exception
      */
-    String adaptPortalUrlToPopup(PortalControllerContext portalControllerContext, String orginalUrl, int adapter) throws Exception;
+    String adaptPortalUrlToPopup(PortalControllerContext portalControllerContext, String orginalUrl, int adapter);
 
 
     /**

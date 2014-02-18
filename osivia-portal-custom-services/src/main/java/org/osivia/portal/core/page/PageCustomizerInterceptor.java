@@ -92,7 +92,6 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.contribution.ContributionService;
-import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -342,64 +341,65 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             logger.debug("PageCustomizerInterceptor test2 commande " + cmd.getClass().getName());
         }
 
-        
-        
+
+
         /* Le player d'un item CMS doit être rejoué en cas de refresh
          * 
          * (mais on garde les render parameters et l'état)
-         *  
+         * 
          * */
-        
-        
-        
+
+
+
         if (cmd instanceof RenderWindowCommand) {
             Window window = ((RenderWindowCommand) cmd).getWindow();
-            
+
             // Only concerns player window
             if ("CMSPlayerWindow".equals(window.getName())) {
                 if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
-                    
+
                     // original window path
                     String cmsPath = window.getDeclaredProperty("osivia.cms.uri");
-                    
-                    
+
+
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
-                    
-                    
+
+
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
                     if( state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && cmsPath.equals(state.getDocPath())) {
                         cmsReadItemContext.setDisplayLiveVersion("1");
                     }
 
-                    
+
                     CMSItem cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
-                    
+
                     CMSServiceCtx handlerCtx = new CMSServiceCtx();
                     handlerCtx.setControllerContext(cmd.getControllerContext());
                     handlerCtx.setDoc(cmsItem.getNativeItem());
-                    
+
                     // Restore handle properties
                     CMSPlayHandlerUtils.restoreHandlerProperties(window, handlerCtx);
 
                     // Invoke handler to get player
                     CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
-                    
+
                     Map<String,String> windowProps = ((DynamicTemplateWindow) window).getDynamicWindowBean().getProperties();
-               
-                    for (String propName : contentProperties.getWindowProperties().keySet())
+
+                    for (String propName : contentProperties.getWindowProperties().keySet()) {
                         windowProps.put(propName, contentProperties.getWindowProperties().get(propName));
-                     
+                    }
+
                     DynamicPortalObjectContainer.clearCache();
-                   
+
                     // Reload the window
                     ((RenderWindowCommand) cmd).acquireResources();
-               }
+                }
             }
-        }     
-        
-        
+        }
+
+
         if (cmd instanceof RenderPageCommand) {
             begin = System.currentTimeMillis();
         }
@@ -548,6 +548,22 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 mode = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE;
                 controllerCtx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE, mode);
             }
+
+            /* Is player in edition mode ? */
+
+            Window cmsWindow = ((RenderPageCommand) cmd).getPage().getWindow("CMSPlayerWindow");
+            if (cmsWindow != null) {
+
+                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, cmsWindow.getId());
+
+                WindowNavigationalState windowNavState = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
+                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                // On regarde si la fenêtre est en vue MAXIMIZED
+                if (WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                    controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, true);
+                }
+            }
+
         }
 
 

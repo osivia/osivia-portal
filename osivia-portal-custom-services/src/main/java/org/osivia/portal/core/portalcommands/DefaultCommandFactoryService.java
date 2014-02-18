@@ -287,11 +287,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             theme = URLDecoder.decode(parameterMap.get("newTheme")[0], CharEncoding.UTF_8);
                         }
 
-                        String category = null;                        
-                        if (parameterMap.get("pageCategory") != null)
-                            category = URLDecoder.decode(((String[]) parameterMap.get("pageCategory"))[0], "UTF-8");
+                        String category = null;
+                        if (parameterMap.get("pageCategory") != null) {
+                            category = URLDecoder.decode(parameterMap.get("pageCategory")[0], "UTF-8");
+                        }
 
-                        
+
                         return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme, category);
                     }
                 }
@@ -397,7 +398,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         addToBreadcrumb = URLDecoder.decode(parameterMap.get("addToBreadcrumb")[0], CharEncoding.UTF_8);
 
                         return new StartDynamicWindowCommand(pageId, regionId, instanceId, windowName, WindowPropertiesEncoder.decodeProperties(windowProps),
-                                WindowPropertiesEncoder.decodeProperties(params), addToBreadcrumb);
+                                WindowPropertiesEncoder.decodeProperties(params), addToBreadcrumb, null);
                     }
                 }
 
@@ -510,20 +511,20 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
 
-				/* CMS commands */
+                /* CMS commands */
 
-				if ("CMSDeleteFragment".equals(action)) {
+                if ("CMSDeleteFragment".equals(action)) {
 
-					String pageId = null;
-					String pagePath = null;
-					String refURI = null;
+                    String pageId = null;
+                    String pagePath = null;
+                    String refURI = null;
 
-					if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null) ) {
-						pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
-						pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
-						refURI = URLDecoder.decode(parameterMap.get("refURI")[0], "UTF-8");
-						return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
-					}
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null) ) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+                        refURI = URLDecoder.decode(parameterMap.get("refURI")[0], "UTF-8");
+                        return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
+                    }
                 }
 
 
@@ -554,7 +555,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new CMSDeleteDocumentCommand(pageId, pagePath);
                     }
                 }
-                
+
                 if ("CMSPutDocumentInTrashCommand".equals(action)) {
 
                     String docId = null;
@@ -567,7 +568,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new CMSPutDocumentInTrashCommand(docId, docPath);
                     }
                 }
-                
+
                 if ("CMSChangeContributionMode".equals(action)) {
 
                     String windowID = null;
@@ -581,7 +582,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new ChangeContributionModeCommand(windowID, contributionMode, docPath);
                     }
                 }
-                
+
                 if ("PublishContribution".equals(action)) {
 
                     String windowId = null;

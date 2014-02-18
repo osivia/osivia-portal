@@ -37,6 +37,7 @@
         <log4j.version>1.2.14</log4j.version>
         <portlet-api.version>2.0</portlet-api.version>
         <servlet-api.version>2.5</servlet-api.version>
+        <springframework.version>3.0.5.RELEASE</springframework.version>
         
         <!-- Various libs -->
         <jsf-api.version>1.2</jsf-api.version>
@@ -424,6 +425,13 @@
                 <groupId>xerces</groupId>
                 <artifactId>xercesImpl</artifactId>
                 <version>${xerces.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc-portlet</artifactId>
+                <version>${springframework.version}</version>
                 <scope>provided</scope>
             </dependency>
 

@@ -64,7 +64,7 @@ public final class InternalConstants {
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING = "portlets.rendering";
     /** Portlets div rendering. */
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV = "div";
-    /** Page categories PREFIX */
+    /** Page categories prefix. */
     public static final String SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX = "page.category.prefix";
 
     // Administration constants
@@ -86,7 +86,7 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
     /** Page currentcategory. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY = "osivia.toolbarSettings.pageCategory";
-    
+
     /** Page category list */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES = "osivia.toolbarSettings.pageCategories";
 
@@ -215,6 +215,9 @@ public final class InternalConstants {
 
     /** Templates path name convention. */
     public static final String TEMPLATES_PATH_NAME = "templates";
+
+    /** Live edition indicator. */
+    public static final String LIVE_EDITION = "LiveEdition";
 
 
     /**

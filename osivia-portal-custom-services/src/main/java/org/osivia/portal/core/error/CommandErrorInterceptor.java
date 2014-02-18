@@ -67,7 +67,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 
 
             PortalObjectId poid = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
-            PortalObject portal = (PortalObject) cmd.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
+            PortalObject portal = cmd.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
             // For sites, display templated error page
             if (InternalConstants.PORTAL_TYPE_SPACE.equals(portal.getDeclaredProperty("osivia.portal.portalType"))) {
@@ -87,12 +87,13 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                     String errorLabel;
 
                     // response is an error, functionnal error cases are managed with a notification.
-                    if (resp instanceof UnavailableResourceResponse)
-                        errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_NOT_FOUND, locale);
-                    else if (resp instanceof SecurityErrorResponse)
-                        errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN, locale);
-                    else
-                        errorLabel = internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED, locale);
+                    if (resp instanceof UnavailableResourceResponse) {
+                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_NOT_FOUND, locale);
+                    } else if (resp instanceof SecurityErrorResponse) {
+                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN, locale);
+                    } else {
+                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED, locale);
+                    }
 
 
                     NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(cmd.getControllerContext()), errorLabel,
@@ -115,6 +116,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
         ControllerResponse resp = null;
 
@@ -123,7 +125,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 
             // * functionnal errors, see displayError
             if (resp instanceof ErrorResponse || resp instanceof UnavailableResourceResponse) {
-                return displayError(cmd, resp, -1);
+                return this.displayError(cmd, resp, -1);
             }
             
 
@@ -151,9 +153,10 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                 // print stack in server.log and portal_user_error.log
                 long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 
-                ControllerResponse errResp = displayError(cmd, resp, errId);
-                if (errResp != null)
+                ControllerResponse errResp = this.displayError(cmd, resp, errId);
+                if (errResp != null) {
                     return errResp;
+                }
 
                 // * unknown technical errors and template 'error' can not display it, return the default error page
             } catch (Exception errorExc) {

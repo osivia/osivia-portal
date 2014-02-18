@@ -52,9 +52,11 @@ public class NotificationsService implements INotificationsService {
      * {@inheritDoc}
      */
     public void addNotifications(PortalControllerContext portalControllerContext, Notifications notifications) {
-        List<Notifications> notificationsList = this.getNotificationsList(portalControllerContext);
-        notificationsList.add(notifications);
-        this.setNotificationsList(portalControllerContext, notificationsList);
+        if (notifications != null) {
+            List<Notifications> notificationsList = this.getNotificationsList(portalControllerContext);
+            notificationsList.add(notifications);
+            this.setNotificationsList(portalControllerContext, notificationsList);
+        }
     }
 
 

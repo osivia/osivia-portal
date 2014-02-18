@@ -288,7 +288,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) throws Exception {
+    public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) {
         String url = originalUrl;
 
         int insertIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);

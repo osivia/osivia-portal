@@ -5,7 +5,9 @@ import java.util.Locale;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.jboss.portal.common.invocation.InvocationContext;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
@@ -24,6 +26,7 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
@@ -169,9 +172,14 @@ public class CmsPermissionHelper {
                 editableByUser = pubInfos.isEditableByUser();
                 published = pubInfos.isPublished();
                 belongToPublishSpace = pubInfos.getPublishSpacePath() != null;
-                
-                
+
+
                 if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
+                    cmsVersion = CMS_VERSION_PREVIEW;
+                }
+
+                if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace()
+                        && BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION))) {
                     cmsVersion = CMS_VERSION_PREVIEW;
                 }
 

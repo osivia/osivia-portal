@@ -26,6 +26,15 @@ public final class UserNotificationsException extends ControllerException {
 
 
     /**
+     * Empty message constructor.
+     */
+    public UserNotificationsException() {
+        super();
+        this.notifications = null;
+    }
+
+
+    /**
      * Constructor using fields.
      *
      * @param notifications user notifications
