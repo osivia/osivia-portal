@@ -50,14 +50,20 @@
         <instance>
             <instance-id>osivia-portal-browser-portlet-instance</instance-id>
             <portlet-ref>osivia-portal-browser</portlet-ref>
-            <display-name xml:lang="en">OSIVIA - Live content browser</display-name>
-            <display-name xml:lang="fr">OSIVIA - Parcours du contenu en version de travail</display-name>
+            <display-name xml:lang="en">Osivia - Live content browser</display-name>
+            <display-name xml:lang="fr">Osivia - Parcours du contenu en version de travail</display-name>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>
                     <unchecked />
                 </policy-permission>
             </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
         </instance>
     </deployment>
     

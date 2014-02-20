@@ -239,18 +239,18 @@ public class BrowserServiceImpl implements IBrowserService {
             throw new PortletException(e);
         }
 
-        // CMS item type
+        // CMS item type folderish indicator
+        boolean folderish = true;
         CMSItemType type = cmsItem.getType();
-        if (type == null) {
-            // Default CMS item type : folder
-            type = CMSItemType.FOLDER;
+        if (type != null) {
+            folderish = type.isFolderish();
         }
 
         // JSON object
         JSONObject object = new JSONObject();
         if (root) {
             object.put("state", "open");
-        } else if (type.isContainer()) {
+        } else if (folderish) {
             object.put("state", "closed");
         }
 
@@ -267,11 +267,6 @@ public class BrowserServiceImpl implements IBrowserService {
         // JSON object attributes
         JSONObject attr = new JSONObject();
         attr.put("id", id);
-        if (root) {
-            attr.put("rel", "Root");
-        } else {
-            attr.put("rel", type.getName());
-        }
         object.put("attr", attr);
 
         return object;

@@ -1,8 +1,15 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="internationalization" prefix="is" %>
+
 <%@ page contentType="text/html" isELIgnored="false"%>
 
 
+<portlet:defineObjects />
+
 <portlet:resourceURL id="lazyContent" var="dataProviderURL" />
+
+<c:set var="namespace"><portlet:namespace /></c:set>
 
 
 <script type='text/javascript'>
@@ -34,51 +41,18 @@ $JQry(document).ready(function() {
         "themes" : {
             "theme" : "default",
             "dots" : false,
-            "icons" : true
+            "icons" : false
         },
         "search" : {
             "case_insensitive" : true,
             "show_only_matches" : true
         },
-        "types" : {
-            "types" : {
-            	"Root" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/root.png"
-                    }
-                },
-                "Space" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/space.png"
-                    }
-                },
-                "Page" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/page.png"
-                    }
-                },
-                "Workspace" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/workspace.png"
-                    }
-                },
-                "Folder" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/folder.png"
-                    }
-                },
-                "Document" : {
-                    "icon" : {
-                        "image" : "/osivia-portal-custom-web-assets/images/jstree/document.png"
-                    }
-                }
-            }
-        },
-    	"plugins" : [ "themes", "json_data", "search", "types" ]
+    	"plugins" : [ "json_data", "themes", "search" ]
     });
 });
-    
+
 </script>
 
 
-<div class="jstree-browser"></div>
+<input type="text" onkeyup="jstreeSearch('${namespace}-jstree', this.value)" class="filter" placeholder="<is:getProperty key="JSTREE_FILTER" />" />
+<div id="${namespace}-jstree" class="jstree-browser"></div>

@@ -1,6 +1,10 @@
 package org.osivia.portal.core.constants;
 
-
+/**
+ * OSIVIA portal internal constants.
+ * 
+ * @author Cédric Krommenhoek
+ */
 public final class InternalConstants {
 
     // Environnement variables
@@ -218,6 +222,9 @@ public final class InternalConstants {
 
     /** Live edition indicator. */
     public static final String LIVE_EDITION = "LiveEdition";
+
+    /** Hide portlet in menu property name. */
+    public static final String HIDE_PORTLET_IN_MENU_PROPERTY = "hide";
 
 
     /**

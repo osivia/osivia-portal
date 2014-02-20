@@ -48,6 +48,7 @@ import org.jboss.portal.core.portlet.info.PortletInfoInfo;
 import org.jboss.portal.portlet.Portlet;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.info.PortletInfo;
+import org.jboss.portal.portlet.state.PropertyMap;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.osivia.portal.api.HTMLConstants;
@@ -678,9 +679,18 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
 
         for (InstanceDefinition instance : instances) {
-            // Get portlet
+            // Get portlet and properties
             Portlet portlet;
             try {
+                PropertyMap properties = instance.getProperties();
+                if (properties != null) {
+                    List<String> hideProperties = properties.get(InternalConstants.HIDE_PORTLET_IN_MENU_PROPERTY);
+                    if ((hideProperties != null) && (hideProperties.contains(String.valueOf(true)))) {
+                        // Hide portlet in menu
+                        continue;
+                    }
+                }
+
                 portlet = instance.getPortlet();
             } catch (PortletInvokerException e) {
                 // Portlet non déployé
