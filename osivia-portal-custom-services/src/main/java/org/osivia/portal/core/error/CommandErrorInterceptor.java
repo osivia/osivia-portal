@@ -74,6 +74,9 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                 // TODO : internationaliser
                 Map<String, String> props = new HashMap<String, String>();
 
+                cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.dynamicerrorpage", "1");
+
+
                 // get a template named "error"
                 StartDynamicPageCommand dynaPageCmd = new StartDynamicPageCommand(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), "error", null,
                         PortalObjectId.parse("/default/templates/error", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), props,
@@ -153,9 +156,11 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                 // print stack in server.log and portal_user_error.log
                 long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 
-                ControllerResponse errResp = this.displayError(cmd, resp, errId);
-                if (errResp != null) {
-                    return errResp;
+                if (cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.dynamicerrorpage") == null) {
+                    ControllerResponse errResp = this.displayError(cmd, resp, errId);
+                    if (errResp != null) {
+                        return errResp;
+                    }
                 }
 
                 // * unknown technical errors and template 'error' can not display it, return the default error page
