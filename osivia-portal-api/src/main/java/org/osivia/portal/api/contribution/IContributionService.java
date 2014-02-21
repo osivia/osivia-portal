@@ -82,5 +82,13 @@ public interface IContributionService {
      * @return
      */
     public EditionState getEditionState(PortalControllerContext portalControllerContext);
+    
+    /**
+     * remove current window state
+     * 
+     * @param portalControllerContext
+     * @return
+     */
+    public void removeWindowEditionState(PortalControllerContext portalControllerContext) ;
 
 }
