@@ -165,6 +165,20 @@ public class ContributionService implements IContributionService {
     }
 
 
- 
+    /**
+     * remove the current window edition state
+     * 
+     * @param controllerContext jboss portal context
+     * @param windowID window identifier
+     */
+    public void removeWindowEditionState(PortalControllerContext portalControllerContext) {
+        
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+        if (window != null) {
+           ParametersStateString states = getWindowStatesMap(ControllerContextAdapter.getControllerContext(portalControllerContext), window.getId());
+            states.remove(ADD_STATE_EDITION_KEY);
+        }
+
+    }
 
 }
