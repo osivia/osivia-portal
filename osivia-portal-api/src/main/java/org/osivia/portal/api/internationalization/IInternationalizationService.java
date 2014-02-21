@@ -10,20 +10,20 @@ import java.util.Locale;
 public interface IInternationalizationService {
 
     /** MBean name. */
-    static final String MBEAN_NAME = "osivia:service=InternationalizationService";
+    String MBEAN_NAME = "osivia:service=InternationalizationService";
 
     /** Internationalization customizer identifier. */
-    static final String CUSTOMIZER_ID = "osivia.customizer.internationalization.id";
+    String CUSTOMIZER_ID = "osivia.customizer.internationalization.id";
     /** Internationalization customizer resource key attribute. */
-    static final String CUSTOMIZER_ATTRIBUTE_KEY = "osivia.customizer.internationalization.key";
+    String CUSTOMIZER_ATTRIBUTE_KEY = "osivia.customizer.internationalization.key";
     /** Internationalization customizer locale attribute. */
-    static final String CUSTOMIZER_ATTRIBUTE_LOCALE = "osivia.customizer.internationalization.locale";
+    String CUSTOMIZER_ATTRIBUTE_LOCALE = "osivia.customizer.internationalization.locale";
     /** Internationalization customizer custom result attribute. */
-    static final String CUSTOMIZER_ATTRIBUTE_RESULT = "osivia.customizer.internationalization.result";
+    String CUSTOMIZER_ATTRIBUTE_RESULT = "osivia.customizer.internationalization.result";
 
 
     /**
-     * Get bundle factory
+     * Get bundle factory.
      *
      * @param classLoader class loader, may be null to access default portal resource
      * @return bundle factory

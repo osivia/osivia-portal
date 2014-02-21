@@ -19,7 +19,7 @@ import org.apache.commons.lang.StringUtils;
  * @see HttpServletRequest
  * @see URL
  */
-public class URLUtils {
+public final class URLUtils {
 
     /** Virtual host request header name. */
     public static final String VIRTUAL_HOST_REQUEST_HEADER = "osivia-virtual-host";

@@ -80,7 +80,7 @@ public class BrowserPortletController implements PortletContextAware {
             throws PortletException, IOException {
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
         String parentId = StringUtils.removeStart(nodeId, response.getNamespace());
-        String lazyContent = this.browserService.browseLazyLiveContent(portalControllerContext, parentId);
+        String lazyContent = this.browserService.browse(portalControllerContext, parentId);
 
         OutputStream output = response.getPortletOutputStream();
         output.write(lazyContent.getBytes());
