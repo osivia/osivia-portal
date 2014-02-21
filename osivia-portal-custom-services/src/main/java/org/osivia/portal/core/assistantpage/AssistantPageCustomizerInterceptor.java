@@ -705,7 +705,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
             row.add(leftCell);
             Element middleCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            middleCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
+            middleCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " portlet-name");
             row.add(middleCell);
             Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
             rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);

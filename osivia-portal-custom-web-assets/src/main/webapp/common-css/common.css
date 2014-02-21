@@ -190,6 +190,11 @@ span.portlet-menuitem-edition.live {
     width: 100%;
 }
 
+#add-portlet .fancybox-table {
+    border-collapse: separate;
+    border-spacing: 5px 0;
+}
+
 .fancybox-table-header {
     display: table-header-group;
     font-weight: bold;

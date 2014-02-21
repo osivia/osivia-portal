@@ -10,6 +10,13 @@
         <transaction>
             <trans-attribute>Required</trans-attribute>            
         </transaction>
+        
+        <portlet-info>
+            <icon>
+                <small-icon>/images/portlet_icon.png</small-icon>
+                <large-icon>/images/portlet_icon.png</large-icon>
+            </icon>
+        </portlet-info>
     </portlet>
     
     <portlet>

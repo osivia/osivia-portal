@@ -42,6 +42,12 @@
                     <unchecked />
                 </policy-permission>
             </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
         </instance>
     </deployment>
     
