@@ -153,6 +153,9 @@
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-admin.sar/portal-admin.war/WEB-INF/faces-config.xml</exclude>
 
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-server.war/WEB-INF/web.xml</exclude>
+                
+                <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget.war/WEB-INF/portlet-instances.xml</exclude>
+                <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget-netvibes.war/WEB-INF/portlet-instances.xml</exclude>
             </excludes>
         </fileSet>
 

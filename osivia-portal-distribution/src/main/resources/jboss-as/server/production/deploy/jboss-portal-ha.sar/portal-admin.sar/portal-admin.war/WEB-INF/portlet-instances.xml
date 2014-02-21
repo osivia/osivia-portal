@@ -27,28 +27,41 @@
    "http://www.jboss.org/portal/dtd/portlet-instances_2_6.dtd">
 
 <deployments>
-   <deployment>
-    <if-exists>overwrite</if-exists>
-      <instance>
-         <display-name xml:lang="en">Administration portlet</display-name>
-         <display-name xml:lang="fr">Portlet d'administration</display-name>
-         <display-name xml:lang="pt_BR">Portlet de administração</display-name>
-         <instance-id>AdminPortletInstance</instance-id>
-         <portlet-ref>AdminPortlet</portlet-ref>
-         <security-constraint>
-            <policy-permission>
-               <role-name>Administrators</role-name>
-               <action-name>view</action-name>
-            </policy-permission>
-         </security-constraint>
-      </instance>
-   </deployment>
-   <deployment>
-      <instance>
-         <display-name xml:lang="en">Dashboard Configurator portlet</display-name>
-         <display-name xml:lang="pt_BR">Portlet de configuração do Meu Portal</display-name>
-         <instance-id>DashboardConfigPortletInstance</instance-id>
-         <portlet-ref>DashboardConfigPortlet</portlet-ref>
-      </instance>
-   </deployment>
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <display-name xml:lang="en">Administration portlet</display-name>
+            <display-name xml:lang="fr">Portlet d'administration</display-name>
+            <display-name xml:lang="pt_BR">Portlet de administração</display-name>
+            <instance-id>AdminPortletInstance</instance-id>
+            <portlet-ref>AdminPortlet</portlet-ref>
+            <security-constraint>
+                <policy-permission>
+                    <role-name>Administrators</role-name>
+                    <action-name>view</action-name>
+                </policy-permission>
+            </security-constraint>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
+    <deployment>
+        <if-exists>overwrite</if-exists>
+        <instance>
+            <display-name xml:lang="en">Dashboard Configurator portlet</display-name>
+            <display-name xml:lang="pt_BR">Portlet de configuração do Meu Portal</display-name>
+            <instance-id>DashboardConfigPortletInstance</instance-id>
+            <portlet-ref>DashboardConfigPortlet</portlet-ref>
+            <preferences>
+                <preference>
+                    <name>hide</name>
+                    <value>true</value>
+                </preference>
+            </preferences>
+        </instance>
+    </deployment>
 </deployments>

@@ -30,27 +30,8 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <instance-id>IdentityUserPortletInstance</instance-id>
-            <portlet-ref>IdentityUserPortlet</portlet-ref>
-            <preferences>
-                <preference>
-                    <name>hide</name>
-                    <value>true</value>
-                </preference>
-            </preferences>
-        </instance>
-    </deployment>
-    <deployment>
-        <if-exists>overwrite</if-exists>
-        <instance>
-            <instance-id>IdentityAdminPortletInstance</instance-id>
-            <portlet-ref>IdentityAdminPortlet</portlet-ref>
-            <security-constraint>
-                <policy-permission>
-                    <role-name>Administrators</role-name>
-                    <action-name>view</action-name>
-                </policy-permission>
-            </security-constraint>
+            <instance-id>GoogleWidgetPortletInstance</instance-id>
+            <portlet-ref>GoogleWidgetPortlet</portlet-ref>
             <preferences>
                 <preference>
                     <name>hide</name>
