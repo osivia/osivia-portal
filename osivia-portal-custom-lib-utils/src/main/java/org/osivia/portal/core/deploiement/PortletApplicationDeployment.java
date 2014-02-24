@@ -16,6 +16,7 @@ import org.jboss.portal.portlet.container.managed.ManagedObjectRegistryEventList
 import org.jboss.portal.server.deployment.PortalWebApp;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.api.contribution.IContributionService;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.status.IStatusService;
@@ -60,6 +61,7 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
         this.injectStandardService(Constants.NOTIFICATIONS_SERVICE_NAME, INotificationsService.class.getName(), INotificationsService.MBEAN_NAME);
         this.injectStandardService(Constants.INTERNATIONALIZATION_SERVICE_NAME, IInternationalizationService.class.getName(),
                 IInternationalizationService.MBEAN_NAME);
+        this.injectStandardService(Constants.CONTRIBUTION_SERVICE_NAME, IContributionService.class.getName(), IContributionService.MBEAN_NAME);
 
         // FIXME à déplacer dans CMS
         this.injectStandardService("NuxeoService", "fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService", "osivia:service=NuxeoService");

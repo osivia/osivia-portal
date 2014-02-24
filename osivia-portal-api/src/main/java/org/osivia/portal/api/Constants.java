@@ -23,6 +23,8 @@ public class Constants {
     public static final String NOTIFICATIONS_SERVICE_NAME = "NotificationsService";
     /** Internationalization service name. */
     public static final String INTERNATIONALIZATION_SERVICE_NAME = "InternationalizationService";
+    /** Contribution service name. */
+    public static final String CONTRIBUTION_SERVICE_NAME = "ContributionService";
 
     // JBoss portal objects
     /** JBP key portalName. */
