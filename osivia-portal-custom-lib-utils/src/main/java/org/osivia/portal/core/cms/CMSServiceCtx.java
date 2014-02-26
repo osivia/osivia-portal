@@ -34,7 +34,20 @@ public class CMSServiceCtx {
 	private String pageId;
 	private Object doc;
 	
-	/** if 'true', indicate to don't access the cache. load the latest data */ 
+    // streaming support : Pour comptibilite portlets v1 : NE PAS REPORTER EN V2
+	private boolean streamingSupport = false;
+	
+	
+    public boolean isStreamingSupport() {
+        return streamingSupport;
+    }
+
+    
+    public void setStreamingSupport(boolean streamingSupport) {
+        this.streamingSupport = streamingSupport;
+    }
+
+    /** if 'true', indicate to don't access the cache. load the latest data */ 
 	private boolean forceReload = false;
 	
 	/**

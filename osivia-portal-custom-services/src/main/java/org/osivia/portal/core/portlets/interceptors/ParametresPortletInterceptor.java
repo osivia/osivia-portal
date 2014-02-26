@@ -156,6 +156,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 			if (userDatas != null)
 				attributes.put("osivia.userDatas", userDatas);
 			
+			Object spaceConfig = ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.spaceConfig");
+			if( spaceConfig != null)
+                attributes.put("osivia.spaceConfig", spaceConfig);
+			    
+			
 			invocation.setRequestAttributes(attributes);
 		}
 

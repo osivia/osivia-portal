@@ -511,9 +511,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                             //JSS 2.0.22-RC6 : mise à jour des windows sur les caches partagés
                             updatedFragment = updatedFragment.replace(cachedEntry.originalWindowID + "?", invocation.getWindowContext().getId() + "?");
 
-                            
-                            
-                            // Rename windowID (can change between templates)
+                            fragmentUpdated = true;
                             
 
 

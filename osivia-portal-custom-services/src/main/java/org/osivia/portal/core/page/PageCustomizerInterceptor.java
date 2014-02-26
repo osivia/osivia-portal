@@ -649,7 +649,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 			initShowMenuBarItem( cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
 			cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath",  getTargetContextPath( (PortalCommand) cmd));
-
+			
+			// 2.0.25 : mutualisation du space config pour injection aux portlets
+			Page page = ((PageCommand) cmd).getPage();
+			String spacePath= page.getProperty("osivia.cms.basePath");
+			
+			if( spacePath != null)   {
+			    CMSItem spaceItem = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), page);
+			    cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.spaceConfig",  spaceItem.getNativeItem());
+			}
 
 
 		}
