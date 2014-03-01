@@ -14,7 +14,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=toutatice-releases -Durl=http://projet.toutatice.fr/nexus/content/repositories/toutatice-releases"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -30,6 +30,32 @@
 			</exec>	   	
 	   </sequential>
 	</macrodef>
+
+
+
+	<macrodef name="maven-deploy-file">
+	   <attribute name="file"/>
+	   <attribute name="groupId"/>
+	   <attribute name="artifactId"/>
+	   <attribute name="version"/>
+	   <attribute name="packaging" default="jar"/>	   
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   
+	   <sequential>
+		   	<echo>mvn @{command-line}</echo>
+		   	
+		   	<!-- Window exec command : -->
+		   	<exec executable="cmd.exe" osfamily="Windows" >
+				<arg line="/c mvn.bat @{command-line}"/>
+			</exec>
+			
+		   	<!-- Linux et Unix exec command : -->
+		   	<exec executable="mvn" os="Linux,Unix">
+				<arg line="@{command-line}"/>
+			</exec>	   	
+	   </sequential>
+	</macrodef>
+
 	
 	<!-- ================================= 
           target: build              
@@ -38,30 +64,49 @@
 
 
 
-		<maven-deploy-file file="portal-faces-lib.jar" groupId="org.jboss.portal" artifactId="portal-faces-lib" version="${jboss-portal.version}"  />
 
-		<maven-deploy-file file="jboss-portlet-api-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-api-lib" version="${jboss-portal.version}"  />
-	
+<!-- JBOSS PORTAL -->
+
 		<maven-deploy-file file="portal-api-lib.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" />
-		<maven-deploy-file file="portal-common-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-lib" version="${jboss-portal.version}" />
-		<maven-deploy-file file="portal-common-portal-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-portal-lib" version="${jboss-portal.version}" />
-
+		<maven-deploy-file file="portal-api-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" packaging="java-source"/>
 		<maven-deploy-file file="portal-core-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-lib" version="${jboss-portal.version}" />
-		<maven-deploy-file file="portal-portlet-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}"  />
-
-		<maven-deploy-file file="portal-portlet-controller-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-controller-lib" version="${jboss-portal.portlet.version}"  />
-
-		<maven-deploy-file file="portal-portlet-server-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-server-lib" version="${jboss-portal.portlet.version}"  />
-
-		<maven-deploy-file file="portal-security-lib.jar" groupId="org.jboss.portal" artifactId="portal-security-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-core-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-core-lib" version="${jboss-portal.version}" packaging="java-source"/>
 		<maven-deploy-file file="portal-server-lib.jar" groupId="org.jboss.portal" artifactId="portal-server-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-server-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-server-lib" version="${jboss-portal.version}"  packaging="java-source"/>
 		<maven-deploy-file file="portal-theme-lib.jar" groupId="org.jboss.portal" artifactId="portal-theme-lib" version="${jboss-portal.version}"  />
-		<maven-deploy-file file="portal-web-lib.jar" groupId="org.jboss.portal" artifactId="portal-web-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-theme-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-theme-lib" version="${jboss-portal.version}"  packaging="java-source"/>
+		<maven-deploy-file file="portal-common-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-lib" version="${jboss-portal.version}" />
+		<maven-deploy-file file="portal-common-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-common-lib" version="${jboss-portal.version}" packaging="java-source"/>
+		<maven-deploy-file file="portal-common-portal-lib.jar" groupId="org.jboss.portal" artifactId="portal-common-portal-lib" version="${jboss-portal.version}" />
+		<maven-deploy-file file="portal-common-portal-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-common-portal-lib" version="${jboss-portal.version}" packaging="java-source"/>
 		<maven-deploy-file file="portal-identity-lib.jar" groupId="org.jboss.portal.identity" artifactId="identity-identity" version="${jboss-portal.identity.version}"  />
-		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}" />
+		<maven-deploy-file file="portal-identity-lib-sources.jar" groupId="org.jboss.portal.identity" artifactId="identity-identity" version="${jboss-portal.identity.version}"  packaging="java-source" />
+		<maven-deploy-file file="portal-portlet-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}"  />
+		<maven-deploy-file file="portal-portlet-lib-sources.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-portlet" version="${jboss-portal.portlet.version}"  packaging="java-source" />
+		<maven-deploy-file file="portal-web-lib.jar" groupId="org.jboss.portal" artifactId="portal-web-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-web-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-web-lib" version="${jboss-portal.version}" packaging="java-source" />
+		<maven-deploy-file file="portal-security-lib.jar" groupId="org.jboss.portal" artifactId="portal-security-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-security-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-security-lib" version="${jboss-portal.version}"  packaging="java-source" />
 		<maven-deploy-file file="portal-jems-lib.jar" groupId="org.jboss.portal" artifactId="portal-jems-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-jems-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-jems-lib" version="${jboss-portal.version}"  packaging="java-source"  />
+		<maven-deploy-file file="portal-portlet-server-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-server-lib" version="${jboss-portal.portlet.version}"  />
+		<maven-deploy-file file="portal-portlet-server-lib-sources.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-server-lib" version="${jboss-portal.portlet.version}"  packaging="java-source"/>
+		<maven-deploy-file file="portal-portlet-controller-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-controller-lib" version="${jboss-portal.portlet.version}"  />
+		<maven-deploy-file file="portal-portlet-controller-lib-sources.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-controller-lib" version="${jboss-portal.portlet.version}"  packaging="java-source" />
+		<maven-deploy-file file="jboss-portlet-api-lib.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-api-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="jboss-portlet-api-lib-sources.jar" groupId="org.jboss.portal.portlet" artifactId="portlet-api-lib" version="${jboss-portal.version}" packaging="java-source" />
 		<maven-deploy-file file="cms-jackrabbit.jar" groupId="org.jboss.portal" artifactId="cms-jackrabbit" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-cms-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-cms-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  />
+		<maven-deploy-file file="portal-core-admin-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  packaging="java-source" />
+
+
+
+
+
+<!-- JBOSS AS -->
+
+
 		<maven-deploy-file file="jboss-system.jar" groupId="jboss" artifactId="jboss-system" version="${jboss.modules.version}"  />
 		<maven-deploy-file file="jbossall-client.jar" groupId="jboss" artifactId="jbossall-client" version="${jboss.modules.version}"  />
 		<maven-deploy-file file="jboss-aop-jdk50.jar" groupId="jboss" artifactId="jboss-aop-jdk50" version="${jboss.version}"  />
