@@ -100,17 +100,13 @@
 		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-admin-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  packaging="java-source" />
 
-
-
-
-
 <!-- JBOSS AS -->
 
-
+		<maven-deploy-file file="jbossweb.jar" groupId="jboss" artifactId="jbossweb" version="${jboss.version}"  />
+		<maven-deploy-file file="jbossweb-sources.jar" groupId="jboss" artifactId="jbossweb" version="${jboss.version}" packaging="java-source" />
 		<maven-deploy-file file="jboss-system.jar" groupId="jboss" artifactId="jboss-system" version="${jboss.modules.version}"  />
 		<maven-deploy-file file="jbossall-client.jar" groupId="jboss" artifactId="jbossall-client" version="${jboss.modules.version}"  />
 		<maven-deploy-file file="jboss-aop-jdk50.jar" groupId="jboss" artifactId="jboss-aop-jdk50" version="${jboss.version}"  />
-		<maven-deploy-file file="jbossweb.jar" groupId="jboss" artifactId="jbossweb" version="${jboss.version}"  />
 		<maven-deploy-file file="jboss-xml-binding.jar" groupId="jboss" artifactId="jboss-xml-binding" version="${jboss.version}"  />
 		<maven-deploy-file file="jboss-common.jar" groupId="jboss" artifactId="jboss-common" version="${jboss.version}"  />
 		<maven-deploy-file file="jboss-jmx.jar" groupId="jboss" artifactId="jboss-jmx" version="${jboss.version}"  />
@@ -119,11 +115,8 @@
 		<maven-deploy-file file="jboss-cache-jdk50.jar" groupId="jboss" artifactId="jboss-cache-jdk50" version="${jboss.version}" />
 		<maven-deploy-file file="jboss-j2ee.jar" groupId="jboss" artifactId="jboss-j2ee" version="${jboss.version}" />
 		<maven-deploy-file file="jgroups.jar" groupId="jboss" artifactId="jgroups" version="${jboss.version}" />
+ 	    <maven-deploy-file file="jboss-epp-4.3.GA_CP06.zip" groupId="jboss" artifactId="jboss-epp" version="4.3.GA_CP06" packaging="zip" />	
 
-
-<!--
- 	  <maven-deploy-file file="jboss-epp-4.3.GA_CP06.zip" groupId="jboss" artifactId="jboss-epp" version="4.3.GA_CP06" packaging="zip" />	
--->
 
 	</target>
 </project>
