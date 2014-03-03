@@ -344,9 +344,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
         /* Le player d'un item CMS doit être rejoué en cas de refresh
-         * 
+         *
          * (mais on garde les render parameters et l'état)
-         * 
+         *
          * */
 
 
@@ -368,7 +368,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
-                    if( state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && cmsPath.equals(state.getDocPath())) {
+                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && cmsPath.equals(state.getDocPath())) {
                         cmsReadItemContext.setDisplayLiveVersion("1");
                     }
 
@@ -559,7 +559,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 WindowNavigationalState windowNavState = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
                         ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
                 // On regarde si la fenêtre est en vue MAXIMIZED
-                if (WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
                     controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, true);
                 }
             }
