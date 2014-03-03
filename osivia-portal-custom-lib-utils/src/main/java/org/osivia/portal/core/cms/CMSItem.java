@@ -18,6 +18,8 @@ public class CMSItem {
     private Map<String, String> metaProperties = new TreeMap<String, String>();
     /** Published CMS item indicator. */
     private Boolean published;
+    /** Indicates if working version is different from published version. */
+    private Boolean beingModified;
     /** CMS item type. */
     private CMSItemType type;
 
@@ -125,6 +127,26 @@ public class CMSItem {
      */
     public void setPublished(Boolean published) {
         this.published = published;
+    }
+    
+    /**
+     * Getter for beingModified.
+     * 
+     * @return the beingModified
+     */
+    public Boolean getBeingModified() {
+        return beingModified;
+    }
+
+
+    
+    /**
+     * Setter for beingModified.
+     * 
+     * @param beingModified the beingModified to set
+     */
+    public void setBeingModified(Boolean beingModified) {
+        this.beingModified = beingModified;
     }
 
     /**
