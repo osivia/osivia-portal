@@ -177,7 +177,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 		}
 		
 	    if( closePopup) {
-	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+//	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+	       controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
 	    }
 
 		/*

@@ -282,7 +282,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         Element osiviaAdministration = new DOMElement(QName.get(HTMLConstants.A));
         osiviaAdministration.addAttribute(QName.get(HTMLConstants.HREF), osiviaAdministrationUrl);
-        osiviaAdministration.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYFRAME);
+        osiviaAdministration.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
         osiviaAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION, locale));
         this.addSubMenuElement(configurationMenuUl, osiviaAdministration);
 

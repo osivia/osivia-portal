@@ -701,7 +701,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if ("admin".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode"))) {
                 if (!Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode())) {
                     // Exiting admin mode
-                    cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
+                    // Store in session because of redirection in AJAX MODE
+                    cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", "1");
+
                 }
             } else {
                 if (Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode())) {
@@ -801,8 +803,18 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Inject javascript
                     popupContent.append(" <script type=\"text/javascript\">");
+                    
+                    
+                    if( "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode"))) {
+                        cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", null);
+                        cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
+                    }
 
-                    if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+
+                    if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                        
+                    
+                        
                         String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
                         popupContent.append("  parent.setCallbackParams(  '" + callbackId + "',    '" + url + "');");
                         popupContent.append("  parent.jQuery.fancybox.close();");
@@ -829,9 +841,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     DynaRenderOptions.AJAX.setOptions(region.getProperties());
 
 
-                    if ("1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
+                    if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                                                    
                         cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
                         cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
+                        cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", null);
+                                                    
                         cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
 
 
@@ -1054,8 +1069,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ((popupWindowId != null) && (popupWindowId.equals(((RenderWindowCommand) cmd).getTargetId()))) {
 
-                if (!"1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing"))) {
 
+                    if (!"1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                        
 
                     String popupId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
 
