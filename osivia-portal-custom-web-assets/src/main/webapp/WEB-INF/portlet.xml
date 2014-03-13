@@ -47,7 +47,7 @@
     <portlet>
         <description>Live content browser portlet</description>
         <portlet-name>osivia-portal-browser</portlet-name>
-        <display-name>OSIVIA live content browser portlet</display-name>
+        <display-name>Osivia live content browser portlet</display-name>
 
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
