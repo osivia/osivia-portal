@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.urls;
 
@@ -41,6 +40,7 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
@@ -112,24 +112,28 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws Exception {
-        Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
-        if (window != null) {
-            Page page = window.getPage();
-            // contenu deja contextualise dans la page courante
-            if (CmsCommand.isContentAlreadyContextualizedInPage(ControllerContextAdapter.getControllerContext(ctx), page, path)) {
-                return page;
+    public Page getPortalCMSContextualizedPage(PortalControllerContext ctx, String path) throws PortalException {
+
+        try {
+            Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
+            if (window != null) {
+                Page page = window.getPage();
+                // contenu deja contextualise dans la page courante
+                if (CmsCommand.isContentAlreadyContextualizedInPage(ControllerContextAdapter.getControllerContext(ctx), page, path)) {
+                    return page;
+                }
             }
+
+            Portal portal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext().getDefaultPortal();
+
+            // dans d'autres pages du portail
+            PortalObject page = CmsCommand.searchPublicationPage(ControllerContextAdapter.getControllerContext(ctx), portal, path, this.profilManager);
+            if (page != null) {
+                return (Page) page;
+            }
+        } catch (Exception e) {
+            throw new PortalException(e);
         }
-
-        Portal portal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext().getDefaultPortal();
-
-        // dans d'autres pages du portail
-        PortalObject page = CmsCommand.searchPublicationPage(ControllerContextAdapter.getControllerContext(ctx), portal, path, this.profilManager);
-        if (page != null) {
-            return (Page) page;
-        }
-
         return null;
     }
 
@@ -193,57 +197,64 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getPermaLink(PortalControllerContext ctx, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
-            throws Exception {
-        String templateInstanciationParentId = null;
-        String portalPersistentName = null;
+            throws PortalException {
 
-        // Extract current portal
-        if (ctx.getControllerCtx() != null) {
-            String portalName = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
+        try {
+            String templateInstanciationParentId = null;
+            String portalPersistentName = null;
 
-            Portal defaultPortal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext()
-                    .getDefaultPortal();
+            // Extract current portal
+            if (ctx.getControllerCtx() != null) {
+                String portalName = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
 
-            if (!defaultPortal.getName().equals(portalName)) {
-                portalPersistentName = portalName;
-            }
-        }
+                Portal defaultPortal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext()
+                        .getDefaultPortal();
 
-        // Direct CMS Link : use CMSCommand
-        if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
-            // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null, null,
-            // null, portalPersistentName);
-            CmsCommand cmsCommand = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, portalPersistentName);
-
-            // Remove default initialisation
-            cmsCommand.setItemScope(null);
-
-            cmsCommand.setInsertPageMarker(false);
-            URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
-            urlContext = urlContext.withAuthenticated(false);
-            String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext, URLFormat.newInstance(false, true));
-
-            return permLinkUrl;
-        }
-
-        // Others permalink (Lists, RSS, ...) : use PermLinkCommand
-        if (ctx.getRequest() != null) {
-            Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
-            if (window != null) {
-                Page page = window.getPage();
-
-                if (page instanceof ITemplatePortalObject) {
-                    templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                if (!defaultPortal.getName().equals(portalName)) {
+                    portalPersistentName = portalName;
                 }
             }
+
+            // Direct CMS Link : use CMSCommand
+            if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
+                // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null,
+                // null,
+                // null, portalPersistentName);
+                CmsCommand cmsCommand = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, portalPersistentName);
+
+                // Remove default initialisation
+                cmsCommand.setItemScope(null);
+
+                cmsCommand.setInsertPageMarker(false);
+                URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
+                urlContext = urlContext.withAuthenticated(false);
+                String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext, URLFormat.newInstance(false, true));
+
+                return permLinkUrl;
+            }
+
+            // Others permalink (Lists, RSS, ...) : use PermLinkCommand
+            if (ctx.getRequest() != null) {
+                Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
+                if (window != null) {
+                    Page page = window.getPage();
+
+                    if (page instanceof ITemplatePortalObject) {
+                        templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                    }
+                }
+            }
+
+            PermLinkCommand linkCmd = new PermLinkCommand(permLinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
+            URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
+
+            urlContext = urlContext.withAuthenticated(false);
+
+            return ControllerContextAdapter.getControllerContext(ctx).renderURL(linkCmd, urlContext, URLFormat.newInstance(false, true));
+
+        } catch (Exception e) {
+            throw new PortalException(e);
         }
-
-        PermLinkCommand linkCmd = new PermLinkCommand(permLinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
-        URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
-
-        urlContext = urlContext.withAuthenticated(false);
-
-        return ControllerContextAdapter.getControllerContext(ctx).renderURL(linkCmd, urlContext, URLFormat.newInstance(false, true));
     }
 
 
@@ -329,19 +340,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getStartPageUrl(PortalControllerContext ctx, String parentName, String pageName, String templateName, Map<String, String> props,
-            Map<String, String> params) throws Exception {
-        ControllerCommand cmd = new StartDynamicPageCommand();
-        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+            Map<String, String> params) throws PortalException {
 
-        String parentId = URLEncoder.encode(PortalObjectId.parse(parentName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
-                "UTF-8");
-        String templateId = URLEncoder.encode(PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
-                "UTF-8");
+        try {
+            ControllerCommand cmd = new StartDynamicPageCommand();
+            PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
-        String url = portalURL.toString();
-        url += "&parentId=" + parentId + "&pageName=" + pageName + "&templateId=" + templateId + "&props=" + WindowPropertiesEncoder.encodeProperties(props)
-                + "&params=" + WindowPropertiesEncoder.encodeProperties(params);
-        return url;
+            String parentId = URLEncoder.encode(PortalObjectId.parse(parentName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
+                    "UTF-8");
+            String templateId = URLEncoder.encode(PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT)
+                    .toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+
+            String url = portalURL.toString();
+            url += "&parentId=" + parentId + "&pageName=" + pageName + "&templateId=" + templateId + "&props="
+                    + WindowPropertiesEncoder.encodeProperties(props) + "&params=" + WindowPropertiesEncoder.encodeProperties(params);
+            return url;
+        } catch (Exception e) {
+            throw new PortalException(e);
+        }
     }
 
 
@@ -349,7 +365,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getStartPageUrl(PortalControllerContext ctx, String pageName, String templateName, Map<String, String> props, Map<String, String> params)
-            throws Exception {
+            throws PortalException {
         String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
         // if (portalName == null)
         // portalName = "default";
@@ -412,42 +428,48 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getStartPortletUrl(PortalControllerContext portalCtx, String portletInstance, Map<String, String> windowProperties,
-            Map<String, String> params, boolean popup) throws Exception {
-        // Maps initialization
-        if (windowProperties == null) {
-            windowProperties = new HashMap<String, String>();
+            Map<String, String> params, boolean popup) throws PortalException {
+
+        try {
+            // Maps initialization
+            if (windowProperties == null) {
+                windowProperties = new HashMap<String, String>();
+            }
+            if (params == null) {
+                params = new HashMap<String, String>();
+            }
+
+            if (popup) {
+                return this.getStartPortletInPopupUrl(portalCtx, portletInstance, windowProperties, params);
+            }
+
+            String region = "virtual";
+            String windowName = "dynamicPortlet";
+
+            Window window = (Window) portalCtx.getRequest().getAttribute("osivia.window");
+            Page page = window.getPage();
+            String pageId = URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+
+            ControllerCommand cmd = new StartDynamicWindowCommand();
+            PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalCtx), null, null);
+
+            // Valeurs par défaut
+            if (windowProperties.get("osivia.hideDecorators") == null) {
+                windowProperties.put("osivia.hideDecorators", "1");
+            }
+            if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
+                windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+            }
+
+            String url = portalURL.toString();
+            url += "&pageId=" + pageId + "&regionId=" + region + "&instanceId=" + portletInstance + "&windowName=" + windowName + "&props="
+                    + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params)
+                    + "&addToBreadcrumb=" + this.addToBreadcrumb(portalCtx.getRequest());
+            return url;
+
+        } catch (Exception e) {
+            throw new PortalException(e);
         }
-        if (params == null) {
-            params = new HashMap<String, String>();
-        }
-
-        if (popup) {
-            return this.getStartPortletInPopupUrl(portalCtx, portletInstance, windowProperties, params);
-        }
-
-        String region = "virtual";
-        String windowName = "dynamicPortlet";
-
-        Window window = (Window) portalCtx.getRequest().getAttribute("osivia.window");
-        Page page = window.getPage();
-        String pageId = URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-
-        ControllerCommand cmd = new StartDynamicWindowCommand();
-        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalCtx), null, null);
-
-        // Valeurs par défaut
-        if (windowProperties.get("osivia.hideDecorators") == null) {
-            windowProperties.put("osivia.hideDecorators", "1");
-        }
-        if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
-            windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
-        }
-
-        String url = portalURL.toString();
-        url += "&pageId=" + pageId + "&regionId=" + region + "&instanceId=" + portletInstance + "&windowName=" + windowName + "&props="
-                + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params)
-                + "&addToBreadcrumb=" + this.addToBreadcrumb(portalCtx.getRequest());
-        return url;
     }
 
 

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.CacheDatas;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cache.services.ICacheDataListener;
@@ -66,7 +67,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	 */
 
 	@SuppressWarnings("unchecked")
-	private Map<String, CacheDatas> getMapCache(CacheInfo infosCache) throws Exception {
+	private Map<String, CacheDatas> getMapCache(CacheInfo infosCache) throws PortalException {
 
 		Map<String, CacheDatas> caches = mCaches;
 
@@ -123,7 +124,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		return caches;
 	}
 
-	public Object getCache(CacheInfo infos) throws Exception {
+	public Object getCache(CacheInfo infos) throws PortalException {
 
 		CacheDatas cacheFlux = null;
 
@@ -217,14 +218,18 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	}
 
-	private void asyncRefreshCache(CacheDatas cacheFlux, CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
+	private void asyncRefreshCache(CacheDatas cacheFlux, CacheInfo infos, Map<String, CacheDatas> caches) throws PortalException {
 		
 		AsyncRefreshCacheThread asyncThread = new  AsyncRefreshCacheThread(this, infos, caches);	
-		CacheThreadsPool.getInstance().execute(asyncThread);
+		try {
+            CacheThreadsPool.getInstance().execute(asyncThread);
+        } catch (Exception e) {
+           throw new PortalException(e);
+        }
 		
 	}
 	
-	void refreshCache(CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
+	void refreshCache(CacheInfo infos, Map<String, CacheDatas> caches) throws PortalException {
 		
 		Object response = infos.getInvoker().invoke();
 		storeCache(infos, caches, response);
@@ -237,7 +242,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 	}
 
-	private void rafraichirCacheSynchronise(CacheInfo infos, Map<String, CacheDatas> caches) throws Exception {
+	private void rafraichirCacheSynchronise(CacheInfo infos, Map<String, CacheDatas> caches) throws PortalException {
 
 		Object synchronizer = null;
 
@@ -310,7 +315,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	}
 
 	private synchronized void storeCache(CacheInfo infos, Map<String, CacheDatas> caches, Object response)
-			throws Exception {
+			throws PortalException {
 		CacheDatas old = caches.get(infos.getItemKey());
 		
 		// v1.0.23 : suppression fichiers temporaires
@@ -331,7 +336,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		return lastInitialisationTs;
 	}
 
-	public void initCache() throws Exception {
+	public void initCache() throws PortalException {
 		lastInitialisationTs = System.currentTimeMillis();
 	}
 	public void initPortalParameters() {
