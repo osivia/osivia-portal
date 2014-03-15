@@ -17,10 +17,20 @@ package org.osivia.portal.api.theming;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The Class Breadcrumb.
+ */
 public class Breadcrumb {
 	
+	/** The childs. */
 	private List<BreadcrumbItem> childs = new ArrayList<BreadcrumbItem>();
 
+	/**
+	 * Gets the childs.
+	 *
+	 * @return the childs
+	 */
 	public List<BreadcrumbItem> getChilds() {
 		return childs;
 	}

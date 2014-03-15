@@ -23,8 +23,22 @@ import java.util.Map;
 
 
 
+
+/**
+ * The Class PageParametersEncoder.
+ * 
+ * Encode portal page properties into url parameters
+ * 
+ * @author Jean-Sébastien Steux
+ */
 public class PageParametersEncoder {
 	
+	/**
+	 * Encode properties.
+	 *
+	 * @param props the props
+	 * @return the string
+	 */
 	public static String encodeProperties( Map <String, List<String>> props)	{
 		
 		try	{
@@ -60,6 +74,12 @@ public class PageParametersEncoder {
 		}
 	}
 	
+	/**
+	 * Decode properties.
+	 *
+	 * @param urlParams the url params
+	 * @return the map
+	 */
 	public static Map<String,List<String>> decodeProperties( String urlParams)	{
 		try	{
 			
@@ -95,10 +115,21 @@ public class PageParametersEncoder {
 
 	}
 
+	/** The esc equals. */
 	private static String ESC_EQUALS = "##EQUALS##";
+	
+	/** The esc amp. */
 	private static String ESC_AMP = "##AMP##";	
+	
+	/** The esc comma. */
 	private static String ESC_COMMA = "##COMMA##";
 	
+	/**
+	 * Encode value.
+	 *
+	 * @param origValue the orig value
+	 * @return the string
+	 */
 	private static String encodeValue( String origValue)	{
 		
 		String res = origValue.replaceAll("=", ESC_EQUALS);
@@ -110,6 +141,12 @@ public class PageParametersEncoder {
 		
 	}
 	
+	/**
+	 * Decode value.
+	 *
+	 * @param origValue the orig value
+	 * @return the string
+	 */
 	private static String decodeValue( String origValue)	{
 		
 		String res = origValue.replaceAll( ESC_EQUALS, "=");

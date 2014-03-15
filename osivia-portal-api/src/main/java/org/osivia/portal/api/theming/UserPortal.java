@@ -17,27 +17,55 @@ package org.osivia.portal.api.theming;
 import java.io.Serializable;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class UserPortal.
+ */
 public class UserPortal implements Serializable {
 	
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -4680072181726328231L;
+	
+	/** The name. */
 	private String name;
 	
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets the name.
+	 *
+	 * @param name the new name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/** The pages. */
 	private List<UserPage> pages;
 
+	/**
+	 * Gets the user pages.
+	 *
+	 * @return the user pages
+	 */
 	public List<UserPage> getUserPages() {
 		return pages;
 	
 	}
 
+	/**
+	 * Sets the user pages.
+	 *
+	 * @param pages the new user pages
+	 */
 	public void setUserPages(List<UserPage> pages ) {
 		this.pages = pages;
 	}

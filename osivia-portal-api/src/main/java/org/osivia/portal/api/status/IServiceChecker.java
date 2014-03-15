@@ -14,6 +14,16 @@
  */
 package org.osivia.portal.api.status;
 
+
+/**
+ * The Interface IServiceChecker.
+ */
 public interface IServiceChecker {
+	
+	/**
+	 * Test service.
+	 *
+	 * @throws UnavailableServer the unavailable server
+	 */
 	public void testService() throws UnavailableServer ;
 }

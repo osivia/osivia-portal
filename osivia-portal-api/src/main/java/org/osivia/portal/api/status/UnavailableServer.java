@@ -14,23 +14,43 @@
  */
 package org.osivia.portal.api.status;
 
+
+/**
+ * The Class UnavailableServer.
+ */
 public class UnavailableServer extends Exception {
 
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -19758871528355142L;
 	
+	/** The http code. */
 	int httpCode = -1;
 	
+	/** The message. */
 	String message = null;
 
+	/**
+	 * Instantiates a new unavailable server.
+	 *
+	 * @param httpCode the http code
+	 */
 	public UnavailableServer( int httpCode) {
 		this.httpCode = httpCode;
 	}
 
+	/**
+	 * Instantiates a new unavailable server.
+	 *
+	 * @param message the message
+	 */
 	public UnavailableServer( String message) {
 		this.message = message;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Throwable#toString()
+	 */
 	public String toString()	{
 		String res = "";
 		if( httpCode != -1)

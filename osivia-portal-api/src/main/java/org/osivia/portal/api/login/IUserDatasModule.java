@@ -18,8 +18,22 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+/**
+ * The Interface IUserDatasModule.
+ * 
+ * customize user datas map
+ * 
+ * @author Jean-Sébastien Steux
+ */
 public interface IUserDatasModule {
 	
+	/**
+	 * Compute user datas.
+	 *
+	 * @param request the request
+	 * @param datas the datas
+	 */
 	public void computeUserDatas( HttpServletRequest request, Map<String, Object> datas);
 
 }

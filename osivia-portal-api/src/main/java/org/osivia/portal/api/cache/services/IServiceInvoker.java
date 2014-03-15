@@ -16,9 +16,11 @@ package org.osivia.portal.api.cache.services;
 
 import java.io.Serializable;
 
+import org.osivia.portal.api.PortalException;
+
 public interface IServiceInvoker extends Serializable{
 
-	public Object invoke() throws Exception;
+	public Object invoke() throws PortalException;
 	
 	
 }

@@ -15,8 +15,21 @@
 package org.osivia.portal.api.profiler;
 
 
+/**
+ * The Interface IProfilerService.
+ * 
+ * The profiler is used to log performance datas (log4j implementation at this time)
+ */
 public interface IProfilerService {
 	
+	/**
+	 * Log event.
+	 *
+	 * @param category the category
+	 * @param name the name
+	 * @param time the time
+	 * @param error the error
+	 */
 	public void logEvent( String category, String name, long time, boolean error);
 	
 }

@@ -16,15 +16,34 @@ package org.osivia.portal.api.customization;
 
 import java.util.Map;
 
+
+/**
+ * The Class CustomizationContext.
+ * 
+ * Identifies inputs ant outputs of a customization point
+ * 
+ * @author Jean-Sébastien Steux
+ */
 public class CustomizationContext {
 	
+	/**
+	 * Instantiates a new customization context.
+	 *
+	 * @param attributes the attributes
+	 */
 	public CustomizationContext(Map<String, Object> attributes) {
 		super();
 		this.attributes = attributes;
 	}
 
+	/** The attributes. */
 	private Map<String, Object> attributes;
 
+	/**
+	 * Gets the attributes.
+	 *
+	 * @return the attributes
+	 */
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}

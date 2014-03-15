@@ -15,7 +15,9 @@
 package org.osivia.portal.api.cache.services;
 
 /**
- * Permet de bénéficier du rechargement dynamique du cache à partir de l'interface d'administration
+ * Identify cache elements that can be dynamically reloaded by the administrator
+ * 
+ * @author Jean-Sébastien Steux
  *
  */
 

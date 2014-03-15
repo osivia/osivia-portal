@@ -14,9 +14,29 @@
  */
 package org.osivia.portal.api.customization;
 
+
+/**
+ * The Interface ICustomizationModulesRepository.
+ * 
+ * Allow registering of customization modules
+ * 
+ * @author Jean-Sébastien Steux
+ */
+
 public interface ICustomizationModulesRepository {
 	
+	/**
+	 * Register.
+	 *
+	 * @param moduleMetadatas the module metadatas
+	 */
 	public void register (CustomizationModuleMetadatas moduleMetadatas);
+	
+	/**
+	 * Unregister.
+	 *
+	 * @param moduleMetadatas the module metadatas
+	 */
 	public void unregister (CustomizationModuleMetadatas moduleMetadatas);
 	
 }

@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 
 /**
  * Window properties.
+ * 
+ * Encode window properties into url parameters
  */
 public class WindowProperties {
 

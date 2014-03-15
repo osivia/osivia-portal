@@ -17,6 +17,7 @@ package org.osivia.portal.api.urls;
 import java.util.Map;
 
 import org.jboss.portal.core.model.portal.Page;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -62,7 +63,7 @@ public interface IPortalUrlFactory {
      * @return contextualized page
      * @throws Exception
      */
-    Page getPortalCMSContextualizedPage(PortalControllerContext portalControllerContext, String path) throws Exception;
+    Page getPortalCMSContextualizedPage(PortalControllerContext portalControllerContext, String path) throws PortalException;
 
 
     /**
@@ -93,10 +94,10 @@ public interface IPortalUrlFactory {
      * @param cmsPath CMS path
      * @param permLinkType permalink type
      * @return permalink URL
-     * @throws Exception
+     * @throws PortalException
      */
     String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
-            throws Exception;
+            throws PortalException;
 
 
     /**
@@ -109,10 +110,10 @@ public interface IPortalUrlFactory {
      * @param props page properties
      * @param params page parameters
      * @return start page URL
-     * @throws Exception
+     * @throws PortalException
      */
     String getStartPageUrl(PortalControllerContext portalControllerContext, String parentName, String pageName, String templateName, Map<String, String> props,
-            Map<String, String> params) throws Exception;
+            Map<String, String> params) throws PortalException;
 
 
     /**
@@ -124,10 +125,10 @@ public interface IPortalUrlFactory {
      * @param props page properties
      * @param params page parameters
      * @return start page URL
-     * @throws Exception
+     * @throws PortalException
      */
     String getStartPageUrl(PortalControllerContext portalControllerContext, String pageName, String templateName, Map<String, String> props,
-            Map<String, String> params) throws Exception;
+            Map<String, String> params) throws PortalException;
 
 
     /**
@@ -147,9 +148,9 @@ public interface IPortalUrlFactory {
      * @param portalControllerContext portal controller context
      * @param orginalUrl original URL
      * @return navigation URL
-     * @throws Exception
+     * @throws PortalException
      */
-    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String orginalUrl) throws Exception;
+    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String orginalUrl) throws PortalException;
 
 
     /**
@@ -172,11 +173,11 @@ public interface IPortalUrlFactory {
      * @param params window parameters
      * @param popup popup indicator
      * @return start portlet URL
-     * @throws Exception
+     * @throws PortalException
      */
     String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
             Map<String, String> params,
-            boolean popup) throws Exception;
+            boolean popup) throws PortalException;
 
 
     /**

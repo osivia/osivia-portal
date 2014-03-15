@@ -14,9 +14,24 @@
  */
 package org.osivia.portal.api.login;
 
+
+/**
+ * The Interface IUserDatasModuleRepository.
+ */
 public interface IUserDatasModuleRepository {
 	
+	/**
+	 * Register.
+	 *
+	 * @param moduleMetadatas the module metadatas
+	 */
 	public void register (UserDatasModuleMetadatas moduleMetadatas);
+	
+	/**
+	 * Unregister.
+	 *
+	 * @param moduleMetadatas the module metadatas
+	 */
 	public void unregister (UserDatasModuleMetadatas moduleMetadatas);
 	
 }

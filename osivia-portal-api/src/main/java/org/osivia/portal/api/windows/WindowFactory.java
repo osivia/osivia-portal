@@ -17,9 +17,17 @@ package org.osivia.portal.api.windows;
 import javax.portlet.PortletRequest;
 
 import org.jboss.portal.core.model.portal.Window;
-
+/**
+ * A factory for creating Window objects.
+ */
 public class WindowFactory {
 	
+	/**
+	 * Gets the window.
+	 *
+	 * @param request the request
+	 * @return the window
+	 */
 	public static PortalWindow getWindow( PortletRequest request)	{
 		
 		PortalWindow portalWindow = (PortalWindow) request.getAttribute("osivia.portal.window");

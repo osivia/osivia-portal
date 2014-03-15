@@ -18,26 +18,52 @@ import java.util.Map;
 
 import org.jboss.portal.core.model.portal.Window;
 
-public class InternalWindow  implements PortalWindow	{
-	 private Window internalReference;
 
-	 public InternalWindow(Window internalReference) {
+/**
+ * The Class InternalWindow.
+ */
+public class InternalWindow  implements PortalWindow	{
+	 
+ 	/** The internal reference. */
+ 	private Window internalReference;
+
+	 /**
+ 	 * Instantiates a new internal window.
+ 	 *
+ 	 * @param internalReference the internal reference
+ 	 */
+ 	public InternalWindow(Window internalReference) {
 		super();
 		this.internalReference = internalReference;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.osivia.portal.api.windows.PortalWindow#getProperties()
+	 */
 	public Map<String, String> getProperties()	{
 		return internalReference.getDeclaredProperties();
 		 
 	 }
+    
+    /* (non-Javadoc)
+     * @see org.osivia.portal.api.windows.PortalWindow#getProperty(java.lang.String)
+     */
     public String getProperty(String name)	{
    	 return internalReference.getDeclaredProperty( name);
    	 
     }
-	 public void setProperty(String name, String value)	{
+	 
+ 	/* (non-Javadoc)
+ 	 * @see org.osivia.portal.api.windows.PortalWindow#setProperty(java.lang.String, java.lang.String)
+ 	 */
+ 	public void setProperty(String name, String value)	{
 		 internalReference.setDeclaredProperty( name, value);
 		 
 	 }
 	 
+     /* (non-Javadoc)
+      * @see org.osivia.portal.api.windows.PortalWindow#getPageProperty(java.lang.String)
+      */
      public String getPageProperty(String name)	{
       	 return internalReference.getParent().getProperty( name);
    	 

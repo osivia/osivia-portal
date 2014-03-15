@@ -15,12 +15,19 @@
 package org.osivia.portal.api.customization;
 
 
+
 /**
- * Allow to customize hooks defined by portal
- *
+ * Allow to customize hooks defined by portal.
+ * @author Jean-Sébastien Steux
  */
 public interface ICustomizationModule {
 	
+	/**
+	 * Customize.
+	 *
+	 * @param customizationID the customization id
+	 * @param ctx the ctx
+	 */
 	public void customize ( String customizationID, CustomizationContext ctx);
 
 }

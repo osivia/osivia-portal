@@ -16,9 +16,39 @@ package org.osivia.portal.api.windows;
 
 import java.util.Map;
 
+/**
+ * The Interface PortalWindow.
+ */
 public interface PortalWindow {
-	 public Map<String, String> getProperties();
+	 
+ 	/**
+ 	 * Gets the properties.
+ 	 *
+ 	 * @return the properties
+ 	 */
+ 	public Map<String, String> getProperties();
+     
+     /**
+      * Gets the property.
+      *
+      * @param name the name
+      * @return the property
+      */
      public String getProperty(String name);
-	 public void setProperty(String name, String value);
-	 public String getPageProperty(String name);
+	 
+ 	/**
+ 	 * Sets the property.
+ 	 *
+ 	 * @param name the name
+ 	 * @param value the value
+ 	 */
+ 	public void setProperty(String name, String value);
+	 
+ 	/**
+ 	 * Gets the page property.
+ 	 *
+ 	 * @param name the name
+ 	 * @return the page property
+ 	 */
+ 	public String getPageProperty(String name);
 }

@@ -16,8 +16,23 @@ package org.osivia.portal.api.cache.services;
 
 import java.io.Serializable;
 
+
+/**
+ * The listener interface for receiving ICacheData events.
+ * The class that is interested in processing a ICacheData
+ * event implements this interface, and the object created
+ * with that class is registered with a component using the
+ * component's <code>addICacheDataListener<code> method. When
+ * the ICacheData event occurs, that object's appropriate
+ * method is invoked.
+ *
+ * @see ICacheDataEvent
+ */
 public interface ICacheDataListener extends Serializable{
 
+	/**
+	 * Removes the.
+	 */
 	public void remove();
 	
 	
