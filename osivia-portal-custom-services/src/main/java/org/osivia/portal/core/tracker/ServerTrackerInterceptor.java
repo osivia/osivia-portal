@@ -60,22 +60,6 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
-        // prevent google unwanted request (if pagemarker not empty)
-
-        // HttpServletRequest request = invocation.getServerContext().getClientRequest();
-
-        // String header = request.getHeader("User-Agent");
-        // String uri = request.getRequestURI();
-
-        // logger.info("header:" + header + "uri:"+ uri);
-
-        // if (request.getRemoteUser() == null && header != null && uri != null && header.toLowerCase().indexOf("googlebot/2.1") != -1 &&
-        // uri.contains("/pagemarker/")) {
-        // invocation.getServerContext().getClientResponse().setStatus(403);
-        // return;
-        // }
-
-
 
 		// réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();

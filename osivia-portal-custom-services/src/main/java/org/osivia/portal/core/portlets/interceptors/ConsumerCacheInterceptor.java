@@ -511,7 +511,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                   expirationTimeMillis,
                   validationToken,
                   windowCreationPageMarker,
-                  selectionTs);
+                  selectionTs, 
+                  null);
 
 
                userContext.setAttribute(scopeKey, cacheEntry);
@@ -544,7 +545,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            expirationTimeMillis,
                            null,
                            null,
-                           selectionTs);
+                           selectionTs,
+                           invocation.getWindowContext().getId());
                          userContext.setAttribute("sharedcache." +sharedID, sharedCacheEntry);
              	      }
                 }
@@ -578,7 +580,8 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                            System.currentTimeMillis() + (30 * 1000), // 10 sec.
                            null,
                            null,
-                           selectionTs);
+                           selectionTs,
+                           null);
             		   // v2.0.2 -JSS20130318 - déja fait !!!
                        //  userContext.setAttribute(scopeKey, cacheEntry);
 
@@ -665,6 +668,11 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.path=([a-zA-Z0-9%\\-.]*)", "osivia.cms.path=" + navigationPath);
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.contentPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.contentPath=" + contentPath);
                             updatedFragment = updatedFragment.replaceAll("osivia.cms.itemRelPath=([a-zA-Z0-9%\\-.]*)", "osivia.cms.itemRelPath=" + itemRelPath);
+                            
+                            //JSS 2.0.22-RC6 : mise à jour des windows sur les caches partagés
+                            updatedFragment = updatedFragment.replace(cachedEntry.originalWindowID + "?", invocation.getWindowContext().getId() + "?");
+                            fragmentUpdated = true;
+                            
 
       			     
         			 }

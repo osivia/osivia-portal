@@ -369,7 +369,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Window window = ((RenderWindowCommand) cmd).getWindow();
 
             // Only concerns player window
-            if ("CMSPlayerWindow".equals(window.getName())) {
+            if ("CMSPlayerWindow".equals(window.getName()) &&  "1".equals( window.getProperties().get("osivia.cms.contextualization"))) {
                 if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
 
                     // original window path
@@ -417,6 +417,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (cmd instanceof RenderPageCommand) {
             begin = System.currentTimeMillis();
         }
+        
+        // v2.0.22-RC6 Force to reload resources
+        if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
+            
+            
+            if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
+                PageProperties.getProperties().setRefreshingPage(true);
+                
+                cmd.getControllerContext().removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
+            }
+        }        
 
 
         if (cmd instanceof RenderPageCommand) {
@@ -886,6 +897,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
+            // v2.0.22-RC6 Force to reload resources
+          if( "true".equals( cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents"))) {
+              
+              cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
+
+          }
+          
+
+
         }
 
 
@@ -993,8 +1013,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             String windowId = rwc.getWindow().getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
-            Map<String, String> windowProperties = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowProperties."
-                    + windowId);
 
 
             // Should we hide the portlet (empty response + hideEmptyPortlet positionned)
@@ -1047,7 +1065,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 // Dynamic styles
 
-                String dynamicStyles = windowProperties.get("osivia.dynamicCSSClasses");
+                String dynamicStyles = rwc.getWindow().getDeclaredProperty("osivia.dynamicCSSClasses");
 
                 if (dynamicStyles != null) {
                     customStyle += " " + dynamicStyles;

@@ -84,6 +84,19 @@ public class CMSServiceCtx {
 	private String pageId;
 	private Object doc;
 	
+
+    private boolean streamingSupport = false;
+    
+    
+    public boolean isStreamingSupport() {
+        return streamingSupport;
+    }
+
+    
+    public void setStreamingSupport(boolean streamingSupport) {
+        this.streamingSupport = streamingSupport;
+    }
+	
 	/** if 'true', indicate to don't access the cache. load the latest data */ 
 	private boolean forceReload = false;
 	

@@ -126,9 +126,13 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 			//
 			try {
 
+                // On met le bean du thread parent pour gérer la synchronisation
+                Object parentBean = getTracker().getParentBean();
 
-				// Création d'une requete wrappée spécifique à chaque portlet
-				HttpServletRequestWrapper wrappedRequest = new JBossWrappedRequest(req);
+                
+                // Création d'une requete wrappée spécifique à chaque portlet
+                HttpServletRequestWrapper wrappedRequest = new JBossWrappedRequest(req, parentBean);
+
 				// invocation.setDispatchedRequest(req);
 				invocation.setDispatchedRequest(wrappedRequest);
 
@@ -225,9 +229,9 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 				//
 				wrappedRequest.setAttribute(REQ_ATT_COMPONENT_INVOCATION, invocation);
 
-				// On met le bean du thread parent pour gérer la synchronisation
-				Object parentBean = getTracker().getParentBean();
-				wrappedRequest.setAttribute(REQ_SYNCHRONIZER, parentBean);
+//				// On met le bean du thread parent pour gérer la synchronisation
+//				Object parentBean = getTracker().getParentBean();
+//				wrappedRequest.setAttribute(REQ_SYNCHRONIZER, parentBean);
 
 				//
 				PortletInvocationResponse response = ContextDispatcherWrapperInterceptor.super.invoke(invocation);

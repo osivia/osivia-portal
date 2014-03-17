@@ -192,6 +192,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             // HTTP Request
             HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
             attributes.put("osivia.httpRequest", httpRequest);
+            
+            
+            
+            Object spaceConfig = ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.spaceConfig");
+            if( spaceConfig != null)
+                attributes.put("osivia.spaceConfig", spaceConfig);
+                
+
 
             // Set attributes
             invocation.setRequestAttributes(attributes);
@@ -495,6 +503,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if ("true".equals(attributes.get("osivia.unsetMaxMode"))) {
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
+            
+            // v2.0.22-RC6 Force to reload portlets and CMS resources
+            if ("true".equals(attributes.get("osivia.updateContents")))
+                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
+
 
         }
 
