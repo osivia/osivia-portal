@@ -419,7 +419,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
         
         // v2.0.22-RC6 Force to reload resources
-        if ((cmd instanceof RenderPageCommand) || (cmd instanceof RenderWindowCommand && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
+        if ((cmd instanceof RenderPageCommand) || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
             
             
             if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
@@ -837,9 +837,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                     if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
-                        
-                    
-                        
                         String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
                         popupContent.append("  parent.setCallbackParams(  '" + callbackId + "',    '" + url + "');");
                         popupContent.append("  parent.jQuery.fancybox.close();");

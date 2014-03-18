@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -283,6 +284,16 @@ public class PageMarkerUtils {
             markerInfo.setNotificationsList(notificationsList);
         }
 
+        // Live edition indicator
+        Boolean liveEdition = (Boolean) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION);
+        markerInfo.setLiveEdition(liveEdition);
+
+        // Save closing popup action
+        if ("1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.saveClosingAction"))
+                && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing"))) {
+            markerInfo.setClosingPopupAction(true);
+        }
+
 
         Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
         if (selectionTs != null) {
@@ -397,7 +408,7 @@ public class PageMarkerUtils {
         } else    {
             ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
             String[] pagemarkers = parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER);
-            if( pagemarkers != null && pagemarkers.length == 1) {
+            if( (pagemarkers != null) && (pagemarkers.length == 1)) {
                 currentPageMarker = pagemarkers[ 0];
             }
         }
@@ -431,6 +442,10 @@ public class PageMarkerUtils {
 
                 if (markerInfo != null) {
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
+
+                    // Live edition indicator
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, BooleanUtils.isTrue(markerInfo.getLiveEdition()));
+
 
                     // String lastSavedPageMarker = (String)
                     // controllerContext.getAttribute(Scope.SESSION_SCOPE,
@@ -586,7 +601,9 @@ public class PageMarkerUtils {
                         // Restauration mode popup
                         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", markerInfo.getPopupMode());
                         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", markerInfo.getPopupModeWindowID());
-
+                        if (markerInfo.isClosingPopupAction()) {
+                            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing", "1");
+                        }
 
                         // Restauration de l'ensemble des sélection
                         Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();

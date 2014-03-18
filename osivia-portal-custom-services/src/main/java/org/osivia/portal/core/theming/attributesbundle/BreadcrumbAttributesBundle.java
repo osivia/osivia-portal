@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -250,9 +250,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                     try {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
-
-                        BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
-                        breadcrumb.getChilds().add(0, breadcrumbItem);
+                        if (cmsItem != null) {
+                            // Cannot add live navigation item
+                            BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
+                            breadcrumb.getChilds().add(0, breadcrumbItem);
+                        }
                     } catch (CMSException e) {
                         throw new ControllerException(e);
                     }

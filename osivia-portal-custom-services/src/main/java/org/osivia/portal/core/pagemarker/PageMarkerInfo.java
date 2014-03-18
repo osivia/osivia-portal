@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -57,6 +57,11 @@ public class PageMarkerInfo implements Serializable {
 
     String popupMode;
     PortalObjectId popupModeWindowID;
+    /** Live edition indicator. */
+    private Boolean liveEdition;
+    /** Closing popup action indicator. */
+    private boolean closingPopupAction;
+
 
     /** Notifications. */
     private List<Notifications> notificationsList;
@@ -227,7 +232,7 @@ public class PageMarkerInfo implements Serializable {
 
     /**
      * Getter for notificationsList.
-     * 
+     *
      * @return the notificationsList
      */
     public List<Notifications> getNotificationsList() {
@@ -236,11 +241,47 @@ public class PageMarkerInfo implements Serializable {
 
     /**
      * Setter for notificationsList.
-     * 
+     *
      * @param notificationsList the notificationsList to set
      */
     public void setNotificationsList(List<Notifications> notificationsList) {
         this.notificationsList = notificationsList;
+    }
+
+    /**
+     * Getter for liveEdition.
+     *
+     * @return the liveEdition
+     */
+    public Boolean getLiveEdition() {
+        return this.liveEdition;
+    }
+
+    /**
+     * Setter for liveEdition.
+     *
+     * @param liveEdition the liveEdition to set
+     */
+    public void setLiveEdition(Boolean liveEdition) {
+        this.liveEdition = liveEdition;
+    }
+
+    /**
+     * Getter for closingPopupAction.
+     * 
+     * @return the closingPopupAction
+     */
+    public boolean isClosingPopupAction() {
+        return this.closingPopupAction;
+    }
+
+    /**
+     * Setter for closingPopupAction.
+     * 
+     * @param closingPopupAction the closingPopupAction to set
+     */
+    public void setClosingPopupAction(boolean closingPopupAction) {
+        this.closingPopupAction = closingPopupAction;
     }
 
 }

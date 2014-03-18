@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -43,12 +43,12 @@ import org.osivia.portal.core.web.WebCommand;
 
 
 /**
- * 
+ *
  * ajout d'un tag /pagemarker dans l'url pour associer à chaque page l'état des
  * portlets
- * 
+ *
  * @author jeanseb
- * 
+ *
  */
 public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
@@ -64,19 +64,21 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 	public IDynamicObjectContainer getDynamicContainer() {
 
-		if (dynamicCOntainer == null)
-			dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
+		if (this.dynamicCOntainer == null) {
+            this.dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 					"osivia:service=DynamicPortalObjectContainer");
+        }
 
-		return dynamicCOntainer;
+		return this.dynamicCOntainer;
 	}
 
 	public PortalObjectContainer getPortalObjectContainer() {
 
-		if (portalObjectContainer == null)
-			portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+		if (this.portalObjectContainer == null) {
+            this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+        }
 
-		return portalObjectContainer;
+		return this.portalObjectContainer;
 	}
 
 	private void createPages(List<CMSPage> preloadedPages) {
@@ -88,17 +90,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 			CMSItem publishSpace = page.getPublishSpace();
 
 			PortalObject parent;
-			
+
 			try	{
-		
+
 
 			String parentPath = page.getParentPath();
 			if (parentPath != null) {
 
 				PortalObjectId poid = PortalObjectId.parse(parentPath, PortalObjectPath.CANONICAL_FORMAT);
-				parent = getPortalObjectContainer().getObject(poid);
-			} else
-				parent = getPortalObjectContainer().getContext().getDefaultPortal();
+				parent = this.getPortalObjectContainer().getObject(poid);
+			} else {
+                parent = this.getPortalObjectContainer().getContext().getDefaultPortal();
+            }
 
 			Map displayNames = new HashMap();
 			displayNames.put(Locale.FRENCH, publishSpace.getProperties().get("displayName"));
@@ -112,7 +115,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 			props.put("osivia.cms.basePath", publishSpace.getPath());
 
 			// v2.0-rc7
-			
+
 //			if ("1".equals(publishSpace.getProperties().get("contextualizeInternalContents")))
 //				props.put("osivia.cms.pageContextualizationSupport", "1");
 //
@@ -125,25 +128,25 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 			DynamicPageBean dynaPage = new DynamicPageBean(parent, pageName, displayNames, PortalObjectId.parse(
 					"/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT), props);
 			dynaPage.setOrder(order);
-			
+
 			dynaPage.setClosable(false);
 
-			getDynamicContainer().addDynamicPage(dynaPage);
-			
-			
+			this.getDynamicContainer().addDynamicPage(dynaPage);
+
+
 			} catch( Exception e){
-				
+
 				String cmsDebugPath = "";
-				
+
 				if( page.getPublishSpace() != null)	{
-					cmsDebugPath = page.getPublishSpace().getPath(); 
+					cmsDebugPath = page.getPublishSpace().getPath();
 				}
-					
-				
+
+
 				// Don't block login
-				log.error("Can't preload user cms page " + cmsDebugPath);
+				this.log.error("Can't preload user cms page " + cmsDebugPath);
 			}
-			
+
 
 			order++;
 		}
@@ -152,26 +155,26 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 	public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host,
 			String contextPath, String requestPath) {
-		
+
 		String path = requestPath;
 		boolean popupClosed = false;
 		boolean popupOpened = false;
 	    boolean closePopup = false;
 
-		
+
 		// 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
             path = requestPath.substring(POPUP_CLOSED_PATH.length() -1);
             popupClosed = true;
         }
-        
+
         if (requestPath.startsWith(POPUP_REFRESH_PATH)) {
             // Fait pour utiliser le mode refresh (portlet + CMS) pour un portlet
             // NON VALIDE car mode AJAX non activé en CMS
             path = requestPath.substring(POPUP_REFRESH_PATH.length() -1);
             PageProperties.getProperties().setRefreshingPage(true);
         }
-		
+
 		if (requestPath.startsWith(POPUP_OPEN_PATH)) {
 	            path = requestPath.substring(POPUP_OPEN_PATH.length() -1);
 	            popupOpened = true;
@@ -180,24 +183,25 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             path = requestPath.substring(POPUP_CLOSE_PATH.length() -1);
             closePopup = true;
         }
-		
+
 		String newPath = PageMarkerUtils.restorePageState(controllerContext, path);
-		
+
 
 		if( popupClosed) {
 		    controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed", "1");
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
 			controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID",null);
 		}
-		
+
 	    if( closePopup) {
 //	       controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
-	       controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
+            controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.saveClosingAction", "1");
+            controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
 	    }
 
 		/*
 		 * Synchronisation des pages préchargées
-		 * 
+		 *
 		 * A faire après le restorePageState
 		 */
 
@@ -205,40 +209,40 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 				"osivia.userPreloadedPages");
 
 		if (preloadedPages != null) {
-			createPages(preloadedPages);
+			this.createPages(preloadedPages);
 		}
 
 		ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
-		
-		
-	    if( popupOpened && cmd instanceof PortalObjectCommand  ) {
+
+
+	    if( popupOpened && (cmd instanceof PortalObjectCommand)  ) {
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
 	           controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((PortalObjectCommand) cmd).getTargetId());
-	        }	
-	    
-	       if( popupOpened && cmd instanceof WebCommand  ) {
+	        }
+
+	       if( popupOpened && (cmd instanceof WebCommand)  ) {
                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", ((WebCommand) cmd).getWindowId(controllerContext));
-            }   
+            }
 
-	    
-	    if( popupOpened && cmd instanceof StartDynamicWindowCommand ) {
+
+	    if( popupOpened && (cmd instanceof StartDynamicWindowCommand) ) {
 	        // Calcul du popupWindowID
                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "command");
                PortalObjectPath pagePath = PortalObjectPath.parse(((StartDynamicWindowCommand) cmd).getPageId(), PortalObjectPath.SAFEST_FORMAT);
                String windowPath = pagePath.toString(PortalObjectPath.CANONICAL_FORMAT) + "/popupWindow";
                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", new PortalObjectId("", PortalObjectPath.parse(windowPath, PortalObjectPath.CANONICAL_FORMAT)));
-            }   
-	       
+            }
+
 	    if( closePopup) {
 	        // On memorise la commande qui sera executée au retour
 	        // TODO : en plus , transformer la commande et render minimaliste du popup (juste un view)
 	           controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd", cmd);
-       }       
-	       
-		
+       }
+
+
 		return cmd;
-		
+
 	}
 
 }
