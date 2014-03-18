@@ -109,17 +109,17 @@ public class Constants {
     /** metas of the document. */
     public static final String HEADER_META = "osivia.header.meta";
 
-    //PORTLET
-    /** To retrieve menuBar     */
+    //PORTLET - INPUT
+    /**  menuBar     */
     public static final String PORTLET_ATTR_MENU_BAR = "osivia.menuBar";
-    /** To retrieve user datas Map     */    
+    /**  user datas Map     */    
     public static final String PORTLET_ATTR_USER_DATAS = "osivia.userDatas";
-    /** To retrieve http request     */       
+    /**  http request     */       
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
-    /** To retrieve space configuratoin request     */   
+    /**  space configuratoin request     */   
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     
-
+    //PORTLET - OUTPUT
     /** To refresh all page     */
     public static final String PORTLET_ATTR_REFRESH_PAGE = "osivia.refreshPage";
     /** To return to normal mode     */   
@@ -130,6 +130,7 @@ public class Constants {
     public static final String PORTLET_VALUE_ACTIVATE = "true"; 
     
     // WINDOWS
+    /** The CMS URI of the portlet */    
     public static final String WINDOW_PROP_URI = "osivia.cms.uri";
 
 
