@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.portlet.PortletException;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -41,7 +42,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 
 /**
  * CMS path service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see ICMSPathService
  */
@@ -131,7 +132,7 @@ public class CMSPathService implements ICMSPathService {
 
     /**
      * Utility method used to generate JSON object from CMS item.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param cmsItem current CMS item
      * @param root root node indicator
@@ -155,6 +156,12 @@ public class CMSPathService implements ICMSPathService {
             id = namespace + URLEncoder.encode(path, CharEncoding.UTF_8);
         } catch (UnsupportedEncodingException e) {
             throw new PortletException(e);
+        }
+        String jstreeType;
+        if (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified())) {
+            jstreeType = "live";
+        } else {
+            jstreeType = "published";
         }
 
         // CMS item type folderish indicator
@@ -185,6 +192,7 @@ public class CMSPathService implements ICMSPathService {
         // JSON object attributes
         JSONObject attr = new JSONObject();
         attr.put("id", id);
+        attr.put("rel", jstreeType); // FIXME
         object.put("attr", attr);
 
         return object;
@@ -193,7 +201,7 @@ public class CMSPathService implements ICMSPathService {
 
     /**
      * Getter for cmsServiceLocator.
-     * 
+     *
      * @return the cmsServiceLocator
      */
     public ICMSServiceLocator getCmsServiceLocator() {
@@ -202,7 +210,7 @@ public class CMSPathService implements ICMSPathService {
 
     /**
      * Setter for cmsServiceLocator.
-     * 
+     *
      * @param cmsServiceLocator the cmsServiceLocator to set
      */
     public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {
@@ -211,7 +219,7 @@ public class CMSPathService implements ICMSPathService {
 
     /**
      * Getter for portalURLFactory.
-     * 
+     *
      * @return the portalURLFactory
      */
     public IPortalUrlFactory getPortalURLFactory() {
@@ -220,7 +228,7 @@ public class CMSPathService implements ICMSPathService {
 
     /**
      * Setter for portalURLFactory.
-     * 
+     *
      * @param portalURLFactory the portalURLFactory to set
      */
     public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {

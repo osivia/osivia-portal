@@ -41,13 +41,27 @@ $JQry(document).ready(function() {
         "themes" : {
             "theme" : "default",
             "dots" : false,
-            "icons" : false
+            "icons" : true
         },
         "search" : {
             "case_insensitive" : true,
             "show_only_matches" : true
         },
-    	"plugins" : [ "json_data", "themes", "search" ]
+        "types" : {
+            "types" : {
+                "live" : {
+                    "icon" : {
+                        "image" : "/osivia-portal-custom-web-assets/images/jstree/live_doc.png"
+                    }
+                },
+                "published" : {
+                    "icon" : {
+                        "image" : "/osivia-portal-custom-web-assets/images/jstree/published_doc.png"
+                    }
+                }
+            }
+        },
+    	"plugins" : [ "json_data", "themes", "search", "types" ]
     });
 });
 
