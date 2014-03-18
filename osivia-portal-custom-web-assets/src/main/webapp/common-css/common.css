@@ -130,6 +130,10 @@ a.portlet-menuitem.portlet-menuitem-rss {
     background-image: url('../images/icons/icon_rss.png');
 }
 
+a.portlet-menuitem.add {
+	background-image: url('../images/icons/icon_add.png');
+}
+
 a.portlet-menuitem.published {
     background-image: url('../images/icons/icon_published_version.png');
 }
@@ -150,12 +154,16 @@ a.portlet-menuitem.download {
     background-image: url('../images/icons/icon_download.png');
 }
 
-a.portlet-menuitem-contextualize {
+a.portlet-menuitem.portlet-menuitem-contextualize {
 	background-image: url('../images/icons/icon_published_version.png');
 }
 
 a.portlet-menuitem.nuxeo, a.portlet-menuitem-nuxeo-manage {
     background-image: url('../images/icons/icon_nuxeo.png');
+}
+
+a.portlet-menuitem.portlet-menuitem-nuxeo-delete {
+	background-image: url('../images/icons/icon_delete.png');
 }
 
 a.portlet-menuitem.portlet-dropdown-menu {
