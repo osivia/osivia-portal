@@ -132,6 +132,10 @@ public class Constants {
     // WINDOWS
     /** The CMS URI of the portlet */    
     public static final String WINDOW_PROP_URI = "osivia.cms.uri";
+    /** The version of the content */     
+    public static final String WINDOW_PROP_VERSION = "osivia.cms.displayLiveVersion";
+    /** The scope of the request */  
+    public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
 
 
     /**

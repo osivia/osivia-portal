@@ -61,6 +61,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -334,7 +335,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
 
             // CMS scope select
-            String scope = page.getDeclaredProperty("osivia.cms.scope");
+            String scope = page.getDeclaredProperty(Constants.WINDOW_PROP_SCOPE);
             try {
                 attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT, this.formatter.formatScopeList(page, "scope", scope));
             } catch (Exception e) {
@@ -344,7 +345,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // CMS display live version
             CMSServiceCtx cmsServiceCtx = new CMSServiceCtx();
             cmsServiceCtx.setControllerContext(controllerContext);
-            String displayLiveVersion = page.getDeclaredProperty("osivia.cms.displayLiveVersion");
+            String displayLiveVersion = page.getDeclaredProperty(Constants.WINDOW_PROP_VERSION);
             try {
                 attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION,
                         this.formatter.formatDisplayLiveVersionList(cmsServiceCtx, page, "displayLiveVersion", displayLiveVersion));

@@ -360,7 +360,7 @@ public class CmsCommand extends DynamicCommand {
 
             if ((path.equals(pubInfos.getPublishSpacePath()))) {
 
-                if (checkScope(po.getProperty("osivia.cms.scope"), profilManager)) {
+                if (checkScope(po.getProperty(Constants.WINDOW_PROP_SCOPE), profilManager)) {
 
                     CMSItem publishSpaceConfig = getCMSService().getSpaceConfig(cmsCtx, pubInfos.getPublishSpacePath());
 

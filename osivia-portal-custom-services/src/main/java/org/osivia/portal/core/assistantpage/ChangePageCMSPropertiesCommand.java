@@ -21,6 +21,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.locator.Locator;
@@ -115,15 +116,15 @@ public class ChangePageCMSPropertiesCommand extends AssistantCommand {
         }
 
         if ((this.scope != null) && (this.scope.length() != 0)) {
-            page.setDeclaredProperty("osivia.cms.scope", this.scope);
+            page.setDeclaredProperty(Constants.WINDOW_PROP_SCOPE, this.scope);
         } else {
-            page.setDeclaredProperty("osivia.cms.scope", null);
+            page.setDeclaredProperty(Constants.WINDOW_PROP_SCOPE, null);
         }
 
         if ((this.displayLiveVersion != null) && (this.displayLiveVersion.length() != 0)) {
-            page.setDeclaredProperty("osivia.cms.displayLiveVersion", this.displayLiveVersion);
+            page.setDeclaredProperty(Constants.WINDOW_PROP_VERSION, this.displayLiveVersion);
         } else {
-            page.setDeclaredProperty("osivia.cms.displayLiveVersion", null);
+            page.setDeclaredProperty(Constants.WINDOW_PROP_VERSION, null);
         }
 
         if ((this.pageContextualizationSupport != null) && (this.pageContextualizationSupport.length() != 0)) {

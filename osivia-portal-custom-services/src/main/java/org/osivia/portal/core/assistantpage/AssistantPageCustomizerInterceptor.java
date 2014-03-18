@@ -51,6 +51,7 @@ import org.jboss.portal.portlet.info.PortletInfo;
 import org.jboss.portal.portlet.state.PropertyMap;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -278,7 +279,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         scopes.put("anonymous", "Anonyme");
 
-        String parentScope = po.getParent().getProperty("osivia.cms.scope");
+        String parentScope = po.getParent().getProperty(Constants.WINDOW_PROP_SCOPE);
         String inheritedLabel = null;
         if (parentScope != null) {
             inheritedLabel = scopes.get(parentScope);
@@ -369,7 +370,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                 }
             } else {
                 // Heriatge page parent
-                String parentVersion = po.getParent().getProperty("osivia.cms.displayLiveVersion");
+                String parentVersion = po.getParent().getProperty(Constants.WINDOW_PROP_VERSION);
                 if (parentVersion != null) {
 
                     inheritedLabel = versions.get(parentVersion);
