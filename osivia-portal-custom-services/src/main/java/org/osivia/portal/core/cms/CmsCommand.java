@@ -55,6 +55,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
@@ -1529,8 +1530,8 @@ public class CmsCommand extends DynamicCommand {
                 }
 
 
-                if (windowProperties.get("osivia.cms.uri") == null) {
-                    windowProperties.put("osivia.cms.uri", this.cmsPath);
+                if (windowProperties.get(Constants.WINDOW_PROP_URI) == null) {
+                    windowProperties.put(Constants.WINDOW_PROP_URI, this.cmsPath);
                 }
 
                 EditionState editionState = null;

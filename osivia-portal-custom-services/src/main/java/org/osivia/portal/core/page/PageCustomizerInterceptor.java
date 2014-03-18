@@ -373,7 +373,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
 
                     // original window path
-                    String cmsPath = window.getDeclaredProperty("osivia.cms.uri");
+                    String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
 
 
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();

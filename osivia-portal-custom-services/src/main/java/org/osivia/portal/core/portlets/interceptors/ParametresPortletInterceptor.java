@@ -49,6 +49,7 @@ import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarItem;
@@ -178,26 +179,26 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 List<MenubarItem> menuBar = new ArrayList<MenubarItem>();
 
-                attributes.put("osivia.menuBar", menuBar);
+                attributes.put(Constants.PORTLET_ATTR_MENU_BAR, menuBar);
             }
 
             // v2.0 : user datas
             Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
             if (userDatas != null) {
-                attributes.put("osivia.userDatas", userDatas);
+                attributes.put(Constants.PORTLET_ATTR_USER_DATAS, userDatas);
             }
 
 
 
             // HTTP Request
             HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
-            attributes.put("osivia.httpRequest", httpRequest);
+            attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
             
             
             
             Object spaceConfig = ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.spaceConfig");
             if( spaceConfig != null)
-                attributes.put("osivia.spaceConfig", spaceConfig);
+                attributes.put(Constants.PORTLET_ATTR_SPACE_CONFIG, spaceConfig);
                 
 
 
@@ -244,7 +245,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
 
-                    ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get("osivia.menuBar");
+                    ArrayList<MenubarItem> menuBar = (ArrayList<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
 
                     if (menuBar != null) {
 
@@ -494,18 +495,18 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         if (response instanceof UpdateNavigationalStateResponse) {
 
             Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
-            String synchro = (String) attributes.get("osivia.refreshPage");
+            String synchro = (String) attributes.get(Constants.PORTLET_ATTR_REFRESH_PAGE);
 
-            if ("true".equals(synchro)) {
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(synchro)) {
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
             }
 
-            if ("true".equals(attributes.get("osivia.unsetMaxMode"))) {
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UNSET_MAX_MODE))) {
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
             
             // v2.0.22-RC6 Force to reload portlets and CMS resources
-            if ("true".equals(attributes.get("osivia.updateContents")))
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS)))
                  ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
 
 

@@ -231,13 +231,7 @@ public class ServicesInvoker {
               RenderWindowCommand renderCmd = new RenderWindowCommand(this.pageNavigationalState, window.getId());
 
 
-     			//logger.debug("cms.uri" + window.getDeclaredProperty("osivia.cms.uri"));
-
-
-   			// Pour test
- //             Window windowTest = (Window) context.getController().getPortalObjectContainer().getObject(window.getId());
-  //            String title = windowTest.getDeclaredProperty("osivia.title");
-
+ 
               //
 
               //
