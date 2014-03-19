@@ -25,10 +25,12 @@ package org.osivia.portal.core.renderers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
@@ -98,6 +100,15 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             locale = Locale.US;
         }
 
+        // Wizard mode indicator
+        boolean wizard = false;
+        Collection<?> windows = rrc.getWindows();
+        if (CollectionUtils.isNotEmpty(windows)) {
+            WindowRendererContext wrc = (WindowRendererContext) windows.iterator().next();
+            String mode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+            wizard = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode);
+        }
+
         PrintWriter markup = rendererContext.getWriter();
 
         // Main DIV region (not shown in <head> tag)
@@ -108,6 +119,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 markup.print(" id='");
                 markup.print(rrc.getCSSId());
                 markup.print("'");
+            }
+
+            if (wizard) {
+                markup.print(" class='region wizard-edging'");
             }
             markup.print(">");
         }

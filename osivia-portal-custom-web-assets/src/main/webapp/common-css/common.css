@@ -42,45 +42,65 @@ fieldset {
 	display: inline-block;
 	border-style: solid;
 	border-width: 1px;
-	border-color: rgb(125, 119, 96);
-	border-color: rgba(125, 119, 96, 0.2);	
     margin-bottom: 8px;
-    padding: 5px 10px 0;
+    padding: 5px 10px;
+}
+
+.osivia-portal-regions-commands {
+	border-color: rgb(155, 155, 155);
+	border-color: rgba(155, 155, 155, 0.8);
 }
 
 .osivia-portal-windows-commands {
 	border-left-width: 8px;
 	border-right-width: 8px;
+	border-color: rgb(125, 119, 96);
+    border-color: rgba(125, 119, 96, 0.2);
 }
 
 .osivia-portal-regions-commands a, .osivia-portal-regions-commands a:HOVER, .osivia-portal-windows-commands a, .osivia-portal-windows-commands a:HOVER {
     text-decoration: none;
 }
 
-.osivia-portal-regions-commands img {
+.osivia-portal-regions-commands img, .osivia-portal-windows-commands img {
 	height: 16px;
 	width: 16px;
+	vertical-align: bottom;
 }
 
+
+.osivia-portal-regions-template-name-span, .osivia-portal-regions-cms-name-span {
+	color: #FFFFFF;
+    padding: 1px 2px;
+}
 
 .osivia-portal-regions-template-name-span {
 	background: rgb(155, 155, 155);
-	color: white;
 }
 .osivia-portal-regions-cms-name-span {
 	background: rgb(182, 182, 182);
-	color: white;
 }
 
-
-
-.osivia-portal-windows-commands img {
-	height: 16px;
-	width: 16px;
-}
 
 .osivia-portal-windows-commands > div {
 	display: inline-block;
+}
+
+
+.wizard-edging {
+	border-style: solid;
+	border-width: 1px;
+	padding: 3px;
+}
+
+.region.wizard-edging {
+	border-color: rgb(155, 155, 155);
+    border-color: rgba(155, 155, 155, 0.8);
+}
+
+.window.wizard-edging {
+	border-color: rgb(125, 119, 96);
+    border-color: rgba(125, 119, 96, 0.2);
 }
 
 

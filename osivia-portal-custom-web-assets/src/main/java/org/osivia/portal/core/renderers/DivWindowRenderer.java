@@ -127,15 +127,16 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Activation des liens Ajax
         String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
 
-        // Windows setting mode
+        // Wizard mode indicator
         String windowsSettingMode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+        boolean wizard = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode);
 
         out.print("<div ");
         if (wrc.getProperty("osivia.windowId") != null) {
 
             out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
         }
-        if (!"1".equals(ajaxLink) || InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode)) {
+        if (!"1".equals(ajaxLink) || wizard) {
             out.print("class=\"no-ajax-link\" ");
 
         }
@@ -150,6 +151,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             style = "";
         }
 
+        if (wizard) {
+            style += " window wizard-edging";
+        }
 
         String cssFragment = "";
         if (this.showCmsTools(wrc)) {
@@ -193,7 +197,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Print portlet commands
-        this.printPortletCommands(out, wrc, properties);
+        if (wizard) {
+            this.printPortletCommands(out, wrc, properties);
+        }
 
 
         // Portlet container rendering
@@ -295,7 +301,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /**
      * Utility method used to print portlet commands.
-     * 
+     *
      * @param writer renderer writer
      * @param windowRendererContext window renderer context
      * @param properties properties
@@ -303,91 +309,87 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      */
     @SuppressWarnings("unchecked")
     private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties) throws RenderException {
-        String windowSettingsMode = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
-        if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingsMode)) {
-            String windowId = windowRendererContext.getId();
-            String onclickAction = "windowId = '" + windowId + "'";
+        String windowId = windowRendererContext.getId();
+        String onclickAction = "windowId = '" + windowId + "'";
 
-            // Commands container
-            Element div = new DOMElement(QName.get(HTMLConstants.DIV));
-            div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_WINDOWS_COMMANDS);
+        // Commands container
+        Element div = new DOMElement(QName.get(HTMLConstants.DIV));
+        div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_WINDOWS_COMMANDS);
 
-            // Up move command
-            String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
-            Element upLink = this.generatePortletCommandLink(upUrl, null, UP_LINK_IMAGE_SOURCE, null, null);
-            div.add(upLink);
+        // Up move command
+        String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
+        Element upLink = this.generatePortletCommandLink(upUrl, null, UP_LINK_IMAGE_SOURCE, null, null);
+        div.add(upLink);
 
-            // Down move command
-            String downUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
-            Element downLink = this.generatePortletCommandLink(downUrl, null, DOWN_LINK_IMAGE_SOURCE, null, null);
-            div.add(downLink);
+        // Down move command
+        String downUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
+        Element downLink = this.generatePortletCommandLink(downUrl, null, DOWN_LINK_IMAGE_SOURCE, null, null);
+        div.add(downLink);
 
-            // Spacer
-            Element spacer = new DOMElement(QName.get(HTMLConstants.DIV));
-            spacer.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer.setText(StringUtils.EMPTY);
-            div.add(spacer);
+        // Spacer
+        Element spacer = new DOMElement(QName.get(HTMLConstants.DIV));
+        spacer.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+        spacer.setText(StringUtils.EMPTY);
+        div.add(spacer);
 
-            // Previous region move command
-            String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
-            Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, PREVIOUS_REGION_LINK_IMAGE_SOURCE, null, null);
-            div.add(previousRegionLink);
+        // Previous region move command
+        String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
+        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, PREVIOUS_REGION_LINK_IMAGE_SOURCE, null, null);
+        div.add(previousRegionLink);
 
-            // Next region move command
-            String nextRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
-            Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, NEXT_REGION_LINK_IMAGE_SOURCE, null, null);
-            div.add(nextRegionLink);
+        // Next region move command
+        String nextRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
+        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, NEXT_REGION_LINK_IMAGE_SOURCE, null, null);
+        div.add(nextRegionLink);
 
-            // Spacer (can't reuse previous spacer node)
-            Element spacer2 = new DOMElement(QName.get(HTMLConstants.DIV));
-            spacer2.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer2.setText(StringUtils.EMPTY);
-            div.add(spacer2);
+        // Spacer (can't reuse previous spacer node)
+        Element spacer2 = new DOMElement(QName.get(HTMLConstants.DIV));
+        spacer2.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+        spacer2.setText(StringUtils.EMPTY);
+        div.add(spacer2);
 
-            // Window settings display command
-            String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
-            Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, DISPLAY_SETTINGS_LINK_IMAGE_SOURCE,
-                    CLASS_FANCYBOX_INLINE, null);
-            div.add(displaySettingsLink);
+        // Window settings display command
+        String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
+        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, DISPLAY_SETTINGS_LINK_IMAGE_SOURCE,
+                CLASS_FANCYBOX_INLINE, null);
+        div.add(displaySettingsLink);
 
-            // Portlet administration display command
-            Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
-            for (ActionRendererContext action : actions) {
-                if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
-                    String title = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
-                    if (title == null) {
-                        title = StringUtils.EMPTY;
-                    }
-
-                    String link = action.getURL() + "&windowstate=maximized";
-
-                    String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
-                    title += "   [" + instanceName + "]";
-                    Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME,
-                            title);
-                    div.add(displayAdminLink);
+        // Portlet administration display command
+        Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
+        for (ActionRendererContext action : actions) {
+            if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
+                String title = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
+                if (title == null) {
+                    title = StringUtils.EMPTY;
                 }
+
+                String link = action.getURL() + "&windowstate=maximized";
+
+                String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
+                title += "   [" + instanceName + "]";
+                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME, title);
+                div.add(displayAdminLink);
             }
+        }
 
-            // Spacer (can't reuse previous spacer node)
-            Element spacer3 = new DOMElement(QName.get(HTMLConstants.DIV));
-            spacer3.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-            spacer3.setText(StringUtils.EMPTY);
-            div.add(spacer3);
+        // Spacer (can't reuse previous spacer node)
+        Element spacer3 = new DOMElement(QName.get(HTMLConstants.DIV));
+        spacer3.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
+        spacer3.setText(StringUtils.EMPTY);
+        div.add(spacer3);
 
-            // Delete portlet command
-            String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
-            Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, DELETE_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_INLINE, null);
-            div.add(deleteLink);
+        // Delete portlet command
+        String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
+        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, DELETE_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_INLINE, null);
+        div.add(deleteLink);
 
-            // Print
-            HTMLWriter htmlWriter = new HTMLWriter(writer);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(div);
-            } catch (IOException e) {
-                throw new RenderException(e);
-            }
+        // Print
+        HTMLWriter htmlWriter = new HTMLWriter(writer);
+        htmlWriter.setEscapeText(false);
+        try {
+            htmlWriter.write(div);
+        } catch (IOException e) {
+            throw new RenderException(e);
         }
     }
 

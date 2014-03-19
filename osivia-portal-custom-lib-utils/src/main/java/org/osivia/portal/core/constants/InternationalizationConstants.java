@@ -1,20 +1,23 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.constants;
 
-
+/**
+ * Internationalization constants.
+ *
+ * @author Cédric Krommenhoek
+ */
 public final class InternationalizationConstants {
 
     /** Resource bundle name. */
@@ -27,6 +30,12 @@ public final class InternationalizationConstants {
     public static final String KEY_CANCEL = "CANCEL";
     /** Bundle resource key for change value. */
     public static final String KEY_CHANGE = "CHANGE";
+    /** Bundle resource key for delete value. */
+    public static final String KEY_DELETE = "DELETE";
+    /** Bundle resource key for edit value. */
+    public static final String KEY_EDIT = "EDIT";
+    /** Bundle resource key for manage value. */
+    public static final String KEY_MANAGE = "MANAGE";
     /** Bundle resource key for no value. */
     public static final String KEY_NO = "NO";
     /** Bundle resource key for save value. */
