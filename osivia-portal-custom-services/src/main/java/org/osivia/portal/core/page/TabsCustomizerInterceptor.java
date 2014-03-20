@@ -244,7 +244,40 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
 	
 	
 	
-	
+    public static String getDomainPrefix() {
+        return "e-";
+    }
+    
+    public static String getDomainPublishSiteName() {
+        return "site";
+    }
+
+
+     public static String getDomain(String path) {
+         String domainName = null;
+         String pagePath = path;
+         
+ 
+         if (pagePath != null) {
+             
+             int iSlash = pagePath.indexOf('/', 1);
+             if (iSlash > 0) {
+                 
+                 String nuxeoDomain = pagePath.substring(1, iSlash);
+                 
+                 if (nuxeoDomain.startsWith(getDomainPrefix())) {
+                     domainName = nuxeoDomain;
+                     
+                 }
+             }
+         }
+         return domainName;
+    }
+    
+    public static String getInheritedPageDomain(Page page) {
+        return getDomain( page.getProperty("osivia.cms.basePath"));
+    }
+
 	
 	
 	public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
@@ -654,12 +687,20 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 			}
 			
 			
+       /* Préselection domain */
+            
+            Object selectedPageID =  mainPage.getId();
+            
+            String domain = getInheritedPageDomain( rpc.getPage());
+            if( domain != null){
+                selectedPageID = domain;
+            }
 			
 			
 			if( pageCMSPath != null)
 				rd.setAttribute(Constants.ATTR_PAGE_ID, pageCMSPath); // path CMS
 			else
-				rd.setAttribute(Constants.ATTR_PAGE_ID, mainPage.getId()); // Path page
+				rd.setAttribute(Constants.ATTR_PAGE_ID, selectedPageID); // Path page
 			
 			rd.setAttribute( Constants.ATTR_FIRST_TAB, controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));			
 			
@@ -740,8 +781,20 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					pageToHide = portal.getDeclaredProperty("osivia.unprofiled_home_page");
 		}
 				
+        List<String> domains = new ArrayList<String>();
 		
 		for (Page child : sortedPages) {
+		    
+	          String curDomain =  getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
+
+	            if (curDomain != null)  {
+	                if( domains.contains(curDomain))
+	                            break;
+	                        domains.add(curDomain);
+
+	                    }
+	  
+
 	
 			PortalObjectId pageIdToControl = child.getId();
 			   if (  child instanceof ITemplatePortalObject)
@@ -775,17 +828,22 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 
 				ViewPageCommand showPage = new ViewPageCommand(child.getId());
 				
-				userPage.setId( child.getId());
+                if (curDomain != null) {
+                    userPage.setId(curDomain);
+                    String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx), null, "/" + curDomain + "/" + getDomainPublishSiteName(), null, null, null, null,
+                            null, null, null);
+                    userPage.setUrl(url);
 
-				String url = new PortalURLImpl(showPage, controllerCtx, null, null).toString();
-				userPage.setUrl(url + "?init-state=true");
-
-				
-				
-				String name = child.getDisplayName().getString(locale, true);
-				if (name == null)
-					name = child.getName();
-				userPage.setName(name);
+                } else {
+                    userPage.setId(child.getId());
+                    String url = new PortalURLImpl(showPage, controllerCtx, null, null).toString();
+                    userPage.setUrl(url + "?init-state=true");
+                }
+                
+                String name = child.getDisplayName().getString(locale, true);
+                if (name == null)
+                    name = child.getName();
+                userPage.setName(name);
 				
 				
 				if( child instanceof ITemplatePortalObject && ((ITemplatePortalObject) child).isClosable())	{

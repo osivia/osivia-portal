@@ -2,7 +2,10 @@ package org.osivia.portal.core.dynamic;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +43,7 @@ import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
@@ -77,12 +81,32 @@ public class StopDynamicPageCommand extends DynamicCommand {
 						.getDefaultPortal().getDefaultPage();
 			} else {
 
+			    String domain = TabsCustomizerInterceptor.getInheritedPageDomain( page);
+		    
 				PortalObject parent = page.getParent();
 
 				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 						"osivia:service=DynamicPortalObjectContainer");
 
 				dynamicCOntainer.removeDynamicPage(pageId);
+
+				// Remove other pages from same domain 
+				if( domain != null){
+				    List<String> domainPageIDs = new ArrayList<String>();
+				    
+				    Collection<PortalObject> sisters = parent.getChildren(PortalObject.PAGE_MASK);
+				    for (PortalObject sister: sisters){
+				        String sisterDomain = TabsCustomizerInterceptor.getInheritedPageDomain( (Page) sister);
+				        if( domain.equals(sisterDomain))
+				            domainPageIDs.add(sister.getId().toString( PortalObjectPath.SAFEST_FORMAT));
+				    }
+				    
+				    for (String domainPageID: domainPageIDs)  {
+		                dynamicCOntainer.removeDynamicPage(domainPageID);				        
+				    }
+				}
+				
+				
 
 				PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
 						ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
@@ -115,8 +139,43 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				
 				/* Sinon, on prend le dernier onglet */
 				
-				if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))	{
+				
+				
+				
+				if( domain != null) {
+	                // une page de domaine a été effacée
 
+                    UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
+                            ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
+
+                    if (tabbedNavUserPortal != null) {
+
+                        // On cherche l'item courant
+                        int indiceCurrentPage = -1;
+                        for (int i = 0; i < tabbedNavUserPortal.getUserPages().size(); i++)
+                            if (tabbedNavUserPortal.getUserPages().get(i).getId().equals(poid)) {
+                                indiceCurrentPage = i;
+                            }
+
+                        if (indiceCurrentPage != -1) {
+
+                           int redirectPageIndice = indiceCurrentPage - 1;
+
+                            redirectPage = (Page) getControllerContext()
+                                    .getController()
+                                    .getPortalObjectContainer()
+                                    .getObject(
+                                            (PortalObjectId) tabbedNavUserPortal.getUserPages().get(redirectPageIndice)
+                                                    .getId());
+                        }
+                    }
+				    
+				    
+				} else
+				
+				
+				if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))	{
+				    
 
 					// La page courante est effacée
 					// Redirection vers l'item précédent ou suivant dans le menu
@@ -142,6 +201,9 @@ public class StopDynamicPageCommand extends DynamicCommand {
 								redirectPageIndice = indiceCurrentPage - 1;
 							else
 								redirectPageIndice = indiceCurrentPage + 1;
+							
+
+
 
 							redirectPage = (Page) getControllerContext()
 									.getController()
