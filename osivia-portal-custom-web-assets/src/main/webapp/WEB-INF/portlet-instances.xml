@@ -8,8 +8,8 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Osivia - Simple selection portlet</display-name>
-            <display-name xml:lang="fr">Osivia - Portlet de sélection simple</display-name>
+            <display-name xml:lang="en">Simple selection</display-name>
+            <display-name xml:lang="fr">Sélection simple</display-name>
             <instance-id>osivia-portal-custom-web-assets-selectionPortletInstance</instance-id>
             <portlet-ref>osivia-portal-custom-web-assets-selectionPortlet</portlet-ref>
             <security-constraint>
@@ -28,8 +28,8 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
-            <display-name xml:lang="en">Osivia - Site map</display-name>
-            <display-name xml:lang="fr">Osivia - Plan du site</display-name>
+            <display-name xml:lang="en">Site map</display-name>
+            <display-name xml:lang="fr">Plan du site</display-name>
             <instance-id>osivia-portal-custom-web-assets-sitemapPortletInstance</instance-id>
             <portlet-ref>osivia-portal-custom-web-assets-sitemapPortlet</portlet-ref>
             <security-constraint>
@@ -56,8 +56,8 @@
         <instance>
             <instance-id>osivia-portal-browser-portlet-instance</instance-id>
             <portlet-ref>osivia-portal-browser</portlet-ref>
-            <display-name xml:lang="en">Osivia - Live content browser</display-name>
-            <display-name xml:lang="fr">Osivia - Parcours du contenu en version de travail</display-name>
+            <display-name xml:lang="en">Live content browser</display-name>
+            <display-name xml:lang="fr">Parcours du contenu en version de travail</display-name>
             <security-constraint>
                 <policy-permission>
                     <action-name>view</action-name>
