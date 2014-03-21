@@ -101,7 +101,7 @@ public class LayoutDeployment extends Deployment {
             IOTools.safeClose(in);
         }
 
-        // Make sure that the portal-layout.tld and the internationalization.tld is available in the local context
+        // Make sure that the portal-layout.tld and custom taglibs are available in the local context
         File targetContextRoot = new File(this.pwa.getServletContext().getRealPath("/WEB-INF"));
         if (targetContextRoot.exists() && targetContextRoot.isDirectory()) {
             InputStream source = null;
@@ -112,6 +112,16 @@ public class LayoutDeployment extends Deployment {
                 this.pwa.importFile("/WEB-INF/theme", "portal-layout.tld", source, false);
             } catch (IOException e) {
                 throw new DeploymentException("Cannot import portal-layout.tld", e);
+            } finally {
+                IOTools.safeClose(source);
+            }
+
+            // osivia-portal.tld
+            try {
+                source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/osivia-portal.tld"));
+                this.pwa.importFile("/WEB-INF/theme", "osivia-portal.tld", source, false);
+            } catch (IOException e) {
+                throw new DeploymentException("Cannot import osivia-portal.tld", e);
             } finally {
                 IOTools.safeClose(source);
             }

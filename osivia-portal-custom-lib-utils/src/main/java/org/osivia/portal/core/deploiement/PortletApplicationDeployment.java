@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -81,14 +81,17 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
         this.injectStandardService("NuxeoService", "fr.toutatice.portail.cms.nuxeo.api.services.INuxeoService", "osivia:service=NuxeoService");
 
 
-        // internationalization.tld
         InputStream source = null;
         try {
-            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("conf/theme/internationalization.tld"));
+            // osivia-portal.tld
+            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/osivia-portal.tld"));
+            this.pwa.importFile("/WEB-INF/theme", "osivia-portal.tld", source, false);
+
+            // internationalization.tld
+            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
             this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
         } catch (IOException e) {
-            throw new DeploymentException("Cannot import internationalization.tld", e);
+            throw new DeploymentException("Cannot import taglib", e);
         } finally {
             IOTools.safeClose(source);
         }
