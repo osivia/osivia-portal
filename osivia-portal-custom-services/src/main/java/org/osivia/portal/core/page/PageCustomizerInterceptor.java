@@ -574,7 +574,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 controllerCtx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE, mode);
             }
 
-            /* Is player in edition mode ? */
+            /* 
+             * Synchronize LIVE EDITION MODE
+             * 
+             * Is player in edition mode ? 
+             * 
+             * */
 
             Window cmsWindow = ((RenderPageCommand) cmd).getPage().getWindow("CMSPlayerWindow");
             if (cmsWindow != null) {
@@ -585,7 +590,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
                 // On regarde si la fenêtre est en vue MAXIMIZED
                 if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
-                    controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, true);
+                    
+                    EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), cmsWindow.getId());
+                    
+                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
+                        controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION,  state.getDocPath());
+                    }                    
                 }
             }
 

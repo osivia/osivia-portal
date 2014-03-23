@@ -48,6 +48,9 @@ import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalState
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.system.ServiceMBeanSupport;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cms.CMSEditableWindow;
 import org.osivia.portal.core.cms.CMSException;
@@ -57,6 +60,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
@@ -76,6 +80,14 @@ import org.osivia.portal.core.tracker.RequestContextUtil;
 
 public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements IDynamicObjectContainer, Serializable {
 	private final Log logger = LogFactory.getLog(DynamicPortalObjectContainer.class);
+	
+    private INotificationsService notificationService;
+    
+    public INotificationsService getNotificationService()   {
+        if( notificationService == null)
+            notificationService = NotificationsUtils.getNotificationsService();
+        return notificationService;
+    }
 
 	private ITracker tracker;
 	private ICMSServiceLocator cmsServiceLocator;
@@ -375,6 +387,13 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 					cmsReadItemContext.setDisplayLiveVersion("0");
 
 
+					// SILENT MODE
+                    int notificationSized = -1;
+                    if( controllerContext != null)
+                        notificationSized = getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext)).size();
+
+                    try   {
+					
                     if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, cmsPath[0]) == Level.allowPreviewVersion) {
 
 						cmsReadItemContext.setDisplayLiveVersion("1");
@@ -401,7 +420,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						windows = new ArrayList<DynamicWindowBean>();
 
 
+
 						List<CMSEditableWindow> editableWindows = this.getCMSService().getEditableWindows(cmsReadItemContext, cmsPath[0]);
+
 
 						for (CMSEditableWindow editableWindow : editableWindows) {
 							// Création des dynamicWindowBeans
@@ -421,14 +442,45 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 							windows.add(dynaWindow);
 						}
-
-
+ 
 						invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
 					}
+					
+					
+                    } catch( Exception e){
+                        // SILENT MODE > Catch Exceptions 
+                        
+                        invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
+                        
+                      
+                        // erreur dues à la confusion entre contribution front office et edition mode page
+                        // des contributions front office 
+                        // CONSTAT : folder live et non publié sont en erreur car sont considérés comme NOT FOUND
+                        // PAS FORCEMENT GRAVE ....
+
+                    }
+                    // SILENT MODE > catch notifications
+                    
+                    // erreur due également à la confusion entre contribution front office et edition mode page
+                    // des contributions front office 
+                    // (ex: folder live sur PublishInfosCommand est considérée comme inaccessible par CmsPermissionHelper)
+                                        
+                    //TODO : bien distinguer l'edition en mode page et l'edition live
+                    
+                    if( notificationSized != -1)  {
+                        List<Notifications>       notificationsAfter = getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext));
+                        if( notificationsAfter.size() > notificationSized)
+                            notificationsAfter.remove(notificationsAfter.size() -1);
+                    }
+				
+					
+					
+					
+					
 				}
 			}
 
-		} catch (CMSException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
         }
 

@@ -57,8 +57,7 @@ public class PageMarkerInfo implements Serializable {
 
     String popupMode;
     PortalObjectId popupModeWindowID;
-    /** Live edition indicator. */
-    private Boolean liveEdition;
+
     /** Closing popup action indicator. */
     private boolean closingPopupAction;
 
@@ -248,23 +247,8 @@ public class PageMarkerInfo implements Serializable {
         this.notificationsList = notificationsList;
     }
 
-    /**
-     * Getter for liveEdition.
-     *
-     * @return the liveEdition
-     */
-    public Boolean getLiveEdition() {
-        return this.liveEdition;
-    }
 
-    /**
-     * Setter for liveEdition.
-     *
-     * @param liveEdition the liveEdition to set
-     */
-    public void setLiveEdition(Boolean liveEdition) {
-        this.liveEdition = liveEdition;
-    }
+
 
     /**
      * Getter for closingPopupAction.

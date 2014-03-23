@@ -284,9 +284,6 @@ public class PageMarkerUtils {
             markerInfo.setNotificationsList(notificationsList);
         }
 
-        // Live edition indicator
-        Boolean liveEdition = (Boolean) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION);
-        markerInfo.setLiveEdition(liveEdition);
 
         // Save closing popup action
         if ("1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.saveClosingAction"))
@@ -443,8 +440,6 @@ public class PageMarkerUtils {
                 if (markerInfo != null) {
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
 
-                    // Live edition indicator
-                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, BooleanUtils.isTrue(markerInfo.getLiveEdition()));
 
 
                     // String lastSavedPageMarker = (String)

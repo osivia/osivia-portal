@@ -59,6 +59,7 @@ public class CmsPermissionHelper {
     // CMS constants
     public static final String CMS_VERSION_PREVIEW = "preview";
     public static final String CMS_VERSION_ONLINE = "online";
+    public static final String CMS_VERSION_LIVE = "live";    
     public static final String CMS_EDITION_MODE_ON = "1";
     public static final String CMS_EDITION_MODE_OFF = "0";
 
@@ -189,13 +190,16 @@ public class CmsPermissionHelper {
 
 
                 if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
-                    cmsVersion = CMS_VERSION_PREVIEW;
+                    //cmsVersion = CMS_VERSION_PREVIEW;
+                    cmsVersion = CMS_VERSION_LIVE;
                 }
 
                 if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace()
-                        && BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION))) {
+                        && pubInfos.getDocumentPath().equals(ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION))) {
                     cmsVersion = CMS_VERSION_PREVIEW;
                 }
+                
+                
 
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion, belongToPublishSpace);
 
@@ -248,6 +252,8 @@ public class CmsPermissionHelper {
                 // Show a notification
                 notifService.addSimpleNotification(pcc, message, NotificationsType.ERROR);
             }
+        }   else  if (cmsVersion.equals(CMS_VERSION_LIVE))   {
+            level = Level.allowPreviewVersion;
         }
         // preview requested
         else {

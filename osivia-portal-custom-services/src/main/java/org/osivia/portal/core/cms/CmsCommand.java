@@ -617,8 +617,8 @@ public class CmsCommand extends DynamicCommand {
 
 
                 if (InternalConstants.LIVE_EDITION.equals(this.displayContext)) {
-                    cmsReadItemContext.setPreviewVersion("1");
-                    controllerContext.setAttribute(REQUEST_SCOPE, InternalConstants.LIVE_EDITION, true);
+                    cmsReadItemContext.setPreviewVersionPath(this.cmsPath);
+                    controllerContext.setAttribute(REQUEST_SCOPE, InternalConstants.LIVE_EDITION, this.cmsPath);
                 }
 
             }
