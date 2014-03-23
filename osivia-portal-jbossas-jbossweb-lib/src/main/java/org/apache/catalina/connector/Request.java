@@ -17,9 +17,11 @@
 /*      */ import java.util.Enumeration;
 /*      */ import java.util.HashMap;
 /*      */ import java.util.Iterator;
+import java.util.List;
 /*      */ import java.util.Locale;
 /*      */ import java.util.Map;
 /*      */ import java.util.Set;
+import java.util.StringTokenizer;
 /*      */ import java.util.TimeZone;
 /*      */ import java.util.TreeMap;
 /*      */ import javax.security.auth.Subject;
@@ -63,7 +65,7 @@
 /*      */ import org.apache.tomcat.util.http.Parameters;
 /*      */ import org.apache.tomcat.util.http.ServerCookie;
 /*      */ import org.apache.tomcat.util.http.mapper.MappingData;
-/*      */ import org.jboss.logging.Logger;
+import org.jboss.logging.Logger;
 /*      */ 
 /*      */ public class Request
 /*      */   implements HttpServletRequest
@@ -1040,9 +1042,13 @@
 /*      */   {
 /* 1854 */     return this.coyoteRequest.getHeader(name);
 /*      */   }
+
 /*      */ 
 /*      */   public Enumeration getHeaders(String name)
 /*      */   {
+              if( "accept-language".equals(name) && System.getProperty("osivia.accepted-language") != null)   {
+                   return new StringTokenizer(System.getProperty("osivia.accepted-language"));
+               }
 /* 1865 */     return this.coyoteRequest.getMimeHeaders().values(name);
 /*      */   }
 /*      */ 
