@@ -180,7 +180,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "';setCallbackFromEcmParams('','"
                     + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
-            out.print("<a href=\"#delete_" + wrc.getProperty("osivia.windowId") + "\" class=\"cmd delete fancybox_inline\">"
+            out.print("<a href=\"#delete_" + wrc.getProperty("osivia.windowId") + "\" class=\"cmd delete no-ajax-link fancybox_inline\">"
                     + INTERNATIONALIZATION_SERVICE.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
 
             out.print("</div>");
