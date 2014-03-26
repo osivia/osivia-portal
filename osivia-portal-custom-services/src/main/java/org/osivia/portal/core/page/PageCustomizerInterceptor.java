@@ -374,7 +374,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // original window path
                     String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
-
+                    
 
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
@@ -399,7 +399,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     // Invoke handler to get player
                     CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
 
-                    Map<String,String> windowProps = ((DynamicTemplateWindow) window).getDynamicWindowBean().getProperties();
+                    Map<String,String> windowProps = ((DynamicWindow) window).getDynamicWindowBean().getProperties();
 
                     for (String propName : contentProperties.getWindowProperties().keySet()) {
                         windowProps.put(propName, contentProperties.getWindowProperties().get(propName));

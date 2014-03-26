@@ -601,6 +601,11 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}
 		}
 
+		PortalObject po = container.getNonDynamicObject(parentId);
+		
+		if( po instanceof PageImpl)
+		    return new DynamicPersistentPage(container, (PageImpl) po, this);
+		
 		// Page parent non dynamique
 		return container.getObject(parentId);
 	}
