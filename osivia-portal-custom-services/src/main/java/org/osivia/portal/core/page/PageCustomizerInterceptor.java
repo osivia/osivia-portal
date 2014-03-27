@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -73,6 +74,8 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
+import org.jboss.portal.portlet.ParametersStateString;
+import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -373,8 +376,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
 
                     // original window path
-                    String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
-                    
+//                    String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
+                    String cmsPath = PagePathUtils.getContentPath(cmd.getControllerContext(), window.getPage().getId());
 
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
@@ -382,7 +385,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
-                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && cmsPath.equals(state.getDocPath())) {
+                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && (state.getDocPath().equals(cmsPath))) {
                         cmsReadItemContext.setDisplayLiveVersion("1");
                     }
 
@@ -749,6 +752,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
         }
+        
+        
+ 
 
 
         if (cmd instanceof RenderPageCommand) {
@@ -806,6 +812,53 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
         }
 
+        
+       /* Navigation interne aux portlets 
+        * 
+        *  Synchronisation de la navigation du portlet (curItemPath) et de la navigation du portail (osivia.cms.contentPath)
+        *  
+        *  Necessaire pour la compataibilité edition front-office dans des portlets externes
+        */
+        
+       if (cmd instanceof InvokePortletWindowRenderCommand) {
+            
+            // navigation intene au portlet
+            // curItemPath et contextualisé > contentPath)
+            
+            InvokePortletWindowRenderCommand inv = (InvokePortletWindowRenderCommand) cmd;
+            
+            StateString navigationalState = inv.getNavigationalState();
+            
+            if (navigationalState instanceof ParametersStateString)
+            {
+               ParametersStateString navigationalParameters = (ParametersStateString)navigationalState;
+
+               //
+               Map<String, String[]> parameters = navigationalParameters.getParameters();
+               
+               if( parameters.get("curItemPath") != null) {
+
+                   NavigationalStateContext nsContext = (NavigationalStateContext) cmd.getControllerContext()
+                           .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+                   PageNavigationalState previousPNS = nsContext.getPageNavigationalState(((InvokePortletWindowRenderCommand) cmd).getPage().getId().toString());
+                   Map<QName, String[]> state = new HashMap<QName, String[]>();
+                   
+                   for( Entry<QName, String[]>  entry: previousPNS.getParameters().entrySet()) {
+                       state.put(entry.getKey(), entry.getValue());
+                       
+                       // Mise à jour du path de contenu
+                       state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"),
+                               new String[] { parameters.get("curItemPath")[0] });
+
+                   }
+                   
+                   nsContext.setPageNavigationalState(((InvokePortletWindowRenderCommand) cmd).getPage().getId().toString(), new PageNavigationalState(state));
+
+               }
+            }
+        }
+        
 
         // Fermeture applicative des popup : les windows n'existent plus
         // injection d'une region permettant de fermer la popup
