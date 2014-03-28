@@ -1,23 +1,24 @@
 /** Toolbar minimum style */
 
-#toolbar {    
-    visibility: hidden;
-}
-
 #toolbar .toolbar-content {
 	text-align: right;
     font-family: 'Oxygen', sans-serif;
-    border-bottom: 1px solid #C5C7C6;
-    background-color: #DCDDDC;
-    padding: 0;
-    margin: 0;
-	visibility: visible;
+    height: 25px;
 }
 
 #toolbar .toolbar-content.offline {
 	display: none;
 }
 
+#toolbar .toolbar-fixed-content {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	border-bottom: 1px solid #C5C7C6;
+    background-color: #DCDDDC;
+}
 
 #toolbar .toolbar-administration {
     float: left;

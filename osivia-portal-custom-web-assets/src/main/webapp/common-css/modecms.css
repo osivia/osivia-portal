@@ -22,6 +22,11 @@
 	vertical-align: middle;
 	height: 20px;
 }
+
+#toolbar #deco img {
+	display: none;
+}
+
 #toolbar img.imgActive, #toolbar img:hover {
 	padding: 0px 0px;
 	height: 24px;
