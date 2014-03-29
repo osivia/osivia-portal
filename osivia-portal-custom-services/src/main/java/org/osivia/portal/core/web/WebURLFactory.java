@@ -185,6 +185,9 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
         if (cmd instanceof CmsCommand) {
+            
+            if( ((CmsCommand) cmd).getDisplayContext() != null)
+                return null;
 
             CmsCommand cmsCmd = (CmsCommand) cmd;
 

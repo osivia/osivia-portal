@@ -370,6 +370,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
                                 if (parameters.getValue(pageEntry.getKey().toString()) == null) {
                                     if (pageEntry.getValue().length > 0) {
+                                        if( ! "init-state".equals(pageEntry.getKey().toString()) && ! "unsetMaxMode".equals(pageEntry.getKey().toString()))
                                         parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
                                     }
                                 }

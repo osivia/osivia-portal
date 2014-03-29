@@ -376,18 +376,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
 
                     // original window path
-//                    String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
-                    String cmsPath = PagePathUtils.getContentPath(cmd.getControllerContext(), window.getPage().getId());
-
+                    String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
+//                    String cmsPath = PagePathUtils.getContentPath(cmd.getControllerContext(), window.getPage().getId());
+                    
+                    
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
-
-
+                    
+                    
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
-                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) && (state.getDocPath().equals(cmsPath))) {
+                    if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
+                        cmsPath = state.getDocPath();
                         cmsReadItemContext.setDisplayLiveVersion("1");
-                    }
+                    }                    
+
+
+
+
+
 
 
                     CMSItem cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
@@ -597,7 +604,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), cmsWindow.getId());
                     
                     if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
-                        controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION,  state.getDocPath());
+                       controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION,  state.getDocPath());
                     }                    
                 }
             }
@@ -817,9 +824,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         * 
         *  Synchronisation de la navigation du portlet (curItemPath) et de la navigation du portail (osivia.cms.contentPath)
         *  
-        *  Necessaire pour la compataibilité edition front-office dans des portlets externes
+        *  Necessaire pour la compataibilité edition front-office dans des portlets externes (type faq)
         */
-        
+        /*
        if (cmd instanceof InvokePortletWindowRenderCommand) {
             
             // navigation intene au portlet
@@ -858,6 +865,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                }
             }
         }
+        */
         
 
         // Fermeture applicative des popup : les windows n'existent plus

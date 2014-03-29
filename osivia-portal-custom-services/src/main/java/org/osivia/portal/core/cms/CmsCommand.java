@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -618,7 +619,7 @@ public class CmsCommand extends DynamicCommand {
 
                 if (InternalConstants.LIVE_EDITION.equals(this.displayContext)) {
                     cmsReadItemContext.setPreviewVersionPath(this.cmsPath);
-                    controllerContext.setAttribute(REQUEST_SCOPE, InternalConstants.LIVE_EDITION, this.cmsPath);
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, this.cmsPath);
                 }
 
             }
