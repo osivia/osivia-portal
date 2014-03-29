@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.security;
 
@@ -41,6 +40,7 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
@@ -59,7 +59,7 @@ public class CmsPermissionHelper {
     // CMS constants
     public static final String CMS_VERSION_PREVIEW = "preview";
     public static final String CMS_VERSION_ONLINE = "online";
-    public static final String CMS_VERSION_LIVE = "live";    
+    public static final String CMS_VERSION_LIVE = "live";
     public static final String CMS_EDITION_MODE_ON = "1";
     public static final String CMS_EDITION_MODE_OFF = "0";
 
@@ -177,9 +177,13 @@ public class CmsPermissionHelper {
 
 
             } else {
-
+                String liveEditionPath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION);
+                cmsContext.setPreviewVersionPath(liveEditionPath);
 
                 CMSPublicationInfos pubInfos = null;
+
+                boolean isWebPage = icmsServiceLocactor.getCMSService().isCmsWebPage(cmsContext, cmsPath);
+
 
                 pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
 
@@ -188,18 +192,17 @@ public class CmsPermissionHelper {
                 published = pubInfos.isPublished();
                 belongToPublishSpace = pubInfos.getPublishSpacePath() != null;
 
+                if (!isWebPage) {
+                    if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
+                        cmsVersion = CMS_VERSION_LIVE;
+                    }
 
-                if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
-                    //cmsVersion = CMS_VERSION_PREVIEW;
-                    cmsVersion = CMS_VERSION_LIVE;
+
+                    if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && pubInfos.getDocumentPath().equals(liveEditionPath)) {
+                        cmsVersion = CMS_VERSION_PREVIEW;
+                    }
                 }
 
-                if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace()
-                        && pubInfos.getDocumentPath().equals(ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION))) {
-                    cmsVersion = CMS_VERSION_PREVIEW;
-                }
-                
-                
 
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion, belongToPublishSpace);
 
@@ -252,7 +255,7 @@ public class CmsPermissionHelper {
                 // Show a notification
                 notifService.addSimpleNotification(pcc, message, NotificationsType.ERROR);
             }
-        }   else  if (cmsVersion.equals(CMS_VERSION_LIVE))   {
+        } else if (cmsVersion.equals(CMS_VERSION_LIVE)) {
             level = Level.allowPreviewVersion;
         }
         // preview requested
