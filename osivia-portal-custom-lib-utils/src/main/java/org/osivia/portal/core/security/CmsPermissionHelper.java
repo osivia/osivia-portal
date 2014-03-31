@@ -182,10 +182,15 @@ public class CmsPermissionHelper {
 
                 CMSPublicationInfos pubInfos = null;
 
-                boolean isWebPage = icmsServiceLocactor.getCMSService().isCmsWebPage(cmsContext, cmsPath);
-
+ 
 
                 pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
+
+                if( !pubInfos.isPublished())
+                    cmsContext.setDisplayLiveVersion("1");
+                
+                boolean isWebPage = icmsServiceLocactor.getCMSService().isCmsWebPage(cmsContext, cmsPath);
+
 
 
                 editableByUser = pubInfos.isEditableByUser();
@@ -193,9 +198,11 @@ public class CmsPermissionHelper {
                 belongToPublishSpace = pubInfos.getPublishSpacePath() != null;
 
                 if (!isWebPage) {
+                    cmsVersion = CMS_VERSION_ONLINE;
+                    
                     if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
                         cmsVersion = CMS_VERSION_LIVE;
-                    }
+                    }   
 
 
                     if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && pubInfos.getDocumentPath().equals(liveEditionPath)) {
