@@ -785,6 +785,7 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 		
 		for (Page child : sortedPages) {
 		    
+		    // String curDomain = null;
 	          String curDomain =  getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
 
 	            if (curDomain != null)  {

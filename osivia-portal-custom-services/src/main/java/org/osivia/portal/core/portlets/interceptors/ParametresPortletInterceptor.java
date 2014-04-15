@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -155,6 +156,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 			Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
 			if (userDatas != null)
 				attributes.put("osivia.userDatas", userDatas);
+
+			// 2.0.26 : injection timestamp
+	        Long userDatasTs = (Long) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp");
+            attributes.put("osivia.userDatas.refreshTimestamp", userDatasTs);
+		
+
+	        //3.1.0-HF1 (BACKPORT) 
+            HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
+            attributes.put("osivia.httpRequest", httpRequest);
 			
 			Object spaceConfig = ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.spaceConfig");
 			if( spaceConfig != null)

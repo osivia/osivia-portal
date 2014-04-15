@@ -11,14 +11,17 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
 import org.jboss.portal.server.ServerInterceptor;
@@ -139,13 +142,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 				/* Appel module userdatas */
 
-				Map<String, Object> userDatas = new Hashtable<String, Object>();
-
-				for (UserDatasModuleMetadatas module : sortedModules) {
-					module.getModule().computeUserDatas(invocation.getServerContext().getClientRequest(), userDatas);
-				}
-
-				invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
+				loadUserDatas(invocation);
 
 				// Job is marked as done
 
@@ -156,6 +153,9 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
 		invocation.invokeNext();
 	}
+	
+
+	
 
 	public void register(UserDatasModuleMetadatas moduleMetadatas) {
 		userModules.put(moduleMetadatas.getName(), moduleMetadatas);
@@ -168,4 +168,23 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 		synchronizeSortedModules();
 
 	}
+
+	public void reload(PortletRequest portletRequest) {
+	    ControllerContext ctx  = (ControllerContext) portletRequest.getAttribute("osivia.controller");
+
+	    loadUserDatas (ctx.getServerInvocation());
+	        
+	}
+	
+    private void loadUserDatas(ServerInvocation invocation) {
+        Map<String, Object> userDatas = new Hashtable<String, Object>();
+
+        for (UserDatasModuleMetadatas module : sortedModules) {
+            module.getModule().computeUserDatas(invocation.getServerContext().getClientRequest(), userDatas);
+        }
+
+        invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
+        invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());        
+    }
+        
 }

@@ -42,6 +42,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
+import org.jboss.portal.theme.ThemeConstants;
 import org.nuxeo.ecm.automation.client.jaxrs.model.Document;
 import org.osivia.portal.api.contexte.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
@@ -468,6 +469,12 @@ public class CmsCommand extends DynamicCommand {
 			
 			props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
 			props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
+			
+			
+
+			String theme = portalSite.getProperties().get("theme");
+			if( theme != null)
+			    props.put(ThemeConstants.PORTAL_PROP_THEME, theme);
 
 			Map displayNames = new HashMap();
 			if( displayName != null)
