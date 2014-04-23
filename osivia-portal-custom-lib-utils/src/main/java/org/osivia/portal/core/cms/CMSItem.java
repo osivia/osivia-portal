@@ -36,20 +36,41 @@ public class CMSItem {
     private Boolean beingModified;
     /** CMS item type. */
     private CMSItemType type;
+    /** Webid */
+    private String webId;
+
+
+    /**
+     * @return the webId
+     */
+    public String getWebId() {
+        return webId;
+    }
+
+
+    /**
+     * @param webId the webId to set
+     */
+    public void setWebId(String webId) {
+        this.webId = webId;
+    }
+
 
     /**
      * Constructor.
      * 
      * @param path CMS item path
+     * @param webId webID
      * @param properties CMS item properties
      * @param nativeItem CMS native item
      */
-    public CMSItem(String path, Map<String, String> properties, Object nativeItem) {
+    public CMSItem(String path, String webId, Map<String, String> properties, Object nativeItem) {
         super();
 
         this.path = path;
         this.properties = properties;
         this.nativeItem = nativeItem;
+        this.webId = webId;
     }
 
 

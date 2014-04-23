@@ -23,6 +23,7 @@ import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
@@ -91,7 +92,14 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
         if (cmd instanceof PortalCommand) {
             portalName = ((PortalCommand) cmd).getPortal().getName();
         } else {
-            portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
+            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+
+            if (currentPageId == null) {
+                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
+            } else {
+                portalName = currentPageId.getPath().getName(0);
+            }
+
         }
         PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
 

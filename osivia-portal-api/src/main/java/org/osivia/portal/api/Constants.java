@@ -29,6 +29,8 @@ public class Constants {
     public static final String STATUS_SERVICE_NAME = "StatusService";
     /** URL service name. */
     public static final String URL_SERVICE_NAME = "UrlService";
+    /** WebId service name */
+    public static final String WEBID_SERVICE_NAME = "webIdService";
     /** Profile service name. */
     public static final String PROFILE_SERVICE_NAME = "ProfileService";
     /** Formatter service name. */

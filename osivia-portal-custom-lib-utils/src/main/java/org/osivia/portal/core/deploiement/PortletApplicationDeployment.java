@@ -37,6 +37,7 @@ import org.osivia.portal.api.status.IStatusService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.web.IWebIdService;
 
 /**
  * Portlet application deployment.
@@ -69,6 +70,7 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
         this.injectStandardService(Constants.CACHE_SERVICE_NAME, ICacheService.class.getName(), "osivia:service=CacheServices");
         this.injectStandardService(Constants.STATUS_SERVICE_NAME, IStatusService.class.getName(), "osivia:service=StatusServices");
         this.injectStandardService(Constants.URL_SERVICE_NAME, IPortalUrlFactory.class.getName(), "osivia:service=UrlFactory");
+        this.injectStandardService(Constants.WEBID_SERVICE_NAME, IWebIdService.class.getName(), IWebIdService.MBEAN_NAME);
         this.injectStandardService(Constants.PROFILE_SERVICE_NAME, IProfilManager.class.getName(), "osivia:service=ProfilManager");
         this.injectStandardService(Constants.FORMATTER_SERVICE_NAME, IFormatter.class.getName(),
                 "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");

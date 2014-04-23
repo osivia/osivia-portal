@@ -77,7 +77,16 @@ public interface ICMSService {
 
     Map<String, String> parseCMSURL(CMSServiceCtx cmsCtx, String requestPath, Map<String, String> requestParameters) throws CMSException;
 
-    String adaptCMSPathToWeb(CMSServiceCtx cmsCtx, String basePath, String requestPath, boolean webPath) throws CMSException;
+    /**
+     * Transform webid path in cms path
+     * 
+     * @param cmsCtx context
+     * @param requestPath the path given in webid
+     * @return path adapted
+     */
+    String adaptWebPathToCms(CMSServiceCtx cmsCtx, String requestPath) throws CMSException;
+
+    // String adaptCMSPathToWeb(CMSServiceCtx cmsCtx, String requestPath, boolean webPath) throws CMSException;
 
     List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx) throws CMSException;
 

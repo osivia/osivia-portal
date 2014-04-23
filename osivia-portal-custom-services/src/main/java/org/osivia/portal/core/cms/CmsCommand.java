@@ -74,6 +74,7 @@ import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
+import org.osivia.portal.core.web.IWebIdService;
 
 import bsh.Interpreter;
 
@@ -226,6 +227,8 @@ public class CmsCommand extends DynamicCommand {
 
     IPortalUrlFactory urlFactory;
 
+    IWebIdService webIdService;
+
     public static ICMSService getCMSService() throws Exception {
 
         if( cmsServiceLocator == null){
@@ -252,6 +255,21 @@ public class CmsCommand extends DynamicCommand {
         }
 
         return this.urlFactory;
+    }
+
+
+    /**
+     * Get Webid service
+     * 
+     * @return
+     */
+    public IWebIdService getWebIdService() {
+
+        if (this.webIdService == null) {
+            this.webIdService = Locator.findMBean(IWebIdService.class, "osivia:service=webIdService");
+        }
+
+        return this.webIdService;
     }
 
     /**
@@ -598,6 +616,12 @@ public class CmsCommand extends DynamicCommand {
             if (IPortalUrlFactory.DISPLAYCTX_REFRESH.equals(this.displayContext)) {
                 PageProperties.getProperties().setRefreshingPage(true);
             }
+
+            // decode webid paths if given
+            if (cmsPath.startsWith(IWebIdService.PREFIX_WEBPATH)) {
+                cmsPath = getWebIdService().pageUrlToFetchInfoService(cmsPath);
+            }
+
 
             /*
              * Lecture de l'item
@@ -1280,6 +1304,12 @@ public class CmsCommand extends DynamicCommand {
                 }
 
                 state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
+
+                String webId = cmsNav.getWebId();
+
+                if (webId != null) {
+                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.webid"), new String[]{cmsNav.getWebId()});
+                }
 
 
                 // Mise à jour du path de contenu

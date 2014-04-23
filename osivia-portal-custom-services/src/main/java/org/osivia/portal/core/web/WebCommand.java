@@ -23,12 +23,15 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
+import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -126,7 +129,7 @@ public class WebCommand extends DynamicCommand {
     
    
     
-   private ControllerResponse getPageResponse(ControllerContext controllerCtx)  throws InvocationException, ControllerException {
+    private ControllerResponse getPageResponse(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
        
        if( pageResponse == null){
            
@@ -147,7 +150,7 @@ public class WebCommand extends DynamicCommand {
    }
     
     
-   private PortalObjectId getPageId(ControllerContext controllerCtx) throws InvocationException, ControllerException {
+    private PortalObjectId getPageId(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
         
        // Transformation du requestpath
        CmsCommand cmsCmd = new CmsCommand();
@@ -241,6 +244,18 @@ public class WebCommand extends DynamicCommand {
 
 
         } catch (Exception e) {
+
+            if (e instanceof CMSException) {
+                CMSException cmsException = (CMSException) e;
+                if (cmsException.getErrorCode() == CMSException.ERROR_FORBIDDEN) {
+                    return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+                }
+
+                if (cmsException.getErrorCode() == CMSException.ERROR_NOTFOUND) {
+                    return new UnavailableResourceResponse(this.webPath, false);
+                }
+            }
+
             throw new ControllerException(e);
         }
 

@@ -59,10 +59,11 @@ public class WebURLFactory extends URLFactoryDelegate {
     /** . */
     private String path;
 
-    
-    private static ICMSServiceLocator cmsServiceLocator ;
-    
-    private static final Log logger = LogFactory.getLog(WebURLFactory.class);    
+
+    private static ICMSServiceLocator cmsServiceLocator;
+
+    private static final Log logger = LogFactory.getLog(WebURLFactory.class);
+
 
     /**
      * Get The CMS Service
@@ -71,13 +72,30 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @throws Exception
      */
     public static ICMSService getCMSService() throws Exception {
-        
-        if( cmsServiceLocator == null){
+
+        if (cmsServiceLocator == null) {
             cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
-    
+
         return cmsServiceLocator.getCMSService();
 
+    }
+
+    static IWebIdService webIdService;
+
+
+    /**
+     * Get Webid service
+     * 
+     * @return
+     */
+    public static IWebIdService getWebIdService() {
+
+        if (webIdService == null) {
+            webIdService = Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+        }
+
+        return webIdService;
     }
 
     /**
@@ -110,37 +128,6 @@ public class WebURLFactory extends URLFactoryDelegate {
     }
 
 
-    /**
-     * Conversion from CMS path to web path
-     * 
-     * @param controllerContext
-     * @param cmsPath
-     * @return
-     */
-    public static String adaptCMSPathToWebURL(ControllerContext controllerContext, String cmsPath)  {
-
-        String basePath = getWebPortalBasePath(controllerContext);
-        String webPath = null;
-
-        if (basePath != null && cmsPath != null) {
-            CMSServiceCtx cmsContext = new CMSServiceCtx();
-            cmsContext.setControllerContext(controllerContext);
-            
-            try {
-                webPath = getCMSService().adaptCMSPathToWeb(cmsContext,basePath, cmsPath, false);
-
-                // Si webPath vide, pas de suffixe .proxy seul
-                if (".proxy".equals(webPath)) {
-                    return "";
-                }
-            } catch( Exception e)   {
-                // Dont' block link conversions
-                logger.error("Error in conversion to web url. Keeping CMS URL" + cmsPath, e);
-            }
-        }
-
-        return webPath;
-    }
 
     /**
      * @param controllerContext
@@ -148,24 +135,27 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @return
      * @throws ControllerException
      */
-    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) throws ControllerException {
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) throws Exception {
 
-        String basePath = getWebPortalBasePath(controllerContext);
 
-        if (StringUtils.isNotEmpty(webPath))    {
-            CMSServiceCtx cmsContext = new CMSServiceCtx();
-            cmsContext.setControllerContext(controllerContext);
-            
-            try {
-                return getCMSService().adaptCMSPathToWeb(cmsContext,basePath, webPath, true);
-            } catch( Exception e)   {
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
 
-                throw new ControllerException("Error in conversion to CMS url. WEB URL is" + webPath, e);
-                     }
-        } else
-            return basePath;
+        String domainIdPage = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId");
+
+        String cmsPath = null;
+        // if webpath is empty or equals '/', get default page associated with the portal
+        if (webPath.length() <= 1) {
+            cmsPath = getWebPortalBasePath(controllerContext);
+        } else {
+            cmsPath = getWebIdService().domainAndIdToFetchInfoService(domainIdPage, webPath);
+            cmsPath = getCMSService().adaptWebPathToCms(cmsContext, cmsPath);
+        }
+
+        return cmsPath;
+
+
     }
- 
 
 
     /**
@@ -178,43 +168,63 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @param standardURL
      * @return the Web URL
      */
-    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL)  {
+    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL) {
 
         if (getWebPortalBasePath(controllerContext) == null)
             return null;
 
 
         if (cmd instanceof CmsCommand) {
-            
-            if( ((CmsCommand) cmd).getDisplayContext() != null)
-                return null;
+
 
             CmsCommand cmsCmd = (CmsCommand) cmd;
-
-            // Exclude non standards urls
-            if (cmsCmd.getPortalPersistentName() != null)
-                return null;
-            if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext()))
-                return null;
-            if (!StringUtils.isEmpty(cmsCmd.getDisplayLiveVersion()))
-                return null;
+            if (cmsCmd.getCmsPath().startsWith(IWebIdService.PREFIX_WEBPATH)) {
 
 
-            String webPath = adaptCMSPathToWebURL(controllerContext, cmsCmd.getCmsPath());
+                // Exclude non standards urls
+                String domainIdPage = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId");
 
-            if (webPath != null) {
-                WebCommand webCommand = new WebCommand();
-                webCommand.setWebPath(webPath);
-                webCommand.setSupportingPageMarker(false);
+                String[] split = cmsCmd.getCmsPath().split("/"); // retirer le segment domain-id
+                String domainId = split[2];
 
 
-                ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
+                if (domainId == null || !domainId.equals(domainIdPage)) {
+                    return null;
+                }
+                if (cmsCmd.getPortalPersistentName() != null)
+                    return null;
+                if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext()))
+                    return null;
 
-                return serverURL;
 
+                String newPath = cmsCmd.getCmsPath().substring(IWebIdService.PREFIX_WEBPATH.length());
+
+                newPath = newPath.substring(domainId.length() + 1);
+
+
+                // TODO : portlet list : impossible d'afficher des ressources hors portal site en webid
+                // avec cette clause
+                // if (!StringUtils.isEmpty(cmsCmd.getDisplayLiveVersion()))
+                // return null;
+
+                String webPath = newPath;
+
+                // webPath = adaptCMSPathToWebURL(controllerContext, newPath);
+
+                if (webPath != null) {
+                    WebCommand webCommand = new WebCommand();
+                    webCommand.setWebPath(webPath);
+                    webCommand.setSupportingPageMarker(false);
+
+
+                    ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
+
+                    return serverURL;
+
+                }
             }
-        }
 
+        }
 
         if (cmd instanceof PortalObjectCommand) {
 
@@ -229,14 +239,17 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
                 WebCommand webCommand = new WebCommand();
-                String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
-                
-                if( pathNavigation == null)
+                // String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
+
+                String pageWebId = PagePathUtils.getNavigationWebId(controllerContext, window.getPage().getId());
+
+                if (pageWebId == null)
                     return null;
 
 
-                String webPath = adaptCMSPathToWebURL(controllerContext, pathNavigation);
-
+                // String webPath = "/" + adaptCMSPathToWebURL(controllerContext, pageWebId);
+                // TODO explicite ?
+                String webPath = "/" + pageWebId.concat(WebIdService.SUFFIX_WEBPATH);
 
                 webCommand.setWebPath(webPath);
                 webCommand.setWindowName(window.getName());
@@ -260,15 +273,14 @@ public class WebURLFactory extends URLFactoryDelegate {
     }
 
 
-
-    
     /**
      * Generate Web URLS as expectec by factory pattern
      * 
-     * @see org.jboss.portal.core.controller.command.mapper.URLFactory#doMapping(org.jboss.portal.core.controller.ControllerContext, org.jboss.portal.server.ServerInvocation, org.jboss.portal.core.controller.ControllerCommand)
+     * @see org.jboss.portal.core.controller.command.mapper.URLFactory#doMapping(org.jboss.portal.core.controller.ControllerContext,
+     *      org.jboss.portal.server.ServerInvocation, org.jboss.portal.core.controller.ControllerCommand)
      */
-    
-    
+
+
     public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
         if (cmd == null) {
             throw new IllegalArgumentException("No null command accepted");

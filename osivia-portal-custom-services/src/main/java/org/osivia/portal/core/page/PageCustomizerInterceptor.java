@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -74,8 +73,6 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
-import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -114,11 +111,12 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
-import org.osivia.portal.core.portalobjects.DynamicTemplateWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
+import org.osivia.portal.core.web.IWebIdService;
+
 
 /**
  * Page customizer interceptor.
@@ -358,6 +356,42 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             logger.debug("PageCustomizerInterceptor test2 commande " + cmd.getClass().getName());
         }
 
+        
+
+        /* Récupération du domainID */
+
+        String domainComputed = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId.computed");
+
+        if (domainComputed == null) {
+
+            PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId.computed", "1");
+
+            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+
+            if (portalName != null) {
+
+                PortalObjectId portalId = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
+
+                PortalObject po = portalObjectContainer.getObject(portalId);
+
+
+                String basePath = ((Portal) po).getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
+
+
+                if (basePath != null) {
+                    CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
+                    cmsReadItemContext.setControllerContext(cmd.getControllerContext());
+
+                    CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
+
+                    if (spaceConfig != null) {
+                        String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+
+                        PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
+                    }
+                }
+            }
+        }
 
 
         /* Le player d'un item CMS doit être rejoué en cas de refresh

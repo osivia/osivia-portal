@@ -43,7 +43,7 @@ public class PagePathUtils {
      * @param var the requested property
      * @return the path
      */
-    private static String computePath(ControllerContext controllerCtx, PortalObjectId pageId, String var) {
+    private static String computePageParameter(ControllerContext controllerCtx, PortalObjectId pageId, String var) {
         NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
         PageNavigationalState pageState = nsContext.getPageNavigationalState(pageId.toString());
 
@@ -60,6 +60,12 @@ public class PagePathUtils {
         return pathPublication;
     }
 
+
+    
+    public static String getNavigationWebId(ControllerContext controllerCtx, PortalObjectId pageId) {
+        return computePageParameter(controllerCtx, pageId, "osivia.cms.webid");
+    }
+
     /**
      * Return the cms page path.
      * 
@@ -68,7 +74,7 @@ public class PagePathUtils {
      * @return cms page path
      */
     public static String getNavigationPath(ControllerContext controllerCtx, PortalObjectId pageId) {
-        return computePath(controllerCtx, pageId, CMS_PATH);
+        return computePageParameter(controllerCtx, pageId, CMS_PATH);
     }
     
     /**
@@ -79,6 +85,6 @@ public class PagePathUtils {
      * @return cms content path
      */
     public static String getContentPath(ControllerContext controllerCtx, PortalObjectId pageId) {
-        return computePath(controllerCtx, pageId, CMS_CONTENT_PATH);
+        return computePageParameter(controllerCtx, pageId, CMS_CONTENT_PATH);
     }
 }

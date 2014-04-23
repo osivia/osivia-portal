@@ -66,6 +66,7 @@ import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.web.IWebIdService;
 
 /**
  * Breadcrumb attributes bundle.
@@ -82,6 +83,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    /** WebId service */
+    private final IWebIdService webIdService;
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
 
@@ -101,6 +104,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         // Portal object container
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+        // Webid service
+        this.webIdService = Locator.findMBean(IWebIdService.class, "osivia:service=webIdService");
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_BREADCRUMB);
@@ -244,12 +249,23 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 while (StringUtils.contains(publicationPath, basePath)) {
                     Map<String, String> pageParams = new HashMap<String, String>();
 
-                    String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
-                            portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), publicationPath, pageParams,
-                            IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
-
                     try {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                        String url;
+                        if (cmsItem.getWebId() != null) {
+
+                            String webPath = webIdService.itemToPageUrl(cmsItem);
+
+                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
+                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+
+                        } else {
+                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
+                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), publicationPath, pageParams,
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+                        }
+
                         if (cmsItem != null) {
                             // Cannot add live navigation item
                             BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
