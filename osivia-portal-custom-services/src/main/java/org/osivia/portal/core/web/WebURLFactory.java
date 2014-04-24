@@ -243,7 +243,7 @@ public class WebURLFactory extends URLFactoryDelegate {
 
                 String pageWebId = PagePathUtils.getNavigationWebId(controllerContext, window.getPage().getId());
 
-                if (pageWebId == null)
+                if (StringUtils.isEmpty(pageWebId))
                     return null;
 
 

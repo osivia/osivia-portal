@@ -108,7 +108,7 @@ public class WebIdService implements IWebIdService {
         if (StringUtils.isNotEmpty(webid)) {
             webpath = SLASH.concat(domainId).concat(SLASH);
 
-            if (explicitUrl != null) {
+            if (StringUtils.isNotEmpty(explicitUrl) ) {
                 webpath = webpath.concat(explicitUrl).concat(SLASH);
             }
 
