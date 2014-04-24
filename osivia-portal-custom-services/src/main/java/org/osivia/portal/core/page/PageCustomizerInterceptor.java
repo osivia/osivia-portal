@@ -31,6 +31,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -374,20 +375,27 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 PortalObject po = portalObjectContainer.getObject(portalId);
 
+                // Pas de page par defaut pour le portail util (NPE) !!!! 
+                Page defPage = ((Portal) po).getDefaultPage();
 
-                String basePath = ((Portal) po).getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
+                if (defPage != null) {
 
 
-                if (basePath != null) {
-                    CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
-                    cmsReadItemContext.setControllerContext(cmd.getControllerContext());
+                    String basePath = ((Portal) po).getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
 
-                    CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
 
-                    if (spaceConfig != null) {
-                        String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+                    if (basePath != null) {
+                        CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
+                        cmsReadItemContext.setControllerContext(cmd.getControllerContext());
 
-                        PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
+                        CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
+
+                        if (spaceConfig != null) {
+                            String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+
+                            if (!StringUtils.isEmpty(domainId))
+                                PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
+                        }
                     }
                 }
             }

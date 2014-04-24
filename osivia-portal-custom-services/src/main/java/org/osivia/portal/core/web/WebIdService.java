@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.core.cms.CMSItem;
 
 /**
@@ -104,7 +105,7 @@ public class WebIdService implements IWebIdService {
         String extension = item.getProperties().get(EXTENSION_URL);
         String webpath = null;
 
-        if (webid != null) {
+        if (StringUtils.isNotEmpty(webid)) {
             webpath = SLASH.concat(domainId).concat(SLASH);
 
             if (explicitUrl != null) {

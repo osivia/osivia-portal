@@ -605,7 +605,9 @@ public class ControllerPageNavigationalState implements PortletPageNavigationalS
    {
       if (windowPublicNavigationalStateUpdate != null)
       {
-         throw new IllegalStateException("Was called with a non null windowPublicNavigationalStateUpdate field");
+          //3.1.0-HF1 : reentrance test
+          return;
+         //throw new IllegalStateException("Was called with a non null windowPublicNavigationalStateUpdate field");
       }
 
       //v1.0.23 : suppression hashmap (synchronisations)
