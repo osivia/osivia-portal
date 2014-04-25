@@ -34,7 +34,7 @@
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-system/4.2.3.GA/jboss-system-4.2.3.GA.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-common/4.2.3.GA/jboss-common-4.2.3.GA.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-jmx/4.2.3.GA/jboss-jmx-4.2.3.GA.jar"/>
-  <classpathentry kind="var" path="M2_REPO/jboss/jbossweb/4.2.3.GA/jbossweb-4.2.3.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jboss/jbossweb/4.2.3.GA/jbossweb-4.2.3.GA.jar" sourcepath="M2_REPO/jboss/jbossweb/4.2.3.GA/jbossweb-4.2.3.GA-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jboss-xml-binding/4.2.3.GA/jboss-xml-binding-4.2.3.GA.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jbossjta/4.2.3.GA/jbossjta-4.2.3.GA.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/jbosssx/4.2.3.GA/jbosssx-4.2.3.GA.jar"/>
@@ -63,18 +63,18 @@
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-api-lib/2.7.2/portal-api-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-api-lib/2.7.2/portal-api-lib-2.7.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-security-lib/2.7.2/portal-security-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-security-lib/2.7.2/portal-security-lib-2.7.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-core-lib/2.7.2/portal-core-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-core-lib/2.7.2/portal-core-lib-2.7.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-server-lib/2.7.2/portal-server-lib-2.7.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-server-lib/2.7.2/portal-server-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-server-lib/2.7.2/portal-server-lib-2.7.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-theme-lib/2.7.2/portal-theme-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-theme-lib/2.7.2/portal-theme-lib-2.7.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-web-lib/2.7.2/portal-web-lib-2.7.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-common-lib/2.7.2/portal-common-lib-2.7.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-jems-lib/2.7.2/portal-jems-lib-2.7.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-common-portal-lib/2.7.2/portal-common-portal-lib-2.7.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-web-lib/2.7.2/portal-web-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-web-lib/2.7.2/portal-web-lib-2.7.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-common-lib/2.7.2/portal-common-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-common-lib/2.7.2/portal-common-lib-2.7.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-jems-lib/2.7.2/portal-jems-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-jems-lib/2.7.2/portal-jems-lib-2.7.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-common-portal-lib/2.7.2/portal-common-portal-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-common-portal-lib/2.7.2/portal-common-portal-lib-2.7.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/cms-jackrabbit/2.7.2/cms-jackrabbit-2.7.2.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-core-cms-lib/2.7.2/portal-core-cms-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portal-core-cms-lib/2.7.2/portal-core-cms-lib-2.7.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portal-core-cms-lib/2.7.2/portal-core-cms-lib-2.7.2.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/identity/identity-identity/1.1.3/identity-identity-1.1.3.jar" sourcepath="M2_REPO/org/jboss/portal/identity/identity-identity/1.1.3/identity-identity-1.1.3-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-portlet/2.0.9/portlet-portlet-2.0.9.jar" sourcepath="M2_REPO/org/jboss/portal/portlet/portlet-portlet/2.0.9/portlet-portlet-2.0.9-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-controller-lib/2.0.9/portlet-controller-lib-2.0.9.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-server-lib/2.0.9/portlet-server-lib-2.0.9.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-api-lib/2.7.2/portlet-api-lib-2.7.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-controller-lib/2.0.9/portlet-controller-lib-2.0.9.jar" sourcepath="M2_REPO/org/jboss/portal/portlet/portlet-controller-lib/2.0.9/portlet-controller-lib-2.0.9-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-server-lib/2.0.9/portlet-server-lib-2.0.9.jar" sourcepath="M2_REPO/org/jboss/portal/portlet/portlet-server-lib/2.0.9/portlet-server-lib-2.0.9-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jboss/portal/portlet/portlet-api-lib/2.7.2/portlet-api-lib-2.7.2.jar" sourcepath="M2_REPO/org/jboss/portal/portlet/portlet-api-lib/2.7.2/portlet-api-lib-2.7.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
 </classpath>
