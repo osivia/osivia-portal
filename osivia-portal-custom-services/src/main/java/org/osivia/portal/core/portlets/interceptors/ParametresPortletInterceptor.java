@@ -190,6 +190,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
 
 
+            // user datas timestamp
+            Long userDatasTs = (Long) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp");
+            attributes.put(Constants.PORTLET_ATTR_USER_DATAS_REFRESH_TS, userDatasTs);
+
+            
             // HTTP Request
             HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
             attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);

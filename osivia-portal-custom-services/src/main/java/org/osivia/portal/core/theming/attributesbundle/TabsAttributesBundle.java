@@ -55,6 +55,7 @@ import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
@@ -219,7 +220,18 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             // User portal
             attributes.put(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
             // Page identifier
-            attributes.put(Constants.ATTR_PAGE_ID, mainPage.getId());
+            
+            /* Préselection domain */
+            
+            Object selectedPageID =  mainPage.getId();
+            
+            String domain = TabsCustomizerInterceptor.getInheritedPageDomain( renderPageCommand.getPage());
+            if( domain != null){
+                selectedPageID = domain;
+            }
+            
+        
+            attributes.put(Constants.ATTR_PAGE_ID, selectedPageID);
             // First tab
             attributes.put(Constants.ATTR_FIRST_TAB, controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));
 
@@ -275,8 +287,21 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
         }
 
+        List<String> domains = new ArrayList<String>();
 
         for (Page child : sortedPages) {
+            
+            // get domain
+            String curDomain = TabsCustomizerInterceptor.getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
+
+            if (curDomain != null) {
+                if (domains.contains(curDomain))
+                    break;
+                domains.add(curDomain);
+
+            }
+    
+            
             // Check if child must be hidden
             if (hideDefaultPage && child.equals(defaultPage)) {
                 continue;
@@ -297,14 +322,25 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                 // View page command
                 ViewPageCommand showPage = new ViewPageCommand(child.getId());
+                
+                
+                if (curDomain != null) {
+                    userPage.setId(curDomain);
+                    String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
+                            null, null, null);
+                    userPage.setUrl(url);
 
-                userPage.setId(child.getId());
-
-                String url = new PortalURLImpl(showPage, controllerContext, null, null).toString();
-                userPage.setUrl(url + "?init-state=true");
-
+                } else {
+                    userPage.setId(child.getId());
+                    String url = new PortalURLImpl(showPage, controllerContext, null, null).toString();
+                    userPage.setUrl(url + "?init-state=true");
+                }
+                
                 String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
                 userPage.setName(name);
+
+  
+
 
                 if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {
                     try {

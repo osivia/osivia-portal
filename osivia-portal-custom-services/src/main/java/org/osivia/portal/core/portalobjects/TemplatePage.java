@@ -333,6 +333,26 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
                                     this.properties.put((String) key, (String) inheritedProperties.get(key));
                                 }
                             }
+                            else    {
+                                // HACK 20140416
+                                // Le template a un thème (nécessaire pour la mise en page par défaut)
+                                // mais ce theme est explicitement surchargé par la page parent (DeclaredProperty)
+                                
+                                // Mis en place pour les workspace etablissement (ou le theme de certains workspaces est modifié via Nuxeo)
+                                
+                                // Dans ce cas, on casse le modèle d'héritage ..
+                                // Ce hack est mis en place car on ne peut pas pas injecter un thème directement  dans
+                                // le CMS_LAYOUT (trop de risques en v2), et en attendant il a été mis dans la page dynamique)
+                                
+                                // TODO : injecter le thème NUXEO dans le CMS_LAYOUT et supprimer ce hack
+                               
+                                PortalObject parent = getParent();
+                                if( parent instanceof DynamicPage){
+                                    // Hack uniquement pour les pages dynamiques CMS
+                                if( parent.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME) != null && parent.getDeclaredProperty("osivia.cms.layoutRules") != null)
+                                    properties.put((String) key, (String) inheritedProperties.get(key));                                        
+                                }
+                            }
                         }
                     }
                 }

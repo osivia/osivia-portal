@@ -116,6 +116,10 @@ public class Constants {
     public static final String PORTLET_ATTR_MENU_BAR = "osivia.menuBar";
     /**  user datas Map     */    
     public static final String PORTLET_ATTR_USER_DATAS = "osivia.userDatas";
+    
+    /**  user datas Map  timestamp   */    
+    public static final String PORTLET_ATTR_USER_DATAS_REFRESH_TS = "osivia.userDatas.refreshTimestamp";
+    
     /**  http request     */       
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
     /**  space configuratoin request     */   

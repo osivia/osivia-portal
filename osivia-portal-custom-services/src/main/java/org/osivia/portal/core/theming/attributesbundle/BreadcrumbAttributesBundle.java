@@ -63,6 +63,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
@@ -247,6 +248,15 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 }
 
                 while (StringUtils.contains(publicationPath, basePath)) {
+                    
+                    // Exclude root publish Site for domain 
+                    // (will be computed later, the same as others spaces)
+                    if(publicationPath.equals(basePath) &&  TabsCustomizerInterceptor.getDomain(basePath) != null) {
+                        String baseName = basePath.substring(basePath.lastIndexOf('/') + 1);
+                        if( baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName()))
+                            break;
+                    }
+                    
                     Map<String, String> pageParams = new HashMap<String, String>();
 
                     try {
@@ -279,6 +289,44 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     CMSObjectPath parent = CMSObjectPath.parse(publicationPath).getParent();
                     publicationPath = parent.toString();
                 }
+                
+                
+                
+                /* add domain site item */
+                
+                
+                String pubDomain = TabsCustomizerInterceptor.getDomain(basePath);
+
+                if( pubDomain != null) {
+
+                    try {
+                        CMSServiceCtx userCtx = new CMSServiceCtx();
+                        userCtx.setControllerContext(controllerContext);
+
+                        CMSItem domain = this.cmsServiceLocator.getCMSService().getContent(userCtx, "/" + pubDomain);
+                        if (domain != null) {
+                            String domainDisplayName = null;
+                            domainDisplayName = domain.getProperties().get("displayName");
+
+                            Map<String, String> pageParams = new HashMap<String, String>();
+
+
+                            String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
+                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
+                                    "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, null, null, null, null, null);
+
+
+                            BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);
+                            breadcrumb.getChilds().add(0, item);
+                        }
+                    } catch (CMSException e) {
+                        throw new ControllerException(e);
+                    }                        
+                       
+                }   
+                
+                
             }
         }
 

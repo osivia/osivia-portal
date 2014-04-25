@@ -56,6 +56,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
+import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -68,6 +69,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
@@ -491,7 +493,7 @@ public class CmsCommand extends DynamicCommand {
      * @throws InvocationException
      * @throws ControllerException
      */
-    private Page getPortalSitePublishPage(PortalObject portal, CMSItem portalSite) throws UnsupportedEncodingException,
+    private Page getPortalSitePublishPage(PortalObject portal, CMSItem portalSite, String displayName) throws UnsupportedEncodingException,
     IllegalArgumentException, InvocationException, ControllerException {
 
         // No template
@@ -531,8 +533,19 @@ public class CmsCommand extends DynamicCommand {
             props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
             props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
+            
+            String theme = portalSite.getProperties().get("theme");
+            if( theme != null)
+                props.put(ThemeConstants.PORTAL_PROP_THEME, theme);
+
             Map displayNames = new HashMap();
-            displayNames.put(Locale.FRENCH, portalSite.getProperties().get("displayName"));
+            if( displayName != null)
+                displayNames.put(Locale.FRENCH, displayName);
+            else
+                displayNames.put(Locale.FRENCH, portalSite.getProperties().get("displayName"));
+
+
+
 
             /*
              * 
@@ -988,7 +1001,19 @@ public class CmsCommand extends DynamicCommand {
                         }
 
                         if (publishSpace != null) {
-                            contextualizationPage = this.getPortalSitePublishPage(portal, publishSpace);
+                            
+                            // Lecture du domaine pour affichage du nom
+                            String pubDomain = TabsCustomizerInterceptor.getDomain(publishSpace.getPath());
+                            String domainDisplayName = null;
+                            
+                            if( pubDomain != null) {
+                                CMSItem domain = getCMSService().getContent(userCtx, "/" + pubDomain);
+                                if( domain != null){
+                                    domainDisplayName = domain.getProperties().get("displayName");
+                                }
+                            }
+                            
+                            contextualizationPage = getPortalSitePublishPage(portal, publishSpace, domainDisplayName);
                         }
 
                         // Create empty page if no current page spécified

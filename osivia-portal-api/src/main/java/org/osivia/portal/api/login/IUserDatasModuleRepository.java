@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.api.login;
 
+import javax.portlet.PortletRequest;
 
 /**
  * The Interface IUserDatasModuleRepository.
@@ -33,5 +34,14 @@ public interface IUserDatasModuleRepository {
 	 * @param moduleMetadatas the module metadatas
 	 */
 	public void unregister (UserDatasModuleMetadatas moduleMetadatas);
+	
+	
+    /**
+     * Force reloading of current user datas.
+     *
+     * @param moduleMetadatas the module metadatas
+     */
+	
+	public void reload(PortletRequest request);
 	
 }
