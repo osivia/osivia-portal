@@ -28,8 +28,12 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
@@ -64,10 +68,30 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 		return portalObjectContainer;
 	}
+	
+	   private static ICMSServiceLocator cmsServiceLocator ;
 
-	private void createPages(List<CMSPage> preloadedPages) {
+	    public static ICMSService getCMSService() throws Exception {
+	        
+	        if( cmsServiceLocator == null){
+	            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+	        }
+	    
+	        return cmsServiceLocator.getCMSService();
+
+	    }
+
+	private void createPages(ControllerContext controllerContext, List<CMSPage> preloadedPages) {
 
 		int order = DynamicPageBean.DYNAMIC_PRELOADEDPAGES_FIRST_ORDER;
+		
+		
+        CMSServiceCtx userCtx = new CMSServiceCtx();
+        userCtx.setControllerContext(controllerContext);
+
+
+		
+		
 
 		for (CMSPage page : preloadedPages) {
 
@@ -85,9 +109,26 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 				parent = getPortalObjectContainer().getObject(poid);
 			} else
 				parent = getPortalObjectContainer().getContext().getDefaultPortal();
+			
+			
+	           Map displayNames = new HashMap();
+	            displayNames.put(Locale.FRENCH, publishSpace.getProperties().get("displayName"));
+	            
+	            
+	        /* Ajout nom domaine */
+	            
+            String pubDomain = TabsCustomizerInterceptor.getDomain(publishSpace.getPath());
 
-			Map displayNames = new HashMap();
-			displayNames.put(Locale.FRENCH, publishSpace.getProperties().get("displayName"));
+            if( pubDomain != null) {
+                    CMSItem domain = getCMSService().getContent(userCtx, "/" + pubDomain);
+                    if (domain != null) {
+                        displayNames.put(Locale.FRENCH, domain.getProperties().get("displayName"));
+                    }
+            }
+			
+			
+
+
 
 			Map<String, String> props = new HashMap<String, String>();
 
@@ -151,7 +192,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 				"osivia.userPreloadedPages");
 
 		if (preloadedPages != null) {
-			createPages(preloadedPages);
+			createPages(controllerContext, preloadedPages);
 		}
 
 		return super.doMapping(controllerContext, invocation, host, contextPath, newPath);

@@ -1703,7 +1703,18 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 					
 	
 					while (pathPublication.contains(basePath)) {
-
+					    
+					    
+                                // Exclude root publish Site for domain 
+					            // (will be computed later, the same as others spaces)
+					            if(pathPublication.equals(basePath) &&  TabsCustomizerInterceptor.getDomain(basePath) != null) {
+					                String baseName = basePath.substring(basePath.lastIndexOf('/') + 1);
+					                if( baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName()))
+					                    break;
+					            }
+                                  
+					    
+					    
 								Map<String, String> pageParams = new HashMap<String, String>();
 						
 								
@@ -1724,10 +1735,48 @@ void injectAdminHeaders(PageCommand rpc, PageRendition rendition)	{
 								pathPublication = parent.toString();
 
 
+		 
+
+								
 						}
+					
+	                
+	                /* add domain site item */
+	                
+	                
+	                String pubDomain = TabsCustomizerInterceptor.getDomain(basePath);
+
+	                if( pubDomain != null) {
 
 
+                            CMSServiceCtx userCtx = new CMSServiceCtx();
+                            userCtx.setControllerContext(controllerCtx);
+
+                            CMSItem domain = getCMSService().getContent(userCtx, "/" + pubDomain);
+                            if (domain != null) {
+                                String domainDisplayName = null;
+                                domainDisplayName = domain.getProperties().get("displayName");
+
+                                Map<String, String> pageParams = new HashMap<String, String>();
+
+
+                                String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
+                                        po.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
+                                        "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
+                                        IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, null, null, null, null, null);
+
+
+                                BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);
+                                breadcrumbDisplay.getChilds().add(0, item);
+                            }
+                           
+	                }					
 				}
+				
+
+
+				
+				
 			}
 			
 
