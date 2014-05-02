@@ -780,6 +780,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
+            /* Inject space config */
+            CMSItem pageConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
+            
+            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.spaceConfig", pageConfig);
+            
+            
         }
 
 

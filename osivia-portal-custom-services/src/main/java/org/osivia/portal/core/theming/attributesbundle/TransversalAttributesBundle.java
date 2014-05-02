@@ -149,7 +149,8 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_PAGE_CATEGORY, renderPageCommand.getPage().getProperty("osivia.pageCategory"));
         CMSItem spaceItem;
         try {
-            spaceItem = CmsCommand.getPagePublishSpaceConfig(controllerContext, renderPageCommand.getPage());
+            spaceItem = (CMSItem) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
+
         } catch (Exception e) {
            throw new ControllerException(e);
         }
