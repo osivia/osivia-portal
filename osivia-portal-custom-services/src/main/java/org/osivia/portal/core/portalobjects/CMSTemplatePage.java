@@ -26,17 +26,17 @@ public class CMSTemplatePage extends TemplatePage implements ITemplatePortalObje
 	
 	public static final String PAGE_NAME = "_CMS_LAYOUT";
 	
-	public static CMSTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer){
+	public static CMSTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template, String theme,  DynamicPortalObjectContainer dynamicContainer){
 		CMSTemplatePage page = null;
 		
 
-		 page = new CMSTemplatePage(container, parentId,  template, dynamicContainer);
+		 page = new CMSTemplatePage(container, parentId,  template, theme, dynamicContainer);
 				return page;
 		
 	}
 	
-	private CMSTemplatePage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
-		super( container,  parentId,  PAGE_NAME,  template,   dynamicContainer);
+	private CMSTemplatePage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template,  String theme, DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+		super( container,  parentId,  PAGE_NAME,  template,  theme, dynamicContainer);
 	
 	}
 	

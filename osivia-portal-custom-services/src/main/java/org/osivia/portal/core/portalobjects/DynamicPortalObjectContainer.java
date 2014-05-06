@@ -577,10 +577,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		// CMS Layout
 		if (parentPath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
-
-			PortalObjectId cmsParentId = new PortalObjectId("", parentPath.getParent());
-
-			DynamicPage dynamicPage = CMSTemplatePage.createPage(container, cmsParentId, this.getCMSTemplate(container, parentPath), this);
+			DynamicPage dynamicPage = CMSTemplatePageFactory.getCMSPage(this, container,  parentPath);
 
 			return dynamicPage;
 
@@ -594,7 +591,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getObject(templateId);
 				DynamicPage dynamicPage = DynamicTemplatePage.createPage(container, dynamicPageBean.getParentId(),
-						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean,
+						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null,this, dynamicPageBean,
 						templateId);
 
 				return dynamicPage;
@@ -610,58 +607,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		return container.getObject(parentId);
 	}
 
-	private PortalObjectImpl getCMSTemplate(PortalObjectContainer container, PortalObjectPath cmsPagePath) {
 
-
-		PageNavigationalState ns = null;
-
-		ControllerContext controllerContext = this.getCommandContext();
-		if( controllerContext != null)	{
-
-			NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(
-					ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-			ns = nsContext.getPageNavigationalState(cmsPagePath.toString());
-
-
-		}	else	{
-			ServerInvocation invocation = this.getInvocation();
-			PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
-					.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
-
-			ns = pnsCtx.getPageNavigationalState(cmsPagePath.toString());
-
-		}
-
-
-
-		if (ns != null) {
-			String layoutPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"));
-
-			if (layoutPath != null) {
-                String currentPortalName = StringUtils.split(cmsPagePath.toString(), "/")[0];
-                String layoutPortalName = StringUtils.split(layoutPath[0], "/")[0];
-                String currentTemplatePath = StringUtils.replace(layoutPath[0], layoutPortalName, currentPortalName, 1);
-
-                PortalObjectPath currentTemplateObjectPath = PortalObjectPath.parse(currentTemplatePath, PortalObjectPath.CANONICAL_FORMAT);
-                PortalObjectId currentTemplateId = new PortalObjectId("", currentTemplateObjectPath);
-                PortalObjectImpl portalObject = (PortalObjectImpl) container.getNonDynamicObject(currentTemplateId);
-
-                if ((portalObject == null) && !StringUtils.equals(currentPortalName, layoutPortalName)) {
-                    PortalObjectPath layoutObjectPath = PortalObjectPath.parse(layoutPath[0], PortalObjectPath.CANONICAL_FORMAT);
-                    PortalObjectId layoutId = new PortalObjectId("", layoutObjectPath);
-                    portalObject = (PortalObjectImpl) container.getNonDynamicObject(layoutId);
-                }
-
-				if( portalObject == null) {
-                    throw new IllegalArgumentException("Template " + layoutPath[0] + " doesn't exist");
-                }
-
-                return portalObject;
-			}
-		}
-
-		return null;
-	}
 
 	public PortalObject getObjectInternal(PortalObjectContainer container, PortalObjectId id) {
 
@@ -723,19 +669,10 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		if (objectPath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
 
-			PortalObjectPath parentPath = id.getPath().getParent();
-			PortalObjectId parentId = new PortalObjectId("", parentPath);
 
-			PortalObjectImpl template = this.getCMSTemplate(container, objectPath);
-
-			if (template != null) {
-
-				DynamicPage dynamicPage = CMSTemplatePage.createPage(container, parentId, this.getCMSTemplate(container, objectPath), this);
-
-				return dynamicPage;
-			} else {
-                return null;
-            }
+			DynamicPage dynamicPage =  CMSTemplatePageFactory.getCMSPage(this, container, objectPath);
+			
+			return dynamicPage;
 		}
 
 		// Accès à une window CMS
@@ -743,19 +680,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		if ((parentPath != null) && parentPath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
 
-			PortalObject templatePage = this.getCMSTemplate(container, parentPath);
+		    // TODO accès auc cache ???
+		    CMSTemplatePage page = CMSTemplatePageFactory.getCMSPage(this, container,  parentPath);
 
-			PortalObjectId parentId = new PortalObjectId("", parentPath.getParent());
-
-			PortalObjectImpl template = this.getCMSTemplate(container, parentPath);
-
-			if (template != null) {
-
-				CMSTemplatePage dynamicPage = CMSTemplatePage.createPage(container, parentId, this.getCMSTemplate(container, parentPath), this);
+			if (page != null) {
 
 				String windowName = id.getPath().getLastComponentName();
-				WindowImpl templateWindow = (WindowImpl) templatePage.getChild(windowName);
-				Window window = new DynamicTemplateWindow(dynamicPage, templateWindow, templateWindow.getName(), ((PageImpl) templatePage)
+				WindowImpl templateWindow = (WindowImpl) page.getTemplate().getChild(windowName);
+				Window window = new DynamicTemplateWindow(page, templateWindow, templateWindow.getName(), ((PageImpl) page.getTemplate())
 						.getObjectNode().getContext(), this);
 				return window;
 			} else {
@@ -769,7 +701,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
 				DynamicPage dynamicPage = DynamicTemplatePage.createPage(container, dynamicPageBean.getParentId(),
-						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean,
+						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null, this, dynamicPageBean,
 						templateId);
 
 				return dynamicPage;
@@ -784,7 +716,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				PortalObject template = container.getNonDynamicObject(templateId);
 
 				DynamicTemplatePage dynamicPage = DynamicTemplatePage.createPage(container, dynamicPageBean.getParentId(),
-						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean,
+						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null,this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
@@ -802,7 +734,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				PortalObjectId templateId = dynamicPageBean.getTemplateId();
 				PortalObject template = container.getNonDynamicObject(templateId);
 				DynamicPage dynamicPage = DynamicTemplatePage.createPage(container, dynamicPageBean.getParentId(),
-						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean,
+						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null, this, dynamicPageBean,
 						templateId);
 
 				return dynamicPage;
@@ -817,7 +749,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				PortalObject template = container.getNonDynamicObject(templateId);
 
 				DynamicTemplatePage dynamicPage = DynamicTemplatePage.createPage(container, dynamicPageBean.getParentId(),
-						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, this, dynamicPageBean,
+						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null, this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);

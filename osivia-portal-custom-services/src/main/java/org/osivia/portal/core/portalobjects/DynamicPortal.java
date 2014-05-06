@@ -81,7 +81,7 @@ public  class DynamicPortal extends PortalImpl {
 				if(dynamicPage.getParentId().equals(getId()))	{
 					
 					try	{
-					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
+					DynamicPage child = DynamicTemplatePage.createPage( container, dynamicPage.getParentId(), dynamicPage.getName(), dynamicPage.getDisplayNames(), (PortalObjectImpl) container.getNonDynamicObject(dynamicPage.getTemplateId()), null, dynamicContainer, dynamicPage, dynamicPage.getTemplateId())	;
 					
 
 					dynamicChilds.put(child.getName(), child);

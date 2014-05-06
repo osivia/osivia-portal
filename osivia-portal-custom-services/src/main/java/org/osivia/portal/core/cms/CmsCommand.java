@@ -56,7 +56,6 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
-import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -533,10 +532,6 @@ public class CmsCommand extends DynamicCommand {
             props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
             props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
-            
-            String theme = portalSite.getProperties().get("theme");
-            if( theme != null)
-                props.put(ThemeConstants.PORTAL_PROP_THEME, theme);
 
             Map displayNames = new HashMap();
             if( displayName != null)
@@ -546,22 +541,6 @@ public class CmsCommand extends DynamicCommand {
 
 
 
-
-            /*
-             * 
-             * String pageTemplate =
-             * portalSite.getProperties().get("pageTemplate"); if( pageTemplate
-             * == null || pageTemplate.length() == 0) // A Traiter dans
-             * CMSCustomizer pageTemplate = "/default/templates/BLOG_TMPL1";
-             * 
-             * StartDynamicPageCommand cmd = new
-             * StartDynamicPageCommand(portal.getId().toString(
-             * PortalObjectPath.SAFEST_FORMAT), pageName, displayNames,
-             * PortalObjectId.parse(pageTemplate,
-             * PortalObjectPath.CANONICAL_FORMAT
-             * ).toString(PortalObjectPath.SAFEST_FORMAT), props, new
-             * HashMap<String, String>());
-             */
 
             StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(
                     PortalObjectPath.SAFEST_FORMAT), pageName, displayNames, PortalObjectId.parse(
@@ -1061,6 +1040,7 @@ public class CmsCommand extends DynamicCommand {
 
             boolean disableCMSLocationInPage = false;
             String ECMPageTemplate = null;
+            String ECMPageTheme = null;
             String computedPageScope = null;
 
             String portalSiteScope = null;
@@ -1137,7 +1117,6 @@ public class CmsCommand extends DynamicCommand {
 
                                 }
 
-                                /* TODO: check by jss! */
                                 if (ECMPageTemplate == null) {
                                     boolean isChildPath = (itemPublicationPath.contains(pathToCheck))
                                             && !(itemPublicationPath.equalsIgnoreCase(pathToCheck));
@@ -1159,6 +1138,13 @@ public class CmsCommand extends DynamicCommand {
                                         }
 
                                     }
+                                    
+                                    if (cmsItemNav.getProperties().get("theme") != null) {
+                                        if (ECMPageTheme == null) {
+                                            ECMPageTheme = cmsItemNav.getProperties().get("theme");
+                                        }
+                                   }
+                                    
                                 }
 
                                 if (computedPageScope == null) {
@@ -1353,6 +1339,11 @@ public class CmsCommand extends DynamicCommand {
                 if (layoutPath != null) {
                     state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),
                             new String[] { layoutPath });
+                }
+                
+                if( layoutPath != null && ECMPageTheme != null){
+                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.theme_path"),
+                            new String[] { ECMPageTheme });
                 }
 
                 // Mise à jour du scope de la page

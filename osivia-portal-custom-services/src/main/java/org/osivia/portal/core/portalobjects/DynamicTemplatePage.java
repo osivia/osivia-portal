@@ -55,10 +55,10 @@ public final class DynamicTemplatePage extends TemplatePage implements ITemplate
      * @return dynamic template page
      */
     public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
-            PortalObjectImpl template, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
+            PortalObjectImpl template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
         DynamicTemplatePage page = null;
         try {
-            page = new DynamicTemplatePage(container, parentId, name, displayNames, template, dynamicContainer, pageBean);
+            page = new DynamicTemplatePage(container, parentId, name, displayNames, template, theme, dynamicContainer, pageBean);
         } catch (Exception e) {
             PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parentId.getPath().toString().concat("/").concat(name),
                     PortalObjectPath.CANONICAL_FORMAT));
@@ -88,8 +88,8 @@ public final class DynamicTemplatePage extends TemplatePage implements ITemplate
      * @param pageBean dynamic page bean
      */
     private DynamicTemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
-            PortalObjectImpl template, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
-        super(container, parentId, name, template, dynamicContainer);
+            PortalObjectImpl template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
+        super(container, parentId, name, template, theme, dynamicContainer);
 
         this.pageBean = pageBean;
 

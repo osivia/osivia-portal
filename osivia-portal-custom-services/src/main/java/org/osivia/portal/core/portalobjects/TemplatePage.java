@@ -48,6 +48,8 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
     /** Template. */
     private final PageImpl template;
     /** Parent portal object. */
+    /** Template. */
+    private final String theme;
     private PortalObject parent;
     /** Windows. */
     private List<Window> windows;
@@ -72,7 +74,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
      * @param template template portal object
      * @param dynamicContainer dynamic portal object container
      */
-    protected TemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, PortalObjectImpl template,
+    protected TemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, PortalObjectImpl template, String theme,  
             DynamicPortalObjectContainer dynamicContainer) {
         super();
 
@@ -84,6 +86,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
         this.setObjectNode(template.getObjectNode());
 
         this.template = (PageImpl) template;
+        this.theme = theme;
 
         this.parentId = parentId;
 
@@ -202,7 +205,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
 
             // Indispensable ???
             if (this.getDeclaredProperty("osivia.cms.layoutRules") != null) {
-                this.children.add(CMSTemplatePage.createPage(this.container, this.parentId, this.template, this.dynamicContainer));
+                this.children.add(CMSTemplatePage.createPage(this.container, this.parentId, this.template, this.theme, this.dynamicContainer));
             }
         }
 
@@ -328,31 +331,17 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
                             this.properties.put((String) key, (String) inheritedProperties.get(key));
                         } else {
                             if (ThemeConstants.PORTAL_PROP_THEME.equals(key)) {
-                                // Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
-                                if (this.template.getDeclaredProperty((String) key) == null) {
-                                    this.properties.put((String) key, (String) inheritedProperties.get(key));
+                                 if (this.theme != null) {
+                                    this.properties.put((String) key, this.theme);
+                                }else   {
+                                    // Le theme est surchargé par héritage s'il n'ont pas été défini explicitement dans le template
+
+                                    if (this.template.getDeclaredProperty((String) key) == null) {
+                                        this.properties.put((String) key, (String) inheritedProperties.get(key));
+                                    }
                                 }
                             }
-                            else    {
-                                // HACK 20140416
-                                // Le template a un thème (nécessaire pour la mise en page par défaut)
-                                // mais ce theme est explicitement surchargé par la page parent (DeclaredProperty)
-                                
-                                // Mis en place pour les workspace etablissement (ou le theme de certains workspaces est modifié via Nuxeo)
-                                
-                                // Dans ce cas, on casse le modèle d'héritage ..
-                                // Ce hack est mis en place car on ne peut pas pas injecter un thème directement  dans
-                                // le CMS_LAYOUT (trop de risques en v2), et en attendant il a été mis dans la page dynamique)
-                                
-                                // TODO : injecter le thème NUXEO dans le CMS_LAYOUT et supprimer ce hack
-                               
-                                PortalObject parent = getParent();
-                                if( parent instanceof DynamicPage){
-                                    // Hack uniquement pour les pages dynamiques CMS
-                                if( parent.getDeclaredProperty(ThemeConstants.PORTAL_PROP_THEME) != null && parent.getDeclaredProperty("osivia.cms.layoutRules") != null)
-                                    properties.put((String) key, (String) inheritedProperties.get(key));                                        
-                                }
-                            }
+                           
                         }
                     }
                 }
