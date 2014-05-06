@@ -88,6 +88,7 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_SPACE_CONFIG);         
         this.names.add(Constants.ATTR_PORTAL_CTX);
         this.names.add(Constants.ATTR_URL_FACTORY);
+        this.names.add(Constants.ATTR_WIZARD_MODE);
     }
 
 
@@ -107,6 +108,7 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
@@ -134,15 +136,8 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         // Generic command URL
         String commandUrl = serverContext.getPortalContextPath() + "/commands";
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
-        // Portal controller context
-        
-        
-        this.names.add(Constants.ATTR_PAGE_CATEGORY);   
-        this.names.add(Constants.ATTR_USER_DATAS); 
-        this.names.add(Constants.ATTR_SPACE_CONFIG); 
-        
-       
-        @SuppressWarnings("unchecked")
+
+        // User datas
         Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
         attributes.put(Constants.ATTR_USER_DATAS, userDatas);
 
@@ -157,11 +152,14 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         if( spaceItem != null)
             attributes.put(Constants.ATTR_SPACE_CONFIG, spaceItem.getNativeItem());
 
-        
+        // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
         // URL factory
         attributes.put(Constants.ATTR_URL_FACTORY, this.urlFactory);
+        // Wizard mode indicator
+        String mode = (String) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+        attributes.put(Constants.ATTR_WIZARD_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode));
     }
 
 

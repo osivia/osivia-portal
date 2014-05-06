@@ -42,11 +42,14 @@ public class Constants {
     /** Contribution service name. */
     public static final String CONTRIBUTION_SERVICE_NAME = "ContributionService";
 
+
     // JBoss portal objects
+
     /** JBP key portalName. */
     public static final String PORTAL_NAME = "portalName";
     /** name of the default portal. */
     public static final String PORTAL_NAME_DEFAULT = "default";
+
 
     // Header and footer
 
@@ -64,14 +67,18 @@ public class Constants {
     public static final String ATTR_FIRST_TAB = "osivia.firstTab";
     /** Page category attribute name. */
     
+
     // Generic
     
-    public static String ATTR_PAGE_CATEGORY = "osivia.pageCategory";
+    public static final String ATTR_PAGE_CATEGORY = "osivia.pageCategory";
     /** User session data attribute name. */
-    public static String ATTR_USER_DATAS = "osivia.userDatas";
+    public static final String ATTR_USER_DATAS = "osivia.userDatas";
     /** Native space object attribute name. */    
-    public static String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
+    public static final String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
+    /** Wizard mode indicator. */
+    public static final String ATTR_WIZARD_MODE = "osivia.wizard";
     
+
     // Breadcrumb
 
     /** Breadcrumb content attribute name. */
@@ -105,36 +112,41 @@ public class Constants {
     /** Administration HTML content attribute name. */
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
 
+
     // SEO
+
     /** title of the document. */
     public static final String HEADER_TITLE = "osivia.header.title";
     /** metas of the document. */
     public static final String HEADER_META = "osivia.header.meta";
 
+
     //PORTLET - INPUT
-    /**  menuBar     */
+
+    /** Menu bar. */
     public static final String PORTLET_ATTR_MENU_BAR = "osivia.menuBar";
-    /**  user datas Map     */    
+    /** User datas map. */
     public static final String PORTLET_ATTR_USER_DATAS = "osivia.userDatas";
-    
-    /**  user datas Map  timestamp   */    
+    /** User datas Map timestamp. */
     public static final String PORTLET_ATTR_USER_DATAS_REFRESH_TS = "osivia.userDatas.refreshTimestamp";
-    
-    /**  http request     */       
+    /** HTTP request. */
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
-    /**  space configuratoin request     */   
+    /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     
+
     //PORTLET - OUTPUT
-    /** To refresh all page     */
+
+    /** To refresh all page. */
     public static final String PORTLET_ATTR_REFRESH_PAGE = "osivia.refreshPage";
-    /** To return to normal mode     */   
+    /** To return to normal mode. */
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
-    /** To refresh all CMS Contents */
+    /** To refresh all CMS Contents. */
     public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";     
      
     public static final String PORTLET_VALUE_ACTIVATE = "true"; 
     
+
     // WINDOWS
     /** The CMS URI of the portlet */    
     public static final String WINDOW_PROP_URI = "osivia.cms.uri";
