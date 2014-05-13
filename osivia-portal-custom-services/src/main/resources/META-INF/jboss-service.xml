@@ -789,5 +789,15 @@
         <xmbean />
 
     </mbean>
+    
+    
+        <mbean
+        code="org.osivia.portal.core.theming.PageHeaderResourceService"
+        name="osivia:service=PageHeaderResourceService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+    
 </server>
    
