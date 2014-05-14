@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,41 +10,42 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
-
 package org.osivia.portal.core.theming;
 
 import org.jboss.portal.server.deployment.PortalWebApp;
 
 
-
 /**
- * The Interface IPageHeaderResourceService.
+ * Page header resource service interface.
+ *
  * @author Jean-Sébastien Steux
+ * @author Cédric Krommenhoek
  */
 public interface IPageHeaderResourceService {
-    
+
     /**
-     * Deploy a webapp
+     * Portal web-app deployment.
      *
-     * @param pwa the pwa
+     * @param portalWebApp the portal web-app to deploy
      */
-    public void deploy(PortalWebApp pwa) ;
-    
+    void deploy(PortalWebApp portalWebApp);
+
+
     /**
-     * Undeploy a webapp
+     * Portal web-app undeployment.
      *
-     * @param pwa the pwa
+     * @param portalWebApp the portal web-app to undeploy
      */
-    public void undeploy(PortalWebApp pwa);
-    
+    void undeploy(PortalWebApp portalWebApp);
+
+
     /**
      * Adapt resource element.
-     *
-     * @param originalResourceURL the original resource url
-     * @return the string
+     * 
+     * @param originalElement original resource element
+     * @return adapted resource element
      */
-    public String adaptResourceElement(String originalResourceURL) ;
+    String adaptResourceElement(String originalElement);
 
 }

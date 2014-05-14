@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,108 +10,115 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
-
 package org.osivia.portal.core.theming;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletContext;
+
+import org.apache.commons.lang.BooleanUtils;
 import org.jboss.portal.server.deployment.PortalWebApp;
+import org.osivia.portal.core.constants.InternalConstants;
 
 
 /**
- * The Class PageHeaderResourceService.
+ * Page header resource service implementation.
+ *
+ * @author Jean-Sébastien Steux
+ * @author Cédric Krommenhoek
+ * @see IPageHeaderResourceService
  */
 public class PageHeaderResourceService implements IPageHeaderResourceService {
 
+    /** Manifest resource path. */
+    private static final String MANIFEST_RESOURCE_PATH = "/META-INF/MANIFEST.MF";
+    /** Manifest attribute name for maven-generated version number. */
+    private static final String MAVEN_VERSION_MANIFEST_ATTRIBUTE = "Implementation-Version";
 
-    /** The href. */
-    Pattern href = Pattern.compile("(.*)(href|src)=\"((?:[^\"])*)\"((.*))(\n)*");
+    /** Page header resource cache. */
+    private final PageHeaderResourceCache cache;
+
+    /** Resource pattern. */
+    private final Pattern resourcePattern;
 
 
-    /* (non-Javadoc)
-     * @see org.osivia.portal.core.theming.IPageHeaderResourceService#deploy(org.jboss.portal.server.deployment.PortalWebApp)
+    /**
+     * Constructor.
      */
-    public void deploy(PortalWebApp pwa) {
+    public PageHeaderResourceService() {
+        this.cache = PageHeaderResourceCache.getInstance();
+        this.resourcePattern = Pattern.compile("^(.+(href|src)=[^/]+)((/[^/]+)/.*)(\\.css|\\.js)(.+)$", Pattern.CASE_INSENSITIVE);
+    }
 
 
-        Manifest manifest;
-        try {
-            if (pwa.getServletContext() != null) {
+    /**
+     * {@inheritDoc}
+     */
+    public void deploy(PortalWebApp portalWebApp) {
+        // Servlet context
+        ServletContext servletContext = portalWebApp.getServletContext();
+        if (servletContext != null) {
+            try {
+                URL url = servletContext.getResource(MANIFEST_RESOURCE_PATH);
+                Manifest manifest = new Manifest(url.openStream());
+                Attributes attributes = manifest.getMainAttributes();
+                String version = attributes.getValue(MAVEN_VERSION_MANIFEST_ATTRIBUTE);
+                this.cache.addVersion(portalWebApp.getContextPath(), version);
+            } catch (IOException e) {
+                // Do nothing
+            }
+        }
+    }
 
-                InputStream is = pwa.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
 
-                if (is != null) {
+    /**
+     * {@inheritDoc}
+     */
+    public void undeploy(PortalWebApp portalWebApp) {
+        this.cache.removeVersion(portalWebApp.getContextPath());
+        this.cache.clearAdaptedElements();
+    }
 
-                    manifest = new Manifest(is);
 
-                    Attributes attrs = manifest.getMainAttributes();
-                    if (attrs != null) {
-                        String builtBy = attrs.getValue("Built-By");
+    /**
+     * {@inheritDoc}
+     */
+    public String adaptResourceElement(String originalElement) {
+        String adaptedElement = this.cache.getAdaptedElement(originalElement);
+        if (adaptedElement == null) {
+            // Default value
+            adaptedElement = originalElement;
 
-                        if (builtBy != null)
-                            // Add to cache
-                            PageHeaderResourceCache.contextVersions.put(pwa.getContextPath(), builtBy);
+            if (BooleanUtils.toBoolean(System.getProperty(InternalConstants.SYSTEM_PROPERTY_ADAPT_RESOURCE))) {
+                Matcher matcher = this.resourcePattern.matcher(originalElement.trim());
+                if (matcher.matches()) {
+                    // Context path
+                    String contextPath = matcher.group(4);
+                    // Version
+                    String version = this.cache.getVersion(contextPath);
+
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(matcher.group(1));
+                    builder.append(matcher.group(3));
+                    if (version != null) {
+                        builder.append("-").append(version);
                     }
-
+                    builder.append(matcher.group(5));
+                    builder.append(matcher.group(6));
+                    adaptedElement = builder.toString();
                 }
             }
 
-        } catch (Exception e) {
-            // NO MANIFEST
+            // Add adapted URL in cache
+            this.cache.addAdaptedElement(originalElement, adaptedElement);
         }
-
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.osivia.portal.core.theming.IPageHeaderResourceService#undeploy(org.jboss.portal.server.deployment.PortalWebApp)
-     */
-    public void undeploy(PortalWebApp pwa) {
-        PageHeaderResourceCache.contextVersions.remove(pwa.getContextPath());
-
-    }
-
-
-    /* (non-Javadoc)
-     * @see org.osivia.portal.core.theming.IPageHeaderResourceService#adaptResourceElement(java.lang.String)
-     */
-    public String adaptResourceElement(String originalResourceURL) {
-
-        Matcher mHref = href.matcher(originalResourceURL);
-        if (mHref.matches()) {
-
-
-                String url = mHref.group(3);
-
-                String[] contexts = url.split("/");
-
-                if (contexts.length > 2) {
-                    
-                    String context = "/" + contexts[1];
-
-                    String builtBy = PageHeaderResourceCache.contextVersions.get(context);
-
-                    if (builtBy != null) {
-                        // build new url
-                        url = url + "?builtBy=" + builtBy;
-                        
-                        // Concat all groups
-
-                        String hrefResult = mHref.group(1) + mHref.group(2) + "=\"" + url + "\"" + mHref.group(4);
-
-                        return hrefResult;
-                    }
-                }
-            
-        }
-
-        return originalResourceURL;
+        return adaptedElement;
     }
 
 }

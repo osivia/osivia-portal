@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,7 +16,7 @@ package org.osivia.portal.core.constants;
 
 /**
  * OSIVIA portal internal constants.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public final class InternalConstants {
@@ -84,6 +84,9 @@ public final class InternalConstants {
     public static final String SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV = "div";
     /** Page categories prefix. */
     public static final String SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX = "page.category.prefix";
+    /** Adapt resource system property name. */
+    public static final String SYSTEM_PROPERTY_ADAPT_RESOURCE = "osivia.adaptResource";
+
 
     // Administration constants
 
