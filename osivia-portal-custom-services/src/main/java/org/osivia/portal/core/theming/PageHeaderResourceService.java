@@ -13,7 +13,6 @@
  */
 package org.osivia.portal.core.theming;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -70,7 +69,7 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
                 Attributes attributes = manifest.getMainAttributes();
                 String version = attributes.getValue(MAVEN_VERSION_MANIFEST_ATTRIBUTE);
                 this.cache.addVersion(portalWebApp.getContextPath(), version);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Do nothing
             }
         }
@@ -107,7 +106,7 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
                     builder.append(matcher.group(1));
                     builder.append(matcher.group(3));
                     if (version != null) {
-                        builder.append("-").append(version);
+                        builder.append("-adapt-").append(version);
                     }
                     builder.append(matcher.group(5));
                     builder.append(matcher.group(6));

@@ -126,31 +126,31 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         }
 
         // CSS
-        out.write("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
-        out.write("<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>");
-        out.write("<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>");
-        out.write("<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>");
-        out.write("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
-        out.write("<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>"));
 
         // post messages API (must be loaded before fancy integration)
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>"));
 
         // Print
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/print/print.js\"></script>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/print/print.js\"></script>"));
 
         // Fancybox
-        out.write("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>"));
 
         // Dropdown menu
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/dropdown-integration.js\"></script>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/dropdown-integration.js\"></script>"));
 
         // JSTree
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>"));
+        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>"));
     }
 
 }

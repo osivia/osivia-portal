@@ -121,7 +121,7 @@ public class PageHeaderResourceServiceTest {
 
         // Test asserts
         assertFalse(originalElement.equals(adaptedElement));
-        assertTrue(adaptedElement.contains(contextPath + "/style/test-3.2.0-RC1.css"));
+        assertTrue(adaptedElement.contains(contextPath + "/style/test-adapt-3.2.0-RC1.css"));
         assertEquals(adaptedElement, this.cache.getAdaptedElement(originalElement));
     }
 
@@ -138,7 +138,7 @@ public class PageHeaderResourceServiceTest {
         String adapted = this.service.adaptResourceElement(original);
 
         // Test asserts
-        assertEquals("<link type=\"text/css\" rel=\"stylesheet\" href=\"/toutatice-portail-cms-nuxeo/css/common-3.2.0-RC2.css\" media=\"screen\"/>", adapted);
+        assertEquals("<link type=\"text/css\" rel=\"stylesheet\" href=\"/toutatice-portail-cms-nuxeo/css/common-adapt-3.2.0-RC2.css\" media=\"screen\"/>", adapted);
     }
 
 }
