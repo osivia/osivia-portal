@@ -105,7 +105,7 @@ public class WebIdService implements IWebIdService {
         String extension = item.getProperties().get(EXTENSION_URL);
         String webpath = null;
 
-        if (StringUtils.isNotEmpty(webid)) {
+        if (StringUtils.isNotEmpty(webid) && StringUtils.isNotEmpty(domainId)) {
             webpath = SLASH.concat(domainId).concat(SLASH);
 
             if (StringUtils.isNotEmpty(explicitUrl) ) {

@@ -54,6 +54,7 @@ import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.customization.ICustomizationService;
@@ -203,7 +204,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             
             Object spaceConfig = ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
             if( spaceConfig != null)
-                attributes.put(Constants.PORTLET_ATTR_SPACE_CONFIG, spaceConfig);
+                attributes.put(Constants.PORTLET_ATTR_SPACE_CONFIG, ((CMSItem) spaceConfig).getNativeItem());
                 
 
 
