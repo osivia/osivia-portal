@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.server.deployment.PortalWebApp;
 import org.osivia.portal.core.constants.InternalConstants;
 
@@ -99,6 +100,10 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
                 if (matcher.matches()) {
                     // Context path
                     String contextPath = matcher.group(4);
+                    if (StringUtils.startsWith(contextPath, "/portal-")) {
+                        // Example : /portal-ajax
+                        contextPath = "/osivia-portal-custom-web-assets";
+                    }
                     // Version
                     String version = this.cache.getVersion(contextPath);
 

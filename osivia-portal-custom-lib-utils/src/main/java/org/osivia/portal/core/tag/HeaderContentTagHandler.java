@@ -98,8 +98,15 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             return;
         }
 
+        // AJAX header
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/portal-ajax/dyna/prototype.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/portal-ajax/dyna/effects.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/portal-ajax/dyna/dragdrop.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/portal-ajax/dyna/dyna.js\"></script>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"dyna_css\" href=\"/portal-ajax/dyna/style.css\" type=\"text/css\"/>");
+        
         // JQuery 1.8.3 for fancybox 2.1.3 compatibility
-        out.write("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jquery/jquery-1.8.3.min.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jquery/jquery-1.8.3.min.js\"></script>");
 
         //
         Map<?, ?> results = page.getWindowContextMap();
@@ -126,31 +133,43 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         }
 
         // CSS
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>"));
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>");
 
         // post messages API (must be loaded before fancy integration)
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>"));
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>");
 
         // Print
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/print/print.js\"></script>"));
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/print/print.js\"></script>");
 
         // Fancybox
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>"));
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"main_css\" href=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/fancybox/jquery.fancybox.pack.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/fancy-integration.js\"></script>");
 
         // Dropdown menu
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/dropdown-integration.js\"></script>"));
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/dropdown-integration.js\"></script>");
 
         // JSTree
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>"));
-        out.write(this.getPageHeaderResourceService().adaptResourceElement("<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>"));
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
+        this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
     }
 
+    
+    /**
+     * Write resource element.
+     * 
+     * @param out JSP writer
+     * @param resource resource element
+     * @throws IOException 
+     */
+    private void writeResource(JspWriter out, String resource) throws IOException {
+        out.write(this.getPageHeaderResourceService().adaptResourceElement(resource));
+    }
+    
 }
