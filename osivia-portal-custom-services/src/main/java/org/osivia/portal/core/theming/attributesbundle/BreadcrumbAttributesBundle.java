@@ -262,7 +262,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     try {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         String url;
-                        if (StringUtils.isNotEmpty(cmsItem.getWebId())) {
+                        if (cmsItem != null && StringUtils.isNotEmpty(cmsItem.getWebId())) {
 
                             String webPath = webIdService.itemToPageUrl(cmsItem);
 
