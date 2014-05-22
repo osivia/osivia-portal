@@ -481,7 +481,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                         Map<String, String> windowProperties = wrc.getProperties();
                         String windowId = wrc.getId();
 
-                        if (!windowId.endsWith("PIA_EMPTY")) {
+                        if (!windowId.endsWith("PIA_EMPTY") && !WindowState.MAXIMIZED.equals (wrc.getWindowState())) {
                             URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
                             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
                             DynamicWindow window = (DynamicWindow) this.portalObjectContainer.getObject(poid);

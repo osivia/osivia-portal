@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
@@ -50,7 +51,7 @@ import org.osivia.portal.core.theming.RegionDecorator;
 
 /**
  * Implementation of a Region renderer, based on div tags.
- *
+ * 
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @author <a href="mailto:roy@jboss.org>Roy Russo</a>
  * @version $LastChangedRevision: 8784 $, $LastChangedDate: 2007-10-27 19:01:46 -0400 (Sat, 27 Oct 2007) $
@@ -202,7 +203,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session.
-     *
+     * 
      * @param rendererContext page context
      * @param irrc region renderer context
      * @return true if CMS tools must be shown
@@ -221,7 +222,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /**
      * Utility method used to add portlet link.
-     *
+     * 
      * @param rendererContext renderer context
      * @param irrc region renderer context
      * @param locale current locale
@@ -231,43 +232,46 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     private void addPortletLink(RendererContext rendererContext, IRegionRendererContext irrc, Locale locale, PrintWriter markup) throws RenderException {
         // Lien d'ajout de portlet
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
-            DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
-            if (irrc.isCMS()) {
-                div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
-                // region id
-                DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
-                span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_CMS_SPAN);
-                span.addAttribute(QName.get(HTMLConstants.TITLE), INTERNATIONALIZATION_SERVICE.getString("REGION_CMS_TITLE", locale));
-                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_CMS", locale).concat(irrc.getId()));
-                div.add(span);
-            } else {
+            if (!StringUtils.equals(irrc.getId(), "maximized")) {
+                DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
+                if (irrc.isCMS()) {
+                    div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
-                String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
-                div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
+                    // region id
+                    DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
+                    span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_CMS_SPAN);
+                    span.addAttribute(QName.get(HTMLConstants.TITLE), INTERNATIONALIZATION_SERVICE.getString("REGION_CMS_TITLE", locale));
+                    span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_CMS", locale).concat(irrc.getId()));
+                    div.add(span);
+                } else {
 
-                DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
-                a.addAttribute(QName.get(HTMLConstants.HREF), url);
-                a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
-                a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + irrc.getId() + "'");
-                div.add(a);
+                    String url = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
+                    div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_COMMANDS);
 
-                DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
-                img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
-                a.add(img);
+                    DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
+                    a.addAttribute(QName.get(HTMLConstants.HREF), url);
+                    a.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_FANCYBOX);
+                    a.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + irrc.getId() + "'");
+                    div.add(a);
 
-                // region id
-                DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
-                span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_TPL_SPAN);
-                span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_TEMPLATE", locale).concat(irrc.getId()));
-                div.add(span);
-            }
+                    DOMElement img = new DOMElement(QName.get(HTMLConstants.IMG));
+                    img.addAttribute(QName.get(HTMLConstants.SRC), SRC_IMG_ADD);
+                    a.add(img);
 
-            HTMLWriter htmlWriter = new HTMLWriter(markup);
-            try {
-                htmlWriter.write(div);
-            } catch (IOException e) {
-                throw new RenderException(e);
+                    // region id
+                    DOMElement span = new DOMElement(QName.get(HTMLConstants.SPAN));
+                    span.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_REGIONS_NAME_TPL_SPAN);
+                    span.setText(INTERNATIONALIZATION_SERVICE.getString("REGION_TEMPLATE", locale).concat(irrc.getId()));
+                    div.add(span);
+                }
+
+                HTMLWriter htmlWriter = new HTMLWriter(markup);
+                try {
+                    htmlWriter.write(div);
+                } catch (IOException e) {
+                    throw new RenderException(e);
+                }
             }
         }
     }
