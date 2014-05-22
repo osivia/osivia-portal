@@ -308,15 +308,25 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
 
             PortalObjectId pageIdToControl = child.getId();
+            
+            
+            /*
             if (child instanceof ITemplatePortalObject) {
                 // In case of template, check original template rights ; moreover, there is no customization
                 pageIdToControl = ((ITemplatePortalObject) child).getTemplate().getId();
             }
+            */
+            boolean permissionCheck = true;
+            
+            // Don't check template permission
+            if (!(child instanceof ITemplatePortalObject)) {
+                 // Permission
+                PortalObjectPermission permission = new PortalObjectPermission(pageIdToControl, PortalObjectPermission.VIEW_MASK);
+                if( !portalAuthorizationManager.checkPermission(permission))
+                    permissionCheck = false;
+            }
 
-            // Permission
-            PortalObjectPermission permission = new PortalObjectPermission(pageIdToControl, PortalObjectPermission.VIEW_MASK);
-
-            if (portalAuthorizationManager.checkPermission(permission) && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
+            if (permissionCheck && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
                 UserPage userPage = new UserPage();
                 mainPages.add(userPage);
 
