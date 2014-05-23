@@ -39,7 +39,11 @@ public class CMSPublicationInfos {
 	private boolean editableByUser = false;
 	private boolean deletableByUser = false;
 	private boolean anonymouslyReadable = false;
-	private boolean published = false;
+	/** Published CMS item indicator. */
+    private boolean published = false;
+	/** Indicates if working version is different from published version. */
+    private boolean beingModified;
+    
 	private boolean commentableByUser;
 
 	private String spaceID = null;
@@ -123,15 +127,39 @@ public class CMSPublicationInfos {
 		this.anonymouslyReadable = anonymouslyReadable;
 	}
 
-	public boolean isPublished() {
-		return published;
-	}
+    /**
+     * Getter for published.
+     * @return the published
+     */
+    public boolean isPublished() {
+        return published;
+    }
 
-	public void setPublished(boolean published) {
-		this.published = published;
-	}
+    /**
+     * Setter for published.
+     * @param published the published to set
+     */
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
 
-	public boolean isCommentableByUser() {
+    /**
+     * Getter for beingModified.
+     * @return the beingModified
+     */
+    public boolean isBeingModified() {
+        return beingModified;
+    }
+
+    /**
+     * Setter for beingModified.
+     * @param beingModified the beingModified to set
+     */
+    public void setBeingModified(boolean beingModified) {
+        this.beingModified = beingModified;
+    }
+
+    public boolean isCommentableByUser() {
 		return commentableByUser;
 	}
 

@@ -559,29 +559,25 @@ public class CmsCommand extends DynamicCommand {
     public ControllerResponse execute() throws ControllerException {
 
         try {
+            // Controller context
+            ControllerContext controllerContext = this.getControllerContext();
+            
             // Profiler
             if( cmsPath != null)  {
-                getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.profiler.cmsPath", cmsPath);
+                controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.profiler.cmsPath", cmsPath);
             }    
 
             
-            
-            
-            
-            ControllerContext controllerContext = this.getControllerContext();
             Page currentPage = null;
             Level level = null;
 
             // Récupération page
-
             if (this.pagePath != null) {
                 PortalObjectId poid = PortalObjectId.parse(this.pagePath, PortalObjectPath.CANONICAL_FORMAT);
                 currentPage = (Page) controllerContext.getController().getPortalObjectContainer().getObject(poid);
 
                 if (currentPage == null) {
-                    // La page n'est plus accessible, on tente de contextualiser
-                    // dans le portail
-                    // (cas de la perte de session)
+                    // La page n'est plus accessible, on tente de contextualiser dans le portail (cas de la perte de session)
                     this.contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTAL;
                 }
             }
@@ -694,33 +690,24 @@ public class CmsCommand extends DynamicCommand {
             /* Lecture de l'item */
 
             if (this.cmsPath != null) {
-
                 try {
                     // Attention, cet appel peut modifier si nécessaire le
                     // scope de cmsReadItemContext
-
                     if (level == Level.allowPreviewVersion) {
                         cmsReadItemContext.setDisplayLiveVersion("1");
                     }
 
                     cmsItem = getCMSService().getContent(cmsReadItemContext, this.cmsPath);
-
                 } catch (CMSException e) {
-
-
                     if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN) {
                         return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
                     }
 
                     if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) {
                         return new UnavailableResourceResponse(this.cmsPath, false);
-
                     }
-
                 }
-
             }
-
 
 
             /* Adapatation des paths à la navigation pilotée par le contenu */

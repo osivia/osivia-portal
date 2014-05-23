@@ -159,7 +159,7 @@ public class ContributionService implements IContributionService {
     /* 
      * @see org.osivia.portal.api.contribution.IContributionService#getPublishContributionUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String)
      */
-    public String getPublishContributionUrl(PortalControllerContext portalControllerContext, String docPath) {
+    public String getPublishContributionURL(PortalControllerContext portalControllerContext, String docPath) {
         
         Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
         
@@ -178,6 +178,30 @@ public class ContributionService implements IContributionService {
         return null;
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getUnpublishContributionURL(PortalControllerContext portalControllerContext, String docPath) {
+        // Current window
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+        if (window != null) {
+            // Controller context
+            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+            // URL context
+            URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+            
+            // Window identifier
+            String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+            // Unpublish command
+            PublishContributionCommand command = new PublishContributionCommand(windowId, docPath, IContributionService.UNPUBLISH);
+            
+            // URL
+            return controllerContext.renderURL(command, urlContext, URLFormat.newInstance(false, true));
+        }
+        return null;
+    }
+    
 
     /**
      * remove the current window edition state
