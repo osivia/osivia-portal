@@ -237,8 +237,14 @@ public final class InternalConstants {
     /** Templates path name convention. */
     public static final String TEMPLATES_PATH_NAME = "templates";
 
-    /** Live edition indicator. */
-    public static final String LIVE_EDITION = "LiveEdition";
+    /** Proxy preview. */
+    public static final String PROXY_PREVIEW = "preview";
+    /** Fancybox proxy indicator callback. */
+    public static final String FANCYBOX_PROXY_CALLBACK = "fancyProxy";
+    /** Fancybox live indicator callback. */
+    public static final String FANCYBOX_LIVE_CALLBACK = "fancyLive";
+    /** Live version document request attribute. */
+    public static final String ATTR_LIVE_DOCUMENT = "osivia.cms.liveDocument";
 
     /** Hide portlet in menu property name. */
     public static final String HIDE_PORTLET_IN_MENU_PROPERTY = "hide";

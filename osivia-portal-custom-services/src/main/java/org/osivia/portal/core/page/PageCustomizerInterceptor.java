@@ -646,7 +646,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), cmsWindow.getId());
                     
                     if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
-                       controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION,  state.getDocPath());
+                       controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT,  state.getDocPath());
                     }                    
                 }
             }

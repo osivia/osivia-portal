@@ -565,6 +565,9 @@ public class CmsCommand extends DynamicCommand {
             }    
 
             
+            
+            
+            
             ControllerContext controllerContext = this.getControllerContext();
             Page currentPage = null;
             Level level = null;
@@ -605,7 +608,8 @@ public class CmsCommand extends DynamicCommand {
             // }
 
             // LBI : refresh navigation when a cms page is created or edited
-            if (IPortalUrlFactory.DISPLAYCTX_REFRESH.equals(this.displayContext)) {
+            if (IPortalUrlFactory.DISPLAYCTX_REFRESH.equals(this.displayContext) || InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext)
+                    || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
                 PageProperties.getProperties().setRefreshingPage(true);
             }
 
@@ -633,9 +637,9 @@ public class CmsCommand extends DynamicCommand {
                 }
 
 
-                if (InternalConstants.LIVE_EDITION.equals(this.displayContext)) {
-                    cmsReadItemContext.setPreviewVersionPath(this.cmsPath);
-                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION, this.cmsPath);
+                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
+                    cmsReadItemContext.setForcedLivePath(this.cmsPath);
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, this.cmsPath);
                 }
 
             }
@@ -1582,7 +1586,9 @@ public class CmsCommand extends DynamicCommand {
                 }
 
                 EditionState editionState = null;
-                if (InternalConstants.LIVE_EDITION.equals(this.displayContext)) {
+                
+                
+                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
                     editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
                 }
 

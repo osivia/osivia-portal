@@ -1,96 +1,86 @@
 
-
 var callbackId = "";
 var callbackUrl = "";
 
-/**
-* manage callback after closing fancybox
-*/
-function callback( )	{
+var callbackUrlFromEcm = "";
+var currentDocumentId = "";
+var live = "";
+var ecmBaseUrl ="";
 
-	if(callbackId) {
+
+/**
+ * manage callback after closing fancybox
+ */
+function callback( )	{
+	if (callbackId) {
 		var divElt = document.getElementById(callbackId);	
 	}
-	
-	
-	
-	if(divElt) {
+
+	if (divElt) {
 		// reload portlet
-		//console.log("callback reload portlet " + callbackUrl);
-			
 		updatePortletContent( divElt, callbackUrl);
 		
-	}
-	// load a new page
-	else if (callbackUrlFromEcm) {
-		
+	} else if (callbackUrlFromEcm) {
+		// load a new page
 		var $f = jQuery('.fancybox-iframe');
 		
-		if($f && currentDocumentId) {
-
+		if ($f && currentDocumentId) {
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
+			redirectUrl = redirectUrl.replace('_LIVE_', live);
 			
-			if(redirectUrl) {
-				//console.log("callback load a new page " + redirectUrl);
-				
+			if (redirectUrl) {
 				window.location.replace(redirectUrl);
 			}
 		}
-		
-	}
-	else {
+	} else {
 		// reload full page
-		if(!callbackUrl) {
-			callbackUrl = document.URL; // if not specified, stay on the current page
+		if (!callbackUrl) {
+			// if not specified, stay on the current page
+			callbackUrl = document.URL; 
 		}
 		
-		//console.log("callback reload full page " + callbackUrl);
 		window.location.replace(callbackUrl);
-
 	}
 }
 
-var callbackUrlFromEcm = "";
-var currentDocumentId = "";
-var ecmBaseUrl ="";
 
 /**
-* Generic callback params
-*/
-function setCallbackParams( id, url)	{
-
+ * Generic callback params
+ */
+function setCallbackParams( id, url) {
 	callbackId = id;
 	callbackUrl = url;
 }
 
-/**
-* Specific callback params for ECM conversation
-*/
-function setCallbackFromEcmParams(url, ecm)	{
 
+/**
+ * Specific callback params for ECM conversation
+ */
+function setCallbackFromEcmParams(url, ecm)	{
 	callbackUrlFromEcm = url;
 	ecmBaseUrl = ecm;
 	
-	//setup a callback to handle the dispatched MessageEvent. if window.postMessage is supported the passed
-	// event will have .data, .origin and .source properties. otherwise, it will only have the .data property.
-	XD.receiveMessage(function(message)
-			{
-				receiveMessageAction(message);
-			}
-	 , ecmBaseUrl);
+	// setup a callback to handle the dispatched MessageEvent. if
+	// window.postMessage is supported the passed
+	// event will have .data, .origin and .source properties. otherwise, it will
+	// only have the .data property.
+	XD.receiveMessage(function(message) {
+			receiveMessageAction(message);
+		}, ecmBaseUrl);
 }
 
-function asyncUpdatePortlet( windowId, url)	{
- 	var divElt = document.getElementById(windowId);
 
-	 if( divElt != null)
-			// reload portlet
-			updatePortletContent( divElt, url);
-		else
-			// reload full page
-			window.location.replace(url);
+function asyncUpdatePortlet(windowId, url)	{
+ 	 var divElt = document.getElementById(windowId);
+
+	 if( divElt != null) {
+		 // reload portlet
+		 updatePortletContent( divElt, url);
+	 } else {
+		 // reload full page
+		 window.location.replace(url);
+	 }
 }
-
 
 
 
@@ -147,17 +137,21 @@ function closeFancybox() {
 }
 
 /**
-* Switch actions after recieving messages from ECM
-*/
+ * Switch actions after recieving messages from ECM
+ */
 function receiveMessageAction(message) {
+	console.debug("Receive message : " + message.data);
 	
-	console.log("message : " + message.data);
-	
-	if(message.data == 'closeFancyBox') {
+	if (message.data == 'closeFancyBox') {
 		parent.$JQry.fancybox.close();
-	}
-	else if (message.data.match('currentDocumentId')) {
+	} else if (message.data.match('currentDocumentId')) {
 		currentDocumentId = message.data.replace('currentDocumentId=','');
+	} else if (message.data.match('live')) {
+		if (message.data.replace('live=', '') === 'true') {
+			live = "fancyLive";
+		} else {
+			live = "fancyProxy";
+		}
 	}
 }
 
@@ -171,7 +165,7 @@ $JQry(document).ready(function() {
 	var fDefined = typeof(fancybox_inline) != 'undefined';
 	/* Trouver autre critère d'égalité */
 	var equals = fancybox_no_title.context == fancybox_inline.context;
-	if(fntDefined && fDefined && equals){	
+	if (fntDefined && fDefined && equals){	
 		$JQry(".fancybox_inline").fancybox({
 			helpers: { 
 		        title: null

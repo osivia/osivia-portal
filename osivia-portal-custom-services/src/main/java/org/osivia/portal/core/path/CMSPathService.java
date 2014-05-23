@@ -149,7 +149,7 @@ public class CMSPathService implements ICMSPathService {
         String title = cmsItem.getProperties().get("displayName");
         String path = cmsItem.getPath();
         String cmsUrl = this.portalURLFactory
-                .getCMSUrl(portalControllerContext, null, path, null, null, InternalConstants.LIVE_EDITION, null, null, null, null);
+                .getCMSUrl(portalControllerContext, null, path, null, null, InternalConstants.PROXY_PREVIEW, null, null, null, null);
         String popupUrl = this.portalURLFactory.adaptPortalUrlToPopup(portalControllerContext, cmsUrl, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
         String id;
         try {

@@ -177,8 +177,8 @@ public class CmsPermissionHelper {
 
 
             } else {
-                String liveEditionPath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.LIVE_EDITION);
-                cmsContext.setPreviewVersionPath(liveEditionPath);
+                String liveEditionPath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT);
+                cmsContext.setForcedLivePath(liveEditionPath);
 
                 CMSPublicationInfos pubInfos = null;
 
@@ -205,7 +205,7 @@ public class CmsPermissionHelper {
                     }   
 
 
-                    if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && pubInfos.getDocumentPath().equals(liveEditionPath)) {
+                    if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && (pubInfos.getDocumentPath().equals(liveEditionPath) || pubInfos.getLiveId().equals(liveEditionPath))) {
                         cmsVersion = CMS_VERSION_PREVIEW;
                     }
                 }
