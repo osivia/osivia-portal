@@ -36,7 +36,9 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
@@ -153,19 +155,39 @@ public class PublishContributionCommand extends ControllerCommand {
 
                 String success = itlzService.getString(SUCCESS_MESSAGE_PUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
+                
+                
+                ContributionService.setWindowEditionState(getControllerContext(), window.getId(), new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE,docPath));
+
+                PageProperties.getProperties().setRefreshingPage(true);
+                
+                return new UpdatePageResponse(window.getPage().getId());
+                
             } else if (actionCms.equals(IContributionService.UNPUBLISH)) {
+                
+                
                 getCMSService().unpublishDocument(cmsCtx, docPath);
 
                 String success = itlzService.getString(SUCCESS_MESSAGE_UNPUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
+                
+                // relaod navigation tree
+                PageProperties.getProperties().setRefreshingPage(true);
+
+
+                // Redirect to the parent window
+                CMSObjectPath parentPath = CMSObjectPath.parse(docPath).getParent();
+                String redirectPath = parentPath.toString();
+
+                CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, null, null, null, null, null, null, null);
+                ControllerResponse execute = context.execute(redirect);
+
+                return execute;
+                
             }
             
-            
-            ContributionService.setWindowEditionState(getControllerContext(), window.getId(), new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE,docPath));
+            return null;
 
-            PageProperties.getProperties().setRefreshingPage(true);
-            
-            return new UpdatePageResponse(window.getPage().getId());
 
 
         } catch (Exception e) {

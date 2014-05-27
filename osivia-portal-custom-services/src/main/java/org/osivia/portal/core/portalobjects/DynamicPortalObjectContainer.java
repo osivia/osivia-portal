@@ -686,10 +686,20 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			if (page != null) {
 
 				String windowName = id.getPath().getLastComponentName();
+				
+				return page.getChild(windowName);
+				/*
 				WindowImpl templateWindow = (WindowImpl) page.getTemplate().getChild(windowName);
+				try {
 				Window window = new DynamicTemplateWindow(page, templateWindow, templateWindow.getName(), ((PageImpl) page.getTemplate())
 						.getObjectNode().getContext(), this);
+				
 				return window;
+				} catch( Exception e)   {
+				    e.printStackTrace();
+				    return null;
+				}
+				*/
 			} else {
                 return null;
             }

@@ -331,7 +331,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                             topMenu.append("<a href=\"#\" class=\"portlet-dropdown-menu portlet-menuitem no-ajax-link\" data-dropdown=\"#");
                             topMenu.append(window.getName());
-                            topMenu.append("dropdown-1\" title=\"Afficher ou masquer le menu d'édition\">Menu d'édition</a>");
+                            topMenu.append("dropdown-1\" title=\"Afficher ou masquer le menu d'édition\">&nbsp;</a>");
                             topMenu.append("<div id=\"");
                             topMenu.append(window.getName());
                             topMenu.append("dropdown-1\" class=\"dropdown dropdown-tip\" style=\"display: none;\"><ul class=\"dropdown-menu\">");
