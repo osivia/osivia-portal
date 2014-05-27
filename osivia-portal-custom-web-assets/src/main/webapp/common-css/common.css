@@ -162,6 +162,11 @@ a.portlet-menuitem.publish-action {
     background-image: url('../images/icons/icon_publish.png');
 }
 
+a.portlet-menuitem.unpublish-action {
+    background-image: url('../images/icons/icon_unpublish.png');
+}
+
+
 a.portlet-menuitem.live {
     background-image: url('../images/icons/icon_live_version.png');
 }
@@ -186,9 +191,12 @@ a.portlet-menuitem.portlet-menuitem-nuxeo-delete {
 	background-image: url('../images/icons/icon_delete.png');
 }
 
+
 a.portlet-menuitem.portlet-dropdown-menu {
-    background-image: url("../images/icons/icon_dropdown.png");
-    background-size: 16px;
+    background-image: url('../images/icons/icon_edition.png');
+    background-size: 20px 20px;
+    height: 26px;
+    text-decoration: none;
 }
 
 
@@ -204,6 +212,9 @@ span.portlet-menuitem-edition.live {
 }
 
 
+ul.dropdown-menu a    {
+    text-decoration: none;
+}
 
 
 /* Fancybox */
