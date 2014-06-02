@@ -429,9 +429,25 @@ function footer() {
 			snapshot();
 			var toRegionId = elt["regionId"];
 			var toPos = elt["pos"];
-			
+
 			// Ajaxmode : The refURI is under 2 DIV elements
 			var refUri = document.getElementById(toRegionId).childNodes[toPos].children[0].children[0].id;
+
+			// recalcul pour igonrer les regions EMPTY
+			// qui ne sont pas des fragments
+			var emptyToRegionId =  toRegionId.substring( 7);
+			var emptyWindowsTo = $(toRegionId).select('#'+  emptyToRegionId + "_PIA_EMPTY") ;
+			if ( emptyWindowsTo.length > 0)
+				toPos = toPos -1;
+
+			var emptyFromRegionId =  fromRegionId.substring( 7);
+			var emptyWindowsFrom = $(fromRegionId).select('#'+  emptyFromRegionId + "_PIA_EMPTY") ;
+			if ( emptyWindowsFrom.length > 0)
+				fromPos = fromPos -1;
+
+
+			
+
 
 			// Perform request
 			sendData("windowmove", windowId, fromPos, fromRegionId, toPos,
