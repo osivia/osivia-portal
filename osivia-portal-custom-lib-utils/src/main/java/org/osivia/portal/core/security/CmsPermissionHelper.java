@@ -203,14 +203,14 @@ public class CmsPermissionHelper {
                     if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
                         cmsVersion = CMS_VERSION_LIVE;
                     }   
-
-
-                    if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && (pubInfos.getDocumentPath().equals(liveEditionPath) || pubInfos.getLiveId().equals(liveEditionPath))) {
-                        cmsVersion = CMS_VERSION_PREVIEW;
-                    }
                 }
 
 
+                if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && (pubInfos.getDocumentPath().equals(liveEditionPath) || pubInfos.getLiveId().equals(liveEditionPath))) {
+                    cmsVersion = CMS_VERSION_PREVIEW;
+                }
+                
+                
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion, belongToPublishSpace);
 
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL.concat(cmsPath), level);

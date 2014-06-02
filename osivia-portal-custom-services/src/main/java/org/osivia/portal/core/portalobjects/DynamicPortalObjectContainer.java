@@ -49,6 +49,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
@@ -385,6 +386,16 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 					cmsReadItemContext.setDisplayLiveVersion("0");
+					
+					
+			        String cmsPreviewPath[] = null;
+		            cmsPreviewPath = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
+		            if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
+		                cmsReadItemContext.setForcedLivePath(cmsPreviewPath[0]);
+		            }
+		            
+		            
+
 
 
 					// SILENT MODE
@@ -392,7 +403,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     if( controllerContext != null)
                         notificationSized = getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext)).size();
 
-                    try   {
+ //                  try   {
 					
                     if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, cmsPath[0]) == Level.allowPreviewVersion) {
 
@@ -446,7 +457,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
 					}
 					
-					
+/*					
                     } catch( Exception e){
                         // SILENT MODE > Catch Exceptions 
                         
@@ -459,8 +470,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                         // PAS FORCEMENT GRAVE ....
 
                     }
+                    */
                     // SILENT MODE > catch notifications
-                    
+                   
                     // erreur due également à la confusion entre contribution front office et edition mode page
                     // des contributions front office 
                     // (ex: folder live sur PublishInfosCommand est considérée comme inaccessible par CmsPermissionHelper)
@@ -729,10 +741,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null,this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
+				
+				return dynamicPage.getChild(windowName);
+				/*
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
 				Window window = new DynamicTemplateWindow(dynamicPage, templateWindow, templateWindow.getName(), ((PageImpl) template)
 						.getObjectNode().getContext(), this);
 				return window;
+				*/
 
 			}
 		}
@@ -762,10 +778,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null, this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
+				
+                return dynamicPage.getChild(windowName);
+                /*
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
 				Window window = new DynamicTemplateWindow(dynamicPage, templateWindow, templateWindow.getName(), ((PageImpl) template)
 						.getObjectNode().getContext(), this);
 				return window;
+				*/
 
 			}
 

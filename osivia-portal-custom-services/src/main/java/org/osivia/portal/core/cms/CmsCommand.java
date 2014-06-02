@@ -1343,6 +1343,13 @@ public class CmsCommand extends DynamicCommand {
                             new String[] { computedPageScope });
                 }
 
+                
+                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
+                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"),
+                            new String[] { this.contentPath });
+                }
+                
+                
                 nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(state));
 
                 /*

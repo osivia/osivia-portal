@@ -18,24 +18,36 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
+import org.osivia.portal.core.web.IWebIdService;
 
 
 public class ServerTrackerInterceptor extends ServerInterceptor {
 
 	protected static final Log logger = LogFactory.getLog(ServerTrackerInterceptor.class);
+	
+    private static ICMSServiceLocator cmsServiceLocator;
 
 	private ITracker tracker;
 	public PortalObjectContainer portalObjectContainer;
@@ -49,6 +61,18 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	}
 
 
+    /**
+     * Static access to CMS service.
+     *
+     * @return CMS service
+     */
+    private static ICMSService getCMSService() {
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
+        return cmsServiceLocator.getCMSService();
+    }
+	
 	public PortalObjectContainer getPortalObjectContainer() {
 
 		if (this.portalObjectContainer == null) {
@@ -113,6 +137,48 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         }
 
         PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
+        
+        /* Récupération du domainID */
+
+        String domainComputed = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId.computed");
+
+        if (domainComputed == null) {
+
+            PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId.computed", "1");
+
+
+            if (portalName != null) {
+
+                PortalObjectId portalId = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
+
+                PortalObject po = portalObjectContainer.getObject(portalId);
+
+                // Pas de page par defaut pour le portail util (NPE) !!!! 
+                Page defPage = ((Portal) po).getDefaultPage();
+
+                if (defPage != null) {
+
+
+                    String basePath = ((Portal) po).getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
+
+
+                    if (basePath != null) {
+                        CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
+                        cmsReadItemContext.setServerInvocation(invocation);
+
+                        CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
+
+                        if (spaceConfig != null) {
+                            String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+
+                            if (!StringUtils.isEmpty(domainId))
+                                PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
+                        }
+                    }
+                }
+            }
+        }
+
 
 
 

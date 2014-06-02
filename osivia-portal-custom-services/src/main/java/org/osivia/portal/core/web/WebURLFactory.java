@@ -43,15 +43,19 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.security.CmsPermissionHelper;
+import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 
 
 public class WebURLFactory extends URLFactoryDelegate {
@@ -140,7 +144,8 @@ public class WebURLFactory extends URLFactoryDelegate {
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
-
+        
+ 
         String domainIdPage = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId");
 
         String cmsPath = null;
@@ -149,6 +154,11 @@ public class WebURLFactory extends URLFactoryDelegate {
             cmsPath = getWebPortalBasePath(controllerContext);
         } else {
             cmsPath = getWebIdService().domainAndIdToFetchInfoService(domainIdPage, webPath);
+            
+            boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
+            if( modePreview)
+                cmsContext.setDisplayLiveVersion("1");
+            
             cmsPath = getCMSService().adaptWebPathToCms(cmsContext, cmsPath);
         }
 
@@ -195,6 +205,9 @@ public class WebURLFactory extends URLFactoryDelegate {
                     return null;
                 if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext()))
                     return null;
+                
+                
+                
 
 
                 String newPath = cmsCmd.getCmsPath().substring(IWebIdService.PREFIX_WEBPATH.length());
@@ -245,6 +258,14 @@ public class WebURLFactory extends URLFactoryDelegate {
 
                 if (StringUtils.isEmpty(pageWebId))
                     return null;
+                
+
+                // Compliqué en retour de fetcher en fonction du webId de l'url
+                // Car pour récupérer le mode de contribution, il faut le windowId ...
+                EditionState editionState = ContributionService.getWindowEditionState(controllerContext,window.getId());
+                if( (editionState != null) && editionState.getContributionMode().equals(EditionState.CONTRIBUTION_MODE_EDITION))  {
+                    return null;
+                }
 
 
                 // String webPath = "/" + adaptCMSPathToWebURL(controllerContext, pageWebId);

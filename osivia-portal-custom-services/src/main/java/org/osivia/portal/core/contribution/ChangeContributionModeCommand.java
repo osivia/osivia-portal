@@ -125,6 +125,8 @@ public class ChangeContributionModeCommand extends ControllerCommand {
       
         getControllerContext().setAttribute(REQUEST_SCOPE, "osivia.changeContributionMode", "1");
         
+        PageProperties.getProperties().setRefreshingPage(true);        
+        
         return new UpdatePageResponse(window.getPage().getId());
 
 

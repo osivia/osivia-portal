@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -197,8 +198,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
      * @throws Exception
      */
     public static boolean checkWebPagePermission(ControllerContext ctx, Page page) throws Exception {
-
-        String pagePath = PagePathUtils.getContentPath(ctx, page.getId());
+        
+        String contentPath = PagePathUtils.getContentPath(ctx, page.getId());
+        String pagePath = PagePathUtils.getNavigationPath(ctx, page.getId());
+        
+        if( ! StringUtils.equals(contentPath, pagePath))
+            return false;
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setServerInvocation(ctx.getServerInvocation());

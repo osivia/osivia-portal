@@ -118,6 +118,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                     logger.debug("osivia.cms.scope " + window.getDeclaredProperty("osivia.cms.scope"));
                 }
 
+                
+                /* Le path CMS identifie de manière unique la session */
+
+                NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
+
 
                 if (window instanceof DynamicWindow) {
                     String uniqueID = ((DynamicWindow) window).getDynamicUniqueID();
@@ -125,11 +131,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                         invocation.setAttribute("osivia.window.path", windowId);
 
 
-                        /* Le path CMS identifie de manière unique la session */
-
-                        NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-                        PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
-
+ 
                         String cmsUniqueID[] = null;
                         if (pageState != null) {
                             cmsUniqueID = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"));
@@ -143,11 +145,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                     }
                 }
-
-
+ 
+                
                 EditionState editionState = ContributionService.getWindowEditionState(ctx, window.getId());
                 attributes.put("osivia.editionState", editionState);
-
+                
+                String webPagePath = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.webPagePath");
+                if( webPagePath != null)
+                    attributes.put("osivia.cms.webPagePath", webPagePath);
+ 
 
             }
 

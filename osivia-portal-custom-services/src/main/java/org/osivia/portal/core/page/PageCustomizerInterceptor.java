@@ -694,6 +694,21 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
                         cmxCtx.setDisplayLiveVersion("1");
                     }
+                    
+                    
+                    
+                    /* Inject web page edition */
+
+                        Boolean layoutCMS = (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
+                        if (BooleanUtils.isTrue(layoutCMS)) {
+                            
+ 
+                            if (getCMSService().isCmsWebPage(cmxCtx, pathPublication)) {
+                                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", pathPublication);
+                            }
+                        }
+
+                    
 
                     CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
 
@@ -777,6 +792,27 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ((sPath != null) && (sPath.length > 0)) {
                 cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[0]);
+
+
+                /* Inject path web page edition */
+
+                CMSServiceCtx cmxCtx = new CMSServiceCtx();
+                cmxCtx.setControllerContext(controllerCtx);
+
+
+                // test si mode assistant activé
+                if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, sPath[0]) == Level.allowPreviewVersion) {
+                    cmxCtx.setDisplayLiveVersion("1");
+                }
+
+                Boolean layoutCMS = (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
+                if (BooleanUtils.isTrue(layoutCMS)) {
+                   if (getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
+                        cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
+                    }
+                }
+
+
             }
 
 
@@ -784,6 +820,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             CMSItem pageConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
             
             cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.spaceConfig", pageConfig);
+            
+            
+     
+         
             
             
         }

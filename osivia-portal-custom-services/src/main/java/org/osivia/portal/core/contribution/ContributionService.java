@@ -1,29 +1,40 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.contribution;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 
 
@@ -34,15 +45,13 @@ public class ContributionService implements IContributionService {
     public static final String ATTR_ADDITITIONNAL_WINDOW_STATES = "osivia.windowStates";
     public static final String ADD_STATE_EDITION_KEY = "editionMode";
 
-  
-    
-     
-    private static String getStringValue(EditionState editionState)  {
+
+    private static String getStringValue(EditionState editionState) {
         return editionState.getContributionMode() + editionState.getDocPath();
     }
-    
-    private static EditionState fromString( String s)  {
-        String contributionMode = s.substring(0,1);
+
+    private static EditionState fromString(String s) {
+        String contributionMode = s.substring(0, 1);
         String docPath = s.substring(1);
         return new EditionState(contributionMode, docPath);
     }
@@ -59,18 +68,61 @@ public class ContributionService implements IContributionService {
     }
 
     /**
-     * set the current window state
+     * set the current edition state
      * 
      * @param controllerContext jboss portal context
      * @param windowID window identifier
      * @param state new state
      */
-    
+
     public static void setWindowEditionState(ControllerContext portalControllerContext, PortalObjectId windowID, EditionState state) {
-        ParametersStateString states = getWindowStatesMap(portalControllerContext, windowID);
-        states.setValue(ADD_STATE_EDITION_KEY, getStringValue(state));
+
+
+        NavigationalStateContext nsContext = (NavigationalStateContext) portalControllerContext
+                .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+        PageNavigationalState pageState = nsContext.getPageNavigationalState(windowID.getPath().getParent().toString());
+
+
+        String sNavPath[] = null;
+        if (pageState != null) {
+            sNavPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+        }
+
+
+        if ((sNavPath != null) && (sNavPath.length > 0) && (!windowID.toString().endsWith("CMSPlayerWindow")) && state.getDocPath().equals(sNavPath[0])) {
+
+            /* Page level edition state */
+
+            PageNavigationalState pns = nsContext.getPageNavigationalState(windowID.getPath().getParent().toString());
+            Map<QName, String[]> newState = new HashMap<QName, String[]>();
+            if (pns != null) {
+                Map<QName, String[]> qNameMap = pns.getParameters();
+                if ((qNameMap != null) && !qNameMap.isEmpty()) {
+
+                    for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
+                        if (!entry.getKey().getLocalPart().equals("osivia.cms.pagePreviewPath"))
+                            newState.put(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                // 
+                if (state.getContributionMode().equals(EditionState.CONTRIBUTION_MODE_EDITION)) {
+                    newState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"), new String[]{state.getDocPath()});
+
+                }
+
+
+                nsContext.setPageNavigationalState(windowID.getPath().getParent().toString(), new PageNavigationalState(newState));
+            }
+
+
+        } else {
+            // window level edition state
+            ParametersStateString states = getWindowStatesMap(portalControllerContext, windowID);
+            states.setValue(ADD_STATE_EDITION_KEY, getStringValue(state));
+        }
     }
-    
+
     /**
      * get current window state
      * 
@@ -78,12 +130,42 @@ public class ContributionService implements IContributionService {
      * @param windowID
      * @return
      */
-    
+
     public static EditionState getWindowEditionState(ControllerContext portalControllerContext, PortalObjectId windowID) {
+
         ParametersStateString states = getWindowStatesMap(portalControllerContext, windowID);
         String state = states.getValue(ADD_STATE_EDITION_KEY);
         if (state != null)
             return fromString(state);
+
+        /* If no window state, Get page navigation state */
+        
+        if(!windowID.toString().endsWith("CMSPlayerWindow")) {
+
+            NavigationalStateContext nsContext = (NavigationalStateContext) portalControllerContext
+                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            PageNavigationalState pageState = nsContext.getPageNavigationalState(windowID.getPath().getParent().toString());
+    
+            
+            String sNavPath[] = null;
+            if (pageState != null) {
+                sNavPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+            }
+    
+    
+            if ((sNavPath != null) && (sNavPath.length > 0) ) {
+                String cmsPreviewPath[] = null;
+                if (pageState != null) {
+                    cmsPreviewPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
+                    if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
+                        EditionState pageEditionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, cmsPreviewPath[0]);
+                        return pageEditionState;
+                    }
+                }
+            }
+        }
+
+
         return null;
     }
 
@@ -95,7 +177,7 @@ public class ContributionService implements IContributionService {
      * @param windowID
      * @return
      */
-    
+
     public static ParametersStateString getWindowStatesMap(ControllerContext controllerContext, PortalObjectId windowID) {
 
         ParametersStateString windowAddStates = null;
@@ -114,9 +196,8 @@ public class ContributionService implements IContributionService {
         return windowAddStates;
     }
 
-    
-    
-    /* 
+
+    /*
      * @see org.osivia.portal.api.contribution.IContributionService#getEditionState(org.osivia.portal.api.context.PortalControllerContext)
      */
     public EditionState getEditionState(PortalControllerContext portalControllerContext) {
@@ -134,15 +215,17 @@ public class ContributionService implements IContributionService {
     }
 
 
-    /* 
-     * @see org.osivia.portal.api.contribution.IContributionService#getChangeEditionStateUrl(org.osivia.portal.api.context.PortalControllerContext, org.osivia.portal.api.contribution.IContributionService.EditionState)
+    /*
+     * @see org.osivia.portal.api.contribution.IContributionService#getChangeEditionStateUrl(org.osivia.portal.api.context.PortalControllerContext,
+     * org.osivia.portal.api.contribution.IContributionService.EditionState)
      */
     public String getChangeEditionStateUrl(PortalControllerContext portalControllerContext, EditionState state) {
 
         Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
         if (window != null) {
 
-            ChangeContributionModeCommand chgCmd = new ChangeContributionModeCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), state.getContributionMode(), state.getDocPath());
+            ChangeContributionModeCommand chgCmd = new ChangeContributionModeCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT),
+                    state.getContributionMode(), state.getDocPath());
             URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
                     .getURLContext();
 
@@ -156,16 +239,18 @@ public class ContributionService implements IContributionService {
     }
 
 
-    /* 
-     * @see org.osivia.portal.api.contribution.IContributionService#getPublishContributionUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String)
+    /*
+     * @see org.osivia.portal.api.contribution.IContributionService#getPublishContributionUrl(org.osivia.portal.api.context.PortalControllerContext,
+     * java.lang.String)
      */
     public String getPublishContributionURL(PortalControllerContext portalControllerContext, String docPath) {
-        
+
         Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
-        
+
         if (window != null) {
 
-            PublishContributionCommand publishCnd = new PublishContributionCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), docPath, IContributionService.PUBLISH );
+            PublishContributionCommand publishCnd = new PublishContributionCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), docPath,
+                    IContributionService.PUBLISH);
             URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
                     .getURLContext();
 
@@ -178,7 +263,7 @@ public class ContributionService implements IContributionService {
         return null;
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
@@ -190,18 +275,18 @@ public class ContributionService implements IContributionService {
             ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
             // URL context
             URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
-            
+
             // Window identifier
             String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
             // Unpublish command
             PublishContributionCommand command = new PublishContributionCommand(windowId, docPath, IContributionService.UNPUBLISH);
-            
+
             // URL
             return controllerContext.renderURL(command, urlContext, URLFormat.newInstance(false, true));
         }
         return null;
     }
-    
+
 
     /**
      * remove the current window edition state
@@ -210,10 +295,10 @@ public class ContributionService implements IContributionService {
      * @param windowID window identifier
      */
     public void removeWindowEditionState(PortalControllerContext portalControllerContext) {
-        
+
         Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
         if (window != null) {
-           ParametersStateString states = getWindowStatesMap(ControllerContextAdapter.getControllerContext(portalControllerContext), window.getId());
+            ParametersStateString states = getWindowStatesMap(ControllerContextAdapter.getControllerContext(portalControllerContext), window.getId());
             states.remove(ADD_STATE_EDITION_KEY);
         }
 

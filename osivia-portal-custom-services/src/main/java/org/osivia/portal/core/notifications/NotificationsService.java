@@ -79,6 +79,8 @@ public class NotificationsService implements INotificationsService {
      */
     @SuppressWarnings("unchecked")
     public final List<Notifications> getNotificationsList(PortalControllerContext portalControllerContext) {
+        
+        
         ControllerContext controllerContext = (ControllerContext) portalControllerContext.getControllerCtx();
         List<Notifications> notificationsList = (List<Notifications>) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE,
                 InternalConstants.ATTR_NOTIFICATIONS);

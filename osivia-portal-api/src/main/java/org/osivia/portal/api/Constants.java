@@ -134,6 +134,9 @@ public class Constants {
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     
+   
+    public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
+    
 
     //PORTLET - OUTPUT
 

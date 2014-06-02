@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -465,6 +466,26 @@ public class PageMarkerUtils {
                         // !currentPageMarker.equals(lastSavedPageMarker))
                         // {
 
+                        
+                        // Restautation etat page
+                        NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                        PageNavigationalState pns = markerInfo.getPageNavigationState();
+                        if (pns != null) {
+                            
+                            // 
+                            ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
+                            
+                            // Restauration de preview nécessaire pour calcul editableWindows
+                            
+                            String cmsPreviewPath[] = null;
+                            cmsPreviewPath = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
+                            if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
+                                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , cmsPreviewPath[0]);
+                            }
+                        }
+                        
+                        
+                        
                         // Restauration des pages dynamiques
                         IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
                         poc.setDynamicPages(markerInfo.getDynamicPages());
@@ -544,14 +565,7 @@ public class PageMarkerUtils {
                             }
                         }
 
-                        // Restautation etat page
-                        NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-                        PageNavigationalState pns = markerInfo.getPageNavigationState();
-                        if (pns != null) {
-                            // JSS v1.1 on remplace le pageId par un
-                            // markerInfo (cas ou page est null)
-                            ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
-                        }
+                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , null);
 
                         // Indispensable pour etre relu dans
                         // DynamicPortalObjectContainer.getCMSTemplate

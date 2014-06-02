@@ -334,7 +334,7 @@
         <depends
             optional-attribute-name="Tracker"
             proxy-type="attribute">osivia:service=Tracker</depends>
-    </mbean>
+      </mbean>
 
 
 

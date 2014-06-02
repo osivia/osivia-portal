@@ -29,7 +29,12 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.portlet.ParametersStateString;
+import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
@@ -37,6 +42,7 @@ import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
@@ -240,6 +246,19 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+        
+        if( cmd instanceof InvokePortletWindowRenderCommand)    {
+            StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
+            if (navigationalState instanceof ParametersStateString)
+            {
+               Map<String, String[]> params = ((ParametersStateString)navigationalState).getParameters();
+               String editionPath[] = params.get(Constants.PORTLET_PARAM_EDITION_PATH);
+               if( editionPath != null && editionPath.length > 0){
+                   ContributionService.setWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId(), new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, editionPath[0]));
+                }
+            }
+
+        }
 
 
         if (popupOpened && (cmd instanceof PortalObjectCommand)) {
