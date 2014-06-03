@@ -79,7 +79,7 @@ public class CacheService extends ServiceMBeanSupport implements  ICacheService,
 		
 	private CacheDatas getCacheDatas() throws RuntimeException	{
 		
-		Fqn fqn = new Fqn("pia");
+		Fqn fqn = new Fqn("osivia");
 		CacheDatas cache = null;
 
 		 try {
@@ -96,7 +96,7 @@ public class CacheService extends ServiceMBeanSupport implements  ICacheService,
 	
 	private void setCacheDatas(CacheDatas cache) throws RuntimeException	{
 		
-		Fqn fqn = new Fqn("pia");
+		Fqn fqn = new Fqn("osivia");
 	
 		 try {
 			 getPiaTreeCache().put(fqn, "main", cache);
