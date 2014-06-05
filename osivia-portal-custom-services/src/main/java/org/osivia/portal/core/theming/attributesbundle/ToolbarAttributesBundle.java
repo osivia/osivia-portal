@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
@@ -44,7 +43,11 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.HTMLConstants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.IDirectoryService;
+import org.osivia.portal.api.directory.IDirectoryServiceLocator;
+import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -75,7 +78,7 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
 
 /**
  * Toolbar attributes bundle.
- *
+ * 
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
@@ -96,6 +99,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private static final String HTML_ID_CONFIGURATION_MENU = "toolbar-administration-configuration";
     /** HTML identifier for edition menu. */
     private static final String HTML_ID_EDITION_MENU = "toolbar-administration-edition";
+    /** HTML identifier for user menu. */
+    private static final String HTML_ID_USERBAR_MENU = "toolbar-userbar-edition";
 
     /** Pages list URL. */
     private static final String URL_PAGES_LIST = "#pages-list";
@@ -114,6 +119,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     /** Page rights URL. */
     private static final String URL_PAGE_RIGHTS = "#page-rights";
 
+
     /** Singleton instance. */
     private static ToolbarAttributesBundle instance;
 
@@ -124,6 +130,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+
+    /** Directory service locator. */
+    private final IDirectoryServiceLocator directoryServiceLocator;
 
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
@@ -145,10 +154,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
+        this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
+
+
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_TOOLBAR_PRINCIPAL);
+        this.names.add(Constants.ATTR_TOOLBAR_PERSON);
         this.names.add(Constants.ATTR_TOOLBAR_LOGIN_URL);
         this.names.add(Constants.ATTR_TOOLBAR_MY_SPACE_URL);
         this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
@@ -159,7 +172,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Singleton instance access.
-     *
+     * 
      * @return singleton instance
      */
     public static ToolbarAttributesBundle getInstance() {
@@ -175,12 +188,59 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      */
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
-        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
         Page page = renderPageCommand.getPage();
 
+        // Administration content
+        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
+        attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
+
+        // userbar content
+        String userbarContent = this.formatHTMLUserbar(controllerContext, page, attributes);
+        attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
+
+        // Refresh page
+        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
+        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
+
+
+    }
+
+
+    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Map<String, Object> attributes) {
+        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
+        // PageType pageType = PageType.getPageType(page, context);
+
+        // user root element
+        Element userbar = new DOMElement(QName.get(HTMLConstants.DIV));
+        userbar.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_ADMINISTRATION);
+
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+
         // Principal
+
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
         attributes.put(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
+
+        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+        cmsCtx.setControllerContext(controllerContext);
+
+
+        DirectoryPerson person = null;
+        if (principal != null) {
+
+            IDirectoryService directoryService = directoryServiceLocator.getDirectoryService();
+
+            if (directoryService != null) {
+
+                person = directoryService.getPerson(principal.getName());
+                attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
+            }
+        }
 
         // My space
         MonEspaceCommand mySpaceCommand = new MonEspaceCommand();
@@ -191,25 +251,118 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             attributes.put(Constants.ATTR_TOOLBAR_MY_SPACE_URL, mySpacePortalUrl.toString());
         }
 
-        // Administration content
-        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
-        attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
+        // userbar menu root
+        // Configuration menu root element
+        Element userbarMenu = new DOMElement(QName.get(HTMLConstants.DIV));
+        userbarMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_USERBAR_MENU);
+        userbarMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+        userbar.add(userbarMenu);
 
-        // Refresh page
-        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
-        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
+        // Configuration menu title
+        Element userbarMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
+        userbarMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
 
-        // Logout
-        SignOutCommand signOutCommand = new SignOutCommand();
-        PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
-        attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
+        // connected with directory service
+        Element userbarMenuTitleAvatar = new DOMElement(QName.get(HTMLConstants.IMG));
+        userbarMenuTitle.add(userbarMenuTitleAvatar);
+        Element userbarMenuTitleName = new DOMElement(QName.get(HTMLConstants.SPAN));
+        userbarMenuTitle.add(userbarMenuTitleName);
+        if (person != null) {
+
+            userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), person.getAvatar().getUrl());
+            userbarMenuTitleName.setText(person.getDisplayName());
+        }
+        // connected
+        else if (principal != null) {
+
+
+            try {
+                userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), cmsService.getUserAvatar(cmsCtx, principal.getName()).getUrl());
+            } catch (CMSException e) {
+
+            }
+            userbarMenuTitleName.setText(principal.getName());
+
+        }
+        // not connected
+        else {
+
+            try {
+                userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), cmsService.getUserAvatar(cmsCtx, "nobody").getUrl());
+            } catch (CMSException e) {
+
+            }
+            userbarMenuTitleName.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_USER_GUEST, locale));
+        }
+
+        userbarMenu.add(userbarMenuTitle);
+
+
+        // Configuration menu "ul" node
+        Element userMenuUl = new DOMElement(QName.get(HTMLConstants.UL));
+        userbarMenu.add(userMenuUl);
+
+        if (principal != null) {
+            // My Space
+            Element mySpace = new DOMElement(QName.get(HTMLConstants.A));
+            mySpace.addAttribute(QName.get(HTMLConstants.HREF), mySpacePortalUrl.toString());
+            mySpace.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale));
+            this.addSubMenuElement(userMenuUl, mySpace);
+
+            // ---- view my profile
+            if (person != null) {
+                PortalControllerContext pcc = new PortalControllerContext(controllerContext);
+                PortalObjectId poid = page.getPortal().getId();
+
+                Map<String, String> properties = new HashMap<String, String>();
+                Map<String, String> parameters = new HashMap<String, String>();
+                String myProfileUrl = "";
+                try {
+                    myProfileUrl = this.urlFactory.getStartPageUrl(pcc, poid.toString(), person.getDisplayName(), "/default/templates/userprofile", properties,
+                            parameters);
+                } catch (PortalException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+
+                Element myProfile = new DOMElement(QName.get(HTMLConstants.A));
+                myProfile.addAttribute(QName.get(HTMLConstants.HREF), myProfileUrl);
+                myProfile.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_MY_PROFILE, locale));
+                this.addSubMenuElement(userMenuUl, myProfile);
+
+            }
+
+            // ---- logout
+
+            // Logout
+            SignOutCommand signOutCommand = new SignOutCommand();
+            PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
+            attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
+
+            Element logout = new DOMElement(QName.get(HTMLConstants.A));
+            logout.addAttribute(QName.get(HTMLConstants.HREF), signOutPortalUrl.toString());
+            logout.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_LOGOUT, locale));
+            this.addSubMenuElement(userMenuUl, logout);
+
+            // ---- else login
+
+        } else {
+            Element login = new DOMElement(QName.get(HTMLConstants.A));
+            login.addAttribute(QName.get(HTMLConstants.HREF), mySpacePortalUrl.toString());
+            login.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_LOGIN, locale));
+            this.addSubMenuElement(userMenuUl, login);
+
+        }
+
+        userbar.setText(StringUtils.EMPTY);
+
+        return userbar.asXML();
     }
-
 
     /**
      * Utility method used to generate administration HTML content.
-     *
+     * 
      * @param context controller context
      * @param page current page
      * @return HTML data
@@ -252,7 +405,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate configuration menu for administration toolbar.
-     *
+     * 
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -361,7 +514,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate edition menu for administration toolbar.
-     *
+     * 
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -450,7 +603,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate web page menu for administration toolbar.
-     *
+     * 
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -476,7 +629,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         String path = publicationInfos.getDocumentPath();
         Boolean published = publicationInfos.isPublished();
-
 
 
         URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
@@ -513,8 +665,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // prepare the callback url params
         // ============
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
-        String closeUrl = this.urlFactory
-                .getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null, null, null);
+        String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
+                null, null);
 
         String ecmBaseUrl = cmsService.getEcmDomain(cmsCtx);
 
@@ -693,7 +845,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generation administration toggle version.
-     *
+     * 
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -804,7 +956,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Fancy box for delete page
-     *
+     * 
      * @param locale user locale
      * @param urlDelete the command for delete
      * @return
@@ -864,7 +1016,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Add sub-menu Fancybox link.
-     *
+     * 
      * @param ul current "ul" element
      * @param url Fancybox "div" identifier
      * @param title link text and Fancybox title value
@@ -881,7 +1033,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Add sub-menu element.
-     *
+     * 
      * @param ul current "ul" element
      * @param element element to add
      */

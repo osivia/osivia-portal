@@ -41,7 +41,8 @@ public class Constants {
     public static final String INTERNATIONALIZATION_SERVICE_NAME = "InternationalizationService";
     /** Contribution service name. */
     public static final String CONTRIBUTION_SERVICE_NAME = "ContributionService";
-
+    /** Directory locator service name. */
+    public static final String DIRECTORY_SERVICE_LOCATOR_NAME = "DirctoryServiceLocator";
 
     // JBoss portal objects
 
@@ -103,8 +104,12 @@ public class Constants {
     public static final String ATTR_TOOLBAR_LOGIN_URL = "osivia.toolbar.loginURL";
     /** Sign out URL attribute name. */
     public static final String ATTR_TOOLBAR_SIGN_OUT_URL = "osivia.toolbar.signOutURL";
+    /** Principal alias */
+    public static final String ATTR_TOOLBAR_PERSON = "osivia.toolbar.person";
     /** Principal attribute name. */
     public static final String ATTR_TOOLBAR_PRINCIPAL = "osivia.toolbar.principal";
+
+    public static final String ATTR_TOOLBAR_USER_CONTENT = "osivia.toolbar.userContent";
     /** My space URL attribute name. */
     public static final String ATTR_TOOLBAR_MY_SPACE_URL = "osivia.toolbar.mySpaceURL";
     /** User refresh page URL attribute name. */

@@ -17,6 +17,8 @@ package org.osivia.portal.core.cms;
 import java.util.List;
 import java.util.Map;
 
+import org.osivia.portal.api.urls.Link;
+
 /**
  * CMS service interface.
  */
@@ -181,7 +183,7 @@ public interface ICMSService {
      * @param pagePath the path of the page
      * @throws CMSException
      */
-    void deleteDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    void deleteDocument(CMSServiceCtx cmsCtx, String Path) throws CMSException;
 
 
     /**
@@ -192,5 +194,14 @@ public interface ICMSService {
      * @throws CMSException
      */
     void putDocumentInTrash(CMSServiceCtx cmsCtx, String docId) throws CMSException;
+
+
+    /**
+     * Get the current user avatar
+     * 
+     * @param cmsCtx
+     * @return
+     */
+    Link getUserAvatar(CMSServiceCtx cmsCtx, String username) throws CMSException;
 
 }

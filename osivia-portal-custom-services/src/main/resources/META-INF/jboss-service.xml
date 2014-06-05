@@ -671,6 +671,14 @@
         <xmbean />
     </mbean>
 
+    <mbean
+        code="org.osivia.portal.core.directory.DirectoryServiceLocator"
+        name="osivia:service=DirectoryServiceLocator"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+
     <!-- Selection service -->
     <mbean
         code="org.osivia.portal.core.selection.SelectionService"

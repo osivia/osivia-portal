@@ -100,6 +100,9 @@ public final class InternationalizationConstants {
     public static final String KEY_RIGHTS = "SUBMENU_RIGHTS";
 
 
+    // Toolbar user
+    /** Bundle resource key for user menu title. */
+    public static final String KEY_USER_MENU_TITLE = "MENU_USER";
 
 
     // CMS properties
@@ -247,6 +250,16 @@ public final class InternationalizationConstants {
     /** ADV_PORTAL_DEFAULT */
     public static final String KEY_ADV_PORTAL_DEFAULT = "ADV_PORTAL_DEFAULT";
 
+    /** USER_GUEST */
+    public static final String KEY_USER_GUEST = "USER_GUEST";
+    /** MY_SPACE */
+    public static final String KEY_MY_SPACE_ = "MY_SPACE";
+    /** MY_PROFILE */
+    public static final String KEY_MY_PROFILE = "MY_PROFILE";
+    /** LOGIN */
+    public static final String KEY_LOGIN = "LOGIN";
+    /** LOGOUT */
+    public static final String KEY_LOGOUT = "LOGOUT";
 
 
     /**
