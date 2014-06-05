@@ -28,6 +28,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -179,6 +180,10 @@ public class SelectionPortlet extends GenericPortlet {
         Set<SelectionItem> selectionItemsSet = this.selectionService.getSelectionItems(new PortalControllerContext(getPortletContext(), request, response), selectionId);
         request.setAttribute(REQUEST_ATTRIBUTE_SELECTION, selectionItemsSet);
 
+        if (CollectionUtils.isEmpty(selectionItemsSet)) {
+        	request.setAttribute("osivia.emptyResponse", "1");
+        }
+        
         response.setContentType(MediaType.TEXT_HTML.getValue());
         this.getPortletContext().getRequestDispatcher(PATH_PAGE_VIEW).include(request, response);
     }
