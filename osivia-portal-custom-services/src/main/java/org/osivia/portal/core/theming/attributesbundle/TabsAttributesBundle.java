@@ -153,7 +153,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if ((user == null) || (headerUsername != null)) {
                     // Check header and services caches validity
                     if ((headerCount.longValue() == this.globalCacheService.getHeaderCount())
-                            && (cmsTs > this.servicesCacheService.getCacheInitialisationTs() && !PageProperties.getProperties().isRefreshingPage())) {
+                            && ( this.servicesCacheService.checkIfPortalParametersReloaded( cmsTs) && !PageProperties.getProperties().isRefreshingPage())) {
                         refreshUserPortal = false;
                     }
                 }

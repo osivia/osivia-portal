@@ -427,7 +427,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          ContentResponse fragment = cachedEntry != null ? cachedEntry.contentRef.getContent() : null;
 
          // If no valid fragment we must invoke
-         if ((fragment == null) || (cachedEntry.expirationTimeMillis < System.currentTimeMillis()) || (cachedEntry.creationTimeMillis < this.getServicesCacheService().getCacheInitialisationTs()) || refresh)
+         if ((fragment == null) || (cachedEntry.expirationTimeMillis < System.currentTimeMillis()) || (! this.getServicesCacheService().checkIfPortalParametersReloaded(cachedEntry.creationTimeMillis) ) || refresh)
          {
             // Set validation token for revalidation only we have have a fragment
             if (fragment != null)

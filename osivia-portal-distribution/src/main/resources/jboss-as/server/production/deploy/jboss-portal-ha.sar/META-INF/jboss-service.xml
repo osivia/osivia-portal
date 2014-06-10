@@ -1403,7 +1403,8 @@
 <!-- suppression branche 1.0
    	<attribute name="CacheMode">REPL_SYNC</attribute>
 -->
-   	<attribute name="ClusterName">
+   	<attribute name="CacheMode">REPL_ASYNC</attribute>
+ 	<attribute name="ClusterName">
    		osivia
    	</attribute>
 

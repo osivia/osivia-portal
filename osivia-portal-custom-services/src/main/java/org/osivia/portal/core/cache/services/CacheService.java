@@ -24,6 +24,7 @@ import org.osivia.portal.api.cache.services.CacheDatas;
 import org.osivia.portal.api.cache.services.CacheInfo;
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 import org.osivia.portal.api.cache.services.IGlobalParameters;
+import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.page.PageProperties;
 
 
@@ -44,10 +45,19 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	private Map<String, CacheDatas> mCaches = new Hashtable<String, CacheDatas>();
 
 	protected static final Log logger = LogFactory.getLog(CacheService.class);
-	
-	private long lastInitialisationTs = 0L;
+
 
 	private long portalParameterslastInitialisationTs = 0L;
+	
+    protected transient ICacheService cacheService;
+
+    public ICacheService getCacheService() {
+        return cacheService;
+    }
+
+    public void setCacheService(ICacheService cacheService) {
+        this.cacheService = cacheService;
+    }
 	
 	public void startService() throws Exception {
 		logger.info("Cache service starting");
@@ -152,10 +162,10 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		// 1.0.27 : initialisation des parametres globaux
 		if (cacheFlux != null)	{
 			if( cacheFlux.getContent() instanceof IGlobalParameters)	{
-				if( cacheFlux.getTsEnregistrement() < portalParameterslastInitialisationTs)	{
-					// Le cache est obsolete, on le conserve quand meme
-					// car en cas d'erreur il sera reutilise (isForceNOTReload)
-					cacheFlux.setTsSaving(0L);
+    			    if( !checkIfPortalParametersReloaded(cacheFlux.getTsEnregistrement())){
+    			        // Le cache est obsolete, on le conserve quand meme
+    			        // car en cas d'erreur il sera reutilise (isForceNOTReload)
+    			        cacheFlux.setTsSaving(0L);
 				}
 			}
 		}
@@ -183,7 +193,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				expired = true;
 			
 			// Réinitialisation par l'adminstrateur
-			if( cacheFlux.getTsEnregistrement() < getCacheInitialisationTs())
+			if( !checkIfPortalParametersReloaded( cacheFlux.getTsEnregistrement()))
 				expired = true;
 			
 			// Réinitialisation par l'utilisateur : tous sauf parametres
@@ -259,7 +269,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 
 			// reinitialisation des caches
 			if (   cacheFlux != null)
-			if (   (cacheFlux.getTsEnregistrement() < getCacheInitialisationTs()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContent() instanceof IGlobalParameters)))
+			if (   (!checkIfPortalParametersReloaded(cacheFlux.getTsEnregistrement()) || (PageProperties.getProperties().isRefreshingPage() && ! (cacheFlux.getContent() instanceof IGlobalParameters))))
 				cacheFlux = null;
 			
 
@@ -332,16 +342,37 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 		caches.put(infos.getItemKey(), new CacheDatas(infos, response));
 	}
 
-	public long getCacheInitialisationTs() {
-		return lastInitialisationTs;
-	}
-
-	public void initCache() throws PortalException {
-		lastInitialisationTs = System.currentTimeMillis();
-	}
+	
+	/* Portal parameters */
+	
+	private long portalParametersCount = 0;
+	
 	public void initPortalParameters() {
+		
+        /* Réinitialiser les caches de profils (cluster )*/
+        getCacheService().incrementGlobalParametersCount();
+	}
+	
+    public boolean checkIfPortalParametersReloaded( long savedTS) {
 
-		portalParameterslastInitialisationTs = System.currentTimeMillis();;
+        long newCacheCount = getCacheService().getGlobalParametersCount();
+        
+        if (portalParametersCount < newCacheCount)  {
+            portalParameterslastInitialisationTs = System.currentTimeMillis();
+            portalParametersCount = newCacheCount;
+        }
+        
+        if( portalParametersCount > newCacheCount) {
+            // Peut arriver si les gestionnaire de cache (jboss cache) a planté
+            // On remet à jour le cache centralisé qui porte la valeur de référence
+            
+            do  {
+                getCacheService().incrementGlobalParametersCount();
+            } while( portalParametersCount > getCacheService().getGlobalParametersCount());
+        }
+        
+        return portalParameterslastInitialisationTs < savedTS;
+        
 	}
 
 }

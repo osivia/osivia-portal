@@ -33,24 +33,13 @@ public interface ICacheService extends Serializable{
 	 */
 	public Object getCache( CacheInfo infos) throws PortalException;
 	
-	/**
-	 * Gets the cache initialisation ts.
-	 *
-	 * @return the cache initialisation ts
-	 */
-	public long getCacheInitialisationTs() ;
-	
-	/**
-	 * Inits the cache.
-	 *
-	 * @throws Exception the exception
-	 */
-	public void initCache() throws PortalException;
-	
+
 	/**
 	 * Inits the portal parameters.
 	 */
 	public void initPortalParameters();
+	
+	public boolean checkIfPortalParametersReloaded( long savedTS);
 
 
 	

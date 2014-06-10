@@ -607,7 +607,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ("true".equals(request.getParameter("init-cache"))) {
                 if ("wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
-                    this.servicesCacheService.initCache();
+                    this.servicesCacheService.initPortalParameters();
                 }
             }
 
