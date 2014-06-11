@@ -315,10 +315,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 PortalObjectId poid = page.getPortal().getId();
 
                 Map<String, String> properties = new HashMap<String, String>();
+                properties.put("osivia.title", person.getDisplayName());
+
                 Map<String, String> parameters = new HashMap<String, String>();
                 String myProfileUrl = "";
                 try {
-                    myProfileUrl = this.urlFactory.getStartPageUrl(pcc, poid.toString(), person.getDisplayName(), "/default/templates/userprofile", properties,
+                    myProfileUrl = this.urlFactory.getStartPageUrl(pcc, poid.toString(), "userprofile", "/default/templates/userprofile", properties,
                             parameters);
                 } catch (PortalException e) {
                     // TODO Auto-generated catch block
