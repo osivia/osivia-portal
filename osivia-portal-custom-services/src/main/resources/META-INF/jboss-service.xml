@@ -644,6 +644,9 @@
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
+        <depends
+            optional-attribute-name="CacheService"
+            proxy-type="attribute">osivia:service=Cache</depends>        
     </mbean>
 
     <mbean

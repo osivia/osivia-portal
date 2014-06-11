@@ -1398,7 +1398,6 @@
 
    	<attribute name="NodeLockingScheme">OPTIMISTIC</attribute>
    	<attribute name="IsolationLevel">READ_COMMITTED</attribute>
-   	<attribute name="CacheMode">INVALIDATION_SYNC</attribute>
 
 <!-- suppression branche 1.0
    	<attribute name="CacheMode">REPL_SYNC</attribute>

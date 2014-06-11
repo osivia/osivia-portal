@@ -23,8 +23,17 @@ public class CacheDatas implements Serializable {
 	private long headerCount = 1;
 	private long profilsCount = 1;
 	private long globalParametersCount = 1;
+	public boolean importRunning = false;
 	
-	
+    
+    public boolean isImportRunning() {
+        return importRunning;
+    }
+   
+    public void setImportRunning(boolean importRunning) {
+        this.importRunning = importRunning;
+    }
+
     public long getGlobalParametersCount() {
         return globalParametersCount;
     }

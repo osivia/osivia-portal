@@ -27,6 +27,7 @@ import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.ServerRequest;
+import org.osivia.portal.core.cache.global.ICacheService;
 
 import java.util.Locale;
 
@@ -36,49 +37,66 @@ import java.util.Locale;
  */
 
 public class ImportInterceptor extends ServerInterceptor {
-	public static boolean isImportRunning = false;
-	
-	public static boolean isPageImportTerminated = false;
-	public static boolean isPortalImportTerminated = false;
-	
-	public static int nbPendingRequest = 0;
 
-	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
+    public static boolean isImportRunningLocally = false;
 
-		if (isImportRunning == true) {
-			while (isImportRunning == true)
-				Thread.sleep(1000L);
-		}
+    public static boolean isPageImportTerminated = false;
+    public static boolean isPortalImportTerminated = false;
 
-		try {
-			nbPendingRequest++;
+    public static int nbPendingRequest = 0;
 
-			invocation.invokeNext();
-		} finally {
-			
-			if( nbPendingRequest > 0)
-				nbPendingRequest--;
-			
-		}
+    protected ICacheService cacheService;
 
-		if (isImportRunning && (isPageImportTerminated || isPortalImportTerminated) ) {
+    public ICacheService getCacheService() {
+        return cacheService;
+    }
 
-			// Wait after the commit for asynchronous updates
-			// (to avoid JCA exception from container)
-			
-			if( isPortalImportTerminated)
-				Thread.sleep(10000L);
-			else
-				Thread.sleep(1000L);				
-			
-			// Eventual loops will be ignored for the next import
-			nbPendingRequest = 0;
+    public void setCacheService(ICacheService cacheService) {
+        this.cacheService = cacheService;
+    }
 
-			// Import is terminated ant transaction is committed
-			// release other threads
-			isImportRunning = false;
+    protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
-		}
 
-	}
+        if (getCacheService().isImportRunning() == true) {
+
+            while (getCacheService().isImportRunning() == true) {
+                Thread.sleep(1000L);
+            }
+        }
+
+        try {
+            nbPendingRequest++;
+
+            invocation.invokeNext();
+        } finally {
+
+            if (nbPendingRequest > 0)
+                nbPendingRequest--;
+
+        }
+
+        if (isImportRunningLocally && (isPageImportTerminated || isPortalImportTerminated)) {
+
+            // Wait after the commit for asynchronous updates
+            // (to avoid JCA exception from container)
+
+            if (isPortalImportTerminated)
+                Thread.sleep(15000L);
+            else
+                Thread.sleep(3000L);
+
+            // Eventual loops will be ignored for the next import
+            nbPendingRequest = 0;
+
+            // Import is terminated ant transaction is committed
+            // release other threads
+            isImportRunningLocally = false;
+
+            // Release cluster nodes
+            getCacheService().setImportRunning(false);
+
+        }
+
+    }
 }
