@@ -195,13 +195,22 @@ public interface ICMSService {
      */
     void putDocumentInTrash(CMSServiceCtx cmsCtx, String docId) throws CMSException;
 
-
     /**
-     * Get the current user avatar
+     * Get the user avatar
      * 
      * @param cmsCtx
+     * @param username the user id
      * @return
      */
     Link getUserAvatar(CMSServiceCtx cmsCtx, String username) throws CMSException;
+
+    /**
+     * Refresh the user avatar
+     * 
+     * @param cmsCtx cms context
+     * @param username username
+     * @return the timestamp associated with the refresh event
+     */
+    String refreshUserAvatar(CMSServiceCtx cmsCtx, String username);
 
 }
