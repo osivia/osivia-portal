@@ -100,15 +100,33 @@ $JQry(document).ready(function() {
  		'height': 600,
  		'beforeClose' : function() {
             callback();
-		}
+		},
+		helpers : {
+            title: {
+                type: 'outside',
+                position: 'top'
+            }
+        }
 	});
 	
-
 	$JQry(".fancybox_inline").fancybox({
-		'titlePosition'     : 'inside',
-        'transitionIn'      : 'none',
-        'transitionOut'     : 'none'
-	});
+		openEffect : 'none',
+    	closeEffect	: 'none',
+    	helpers : {
+    		title : null
+    	}
+    });
+	
+	$JQry(".fancybox_inline_title").fancybox({
+		openEffect : 'none',
+    	closeEffect	: 'none',
+    	helpers : {
+            title: {
+                type: 'outside',
+                position: 'top'
+            }
+        }
+    });
 	
 	$JQry(".fancybox_inline_jstree").fancybox({
 		'titlePosition'     : 'inside',
@@ -154,25 +172,3 @@ function receiveMessageAction(message) {
 		}
 	}
 }
-
-
-
-// Affichage d'une fancybox inline sans titre
-$JQry(document).ready(function() {
-	var fancybox_no_title = $JQry(".fancybox-no-title");
-	var fntDefined = typeof(fancybox_no_title) != 'undefined';
-	var fancybox_inline = $JQry(".fancybox_inline");
-	var fDefined = typeof(fancybox_inline) != 'undefined';
-	/* Trouver autre critère d'égalité */
-	var equals = fancybox_no_title.context == fancybox_inline.context;
-	if (fntDefined && fDefined && equals){	
-		$JQry(".fancybox_inline").fancybox({
-			helpers: { 
-		        title: null
-		    },
-            'transitionIn'      : 'none',
-            'transitionOut'     : 'none'	 		
-		});
-	}
-});
-

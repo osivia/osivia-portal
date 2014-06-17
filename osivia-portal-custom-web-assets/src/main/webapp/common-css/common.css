@@ -219,6 +219,10 @@ ul.dropdown-menu a    {
 
 /* Fancybox */
 
+.fancybox-title {
+	font-size: 14px;
+}
+
 .fancybox-content {
     display: none;
 }

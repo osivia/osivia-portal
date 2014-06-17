@@ -132,14 +132,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             }
         }
 
-        // CSS
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>");
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>");
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>");
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
-        this.writeResource(out, "<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>");
-
         // post messages API (must be loaded before fancy integration)
         this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/postmessage.js\"></script>");
 
@@ -158,6 +150,14 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // JSTree
         this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/jstree/jquery.jstree.js\"></script>");
         this.writeResource(out, "<script type=\"text/javascript\" src=\"/osivia-portal-custom-web-assets/js/jstree-integration.js\"></script>");
+        
+        // CSS
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"settings_css\" href=\"/osivia-portal-custom-web-assets/common-css/common.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"toolbar_css\" href=\"/osivia-portal-custom-web-assets/common-css/toolbar.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"tabs_css\" href=\"/osivia-portal-custom-web-assets/common-css/tabs.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"breadcrumb_css\" href=\"/osivia-portal-custom-web-assets/common-css/breadcrumb.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"modecms_css\" href=\"/osivia-portal-custom-web-assets/common-css/modecms.css\" type=\"text/css\"/>");
+        this.writeResource(out, "<link rel=\"stylesheet\" id=\"dropdown_css\" href=\"/osivia-portal-custom-web-assets/common-css/dropdown.css\" type=\"text/css\"/>");
     }
 
     

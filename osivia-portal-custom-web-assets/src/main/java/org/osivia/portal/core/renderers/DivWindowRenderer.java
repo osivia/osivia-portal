@@ -67,6 +67,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     private static final String CLASS_SPACER = "osivia-portal-spacer";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
+    /** Fancybox class with title, required for link. */
+    private static final String CLASS_FANCYBOX_INLINE_TITLE = "fancybox_inline_title";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_FRAME = "fancyframe_refresh";
     /** Up move command link image source. */
@@ -312,6 +314,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         String windowId = windowRendererContext.getId();
         String onclickAction = "windowId = '" + windowId + "'";
 
+        String title = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
+        String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
+        StringBuilder portletTitle = new StringBuilder();
+        if (StringUtils.isNotBlank(title)) {
+        	portletTitle.append(title);
+        	portletTitle.append(" - ");
+        }
+        portletTitle.append("[");
+        portletTitle.append(instanceName);
+        portletTitle.append("]");
+        
         // Commands container
         Element div = new DOMElement(QName.get(HTMLConstants.DIV));
         div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_WINDOWS_COMMANDS);
@@ -351,23 +364,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Window settings display command
         String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
         Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, DISPLAY_SETTINGS_LINK_IMAGE_SOURCE,
-                CLASS_FANCYBOX_INLINE, null);
+        		CLASS_FANCYBOX_INLINE_TITLE, portletTitle.toString());
         div.add(displaySettingsLink);
 
         // Portlet administration display command
         Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
         for (ActionRendererContext action : actions) {
             if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
-                String title = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
-                if (title == null) {
-                    title = StringUtils.EMPTY;
-                }
-
                 String link = action.getURL() + "&windowstate=maximized";
-
-                String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
-                title += "   [" + instanceName + "]";
-                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME, title);
+                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME, portletTitle.toString());
                 div.add(displayAdminLink);
             }
         }
