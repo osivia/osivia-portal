@@ -38,6 +38,8 @@ import org.jboss.portal.identity.User;
 import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
@@ -45,7 +47,6 @@ import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
 
 
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
@@ -174,12 +175,16 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     private void loadUserDatas(ServerInvocation invocation) {
         Map<String, Object> userDatas = new Hashtable<String, Object>();
+        DirectoryPerson person = null;
 
         for (UserDatasModuleMetadatas module : sortedModules) {
+            // compatibilty v3.2 - provide informations about logged users with a map or with a user object
             module.getModule().computeUserDatas(invocation.getServerContext().getClientRequest(), userDatas);
+            person = module.getModule().computeLoggedUser(invocation.getServerContext().getClientRequest());
         }
 
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
+        invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
     }
 

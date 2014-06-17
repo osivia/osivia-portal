@@ -66,8 +66,8 @@ public class Constants {
     public static final String ATTR_PAGE_ID = "osivia.currentPageId";
     /** First tab attribute name. */
     public static final String ATTR_FIRST_TAB = "osivia.firstTab";
-    /** Page category attribute name. */
-    
+    /** Logged person. */
+    public static final String ATTR_LOGGED_PERSON = "osivia.loggedPerson";
 
     // Generic
     

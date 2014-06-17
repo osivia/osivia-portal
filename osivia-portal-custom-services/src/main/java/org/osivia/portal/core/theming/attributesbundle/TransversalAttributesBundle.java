@@ -34,11 +34,11 @@ import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
@@ -140,6 +140,11 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         // User datas
         Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
         attributes.put(Constants.ATTR_USER_DATAS, userDatas);
+
+
+        // logged person - v3.3
+        DirectoryPerson person = (DirectoryPerson) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON);
+        attributes.put(Constants.ATTR_LOGGED_PERSON, person);
 
         attributes.put(Constants.ATTR_PAGE_CATEGORY, renderPageCommand.getPage().getProperty("osivia.pageCategory"));
         CMSItem spaceItem;
