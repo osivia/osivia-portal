@@ -123,13 +123,18 @@ public class ProfilesBean extends AbstractAdministrationBean {
      * Edit profile popup submit action.
      */
     public void editProfileSubmit() {
+        
+        int iProfile = 0;
         for (ProfileData data : this.profiles) {
+           
             if (this.profile.equals(data)) {
                 this.profiles.remove(data);
                 break;
             }
+            iProfile++;
         }
-        this.profiles.add(this.profile);
+        
+        this.profiles.add(iProfile, this.profile);
     }
 
 
