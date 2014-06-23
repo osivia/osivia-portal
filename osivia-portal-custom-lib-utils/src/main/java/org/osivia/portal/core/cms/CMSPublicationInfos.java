@@ -38,6 +38,7 @@ public class CMSPublicationInfos {
 	private String liveId = null;
 	private boolean editableByUser = false;
 	private boolean deletableByUser = false;
+	private boolean userCanValidate = false;
 	private boolean anonymouslyReadable = false;
 	/** Published CMS item indicator. */
     private boolean published = false;
@@ -118,6 +119,14 @@ public class CMSPublicationInfos {
 	public void setDeletableByUser(boolean deletableByUser) {
 		this.deletableByUser = deletableByUser;
 	}
+	
+	public boolean isUserCanValidate() {
+        return userCanValidate;
+    }
+
+    public void setUserCanValidate(boolean userCanValidate) {
+        this.userCanValidate = userCanValidate;
+    }
 
 	public boolean isAnonymouslyReadable() {
 		return anonymouslyReadable;
