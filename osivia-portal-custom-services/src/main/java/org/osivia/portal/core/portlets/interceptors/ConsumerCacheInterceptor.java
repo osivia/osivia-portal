@@ -56,6 +56,7 @@ import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -308,8 +309,13 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
          // gestion des fermetures de popup
 
-         if( (cachedEntry != null) && (ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed") != null)) {
-             cachedEntry = null;
+         if( cachedEntry != null && window != null && (ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed") != null)) {
+             // Test sur windowID
+
+             String closedWindowID =  (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosedWindowID");
+             PortalObjectId closedWindowOjectID = PortalObjectId.parse(closedWindowID, PortalObjectPath.SAFEST_FORMAT);
+             if( window.getId().equals(closedWindowOjectID))
+                 cachedEntry = null;
          }
 
 
