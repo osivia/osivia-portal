@@ -296,7 +296,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
             if (curDomain != null) {
                 if (domains.contains(curDomain))
-                    break;
+                    continue;
                 domains.add(curDomain);
 
             }
