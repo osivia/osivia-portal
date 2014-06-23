@@ -4,6 +4,7 @@
 package org.osivia.portal.core.assistantpage;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,11 +24,14 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
@@ -52,7 +56,9 @@ import org.jboss.portal.portlet.state.PropertyMap;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.HTMLConstants;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -80,16 +86,16 @@ import org.osivia.portal.core.profils.ProfilBean;
  */
 public class AssistantPageCustomizerInterceptor extends ControllerInterceptor implements IFormatter {
 
+    private static final String HTML_CLASS_INPUT_CONTAINER = "col-sm-8";
+
+    private static final String HTML_CLASS_FORM_GROUP = "form-group";
+
+    private static final String HTML_CLASS_LABEL = "control-label col-sm-4";
+
     /** Windows settings fancyboxes prefix. */
     private static final String PREFIX_ID_FANCYBOX_WINDOW_SETTINGS = "window-settings-";
 
     // HTML classes
-    /** HTML toggle row display class. */
-    private static final String HTML_CLASS_TOGGLE_ROW = "toggle-row";
-    /** HTML class "styles-toggle-row". */
-    private static final String HTML_CLASS_TOGGLE_STYLES_ROW = "styles-toggle-row";
-    /** HTML class "dynamic-properties-toggle-row". */
-    private static final String HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW = "dynamic-properties-toggle-row";
     /** HTML name "action". */
     private static final String HTML_NAME_ACTION = "action";
     /** HTML name "windowId". */
@@ -307,7 +313,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             disabled = " disabled='disabled'";
         }
 
-        select.append("<select name=\"" + scopeName + "\"" + disabled + ">");
+        select.append("<select id=\"cms-scope\" name=\"" + scopeName + "\" class=\"form-control\" " + disabled + ">");
 
         if (!scopes.isEmpty()) {
             if ((selectedScope == null) || (selectedScope.length() == 0)) {
@@ -396,7 +402,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             disabled = "disabled='disabled'";
         }
 
-        select.append("<select name=\"" + versionName + "\"" + disabled + ">");
+        select.append("<select id=\"cms-scope\" name=\"" + versionName + "\" class=\"form-control\" " + disabled + ">");
 
         if (!versions.isEmpty()) {
             if ((selectedVersion == null) || (selectedVersion.length() == 0)) {
@@ -676,8 +682,10 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
         Collections.sort(instances, new InstanceComparator(locale));
 
-        Element table = new DOMElement(QName.get(HTMLConstants.DIV));
-        table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
+        Element table = new DOMElement(QName.get(HTMLConstants.TABLE));
+        table.addAttribute(QName.get(HTMLConstants.CLASS), "table table-condensed");
+
+        String buttonText = this.internationalizationService.getString(InternationalizationConstants.KEY_ADD_PORTLET_SUBMIT_VALUE, locale);
 
         for (InstanceDefinition instance : instances) {
             // Get portlet and properties
@@ -699,17 +707,13 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
 
             // HTML elements initialization
-            Element row = new DOMElement(QName.get(HTMLConstants.DIV));
-            row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
+            Element row = new DOMElement(QName.get(HTMLConstants.TR));
             table.add(row);
-            Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
+            Element leftCell = new DOMElement(QName.get(HTMLConstants.TD));
             row.add(leftCell);
-            Element middleCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            middleCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " portlet-name");
+            Element middleCell = new DOMElement(QName.get(HTMLConstants.TD));
             row.add(middleCell);
-            Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
+            Element rightCell = new DOMElement(QName.get(HTMLConstants.TD));
             row.add(rightCell);
 
             // Portlet icon
@@ -735,11 +739,11 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             middleCell.setText(displayName);
 
             // Submit
-            Element input = new DOMElement(QName.get(HTMLConstants.INPUT));
+            Element input = new DOMElement(QName.get(HTMLConstants.BUTTON));
             input.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-            input.addAttribute(QName.get(HTMLConstants.VALUE),
-                    this.internationalizationService.getString(InternationalizationConstants.KEY_ADD_PORTLET_SUBMIT_VALUE, locale));
+            input.addAttribute(QName.get(HTMLConstants.CLASS), "btn btn-default btn-sm");
             input.addAttribute(QName.get(HTMLConstants.ONCLICK), "selectPortlet('" + instance.getId() + "', this.form)");
+            input.setText(buttonText);
             rightCell.add(input);
         }
 
@@ -770,9 +774,8 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             portalStyles.addAll(Arrays.asList(portalStylesProperty.split(",")));
         }
 
-        // HTML "div" fancyboxes parent node
+        // HTML "div" parent node
         Element divParent = new DOMElement(QName.get(HTMLConstants.DIV));
-        divParent.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
         divParent.setText(StringUtils.EMPTY);
 
         if (CollectionUtils.isNotEmpty(windows)) {
@@ -782,8 +785,22 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             }
         }
 
-        // Get HTML data
-        return divParent.asXML();
+
+        // Write HTML content
+        try {
+            StringWriter stringWriter = new StringWriter();
+            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(divParent);
+                return stringWriter.toString();
+            } finally {
+                stringWriter.close();
+                htmlWriter.close();
+            }
+        } catch (IOException e) {
+            return StringUtils.EMPTY;
+        }
     }
 
 
@@ -803,34 +820,28 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         String fancyboxId = PREFIX_ID_FANCYBOX_WINDOW_SETTINGS + windowId;
 
         // Fancybox
-        Element divFancyboxContent = new DOMElement(QName.get(HTMLConstants.DIV));
-        divFancyboxContent.addAttribute(QName.get(HTMLConstants.ID), fancyboxId);
+        Element divFancyboxContent = DOM4JUtils.generateDivElement("container");
+        DOM4JUtils.addAttribute(divFancyboxContent, HTMLConstants.ID, fancyboxId);
         divParent.add(divFancyboxContent);
 
         // Form
-        Element form = new DOMElement(QName.get(HTMLConstants.FORM));
-        form.addAttribute(QName.get(HTMLConstants.ACTION), commandUrl);
-        form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
-        form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
+        Element form = DOM4JUtils.generateElement(HTMLConstants.FORM, "form-horizontal", null, null, AccessibilityRoles.FORM);
+        DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, commandUrl);
+        DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_GET);
         divFancyboxContent.add(form);
 
         // Hidden fields
-        Element inputHiddenAction = new DOMElement(QName.get(HTMLConstants.INPUT));
-        inputHiddenAction.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
-        inputHiddenAction.addAttribute(QName.get(HTMLConstants.NAME), HTML_NAME_ACTION);
-        inputHiddenAction.addAttribute(QName.get(HTMLConstants.VALUE), HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
+        Element inputHiddenAction = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        DOM4JUtils.addAttribute(inputHiddenAction, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_HIDDEN);
+        DOM4JUtils.addAttribute(inputHiddenAction, HTMLConstants.NAME, HTML_NAME_ACTION);
+        DOM4JUtils.addAttribute(inputHiddenAction, HTMLConstants.VALUE, HTML_VALUE_ACTION_CHANGE_WINDOW_PROPERTIES);
         form.add(inputHiddenAction);
 
-        Element inputHiddenWindowId = new DOMElement(QName.get(HTMLConstants.INPUT));
-        inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
-        inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.NAME), HTML_NAME_WINDOW_ID);
-        inputHiddenWindowId.addAttribute(QName.get(HTMLConstants.VALUE), windowId);
+        Element inputHiddenWindowId = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        DOM4JUtils.addAttribute(inputHiddenWindowId, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_HIDDEN);
+        DOM4JUtils.addAttribute(inputHiddenWindowId, HTMLConstants.NAME, HTML_NAME_WINDOW_ID);
+        DOM4JUtils.addAttribute(inputHiddenWindowId, HTMLConstants.VALUE, windowId);
         form.add(inputHiddenWindowId);
-
-        // Table
-        Element table = new DOMElement(QName.get(HTMLConstants.DIV));
-        table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
-        form.add(table);
 
         // Styles rows
         String windowStylesProperty = window.getDeclaredProperty("osivia.style");
@@ -838,67 +849,81 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (StringUtils.isNotEmpty(windowStylesProperty)) {
             windowStyles.addAll(Arrays.asList(windowStylesProperty.split(",")));
         }
-        this.insertStylesRows(table, locale, portalStyles, windowStyles);
+        this.generateStylesFormGroup(form, locale, portalStyles, windowStyles);
+
+        // Mobile collapse
+        String mobileCollapse = window.getDeclaredProperty("osivia.mobileCollapse");
+        boolean collapse = BooleanUtils.toBoolean(mobileCollapse);
+        form.add(this.generateFormGroup(
+                this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_MOBILE_COLLAPSE, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "mobileCollapse", "on", collapse, false));
 
         // Title bar display row
         String hideTitle = window.getDeclaredProperty("osivia.hideTitle");
-        checkboxChecked = !"1".equals(hideTitle);
-        table.add(this.generateRow(
+        checkboxChecked = !("1".equals(hideTitle));
+        form.add(this.generateFormGroup(
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE_DISPLAY, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX, "displayTitle", "1", checkboxChecked));
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "displayTitle", "1", collapse || checkboxChecked, collapse));
 
         // Title
         String title = window.getDeclaredProperty("osivia.title");
         if (title == null) {
             title = StringUtils.EMPTY;
         }
-        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE, locale),
-                HTMLConstants.INPUT_TYPE_TEXT, "title", title, false));
+        form.add(this.generateFormGroup(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_TITLE, locale),
+                HTMLConstants.INPUT_TYPE_TEXT, "title", title, false, false));
 
         // Icons display
         String hideDecorators = window.getDeclaredProperty("osivia.hideDecorators");
         checkboxChecked = !"1".equals(hideDecorators);
-        table.add(this.generateRow(
+        form.add(this.generateFormGroup(
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_ICONS_DISPLAY, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked));
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "displayDecorators", "1", checkboxChecked, false));
+
+        // Bootstrap panel style
+        String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
+        checkboxChecked = BooleanUtils.toBoolean(bootstrapPanelStyle);
+        form.add(this.generateFormGroup(
+                this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_BOOTSTRAP_PANEL_STYLE, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "bootstrapPanelStyle", "on", collapse || checkboxChecked, collapse));
 
         // AJAX links and forms
         String ajaxLinks = window.getProperty("osivia.ajaxLink");
         checkboxChecked = "1".equals(ajaxLinks);
-        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_AJAX_LINK, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked));
+        form.add(this.generateFormGroup(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_AJAX_LINK, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "ajaxLink", "1", checkboxChecked, false));
 
         // Print
         String print = window.getProperty("osivia.printPortlet");
         checkboxChecked = "1".equals(print);
-        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PRINT, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked));
+        form.add(this.generateFormGroup(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PRINT, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "printPortlet", "1", checkboxChecked, false));
 
         // Hide empty portlet
         String hideEmptyPortlet = window.getProperty("osivia.hideEmptyPortlet");
         checkboxChecked = "1".equals(hideEmptyPortlet);
-        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_HIDE_EMPTY, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked));
+        form.add(this.generateFormGroup(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_HIDE_EMPTY, locale),
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "hideEmptyPortlet", "1", checkboxChecked, false));
 
         // Conditional scope
-        this.insertConditionalScopeRow(table, locale, window);
+        this.insertConditionalScopeRow(form, locale, window);
 
         // Customize ID
         String customizeId = window.getDeclaredProperty("osivia.idPerso");
         if (customizeId == null) {
             customizeId = StringUtils.EMPTY;
         }
-        table.add(this.generateRow(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CUSTOM_ID, locale),
-                HTMLConstants.INPUT_TYPE_TEXT, "idPerso", customizeId, false));
+        form.add(this.generateFormGroup(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CUSTOM_ID, locale),
+                HTMLConstants.INPUT_TYPE_TEXT, "idPerso", customizeId, false, false));
 
         // Shared cache ID
         String cacheId = window.getProperty("osivia.cacheID");
         if (cacheId == null) {
             cacheId = StringUtils.EMPTY;
         }
-        table.add(this.generateRow(
+        form.add(this.generateFormGroup(
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHARED_CACHE_ID, locale),
-                HTMLConstants.INPUT_TYPE_TEXT, "cacheID", cacheId, false));
+                HTMLConstants.INPUT_TYPE_TEXT, "cacheID", cacheId, false, false));
 
         // Bash activation
         String bashActivation = window.getDeclaredProperty("osivia.bshActivation");
@@ -907,47 +932,51 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (scriptContent == null) {
             scriptContent = StringUtils.EMPTY;
         }
-        this.insertDynamicPropertiesRows(table, locale, isBashActive, scriptContent);
+        this.insertDynamicPropertiesRows(form, locale, isBashActive, scriptContent);
 
         // Selection service dependency
         String cacheEvents = window.getProperty("osivia.cacheEvents");
         checkboxChecked = "selection".equals(cacheEvents);
-        table.add(this.generateRow(
+        form.add(this.generateFormGroup(
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_SELECTION_DEPENDENCY, locale),
-                HTMLConstants.INPUT_TYPE_CHECKBOX,
-                "selectionDep", "1", checkboxChecked));
+                HTMLConstants.INPUT_TYPE_CHECKBOX, "selectionDep", "1", checkboxChecked, false));
 
-        // Buttons
-        Element buttonsContainer = new DOMElement(QName.get(HTMLConstants.DIV));
-        buttonsContainer.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
-        form.add(buttonsContainer);
+
+        // Buttons form group
+        Element buttonsFormGroup = DOM4JUtils.generateDivElement(HTML_CLASS_FORM_GROUP);
+        form.add(buttonsFormGroup);
+
+        // Buttons container
+        Element buttonsContainer = DOM4JUtils.generateDivElement("col-sm-offset-4 col-sm-8");
+        buttonsFormGroup.add(buttonsContainer);
 
         // Submit button
-        Element submitButton = new DOMElement(QName.get(HTMLConstants.INPUT));
-        submitButton.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-        submitButton.addAttribute(QName.get(HTMLConstants.VALUE),
+        Element submitButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary",
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_SUBMIT, locale));
+        DOM4JUtils.addAttribute(submitButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         buttonsContainer.add(submitButton);
 
         // Cancel button
-        Element cancelButton = new DOMElement(QName.get(HTMLConstants.INPUT));
-        cancelButton.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
-        cancelButton.addAttribute(QName.get(HTMLConstants.VALUE),
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default",
                 this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_PROPERTIES_CANCEL, locale));
-        cancelButton.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
         buttonsContainer.add(cancelButton);
     }
 
 
     /**
-     * Utility method used to insert styles rows.
+     * Utility method used to generate styles form group.
      *
-     * @param tableParent parent table node
+     * @param parent parent node
      * @param locale current locale
      * @param portalStyles portal styles
      * @param windowStyles window styles
      */
-    private void insertStylesRows(Element tableParent, Locale locale, List<String> portalStyles, List<String> windowStyles) {
+    private void generateStylesFormGroup(Element parent, Locale locale, List<String> portalStyles, List<String> windowStyles) {
+        // UUID for panel toggle
+        String uuid = StringEscapeUtils.escapeHtml(UUID.randomUUID().toString());
+
         String displayStyle = StringUtils.EMPTY;
         for (String windowStyle : windowStyles) {
             displayStyle += windowStyle + " ";
@@ -959,72 +988,81 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Set<String> styles = new HashSet<String>(portalStyles);
         styles.addAll(windowStyles);
 
-        // Styles row
-        Element rowStyles = new DOMElement(QName.get(HTMLConstants.DIV));
-        rowStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
-        tableParent.add(rowStyles);
+        // Styles form group
+        Element formGroup = DOM4JUtils.generateDivElement(HTML_CLASS_FORM_GROUP);
+        parent.add(formGroup);
 
-        // Styles left cell
-        Element leftCellStyles = new DOMElement(QName.get(HTMLConstants.DIV));
-        leftCellStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
-        leftCellStyles.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES, locale));
-        rowStyles.add(leftCellStyles);
+        // Styles label
+        Element label = DOM4JUtils.generateElement(HTMLConstants.LABEL, HTML_CLASS_LABEL,
+                this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES, locale));
+        formGroup.add(label);
 
-        // Styles right cell
-        Element rightCellStyles = new DOMElement(QName.get(HTMLConstants.DIV));
-        rightCellStyles.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-        rightCellStyles.setText(displayStyle);
-        rowStyles.add(rightCellStyles);
+        // Styles inputs
+        Element inputs = DOM4JUtils.generateDivElement(HTML_CLASS_INPUT_CONTAINER);
+        formGroup.add(inputs);
 
-        // Styles right cell display link
-        Element aStylesDisplay = new DOMElement(QName.get(HTMLConstants.A));
-        aStylesDisplay.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
-        aStylesDisplay.addAttribute(QName.get(HTMLConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_STYLES_ROW + "')");
-        aStylesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK, locale));
-        rightCellStyles.add(aStylesDisplay);
+        // Styles summary display
+        Element summary = DOM4JUtils.generateElement(HTMLConstants.P, "form-control-static", displayStyle);
+        inputs.add(summary);
 
-        if (CollectionUtils.isNotEmpty(styles)) {
-            // Styles display toggle row
-            Element rowToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-            rowToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_STYLES_ROW + " "
-                    + HTMLConstants.CLASS_FANCYBOX_ROW);
-            rowToggle.addAttribute(QName.get(HTMLConstants.STYLE), HTMLConstants.STYLE_DISPLAY_NONE);
-            tableParent.add(rowToggle);
+        // Styles panel
+        Element panel = DOM4JUtils.generateDivElement("panel panel-default");
+        inputs.add(panel);
 
-            // Styles display toggle empty left cell
-            Element leftCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-            leftCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-            leftCellToggle.setText(StringUtils.EMPTY);
-            rowToggle.add(leftCellToggle);
+        // Panel heading
+        Element panelHeading = DOM4JUtils.generateDivElement("panel-heading");
+        panel.add(panelHeading);
 
-            // Styles display toggle right cell
-            Element rightCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-            rightCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-            rowToggle.add(rightCellToggle);
+        // Panel title
+        Element panelCollapseLink = DOM4JUtils.generateLinkElement("#" + uuid, null, null, null,
+                this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK, locale));
+        DOM4JUtils.addAttribute(panelCollapseLink, HTMLConstants.DATA_TOGGLE, "collapse");
+        panelHeading.add(panelCollapseLink);
 
-            // Styles display table
-            Element table = new DOMElement(QName.get(HTMLConstants.DIV));
-            table.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_TABLE);
-            rightCellToggle.add(table);
+        // Panel collapse
+        Element panelCollapseBody = DOM4JUtils.generateDivElement("panel-collapse collapse");
+        DOM4JUtils.addAttribute(panelCollapseBody, HTMLConstants.ID, uuid);
+        panel.add(panelCollapseBody);
 
+        // Panel body
+        Element panelBody = DOM4JUtils.generateDivElement("panel-body");
+        panelCollapseBody.add(panelBody);
+
+        if (styles != null) {
             // Loop on each style
             for (String style : styles) {
-                boolean checkboxChecked = windowStyles.contains(style);
-                Element row = this.generateRow(style, HTMLConstants.INPUT_TYPE_CHECKBOX, HTML_NAME_STYLE, style, checkboxChecked);
-                table.add(row);
+                // Checkbox container
+                Element checkboxContainer = DOM4JUtils.generateDivElement("checkbox");
+
+                // Checkbox label
+                Element checkboxLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
+                checkboxContainer.add(checkboxLabel);
+
+                // Checkbox input
+                Element checkboxInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+                DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_CHECKBOX);
+                DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.NAME, HTML_NAME_STYLE);
+                DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.VALUE, style);
+                if (windowStyles.contains(style)) {
+                    DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.CHECKED, HTMLConstants.INPUT_CHECKED);
+                }
+                checkboxLabel.add(checkboxInput);
+                checkboxLabel.setText(style);
+
+                panelBody.add(checkboxContainer);
             }
         }
     }
 
 
     /**
-     * Utility method used to insert conditional scope row.
+     * Utility method used to insert conditional scope form group.
      *
-     * @param tableParent parent table node
+     * @param parent parent node
      * @param locale current locale
      * @param window window
      */
-    private void insertConditionalScopeRow(Element tableParent, Locale locale, Window window) {
+    private void insertConditionalScopeRow(Element parent, Locale locale, Window window) {
         String conditionalScope = window.getProperty("osivia.conditionalScope");
         Map<String, String> scopes = new LinkedHashMap<String, String>();
 
@@ -1035,203 +1073,201 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
                             + profil.getName());
         }
         if (!scopes.isEmpty()) {
-            // Row
-            Element row = new DOMElement(QName.get(HTMLConstants.DIV));
-            row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
-            tableParent.add(row);
+            // Form group
+            Element formGroup = DOM4JUtils.generateDivElement(HTML_CLASS_FORM_GROUP);
+            parent.add(formGroup);
 
-            // Left cell
-            Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
-            leftCell.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_DISPLAY, locale));
-            row.add(leftCell);
+            // Label
+            Element label = DOM4JUtils.generateElement(HTMLConstants.LABEL, HTML_CLASS_LABEL,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_DISPLAY, locale));
+            formGroup.add(label);
 
-            // Right cell
-            Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
-            rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-            row.add(rightCell);
+            // Input container
+            Element inputContainer = DOM4JUtils.generateDivElement(HTML_CLASS_INPUT_CONTAINER);
+            formGroup.add(inputContainer);
 
-            // Select
-            Element select = new DOMElement(QName.get(HTMLConstants.SELECT));
-            select.addAttribute(QName.get(HTMLConstants.NAME), "conditionalScope");
-            rightCell.add(select);
+            // Select input
+            Element select = DOM4JUtils.generateElement(HTMLConstants.SELECT, "form-control", null);
+            inputContainer.add(select);
 
             // All profiles option
-            Element optionAllProfiles = new DOMElement(QName.get(HTMLConstants.OPTION));
-            optionAllProfiles.addAttribute(QName.get(HTMLConstants.VALUE), StringUtils.EMPTY);
+            Element optionAllProfiles = DOM4JUtils.generateElement(HTMLConstants.OPTION, null,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_ALL_PROFILES, locale));
+            DOM4JUtils.addAttribute(optionAllProfiles, HTMLConstants.VALUE, StringUtils.EMPTY);
             if (StringUtils.isNotEmpty(conditionalScope)) {
-                optionAllProfiles.addAttribute(QName.get(HTMLConstants.SELECTED), HTMLConstants.INPUT_SELECTED);
+                DOM4JUtils.addAttribute(optionAllProfiles, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
             }
-            optionAllProfiles.setText(this.internationalizationService.getString(
-                    InternationalizationConstants.KEY_WINDOW_PROPERTIES_CONDITIONAL_SCOPE_ALL_PROFILES, locale));
             select.add(optionAllProfiles);
 
             for (Entry<String, String> entry : scopes.entrySet()) {
                 // Scope option
-                Element optionScope = new DOMElement(QName.get(HTMLConstants.OPTION));
-                optionScope.addAttribute(QName.get(HTMLConstants.VALUE), entry.getKey());
+                Element optionScope = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, entry.getValue());
+                DOM4JUtils.addAttribute(optionScope, HTMLConstants.VALUE, entry.getKey());
                 if (StringUtils.equals(conditionalScope, entry.getKey())) {
-                    optionScope.addAttribute(QName.get(HTMLConstants.SELECTED), HTMLConstants.INPUT_SELECTED);
+                    DOM4JUtils.addAttribute(optionScope, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
                 }
-                optionScope.setText(entry.getValue());
                 select.add(optionScope);
             }
         }
     }
 
     /**
-     * Utility method used to insert dynamic properties rows.
+     * Utility method used to insert dynamic properties form group.
      *
-     * @param tableParent parent table node
+     * @param parent parent node
      * @param locale current locale
      * @param isBashActive bash active indicator
      * @param scriptContent script content
      */
-    private void insertDynamicPropertiesRows(Element tableParent, Locale locale, boolean isBashActive, String scriptContent) {
-        // Label - checkbox input unique ID link
-        String checkboxId = UUID.randomUUID().toString();
+    private void insertDynamicPropertiesRows(Element parent, Locale locale, boolean isBashActive, String scriptContent) {
+        // UUID for panel toggle
+        String uuid = StringEscapeUtils.escapeHtml(UUID.randomUUID().toString());
 
-        // Dynamic properties label
-        String dynamicPropertiesLabel;
+        // Form group
+        Element formGroup = DOM4JUtils.generateDivElement(HTML_CLASS_FORM_GROUP);
+        parent.add(formGroup);
+
+        // Label
+        Element label = DOM4JUtils.generateElement(HTMLConstants.LABEL, HTML_CLASS_LABEL,
+                this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES, locale));
+        formGroup.add(label);
+
+        // Input container
+        Element inputContainer = DOM4JUtils.generateDivElement(HTML_CLASS_INPUT_CONTAINER);
+        formGroup.add(inputContainer);
+
+        // Dynamic properties summary display
+        String summaryText;
         if (isBashActive) {
-            dynamicPropertiesLabel = InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHELL_SCRIPT;
+            summaryText = InternationalizationConstants.KEY_WINDOW_PROPERTIES_SHELL_SCRIPT;
         } else {
-            dynamicPropertiesLabel = "-";
+            summaryText = "-";
         }
+        Element summary = DOM4JUtils.generateElement(HTMLConstants.P, "form-control-static", summaryText);
+        inputContainer.add(summary);
 
-        // Dynamic properties row
-        Element rowDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
-        rowDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
-        tableParent.add(rowDynamicProperties);
+        // Styles panel
+        Element panel = DOM4JUtils.generateDivElement("panel panel-default");
+        inputContainer.add(panel);
 
-        // Dynamic properties left cell
-        Element leftCellDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
-        leftCellDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
-        leftCellDynamicProperties.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES,
-                locale));
-        rowDynamicProperties.add(leftCellDynamicProperties);
+        // Panel heading
+        Element panelHeading = DOM4JUtils.generateDivElement("panel-heading");
+        panel.add(panelHeading);
 
-        // Dynamic properties right cell
-        Element rightCellDynamicProperties = new DOMElement(QName.get(HTMLConstants.DIV));
-        rightCellDynamicProperties.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-        rightCellDynamicProperties.setText(dynamicPropertiesLabel);
-        rowDynamicProperties.add(rightCellDynamicProperties);
+        // Panel title
+        Element panelCollapseLink = DOM4JUtils.generateLinkElement("#" + uuid, null, null, null,
+                this.internationalizationService.getString(InternationalizationConstants.KEY_CHANGE, locale));
+        DOM4JUtils.addAttribute(panelCollapseLink, HTMLConstants.DATA_TOGGLE, "collapse");
+        panelHeading.add(panelCollapseLink);
 
-        // Dynamic properties right cell display link
-        Element aDynamicPropertiesDisplay = new DOMElement(QName.get(HTMLConstants.A));
-        aDynamicPropertiesDisplay.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
-        aDynamicPropertiesDisplay.addAttribute(QName.get(HTMLConstants.ONCLICK), "toggleRow(this, '" + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + "')");
-        aDynamicPropertiesDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CHANGE, locale));
-        rightCellDynamicProperties.add(aDynamicPropertiesDisplay);
+        // Panel collapse
+        Element panelCollapseBody = DOM4JUtils.generateDivElement("panel-collapse collapse");
+        DOM4JUtils.addAttribute(panelCollapseBody, HTMLConstants.ID, uuid);
+        panel.add(panelCollapseBody);
 
-        // Dynamic properties display toggle row
-        Element rowToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-        rowToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOGGLE_ROW + " " + HTML_CLASS_TOGGLE_DYNAMIC_PROPERTIES_ROW + " "
-                + HTMLConstants.CLASS_FANCYBOX_ROW);
-        rowToggle.addAttribute(QName.get(HTMLConstants.STYLE), HTMLConstants.STYLE_DISPLAY_NONE);
-        tableParent.add(rowToggle);
+        // Panel body
+        Element panelBody = DOM4JUtils.generateDivElement("panel-body");
+        panelCollapseBody.add(panelBody);
 
-        // Dynamic properties display toggle left cell
-        Element leftCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-        leftCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-        rowToggle.add(leftCellToggle);
+        // Checkbox container
+        Element checkboxContainer = DOM4JUtils.generateDivElement("checkbox");
+        panelBody.add(checkboxContainer);
 
-        // Dynamic properties display toggle checkbox label
-        Element label = new DOMElement(QName.get(HTMLConstants.LABEL));
-        label.addAttribute(QName.get(HTMLConstants.FOR), checkboxId);
-        label.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES_BEAN_SHELL, locale));
-        leftCellToggle.add(label);
+        // Checkbox label
+        Element checkboxLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
+        checkboxContainer.add(checkboxLabel);
 
-        // Dynamic properties display toggle checkbox
-        Element checkbox = new DOMElement(QName.get(HTMLConstants.INPUT));
-        checkbox.addAttribute(QName.get(HTMLConstants.ID), checkboxId);
-        checkbox.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_CHECKBOX);
-        checkbox.addAttribute(QName.get(HTMLConstants.NAME), "bshActivation");
-        checkbox.addAttribute(QName.get(HTMLConstants.VALUE), "1");
-        checkbox.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_SMALL_INPUT);
+        // Checkbox input
+        Element checkboxInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_CHECKBOX);
+        DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.NAME, "bshActivation");
+        DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.VALUE, "1");
         if (isBashActive) {
-            checkbox.addAttribute(QName.get(HTMLConstants.CHECKED), HTMLConstants.INPUT_CHECKED);
+            DOM4JUtils.addAttribute(checkboxInput, HTMLConstants.CHECKED, HTMLConstants.INPUT_CHECKED);
         }
-        leftCellToggle.add(checkbox);
+        checkboxLabel.add(checkboxInput);
+        checkboxLabel.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_WINDOW_PROPERTIES_DYNAMIC_PROPERTIES_BEAN_SHELL,
+                locale));
 
-        // Dynamic properties display toggle right cell
-        Element rightCellToggle = new DOMElement(QName.get(HTMLConstants.DIV));
-        rightCellToggle.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-        rowToggle.add(rightCellToggle);
+        // Textarea
+        Element textarea = DOM4JUtils.generateElement(HTMLConstants.TEXTAREA, "form-control", scriptContent);
+        DOM4JUtils.addAttribute(textarea, HTMLConstants.NAME, "bshScript");
+        DOM4JUtils.addAttribute(textarea, HTMLConstants.ROWS, "10");
+        panelBody.add(textarea);
 
-        // Dynamic properties display toggle right cell textarea
-        Element textarea = new DOMElement(QName.get(HTMLConstants.TEXTAREA));
-        textarea.addAttribute(QName.get(HTMLConstants.NAME), "bshScript");
-        textarea.addAttribute(QName.get(HTMLConstants.ROWS), "10");
-        textarea.addAttribute(QName.get(HTMLConstants.COLS), "75");
-        textarea.setText(scriptContent);
-        rightCellToggle.add(textarea);
-
-        // Dynamic properties display toggle right cell example
-        Element example = new DOMElement(QName.get(HTMLConstants.PRE));
-        StringBuffer sb = new StringBuffer();
-        sb.append("/*\n");
-        sb.append("implicits variables :\n");
-        sb.append("   - pageParamsEncoder : parameters encoder (decoded to List&lt;String&gt;)\n");
-        sb.append("   - windowsProperties : window dynamic properties (Map&lt;String, String&gt;)\n");
-        sb.append("        > osivia.dynamicCSSClasses : css class names separated by a space (eq : \"css1 css2\")\n");
-        sb.append("*/\n");
-        sb.append("\n");
-        sb.append("import java.util.List;\n");
-        sb.append("\n");
-        sb.append("List cssSelectorValues =  pageParamsEncoder.decode(\"selectors\", \"cssSelector\");\n");
-        sb.append("\n");
-        sb.append("if (cssSelectorValues != null) {\n");
-        sb.append("    windowProperties.put(\"osivia.dynamicCSSClasses\", cssSelectorValues.get(0));\n");
-        sb.append("}\n");
-        sb.append("rightCellToggle.add(example);\n");
-        example.setText(sb.toString());
-        rightCellToggle.add(example);
+        // Example
+        StringBuilder exampleText = new StringBuilder();
+        exampleText.append("/*\n");
+        exampleText.append("implicits variables :\n");
+        exampleText.append("   - pageParamsEncoder : parameters encoder (decoded to List&lt;String&gt;)\n");
+        exampleText.append("   - windowsProperties : window dynamic properties (Map&lt;String, String&gt;)\n");
+        exampleText.append("        &gt; osivia.dynamicCSSClasses : css class names separated by a space (eq : \"css1 css2\")\n");
+        exampleText.append("*/\n");
+        exampleText.append("\n");
+        exampleText.append("import java.util.List;\n");
+        exampleText.append("\n");
+        exampleText.append("List cssSelectorValues =  pageParamsEncoder.decode(\"selectors\", \"cssSelector\");\n");
+        exampleText.append("\n");
+        exampleText.append("if (cssSelectorValues != null) {\n");
+        exampleText.append("    windowProperties.put(\"osivia.dynamicCSSClasses\", cssSelectorValues.get(0));\n");
+        exampleText.append("}\n");
+        exampleText.append("rightCellToggle.add(example);\n");
+        Element exampleContainer = DOM4JUtils.generateElement(HTMLConstants.P, "form-control-static", null);
+        panelBody.add(exampleContainer);
+        Element examplePre = DOM4JUtils.generateElement(HTMLConstants.PRE, null, exampleText.toString());
+        exampleContainer.add(examplePre);
     }
 
 
     /**
-     * Utility method used to generate window settings row.
+     * Utility method used to generate window settings form group.
      *
-     * @param label label
+     * @param labelText label text
      * @param inputType input type
      * @param inputName input name
      * @param inputValue input value
      * @param checkboxChecked checkbox checked indicator
-     * @return row DOM4J element
+     * @param disabled disabled input indicator
+     * @return form group DOM4J element
      */
-    private Element generateRow(String label, String inputType, String inputName, String inputValue, boolean checkboxChecked) {
-        // Row
-        Element row = new DOMElement(QName.get(HTMLConstants.DIV));
-        row.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_ROW);
+    private Element generateFormGroup(String labelText, String inputType, String inputName, String inputValue, boolean checkboxChecked,
+            boolean disabled) {
+        // Form group
+        Element formGroup = DOM4JUtils.generateDivElement(HTML_CLASS_FORM_GROUP);
 
-        // Left cell
-        Element leftCell = new DOMElement(QName.get(HTMLConstants.DIV));
-        leftCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL + " " + HTMLConstants.CLASS_FANCYBOX_LABEL);
-        leftCell.setText(label);
-        row.add(leftCell);
+        // Label
+        Element label = DOM4JUtils.generateElement(HTMLConstants.LABEL, HTML_CLASS_LABEL, labelText);
+        formGroup.add(label);
 
-        // Right cell
-        Element rightCell = new DOMElement(QName.get(HTMLConstants.DIV));
-        rightCell.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CELL);
-        row.add(rightCell);
+        // Input container
+        Element inputContainer = DOM4JUtils.generateDivElement(HTML_CLASS_INPUT_CONTAINER);
+        formGroup.add(inputContainer);
 
-        // Right cell input
-        Element input = new DOMElement(QName.get(HTMLConstants.INPUT));
-        input.addAttribute(QName.get(HTMLConstants.TYPE), inputType);
-        input.addAttribute(QName.get(HTMLConstants.NAME), inputName);
-        if (inputValue != null) {
-            input.addAttribute(QName.get(HTMLConstants.VALUE), inputValue);
+        // Input
+        Element input = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        DOM4JUtils.addAttribute(input, HTMLConstants.TYPE, inputType);
+        DOM4JUtils.addAttribute(input, HTMLConstants.NAME, inputName);
+        DOM4JUtils.addAttribute(input, HTMLConstants.VALUE, inputValue);
+        if (disabled) {
+            DOM4JUtils.addAttribute(input, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
         }
+
         if (HTMLConstants.INPUT_TYPE_CHECKBOX.equals(inputType)) {
-            input.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_SMALL_INPUT);
-            if (checkboxChecked) {
-                input.addAttribute(QName.get(HTMLConstants.CHECKED), HTMLConstants.INPUT_CHECKED);
-            }
-        }
-        rightCell.add(input);
+            // Checkbox container
+            Element checkboxContainer = DOM4JUtils.generateDivElement("checkbox");
 
-        return row;
+            // Checkbox input
+            if (checkboxChecked) {
+                DOM4JUtils.addAttribute(input, HTMLConstants.CHECKED, HTMLConstants.INPUT_CHECKED);
+            }
+            checkboxContainer.add(input);
+            inputContainer.add(checkboxContainer);
+        } else {
+            DOM4JUtils.addAttribute(input, HTMLConstants.CLASS, "form-control");
+            inputContainer.add(input);
+        }
+
+        return formGroup;
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -64,7 +64,7 @@ import org.osivia.portal.core.profils.ProfilManager;
 
 /**
  * Tabs attributes bundle.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
@@ -108,13 +108,14 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_USER_PORTAL);
         this.names.add(Constants.ATTR_PAGE_ID);
+        this.names.add(Constants.ATTR_PAGE_NAME);
         this.names.add(Constants.ATTR_FIRST_TAB);
     }
 
 
     /**
      * Singleton instance access.
-     * 
+     *
      * @return singleton instance
      */
     public static TabsAttributesBundle getInstance() {
@@ -136,6 +137,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Server request
+        ServerRequest request = controllerContext.getServerInvocation().getRequest();
 
         PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
         if (popupWindowId == null) {
@@ -153,7 +156,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if ((user == null) || (headerUsername != null)) {
                     // Check header and services caches validity
                     if ((headerCount.longValue() == this.globalCacheService.getHeaderCount())
-                            && (cmsTs > this.servicesCacheService.getCacheInitialisationTs() && !PageProperties.getProperties().isRefreshingPage())) {
+                            && ((cmsTs > this.servicesCacheService.getCacheInitialisationTs()) && !PageProperties.getProperties().isRefreshingPage())) {
                         refreshUserPortal = false;
                     }
                 }
@@ -164,19 +167,20 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         this.globalCacheService.incrementHeaderCount();
                     } while (headerCount.longValue() > this.globalCacheService.getHeaderCount());
                 }
-                
-                
+
+
                 if( refreshUserPortal == false){
-                    if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh")))
-                            refreshUserPortal = true;
+                    if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh"))) {
+                        refreshUserPortal = true;
+                    }
                 }
-                
+
             }
 
             if (refreshUserPortal) {
                 tabbedNavUserPortal = this.getPageBean(renderPageCommand);
-                
-                controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh");    
+
+                controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh");
 
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal", tabbedNavUserPortal);
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount",
@@ -220,28 +224,29 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             // User portal
             attributes.put(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
             // Page identifier
-            
+
             /* Préselection domain */
-            
+
             Object selectedPageID =  mainPage.getId();
-            
+
             String domain = TabsCustomizerInterceptor.getInheritedPageDomain( renderPageCommand.getPage());
             if( domain != null){
                 selectedPageID = domain;
             }
-            
-        
+
+
             attributes.put(Constants.ATTR_PAGE_ID, selectedPageID);
+            // Page name
+            attributes.put(Constants.ATTR_PAGE_NAME, PortalObjectUtils.getDisplayName(mainPage, request.getLocales()));
             // First tab
             attributes.put(Constants.ATTR_FIRST_TAB, controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));
-
         }
     }
 
 
     /**
      * Utility method used to get user portal pages.
-     * 
+     *
      * @param renderPageCommand render page command
      * @return user portal pages
      * @throws ControllerException
@@ -290,26 +295,27 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         List<String> domains = new ArrayList<String>();
 
         for (Page child : sortedPages) {
-            
+
             // get domain
             String curDomain = TabsCustomizerInterceptor.getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
 
             if (curDomain != null) {
-                if (domains.contains(curDomain))
+                if (domains.contains(curDomain)) {
                     break;
+                }
                 domains.add(curDomain);
 
             }
-    
-            
+
+
             // Check if child must be hidden
             if (hideDefaultPage && child.equals(defaultPage)) {
                 continue;
             }
 
             PortalObjectId pageIdToControl = child.getId();
-            
-            
+
+
             /*
             if (child instanceof ITemplatePortalObject) {
                 // In case of template, check original template rights ; moreover, there is no customization
@@ -317,13 +323,14 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
             */
             boolean permissionCheck = true;
-            
+
             // Don't check template permission
             if (!(child instanceof ITemplatePortalObject)) {
                  // Permission
                 PortalObjectPermission permission = new PortalObjectPermission(pageIdToControl, PortalObjectPermission.VIEW_MASK);
-                if( !portalAuthorizationManager.checkPermission(permission))
+                if( !portalAuthorizationManager.checkPermission(permission)) {
                     permissionCheck = false;
+                }
             }
 
             if (permissionCheck && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
@@ -332,11 +339,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                 // View page command
                 ViewPageCommand showPage = new ViewPageCommand(child.getId());
-                
-                
+
+
                 if (curDomain != null) {
                     userPage.setId(curDomain);
-                    String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
+                    String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
                             null, null, null);
                     userPage.setUrl(url);
 
@@ -345,11 +352,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     String url = new PortalURLImpl(showPage, controllerContext, null, null).toString();
                     userPage.setUrl(url + "?init-state=true");
                 }
-                
+
                 String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
                 userPage.setName(name);
 
-  
+
 
 
                 if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {

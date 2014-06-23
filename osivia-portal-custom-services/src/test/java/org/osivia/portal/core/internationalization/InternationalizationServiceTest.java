@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,9 @@ package org.osivia.portal.core.internationalization;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Map;
 
@@ -117,6 +120,45 @@ public class InternationalizationServiceTest {
         ClassLoader classLoader2 = null;
         String test2 = this.internationalizationService.getString("EXAMPLE", Locale.GERMAN, classLoader2);
         assertEquals("Beispiel", test2);
+    }
+
+
+    @Test
+    public final void testGetStringArgs() {
+        String key = "DEFAULT_VALUE";
+
+        // Text
+        String testText;
+        // Standard text
+        testText = this.internationalizationService.getString(key, Locale.GERMAN, "test");
+        assertEquals("Standard: test", testText);
+        // Integer
+        testText = this.internationalizationService.getString(key, Locale.GERMAN, "12");
+        assertEquals("Standard: 12", testText);
+
+        // Date
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 20);
+        calendar.set(Calendar.MONTH, Calendar.JUNE);
+        calendar.set(Calendar.YEAR, 2014);
+        Date date = calendar.getTime();
+        String testDate;
+        // German
+        testDate = this.internationalizationService.getString(key, Locale.GERMAN, date);
+        assertEquals("Standard: 20.06.2014", testDate);
+        // French
+        testDate = this.internationalizationService.getString(key, Locale.FRENCH, date);
+        assertEquals("Valeur par défaut : 20 juin 2014", testDate);
+
+        // Decimal number
+        double decimalNumber = 1234.567;
+        String testDecimalNumber;
+        // German
+        testDecimalNumber = this.internationalizationService.getString(key, Locale.GERMAN, decimalNumber);
+        assertEquals("Standard: 1.234,567", testDecimalNumber);
+        // French
+        testDecimalNumber = this.internationalizationService.getString(key, Locale.FRENCH, decimalNumber);
+        assertEquals("Valeur par défaut : 1 234,567", testDecimalNumber);
     }
 
 

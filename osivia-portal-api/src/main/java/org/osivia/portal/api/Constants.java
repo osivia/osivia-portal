@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,7 +19,7 @@ package org.osivia.portal.api;
  *
  * @author Cédric Krommenhoek
  */
-public class Constants {
+public final class Constants {
 
     // API services names
 
@@ -64,21 +64,27 @@ public class Constants {
     public static final String ATTR_USER_PORTAL = "osivia.userPortal";
     /** Current page identifier attribute name. */
     public static final String ATTR_PAGE_ID = "osivia.currentPageId";
+    /** Current page name attribute name. */
+    public static final String ATTR_PAGE_NAME = "osivia.currentPageName";
     /** First tab attribute name. */
     public static final String ATTR_FIRST_TAB = "osivia.firstTab";
     /** Logged person. */
     public static final String ATTR_LOGGED_PERSON = "osivia.loggedPerson";
 
+
     // Generic
-    
+
+    /** Portal home page URL. */
+    public static final String ATTR_PORTAL_HOME_URL = "osivia.home.url";
+    /** Page category attribute name. */
     public static final String ATTR_PAGE_CATEGORY = "osivia.pageCategory";
     /** User session data attribute name. */
     public static final String ATTR_USER_DATAS = "osivia.userDatas";
-    /** Native space object attribute name. */    
+    /** Native space object attribute name. */
     public static final String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
     /** Wizard mode indicator. */
     public static final String ATTR_WIZARD_MODE = "osivia.wizard";
-    
+
 
     // Breadcrumb
 
@@ -95,8 +101,10 @@ public class Constants {
 
 
     // SEO
+
     /** content of meta tags. */
     public static final String ATTR_HEADER_METADATA_CONTENT = "osivia.header.metadata.content";
+
 
     // Toolbar
 
@@ -138,10 +146,10 @@ public class Constants {
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
-    
    
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
     
+
 
     //PORTLET - OUTPUT
 
@@ -150,27 +158,26 @@ public class Constants {
     /** To return to normal mode. */
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
     /** To refresh all CMS Contents. */
-    public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";     
-     
-    public static final String PORTLET_VALUE_ACTIVATE = "true"; 
-    
+    public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
+
+    public static final String PORTLET_VALUE_ACTIVATE = "true";
+
 
     // WINDOWS
-    /** The CMS URI of the portlet */    
+
+    /** The CMS URI of the portlet. */
     public static final String WINDOW_PROP_URI = "osivia.cms.uri";
-    /** The version of the content */     
+    /** The version of the content. */
     public static final String WINDOW_PROP_VERSION = "osivia.cms.displayLiveVersion";
-    /** The scope of the request */  
+    /** The scope of the request. */
     public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
 
 
     /**
-     * Default constructor.
-     * Constants instances should NOT be constructed in standard programming.
-     * This constructor is public to permit tools that require a JavaBean instance to operate.
+     * Private constructor : prevent instantiation.
      */
-    public Constants() {
-        super();
+    private Constants() {
+        throw new AssertionError();
     }
 
 }

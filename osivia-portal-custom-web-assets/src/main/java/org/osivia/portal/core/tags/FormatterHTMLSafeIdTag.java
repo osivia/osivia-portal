@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,21 +17,20 @@ package org.osivia.portal.core.tags;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
- * Formatter tag for HTML safe identifier access.
+ * Formatter tag for HTML safe identifier.
  *
  * @author Cédric Krommenhoek
  * @see SimpleTagSupport
  */
 public class FormatterHTMLSafeIdTag extends SimpleTagSupport {
 
-    /** Exported variable name. */
-    private String var;
     /** Portal object identifier. */
     private PortalObjectId portalObjectId;
 
@@ -49,33 +48,17 @@ public class FormatterHTMLSafeIdTag extends SimpleTagSupport {
      */
     @Override
     public void doTag() throws JspException, IOException {
+        // HTML safe identifier
         String htmlSafeId = PortalObjectUtils.getHTMLSafeId(this.portalObjectId);
 
-        this.getJspContext().setAttribute(this.var, htmlSafeId);
+        JspWriter out = this.getJspContext().getOut();
+        out.write(htmlSafeId);
     }
 
-
-    /**
-     * Getter for var.
-     * 
-     * @return the var
-     */
-    public String getVar() {
-        return this.var;
-    }
-
-    /**
-     * Setter for var.
-     * 
-     * @param var the var to set
-     */
-    public void setVar(String var) {
-        this.var = var;
-    }
 
     /**
      * Getter for portalObjectId.
-     * 
+     *
      * @return the portalObjectId
      */
     public PortalObjectId getPortalObjectId() {
@@ -84,7 +67,7 @@ public class FormatterHTMLSafeIdTag extends SimpleTagSupport {
 
     /**
      * Setter for portalObjectId.
-     * 
+     *
      * @param portalObjectId the portalObjectId to set
      */
     public void setPortalObjectId(PortalObjectId portalObjectId) {

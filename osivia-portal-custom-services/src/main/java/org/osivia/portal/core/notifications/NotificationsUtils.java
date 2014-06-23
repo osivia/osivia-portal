@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,6 +15,7 @@
 package org.osivia.portal.core.notifications;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +27,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
-import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -38,8 +38,9 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
-import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
@@ -144,63 +145,49 @@ public class NotificationsUtils {
      */
     private static String generateNotificationsHTMLContent(List<Notifications> notificationsList) {
         // HTML "div" #1
-        Element div1 = new DOMElement(QName.get(HTMLConstants.DIV));
-        div1.addAttribute(QName.get(HTMLConstants.CLASS), "dyna-window");
+        Element div1 = DOM4JUtils.generateDivElement("dyna-window");
 
         // HTML "div" #2
-        Element div2 = new DOMElement(QName.get(HTMLConstants.DIV));
-        div2.addAttribute(QName.get(HTMLConstants.ID), WINDOW_ID);
+        Element div2 = DOM4JUtils.generateDivElement(null);
+        DOM4JUtils.addAttribute(div2, HTMLConstants.ID, WINDOW_ID);
         div1.add(div2);
 
         // HTML "div" #3
-        Element div3 = new DOMElement(QName.get(HTMLConstants.DIV));
-        div3.addAttribute(QName.get(HTMLConstants.CLASS), "dyna-window-content");
-        div3.setText(StringUtils.EMPTY);
+        Element div3 = DOM4JUtils.generateDivElement("dyna-window-content");
         div2.add(div3);
 
-        if (CollectionUtils.isNotEmpty(notificationsList)) {
-            // Notifications list HTML "div"
-            Element divNotificationsList = new DOMElement(QName.get(HTMLConstants.DIV));
-            divNotificationsList.addAttribute(QName.get(HTMLConstants.CLASS), "notifications-list");
-            div3.add(divNotificationsList);
-
+        if (notificationsList != null) {
             for (Notifications notifications : notificationsList) {
                 // Notifications
-                Element divNotifications = new DOMElement(QName.get(HTMLConstants.DIV));
-                divNotifications.addAttribute(QName.get(HTMLConstants.CLASS), "notifications " + notifications.getType().getHtmlClass());
-
+                Element divNotifications = DOM4JUtils.generateDivElement("alert alert-dismissable " + notifications.getType().getHtmlClass());
+                div3.add(divNotifications);
 
                 if (notifications.getErrorCode() != null) {
                     divNotifications.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
                 }
 
-
-                divNotificationsList.add(divNotifications);
+                // Close button
+                Element button = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "close", "&times;");
+                DOM4JUtils.addAttribute(button, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
+                DOM4JUtils.addAttribute(button, HTMLConstants.DATA_DISMISS, "alert");
+                DOM4JUtils.addAttribute(button, HTMLConstants.ARIA_HIDDEN, "true");
+                divNotifications.add(button);
 
                 List<String> messages = notifications.getMessages();
                 if (CollectionUtils.isNotEmpty(messages)) {
                     if (messages.size() == 1) {
                         // Single message
                         String message = messages.get(0);
-                        Element p = new DOMElement(QName.get(HTMLConstants.P));
-                        // p.setText(message);
+                        Element p = DOM4JUtils.generateElement(HTMLConstants.P, null, null);
                         messageHandling(p, message);
                         divNotifications.add(p);
-
-
-
                     } else {
                         // Multiple messages
-                        Element ul = new DOMElement(QName.get(HTMLConstants.UL));
+                        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
                         divNotifications.add(ul);
 
                         for (String message : messages) {
-                            Element li = new DOMElement(QName.get(HTMLConstants.LI));
-                            // if (StringUtils.isEmpty(message)) {
-                            // li.setText(StringUtils.EMPTY);
-                            // } else {
-                            // li.setText(message);
-                            // }
+                            Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
                             messageHandling(li, message);
                             ul.add(li);
                         }
@@ -209,7 +196,21 @@ public class NotificationsUtils {
             }
         }
 
-        return div1.asXML();
+        // Write HTML content
+        try {
+            StringWriter stringWriter = new StringWriter();
+            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(div1);
+                return stringWriter.toString();
+            } finally {
+                stringWriter.close();
+                htmlWriter.close();
+            }
+        } catch (IOException e) {
+            return StringUtils.EMPTY;
+        }
     }
 
 
@@ -235,14 +236,14 @@ public class NotificationsUtils {
             parent.addText(beginning);
 
             // Link
-            Element a = new DOMElement(QName.get(HTMLConstants.A));
             String[] split = StringUtils.split(link, "|");
-            a.addAttribute(QName.get(HTMLConstants.HREF), split[0]);
+            String text;
             if (split.length > 1) {
-                a.setText(split[1]);
+                text = split[1];
             } else {
-                a.setText(split[0]);
+                text = split[0];
             }
+            Element a = DOM4JUtils.generateLinkElement(split[0], null, null, null, text);
             parent.add(a);
 
             matcher = MESSAGE_LINKS_PATTERN.matcher(continuation);

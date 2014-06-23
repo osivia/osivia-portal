@@ -268,7 +268,7 @@ function bilto(event) {
 
 	//PIA : desactivation des liens en ajax
 	if (!source.classList.contains("ajax-link")
-			&& ((Element.up(source, "div.no-ajax-link") != null) || source
+			&& ((Element.up(source, ".no-ajax-link") != null) || source
 					.hasClassName("no-ajax-link"))) {
 		return;
 	}

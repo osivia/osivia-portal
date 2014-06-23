@@ -10,18 +10,12 @@
     <short-name>f</short-name>
     
     <tag>
-        <description>Set HTML safe identifier with PortalObjectUtils "getHTMLSafeId" call.</description>
-        <display-name>Set HTML safe identifier</display-name>
-        <name>setSafeId</name>
+        <description>Get HTML safe identifier.</description>
+        <display-name>Get HTML safe identifier</display-name>
+        <name>safeId</name>
         <tag-class>org.osivia.portal.core.tags.FormatterHTMLSafeIdTag</tag-class>
         <body-content>empty</body-content>
-        
-        <attribute>
-            <description>Name of the exported variable to hold the value specified in the action.</description>
-            <name>var</name>
-            <required>true</required>
-        </attribute>
-        
+
         <attribute>
             <description>Portal object identifier.</description>
             <name>portalObjectId</name>
@@ -32,7 +26,7 @@
     </tag>
     
     <tag>
-        <description>Generate portal objects JSTree HTML data</description>
+        <description>Generate portal objects JSTree HTML data.</description>
         <display-name>Generate JSTree HTML data</display-name>
         <name>tree</name>
         <tag-class>org.osivia.portal.core.tags.FormatterHTMLTreeTag</tag-class>
@@ -40,22 +34,55 @@
         
         <attribute>
             <description>Tree identifier.</description>
-            <name>treeId</name>
+            <name>id</name>
             <required>true</required>
         </attribute>
         
         <attribute>
-            <description>Tree HTML class.</description>
-            <name>htmlClass</name>
-            <required>false</required>
+            <description>Tree type.</description>
+            <name>type</name>
+            <required>true</required>
         </attribute>
+    </tag>
+    
+    <tag>
+        <description>Get portal object display name.</description>
+        <display-name>Get display name</display-name>
+        <name>displayName</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterDisplayNameTag</tag-class>
+        <body-content>empty</body-content>
         
         <attribute>
-            <description>Tree filter indicator.</description>
-            <name>filter</name>
-            <required>false</required>
-            <type>java.lang.Boolean</type>
+            <description>Portal object.</description>
+            <name>object</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.jboss.portal.core.model.portal.PortalObject</type>
         </attribute>
+    </tag>
+    
+    <tag>
+        <description>Get template indicator for current page.</description>
+        <display-name>Get template indicator</display-name>
+        <name>isTemplate</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterTemplateIndicatorTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    
+    <tag>
+        <description>Generate portlets list HTML data.</description>
+        <display-name>Generate portlets list</display-name>
+        <name>portletsList</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLPortletsListTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    
+    <tag>
+        <description>Generate windows settings HTML data.</description>
+        <display-name>Generate windows settings</display-name>
+        <name>windowsSettings</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLWindowsSettingsTag</tag-class>
+        <body-content>empty</body-content>
     </tag>
 
 </taglib>

@@ -29,7 +29,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.HTMLConstants;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.cms.CMSException;

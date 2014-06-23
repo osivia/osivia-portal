@@ -138,12 +138,12 @@ public final class InternalConstants {
 
     // Windows constants
 
-    /** Toolbar settings content. */
-    public static final String ATTR_WINDOWS_SETTINGS_CONTENT = "osivia.windows.settingsContent";
-    /** Formatter. */
-    public static final String ATTR_WINDOWS_FORMATTER = "osivia.windows.formatter";
-    /** Controller context. */
-    public static final String ATTR_WINDOWS_CONTROLLER_CONTEXT = "osivia.windows.controllerContext";
+    // /** Toolbar settings content. */
+    // public static final String ATTR_WINDOWS_SETTINGS_CONTENT = "osivia.windows.settingsContent";
+    // /** Formatter. */
+    // public static final String ATTR_WINDOWS_FORMATTER = "osivia.windows.formatter";
+    // /** Controller context. */
+    // public static final String ATTR_WINDOWS_CONTROLLER_CONTEXT = "osivia.windows.controllerContext";
     /** Generic command URL. */
     public static final String ATTR_WINDOWS_COMMAND_URL = "osivia.portlets.commandURL";
     /** Current page. */

@@ -42,12 +42,14 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.HTMLConstants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.IDirectoryService;
 import org.osivia.portal.api.directory.IDirectoryServiceLocator;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -85,22 +87,25 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
 public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /** HTML class "toolbar-administration". */
-    private static final String HTML_CLASS_TOOLBAR_ADMINISTRATION = "toolbar-administration";
-    /** HTML class "toolbar-menu". */
-    private static final String HTML_CLASS_TOOLBAR_MENU = "toolbar-menu";
-    /** HTML class "toolbar-menu-title". */
-    private static final String HTML_CLASS_TOOLBAR_MENU_TITLE = "toolbar-menu-title";
+    private static final String HTML_CLASS_TOOLBAR_ADMINISTRATION = "nav navbar-nav navbar-left";
+
+    /** HTML class "dropdown". */
+    private static final String HTML_CLASS_DROPDOWN = "dropdown";
+    /** HTML class "dropdown-toggle". */
+    private static final String HTML_CLASS_DROPDOWN_TOGGLE = "dropdown-toggle";
+    /** HTML class "dropdown-menu". */
+    private static final String HTML_CLASS_DROPDOWN_MENU = "dropdown-menu";
+    /** HTML class "dropdown-header". */
+    private static final String HTML_CLASS_DROPDOWN_HEADER = "dropdown-header";
+    /** HTML class "caret". */
+    private static final String HTML_CLASS_DROPDOWN_CARET = "caret";
+    /** HTML class "divider". */
+    private static final String HTML_CLASS_DROPDOWN_DIVIDER = "divider";
+
     /** HTML class "fancybox_inline". */
     private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** HTML class "fancybox_refresh". */
     private static final String HTML_CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
-
-    /** HTML identifier for configuration menu. */
-    private static final String HTML_ID_CONFIGURATION_MENU = "toolbar-administration-configuration";
-    /** HTML identifier for edition menu. */
-    private static final String HTML_ID_EDITION_MENU = "toolbar-administration-edition";
-    /** HTML identifier for user menu. */
-    private static final String HTML_ID_USERBAR_MENU = "toolbar-userbar-edition";
 
     /** Pages list URL. */
     private static final String URL_PAGES_LIST = "#pages-list";
@@ -153,7 +158,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-
+        // Directory service locator
         this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
 
 
@@ -164,9 +169,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_TOOLBAR_PERSON);
         this.names.add(Constants.ATTR_TOOLBAR_LOGIN_URL);
         this.names.add(Constants.ATTR_TOOLBAR_MY_SPACE_URL);
-        this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
         this.names.add(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL);
         this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
+        this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
     }
 
 
@@ -187,56 +193,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * {@inheritDoc}
      */
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) {
+        // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
-
-        Page page = renderPageCommand.getPage();
-
-        // Administration content
-        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
-        attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
-
-        // userbar content
-        String userbarContent = this.formatHTMLUserbar(controllerContext, page, attributes);
-        attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
-
-        // Refresh page
-        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
-        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
-
-
-    }
-
-
-    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Map<String, Object> attributes) {
-        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
-        // PageType pageType = PageType.getPageType(page, context);
-
-        // user root element
-        Element userbar = new DOMElement(QName.get(HTMLConstants.DIV));
-        userbar.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_ADMINISTRATION);
-
+        // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+        // Current page
+        Page page = renderPageCommand.getPage();
+        // Current locale
+        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
 
-
+        
         // Principal
-
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
         attributes.put(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
 
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
-        cmsCtx.setControllerContext(controllerContext);
-
-
+        // Person
         DirectoryPerson person = null;
         if (principal != null) {
-
             IDirectoryService directoryService = directoryServiceLocator.getDirectoryService();
-
             if (directoryService != null) {
-
                 person = directoryService.getPerson(principal.getName());
                 attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
             }
@@ -251,116 +226,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             attributes.put(Constants.ATTR_TOOLBAR_MY_SPACE_URL, mySpacePortalUrl.toString());
         }
 
-        // userbar menu root
-        // Configuration menu root element
-        Element userbarMenu = new DOMElement(QName.get(HTMLConstants.DIV));
-        userbarMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_USERBAR_MENU);
-        userbarMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
-        userbar.add(userbarMenu);
+        // Refresh page
+        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
+        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
 
-        // Configuration menu title
-        Element userbarMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
-        userbarMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+        // Logout
+        SignOutCommand signOutCommand = new SignOutCommand();
+        PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
+        attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
 
-        // connected with directory service
-        Element userbarMenuTitleAvatar = new DOMElement(QName.get(HTMLConstants.IMG));
-        userbarMenuTitle.add(userbarMenuTitleAvatar);
-        Element userbarMenuTitleName = new DOMElement(QName.get(HTMLConstants.SPAN));
-        userbarMenuTitle.add(userbarMenuTitleName);
-        if (person != null) {
+        // Administration content
+        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
+        attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
 
-            userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), person.getAvatar().getUrl());
-            userbarMenuTitleName.setText(person.getDisplayName());
-        }
-        // connected
-        else if (principal != null) {
-
-
-            try {
-                userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), cmsService.getUserAvatar(cmsCtx, principal.getName()).getUrl());
-            } catch (CMSException e) {
-
-            }
-            userbarMenuTitleName.setText(principal.getName());
-
-        }
-        // not connected
-        else {
-
-            try {
-                userbarMenuTitleAvatar.addAttribute(QName.get(HTMLConstants.SRC), cmsService.getUserAvatar(cmsCtx, "nobody").getUrl());
-            } catch (CMSException e) {
-
-            }
-            userbarMenuTitleName.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_USER_GUEST, locale));
-        }
-
-        userbarMenu.add(userbarMenuTitle);
-
-
-        // Configuration menu "ul" node
-        Element userMenuUl = new DOMElement(QName.get(HTMLConstants.UL));
-        userbarMenu.add(userMenuUl);
-
-        if (principal != null) {
-            // My Space
-            Element mySpace = new DOMElement(QName.get(HTMLConstants.A));
-            mySpace.addAttribute(QName.get(HTMLConstants.HREF), mySpacePortalUrl.toString());
-            mySpace.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale));
-            this.addSubMenuElement(userMenuUl, mySpace);
-
-            // ---- view my profile
-            if (person != null) {
-                PortalControllerContext pcc = new PortalControllerContext(controllerContext);
-                PortalObjectId poid = page.getPortal().getId();
-
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put("osivia.title", person.getDisplayName());
-
-                Map<String, String> parameters = new HashMap<String, String>();
-                String myProfileUrl = "";
-                try {
-                    myProfileUrl = this.urlFactory.getStartPageUrl(pcc, poid.toString(), "userprofile", "/default/templates/userprofile", properties,
-                            parameters);
-                } catch (PortalException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-
-                Element myProfile = new DOMElement(QName.get(HTMLConstants.A));
-                myProfile.addAttribute(QName.get(HTMLConstants.HREF), myProfileUrl);
-                myProfile.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_MY_PROFILE, locale));
-                this.addSubMenuElement(userMenuUl, myProfile);
-
-            }
-
-            // ---- logout
-
-            // Logout
-            SignOutCommand signOutCommand = new SignOutCommand();
-            PortalURL signOutPortalUrl = new PortalURLImpl(signOutCommand, controllerContext, false, null);
-            attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
-
-            Element logout = new DOMElement(QName.get(HTMLConstants.A));
-            logout.addAttribute(QName.get(HTMLConstants.HREF), signOutPortalUrl.toString());
-            logout.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_LOGOUT, locale));
-            this.addSubMenuElement(userMenuUl, logout);
-
-            // ---- else login
-
-        } else {
-            Element login = new DOMElement(QName.get(HTMLConstants.A));
-            login.addAttribute(QName.get(HTMLConstants.HREF), mySpacePortalUrl.toString());
-            login.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_LOGIN, locale));
-            this.addSubMenuElement(userMenuUl, login);
-
-        }
-
-        userbar.setText(StringUtils.EMPTY);
-
-        return userbar.asXML();
+        // Userbar content
+        String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), signOutPortalUrl.toString());
+        attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
     }
+
 
     /**
      * Utility method used to generate administration HTML content.
@@ -374,7 +258,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         PageType pageType = PageType.getPageType(page, context);
 
         // Administration root element
-        Element administration = new DOMElement(QName.get(HTMLConstants.DIV));
+        Element administration = new DOMElement(QName.get(HTMLConstants.UL));
         administration.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_ADMINISTRATION);
         administration.setText(StringUtils.EMPTY);
 
@@ -418,26 +302,44 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String portalName = page.getPortal().getName();
 
         // Configuration menu root element
-        Element configurationMenu = new DOMElement(QName.get(HTMLConstants.DIV));
-        configurationMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_CONFIGURATION_MENU);
-        configurationMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+        Element configurationMenu = new DOMElement(QName.get(HTMLConstants.LI));
+        configurationMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN);
         administration.add(configurationMenu);
+
+        // Glyphicon
+        Element glyph = new DOMElement(QName.get(HTMLConstants.SPAN));
+        glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons halflings uni-wrench");
+        glyph.setText(StringUtils.EMPTY);
 
         // Configuration menu title
         Element configurationMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
-        configurationMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
-        configurationMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
+        configurationMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_TOGGLE);
+        configurationMenuTitle.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
+        configurationMenuTitle.addAttribute(QName.get(HTMLConstants.DATA_TOGGLE), HTML_CLASS_DROPDOWN);
+        configurationMenuTitle.add(glyph);
+        configurationMenuTitle.setText(" ");
+        configurationMenuTitle.addText(this.internationalizationService.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE, locale));
         configurationMenu.add(configurationMenuTitle);
+
+        // Dropdown caret
+        Element dropdownCaret = new DOMElement(QName.get(HTMLConstants.SPAN));
+        dropdownCaret.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_CARET);
+        dropdownCaret.setText(StringUtils.EMPTY);
+        configurationMenuTitle.addText(" ");
+        configurationMenuTitle.add(dropdownCaret);
 
         // Configuration menu "ul" node
         Element configurationMenuUl = new DOMElement(QName.get(HTMLConstants.UL));
+        configurationMenuUl.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_MENU);
+        configurationMenuUl.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU);
         configurationMenu.add(configurationMenuUl);
 
         // Home
         Element home = new DOMElement(QName.get(HTMLConstants.A));
         home.addAttribute(QName.get(HTMLConstants.HREF), context.getServerInvocation().getServerContext().getPortalContextPath());
+        home.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU_ITEM);
         home.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_HOME, locale));
-        this.addSubMenuElement(configurationMenuUl, home);
+        this.addSubMenuElement(configurationMenuUl, home, null, "halflings home");
 
         // OSIVIA Portal administration
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
@@ -452,8 +354,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element osiviaAdministration = new DOMElement(QName.get(HTMLConstants.A));
         osiviaAdministration.addAttribute(QName.get(HTMLConstants.HREF), osiviaAdministrationUrl);
         osiviaAdministration.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
+        osiviaAdministration.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU_ITEM);
         osiviaAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION, locale));
-        this.addSubMenuElement(configurationMenuUl, osiviaAdministration);
+        this.addSubMenuElement(configurationMenuUl, osiviaAdministration, null, "settings");
 
         // JBoss administration
         ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(this.adminPortalId);
@@ -461,25 +364,32 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         Element jbossAdministration = new DOMElement(QName.get(HTMLConstants.A));
         jbossAdministration.addAttribute(QName.get(HTMLConstants.HREF), jbossAdministrationUrl);
+        jbossAdministration.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU_ITEM);
         jbossAdministration.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION, locale));
-        this.addSubMenuElement(configurationMenuUl, jbossAdministration);
+        this.addSubMenuElement(configurationMenuUl, jbossAdministration, null, "settings");
 
         // Pages list
         this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGES_LIST,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_PAGES_LIST, locale), "halflings list");
 
-        // HR
-        this.addSubMenuElement(configurationMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+        // Divider
+        this.addSubMenuElement(configurationMenuUl, null, HTML_CLASS_DROPDOWN_DIVIDER, null);
+
+        // Creation dropdown header
+        Element creationDropdownHeader = new DOMElement(QName.get(HTMLConstants.LI));
+        creationDropdownHeader.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_HEADER);
+        creationDropdownHeader.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CREATION_HEADER, locale));
+        configurationMenuUl.add(creationDropdownHeader);
 
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation
             this.addSubMenuFancyboxLink(configurationMenuUl, URL_PAGE_CREATION,
-                    this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CREATION, locale));
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_CREATION, locale), "halflings plus");
         }
 
         // Template creation
         this.addSubMenuFancyboxLink(configurationMenuUl, URL_TEMPLATE_CREATION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION, locale), "halflings plus");
 
         // Page template access
         if (pageType.isTemplated()) {
@@ -491,16 +401,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element pageTemplateAccessLink = new DOMElement(QName.get(HTMLConstants.A));
             pageTemplateAccessLink.addAttribute(QName.get(HTMLConstants.HREF), pageTemplateAccessUrl);
             pageTemplateAccessLink.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
-            this.addSubMenuElement(configurationMenuUl, pageTemplateAccessLink);
+            this.addSubMenuElement(configurationMenuUl, pageTemplateAccessLink, null, "construction_cone");
         } else {
-            Element pageTemplateAccessDisable = new DOMElement(QName.get(HTMLConstants.P));
-            pageTemplateAccessDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
-
-            this.addSubMenuElement(configurationMenuUl, pageTemplateAccessDisable);
+            Element pageTemplateDisabledLink = new DOMElement(QName.get(HTMLConstants.A));
+            pageTemplateDisabledLink.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
+            pageTemplateDisabledLink.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS, locale));
+            this.addSubMenuElement(configurationMenuUl, pageTemplateDisabledLink, "disabled", "construction_cone");
         }
 
-        // HR
-        this.addSubMenuElement(configurationMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+        // Divider
+        this.addSubMenuElement(configurationMenuUl, null, HTML_CLASS_DROPDOWN_DIVIDER, null);
 
         // Caches initialization
         ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
@@ -510,7 +420,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element cachesInitialization = new DOMElement(QName.get(HTMLConstants.A));
         cachesInitialization.addAttribute(QName.get(HTMLConstants.HREF), cachesInitializationUrl);
         cachesInitialization.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION, locale));
-        this.addSubMenuElement(configurationMenuUl, cachesInitialization);
+        this.addSubMenuElement(configurationMenuUl, cachesInitialization, null, "halflings refresh");
     }
 
 
@@ -526,25 +436,42 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         PageType pageType = PageType.getPageType(page, context);
 
         // Edition menu root element
-        Element editionMenu = new DOMElement(QName.get(HTMLConstants.DIV));
-        editionMenu.addAttribute(QName.get(HTMLConstants.ID), HTML_ID_EDITION_MENU);
-        editionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+        Element editionMenu = new DOMElement(QName.get(HTMLConstants.LI));
+        editionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN);
         administration.add(editionMenu);
+
+        // Glyphicon
+        Element glyph = new DOMElement(QName.get(HTMLConstants.SPAN));
+        glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons halflings pencil");
+        glyph.setText(StringUtils.EMPTY);
 
         // Edition menu title
         Element editionMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
-        editionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+        editionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_TOGGLE);
+        editionMenuTitle.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
+        editionMenuTitle.addAttribute(QName.get(HTMLConstants.DATA_TOGGLE), HTML_CLASS_DROPDOWN);
+        editionMenuTitle.add(glyph);
+        editionMenuTitle.setText(" ");
         if (pageType.isSpace()) {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.addText(this.internationalizationService.getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE, locale));
         } else if (PortalObjectUtils.isTemplate(page)) {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.addText(this.internationalizationService.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE, locale));
         } else {
-            editionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE, locale));
+            editionMenuTitle.addText(this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE, locale));
         }
         editionMenu.add(editionMenuTitle);
 
+        // Dropdown caret
+        Element dropdownCaret = new DOMElement(QName.get(HTMLConstants.SPAN));
+        dropdownCaret.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_CARET);
+        dropdownCaret.setText(StringUtils.EMPTY);
+        editionMenuTitle.addText(" ");
+        editionMenuTitle.add(dropdownCaret);
+
         // Edition menu "ul" node
         Element editionMenuUl = new DOMElement(QName.get(HTMLConstants.UL));
+        editionMenuUl.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_MENU);
+        editionMenuUl.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU);
         editionMenu.add(editionMenuUl);
 
         if (!pageType.isTemplated()) {
@@ -554,52 +481,54 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String modeHtmlClass;
             if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode)) {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), StringUtils.EMPTY);
-                modeHtmlClass = HTMLConstants.CLASS_CHECK;
+                modeHtmlClass = "halflings check";
             } else {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
                         InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
-                modeHtmlClass = HTMLConstants.CLASS_UNCHECK;
+                modeHtmlClass = "halflings unchecked";
             }
             String changeModeUrl = new PortalURLImpl(changeModeCommand, context, null, null).toString();
 
             Element iconsDisplay = new DOMElement(QName.get(HTMLConstants.A));
             iconsDisplay.addAttribute(QName.get(HTMLConstants.HREF), changeModeUrl);
-            iconsDisplay.addAttribute(QName.get(HTMLConstants.CLASS), modeHtmlClass);
+            iconsDisplay.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU_ITEM);
             iconsDisplay.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ICONS_DISPLAY, locale));
-            this.addSubMenuElement(editionMenuUl, iconsDisplay);
 
-            // HR
-            this.addSubMenuElement(editionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+            this.addSubMenuElement(editionMenuUl, iconsDisplay, null, modeHtmlClass);
+
+            // Divider
+            this.addSubMenuElement(editionMenuUl, null, HTML_CLASS_DROPDOWN_DIVIDER, null);
         }
 
         // Page suppression
         if (PortalObjectUtils.isPortalDefaultPage(page)) {
-            Element suppressionDisable = new DOMElement(QName.get(HTMLConstants.P));
+            Element suppressionDisable = new DOMElement(QName.get(HTMLConstants.A));
+            suppressionDisable.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
             suppressionDisable.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
-            this.addSubMenuElement(editionMenuUl, suppressionDisable);
+            this.addSubMenuElement(editionMenuUl, suppressionDisable, "disabled", "halflings remove");
         } else {
             this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_SUPPRESSION,
-                    this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale));
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_SUPPRESSION, locale), "halflings remove");
         }
 
         // Page location
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_LOCATION,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_LOCATION, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_LOCATION, locale), "halflings sort");
 
-        // HR
-        this.addSubMenuElement(editionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+        // Divider
+        this.addSubMenuElement(editionMenuUl, null, HTML_CLASS_DROPDOWN_DIVIDER, null);
 
         // Page properties
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_PROPERTIES,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_PROPERTIES, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_PROPERTIES, locale), "halflings cog");
 
         // Page CMS
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_CMS,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION, locale), "halflings cog");
 
         // Page rights
         this.addSubMenuFancyboxLink(editionMenuUl, URL_PAGE_RIGHTS,
-                this.internationalizationService.getString(InternationalizationConstants.KEY_RIGHTS, locale));
+                this.internationalizationService.getString(InternationalizationConstants.KEY_RIGHTS, locale), "halflings cog");
     }
 
 
@@ -637,13 +566,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // CMS edition menu root element
         Element cmsEditionMenu = new DOMElement(QName.get(HTMLConstants.DIV));
-        cmsEditionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU);
+        cmsEditionMenu.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN);
         administration.add(cmsEditionMenu);
 
         // CMS edition menu title
         Element cmsEditionMenuTitle = new DOMElement(QName.get(HTMLConstants.A));
 
-        cmsEditionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_TOOLBAR_MENU_TITLE);
+        cmsEditionMenuTitle.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_DROPDOWN_TOGGLE);
         cmsEditionMenuTitle.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE, locale));
 
         cmsEditionMenu.add(cmsEditionMenuTitle);
@@ -689,7 +618,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         cmsCreatePage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage);
+        this.addSubMenuElement(templateEditionMenuUl, cmsCreatePage, null, "halflings plus");
 
 
         // ========== Edit current page
@@ -708,7 +637,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         cmsEditPage.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsEditPage);
+        this.addSubMenuElement(templateEditionMenuUl, cmsEditPage, null, "halflings pencil");
 
         // ========== Publish document
 
@@ -728,7 +657,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         cmsPublishDoc.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc);
+        this.addSubMenuElement(templateEditionMenuUl, cmsPublishDoc, null, "halflings ok-circle");
 
 
         // ========== Unpublish document
@@ -764,7 +693,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         cmsUnpublishDoc.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsUnpublishDoc);
+        this.addSubMenuElement(templateEditionMenuUl, cmsUnpublishDoc, null, "halflings remove-circle");
 
 
         // ========== Delete document
@@ -802,10 +731,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         cmsDeleteDoc.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_DELETE, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsDeleteDoc);
+        this.addSubMenuElement(templateEditionMenuUl, cmsDeleteDoc, null, "halflings remove");
 
-        // HR
-        this.addSubMenuElement(templateEditionMenuUl, new DOMElement(QName.get(HTMLConstants.HR)));
+        // Divider
+        this.addSubMenuElement(templateEditionMenuUl, null, HTML_CLASS_DROPDOWN_DIVIDER, null);
 
 
         // ========== sitemap
@@ -820,7 +749,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         cmsViewSitemap.addAttribute(QName.get(HTMLConstants.HREF), siteMapPopupURL);
         cmsViewSitemap.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYFRAME_REFRESH);
         cmsViewSitemap.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_SITEMAP, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap);
+        this.addSubMenuElement(templateEditionMenuUl, cmsViewSitemap, null, "halflings map-marker");
 
 
         // ========== Go to the media library
@@ -841,7 +770,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         cmsGotoMediaLib.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_MEDIA_LIB, locale));
-        this.addSubMenuElement(templateEditionMenuUl, cmsGotoMediaLib);
+        this.addSubMenuElement(templateEditionMenuUl, cmsGotoMediaLib, null, "halflings picture");
     }
 
 
@@ -1014,6 +943,120 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         return div;
     }
+    
+    
+    /**
+     * Generate userbar HTML content.
+     * 
+     * @param controllerContext controller context
+     * @param page current page
+     * @param principal principal
+     * @param person directory person
+     * @param mySpaceURL my space URL
+     * @param signOutURL sign out URL
+     * @return HTML data
+     * @throws Exception
+     */
+    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, DirectoryPerson person, String mySpaceURL,
+            String signOutURL) {
+        // Current locale
+        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
+        // CMS service
+        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+        cmsCtx.setControllerContext(controllerContext);
+
+        
+        // User informations
+        String userName;
+        String userAvatarSrc;
+        if (person != null) {
+            userName = person.getDisplayName();
+            userAvatarSrc = person.getAvatar().getUrl();
+        } else if (principal != null) {
+            userName = principal.getName();
+            try {
+                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, userName).getUrl();
+            } catch (CMSException e) {
+                userAvatarSrc = null;
+            }
+        } else {
+            userName = this.internationalizationService.getString(InternationalizationConstants.KEY_USER_GUEST, locale);
+            try {
+                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, "nobody").getUrl();
+            } catch (CMSException e) {
+                userAvatarSrc = null;
+            }
+        }
+
+
+        // Userbar menu root element
+        Element userbarMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
+        
+        // Userbar menu title
+        Element userbarMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, userName);
+        DOM4JUtils.addAttribute(userbarMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
+        if (userAvatarSrc != null) {
+            Element avatar = DOM4JUtils.generateElement(HTMLConstants.IMG, null, null);
+            DOM4JUtils.addAttribute(avatar, HTMLConstants.SRC, userAvatarSrc);
+            userbarMenuTitle.add(avatar);
+        }
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
+        userbarMenuTitle.add(caret);
+        
+        // Userbar menu "ul" node
+        Element userbarMenuUl = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
+        userbarMenu.add(userbarMenuUl);
+        
+        if (principal != null) {
+            // My space
+            Element mySpace = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale), "halflings star",
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(userbarMenuUl, mySpace, null, null);
+            
+            
+            if (person != null) {
+                // View profile
+                try {
+                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                    PortalObjectId portalId = page.getPortal().getId();
+
+                    Map<String, String> properties = new HashMap<String, String>();
+                    properties.put("osivia.title", person.getDisplayName());
+
+                    Map<String, String> parameters = new HashMap<String, String>();
+
+                    String viewProfileURL = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "userprofile",
+                            "/default/templates/userprofile", properties, parameters);
+
+                    Element viewProfile = DOM4JUtils.generateLinkElement(viewProfileURL, null, null, null,
+                            this.internationalizationService.getString(InternationalizationConstants.KEY_MY_PROFILE, locale), "halflings user",
+                            AccessibilityRoles.MENU_ITEM);
+                    this.addSubMenuElement(userbarMenuUl, viewProfile, null, null);
+                } catch (PortalException e) {
+                    // Do nothing
+                }
+            }
+
+
+            // Logout
+            Element signOut = DOM4JUtils.generateLinkElement(signOutURL, null, null, null,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_LOGOUT, locale), "halflings log_out",
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(userbarMenuUl, signOut, null, null);
+        } else {
+            // Login
+            Element login = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null,
+                    this.internationalizationService.getString(InternationalizationConstants.KEY_LOGIN, locale), "halflings log_in",
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(userbarMenuUl, login, null, null);
+        }
+
+        return userbarMenu.asXML();
+    }    
 
 
     /**
@@ -1023,13 +1066,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param url Fancybox "div" identifier
      * @param title link text and Fancybox title value
      */
-    private void addSubMenuFancyboxLink(Element ul, String url, String title) {
+    private void addSubMenuFancyboxLink(Element ul, String url, String title, String glyphicon) {
         Element element = new DOMElement(QName.get(HTMLConstants.A));
         element.addAttribute(QName.get(HTMLConstants.HREF), url);
         element.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FANCYBOX_INLINE);
+        element.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_MENU_ITEM);
         element.addAttribute(QName.get(HTMLConstants.TITLE), title);
         element.setText(title);
-        this.addSubMenuElement(ul, element);
+        this.addSubMenuElement(ul, element, null, glyphicon);
     }
 
 
@@ -1037,11 +1081,39 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * Add sub-menu element.
      * 
      * @param ul current "ul" element
-     * @param element element to add
+     * @param object element or text to add, may be null
+     * @param htmlClass HTML class, may be null
+     * @param glyphicon glyphicon name, may be null
      */
-    private void addSubMenuElement(Element ul, Element element) {
-        Element li = new DOMElement(QName.get(HTMLConstants.LI));
-        li.add(element);
+    private void addSubMenuElement(Element ul, Object object, String htmlClass, String glyphicon) {
+        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClass, null, null, AccessibilityRoles.PRESENTATION);
+
+        Element glyph = null;
+        if (glyphicon != null) {
+            glyph = new DOMElement(QName.get(HTMLConstants.I));
+            glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons " + glyphicon);
+            glyph.setText(StringUtils.EMPTY);
+        }
+        if (object != null) {
+            if (object instanceof Element) {
+                Element element = (Element) object;
+                if (glyph != null) {
+                    String text = element.getText();
+                    element.add(glyph);
+                    element.setText(" ");
+                    element.addText(text);
+                }
+                li.add(element);
+            } else if (object instanceof String) {
+                if (glyph != null) {
+                    li.add(glyph);
+                    li.setText(" ");
+                }
+                String text = (String) object;
+                li.addText(text);
+            }
+
+        }
         ul.add(li);
     }
 

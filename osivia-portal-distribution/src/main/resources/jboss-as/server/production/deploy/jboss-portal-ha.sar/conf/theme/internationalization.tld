@@ -21,6 +21,13 @@
             <name>key</name>
             <required>true</required>
         </attribute>
+        
+        <attribute>
+            <description>Property arguments, separated by commas</description>
+            <name>args</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
 
 </taglib>

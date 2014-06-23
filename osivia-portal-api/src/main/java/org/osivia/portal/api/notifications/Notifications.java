@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -75,8 +75,8 @@ public final class Notifications {
 
 
     /**
-     * Add multiple messages to messages list
-     *
+     * Add multiple messages to messages list.
+     * 
      * @param messages messages
      */
     public void addMessages(List<String> messages) {
@@ -123,17 +123,17 @@ public final class Notifications {
 
     /**
      * Getter for errorCode.
-     * 
+     *
      * @return the errorCode
      */
     public Long getErrorCode() {
-        return errorCode;
+        return this.errorCode;
     }
 
 
     /**
      * Setter for errorCode.
-     * 
+     *
      * @param errorCode the errorCode to set
      */
     public void setErrorCode(Long errorCode) {

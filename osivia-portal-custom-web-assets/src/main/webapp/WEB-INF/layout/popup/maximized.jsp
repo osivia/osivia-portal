@@ -15,7 +15,7 @@
  
 </head>
 
-<body id="body">
+<body id="popup-body">
 
 
 

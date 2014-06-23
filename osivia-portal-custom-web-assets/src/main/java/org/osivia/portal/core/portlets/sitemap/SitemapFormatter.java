@@ -14,12 +14,12 @@
  */
 package org.osivia.portal.core.portlets.sitemap;
 
-import static org.osivia.portal.api.HTMLConstants.A;
-import static org.osivia.portal.api.HTMLConstants.CLASS;
-import static org.osivia.portal.api.HTMLConstants.CLASS_NAVIGATION_ITEM;
-import static org.osivia.portal.api.HTMLConstants.HREF;
-import static org.osivia.portal.api.HTMLConstants.LI;
-import static org.osivia.portal.api.HTMLConstants.UL;
+import static org.osivia.portal.api.html.HTMLConstants.A;
+import static org.osivia.portal.api.html.HTMLConstants.CLASS;
+import static org.osivia.portal.api.html.HTMLConstants.CLASS_NAVIGATION_ITEM;
+import static org.osivia.portal.api.html.HTMLConstants.HREF;
+import static org.osivia.portal.api.html.HTMLConstants.LI;
+import static org.osivia.portal.api.html.HTMLConstants.UL;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

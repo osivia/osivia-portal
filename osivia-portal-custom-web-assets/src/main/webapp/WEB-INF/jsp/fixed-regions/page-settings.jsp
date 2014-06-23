@@ -1,145 +1,40 @@
-<%@page import="org.osivia.portal.api.internationalization.IInternationalizationService"%>
-<%@page import="org.osivia.portal.core.constants.InternalConstants"%>
-<%@page import="org.apache.commons.lang.BooleanUtils"%>
-<%@page import="org.jboss.portal.theme.PortalTheme"%>
-<%@page import="org.jboss.portal.core.controller.ControllerContext"%>
-<%@page import="org.osivia.portal.core.portalobjects.PortalObjectUtils"%>
-<%@page import="java.util.Enumeration"%>
-<%@page import="java.util.Locale"%>
-<%@page import="org.osivia.portal.core.formatters.IFormatter"%>
-<%@page import="java.util.Set"%>
-<%@page import="java.util.Map"%>
-<%@page import="org.jboss.portal.identity.Role"%>
-<%@page import="org.apache.commons.lang.StringUtils"%>
-<%@page import="java.util.List"%>
-<%@page import="org.jboss.portal.theme.PortalLayout"%>
-<%@page import="org.apache.commons.collections.CollectionUtils"%>
-<%@page import="org.jboss.portal.core.model.portal.PortalObjectPath"%>
-<%@page import="java.util.Collection"%>
-<%@page import="org.jboss.portal.core.model.portal.Page"%>
-<%@page import="org.jboss.portal.core.model.portal.Window"%>
-
-<%@page contentType="text/html"%>
-<%@page pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="internationalization" prefix="is"%>
+<%@ taglib uri="/WEB-INF/tld/formatter.tld" prefix="formatter" %>
 
 
-<%
-//Internationalization service
-IInternationalizationService is = (IInternationalizationService) request.getAttribute(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE);
+<c:set var="commandUrl" value="${requestScope['osivia.toolbarSettings.commandURL']}" />
+<c:set var="currentPage" value="${requestScope['osivia.toolbarSettings.page']}" />
+<c:set var="portalId"><formatter:safeId portalObjectId="${currentPage.portal.id}" /></c:set>
+<c:set var="currentPageId"><formatter:safeId portalObjectId="${currentPage.id}" /></c:set>
+<c:set var="currentPageDisplayName"><formatter:displayName object="${currentPage}"/></c:set>
 
-// Formatter
-IFormatter formatter = (IFormatter) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
-// Controller context
-ControllerContext context = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
+<c:if test="${requestScope['osivia.toolbarSettings.draftPage']}">
+    <c:set var="draftModeChecked" value="checked" />
+</c:if>
 
-
-// user is admin ?
-Boolean admin = (Boolean) request.getAttribute(InternalConstants.ATTR_USER_ADMIN);
-if(admin == null) {
-    admin = Boolean.FALSE;
-}
-
-// Generic command URL
-String commandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
-// Current page
-Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
-// CMS templated
-Boolean cmsTemplated = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
-// Draft page
-Boolean draftPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
-// Layout list
-@SuppressWarnings("unchecked")
-List<PortalLayout> layoutsList = (List<PortalLayout>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
-// Current layout
-String currentLayout = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT);
-//Themes list
-@SuppressWarnings("unchecked")
-List<PortalTheme> themesList = (List<PortalTheme>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
-// Current theme
-String currentTheme = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME);
-//Current category
-String currentCategory = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY);
-//Categories list
-@SuppressWarnings("unchecked")
-Map<String, String> categoriesList = (Map<String, String>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);
-// Roles
-@SuppressWarnings("unchecked")
-List<Role> roles = (List<Role>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES);
-// Actions for roles
-@SuppressWarnings("unchecked")
-Map<String, Set<String>> actionsForRoles = (Map<String, Set<String>>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES);
-// Delete page command URL
-String deletePageCommandUrl = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL);
-// CMS scope select
-String cmsScopeSelect = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT);
-// CMS display live version
-String cmsDisplayLiveVersion = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION);   
-// CMS recontextualization support
-String cmsRecontextualizationSupport = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
-// CMS base path
-String cmsBasePath = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
-// Current page windows list
-@SuppressWarnings("unchecked")
-List<Window> windows = (List<Window>) request.getAttribute(InternalConstants.ATTR_WINDOWS_CURRENT_LIST);
-
-// CMS templated disabled configurations
-String disabledCMSTemplated = StringUtils.EMPTY;
-if (BooleanUtils.isTrue(cmsTemplated)) {
-    disabledCMSTemplated = "disabled";
-}
-
-// Draft page checkbox value
-String checkDraft = StringUtils.EMPTY;
-if (BooleanUtils.isTrue(draftPage)) {
-    checkDraft = "checked";
-}
-
-// Template disabled configurations
-String disabledTemplate = StringUtils.EMPTY;
-if (PortalObjectUtils.isTemplate(currentPage)) {
-    disabledTemplate = "disabled";
-}
-
-
-// Locales
-Locale locale = request.getLocale();
-@SuppressWarnings("unchecked")
-Enumeration<Locale> locales = request.getLocales();
-
-// Portal ID
-String portalId = formatter.formatHtmlSafeEncodingId(currentPage.getPortal().getId());
-// Current page ID
-String currentPageId = formatter.formatHtmlSafeEncodingId(currentPage.getId());
-// Current page name
-String currentPageName = PortalObjectUtils.getDisplayName(currentPage, locales);
-
-%>
+<c:if test="${requestScope['osivia.toolbarSettings.cmsTemplated']}">
+    <c:set var="propertiesDisabled" value="disabled" />
+</c:if>
 
 
 <script type="text/javascript">
-
-var cmsPath = '<%=request.getAttribute(InternalConstants.ATTR_CMS_PATH) %>';
-var commandPrefix = '<%=request.getAttribute(InternalConstants.ATTR_COMMAND_PREFIX) %>';
-
-var portalId = '<%=portalId %>';
-var currentPageId = '<%=currentPageId %>';
+// Variables used by JStree integration
+var portalId = '${portalId}';
+var currentPageId = '${currentPageId}';
 
 // Variables filled when opening fancybox
 var regionId;
 var windowId;
 
-
-function disableOrNotPreviousFormValues(cmsPathInput){
-    var cmsForm = document.forms["formCMSProperties"];
-    if(cmsPathInput.value != ''){
-        cmsForm.elements["scope"].disabled = true;
-        cmsForm.elements["displayLiveVersion"].disabled = true;
-        cmsForm.elements["outgoingRecontextualizationSupport"].disabled = true;
-    } else {
-        cmsForm.elements["scope"].disabled = false;
-        cmsForm.elements["displayLiveVersion"].disabled = false;
-        cmsForm.elements["outgoingRecontextualizationSupport"].disabled = false;
-    }
+// Toggle CMS properties
+function toggleCMS() {
+    var form = document.getElementById("formCMSProperties");
+    var cms = form.elements["cmsBasePath"];
+    var disabled = ("" != cms.value);
+    
+    var fieldset = document.getElementById("fieldsetCMSProperties");
+    fieldset.disabled = disabled;
 }
 
 // Onclick action for add portlet formulaire submit
@@ -153,498 +48,437 @@ function selectWindow(formulaire) {
     formulaire.windowId.value = windowId;
 }
 
-// Toggle row display
-function toggleRow(link, divClass) {
-    var divToggleRow = $JQry(link).parents(".fancybox-table-row").siblings("." + divClass)[0];
-    if (undefined != divToggleRow) {
-        if (divToggleRow.style.display == "none") {
-            divToggleRow.style.display = "table-row";           
-        } else {
-            divToggleRow.style.display = "none";
-        }
-        parent.jQuery.fancybox.update();
-    }   
-}
+// Window properties : mobile collapse check event
+$JQry(document).ready(function($) {
+    $("input[name=mobileCollapse]").change(function() {
+    	var $form = $(this).parents("form");
+    	var $displayTitle = $form.find("input[name=displayTitle]");
+    	var $bootstrapPanelStyle = $form.find("input[name=bootstrapPanelStyle]");
+    	
+    	var checked = $(this).is(":checked");
+    	
+    	if (checked) {
+    		// Force checked value
+    		$displayTitle.prop("checked", true);
+    		$bootstrapPanelStyle.prop("checked", true);
+    	}
+    	
+    	// Toggle disabled state
+    	$displayTitle.prop("disabled", checked);
+    	$bootstrapPanelStyle.prop("disabled", checked);
+    });
+});
 
 </script>
 
 
-<% if(admin) { %>
-	<!-- Fancybox de création de page -->
-	<div class="fancybox-content">
-	    <div id="page-creation">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="createPage" />
-	            <input type="hidden" name="jstreePageParentSelect" value="<%=portalId %>" />
-	            <input type="hidden" name="jstreePageModelSelect" />
-	
-	            <div class="fancybox-table">
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_NAME", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" name="name" required />
-	                    </div>
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                </div>
-	
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_PAGE_MODEL", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
-	                    </div>
-	                
-	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_PAGE_PARENT", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
-	                    </div>                    
-	                </div>
-	                
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
-	                        <label for="checkboxNoModel"><%=is.getString("NEW_PAGE_NO_MODEL", locale) %></label>                        
-	                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
-	                    </div>
-	                    
-	                    <div class="fancybox-table-cell">
-	                        <div id="jstreePageModelSelect" class="jstree-select-unique locked">
-	                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreePageModelSelect") %>
-	                        </div>
-	                    </div>
-	                
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                    
-	                    <div class="fancybox-table-cell">
-	                        <div id="jstreePageParentSelect" class="jstree-select-unique">
-	                            <%=formatter.formatHTMLTreePageParent(currentPage, context, "jstreePageParentSelect") %>
-	                        </div>                        
-	                    </div>
-	                </div>
-	            </div>
-	
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("NEW_PAGE_SUBMIT", locale) %>' />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de création de template -->
-	<div class="fancybox-content">
-	    <div id="template-creation">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="createTemplate" />
-	            <input type="hidden" name="jstreeTemplateParentSelect" value="<%=portalId %>" />
-	            <input type="hidden" name="jstreeTemplateModelSelect" />
-	
-	            <div class="fancybox-table">
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_NAME", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" name="name" required />
-	                    </div>
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                </div>
-	
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("NEW_TEMPLATE_MODEL", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                       
-	                    </div>
-	                
-	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("NEW_TEMPLATE_PARENT", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />                                               
-	                    </div>                    
-	                </div>
-	                
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label fancybox-upper">
-	                        <label for="checkboxNoModel"><%=is.getString("NEW_TEMPLATE_NO_MODEL", locale) %></label>                        
-	                        <input id="checkboxNoModel" type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" checked="checked" class="inline-checkbox" />
-	                    </div>
-	                    
-	                    <div class="fancybox-table-cell">
-	                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique locked">
-	                            <%=formatter.formatHTMLTreeModels(currentPage, context, "jstreeTemplateModelSelect") %>
-	                        </div>
-	                    </div>
-	                
-	                    <div class="fancybox-table-cell">&nbsp;</div>
-	                    
-	                    <div class="fancybox-table-cell">
-	                        <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
-	                            <%=formatter.formatHTMLTreeTemplateParent(currentPage, context, "jstreeTemplateParentSelect") %>
-	                        </div>                        
-	                    </div>
-	                </div>
-	            </div>
-	
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("NEW_TEMPLATE_SUBMIT", locale) %>' />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de propriétés de la page -->
-	<div class="fancybox-content">
-	    <div id="page-properties">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="changePageProperties" />
-	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-	        
-	            <div class="fancybox-table">
-	                        
-	                <!-- Renommer la page -->
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label required"><%=is.getString("PAGE_NAME", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" name="displayName" value="<%=currentPageName %>" required />                    
-	                    </div>
-	                </div>
-	            
-	                <!-- Mode brouillon -->
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_DRAFT_MODE", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="checkbox" name="draftPage" value="1" <%=checkDraft %> <%=disabledCMSTemplated %> class="small-input" />                        
-	                    </div>
-	                </div>
-	                
-	                <!-- Sélection du layout -->
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_LAYOUT", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <select name="newLayout" <%=disabledCMSTemplated %>>
-	                            <%
-	                            if (CollectionUtils.isNotEmpty(layoutsList)) {
-	                                if (StringUtils.isEmpty(currentLayout)) {
-	                                    %>
-	                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
-	                                    <%
-	                                } else {
-	                                    %>
-	                            <option value=""><%=is.getString("PAGE_DEFAULT_LAYOUT", locale) %></option>
-	                                    <%
-	                                }
-	                                
-	                                for (PortalLayout portalLayout : layoutsList) {
-	                                    String portalLayoutName = portalLayout.getLayoutInfo().getName();
-	                                    if (StringUtils.isNotEmpty(currentLayout) && StringUtils.equals(currentLayout, portalLayoutName)) {
-	                                        %>
-	                            <option selected="selected" value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
-	                                        <%
-	                                    } else {
-	                                        %>
-	                            <option value="<%=portalLayoutName %>"><%=portalLayoutName %></option>
-	                                        <%
-	                                    }
-	                                }
-	                            }
-	                            %>
-	                        </select>                        
-	                    </div>
-	                </div>
-	                
-	                <!-- Sélection du thème -->
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_THEME", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <select name="newTheme" <%=disabledCMSTemplated %>>
-	                            <%
-	                            if (CollectionUtils.isNotEmpty(themesList)) {
-	                                if (StringUtils.isEmpty(currentTheme)) {
-	                                    %>
-	                            <option selected="selected" value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
-	                                    <%
-	                                } else {
-	                                    %>
-	                            <option value=""><%=is.getString("PAGE_DEFAULT_THEME", locale) %></option>
-	                                    <%
-	                                }
-	                                
-	                                for (PortalTheme theme : themesList) {
-	                                    String themeName = theme.getThemeInfo().getName();
-	                                    if (StringUtils.isNotEmpty(currentTheme) && StringUtils.equals(currentTheme, themeName)) {
-	                                        %>
-	                            <option selected="selected" value="<%=themeName %>"><%=themeName %></option>
-	                                        <%
-	                                    } else {
-	                                        %>
-	                            <option value="<%=themeName %>"><%=themeName %></option>
-	                                        <%
-	                                    }
-	                                }
-	                            }
-	                            %>
-	                        </select>                        
-	                    </div>
-	                </div>
-	                
-	                              <!-- Sélection de la catégorie -->
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_CATEGORY", locale) %></div>
-	                    <div class="fancybox-table-cell">
-	                        <select name="pageCategory" <%=disabledCMSTemplated %>>
-	                            <%
-	                            if (categoriesList != null) {
-	                                for (String possibleCategory : categoriesList.keySet()) {
-	                                    String selected = "";
-	                                    
-	                					if( possibleCategory.equals( currentCategory))	{
-	                						selected = "selected=\"selected\"";
-	                					}
-	                			%>		
-	
-	                             <option  <%=selected %> value="<%= possibleCategory %>"><%= categoriesList.get(possibleCategory) %></option>
-	                                        <%
-	                                }
-	                            }
-	                            %>
-	                        </select>                        
-	                    </div>
-	                </div>
-	  
-	  
-	            </div>
-	            
-	            <!-- CMS templated message -->
-	            <%
-	            if (BooleanUtils.isTrue(cmsTemplated)) {
-	                %>
-	                <div class="fancybox-center-content">
-	                    <p><%=is.getString("PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED", locale) %></p>
-	                </div>
-	                <%
-	            }
-	            %>
-	            
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("CHANGE", locale) %>' />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de déplacement de la page -->
-	<div class="fancybox-content">
-	    <div id="page-location">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="changePageOrder" />
-	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-	            <input type="hidden" name="jstreePageOrder" />
-	            
-	            <div class="fancybox-table">
-	                <div class="fancybox-table-row">                
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ORDER", locale) %></div>
-	                </div>
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" onkeyup="jstreeSearch('jstreePageOrder', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
-	                    </div>
-	                </div>
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell">
-	                        <div id="jstreePageOrder" class="jstree-select-unique">
-	                            <%=formatter.formatHTMLTreePortalObjectsMove(currentPage, context, "jstreePageOrder") %>
-	                        </div>
-	                    </div>
-	                </div>
-	            </div>
-	            
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("PAGE_ORDER_SUBMIT", locale) %>' />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de configuration des droits de la page -->
-	<div class="fancybox-content">
-	    <div id="page-rights">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="securePage" />
-	            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
-	            
-	            <div class="fancybox-table">
-	                <div class="fancybox-table-header">
-	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ROLES", locale) %></div>
-	                    <div class="fancybox-table-cell"><%=is.getString("PAGE_ACCESS", locale) %></div>
-	                </div>
-	                <%
-	                if (CollectionUtils.isNotEmpty(roles)) {
-	                    for (Role role : roles) {
-	                        Set<String> actions = null;
-	                        if (actionsForRoles.containsKey(role.getName())){
-	                            actions = actionsForRoles.get(role.getName());
-	                        }
-	                        String checked = StringUtils.EMPTY;
-	                        if (CollectionUtils.isNotEmpty(actions) && actions.contains("view")) {
-	                            checked = "checked=\"checked\"";
-	                        }
-	                        %>
-	                        <div class="fancybox-table-row">
-	                            <div class="fancybox-table-cell fancybox-label">
-	                                <p><%=role.getDisplayName() %></p>
-	                            </div>
-	                            <div class="fancybox-table-cell">
-	                                <input type="checkbox" name="view" value="<%=role.getName() %>" class="small-input" <%=checked %> />
-	                            </div>
-	                        </div>
-	                        <%
-	                    }
-	                }
-	                %>
-	            </div>
-	            
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("PAGE_RIGHTS_SUBMIT", locale) %>' />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de configuration CMS -->
-	<div class="fancybox-content">
-	    <div id="page-cms">
-	        <form id="formCMSProperties" action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="changeCMSProperties" />
-	            <input type="hidden" name="pageId" value="<%= currentPageId %>" />
-	            
-	            <div class="fancybox-table">
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label">
-	                        <p><%=is.getString("PAGE_CMS_PATH", locale) %></p>
-	                    </div>
-	                    <div class="fancybox-table-cell">
-	                        <input type="text" name="cmsBasePath" value="<%=cmsBasePath %>" onKeyup="disableOrNotPreviousFormValues(this);" onBlur="disableOrNotPreviousFormValues(this);" <%=disabledTemplate %> />
-	                    </div>
-	                </div>
-	            
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label">
-	                        <p><%=is.getString("PAGE_CMS_SCOPE", locale) %></p>
-	                    </div>
-	                    <div class="fancybox-table-cell">
-	                        <p><%=cmsScopeSelect %></p>
-	                    </div>
-	                </div>
-	                
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label">
-	                        <p><%=is.getString("PAGE_CMS_VERSION", locale) %></p>
-	                    </div>
-	                    <div class="fancybox-table-cell">
-	                        <p><%=cmsDisplayLiveVersion %></p>
-	                    </div>
-	                </div>
-	                
-	                <div class="fancybox-table-row">
-	                    <div class="fancybox-table-cell fancybox-label">
-	                        <p><%=is.getString("PAGE_CMS_CONTEXTUALIZATION", locale) %></p>
-	                    </div>
-	                    <div class="fancybox-table-cell">
-	                        <p><%=cmsRecontextualizationSupport %></p>
-	                    </div>
-	                </div>
-	            
-	            </div>
-	            
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("PAGE_CMS_SUBMIT", locale) %>' onMouseOver="disableOrNotPreviousFormValues(this.form['cmsBasePath']);" />
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de suppression de la page -->
-	<div class="fancybox-content">
-	    <div id="page-suppression">
-	        <form action="<%=deletePageCommandUrl %>" method="post" class="fancybox-form">
-	            <div class="fancybox-center-content">
-	                <p><%=is.getString("PAGE_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
-	            </div>
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("YES", locale) %>' />
-	                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancybox de liste des pages -->
-	<div class="fancybox-content">
-	    <div id="pages-list">
-	        <div class="fancybox-table">
-	            <div class="fancybox-table-row">
-	                <div class="fancybox-table-cell">
-	                    <input type="text" onkeyup="jstreeSearch('jstreePagesList', this.value)" class="filter" placeholder="<%=is.getString("JSTREE_FILTER", locale) %>" />
-	                </div>
-	            </div>
-	            <div class="fancybox-table-row">
-	                <div class="fancybox-table-cell">
-	                    <div id="jstreePagesList" class="jstree-links">
-	                        <%=formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, context, "jstreePagesList") %>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	
-	<!-- Fancybox d'ajout de portlet -->
-	<div class="fancybox-content">
-	    <div id="add-portlet">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="addPortlet" />
-	            <input type="hidden" name="pageId" value="<%=currentPageId %>" />
-	            <input type="hidden" name="regionId" />
-	            <input type="hidden" name="instanceId" />
-	
-	            <%=formatter.formatHtmlPortletsList(context) %>
-	            
-	            <div class="fancybox-center-content">
-	                <input type="button" value='<%=is.getString("CANCEL", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-	
-	
-	<!-- Fancyboxes d'affichage des paramètres des fenêtres -->
-	<%=formatter.formatHtmlWindowsSettings(currentPage, windows, context) %>
-	
-	
-	<!-- Fancybox de suppression de portlet -->
-	<div class="fancybox-content">
-	    <div id="delete-portlet">
-	        <form action="<%=commandUrl %>" method="get" class="fancybox-form">
-	            <input type="hidden" name="action" value="deleteWindow" />
-	            <input type="hidden" name="windowId" />
-	            
-	            <div class="fancybox-center-content">
-	                <p><%=is.getString("PORTLET_SUPPRESSION_CONFIRM_MESSAGE", locale) %></p>
-	            </div>
-	            <div class="fancybox-center-content">
-	                <input type="submit" value='<%=is.getString("YES", locale) %>' onclick="selectWindow(this.form)" />
-	                <input type="button" value='<%=is.getString("NO", locale) %>' onclick="closeFancybox()" />
-	            </div>
-	        </form>
-	    </div>
-	</div>
-<% } %>
+<div class="hidden">
+
+    <!-- Page creation -->
+    <div id="page-creation" class="container">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="createPage" />
+            <input type="hidden" name="jstreePageParentSelect" value="${portalId}" />
+            <input type="hidden" name="jstreePageModelSelect" />
+        
+            <!-- Name -->
+            <div class="form-group">
+                <label for="new-page-name" class="control-label required col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_NAME" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <input id="new-page-name" type="text" name="name" class="form-control" placeholder='<is:getProperty key="NEW_PAGE_NAME" />' required="required" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <!-- Model -->
+                <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_MODEL" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" />
+                            <is:getProperty key="NEW_PAGE_NO_MODEL" />
+                        </label>
+                    </div>
+                    <div class="well">
+                        <div class="jstree-filter input-group input-group-sm">
+                            <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                        </div>
+                        <div id="jstreePageModelSelect" class="jstree-select-unique">
+                            <formatter:tree id="jstreePageModelSelect" type="model" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parent -->
+                <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_PARENT" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <div class="well">
+                        <div class="jstree-filter input-group input-group-sm">
+                            <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                        </div>
+                        <div id="jstreePageParentSelect" class="jstree-select-unique">
+                            <formatter:tree id="jstreePageParentSelect" type="parentPage" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="NEW_PAGE_SUBMIT" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Template creation -->
+    <div id="template-creation" class="container">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="createTemplate" />
+            <input type="hidden" name="jstreeTemplateParentSelect" value="${portalId}" />
+            <input type="hidden" name="jstreeTemplateModelSelect" />
+            
+            <!-- Name -->
+            <div class="form-group">
+                <label for="new-template-name" class="control-label required col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_NAME" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <input id="new-template-name" type="text" name="name" class="form-control" placeholder='<is:getProperty key="NEW_TEMPLATE_NAME" />' required="required" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <!-- Model -->
+                <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_MODEL" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" />
+                            <is:getProperty key="NEW_TEMPLATE_NO_MODEL" />
+                        </label>
+                    </div>
+                    <div class="well">
+                        <div class="jstree-filter input-group input-group-sm">
+                            <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                        </div>
+                        <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
+                            <formatter:tree id="jstreeTemplateModelSelect" type="model" />
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parent -->
+                <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_PARENT" /></label>
+                <div class="col-sm-8 col-lg-3">
+                    <div class="well">
+                        <div class="jstree-filter input-group input-group-sm">
+                            <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                        </div>
+                        <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
+                            <formatter:tree id="jstreeTemplateParentSelect" type="parentTemplate" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="NEW_TEMPLATE_SUBMIT" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Properties -->
+    <div id="page-properties" class="container">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="changePageProperties" />
+            <input type="hidden" name="pageId" value="${currentPageId}" />
+            
+            <!-- Name -->
+            <div class="form-group">                
+                <label for="properties-page-name" class="control-label required col-sm-4"><is:getProperty key="PAGE_NAME" /></label>
+                <div class="col-sm-8">
+                    <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" placeholder='<is:getProperty key="PAGE_NAME" />' required="required" />
+                </div>
+            </div>
+            
+            <!-- Draft mode -->
+            <div class="form-group">
+                <label for="properties-page-draft-mode" class="control-label col-sm-4"><is:getProperty key="PAGE_DRAFT_MODE" /></label>
+                <div class="col-sm-8">
+                    <div class="checkbox">
+                        <input id="properties-page-draft-mode" type="checkbox" name="draftPage" value="1" ${draftModeChecked} ${propertiesDisabled} />
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Layout -->
+            <div class="form-group">
+                <label for="properties-page-layout" class="control-label col-sm-4"><is:getProperty key="PAGE_LAYOUT" /></label>
+                <div class="col-sm-8">
+                    <select id="properties-page-layout" name="newLayout" class="form-control" ${propertiesDisabled}>
+                        <!-- Default layout -->
+                        <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">
+                            <c:set var="defaultLayoutSelected" value="selected" />
+                        </c:if> 
+                        <option ${defaultLayoutSelected}><is:getProperty key="PAGE_DEFAULT_LAYOUT" /></option>
+                    
+                        <!-- Layouts list -->
+                        <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
+                            <c:if test="${requestScope['osivia.toolbarSettings.currentLayout'] eq layout.layoutInfo.name}">
+                                <c:set var="layoutSelected" value="selected" />
+                            </c:if>                                                    
+                            <option ${layoutSelected}>${layout.layoutInfo.name}</option>
+                            <c:remove var="layoutSelected" />
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Theme -->
+            <div class="form-group">
+                <label for="properties-page-theme" class="control-label col-sm-4"><is:getProperty key="PAGE_THEME" /></label>
+                <div class="col-sm-8">
+                    <select id="properties-page-theme" name="newTheme" class="form-control" ${propertiesDisabled}>
+                        <!-- Default theme -->
+                        <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">
+                            <c:set var="defaultThemeSelected" value="selected" />
+                        </c:if> 
+                        <option ${defaultThemeSelected}><is:getProperty key="PAGE_DEFAULT_THEME" /></option>
+                    
+                        <!-- Themes list -->
+                        <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
+                            <c:if test="${requestScope['osivia.toolbarSettings.currentTheme'] eq theme.themeInfo.name}">
+                                <c:set var="themeSelected" value="selected" />
+                            </c:if>                                                    
+                            <option ${themeSelected}>${theme.themeInfo.name}</option>
+                            <c:remove var="themeSelected" />
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Category -->
+            <div class="form-group">
+                <label for="properties-page-category" class="control-label col-sm-4"><is:getProperty key="PAGE_CATEGORY" /></label>
+                <div class="col-sm-8">
+                    <select id="properties-page-category" name="pageCategory" class="form-control" ${propertiesDisabled}>
+                        <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">
+                            <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">
+                                <c:set var="categorySelected" value="selected" />
+                            </c:if>                                                    
+                            <option ${categorySelected}>${category.value}</option>
+                            <c:remove var="categorySelected" />
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <c:if test="${currentPageTemplateIndicator}">
+                        <p class="help-block"><is:getProperty key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED" /></p>
+                    </c:if>
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="CHANGE" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Move -->
+    <div id="page-location" class="container-fluid">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="changePageOrder" />
+            <input type="hidden" name="pageId" value="${currentPageId}" />
+            <input type="hidden" name="jstreePageOrder" />
+            
+            <div class="form-group">
+                <p class="help-block"><is:getProperty key="PAGE_ORDER" /></p>
+                <div class="well">
+                    <div class="jstree-filter input-group input-group-sm">
+                        <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                        <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageOrder', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                    </div>
+                    <div id="jstreePageOrder" class="jstree-select-unique">
+                        <formatter:tree id="jstreePageOrder" type="move" />
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_ORDER_SUBMIT" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Rights -->
+    <div id="page-rights" class="container-fluid">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="securePage" />
+            <input type="hidden" name="pageId" value="${currentPageId}" />
+            
+            <div class="form-group">
+                <table class="table table-condensed">
+                    <thead>
+                        <tr>
+                            <th><is:getProperty key="PAGE_ROLES" /></th>
+                            <th><is:getProperty key="PAGE_ACCESS" /></th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        <c:forEach var="role" items="${requestScope['osivia.toolbarSettings.roles']}">
+                            <c:set var="roleChecked" value="" />
+                            <c:forEach var="item" items="${requestScope['osivia.toolbarSettings.actionsForRoles'][role.name]}">
+                                <c:if test='${item eq "view"}'>
+                                    <c:set var="roleChecked" value="checked" />
+                                </c:if>
+                            </c:forEach>
+
+                            <tr>
+                                <td>${role.displayName}</td>
+                                <td>
+                                    <input type="checkbox" name="view" value="${role.name}" ${roleChecked} />
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="form-group">
+                <div class="text-center">
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_RIGHTS_SUBMIT" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- CMS -->
+    <div id="page-cms" class="container">
+        <form id="formCMSProperties" action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="changeCMSProperties" />
+            <input type="hidden" name="pageId" value="${currentPageId}" />
+            
+            <!-- Path -->
+            <div class="form-group">                
+                <label for="cms-path" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_PATH" /></label>
+                <div class="col-sm-8">
+                    <input id="cms-path" type="text" name="cmsBasePath" value="${requestScope['osivia.toolbarSettings.cmsBasePath']}" onkeyup="toggleCMS()" class="form-control" placeholder="<is:getProperty key='PAGE_CMS_PATH' />" />
+                </div>
+            </div>
+            
+            <fieldset id="fieldsetCMSProperties">
+                <!-- Scope -->
+                <div class="form-group">                
+                    <label for="cms-scope" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_SCOPE" /></label>
+                    <div class="col-sm-8">
+                        <span>${requestScope['osivia.toolbarSettings.cmsScopeSelect']}</span>
+                    </div>
+                </div>
+            
+                <!-- Version -->
+                <div class="form-group">                
+                    <label for="cms-version" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_VERSION" /></label>
+                    <div class="col-sm-8">
+                        <span>${requestScope['osivia.toolbarSettings.cmsDisplayLiveVersion']}</span>
+                    </div>
+                </div>
+                
+                <!-- Contextualization -->
+                <div class="form-group">                
+                    <label for="cms-contextualization" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_CONTEXTUALIZATION" /></label>
+                    <div class="col-sm-8">
+                        <span>${requestScope['osivia.toolbarSettings.cmsRecontextualizationSupport']}</span>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <div class="form-group">
+                <div class="col-sm-offset-4 col-sm-8">
+                    <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_CMS_SUBMIT" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Delete page -->
+    <div id="page-suppression" class="container-fluid">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <div class="form-group">
+                <p class="help-block"><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-default btn-warning">
+                        <span class="glyphicons halflings warning-sign"></span>
+                        <is:getProperty key="YES" />
+                    </button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Elements list -->
+    <div id="pages-list" class="container-fluid">
+        <div class="well">
+            <div class="jstree-filter input-group input-group-sm">
+                <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePagesList', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+            </div>
+            <div id="jstreePagesList" class="jstree-links">
+                <formatter:tree id="jstreePagesList" type="alphaOrder" />
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add portlet -->
+    <div id="add-portlet" class="container-fluid">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="addPortlet" />
+            <input type="hidden" name="pageId" value="${currentPageId}" />
+            <input type="hidden" name="regionId" />
+            <input type="hidden" name="instanceId" />
+
+            <formatter:portletsList />
+            
+            <div class="form-group">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Delete portlet  -->
+    <div id="delete-portlet" class="container-fluid">
+        <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="action" value="deleteWindow" />
+            <input type="hidden" name="windowId" />
+
+            <p class="help-block"><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+            <div class="text-center">
+                <button type="submit" class="btn btn-default btn-warning" onclick="selectWindow(this.form)">
+                    <span class="glyphicons halflings warning-sign"></span>
+                    <is:getProperty key="YES" />
+                </button>
+                <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Windows settings -->
+    <formatter:windowsSettings />
+
+</div>

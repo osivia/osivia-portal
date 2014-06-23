@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,23 +15,21 @@
 package org.osivia.portal.core.tags;
 
 import java.io.IOException;
-import java.util.Locale;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Element;
-import org.dom4j.QName;
-import org.dom4j.dom.DOMElement;
-import org.osivia.portal.api.HTMLConstants;
-import org.osivia.portal.api.internationalization.Bundle;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.formatters.IFormatter;
 
 /**
  * Formatter tag for JSTree HTML data generation.
@@ -41,22 +39,30 @@ import org.osivia.portal.api.locator.Locator;
  */
 public class FormatterHTMLTreeTag extends SimpleTagSupport {
 
-    /** Filter HTML class. */
-    private static final String HTML_CLASS_FILTER = "filter";
+    /** Model tree type. */
+    public static final String MODEL = "model";
+    /** Parent page tree type. */
+    public static final String PARENT_PAGE = "parentPage";
+    /** Parent template tree type. */
+    public static final String PARENT_TEMPLATE = "parentTemplate";
+    /** Move tree type. */
+    public static final String MOVE = "move";
+    /** Alpha ordered tree type. */
+    public static final String ALPHA_ORDER = "alphaOrder";
 
     /** Bundle factory. */
     private static IBundleFactory bundleFactory;
+    /** Formatter. */
+    private static IFormatter formatter;
 
     /** Tree identifier. */
-    private String treeId;
-    /** HTML class. */
-    private String htmlClass;
-    /** Filter indicator. */
-    private Boolean filter;
+    private String id;
+    /** Tree type. */
+    private String type;
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public FormatterHTMLTreeTag() {
         super();
@@ -67,6 +73,10 @@ public class FormatterHTMLTreeTag extends SimpleTagSupport {
                     IInternationalizationService.MBEAN_NAME);
             bundleFactory = internationalizationService.getBundleFactory(classLoader);
         }
+
+        if (formatter == null) {
+            formatter = Locator.findMBean(IFormatter.class, "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
+        }
     }
 
 
@@ -75,100 +85,69 @@ public class FormatterHTMLTreeTag extends SimpleTagSupport {
      */
     @Override
     public void doTag() throws JspException, IOException {
-        JspWriter out = this.getJspContext().getOut();
+        // Context
+        PageContext pageContext = (PageContext) this.getJspContext();
+        // Request
+        ServletRequest request = pageContext.getRequest();
+        // Current page
+        Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
+        // Controller context
+        ControllerContext controllerContext = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
 
-        Element tree = this.generateTree();
-        tree.write(out);
+        // Generated tree content
+        String content = StringUtils.EMPTY;
+        if (MODEL.equals(this.type)) {
+            content = formatter.formatHTMLTreeModels(currentPage, controllerContext, this.id);
+        } else if (PARENT_PAGE.equals(this.type)) {
+            content = formatter.formatHTMLTreePageParent(currentPage, controllerContext, this.id);
+        } else if (PARENT_TEMPLATE.equals(this.type)) {
+            content = formatter.formatHTMLTreeTemplateParent(currentPage, controllerContext, this.id);
+        } else if (MOVE.equals(this.type)) {
+            content = formatter.formatHTMLTreePortalObjectsMove(currentPage, controllerContext, this.id);
+        } else if (ALPHA_ORDER.equals(this.type)) {
+            content = formatter.formatHTMLTreePortalObjectsAlphaOrder(currentPage, controllerContext, this.id);
+        }
+
+        JspWriter out = pageContext.getOut();
+        out.write(content);
         out.flush();
     }
 
 
-    private Element generateTree() {
-        PageContext pageContext = (PageContext) this.getJspContext();
-        Locale locale = pageContext.getRequest().getLocale();
-        Bundle bundle = bundleFactory.getBundle(locale);
-
-        Element parent = new DOMElement(QName.get(HTMLConstants.DIV));
-        if (StringUtils.isNotBlank(this.htmlClass)) {
-            parent.addAttribute(QName.get(HTMLConstants.CLASS), this.htmlClass);
-        }
-
-        Element tree;
-        if (BooleanUtils.isTrue(this.filter)) {
-            Element filter = new DOMElement(QName.get(HTMLConstants.DIV));
-            parent.add(filter);
-
-            Element input = new DOMElement(QName.get(HTMLConstants.INPUT));
-            input.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_TEXT);
-            input.addAttribute(QName.get(HTMLConstants.CLASS), HTML_CLASS_FILTER);
-            input.addAttribute(QName.get(HTMLConstants.ONKEYUP), "jstreeSearch('" + this.treeId + "', this.value)");
-            input.addAttribute(QName.get(HTMLConstants.PLACEHOLDER), bundle.getString("JSTREE_FILTER"));
-            filter.add(input);
-
-            tree = new DOMElement(QName.get(HTMLConstants.DIV));
-            parent.add(tree);
-        } else {
-            tree = parent;
-        }
-        tree.addAttribute(QName.get(HTMLConstants.ID), this.treeId);
-
-
-        return parent;
-    }
-
-
     /**
-     * Getter for treeId.
+     * Getter for id.
      *
-     * @return the treeId
+     * @return the id
      */
-    public String getTreeId() {
-        return this.treeId;
+    public String getId() {
+        return this.id;
     }
 
     /**
-     * Setter for treeId.
+     * Setter for id.
      *
-     * @param treeId the treeId to set
+     * @param id the id to set
      */
-    public void setTreeId(String treeId) {
-        this.treeId = treeId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
-     * Getter for htmlClass.
+     * Getter for type.
      *
-     * @return the htmlClass
+     * @return the type
      */
-    public String getHtmlClass() {
-        return this.htmlClass;
+    public String getType() {
+        return this.type;
     }
 
     /**
-     * Setter for htmlClass.
+     * Setter for type.
      *
-     * @param htmlClass the htmlClass to set
+     * @param type the type to set
      */
-    public void setHtmlClass(String htmlClass) {
-        this.htmlClass = htmlClass;
-    }
-
-    /**
-     * Getter for filter.
-     *
-     * @return the filter
-     */
-    public Boolean getFilter() {
-        return this.filter;
-    }
-
-    /**
-     * Setter for filter.
-     *
-     * @param filter the filter to set
-     */
-    public void setFilter(Boolean filter) {
-        this.filter = filter;
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

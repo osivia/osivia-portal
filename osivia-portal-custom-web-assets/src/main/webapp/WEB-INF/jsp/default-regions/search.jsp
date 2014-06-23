@@ -12,7 +12,18 @@ function onsubmitGlobalSearch(form) {
 </script>
 
 
-<form onsubmit="return onsubmitGlobalSearch(this);" method="post">
-    <input type="text" id="search-text" name="keywords" placeholder='<is:getProperty key="SEARCH_PLACEHOLDER" />'>
-    <button type="submit" id="search-submit"><is:getProperty key="SEARCH_SUBMIT" /></button>
-</form>
+<div class="pull-right hidden-xs">
+    <form class="form-inline" onsubmit="return onsubmitGlobalSearch(this);" method="post" role="search">
+        <div class="form-group">
+            <label class="sr-only" for="search-input">Search</label>
+            <div class="input-group input-group-sm">
+                <input id="search-input" type="text" name="keywords" class="form-control" placeholder='<is:getProperty key="SEARCH_PLACEHOLDER" />'>
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default" title='<is:getProperty key="SEARCH_TITLE" />' data-toggle="tooltip" data-placement="bottom">
+                        <span class="glyphicons halflings search"></span>
+                    </button>
+                </span>
+            </div>
+        </div>
+    </form>
+</div>

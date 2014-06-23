@@ -1,0 +1,375 @@
+@media screen and (max-width: 767px) {
+	header, footer {
+	    visibility: hidden;
+	}
+}
+
+
+
+/* Helper classes */
+
+.text-middle {
+    position: relative;
+    top: 50%;
+    
+    -webkit-transform: translateY(-50%);
+       -moz-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+         -o-transform: translateY(-50%);
+            transform: translateY(-50%);
+}
+
+
+
+/* Toolbar */
+
+#toolbar {
+	padding-bottom: 50px;
+}
+
+#toolbar .navbar .navbar-form {
+	padding: 0 15px;
+	border: 0;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+#toolbar .navbar .navbar-form .input-group {
+    margin-left: 5px;
+}
+
+#toolbar .btn {
+	margin-right: 5px;
+}
+
+#toolbar .btn.pull-left {
+    margin-left: 5px;
+}
+
+#toolbar .navbar-btn {
+	float: right;
+	color: #888;
+	border-color: #ddd;
+}
+
+
+
+/* Tabs */
+
+#tabs ul {
+	margin-bottom: 0;
+	padding: 0;
+}
+
+#tabs li {
+	margin-bottom: 3px;
+}
+
+@media screen and (max-width: 767px) {
+	header {
+	   position: relative;
+	}
+	
+	#tabs .tabs-menu {
+		position: absolute;
+		top: 0;
+		left: 10px;
+		right: 10px;
+		z-index: 1000;
+		display: none;
+		visibility: visible;
+		min-width: 160px;
+		padding: 5px 0;
+		margin: 2px 0 0;
+		background-color: #fff;
+		background-clip: padding-box;
+		border: 1px solid #ccc;
+		border: 1px solid rgba(0, 0, 0, .15);
+		border-radius: 4px;
+		-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+		box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+	}
+	
+	#tabs .tabs-menu.active {
+        display: block;
+    }
+    
+    #tabs li {
+        width: 32%;
+        margin-left: 1%;
+    }
+    
+    #tabs a {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-radius: 4px;
+        
+    }
+}
+
+
+
+/* Required fields */
+
+label.required:BEFORE  {
+	color: red;
+    content: "* ";
+}
+
+
+
+/* Portlet */
+
+.portlet-container {
+	margin-bottom: 20px;
+}
+
+.portlet-container .portlet-header .portlet-mode-container {
+	margin-top: 23px;
+}
+
+.portlet-container .panel-heading .portlet-titlebar-title {
+	margin: 2px 0;
+}
+
+.portlet-menubar {
+	margin-bottom: 5px;
+}
+
+@media screen and (min-width: 768px) {
+	.mobile-collapse {
+	    display: block;
+	    overflow: hidden;
+	}
+}
+
+
+
+/* Drawer */
+
+.drawer-toggle-btn {
+	display: none;
+}
+
+@media screen and (max-width: 767px) {
+	html, body {
+	    height: 100%;
+	    margin: 0;
+	    padding: 0;
+	}
+	
+	.wrapper-outer {
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    height: 100%;
+	    width: 100%;
+	    overflow: hidden;
+	}
+	
+	#toolbar ~ .wrapper-outer {
+	    padding-top: 50px;
+	}
+	
+	.wrapper-inner {
+	    position: relative;
+	    height: 100%;
+	    overflow: hidden;
+	}
+	
+	.wrapper-inner > * {
+	    max-height: 100%;
+	    overflow: auto;
+	}
+	
+	#drawer {
+	    position: absolute;
+	    top: 0;
+	    left: -80%;
+	    height: 100%;
+	    width: 80%;
+	    overflow: auto;
+	    z-index: 120;
+
+		-webkit-transform: translate3d(0, 0, 0);
+	       -moz-transform: translate3d(0, 0, 0);
+	        -ms-transform: translate3d(0, 0, 0);
+	         -o-transform: translate3d(0, 0, 0);
+	            transform: translate3d(0, 0, 0);
+		
+		-webkit-backface-visibility: hidden;
+		        backface-visibility: hidden;
+		
+		-webkit-transition: all 300ms ease-out;
+           -moz-transition: all 300ms ease-out;
+            -ms-transition: all 300ms ease-out;
+             -o-transition: all 300ms ease-out;
+                transition: all 300ms ease-out;
+		
+		background-color: #fff;
+		padding-top: 15px;
+	}
+	
+	#drawer.active  {
+		-webkit-transform: translate3d(100%, 0, 0);
+           -moz-transform: translate3d(100%, 0, 0);
+            -ms-transform: translate3d(100%, 0, 0);
+             -o-transform: translate3d(100%, 0, 0);
+                transform: translate3d(100%, 0, 0);
+    }
+	
+	#drawer-shadowbox {
+	    position: absolute;
+	    top: 0;
+	    left: 0;
+	    height: 100%;
+	    width: 100%;
+	    z-index: 110;
+	    
+	    background-color: #000;
+	    opacity: 0;
+	}
+	
+	
+	#toolbar .btn.drawer-toggle-btn {
+	    position: relative;
+	    max-width: 30%;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	    margin-left: -4px;
+	    margin-right: 0;
+	    padding: 6px 0;
+	}
+	
+	.with-drawer .drawer-toggle-btn {
+	    display: block;
+	}
+	
+	#toolbar .drawer-toggle-btn > .glyphicons {
+	    position: absolute;
+	    top: 8px;
+	    left: 0; 
+
+	    -webkit-transition: all 300ms ease-out;
+	       -moz-transition: all 300ms ease-out;
+	        -ms-transition: all 300ms ease-out;
+	         -o-transition: all 300ms ease-out;
+	            transition: all 300ms ease-out;
+    }
+	
+	#toolbar .drawer-toggle-btn.active-drawer > .glyphicons {
+	    left: -6px;
+	}
+	
+	#toolbar .drawer-toggle-btn > .text {
+	    padding-left: 20px;
+	    padding-right: 12px;
+	}
+}
+
+
+
+/* JStree */
+
+.jstree {
+    width: 280px;
+    min-height: 100px;
+    overflow: auto;
+}
+
+.jstree-filter {
+	margin-bottom: 10px;
+}
+
+
+
+/* Portlets list */
+
+#add-portlet .table td {
+	vertical-align: middle;
+}
+
+
+
+/* Wizard edging */
+
+.wizard-edging {
+    border-style: solid;
+    border-width: 1px;
+    padding: 3px;
+}
+
+.region.wizard-edging {
+    border-color: rgb(155, 155, 155);
+    border-color: rgba(155, 155, 155, 0.8);
+    margin: 10px 0; 
+}
+
+.window.wizard-edging {
+    border-color: rgb(125, 119, 96);
+    border-color: rgba(125, 119, 96, 0.2);
+    margin: 5px 0;
+}
+
+.wizard-edging .btn-toolbar {
+	margin-bottom: 3px;
+}
+
+
+
+/* Accessible dropdown menu without Javascript */
+
+.accessible-dropdown-menu .btn:ACTIVE + .dropdown-menu, .accessible-dropdown-menu .btn:FOCUS + .dropdown-menu, .accessible-dropdown-menu .dropdown-menu:FOCUS, .accessible-dropdown-menu .dropdown-menu:HOVER {
+	display: block;
+}
+
+
+
+/* Bootstrap multi-level list */
+
+ul.list-group li.list-group-item {
+	padding: 0;
+}
+
+ul.list-group li.list-group-item a {
+	border: none;
+	border-radius: 0;
+}
+
+ul.list-group li.list-group-item:first-child a {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+ul.list-group li.list-group-item:last-child a {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+ul.list-group ul.list-group {
+	margin: 1px 0 0; 
+}
+
+ul.list-group ul.list-group li.list-group-item {
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+	border-radius: 0;
+	margin-left: 15px;
+	padding-left: 5px;
+}
+
+ul.list-group ul.list-group li.list-group-item a {
+	border-radius: 0;
+}
+
+
+
+/* Bootstrap bug fix */
+
+.form-inline .form-group .input-group {
+    width: 220px;
+}
+

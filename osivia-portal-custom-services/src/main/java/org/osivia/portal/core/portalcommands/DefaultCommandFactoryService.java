@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -93,9 +93,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 if ("changeWindowSettings".equals(action)) {
                     String windowId = null;
                     List<String> style = null;
+                    String mobileCollapse = null;
                     String displayTitle = null;
                     String title = null;
                     String displayDecorators = null;
+                    String bootstrapPanelStyle = null;
                     String idPerso = null;
                     String ajaxLink = null;
                     String hideEmptyPortlet = null;
@@ -115,6 +117,10 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             style.addAll(Arrays.asList(parameterMap.getValues("style")));
                         }
 
+                        if (parameterMap.get("mobileCollapse") != null) {
+                            mobileCollapse = URLDecoder.decode(parameterMap.get("mobileCollapse")[0], CharEncoding.UTF_8);
+                        }
+
                         if (parameterMap.get("displayTitle") != null) {
                             displayTitle = URLDecoder.decode(parameterMap.get("displayTitle")[0], CharEncoding.UTF_8);
                         } else {
@@ -131,6 +137,10 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             displayDecorators = URLDecoder.decode(parameterMap.get("displayDecorators")[0], CharEncoding.UTF_8);
                         } else {
                             displayDecorators = "0";
+                        }
+
+                        if (parameterMap.get("bootstrapPanelStyle") != null) {
+                            bootstrapPanelStyle = URLDecoder.decode(parameterMap.get("bootstrapPanelStyle")[0], CharEncoding.UTF_8);
                         }
 
                         if (parameterMap.get("idPerso") != null) {
@@ -186,8 +196,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectionDep = "";
                         }
 
-                        return new ChangeWindowSettingsCommand(windowId, style, displayTitle, title, displayDecorators, idPerso, ajaxLink, hideEmptyPortlet,
-                                printPortlet, conditionalScope, bshActivation, bshScript, cacheID, selectionDep);
+                        return new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title, displayDecorators, bootstrapPanelStyle,
+                                idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID, selectionDep);
                     }
                 }
 

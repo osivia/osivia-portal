@@ -22,18 +22,17 @@
  ******************************************************************************/
 package org.osivia.portal.core.renderers;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
@@ -41,7 +40,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
-import org.osivia.portal.api.HTMLConstants;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -57,41 +56,24 @@ import org.osivia.portal.core.page.PageProperties;
  */
 public class DivWindowRenderer extends AbstractObjectRenderer implements WindowRenderer {
 
-    /** Internationalization service. */
-    private static final IInternationalizationService INTERNATIONALIZATION_SERVICE = Locator.findMBean(IInternationalizationService.class,
-            IInternationalizationService.MBEAN_NAME);
-
-    /** Windows settings commands class. */
-    private static final String CLASS_WINDOWS_COMMANDS = "osivia-portal-windows-commands";
-    /** Spacer commands class. */
-    private static final String CLASS_SPACER = "osivia-portal-spacer";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_FRAME = "fancyframe_refresh";
-    /** Up move command link image source. */
-    private static final String UP_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_up.png";
-    /** Down move command link image source. */
-    private static final String DOWN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_down.png";
-    /** Previous region move command link image source. */
-    private static final String PREVIOUS_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_previous.png";
-    /** Next region move command link image source. */
-    private static final String NEXT_REGION_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/arrow_next.png";
-    /** Display window settings command link image source. */
-    private static final String DISPLAY_SETTINGS_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_config_window.png";
-    /** Display portlet administration command link image source. */
-    private static final String DISPLAY_ADMIN_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_parameters.png";
-    /** Delete portlet command link image source. */
-    private static final String DELETE_LINK_IMAGE_SOURCE = "/osivia-portal-custom-web-assets/images/icons/icon_delete_window.png";
     /** Delete portlet message. */
     private static final String CMS_DELETE_CONFIRM_MESSAGE = "CMS_DELETE_CONFIRM_MESSAGE";
 
+    /** Internationalization service. */
+    private final IInternationalizationService internationalizationService;
+
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public DivWindowRenderer() {
         super();
+
+        this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
     }
 
 
@@ -110,22 +92,24 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         PrintWriter out = rendererContext.getWriter();
 
         PageProperties properties = PageProperties.getProperties();
-
-        // Pour les décorateurs
+        // Set current window identifier for decorators
         properties.setCurrentWindowId(wrc.getId());
 
+
+        // Mobile collapse indicator
+        boolean mobileCollapse = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.mobileCollapse"));
+        // Bootstrap panel style indicator
+        boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
+        // Hide portlet indicator
         String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
+        // AJAX links indicator
+        String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
 
         if ("1".equals(hidePortlet)) {
             // v2.0.22 : portlet vide non rafraichi en ajax
             out.println("<div class=\"dyna-window-content\" ></div>");
-
             return;
         }
-
-
-        // Activation des liens Ajax
-        String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
 
         // Wizard mode indicator
         String windowsSettingMode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
@@ -151,18 +135,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             style = "";
         }
 
-        if (wizard) {
-            style += " window wizard-edging";
-        }
-
         String cssFragment = "";
         if (this.showCmsTools(wrc)) {
             cssFragment = "fragmentPreview";
         }
 
+        // Dyna window content
         out.println("<div class=\" dyna-window-content " + cssFragment + "\" >");
 
-        // edit / remove fragment actions
+        // Edit / remove fragment actions
         if (this.showCmsTools(wrc)) {
 
             Element divFancyBoxDelete;
@@ -179,9 +160,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print("<a class=\"fancyframe_refresh cmd edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
                     + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "';setCallbackFromEcmParams('','"
                     + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
-                    + INTERNATIONALIZATION_SERVICE.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
+                    + this.internationalizationService.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
             out.print("<a href=\"#delete_" + wrc.getProperty("osivia.windowId") + "\" class=\"cmd delete no-ajax-link fancybox_inline\">"
-                    + INTERNATIONALIZATION_SERVICE.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
+                    + this.internationalizationService.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
 
             out.print("</div>");
         }
@@ -192,32 +173,63 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print(scripts);
         }
 
-
-        out.print("<div class=\"portlet-container " + style + "\">");
-
+        // Wizard edging
+        if (wizard) {
+            out.print("<div class='window wizard-edging'>");
+        }
 
         // Print portlet commands
         if (wizard) {
             this.printPortletCommands(out, wrc, properties);
         }
 
+        // Portlet container
+        if (bootstrapPanelStyle) {
+            out.print("<div class='panel panel-default portlet-container " + style + "'>");
+        } else {
+            out.print("<div class='portlet-container " + style + "'>");
+        }
 
         // Portlet container rendering
         String portletsRendering = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING);
         if (InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
             // Div rendering
 
+            String headerClass;
+            String bodyClass;
+            if (bootstrapPanelStyle) {
+                headerClass = "panel-heading";
+                bodyClass = "panel-body";
+            } else {
+                headerClass = "portlet-header";
+                bodyClass = "portlet-content-center";
+            }
+
             // Header
             if ("1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
-                out.print("<div class='portlet-header'>");
+                out.print("<div class='" + headerClass + " clearfix'>");
                 rendererContext.render(wrc.getDecoration());
                 out.print("</div>");
             }
 
             // Body
-            out.print("<div class='portlet-content-center'>");
+            if (mobileCollapse) {
+                out.print("<div id='body_");
+                out.print(wrc.getId());
+                out.print("' class='panel-collapse collapse mobile-collapse");
+
+                if (BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.collapse.forceDisplay"))) {
+                    out.print(" in");
+                }
+
+                out.print("'>");
+            }
+            out.print("<div class='" + bodyClass + "'>");
             rendererContext.render(wrc.getPortlet());
             out.print("</div>");
+            if (mobileCollapse) {
+                out.print("</div>");
+            }
 
             // Footer
 
@@ -246,9 +258,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print("</table>");
         }
 
-        // portlet-container
+        // Portlet container
         out.print("</div>");
-        // dyna-window-content
+        // Wizard edging
+        if (wizard) {
+            out.print("</div>");
+        }
+        // Dyna window content
         out.print("</div>");
 
         // in cms mode, create a new fragment below the current window
@@ -259,7 +275,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
             out.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL")
                     + "';setCallbackFromEcmParams('','" + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\""
-                    + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + INTERNATIONALIZATION_SERVICE.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
+                    + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
 
             out.println("</div>");
 
@@ -312,47 +328,47 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         String windowId = windowRendererContext.getId();
         String onclickAction = "windowId = '" + windowId + "'";
 
-        // Commands container
-        Element div = new DOMElement(QName.get(HTMLConstants.DIV));
-        div.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_WINDOWS_COMMANDS);
+        // Commands toolbar
+        Element toolbar = new DOMElement(QName.get(HTMLConstants.DIV));
+        toolbar.addAttribute(QName.get(HTMLConstants.CLASS), "btn-toolbar");
+        toolbar.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_TOOLBAR);
+
+
+        // Move commands group
+        Element moveGroup = new DOMElement(QName.get(HTMLConstants.DIV));
+        moveGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        toolbar.add(moveGroup);
 
         // Up move command
         String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
-        Element upLink = this.generatePortletCommandLink(upUrl, null, UP_LINK_IMAGE_SOURCE, null, null);
-        div.add(upLink);
+        Element upLink = this.generatePortletCommandLink(upUrl, null, "halflings arrow-up", null);
+        moveGroup.add(upLink);
 
         // Down move command
         String downUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
-        Element downLink = this.generatePortletCommandLink(downUrl, null, DOWN_LINK_IMAGE_SOURCE, null, null);
-        div.add(downLink);
-
-        // Spacer
-        Element spacer = new DOMElement(QName.get(HTMLConstants.DIV));
-        spacer.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-        spacer.setText(StringUtils.EMPTY);
-        div.add(spacer);
+        Element downLink = this.generatePortletCommandLink(downUrl, null, "glyphicons halflings arrow-down", null);
+        moveGroup.add(downLink);
 
         // Previous region move command
         String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
-        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, PREVIOUS_REGION_LINK_IMAGE_SOURCE, null, null);
-        div.add(previousRegionLink);
+        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, "halflings arrow-left", null);
+        moveGroup.add(previousRegionLink);
 
         // Next region move command
         String nextRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
-        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, NEXT_REGION_LINK_IMAGE_SOURCE, null, null);
-        div.add(nextRegionLink);
+        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, "halflings arrow-right", null);
+        moveGroup.add(nextRegionLink);
 
-        // Spacer (can't reuse previous spacer node)
-        Element spacer2 = new DOMElement(QName.get(HTMLConstants.DIV));
-        spacer2.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-        spacer2.setText(StringUtils.EMPTY);
-        div.add(spacer2);
+
+        // Settings commands group
+        Element settingsGroup = new DOMElement(QName.get(HTMLConstants.DIV));
+        settingsGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        toolbar.add(settingsGroup);
 
         // Window settings display command
         String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
-        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, DISPLAY_SETTINGS_LINK_IMAGE_SOURCE,
-                CLASS_FANCYBOX_INLINE, null);
-        div.add(displaySettingsLink);
+        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, "halflings uni-wrench", CLASS_FANCYBOX_INLINE);
+        settingsGroup.add(displaySettingsLink);
 
         // Portlet administration display command
         Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
@@ -367,30 +383,24 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
                 String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
                 title += "   [" + instanceName + "]";
-                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, DISPLAY_ADMIN_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_FRAME, title);
-                div.add(displayAdminLink);
+                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, "halflings cog", CLASS_FANCYBOX_FRAME);
+                settingsGroup.add(displayAdminLink);
             }
         }
 
-        // Spacer (can't reuse previous spacer node)
-        Element spacer3 = new DOMElement(QName.get(HTMLConstants.DIV));
-        spacer3.addAttribute(QName.get(HTMLConstants.CLASS), CLASS_SPACER);
-        spacer3.setText(StringUtils.EMPTY);
-        div.add(spacer3);
+        // Delete command group
+        Element deleteGroup = new DOMElement(QName.get(HTMLConstants.DIV));
+        deleteGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        toolbar.add(deleteGroup);
 
         // Delete portlet command
         String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
-        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, DELETE_LINK_IMAGE_SOURCE, CLASS_FANCYBOX_INLINE, null);
-        div.add(deleteLink);
+        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, "halflings remove", CLASS_FANCYBOX_INLINE);
+        deleteGroup.add(deleteLink);
 
-        // Print
-        HTMLWriter htmlWriter = new HTMLWriter(writer);
-        htmlWriter.setEscapeText(false);
-        try {
-            htmlWriter.write(div);
-        } catch (IOException e) {
-            throw new RenderException(e);
-        }
+
+        // Write HTML data
+        writer.write(toolbar.asXML());
     }
 
     /**
@@ -398,29 +408,34 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      *
      * @param href link URL
      * @param onclick onclick action, may be null
-     * @param imageSource image source
-     * @param htmlClass HTML class, may be null
-     * @param title title, may be null
+     * @param glyphicon glyphicon name
+     * @param additionalHTMLClass additional HTML class
      * @return HTML "a" node
      */
-    private Element generatePortletCommandLink(String href, String onclick, String imageSource, String htmlClass, String title) {
+    private Element generatePortletCommandLink(String href, String onclick, String glyphicon, String additionalHTMLClass) {
         // HTML "a" node
         DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
         a.addAttribute(QName.get(HTMLConstants.HREF), href);
         if (onclick != null) {
             a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
         }
-        if (StringUtils.isNotEmpty(htmlClass)) {
-            a.addAttribute(QName.get(HTMLConstants.CLASS), htmlClass);
-        }
-        if (StringUtils.isNotEmpty(title)) {
-            a.addAttribute(QName.get(HTMLConstants.TITLE), title);
-        }
 
-        // HTML "img" sub node
-        Element img = new DOMElement(QName.get(HTMLConstants.IMG));
-        img.addAttribute(QName.get(HTMLConstants.SRC), imageSource);
-        a.add(img);
+        // HTML class
+        StringBuilder htmlClass = new StringBuilder();
+        htmlClass.append("btn btn-default");
+        if (additionalHTMLClass != null) {
+            htmlClass.append(" ");
+            htmlClass.append(additionalHTMLClass);
+        }
+        a.addAttribute(QName.get(HTMLConstants.CLASS), htmlClass.toString());
+
+        // Glyphicon
+        if (glyphicon != null) {
+            Element glyph = new DOMElement(QName.get(HTMLConstants.I));
+            glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons " + glyphicon);
+            glyph.setText(StringUtils.EMPTY);
+            a.add(glyph);
+        }
 
         return a;
     }
@@ -456,7 +471,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
         divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
-        divMsg.setText(INTERNATIONALIZATION_SERVICE.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
+        divMsg.setText(this.internationalizationService.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
         form.add(divMsg);
 
         Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
@@ -473,12 +488,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(InternationalizationConstants.KEY_YES, locale));
+        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString(InternationalizationConstants.KEY_YES, locale));
         divButton.add(btnOk);
 
         Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
         btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
-        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), INTERNATIONALIZATION_SERVICE.getString(InternationalizationConstants.KEY_NO, locale));
+        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString(InternationalizationConstants.KEY_NO, locale));
         btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
         divButton.add(btnQuit);
 

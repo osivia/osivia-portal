@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -72,6 +72,8 @@ public final class InternationalizationConstants {
     public static final String KEY_JBOSS_ADMINISTRATION = "SUBMENU_JBOSS_ADMINISTRATION";
     /** Bundle resource key for pages list. */
     public static final String KEY_PAGES_LIST = "SUBMENU_PAGES_LIST";
+    /** Bundle resource key for creation header. */
+    public static final String KEY_CREATION_HEADER = "SUBMENU_CREATION_HEADER";
     /** Bundle resource key for page creation. */
     public static final String KEY_PAGE_CREATION = "SUBMENU_PAGE_CREATION";
     /** Bundle resource key for template creation. */
@@ -160,12 +162,16 @@ public final class InternationalizationConstants {
     public static final String KEY_WINDOW_PROPERTIES_NO_STYLE = "WINDOW_PROPERTIES_NO_STYLE";
     /** Bundle resource key for styles window properties display link. */
     public static final String KEY_WINDOW_PROPERTIES_STYLES_DISPLAY_LINK = "WINDOW_PROPERTIES_STYLES_DISPLAY_LINK";
+    /** Bundle resource key for window properties mobile collapse. */
+    public static final String KEY_WINDOW_PROPERTIES_MOBILE_COLLAPSE = "WINDOW_PROPERTIES_MOBILE_COLLAPSE";
     /** Bundle resource key for window properties title display. */
     public static final String KEY_WINDOW_PROPERTIES_TITLE_DISPLAY = "WINDOW_PROPERTIES_TITLE_DISPLAY";
     /** Bundle resource key for window properties title value. */
     public static final String KEY_WINDOW_PROPERTIES_TITLE = "WINDOW_PROPERTIES_TITLE";
     /** Bundle resource key for window properties icons display. */
     public static final String KEY_WINDOW_PROPERTIES_ICONS_DISPLAY = "WINDOW_PROPERTIES_ICONS_DISPLAY";
+    /** Bundle resource key for window properties Bootstrap panel style. */
+    public static final String KEY_WINDOW_PROPERTIES_BOOTSTRAP_PANEL_STYLE = "WINDOW_PROPERTIES_BOOTSTRAP_PANEL_STYLE";
     /** Bundle resource key for window properties AJAX link. */
     public static final String KEY_WINDOW_PROPERTIES_AJAX_LINK = "WINDOW_PROPERTIES_AJAX_LINK";
     /** Bundle resource key for window properties print. */

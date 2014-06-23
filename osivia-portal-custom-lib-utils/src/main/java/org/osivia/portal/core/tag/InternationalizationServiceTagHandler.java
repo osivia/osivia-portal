@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,6 +22,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -37,9 +38,13 @@ public class InternationalizationServiceTagHandler extends SimpleTagSupport {
 
     /** Bundle factory attribute name. */
     private static final String BUNDLE_FACTORY_ATTRIBUTE_NAME = "osivia.internationalization.bundleFactory";
+    /** Property attributes separator. */
+    private static final String SEPARATOR = ",";
 
     /** Resource property key. */
     private String key;
+    /** Resource property arguments, separated by comma. */
+    private String args;
 
 
     /**
@@ -71,14 +76,16 @@ public class InternationalizationServiceTagHandler extends SimpleTagSupport {
             pageContext.setAttribute(BUNDLE_FACTORY_ATTRIBUTE_NAME, PageContext.APPLICATION_SCOPE);
         }
 
+        // Property arguments
+        Object[] arguments = StringUtils.split(this.args, SEPARATOR);
+
         // Internationalization service invocation
         Bundle bundle = bundleFactory.getBundle(locale);
-        String property = bundle.getString(this.key);
+        String property = bundle.getString(this.key, arguments);
 
         // Write property into JSP
         JspWriter out = pageContext.getOut();
         out.write(property);
-        out.flush();
     }
 
 
@@ -98,6 +105,24 @@ public class InternationalizationServiceTagHandler extends SimpleTagSupport {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+
+    /**
+     * Getter for args.
+     *
+     * @return the args
+     */
+    public String getArgs() {
+        return this.args;
+    }
+
+    /**
+     * Setter for args.
+     *
+     * @param args the args to set
+     */
+    public void setArgs(String args) {
+        this.args = args;
     }
 
 }

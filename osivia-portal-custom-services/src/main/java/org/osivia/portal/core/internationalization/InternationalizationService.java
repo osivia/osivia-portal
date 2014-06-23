@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -129,10 +129,11 @@ public class InternationalizationService implements IInternationalizationService
 
         List<Object> formattedArguments = new ArrayList<Object>(args.length);
         for (Object arg : args) {
-            if (NumberUtils.isNumber(arg.toString())) {
-                // Number
-                String number = NumberFormat.getNumberInstance(locale).format(arg);
-                formattedArguments.add(number);
+            if (NumberUtils.isNumber(arg.toString()) && !NumberUtils.isDigits(args.toString())) {
+                // Decimal number
+                double value = NumberUtils.createDouble(arg.toString());
+                String display = NumberFormat.getNumberInstance(locale).format(value);
+                formattedArguments.add(display);
             } else if (arg instanceof Date) {
                 // Date
                 String date = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(arg);

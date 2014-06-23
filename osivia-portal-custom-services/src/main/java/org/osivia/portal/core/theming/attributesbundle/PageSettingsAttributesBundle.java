@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -108,10 +108,10 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final PortalObjectContainer portalObjectContainer;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
-    
+
     /** Internationalization service. */
     private IInternationalizationService internationalizationService;
-    
+
 
 
     /** Toolbar attributes names. */
@@ -138,17 +138,17 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
-        
+
          // Internationalization service
          this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
-        
+
 
 
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY); 
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);   
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_LAYOUT);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST);
@@ -217,9 +217,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // URL context
         URLContext urlContext = serverContext.getURLContext();
-        
+
         Locale locale = serverContext.getClientRequest().getLocale();
-        
+
 
         // Current page
         Page page = renderPageCommand.getPage();
@@ -245,37 +245,38 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
-            
-            
+
+
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
-            
+
             if( pageCategoryPrefix != null) {
-                
+
                 String category = page.getDeclaredProperty("osivia.pageCategory");
-                if( category == null)
+                if( category == null) {
                     category = "";
-                
+                }
+
                 attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY, category);
-                
+
                 Map<String, String> categories = new LinkedHashMap<String, String>();
-                
+
 
                 categories.put("", this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_NO_CATEGORY, locale));
-                
+
                 TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<OrderedPageCategory>();
 
                 Properties properties = System.getProperties();
                 Enumeration<Object>props = properties.keys();
                 while(props.hasMoreElements()){
-                    
+
                     String key = (String) props.nextElement();
-                    
+
                     if( key.startsWith(pageCategoryPrefix)) {
                         String curCategory = key.substring(pageCategoryPrefix.length());
-                        
+
                         int curOrder = 100;
-                        
+
                         try {
                          curOrder = Integer.parseInt(curCategory);
                         } catch( NumberFormatException e)   {
@@ -287,17 +288,17 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
                     }
                 }
-                
-                
+
+
                 for(OrderedPageCategory pageCategory : orderedCategories)   {
-                    categories.put(pageCategory.getCode(),pageCategory.getLabel());     
+                    categories.put(pageCategory.getCode(),pageCategory.getLabel());
                 }
-            
-                
-                attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES, categories);  
+
+
+                attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES, categories);
             }
-                
-            
+
+
             // Layouts
             List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
             Collections.sort(layouts, new PortalLayoutComparator());
@@ -394,7 +395,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             disabled = "disabled='disabled'";
         }
 
-        select.append("<select name=\"" + selectName + "\"" + disabled + ">");
+        select.append("<select id=\"cms-contextualization\" name=\"" + selectName + "\" class=\"form-control\" " + disabled + ">");
 
         if (!supportedValue.isEmpty()) {
             // Héritage

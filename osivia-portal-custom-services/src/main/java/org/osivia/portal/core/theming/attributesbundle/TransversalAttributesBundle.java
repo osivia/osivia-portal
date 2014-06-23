@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -83,11 +83,12 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_FORMATTER);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL);
-        this.names.add(Constants.ATTR_PAGE_CATEGORY);   
-        this.names.add(Constants.ATTR_USER_DATAS); 
-        this.names.add(Constants.ATTR_SPACE_CONFIG);         
+        this.names.add(Constants.ATTR_PAGE_CATEGORY);
+        this.names.add(Constants.ATTR_USER_DATAS);
+        this.names.add(Constants.ATTR_SPACE_CONFIG);
         this.names.add(Constants.ATTR_PORTAL_CTX);
         this.names.add(Constants.ATTR_URL_FACTORY);
+        this.names.add(Constants.ATTR_PORTAL_HOME_URL);
         this.names.add(Constants.ATTR_WIZARD_MODE);
     }
 
@@ -136,8 +137,11 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         // Generic command URL
         String commandUrl = serverContext.getPortalContextPath() + "/commands";
         attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_COMMAND_URL, commandUrl);
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+        attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
 
-        // User datas
+		// User datas
         Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getServerInvocation().getAttribute(Scope.SESSION_SCOPE, "osivia.userDatas");
         attributes.put(Constants.ATTR_USER_DATAS, userDatas);
 
@@ -154,14 +158,16 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         } catch (Exception e) {
            throw new ControllerException(e);
         }
-        if( spaceItem != null)
+        if( spaceItem != null) {
             attributes.put(Constants.ATTR_SPACE_CONFIG, spaceItem.getNativeItem());
+        }
 
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-        attributes.put(Constants.ATTR_PORTAL_CTX, portalControllerContext);
         // URL factory
         attributes.put(Constants.ATTR_URL_FACTORY, this.urlFactory);
+
+        // Portal home page URL
+        attributes.put(Constants.ATTR_PORTAL_HOME_URL, serverContext.getPortalContextPath());
+        
         // Wizard mode indicator
         String mode = (String) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
         attributes.put(Constants.ATTR_WIZARD_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode));

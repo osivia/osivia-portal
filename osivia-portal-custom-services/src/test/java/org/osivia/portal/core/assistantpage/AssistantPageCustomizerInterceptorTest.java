@@ -185,7 +185,7 @@ public class AssistantPageCustomizerInterceptorTest {
 
     /**
      * Test method for {@link AssistantPageCustomizerInterceptor#formatHTMLTreeModels(Page, ControllerContext, String)}.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -390,10 +390,8 @@ public class AssistantPageCustomizerInterceptorTest {
             // Test 2 : 4 instance definitions generated
             htmlData = this.formatter.formatHtmlPortletsList(this.context);
             assertNotNull(htmlData);
-            assertEquals(4, StringUtils.countMatches(htmlData, "fancybox-table-row"));
-            assertEquals(12, StringUtils.countMatches(htmlData, "fancybox-table-cell"));
             assertEquals(4, StringUtils.countMatches(htmlData, "<img"));
-            assertEquals(4, StringUtils.countMatches(htmlData, "<input"));
+            assertEquals(4, StringUtils.countMatches(htmlData, "<button"));
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -425,7 +423,6 @@ public class AssistantPageCustomizerInterceptorTest {
             // Test 3
             htmlData = this.formatter.formatHtmlWindowsSettings(currentPageMock, windows, this.context);
             assertNotNull(htmlData);
-            assertEquals(4, StringUtils.countMatches(htmlData, "class=\"fancybox-table\""));
         } catch (IOException e) {
             e.printStackTrace();
             fail(e.getMessage());
