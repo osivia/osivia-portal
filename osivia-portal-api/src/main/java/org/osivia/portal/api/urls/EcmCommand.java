@@ -12,21 +12,39 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.core.cms;
+package org.osivia.portal.api.urls;
 
+/**
+ * Main command views on the ecm
+ * @author lbi
+ *
+ */
 public enum EcmCommand {
 
+    /** summary view of a doc */
     viewSummary,
 
+    /** create a document */
+    createDocument,
+
+    /** create a webpage (mode webpage) */
     createPage,
 
+    /** edit a document */
+    editDocument,
+
+    /** edit a webpage (mode webpage) */    
     editPage,
 
+    /** create a fragment in the top of the region (mode webpage) */    
     createFgtInRegion,
 
+    /** create a fragment below an other window (mode webpage) */
     createFgtBelowWindow,
 
+    /** edit a fragment (mode webpage) */
     editFgt,
 
-    gotoMediaLibrary;
+    /** Go to the current media library in back office */
+    gotoMediaLibrary,
 }

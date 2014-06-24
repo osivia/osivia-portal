@@ -245,4 +245,17 @@ public interface IPortalUrlFactory {
      */
     String getHttpErrorUrl(PortalControllerContext portalControllerContext, int httpErrorCode);
 
+
+    /**
+     * Get an ECM URL (for front office views)
+     * 
+     * @param pcc portal controller context
+     * @param command the name of the command (create document, view, ...) managed by the ecm
+     * @param path path of the document
+     * @param requestParameters params added in the http url
+     * @return the url
+     */
+    String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException;
+
+
 }

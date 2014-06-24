@@ -42,9 +42,15 @@ import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -73,6 +79,20 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     private ITracker tracker;
     /** Profile manager. */
     private IProfilManager profilManager;
+    /** CMS service locator. */
+    private static ICMSServiceLocator cmsServiceLocator;
+
+    /**
+     * Static access to CMS service.
+     * 
+     * @return CMS service
+     */
+    private static ICMSService getCMSService() {
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
+        return cmsServiceLocator.getCMSService();
+    }
 
 
     /**
@@ -161,6 +181,25 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
         return portalURL.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException {
+
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setControllerContext((ControllerContext) pcc.getControllerCtx());
+        String ret = "";
+        try {
+            ret = getCMSService().getEcmUrl(cmsCtx, command, path, requestParameters);
+        } catch (CMSException e) {
+            throw new PortalException(e);
+        }
+
+
+        return ret;
+
     }
 
 
