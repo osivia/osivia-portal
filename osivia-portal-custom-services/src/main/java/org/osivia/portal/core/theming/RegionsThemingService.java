@@ -36,7 +36,9 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
@@ -85,7 +87,7 @@ public class RegionsThemingService implements IRegionsThemingService {
         if (renderedRegion.isDefaultRegion()) {
             contextPath = this.defaultContextPath;
         } else {
-            contextPath = this.getContextPath(renderPageCommand);
+            contextPath = this.getLayoutContextPath(renderPageCommand);
         }
 
         // Server invocation
@@ -134,7 +136,7 @@ public class RegionsThemingService implements IRegionsThemingService {
     @SuppressWarnings("unchecked")
     public void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion) {
         // Context path
-        String contextPath = this.getContextPath(renderPageCommand);
+        String contextPath = this.getLayoutContextPath(renderPageCommand);
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
@@ -173,13 +175,22 @@ public class RegionsThemingService implements IRegionsThemingService {
     /**
      * {@inheritDoc}
      */
-    public String getContextPath(RenderPageCommand renderPageCommand) {
-
-        // [v3.0.2] context is found in the current layout
+    public String getLayoutContextPath(RenderPageCommand renderPageCommand) {
         LayoutService layoutService = renderPageCommand.getControllerContext().getController().getPageService().getLayoutService();
         String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout layout = layoutService.getLayoutById(layoutId);
         return layout.getLayoutInfo().getContextPath();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getThemeContextPath(RenderPageCommand renderPageCommand) {
+        ThemeService themeService = renderPageCommand.getControllerContext().getController().getPageService().getThemeService();
+        String themeId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_THEME);
+        PortalTheme theme = themeService.getThemeById(themeId);
+        return theme.getThemeInfo().getContextPath();
     }
 
 

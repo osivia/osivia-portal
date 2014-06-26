@@ -50,12 +50,21 @@ public interface IRegionsThemingService {
 
 
     /**
-     * Get context path from render page command.
-     *
+     * Get layout context path from render page command.
+     * 
      * @param renderPageCommand render page command
-     * @return context path
+     * @return layout context path
      */
-    String getContextPath(RenderPageCommand renderPageCommand);
+    String getLayoutContextPath(RenderPageCommand renderPageCommand);
+
+
+    /**
+     * Get theme context path from render page command.
+     * 
+     * @param renderPageCommand render page command
+     * @return theme context path
+     */
+    String getThemeContextPath(RenderPageCommand renderPageCommand);
 
 
     /**

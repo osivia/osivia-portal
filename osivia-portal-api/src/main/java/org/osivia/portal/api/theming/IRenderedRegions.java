@@ -24,8 +24,10 @@ public interface IRenderedRegions {
 
     /** Regions theming customizer identifier. */
     static final String CUSTOMIZER_ID = "osivia.customizer.regions.id";
-    /** Regions theming customizer context path attribute. */
-    static final String CUSTOMIZER_ATTRIBUTE_CONTEXT_PATH = "osivia.customizer.regions.contextPath";
+    /** Regions theming customizer layout context path attribute. */
+    static final String CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH = "osivia.customizer.regions.layoutContextPath";
+    /** Regions theming customizer theme context path attribute. */
+    static final String CUSTOMIZER_ATTRIBUTE_THEME_CONTEXT_PATH = "osivia.customizer.regions.themeContextPath";
     /** Regions theming customizer administrator indicator attribute. */
     static final String CUSTOMIZER_ATTRIBUTE_ADMINISTATOR = "osivia.customizer.regions.administrator";
     /** Regions theming customizer context path attribute. */

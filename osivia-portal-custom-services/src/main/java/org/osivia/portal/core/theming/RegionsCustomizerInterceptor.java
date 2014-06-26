@@ -69,14 +69,14 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
                 // Page rendition
                 PageRendition pageRendition = (PageRendition) response;
 
-                String contextPath = this.regionsThemingService.getContextPath(renderPageCommand);
+                String contextPath = this.regionsThemingService.getLayoutContextPath(renderPageCommand);
                 Boolean administrator = PageCustomizerInterceptor.isAdministrator(renderPageCommand.getControllerContext());
 
                 // Rendered regions
                 RenderedRegions renderedRegions = new RenderedRegions(renderPageCommand.getPage());
 
                 Map<String, Object> customizerAttributes = new HashMap<String, Object>();
-                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_CONTEXT_PATH, contextPath);
+                customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_LAYOUT_CONTEXT_PATH, contextPath);
                 customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_ADMINISTATOR, administrator);
                 customizerAttributes.put(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS, renderedRegions);
                 CustomizationContext context = new CustomizationContext(customizerAttributes);
