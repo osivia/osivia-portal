@@ -86,6 +86,8 @@ public class RegionsThemingService implements IRegionsThemingService {
         String contextPath;
         if (renderedRegion.isDefaultRegion()) {
             contextPath = this.defaultContextPath;
+        } else if (renderedRegion.getContextPath() != null) {
+            contextPath = renderedRegion.getContextPath();
         } else {
             contextPath = this.getLayoutContextPath(renderPageCommand);
         }

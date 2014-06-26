@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.api.theming;
 
@@ -28,11 +27,13 @@ public class RenderedRegionBean extends AbstractRegionBean {
     private boolean defaultRegion;
     /** Customizable region indicator (default value is true). */
     private boolean customizable;
+    /** Region context path, may be null. */
+    private String contextPath;
 
 
     /**
      * Constructor.
-     *
+     * 
      * @param name rendered region name
      * @param path rendered region path
      */
@@ -43,7 +44,7 @@ public class RenderedRegionBean extends AbstractRegionBean {
         this.customizable = true;
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
@@ -51,11 +52,11 @@ public class RenderedRegionBean extends AbstractRegionBean {
     public boolean isCustomizable() {
         return this.customizable;
     }
-    
+
 
     /**
      * Getter for path.
-     *
+     * 
      * @return the path
      */
     public String getPath() {
@@ -64,7 +65,7 @@ public class RenderedRegionBean extends AbstractRegionBean {
 
     /**
      * Getter for defaultRegion.
-     *
+     * 
      * @return the defaultRegion
      */
     public boolean isDefaultRegion() {
@@ -73,7 +74,7 @@ public class RenderedRegionBean extends AbstractRegionBean {
 
     /**
      * Setter for defaultRegion.
-     *
+     * 
      * @param defaultRegion the defaultRegion to set
      */
     public void setDefaultRegion(boolean defaultRegion) {
@@ -82,11 +83,29 @@ public class RenderedRegionBean extends AbstractRegionBean {
 
     /**
      * Setter for customizable.
-     *
+     * 
      * @param customizable the customizable to set
      */
     public void setCustomizable(boolean customizable) {
         this.customizable = customizable;
+    }
+
+    /**
+     * Getter for contextPath.
+     * 
+     * @return the contextPath
+     */
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    /**
+     * Setter for contextPath.
+     * 
+     * @param contextPath the contextPath to set
+     */
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
 }

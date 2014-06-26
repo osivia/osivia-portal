@@ -64,13 +64,23 @@ public class RenderedRegions implements IRenderedRegions {
      * {@inheritDoc}
      */
     public boolean customizeRenderedRegion(String regionName, String regionPath) {
+        return this.customizeRenderedRegion(regionName, regionPath, null);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean customizeRenderedRegion(String regionName, String regionPath, String contextPath) {
         boolean customizable = true;
         if (this.renderedRegions.containsKey(regionName)) {
             customizable = this.renderedRegions.get(regionName).isCustomizable();
         }
 
         if (customizable) {
-            this.renderedRegions.put(regionName, new RenderedRegionBean(regionName, regionPath));
+            RenderedRegionBean region = new RenderedRegionBean(regionName, regionPath);
+            region.setContextPath(contextPath);
+            this.renderedRegions.put(regionName, region);
         }
         return customizable;
     }

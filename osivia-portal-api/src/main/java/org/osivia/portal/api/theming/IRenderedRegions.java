@@ -53,6 +53,17 @@ public interface IRenderedRegions {
 
 
     /**
+     * Customize rendered region.
+     * 
+     * @param regionName region name
+     * @param regionPath region path
+     * @param contextPath region context path
+     * @return true if the region was successfully customized
+     */
+    boolean customizeRenderedRegion(String regionName, String regionPath, String contextPath);
+
+
+    /**
      * Remove rendered region.
      *
      * @param regionName region name
