@@ -15,6 +15,7 @@
 
 package org.osivia.portal.core.cms;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -298,12 +299,17 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 
          try
          {
-         if (parameterMap.get("skipPortletCacheInitialization") != null)	
-        	 if ("1".equals( URLDecoder.decode(parameterMap.get("skipPortletCacheInitialization")[0], "UTF-8")))
-        			 cmsCommand.setSkipPortletInitialisation(true);
+             if (parameterMap.get("skipPortletCacheInitialization") != null)	
+            	 if ("1".equals( URLDecoder.decode(parameterMap.get("skipPortletCacheInitialization")[0], "UTF-8")))
+            			 cmsCommand.setSkipPortletInitialisation(true);
+    	    
+             if (parameterMap.get("ecmActionReturn") != null){ 
+                 String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
+                 if (StringUtils.isNotBlank(ecmActionReturn) && !"NO".equals(ecmActionReturn)){
+                         cmsCommand.setEcmActionReturn(ecmActionReturn);
+                 }
+             }
          }
-	         
-	            
          catch (UnsupportedEncodingException e)
          {
             // ignore

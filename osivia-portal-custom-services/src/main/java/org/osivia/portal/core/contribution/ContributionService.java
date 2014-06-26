@@ -262,6 +262,78 @@ public class ContributionService implements IContributionService {
 
         return null;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getAskPublishContributionURL(PortalControllerContext portalControllerContext, String docPath) {
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+
+        if (window != null) {
+            return getRefreshURLByContribution(portalControllerContext, docPath, window, IContributionService.ASK_PUBLISH);
+        }
+
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getCancelPublishingAskContributionURL(PortalControllerContext portalControllerContext, String docPath) {
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+
+        if (window != null) {
+            return getRefreshURLByContribution(portalControllerContext, docPath, window, IContributionService.CANCEL_PUBLISH);
+        }
+
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getValidatePublishContributionURL(PortalControllerContext portalControllerContext, String docPath){
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+
+        if (window != null) {
+            return getRefreshURLByContribution(portalControllerContext, docPath, window, IContributionService.VALIDATE_PUBLISHING);
+        }
+
+        return null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getRejectPublishContributionURL(PortalControllerContext portalControllerContext, String docPath){
+        Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+
+        if (window != null) {
+            return getRefreshURLByContribution(portalControllerContext, docPath, window, IContributionService.REJECT_PUBLISHING);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get refresh URL for contribution.
+     * 
+     * @param portalControllerContext
+     * @param docPath
+     * @param window
+     * @return
+     */
+    protected String getRefreshURLByContribution(PortalControllerContext portalControllerContext, String docPath, Window window, String contribution) {
+        PublishContributionCommand publishCnd = new PublishContributionCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), docPath,
+                contribution);
+        URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
+                .getURLContext();
+
+        String resfreshUrl = ControllerContextAdapter.getControllerContext(portalControllerContext).renderURL(publishCnd, urlContext,
+                URLFormat.newInstance(false, true));
+
+        return resfreshUrl;
+    }
 
 
     /**

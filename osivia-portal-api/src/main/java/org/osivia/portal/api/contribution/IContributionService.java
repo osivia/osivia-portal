@@ -22,6 +22,10 @@ public interface IContributionService {
 
     public static final String PUBLISH = "publish";
     public static final String UNPUBLISH = "unpublish";
+    public static final String ASK_PUBLISH = "ask_publish";
+    public static final String VALIDATE_PUBLISHING = "validate_publishing";
+    public static final String REJECT_PUBLISHING = "reject_publishing";
+    public static final String CANCEL_PUBLISH = "cancel_publish";
 
     /**
      * Window edition state types enumeration.
@@ -93,8 +97,43 @@ public interface IContributionService {
      * @return unpublish URL
      */
     String getUnpublishContributionURL(PortalControllerContext portalControllerContext, String docPath);
-
-
+    
+    /**
+     * Return a "ask to publish" contribution URL for current document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param docPath current document path
+     * @return publish URL
+     */
+    String getAskPublishContributionURL(PortalControllerContext portalControllerContext, String docPath);
+    
+    /**
+     * Return a "cancel publising workflow" contribution URL for current document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param docPath current document path
+     * @return publish URL
+     */
+    String getCancelPublishingAskContributionURL(PortalControllerContext portalControllerContext, String docPath);
+    
+    /**
+     * Return a "validate publishing" contribution URL for current document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param docPath current document path
+     * @return publish URL
+     */
+    String getValidatePublishContributionURL(PortalControllerContext portalControllerContext, String docPath);
+    
+    /**
+     * Return a "reject publishing" contribution URL for current document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param docPath current document path
+     * @return publish URL
+     */
+    String getRejectPublishContributionURL(PortalControllerContext portalControllerContext, String docPath);
+    
     /**
      * get current window state
      * 

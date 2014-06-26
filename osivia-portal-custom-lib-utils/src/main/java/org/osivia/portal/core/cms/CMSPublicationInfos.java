@@ -25,6 +25,9 @@ import java.util.Map;
  * @author jeanseb
  * 
  */
+/**
+ * @author David Chevrier
+ */
 public class CMSPublicationInfos {
 
 	public static final int ERROR_CONTENT_NOT_FOUND = 1;
@@ -38,7 +41,10 @@ public class CMSPublicationInfos {
 	private String liveId = null;
 	private boolean editableByUser = false;
 	private boolean deletableByUser = false;
+	private boolean userCanValidate = false;
 	private boolean anonymouslyReadable = false;
+	private boolean isOnLinePending = false;
+	private boolean isUserOnLineInitiator = false;
 	/** Published CMS item indicator. */
     private boolean published = false;
 	/** Indicates if working version is different from published version. */
@@ -118,14 +124,39 @@ public class CMSPublicationInfos {
 	public void setDeletableByUser(boolean deletableByUser) {
 		this.deletableByUser = deletableByUser;
 	}
+	
+    public boolean isUserCanValidate() {
+        return userCanValidate;
+    }
 
-	public boolean isAnonymouslyReadable() {
+    public void setUserCanValidate(boolean userCanValidate) {
+        this.userCanValidate = userCanValidate;
+    }
+
+    public boolean isAnonymouslyReadable() {
 		return anonymouslyReadable;
 	}
 
 	public void setAnonymouslyReadable(boolean anonymouslyReadable) {
 		this.anonymouslyReadable = anonymouslyReadable;
 	}
+	
+    public boolean isOnLinePending() {
+        return isOnLinePending;
+    }
+
+    public void setOnLinePending(boolean isOnLinePending) {
+        this.isOnLinePending = isOnLinePending;
+    }
+    
+    public boolean isUserOnLineInitiator() {
+        return isUserOnLineInitiator;
+    }
+
+    
+    public void setUserOnLineInitiator(boolean isUserOnLineInitiator) {
+        this.isUserOnLineInitiator = isUserOnLineInitiator;
+    }
 
     /**
      * Getter for published.

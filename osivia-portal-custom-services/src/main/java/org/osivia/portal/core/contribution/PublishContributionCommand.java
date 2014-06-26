@@ -54,6 +54,10 @@ public class PublishContributionCommand extends ControllerCommand {
 
     private static final String SUCCESS_MESSAGE_PUBLISH = "SUCCESS_MESSAGE_PUBLISH";
     private static final String SUCCESS_MESSAGE_UNPUBLISH = "SUCCESS_MESSAGE_UNPUBLISH";
+    private static final String SUCCESS_MESSAGE_ASK_PUBLISH = "SUCCESS_MESSAGE_ASK_PUBLISH"; 
+    private static final String SUCCESS_MESSAGE_PUBLISHING_VALIDATED = "SUCCESS_MESSAGE_PUBLISHING_VALIDATED";
+    private static final String SUCCESS_MESSAGE_PUBLISHING_REJECTED = "SUCCESS_MESSAGE_PUBLISHING_REJECTED";
+    private static final String SUCCESS_CANCEL_PUBLISH = "SUCCESS_CANCEL_PUBLISH";
 
     ICMSService cmsService;
 
@@ -151,17 +155,9 @@ public class PublishContributionCommand extends ControllerCommand {
             PortalControllerContext pcc = new PortalControllerContext(getControllerContext());
 
             if (actionCms.equals(IContributionService.PUBLISH)) {
+                
                 getCMSService().publishDocument(cmsCtx, docPath);
-
-                String success = itlzService.getString(SUCCESS_MESSAGE_PUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
-                notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
-                
-                
-                ContributionService.setWindowEditionState(getControllerContext(), window.getId(), new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE,docPath));
-
-                PageProperties.getProperties().setRefreshingPage(true);
-                
-                return new UpdatePageResponse(window.getPage().getId());
+                return updatePage(window, pcc, SUCCESS_MESSAGE_PUBLISH, EditionState.CONTRIBUTION_MODE_ONLINE);
                 
             } else if (actionCms.equals(IContributionService.UNPUBLISH)) {
                 
@@ -184,6 +180,26 @@ public class PublishContributionCommand extends ControllerCommand {
 
                 return execute;
                 
+            } else if (actionCms.equals(IContributionService.ASK_PUBLISH)) {
+                
+                getCMSService().askToPublishDocument(cmsCtx, docPath);
+                return updatePage(window, pcc, SUCCESS_MESSAGE_ASK_PUBLISH, EditionState.CONTRIBUTION_MODE_EDITION);
+                
+            } else if (actionCms.equals(IContributionService.VALIDATE_PUBLISHING)) {
+                
+                getCMSService().validatePublicationOfDocument(cmsCtx, docPath);
+                return updatePage(window, pcc, SUCCESS_MESSAGE_PUBLISHING_VALIDATED, EditionState.CONTRIBUTION_MODE_ONLINE);
+                
+            } else if (actionCms.equals(IContributionService.REJECT_PUBLISHING)) {
+                
+                getCMSService().rejectPublicationOfDocument(cmsCtx, docPath);
+                return updatePage(window, pcc, SUCCESS_MESSAGE_PUBLISHING_REJECTED, EditionState.CONTRIBUTION_MODE_EDITION);
+                
+            } else if (actionCms.equals(IContributionService.CANCEL_PUBLISH)) {
+                
+                getCMSService().cancelPublishWorkflow(cmsCtx, docPath);
+                return updatePage(window, pcc, SUCCESS_CANCEL_PUBLISH, EditionState.CONTRIBUTION_MODE_EDITION);
+                
             }
             
             return null;
@@ -196,6 +212,24 @@ public class PublishContributionCommand extends ControllerCommand {
             else
                 throw (ControllerException) e;
         }
+    }
+
+
+    /**
+     * @param window
+     * @param pcc
+     * @return
+     */
+    public ControllerResponse updatePage(Window window, PortalControllerContext pcc, String notificationKey, String state) {
+        
+        String success = itlzService.getString(notificationKey, getControllerContext().getServerInvocation().getRequest().getLocale());
+        notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
+        
+        ContributionService.setWindowEditionState(getControllerContext(), window.getId(), new EditionState(state, docPath));
+        PageProperties.getProperties().setRefreshingPage(true);
+        
+        return new UpdatePageResponse(window.getPage().getId());
+        
     }
 
 }

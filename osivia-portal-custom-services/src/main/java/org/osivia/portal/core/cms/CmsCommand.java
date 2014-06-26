@@ -59,13 +59,18 @@ import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.error.UserNotificationsException;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
@@ -118,6 +123,7 @@ public class CmsCommand extends DynamicCommand {
     private String portalPersistentName;
     private boolean insertPageMarker = true;
     private boolean skipPortletInitialisation = false;
+    private String ecmActionReturn;
 
     public void setSkipPortletInitialisation(boolean skipPortletInitialisation) {
         this.skipPortletInitialisation = skipPortletInitialisation;
@@ -178,6 +184,14 @@ public class CmsCommand extends DynamicCommand {
 
     public String getContextualization() {
         return this.contextualization;
+    }
+
+    public String getEcmActionReturn() {
+        return ecmActionReturn;
+    }
+
+    public void setEcmActionReturn(String ecmActionReturn) {
+        this.ecmActionReturn = ecmActionReturn;
     }
 
     public CmsCommand() {
@@ -272,6 +286,10 @@ public class CmsCommand extends DynamicCommand {
 
         return this.webIdService;
     }
+    
+    public static IInternationalizationService itlzService = InternationalizationUtils.getInternationalizationService();
+    
+    public static INotificationsService notifService = NotificationsUtils.getNotificationsService();
 
     /**
      * compare 2 pages en fonction de leur path de publication
@@ -1584,6 +1602,13 @@ public class CmsCommand extends DynamicCommand {
                 
                 if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
                     editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
+                }
+                
+                String ecmActionReturn = getEcmActionReturn();
+                if(StringUtils.isNotBlank(ecmActionReturn)){
+                    PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
+                    String notification = itlzService.getString(ecmActionReturn, getControllerContext().getServerInvocation().getRequest().getLocale());
+                    notifService.addSimpleNotification(portalCtx, notification, NotificationsType.SUCCESS);
                 }
 
                 StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "virtual",

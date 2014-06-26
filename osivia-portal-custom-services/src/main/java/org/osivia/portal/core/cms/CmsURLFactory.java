@@ -145,6 +145,9 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
+            if( "_LIVE_".equals(displayContext))
+                asu.setParameterValue("ecmActionReturn", "NO");
+            
          }             
          
          
@@ -215,6 +218,7 @@ public class CmsURLFactory extends URLFactoryDelegate
             }
          }     
          
+
    
   
  

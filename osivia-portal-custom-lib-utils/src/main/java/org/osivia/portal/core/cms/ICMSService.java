@@ -176,6 +176,42 @@ public interface ICMSService {
      * @throws CMSException
      */
     void unpublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    
+    /**
+     * Start Publication workflow.
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    void askToPublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    
+    /**
+     * Cancel Publication workflow.
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    void cancelPublishWorkflow(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    
+    /**
+     * Accept publication of current document.
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    void validatePublicationOfDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    
+    /**
+     * Reject publication of current document.
+     * 
+     * @param cmsCtx context
+     * @param pagePath the path of the page
+     * @throws CMSException
+     */
+    void rejectPublicationOfDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
     /**
      * Delete the document.
