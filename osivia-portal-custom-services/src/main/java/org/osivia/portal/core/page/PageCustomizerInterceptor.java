@@ -1221,12 +1221,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 // Dynamic styles
                 
-                String dynamicStyles = (String) windowProperties.get( "osivia.dynamicCSSClasses");
+                if( windowProperties != null)   {
+                    String dynamicStyles = (String) windowProperties.get( "osivia.dynamicCSSClasses");
                 
-                if( dynamicStyles != null)
-                    customStyle += " " + dynamicStyles;
+                    if( dynamicStyles != null)
+                        customStyle += " " + dynamicStyles;
                     
-                properties.setWindowProperty(windowId, "osivia.style",  customStyle);
+                    properties.setWindowProperty(windowId, "osivia.style",  customStyle);
+                }
                 
                 
             }
