@@ -13,6 +13,8 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
@@ -27,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -199,10 +202,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // Current page
         Page page = renderPageCommand.getPage();
-        // Current locale
-        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
 
-        
         // Principal
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
         attributes.put(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
@@ -1005,6 +1005,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
         userbarMenuTitle.add(caret);
+        userbarMenu.add(userbarMenuTitle);
         
         // Userbar menu "ul" node
         Element userbarMenuUl = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
@@ -1055,7 +1056,22 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             this.addSubMenuElement(userbarMenuUl, login, null, null);
         }
 
-        return userbarMenu.asXML();
+
+        // Write HTML content
+        try {
+            StringWriter stringWriter = new StringWriter();
+            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(userbarMenu);
+                return stringWriter.toString();
+            } finally {
+                stringWriter.close();
+                htmlWriter.close();
+            }
+        } catch (IOException e) {
+            return StringUtils.EMPTY;
+        }
     }    
 
 
