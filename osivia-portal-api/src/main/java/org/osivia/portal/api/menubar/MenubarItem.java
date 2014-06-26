@@ -63,7 +63,18 @@ public class MenubarItem {
     private boolean dropdownItem;
 
 
- 
+    /** The ajax disabled. */
+    private boolean ajaxDisabled=false;
+
+    
+    @Override
+    public MenubarItem clone()  {
+        MenubarItem item = new MenubarItem(id, title, ORDER_PORTLET_GENERIC, url, onClickEvent, className, target);
+        item.setAssociatedHtml(associatedHtml);  
+        item.setStateItem(stateItem);       
+        item.setDropdownItem(stateItem);     
+        return item;
+    }
 
 
     
@@ -106,8 +117,6 @@ public class MenubarItem {
         this.dropdownItem = dropdownItem;
     }
 
-    /** The ajax disabled. */
-    private boolean ajaxDisabled=false;
 
 	/** The order portlet specific. */
 	public static int ORDER_PORTLET_SPECIFIC = 0;
