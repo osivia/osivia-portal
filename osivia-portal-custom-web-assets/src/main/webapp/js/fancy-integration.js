@@ -5,6 +5,7 @@ var callbackUrl = "";
 var callbackUrlFromEcm = "";
 var currentDocumentId = "";
 var live = "";
+var notificationKey = "";
 var ecmBaseUrl ="";
 
 
@@ -27,6 +28,7 @@ function callback( )	{
 		if ($f && currentDocumentId) {
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
 			redirectUrl = redirectUrl.replace('_LIVE_', live);
+			redirectUrl = redirectUrl.replace('NO', notificationKey);
 			
 			if (redirectUrl) {
 				window.location.replace(redirectUrl);
@@ -152,6 +154,8 @@ function receiveMessageAction(message) {
 		} else {
 			live = "fancyProxy";
 		}
+	} else if (message.data.match('notificationKey')) {
+		notificationKey = message.data.replace('notificationKey=','');
 	}
 }
 
