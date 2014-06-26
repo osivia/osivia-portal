@@ -20,6 +20,16 @@
 }
 
 
+.avatar {
+	max-height: 20px;
+    max-width: 30px;
+	background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1px;
+    vertical-align: top;
+}
+
+
 
 /* Toolbar */
 

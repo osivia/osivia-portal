@@ -996,13 +996,15 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element userbarMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
         
         // Userbar menu title
-        Element userbarMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, userName);
+        Element userbarMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null);
         DOM4JUtils.addAttribute(userbarMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
         if (userAvatarSrc != null) {
-            Element avatar = DOM4JUtils.generateElement(HTMLConstants.IMG, null, null);
+            Element avatar = DOM4JUtils.generateElement(HTMLConstants.IMG, "avatar", null);
             DOM4JUtils.addAttribute(avatar, HTMLConstants.SRC, userAvatarSrc);
             userbarMenuTitle.add(avatar);
         }
+        Element displayName = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, userName);
+        userbarMenuTitle.add(displayName);
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
         userbarMenuTitle.add(caret);
         userbarMenu.add(userbarMenuTitle);
@@ -1013,10 +1015,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         
         if (principal != null) {
             // My space
-            Element mySpace = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null,
-                    this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale), "halflings star",
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(userbarMenuUl, mySpace, null, null);
+            // Element mySpace = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null,
+            // this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale), "halflings star",
+            // AccessibilityRoles.MENU_ITEM);
+            // this.addSubMenuElement(userbarMenuUl, mySpace, null, null);
             
             
             if (person != null) {
