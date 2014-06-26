@@ -146,9 +146,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/bootstrap-integration.js'></script>");
 
-        // Glyphicons
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/style/glyphicons.css' type='text/css'/>");
-
         // Fancybox
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.css' type='text/css'/>");
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.js'></script>");
@@ -159,9 +156,12 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jstree/jquery.jstree.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jstree-integration.js'></script>");
 
+        // Glyphicons
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.css' type='text/css'/>");
+
         // CSS (must be loaded after all components for rules override)
-        this.writeResource(out, "<link rel='stylesheet' id='common_css' href='/osivia-portal-custom-web-assets/style/common.css' type='text/css'/>");
-        // this.writeResource(out, "<link rel='stylesheet' id='modecms_css' href='/osivia-portal-custom-web-assets/style/modecms.css' type='text/css'/>");
+        this.writeResource(out, "<link rel='stylesheet' id='common_css' href='/osivia-portal-custom-web-assets/css/common.css' type='text/css'/>");
+        // this.writeResource(out, "<link rel='stylesheet' id='modecms_css' href='/osivia-portal-custom-web-assets/css/modecms.css' type='text/css'/>");
     }
 
 
