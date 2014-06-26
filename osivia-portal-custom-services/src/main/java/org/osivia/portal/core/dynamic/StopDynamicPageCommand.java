@@ -50,9 +50,11 @@ import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.UserPage;
 import org.osivia.portal.api.theming.UserPortal;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSPage;
@@ -62,10 +64,24 @@ import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
+/* COMPLETEMENT REFACTORE PAR JSS : REPRENDRE INTEGRALEMENT lors de la migration en 3.3 */
+
 public class StopDynamicPageCommand extends DynamicCommand {
 
 	private static final CommandInfo info = new ActionCommandInfo(false);
 	protected static final Log logger = LogFactory.getLog(StopDynamicPageCommand.class);
+	
+    IPortalUrlFactory urlFactory;
+	
+    public IPortalUrlFactory getUrlFactory()throws Exception {
+
+        if (this.urlFactory == null) {
+            this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        }
+
+        return this.urlFactory;
+    }
+
 
 	public CommandInfo getInfo() {
 		return info;
@@ -88,6 +104,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 			Page page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
 			Page redirectPage = null;
+			String redirectUrl = null;
 
 			if (page == null) {
 				// The session can have expired, no actions
@@ -96,11 +113,41 @@ public class StopDynamicPageCommand extends DynamicCommand {
 			} else {
 			    
 
-                String domain = TabsCustomizerInterceptor.getInheritedPageDomain( page);
-            
-			    
+                String domainDeleted = TabsCustomizerInterceptor.getInheritedPageDomain( page);
+ 		    
 
 				PortalObject parent = page.getParent();
+				
+				
+                /* Get current page before it is deleted */
+                
+                Page currentPage = null;   
+                 
+                PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
+                        ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+                if( currentPageId != null)  {
+                    currentPage  = (Page) getControllerContext()
+                            .getController()
+                            .getPortalObjectContainer()
+                            .getObject(
+                                    currentPageId);
+                }
+                Page topCurrentPage = currentPage;
+                
+                if( currentPage.getParent() instanceof Portal)
+                    topCurrentPage = currentPage;
+                else
+                    topCurrentPage = (Page) currentPage.getParent();
+                
+                Page topDeletedPage = null;
+                if( page.getParent() instanceof Portal)
+                    topDeletedPage = page;
+                else
+                    topDeletedPage = (Page) page.getParent();
+                
+                
+				
+				
 
 				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 						"osivia:service=DynamicPortalObjectContainer");
@@ -109,13 +156,15 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				
 				
                 // Remove other pages from same domain 
-                if( domain != null){
+                if( domainDeleted != null){
+                    
+                
                     List<String> domainPageIDs = new ArrayList<String>();
                     
                     Collection<PortalObject> sisters = parent.getChildren(PortalObject.PAGE_MASK);
                     for (PortalObject sister: sisters){
                         String sisterDomain = TabsCustomizerInterceptor.getInheritedPageDomain( (Page) sister);
-                        if( domain.equals(sisterDomain))
+                        if( domainDeleted.equals(sisterDomain))
                             domainPageIDs.add(sister.getId().toString( PortalObjectPath.SAFEST_FORMAT));
                     }
                     
@@ -123,143 +172,101 @@ public class StopDynamicPageCommand extends DynamicCommand {
                         dynamicCOntainer.removeDynamicPage(domainPageID);                       
                     }
                 }
-    				
-
-				PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
-						ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
-				
-				
-				
-				/* On regarde si la page appelante est mémorisée */
-				
-				String closePagePath = page.getProperty("osivia.dynamic.close_page_path");
+                
 
 				
-				if( closePagePath != null)	{
-					
-					ViewPageCommand pageCmd = new ViewPageCommand(PortalObjectId.parse(closePagePath, PortalObjectPath.CANONICAL_FORMAT));
-					
-					PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
-					
-					// Impact sur les caches du bandeau
-					ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
-					cacheService.incrementHeaderCount();
-
-					//TODO : ajouter last pagemarker de la page
-					
-					return new RedirectionResponse(url.toString());
+				
+				
+				/* Check if current page deleted */
+				
+                boolean currentPageDeleted = false;
+				
+				if( domainDeleted != null)  {
+				    if( currentPage != null)    {
+				        String curDomain = TabsCustomizerInterceptor.getInheritedPageDomain( currentPage);
+				        if( domainDeleted.equals(curDomain))
+				            currentPageDeleted = true;
+				    }
+				}   else    {
+				    if( currentPage != null)    {
+                         currentPageDeleted = topDeletedPage.getId().equals(topCurrentPage.getId() );
+				    }
 				}
+		
 
 				
-				/* Sinon, on prend le dernier onglet */
+				/* Compute the url */
 				
-                if( domain != null) {
-                    // une page de domaine a été effacée
-
-                    UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
+				if( ! currentPageDeleted){
+				    redirectPage = currentPage;
+				}   else    {
+				
+				    UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
                             ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
+				    
+                    // On cherche l'item courant
+                    int indiceCurrentPage = -1;
+                    for (int i = 0; i < tabbedNavUserPortal.getUserPages().size(); i++) {
+                        if(  ( domainDeleted != null && (  tabbedNavUserPortal.getUserPages().get(i).getId().equals(domainDeleted)))
+                                ||
+                                (tabbedNavUserPortal.getUserPages().get(i).getId().equals(poid))
+                                )   {
+                            indiceCurrentPage = i;
+                            break;
+                        }
+                    }
+                            
+                    
 
-                    if (tabbedNavUserPortal != null) {
+                    if (indiceCurrentPage != -1) {
+                        
+                        // Si c'est le dernier item, on prend le précédent
+                        // sinon le suivant
 
-                        // On cherche l'item courant
-                        int indiceCurrentPage = -1;
-                        for (int i = 0; i < tabbedNavUserPortal.getUserPages().size(); i++)
-                            if (tabbedNavUserPortal.getUserPages().get(i).getId().equals(poid)) {
-                                indiceCurrentPage = i;
-                            }
-
-                        if (indiceCurrentPage != -1) {
-
-                           int redirectPageIndice = indiceCurrentPage - 1;
-
+                        if (indiceCurrentPage == tabbedNavUserPortal.getUserPages().size() - 1)
+                            indiceCurrentPage = indiceCurrentPage - 1;
+                        
+                        
+                        Object redirectID = tabbedNavUserPortal.getUserPages().get(indiceCurrentPage).getId();
+                        if( redirectID instanceof PortalObjectId) {
                             redirectPage = (Page) getControllerContext()
                                     .getController()
                                     .getPortalObjectContainer()
-                                    .getObject(
-                                            (PortalObjectId) tabbedNavUserPortal.getUserPages().get(redirectPageIndice)
-                                                    .getId());
+                                    .getObject((PortalObjectId) redirectID);
+                            
+                            
+                        }   else    {
+                            // Domaine
+                            redirectUrl = getUrlFactory().getCMSUrl(new PortalControllerContext(getControllerContext()), null, "/" + (String) redirectID + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
+                                    null, null, null);
                         }
-                    }
-                    
-                    
-                } else
-                
-                
-                if( currentPageId.toString(PortalObjectPath.CANONICAL_FORMAT).contains(poid.toString(PortalObjectPath.CANONICAL_FORMAT)))   {
-                    
-
-
-					// La page courante est effacée
-					// Redirection vers l'item précédent ou suivant dans le menu
-
-					UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
-							ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
-
-					if (tabbedNavUserPortal != null) {
-
-						// On cherche l'item courant
-						int indiceCurrentPage = -1;
-						for (int i = 0; i < tabbedNavUserPortal.getUserPages().size(); i++)
-							if (tabbedNavUserPortal.getUserPages().get(i).getId().equals(poid)) {
-								indiceCurrentPage = i;
-							}
-
-						if (indiceCurrentPage != -1) {
-
-							// Si c'est le dernier item, on prend le précédent
-							// sinon le suivant
-							int redirectPageIndice = 0;
-							if (indiceCurrentPage == tabbedNavUserPortal.getUserPages().size() - 1)
-								redirectPageIndice = indiceCurrentPage - 1;
-							else
-								redirectPageIndice = indiceCurrentPage + 1;
-
-							redirectPage = (Page) getControllerContext()
-									.getController()
-									.getPortalObjectContainer()
-									.getObject(
-											(PortalObjectId) tabbedNavUserPortal.getUserPages().get(redirectPageIndice)
-													.getId());
-						}
-					}
-
-				} else {
-					// On affiche la page courante
-					redirectPage = (Page) getControllerContext().getController().getPortalObjectContainer()
-							.getObject(currentPageId);
-
-				}
-
-				// Par défaut Redirection vers le parent, ou -si pas de parent-
-				// vers la page par défaut du portail
-
-				if (redirectPage == null) {
-					if (parent instanceof Page)
-						redirectPage = (Page) parent;
-					else if (parent instanceof Portal)
-						redirectPage = (Page) ((Portal) parent).getDefaultPage();
-				}
+                      }
+				}	
 			}
+			
 
 			// Maj du breadcrumb
 			getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
 
 	         // rafaichir la bandeau
             getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1"); 
+            
+            
 
-			
+            
+            if( redirectUrl == null)    {
+                if( redirectPage == null)
+                    redirectPage = (Page) ((Portal) page.getParent()).getDefaultPage();
 
-			if( redirectPage instanceof CMSTemplatePage)	{
-				redirectPage = (Page) redirectPage.getParent();
-			}
-			
-			ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
-			PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+                if( redirectPage != null)   {
+                    ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
+                    PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+                    redirectUrl = url.toString();
+                }
 
+                    
+            }
 
-
-			String redirectUrl = url.toString()	+ "?init-state=true";
-			
 			
 			return new RedirectionResponse(redirectUrl);
 
