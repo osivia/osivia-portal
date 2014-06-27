@@ -84,6 +84,18 @@ public class MenubarItem {
     }
 
 
+    @Override
+    public MenubarItem clone()  {
+        MenubarItem item = new MenubarItem(id, title, ORDER_PORTLET_GENERIC, url, onClickEvent, className, target);
+        item.setAssociatedHtml(associatedHtml);  
+        item.setStateItem(stateItem);       
+        item.setDropdownItem(stateItem);     
+        item.setGlyphicon(glyphicon);
+        
+        return item;
+    }
+
+
     /**
      * {@inheritDoc}
      */
