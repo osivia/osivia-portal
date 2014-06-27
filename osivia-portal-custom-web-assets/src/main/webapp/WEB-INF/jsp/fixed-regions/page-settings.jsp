@@ -227,14 +227,16 @@ $JQry(document).ready(function($) {
                         <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">
                             <c:set var="defaultLayoutSelected" value="selected" />
                         </c:if> 
-                        <option ${defaultLayoutSelected}><is:getProperty key="PAGE_DEFAULT_LAYOUT" /></option>
+                        <option value="" ${defaultLayoutSelected}><is:getProperty key="PAGE_DEFAULT_LAYOUT" /></option>
                     
                         <!-- Layouts list -->
                         <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
                             <c:if test="${requestScope['osivia.toolbarSettings.currentLayout'] eq layout.layoutInfo.name}">
                                 <c:set var="layoutSelected" value="selected" />
-                            </c:if>                                                    
-                            <option ${layoutSelected}>${layout.layoutInfo.name}</option>
+                            </c:if>
+                            
+                            <option value="${layout.layoutInfo.name}" ${layoutSelected}>${layout.layoutInfo.name}</option>
+                            
                             <c:remove var="layoutSelected" />
                         </c:forEach>
                     </select>
@@ -250,14 +252,16 @@ $JQry(document).ready(function($) {
                         <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">
                             <c:set var="defaultThemeSelected" value="selected" />
                         </c:if> 
-                        <option ${defaultThemeSelected}><is:getProperty key="PAGE_DEFAULT_THEME" /></option>
+                        <option value="" ${defaultThemeSelected}><is:getProperty key="PAGE_DEFAULT_THEME" /></option>
                     
                         <!-- Themes list -->
                         <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
                             <c:if test="${requestScope['osivia.toolbarSettings.currentTheme'] eq theme.themeInfo.name}">
                                 <c:set var="themeSelected" value="selected" />
-                            </c:if>                                                    
-                            <option ${themeSelected}>${theme.themeInfo.name}</option>
+                            </c:if>
+                            
+                            <option value="${theme.themeInfo.name}" ${themeSelected}>${theme.themeInfo.name}</option>
+                            
                             <c:remove var="themeSelected" />
                         </c:forEach>
                     </select>
