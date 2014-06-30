@@ -125,6 +125,9 @@ public final class Constants {
     /** Administration HTML content attribute name. */
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
 
+    /** User's profile */
+    public static final String ATTR_TOOLBAR_MY_PROFILE = "osivia.toolbar.myprofile";
+
 
     // SEO
 
@@ -171,6 +174,7 @@ public final class Constants {
     public static final String WINDOW_PROP_VERSION = "osivia.cms.displayLiveVersion";
     /** The scope of the request. */
     public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
+
 
 
     /**

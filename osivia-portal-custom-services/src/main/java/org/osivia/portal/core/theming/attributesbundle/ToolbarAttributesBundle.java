@@ -226,6 +226,28 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             attributes.put(Constants.ATTR_TOOLBAR_MY_SPACE_URL, mySpacePortalUrl.toString());
         }
 
+        
+        // My profile
+        String myProfileUrl = null;
+        if (person != null) {
+            // View profile
+            try {
+                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                PortalObjectId portalId = page.getPortal().getId();
+
+                Map<String, String> properties = new HashMap<String, String>();
+                properties.put("osivia.title", person.getDisplayName());
+
+                Map<String, String> parameters = new HashMap<String, String>();
+
+                myProfileUrl = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "userprofile",
+                        "/default/templates/userprofile", properties, parameters);
+            } catch (PortalException e) {
+                // Do nothing
+            }
+        }
+        attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
+
         // Refresh page
         RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
         PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
@@ -241,7 +263,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
 
         // Userbar content
-        String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), signOutPortalUrl.toString());
+        String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), myProfileUrl, signOutPortalUrl.toString());
         attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
     }
 
@@ -957,7 +979,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @return HTML data
      * @throws Exception
      */
-    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, DirectoryPerson person, String mySpaceURL,
+    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, DirectoryPerson person, String mySpaceURL, String myProfileUrl,
             String signOutURL) {
         // Current locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
@@ -1023,25 +1045,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             
             if (person != null) {
                 // View profile
-                try {
-                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-                    PortalObjectId portalId = page.getPortal().getId();
 
-                    Map<String, String> properties = new HashMap<String, String>();
-                    properties.put("osivia.title", person.getDisplayName());
-
-                    Map<String, String> parameters = new HashMap<String, String>();
-
-                    String viewProfileURL = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "userprofile",
-                            "/default/templates/userprofile", properties, parameters);
-
-                    Element viewProfile = DOM4JUtils.generateLinkElement(viewProfileURL, null, null, null,
+                Element viewProfile = DOM4JUtils.generateLinkElement(myProfileUrl, null, null, null,
                             this.internationalizationService.getString(InternationalizationConstants.KEY_MY_PROFILE, locale), "halflings user",
                             AccessibilityRoles.MENU_ITEM);
                     this.addSubMenuElement(userbarMenuUl, viewProfile, null, null);
-                } catch (PortalException e) {
-                    // Do nothing
-                }
+
             }
 
 
