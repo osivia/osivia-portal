@@ -1,6 +1,7 @@
 @media screen and (max-width: 767px) {
 	header, footer {
 	    visibility: hidden;
+	    height: 0;
 	}
 }
 
