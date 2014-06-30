@@ -251,6 +251,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 }
 
                 /* v 1.0.14 : affichage d'une barre de menu */
+                
+                if(!Boolean.TRUE.equals(attributes.get("osivia.menubar.hide"))){
 
                 if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
                     List<MenubarItem> menubarItems = (List<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
@@ -273,6 +275,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             }
                         }
 
+                        
+                        
                         if ("1".equals(printPortlet)) {
                             // Appel module custom PRINT
                             Map<String, Object> customAttrMap = new HashMap<String, Object>();
@@ -313,6 +317,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                         }
                     }
                 }
+            }
 
                 if (attributes.get("osivia.asyncReloading.ajaxId") != null) {
                     Map<String, String[]> newNS = new HashMap<String, String[]>();
