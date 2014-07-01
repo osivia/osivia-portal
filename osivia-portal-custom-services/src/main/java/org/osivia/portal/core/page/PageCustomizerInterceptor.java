@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -823,10 +824,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             
             
      
-         
-            
-            
-        }
+            // Parse cookies for accessibility
+            HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+            Cookie[] cookies = request.getCookies();
+            if( cookies != null)    {
+                for(Cookie cookie: cookies)     {
+                    if("rendererMode".equals(cookie.getName()))     {
+                        if( "accessibility".equals(cookie.getValue()))   {
+                            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.accessibility", "1");
+                       }
+                    break;
+                    }
+                }        
+                }
+         }
 
 
         // v2.1 Entering and exiting the admin popup mode
@@ -1232,7 +1243,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 
                 
             }
-
+            
+            if ("1".equals(cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.accessibility"))) {
+                properties.setWindowProperty(windowId, "osivia.accessibility", "1");               
+            }
+           
 
             properties.setWindowProperty(windowId, "osivia.ajaxLink", rwc.getWindow().getDeclaredProperty("osivia.ajaxLink"));
 

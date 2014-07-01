@@ -205,8 +205,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Portlet container rendering
+        boolean accessibilityMode = "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.accessibility"));
+        
         String portletsRendering = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING);
-        if (InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
+        if (accessibilityMode || InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
             // Div rendering
 
             // Header
