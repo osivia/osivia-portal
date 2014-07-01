@@ -1088,6 +1088,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
             // Select input
             Element select = DOM4JUtils.generateElement(HTMLConstants.SELECT, "form-control", null);
+            DOM4JUtils.addAttribute(select, HTMLConstants.NAME, "conditionalScope");
             inputContainer.add(select);
 
             // All profiles option
