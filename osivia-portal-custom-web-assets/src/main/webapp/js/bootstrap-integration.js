@@ -72,6 +72,6 @@ $JQry(window).on("swipeleft", function(event) {
 
 // Tooltips initialization
 $JQry(document).ready(function($) {
-	$("[data-toggle=tooltip]").tooltip();
+	$("[data-toggle=tooltip]").tooltip({container: 'body'});
 });
 
