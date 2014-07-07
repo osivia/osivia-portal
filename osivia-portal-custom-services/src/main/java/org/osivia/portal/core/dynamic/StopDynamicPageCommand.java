@@ -261,7 +261,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 if( redirectPage != null)   {
                     ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
                     PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
-                    redirectUrl = url.toString();
+                    redirectUrl = url.toString() + "?init-state=true";
                 }
 
                     
