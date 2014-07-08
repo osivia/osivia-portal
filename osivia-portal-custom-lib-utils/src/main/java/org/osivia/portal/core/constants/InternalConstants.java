@@ -217,6 +217,13 @@ public final class InternalConstants {
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
 
 
+    // Window properties
+    /** Locale language window property name. */
+    public static final String WINDOW_PROPERTY_LOCALE_LANGUAGE = "osivia.locale.language";
+    /** Locale country window property name. */
+    public static final String WINDOW_PROPERTY_LOCALE_COUNTRY = "osivia.locale.country";
+
+
     /* Web URLs */
     public static final String PORTAL_URL_POLICY_WEB = "web";
     public static final String PORTAL_PROP_NAME_URL_POLICY = "osivia.urlPolicy";

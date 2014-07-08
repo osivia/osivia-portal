@@ -20,6 +20,7 @@
             <description>Property key</description>
             <name>key</name>
             <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         
         <attribute>

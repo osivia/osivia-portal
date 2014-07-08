@@ -29,9 +29,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -40,22 +42,32 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.DecorationRenderer;
 import org.jboss.portal.theme.render.renderer.DecorationRendererContext;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
  * Implementation of a decoration renderer, based on div tags.
- *
+ * 
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @version $LastChangedRevision: 12912 $, $LastChangedDate: 2009-02-28 11:37:59 -0500 (Sat, 28 Feb 2009) $
- * @see org.jboss.portal.theme.render.renderer.DecorationRenderer
+ * @see AbstractObjectRenderer
+ * @see DecorationRenderer
  */
 public class DivDecorationRenderer extends AbstractObjectRenderer implements DecorationRenderer {
+
+    /** Internationalization service. */
+    private final IInternationalizationService internationalizationService;
+
 
     /**
      * Default constructor.
      */
     public DivDecorationRenderer() {
         super();
+
+        this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
     }
 
 
@@ -68,6 +80,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         PageProperties properties = PageProperties.getProperties();
         // Current window identifier
         String currentWindowId = properties.getCurrentWindowId();
+        // Current locale
+        Locale locale = getLocale(properties, currentWindowId);
 
         // Render title
         this.renderTitle(properties, markup, drc);
@@ -76,8 +90,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         markup.print("<div class='btn-group btn-group-xs'>");
 
         if ("1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"))) {
-            renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY);
-            renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY);
+            renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
+            renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
         }
 
         String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
@@ -89,6 +103,30 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
         markup.print("</div>");
         markup.print("</div>");
+    }
+
+
+    /**
+     * Get current locale
+     * 
+     * @param properties page properties
+     * @param currentWindowId current window identifier
+     * @return current locale
+     */
+    private Locale getLocale(PageProperties properties, String currentWindowId) {
+        Locale locale;
+        String language = properties.getWindowProperty(currentWindowId, InternalConstants.WINDOW_PROPERTY_LOCALE_LANGUAGE);
+        if (language != null) {
+            String country = properties.getWindowProperty(currentWindowId, InternalConstants.WINDOW_PROPERTY_LOCALE_COUNTRY);
+            if (country != null) {
+                locale = new Locale(language, country);
+            } else {
+                locale = new Locale(language);
+            }
+        } else {
+            locale = Locale.getDefault();
+        }
+        return locale;
     }
 
 
@@ -135,12 +173,13 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
     /**
      * Render triggerable actions.
-     *
+     * 
      * @param ctx renderer context
      * @param drc decoration renderer context
      * @param selector selector
+     * @param locale current locale
      */
-    private static void renderTriggerableActions(RendererContext ctx, DecorationRendererContext drc, String selector) {
+    private void renderTriggerableActions(RendererContext ctx, DecorationRendererContext drc, String selector, Locale locale) {
         Collection<?> modesOrStates = drc.getTriggerableActions(selector);
         if (modesOrStates == null) {
             return;
@@ -158,6 +197,9 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             ActionRendererContext action = (ActionRendererContext) name;
             String actionName = action.getName();
             if (action.isEnabled() && !"admin".equals(actionName) && !"minimized".equals(actionName)) {
+                // Title
+                String title = this.internationalizationService.getString(StringUtils.upperCase(actionName), locale);
+                
                 // Glyphicon
                 String glyphicon = "asterisk";
                 if ("maximized".equals(actionName)) {
@@ -170,7 +212,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
                 markup.print("<a href='");
                 markup.print(action.getURL());
                 markup.print("' class='btn btn-default' title='");
-                markup.print(actionName);
+                markup.print(title);
                 markup.print("' data-toggle='tooltip' data-placement='bottom'><span class='glyphicons ");
                 markup.print(glyphicon);
                 markup.print("'></span></a>");

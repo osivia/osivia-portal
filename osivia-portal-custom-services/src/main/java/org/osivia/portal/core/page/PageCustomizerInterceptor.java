@@ -337,7 +337,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
@@ -1264,6 +1263,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
 
             }
+
+
+            // Set current locale in window properties
+            Locale locale = controllerCtx.getServerInvocation().getServerContext().getClientRequest().getLocale();
+            properties.setWindowProperty(windowId, InternalConstants.WINDOW_PROPERTY_LOCALE_LANGUAGE, locale.getLanguage());
+            properties.setWindowProperty(windowId, InternalConstants.WINDOW_PROPERTY_LOCALE_COUNTRY, locale.getCountry());
 
 
             /* Ajout script callback (fermeture par la croix des fancybox) */
