@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.osivia.portal.core.renderers;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,12 +35,14 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -121,24 +124,43 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // in cms mode, create a new fragment on the top of this region
         if (this.showCmsTools(rendererContext, irrc)) {
-            markup.print("<div class=\"cms-commands\">");
+            // Add fragment            
+            String addFragmentURL = rendererContext.getProperty("osivia.cmsCreateUrl");
+            StringBuilder addFragmentOnClick = new StringBuilder();
+            addFragmentOnClick.append("callbackUrl='");
+            addFragmentOnClick.append(rendererContext.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
+            addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
+            addFragmentOnClick.append("');");
+            String addFragmentTitle = this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale);
+            
+            Element addFragment = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh",
+                    addFragmentTitle,
+                    "halflings plus");
 
-            markup.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsCreateCallBackURL")
-                    + "';setCallbackFromEcmParams('','" + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\""
-                    + rendererContext.getProperty("osivia.cmsCreateUrl") + "\">" + this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
-
-
-            markup.println("</div>");
-
+            // Empty region indicator
+            Element emptyRegionIndicator = null;
             if (rrc.getWindows().size() == 1) {
                 WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
                 if (wrc.getId().contains("_PIA_EMPTY")) {
-
-                    markup.println("<div id=\"emptyRegion_" + rrc.getId() + "\" class=\"fragmentPreview\">"
-                            + this.internationalizationService.getString("CMS_EMPTY_REGION", locale) + "</div>");
-
+                    String emptyRegionIndicatorTitle = this.internationalizationService.getString("CMS_EMPTY_REGION", locale);
+                    emptyRegionIndicator = DOM4JUtils.generateElement(HTMLConstants.P, "text-muted", emptyRegionIndicatorTitle, "transfer", null);
+                    DOM4JUtils.addAttribute(emptyRegionIndicator, HTMLConstants.ID, "emptyRegion_" + rrc.getId());
                 }
             }
+
+            // Write HTML
+            HTMLWriter htmlWriter = new HTMLWriter(markup);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(addFragment);
+                if (emptyRegionIndicator != null) {
+                    htmlWriter.write(emptyRegionIndicator);
+                }
+            } catch (IOException e) {
+                // Do nothing
+            }
+            
 
             // Begin of DIV for Drag n drop
             // each cms region is a drag n drop zone

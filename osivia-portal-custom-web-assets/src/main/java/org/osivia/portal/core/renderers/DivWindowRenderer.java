@@ -22,6 +22,7 @@
  ******************************************************************************/
 package org.osivia.portal.core.renderers;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -29,10 +30,12 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
@@ -40,11 +43,12 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRenderer;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
@@ -115,56 +119,91 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         String windowsSettingMode = wrc.getProperty(InternalConstants.ATTR_WINDOWS_SETTING_MODE);
         boolean wizard = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowsSettingMode);
 
-        out.print("<div ");
-        if (wrc.getProperty("osivia.windowId") != null) {
+        // Window identifier
+        String windowId = wrc.getProperty("osivia.windowId");
 
-            out.print("id=\"" + wrc.getProperty("osivia.windowId") + "\" ");
+
+        // Styles
+        String styles = properties.getWindowProperty(wrc.getId(), "osivia.style");
+        if (styles != null) {
+            styles = styles.replaceAll(",", " ");
+        } else {
+            styles = StringUtils.EMPTY;
+        }
+
+
+        // Window root element
+        out.print("<div");
+        if (windowId != null) {
+            out.print(" id='");
+            out.print(windowId);
+            out.print("'");
         }
         if (!"1".equals(ajaxLink) || wizard) {
-            out.print("class=\"no-ajax-link\" ");
-
+            out.print(" class='no-ajax-link'");
         }
-        out.print("/> ");
+        out.print(">");
 
-
-        String style = properties.getWindowProperty(wrc.getId(), "osivia.style");
-
-        if (style != null) {
-            style = style.replaceAll(",", " ");
-        } else {
-            style = "";
-        }
-
-        String cssFragment = "";
-        if (this.showCmsTools(wrc)) {
-            cssFragment = "fragmentPreview";
-        }
 
         // Dyna window content
-        out.println("<div class=\" dyna-window-content " + cssFragment + "\" >");
+        out.print("<div class='dyna-window-content");
+        if (this.showCmsTools(wrc)) {
+            out.print(" well well-sm");
+        }
+        out.print("'>");
+
 
         // Edit / remove fragment actions
         if (this.showCmsTools(wrc)) {
-
-            Element divFancyBoxDelete;
+            // Delete confirmation fancybox
+            Element deleteConfirmation;
             try {
-                divFancyBoxDelete = this.generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
+                deleteConfirmation = this.generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
             } catch (UnsupportedEncodingException e) {
                 throw new RenderException(e);
             }
 
-            out.println(divFancyBoxDelete.asXML());
 
-            out.println("<div class=\"cms-commands\">");
+            // CMS commands toolbar
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
 
-            out.print("<a class=\"fancyframe_refresh cmd edit\" onClick=\"callbackUrl='" + rendererContext.getProperty("osivia.cmsEditCallbackUrl")
-                    + "';callBackId='" + rendererContext.getProperty("osivia.cmsEditCallbackId") + "';setCallbackFromEcmParams('','"
-                    + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\"" + wrc.getProperty("osivia.cmsEditUrl") + "\">"
-                    + this.internationalizationService.getString("CMS_EDIT_FRAGMENT", locale) + "</a> ");
-            out.print("<a href=\"#delete_" + wrc.getProperty("osivia.windowId") + "\" class=\"cmd delete no-ajax-link fancybox_inline\">"
-                    + this.internationalizationService.getString("CMS_DELETE_FRAGMENT", locale) + "</a> ");
+            // Buttons group
+            Element buttonsGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
+            toolbar.add(buttonsGroup);
 
-            out.print("</div>");
+            // Edition button
+            String editionURL = wrc.getProperty("osivia.cmsEditUrl");
+            StringBuilder editionOnClick = new StringBuilder();
+            editionOnClick.append("callbackUrl='");
+            editionOnClick.append(rendererContext.getProperty("osivia.cmsEditCallbackUrl"));
+            editionOnClick.append("'; callBackId='");
+            editionOnClick.append(rendererContext.getProperty("osivia.cmsEditCallbackId"));
+            editionOnClick.append("'; setCallbackFromEcmParams('', '");
+            editionOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
+            editionOnClick.append("');");
+            String editionTitle = this.internationalizationService.getString("CMS_EDIT_FRAGMENT", locale);
+            Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-default fancyframe_refresh", null,
+                    "halflings pencil");
+            DOM4JUtils.addTooltip(edition, editionTitle);
+            buttonsGroup.add(edition);
+            
+            // Delete button
+            String deleteURL = "#delete_" + windowId;
+            String deleteTitle = this.internationalizationService.getString("CMS_DELETE_FRAGMENT", locale);
+            Element delete = DOM4JUtils.generateLinkElement(deleteURL, null, null, "btn btn-default no-ajax-link fancybox_inline", null, "halflings remove");
+            DOM4JUtils.addTooltip(delete, deleteTitle);
+            buttonsGroup.add(delete);
+
+
+            // Write HTML
+            HTMLWriter htmlWriter = new HTMLWriter(out);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(deleteConfirmation);
+                htmlWriter.write(toolbar);
+            } catch (IOException e) {
+                // Do nothing
+            }
         }
 
 
@@ -185,9 +224,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Portlet container
         if (bootstrapPanelStyle) {
-            out.print("<div class='panel panel-default portlet-container " + style + "'>");
+            out.print("<div class='panel panel-default portlet-container " + styles + "'>");
         } else {
-            out.print("<div class='portlet-container " + style + "'>");
+            out.print("<div class='portlet-container " + styles + "'>");
         }
 
         // Portlet container rendering
@@ -269,23 +308,30 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // in cms mode, create a new fragment below the current window
         if (this.showCmsTools(wrc)) {
+            // Add fragment
+            String addFragmentURL = wrc.getProperty("osivia.cmsCreateUrl");
+            StringBuilder addFragmentOnClick = new StringBuilder();
+            addFragmentOnClick.append("callbackUrl='");
+            addFragmentOnClick.append(wrc.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
+            addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
+            addFragmentOnClick.append("');");
+            String addFragmentTitle = this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale);
+            Element addFragment = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh",
+                    addFragmentTitle, "halflings plus");
 
-
-            out.print("<div class=\"cms-commands cms-region-commands\">");
-
-            out.print("<a class=\"fancyframe_refresh cmd add\" onClick=\"callbackUrl='" + wrc.getProperty("osivia.cmsCreateCallBackURL")
-                    + "';setCallbackFromEcmParams('','" + rendererContext.getProperty("osivia.ecmBaseUrl") + "')\" href=\""
-                    + wrc.getProperty("osivia.cmsCreateUrl") + "\">" + this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale) + "</a>");
-
-            out.println("</div>");
-
+            // Write HTML
+            HTMLWriter htmlWriter = new HTMLWriter(out);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(addFragment);
+            } catch (IOException e) {
+                // Do nothing
+            }
         }
-
 
         // End of DIV for osivia.windowID or no ajax link
         out.print("</div>");
-
-
     }
 
     /**
@@ -451,55 +497,54 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @throws UnsupportedEncodingException
      */
     private Element generateDeleteFancyBox(Locale locale, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
-        String[] split = urlDelete.split("\\?");
-        String action = split[0];
-        String[] args = split[1].split("&");
+        String id = "delete_".concat(fragmentId);
 
-        DOMElement div = new DOMElement(QName.get(HTMLConstants.DIV));
-        div.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CONTAINER);
+        String[] splitURL = urlDelete.split("\\?");
+        String action = splitURL[0];
+        String[] args = splitURL[1].split("&");
 
-        DOMElement innerDiv = new DOMElement(QName.get(HTMLConstants.DIV));
-        innerDiv.addAttribute(QName.get(HTMLConstants.ID), "delete_".concat(fragmentId));
-        div.add(innerDiv);
 
-        Element form = new DOMElement(QName.get(HTMLConstants.FORM));
-        form.addAttribute(QName.get(HTMLConstants.ID), "formDelete_".concat(fragmentId));
-        form.addAttribute(QName.get(HTMLConstants.METHOD), HTMLConstants.FORM_METHOD_GET);
-        form.addAttribute(QName.get(HTMLConstants.ACTION), action);
-        form.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_FORM);
-        innerDiv.add(form);
+        // Root
+        Element root = DOM4JUtils.generateDivElement("hidden");
 
-        Element divMsg = new DOMElement(QName.get(HTMLConstants.DIV));
-        divMsg.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
-        divMsg.setText(this.internationalizationService.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
-        form.add(divMsg);
+        // Container
+        Element container = DOM4JUtils.generateDivElement("container-fluid");
+        DOM4JUtils.addAttribute(container, HTMLConstants.ID, id);
+        root.add(container);
 
-        Element divButton = new DOMElement(QName.get(HTMLConstants.DIV));
-        divButton.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_FANCYBOX_CENTER_CONTENT);
+        // Form
+        Element form = DOM4JUtils.generateElement(HTMLConstants.FORM, "text-center", null, null, AccessibilityRoles.FORM);
+        DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, action);
+        DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_GET);
+        container.add(form);
 
+        // Message
+        Element message = DOM4JUtils.generateElement(HTMLConstants.P, null, this.internationalizationService.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
+        form.add(message);
+
+        // Hidden fields
         for (String arg : args) {
-            Element hiddenArg = new DOMElement(QName.get(HTMLConstants.INPUT));
-            hiddenArg.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_HIDDEN);
-            hiddenArg.addAttribute(QName.get(HTMLConstants.NAME), arg.split("=")[0]);
-            String value = arg.split("=")[1];
-            hiddenArg.addAttribute(QName.get(HTMLConstants.VALUE), URLDecoder.decode(value, "UTF-8"));
-            divButton.add(hiddenArg);
+            String[] argSplit = arg.split("=");
+            Element hidden = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_HIDDEN);
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.NAME, argSplit[0]);
+            DOM4JUtils.addAttribute(hidden, HTMLConstants.VALUE, URLDecoder.decode(argSplit[1], CharEncoding.UTF_8));
+            form.add(hidden);
         }
 
-        Element btnOk = new DOMElement(QName.get(HTMLConstants.INPUT));
-        btnOk.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-        btnOk.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString(InternationalizationConstants.KEY_YES, locale));
-        divButton.add(btnOk);
+        // OK button
+        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning",
+                this.internationalizationService.getString("YES", locale), "halflings warning-sign", null);
+        DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
+        form.add(okButton);
 
-        Element btnQuit = new DOMElement(QName.get(HTMLConstants.INPUT));
-        btnQuit.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_BUTTON);
-        btnQuit.addAttribute(QName.get(HTMLConstants.VALUE), this.internationalizationService.getString(InternationalizationConstants.KEY_NO, locale));
-        btnQuit.addAttribute(QName.get(HTMLConstants.ONCLICK), "closeFancybox()");
-        divButton.add(btnQuit);
+        // Cancel button
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", this.internationalizationService.getString("NO", locale));
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
+        DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
+        form.add(cancelButton);
 
-        form.add(divButton);
-
-        return div;
+        return root;
     }
 
 }

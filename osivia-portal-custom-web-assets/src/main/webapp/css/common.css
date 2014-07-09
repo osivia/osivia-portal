@@ -40,6 +40,7 @@
 }
 
 
+
 /* Toolbar */
 
 #toolbar {
@@ -57,11 +58,11 @@
     margin-left: 5px;
 }
 
-#toolbar .btn {
+#toolbar .navbar-header .btn {
 	margin-right: 5px;
 }
 
-#toolbar .btn.pull-left {
+#toolbar .navbar-header .btn.pull-left {
     margin-left: 5px;
 }
 
@@ -129,15 +130,6 @@
 
 
 
-/* Required fields */
-
-label.required:BEFORE  {
-	color: red;
-    content: "* ";
-}
-
-
-
 /* Portlet */
 
 .portlet-container {
@@ -161,6 +153,15 @@ label.required:BEFORE  {
 	    display: block;
 	    overflow: hidden;
 	}
+}
+
+
+
+/* CMS portlet */
+
+.dyna-window-content.well:HOVER {
+	cursor: move;
+	background-color: #fafafa;
 }
 
 

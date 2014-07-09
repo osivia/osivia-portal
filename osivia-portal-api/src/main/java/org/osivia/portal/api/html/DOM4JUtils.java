@@ -214,4 +214,23 @@ public final class DOM4JUtils {
         }
     }
 
+
+    /**
+     * Add tooltip to element.
+     * 
+     * @param element element
+     * @param title tooltip title
+     */
+    public static void addTooltip(Element element, String title) {
+        if (element == null) {
+            return;
+        }
+
+        if (StringUtils.isNotBlank(title)) {
+            addAttribute(element, HTMLConstants.TITLE, title);
+            addAttribute(element, HTMLConstants.DATA_TOGGLE, "tooltip");
+            addAttribute(element, HTMLConstants.DATA_PLACEMENT, "bottom");
+        }
+    }
+
 }
