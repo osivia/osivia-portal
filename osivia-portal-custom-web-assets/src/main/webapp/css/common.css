@@ -252,7 +252,7 @@
 	}
 	
 	
-	#toolbar .btn.drawer-toggle-btn {
+	#toolbar .navbar-header .btn.drawer-toggle-btn {
 	    position: relative;
 	    max-width: 30%;
 	    overflow: hidden;
@@ -349,8 +349,12 @@
 
 /* Bootstrap multi-level list */
 
-ul.list-group li.list-group-item {
-	padding: 0;
+ul.list-group.multi-level li.list-group-item {
+	padding: 0 0 1px;
+}
+
+ul.list-group.multi-level ul.list-group  li.list-group-item {
+	padding-bottom: 0;
 }
 
 ul.list-group.multi-level li.list-group-item a.list-group-item {
