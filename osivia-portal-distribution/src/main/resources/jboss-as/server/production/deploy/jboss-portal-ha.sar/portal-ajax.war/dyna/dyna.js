@@ -85,7 +85,7 @@ function onAjaxSuccess(t, callerId) {
 function sendData(action, windowId, fromPos, fromRegionId, toPos, toRegionId,
 		refUri) {
 	var options = {
-		requestHeaders : [ "ajax", "true", "bilto", "toto" ],
+		requestHeaders : [ "ajax", "true", "bilto" ],
 		method : "post",
 		postBody : "action=" + action + "&windowId=" + windowId + "&fromPos="
 				+ fromPos + "&fromRegion=" + fromRegionId + "&toPos=" + toPos
