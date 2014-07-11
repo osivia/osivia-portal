@@ -20,6 +20,9 @@
             transform: translateY(-50%);
 }
 
+.hidden-script {
+	display: none;
+}
 
 .avatar {
 	max-height: 20px;
