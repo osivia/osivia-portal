@@ -429,6 +429,8 @@ var currentPageId = '${currentPageId}';
         <!-- Delete page -->
         <div id="page-suppression" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="action" value="deletePage" />
+                <input type="hidden" name="pageId" value="${currentPageId}" />            
                 <div class="form-group">
                     <p class="help-block"><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                     <div class="text-center">

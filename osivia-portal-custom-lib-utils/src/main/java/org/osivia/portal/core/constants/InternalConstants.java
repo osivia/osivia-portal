@@ -123,8 +123,7 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_ROLES = "osivia.toolbarSettings.roles";
     /** Actions for roles. */
     public static final String ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES = "osivia.toolbarSettings.actionsForRoles";
-    /** Delete page command URL. */
-    public static final String ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL = "osivia.toolbarSettings.deletePageCommandURL";
+
     /** CMS scope select. */
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT = "osivia.toolbarSettings.cmsScopeSelect";
     /** CMS display live version. */

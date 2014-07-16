@@ -155,7 +155,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CURRENT_THEME);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_ROLES);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES);
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_SCOPE_SELECT);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
@@ -330,10 +329,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             }
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_ACTIONS_FOR_ROLES, actionsForRoles);
 
-            // Page suppression
-            DeletePageCommand deletePageCommand = new DeletePageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-            String deletePageCommandUrl = controllerContext.renderURL(deletePageCommand, urlContext, URLFormat.newInstance(true, true));
-            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_DELETE_PAGE_COMMAND_URL, deletePageCommandUrl);
 
             // CMS scope select
             String scope = page.getDeclaredProperty(Constants.WINDOW_PROP_SCOPE);
