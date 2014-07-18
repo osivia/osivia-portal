@@ -6,7 +6,8 @@ var callbackUrlFromEcm = "";
 var currentDocumentId = "";
 var live = "";
 var notificationKey = "";
-var ecmBaseUrl ="";
+var ecmBaseUrl = "";
+var liveEditLink = "";
 
 
 /**
@@ -29,11 +30,15 @@ function callback( )	{
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
 			redirectUrl = redirectUrl.replace('_LIVE_', live);
 			redirectUrl = redirectUrl.replace('NO', notificationKey);
+			if(liveEditLink){
+				redirectUrl = callbackUrlFromEcm.replace('_LIVEEDIT_', liveEditLink);
+			}
 			
 			if (redirectUrl) {
 				window.location.replace(redirectUrl);
 			}
 		}
+		
 	} else {
 		// reload full page
 		if (!callbackUrl) {
@@ -53,7 +58,6 @@ function setCallbackParams( id, url) {
 	callbackId = id;
 	callbackUrl = url;
 }
-
 
 /**
  * Specific callback params for ECM conversation
@@ -146,16 +150,18 @@ function receiveMessageAction(message) {
 	
 	if (message.data == 'closeFancyBox') {
 		parent.$JQry.fancybox.close();
-	} else if (message.data.match('currentDocumentId')) {
+	} else if (message.data.match('currentDocumentId=')) {
 		currentDocumentId = message.data.replace('currentDocumentId=','');
-	} else if (message.data.match('live')) {
+	} else if (message.data.match('live=')) {
 		if (message.data.replace('live=', '') === 'true') {
 			live = "fancyLive";
 		} else {
 			live = "fancyProxy";
 		}
-	} else if (message.data.match('notificationKey')) {
+	} else if (message.data.match('notificationKey=')) {
 		notificationKey = message.data.replace('notificationKey=','');
+	} else if(message.data.match('liveEditLink=')){
+		liveEditLink = message.data.replace('liveEditLink=','');
 	}
 }
 
