@@ -7,7 +7,7 @@ var currentDocumentId = "";
 var live = "";
 var notificationKey = "";
 var ecmBaseUrl = "";
-var liveEditLink = "";
+//var liveEditLink = "";
 
 
 /**
@@ -30,9 +30,9 @@ function callback( )	{
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
 			redirectUrl = redirectUrl.replace('_LIVE_', live);
 			redirectUrl = redirectUrl.replace('NO', notificationKey);
-			if(liveEditLink){
-				redirectUrl = callbackUrlFromEcm.replace('_LIVEEDIT_', liveEditLink);
-			}
+//			if(liveEditLink){
+//				redirectUrl = callbackUrlFromEcm.replace('_LIVEEDIT_', liveEditLink);
+//			}
 			
 			if (redirectUrl) {
 				window.location.replace(redirectUrl);
@@ -146,7 +146,7 @@ function closeFancybox() {
  * Switch actions after recieving messages from ECM
  */
 function receiveMessageAction(message) {
-	console.debug("Receive message : " + message.data);
+	console.log("Receive message : " + message.data);
 	
 	if (message.data == 'closeFancyBox') {
 		parent.$JQry.fancybox.close();
@@ -160,9 +160,10 @@ function receiveMessageAction(message) {
 		}
 	} else if (message.data.match('notificationKey=')) {
 		notificationKey = message.data.replace('notificationKey=','');
-	} else if(message.data.match('liveEditLink=')){
-		liveEditLink = message.data.replace('liveEditLink=','');
-	}
+	} 
+//	else if(message.data.match('liveEditLink=')){
+//		liveEditLink = message.data.replace('liveEditLink=','');
+//	}
 }
 
 
