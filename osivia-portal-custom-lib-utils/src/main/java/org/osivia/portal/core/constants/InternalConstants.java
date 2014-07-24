@@ -244,7 +244,7 @@ public final class InternalConstants {
     public static final String TEMPLATES_PATH_NAME = "templates";
 
     /** Proxy preview. */
-    public static final String PROXY_PREVIEW = "preview";
+    public static final String PROXY_PREVIEW = "proxy_preview";
     /** Fancybox proxy indicator callback. */
     public static final String FANCYBOX_PROXY_CALLBACK = "fancyProxy";
     /** Fancybox live indicator callback. */

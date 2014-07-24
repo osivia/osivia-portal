@@ -58,9 +58,12 @@ public class MenubarItem {
     private boolean dropdownItem;
     /** The ajax disabled. */
     private boolean ajaxDisabled;
+    /**  This item is the first. */
+    private boolean firstItem;
 
 
-    /**
+
+	/**
      * Instantiates a new menubar item.
      *
      * @param id the id
@@ -81,9 +84,13 @@ public class MenubarItem {
         this.className = className;
         this.target = target;
         this.ajaxDisabled = false;
+        this.firstItem = false;
     }
 
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
     @Override
     public MenubarItem clone()  {
         MenubarItem item = new MenubarItem(id, title, ORDER_PORTLET_GENERIC, url, onClickEvent, className, target);
@@ -341,4 +348,24 @@ public class MenubarItem {
         this.ajaxDisabled = ajaxDisabled;
     }
 
+    
+    /**
+     * Checks if is first item.
+     *
+     * @return true, if is first item
+     */
+    public boolean isFirstItem() {
+		return firstItem;
+	}
+
+
+	/**
+	 * Sets the first item.
+	 *
+	 * @param firstItem the new first item
+	 */
+	public void setFirstItem(boolean firstItem) {
+		this.firstItem = firstItem;
+	}
+    
 }

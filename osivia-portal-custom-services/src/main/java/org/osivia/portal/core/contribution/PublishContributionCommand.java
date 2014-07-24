@@ -225,7 +225,23 @@ public class PublishContributionCommand extends ControllerCommand {
         String success = itlzService.getString(notificationKey, getControllerContext().getServerInvocation().getRequest().getLocale());
         notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
         
-        ContributionService.setWindowEditionState(getControllerContext(), window.getId(), new EditionState(state, docPath));
+        EditionState editionState = new EditionState(state, docPath);
+        
+         // Restore navigation values   
+        EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), window.getId());
+        if (oldState != null) {
+            if (oldState.getDocPath().equals(docPath)) {
+                editionState.setBackPageMarker(oldState.getBackPageMarker());
+                }
+        }          
+        
+        editionState.setHasBeenModified(true);
+        
+        ContributionService.setWindowEditionState(getControllerContext(), window.getId(), editionState);
+  
+        
+        
+        
         PageProperties.getProperties().setRefreshingPage(true);
         
         return new UpdatePageResponse(window.getPage().getId());

@@ -52,6 +52,9 @@ public interface IPortalUrlFactory {
 
     /** Display context refresh. */
     String DISPLAYCTX_REFRESH = "refreshPageAndNavigation";
+    
+    /** Display context preview (live version for validation purpose). */
+    String DISPLAYCTX_PREVIEW_LIVE_VERSION = "preview";
 
 
     /**
@@ -256,6 +259,16 @@ public interface IPortalUrlFactory {
      * @return the url
      */
     String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException;
+    
+    
+    /**
+     * Get back url
+     * 
+     * @param refresh to refresh previous page
+     * @return back URL
+     */
+    String getBackUrl(PortalControllerContext portalControllerContext, boolean refresh);
+    
 
 
 }

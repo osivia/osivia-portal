@@ -93,14 +93,14 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
             renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
         }
-
+/*
         String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
         if (closeUrl != null) {
             markup.print("<a href='");
             markup.print(closeUrl);
             markup.print("' class='btn btn-default' data-toggle='tooltip' data-placement='bottom' title='close'><span class='glyphicons halflings remove'></span></a>");
         }
-
+*/
         markup.print("</div>");
         markup.print("</div>");
     }

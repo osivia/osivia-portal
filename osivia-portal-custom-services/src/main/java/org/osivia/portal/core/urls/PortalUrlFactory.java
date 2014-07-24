@@ -28,12 +28,14 @@ import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -42,6 +44,7 @@ import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -61,6 +64,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.profils.IProfilManager;
@@ -541,13 +545,83 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getPutDocumentInTrashUrl(PortalControllerContext ctx, String docId, String docPath) {
-        ControllerCommand cmd = new CMSPutDocumentInTrashCommand(docId, docPath);
+    	
+    	String backPageMarker = null;
+    	
+     	
+        Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
+        if (window != null) {
+        	// Deleted doc is equals to CMS doc
+        	// Navigation is managed by portal (not inside a portlet)
+        	// So go back to previous state
+            
+            EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
+
+                // Deleted doc is equals to CMS doc
+                // Navigation is managed by portal (not inside a portlet)
+                // So go back to previous state           
+                if( curState != null && curState.getDocPath().equals(window.getDeclaredProperty(Constants.WINDOW_PROP_URI)))    {
+                    backPageMarker = curState.getBackPageMarker();
+
+            }
+
+        }
+   	
+    	
+        ControllerCommand cmd = new CMSPutDocumentInTrashCommand(docId, docPath, backPageMarker);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
         return portalURL.toString();
     }
 
 
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getBackUrl(PortalControllerContext ctx, boolean refresh) {
+
+        String backPageMarker = null;
+
+        EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
+        
+
+        backPageMarker = curState.getBackPageMarker();
+
+
+        String backURL = null;
+
+        if (backPageMarker != null) {
+            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(ctx);
+
+            PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
+            if (infos != null) {
+                PortalObjectId pageId = infos.getPageId();
+
+                URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+
+                if (refresh) {
+                    RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
+                    backURL = controllerContext.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true));
+                } else {
+                    ViewPageCommand rpc = new ViewPageCommand(pageId);
+                    backURL = controllerContext.renderURL(rpc, urlContext, URLFormat.newInstance(false, true));
+                 }
+
+                backURL = backURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + backPageMarker + "/");
+
+            }
+        }
+
+        return backURL;
+
+    }
+    
+    
+    
+    
+    
     /**
      * {@inheritDoc}
      */

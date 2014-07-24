@@ -44,16 +44,35 @@ public class ContributionService implements IContributionService {
 
     public static final String ATTR_ADDITITIONNAL_WINDOW_STATES = "osivia.windowStates";
     public static final String ADD_STATE_EDITION_KEY = "editionMode";
-
-
+    public static final String STATE_SEPARATOR = ";";
+    public static final String STATE_EMPTY = "-";
+    
     private static String getStringValue(EditionState editionState) {
-        return editionState.getContributionMode() + editionState.getDocPath();
+        StringBuffer s = new StringBuffer(); 
+        
+        s.append( editionState.getContributionMode());
+        s.append( STATE_SEPARATOR);
+        s.append( editionState.getDocPath());
+        s.append( STATE_SEPARATOR);       
+        s.append(  editionState.getBackPageMarker() != null ? editionState.getBackPageMarker() : STATE_EMPTY);
+        s.append( STATE_SEPARATOR);       
+        s.append(Boolean.toString(editionState.isHasBeenModified()));
+        
+        return s.toString();
+            
     }
 
     private static EditionState fromString(String s) {
-        String contributionMode = s.substring(0, 1);
-        String docPath = s.substring(1);
-        return new EditionState(contributionMode, docPath);
+        String[] tokens = s.split(STATE_SEPARATOR);
+        
+        String contributionMode = tokens[ 0];
+        String docPath = tokens[ 1];
+        EditionState editionState =  new EditionState(contributionMode, docPath);
+        if( !STATE_EMPTY.equals( tokens[ 2]))
+            editionState.setBackPageMarker(tokens[ 2]);
+        editionState.setHasBeenModified(Boolean.parseBoolean(tokens[ 3]))    ;   
+        return editionState;
+        
     }
 
     /**

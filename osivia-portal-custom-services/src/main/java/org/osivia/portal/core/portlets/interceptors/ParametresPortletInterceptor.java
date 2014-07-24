@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
+import java.awt.MenuBar;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -297,6 +298,36 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             }
                             menubarItems.add(printItem);
                         }
+                        
+                        /* Add back item */
+                        
+                       
+                        if( window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
+                            
+                            boolean containsBackItem = false;
+                            
+                            // already managed at application level ?
+                            
+                            for(MenubarItem item : menubarItems)    {
+                                if ("BACK".equals(item.getId()))    {
+                                    containsBackItem = true;
+                                    break;
+                                }
+                            }
+                            
+                            if( !containsBackItem)  {
+                                MenubarItem backItem = new MenubarItem("BACK", "Revenir", MenubarItem.ORDER_PORTLET_SPECIFIC_CMS, window.getDeclaredProperty("osivia.dynamic.close_url"),
+                                    null, null, null);
+                                backItem.setGlyphicon("halflings arrow-left");
+                                backItem.setAjaxDisabled(true);
+                                backItem.setFirstItem(true);
+                                menubarItems.add(backItem);
+                            }
+                        }
+                        
+                        
+                        
+                        
 
                         if (menubarItems.size() > 0) {
                             List<MenubarItem> sortedItems = new ArrayList<MenubarItem>(menubarItems);
@@ -409,6 +440,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         // Dropdown menu container
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
 
+        
+        // Menubar left group
+        Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
+        
         // Menubar left group
         Element leftGroup = DOM4JUtils.generateDivElement("btn-group");
 
@@ -440,7 +475,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 dropdownMenu.add(dropdownItemContainer);
 
                 parent = dropdownItemContainer;
-            } else if (item.isStateItem()) {
+            } else if( item.isFirstItem()){
+            	parent = firstGroup;
+            }
+             else if (item.isStateItem()) {
                 parent = leftGroup;
             } else {
                 parent = rightGroup;
@@ -476,6 +514,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             }
         }
 
+        menubar.add(firstGroup);
         if (!emptyDropdownMenu) {
             menubar.add(dropdownContainer);
         }

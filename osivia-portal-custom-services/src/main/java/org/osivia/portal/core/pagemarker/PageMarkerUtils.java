@@ -701,4 +701,22 @@ public class PageMarkerUtils {
         return markerInfo;
     }
 
+    
+    public static PageMarkerInfo  getPageMarkerInfo(ControllerContext controllerContext, String pageMarker)  {
+        
+        PageMarkerInfo markerInfo = null;
+        
+        Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
+        if (markers != null) {
+            try {
+                markerInfo = markers.get(pageMarker);
+            } catch (ClassCastException e) {
+                // Cas d'un redéploiement à chaud
+            }
+        }        
+        
+        return markerInfo;
+    }
+
+    
 }

@@ -65,6 +65,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
@@ -651,7 +652,7 @@ public class CmsCommand extends DynamicCommand {
                 }
 
 
-                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
+                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
                     cmsReadItemContext.setForcedLivePath(this.cmsPath);
                     controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, this.cmsPath);
                 }
@@ -1362,7 +1363,7 @@ public class CmsCommand extends DynamicCommand {
                 }
 
                 
-                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
+                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
                     state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"),
                             new String[] { this.contentPath });
                 }
@@ -1590,19 +1591,62 @@ public class CmsCommand extends DynamicCommand {
 
                 if (contextualizationPage != null) {
                     windowProperties.put("osivia.cms.contextualization", "1");
-                }
+                    
+               }
 
 
                 if (windowProperties.get(Constants.WINDOW_PROP_URI) == null) {
                     windowProperties.put(Constants.WINDOW_PROP_URI, this.cmsPath);
                 }
+                
+                
+                
+                /* Edition state update */
+                
 
-                EditionState editionState = null;
+                EditionState editionState =  null;
                 
                 
-                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
+                PortalObjectId windowID = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString().concat("/")
+                        .concat("CMSPlayerWindow"), PortalObjectPath.CANONICAL_FORMAT));
+                
+                
+                
+                // Default initialization of editionState
+                if( pubInfos.isLiveSpace()){
                     editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
+                }   else    {
+                    if( InternalConstants.PROXY_PREVIEW.equals(this.displayContext)  || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext))
+                        editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
+                    else
+                        editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, this.cmsPath);
                 }
+                    
+                // Restore navigation values   
+                EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), windowID);
+                if (oldState != null) {
+                    if (oldState.getDocPath().equals(pubInfos.getDocumentPath())) {
+                        editionState.setBackPageMarker(oldState.getBackPageMarker());
+                        editionState.setHasBeenModified(oldState.isHasBeenModified());
+                    }
+                }    
+                
+                // Modified indicator
+                boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
+                
+                if (fancyBox) {
+                    editionState.setHasBeenModified(true);
+                }   
+                
+                // page marker initialization ( means an applicative back button)
+                if( ! "breadcrumb".equals(this.displayContext) && ! "menu".equals(displayContext) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
+                    String backCMSPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                    editionState.setBackPageMarker(backCMSPageMarker);
+                }
+                
+                // No automatic back, it's computed at CMS Level
+                if( contextualizationPage != null)
+                    windowProperties.put("osivia.application.close_url", "1");                
                 
                 String ecmActionReturn = getEcmActionReturn();
                 if(StringUtils.isNotBlank(ecmActionReturn)){

@@ -1,21 +1,20 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.dynamic;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+// import org.apache.commons.logging.Log;
+// import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,8 +80,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
     public StartDynamicWindowCommand() {
     }
 
-    public StartDynamicWindowCommand(String pageId, String regionId, String portletInstance, String windowName,
- Map<String, String> props,
+    public StartDynamicWindowCommand(String pageId, String regionId, String portletInstance, String windowName, Map<String, String> props,
             Map<String, String> params, String addTobreadcrumb, EditionState editionState) {
         this.pageId = pageId;
         this.regionId = regionId;
@@ -104,20 +102,14 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
 
-            if( page == null){
+            if (page == null) {
                 // La page dynamique n'existe plus
                 // Redirection vers la page par défaut du portail
                 Portal portal = this.getControllerContext().getController().getPortalObjectContainer().getContext().getDefaultPortal();
                 return new UpdatePageResponse(portal.getDefaultPage().getId());
             }
 
-            IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-                    "osivia:service=DynamicPortalObjectContainer");
-
-
-
-
-
+            IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
 
 
             Map<String, String> properties = new HashMap<String, String>();
@@ -133,83 +125,94 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             // close url : lien vers la page dans son état avant le lancement
 
-
-            PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState( this.getControllerContext());
-
-            if( markerInfo != null)	{
+            boolean computeBackLink = true;
 
 
-                String backUrl = null;
+            // Pour les éléments contextualisés, le revenir est géré dans la couche CMS (CMSCommand)
+            if ("1".equals(properties.get("osivia.application.close_url")))
+                computeBackLink = false;
 
-                if ( "1".equals(this.addTobreadcrumb)) 	{
-
-                    ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
-
-                    PortalURL url = new PortalURLImpl(pageCmd,this.getControllerContext(), null, null);
-
-                    backUrl = url.toString();
-
-                }	else	{
+            // First popup item
+            if ("popup".equals(regionId) && "0".equals(this.addTobreadcrumb))
+                computeBackLink = false;
 
 
-                    /* On détermine si on est en mode contextualisé */
+            if (computeBackLink) {
 
-                    /*
-					String cmsNav[] = null;
+                PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState(this.getControllerContext());
 
-					NavigationalStateContext nsContext = (NavigationalStateContext) context
-					.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-					PageNavigationalState pns = nsContext.getPageNavigationalState( page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-
-					if( pns != null )	{
-						cmsNav = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
-					}
+                if (markerInfo != null) {
 
 
+                    String backUrl = null;
 
-					if( cmsNav != null && cmsNav.length > 0)	{
-						// Si contenu contextualisé, renvoi sur le cms
-						// Pour réinitialiser la page
+                    if ("1".equals(this.addTobreadcrumb)) {
 
-						Map<String, String> pageParams = new HashMap<String, String>();
+                        ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
 
-						IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+                        PortalURL url = new PortalURLImpl(pageCmd, this.getControllerContext(), null, null);
 
-						backUrl = urlFactory.getCMSUrl(new PortalControllerContext(getControllerContext()), page.getId()
-								.toString(PortalObjectPath.CANONICAL_FORMAT), cmsNav[0],  pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null,  null, null,null, null);
+                        backUrl = url.toString();
 
-					}
-					else	{
-                     */
+                    } else {
 
-                    // Mode non contextualisé
 
-                    // Use case : menu > maximized puis a nouvean menu > maximized
-                    //            le close revient sur l'accueil
-                    ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
+                        /* On détermine si on est en mode contextualisé */
 
-                    PortalURL url = new PortalURLImpl(pageCmd,this.getControllerContext(), null, null);
+                        /*
+                         * String cmsNav[] = null;
+                         * 
+                         * NavigationalStateContext nsContext = (NavigationalStateContext) context
+                         * .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                         * 
+                         * PageNavigationalState pns = nsContext.getPageNavigationalState( page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                         * 
+                         * if( pns != null ) {
+                         * cmsNav = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path") );
+                         * }
+                         * 
+                         * 
+                         * 
+                         * if( cmsNav != null && cmsNav.length > 0) {
+                         * // Si contenu contextualisé, renvoi sur le cms
+                         * // Pour réinitialiser la page
+                         * 
+                         * Map<String, String> pageParams = new HashMap<String, String>();
+                         * 
+                         * IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+                         * 
+                         * backUrl = urlFactory.getCMSUrl(new PortalControllerContext(getControllerContext()), page.getId()
+                         * .toString(PortalObjectPath.CANONICAL_FORMAT), cmsNav[0], pageParams, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null,null,
+                         * null);
+                         * 
+                         * }
+                         * else {
+                         */
 
-                    backUrl = url.toString();
-                    backUrl +=  "?unsetMaxMode=true";
-                    //					}
+                        // Mode non contextualisé
+
+                        // Use case : menu > maximized puis a nouvean menu > maximized
+                        // le close revient sur l'accueil
+                        ViewPageCommand pageCmd = new ViewPageCommand(markerInfo.getPageId());
+
+                        PortalURL url = new PortalURLImpl(pageCmd, this.getControllerContext(), null, null);
+
+                        backUrl = url.toString();
+                        backUrl += "?unsetMaxMode=true";
+                        // }
+                    }
+
+                    if (backUrl.indexOf("/pagemarker/") != -1) {
+                        String pageMarker = markerInfo.getPageMarker();
+                        backUrl = backUrl.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/");
+                    }
+                    properties.put("osivia.dynamic.close_url", backUrl);
                 }
 
-                if( backUrl.indexOf("/pagemarker/") != -1)	{
-                    String pageMarker = markerInfo.getPageMarker();
-                    backUrl =  backUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+pageMarker+"/");
-                }
-                properties.put("osivia.dynamic.close_url",backUrl);
             }
 
 
-
-
-
-
-            InstanceDefinition instance = this.getControllerContext().getController().getInstanceContainer()
-                    .getDefinition(this.instanceId);
+            InstanceDefinition instance = this.getControllerContext().getController().getInstanceContainer().getDefinition(this.instanceId);
             if (instance == null) {
                 throw new ControllerException("Instance not defined");
             }
@@ -237,44 +240,35 @@ public class StartDynamicWindowCommand extends DynamicCommand {
              */
 
 
-
             for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
                 Window child = (Window) po;
                 NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, child.getId());
 
-                WindowNavigationalState ws = (WindowNavigationalState) this.getControllerContext().getAttribute(
-                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                WindowNavigationalState ws = (WindowNavigationalState) this.getControllerContext().getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE,
+                        nsKey);
 
                 if (ws != null) {
-                    WindowNavigationalState newNS = new WindowNavigationalState(WindowState.NORMAL, ws.getMode(),
-                            ws.getContentState(), ws.getPublicContentState());
+                    WindowNavigationalState newNS = new WindowNavigationalState(WindowState.NORMAL, ws.getMode(), ws.getContentState(),
+                            ws.getPublicContentState());
                     this.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
                 }
 
             }
 
 
-
-            String controlledPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE,
-                    "controlledPageMarker");
+            String controlledPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
 
 
-
-
-
-            PortalObjectId vindowId = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString()
-                    .concat("/").concat(this.windowName), PortalObjectPath.CANONICAL_FORMAT));
-
+            PortalObjectId vindowId = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString().concat("/").concat(this.windowName),
+                    PortalObjectPath.CANONICAL_FORMAT));
 
 
             /* Création de la nouvelle fenêtre */
             dynamicCOntainer.addDynamicWindow(new DynamicWindowBean(page.getId(), this.windowName, this.instanceId, properties, controlledPageMarker));
 
 
-
-
             // TODO : SESSIONDYNA A reactiver pour synchroniser les sessions
-            //getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.session.refresh."+vindowId, "1");
+            // getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.session.refresh."+vindowId, "1");
 
 
             // Pour forcer le rechargement de la page, on supprime l'ancien
@@ -287,13 +281,13 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             Map<String, String[]> parameters = new HashMap<String, String[]>();
             for (String keyParam : this.params.keySet()) {
-                parameters.put(keyParam, new String[] { this.params.get(keyParam) });
+                parameters.put(keyParam, new String[]{this.params.get(keyParam)});
             }
 
 
             // On force la maximisation
-            WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED,
-                    windowNavState.getMode(), ParametersStateString.create(parameters));
+            WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
+                    ParametersStateString.create(parameters));
 
             this.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
 
@@ -307,8 +301,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
              */
 
             // Suppression du cache
-            this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                    "cached_markup." + vindowId.toString());
+            this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "cached_markup." + vindowId.toString());
 
 
             ContributionService.initWindowEditionStates(this.getControllerContext(), vindowId);
@@ -319,10 +312,9 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             }
 
             // Maj du breadcrumb
-            Breadcrumb breadcrumb = (Breadcrumb) this.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                    "breadcrumb");
+            Breadcrumb breadcrumb = (Breadcrumb) this.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
 
-            if (breadcrumb == null)	{
+            if (breadcrumb == null) {
                 breadcrumb = new Breadcrumb();
             }
 
@@ -340,7 +332,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             }
             BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), vindowId, false);
 
-            if( "navigationPlayer".equals(this.addTobreadcrumb))	{
+            if ("navigationPlayer".equals(this.addTobreadcrumb)) {
                 item.setNavigationPlayer(true);
             }
 

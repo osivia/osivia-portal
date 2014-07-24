@@ -584,12 +584,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     String docId = null;
                     String docPath = null;
+                    String backCMSPageMarker  = null;
 
                     if ((parameterMap.get("docId") != null) && (parameterMap.get("docPath") != null)) {
                         docId = URLDecoder.decode(parameterMap.get("docId")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
+                        if( parameterMap.get("backCMSPageMarker") != null)
+                        	backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
 
-                        return new CMSPutDocumentInTrashCommand(docId, docPath);
+                        return new CMSPutDocumentInTrashCommand(docId, docPath, backCMSPageMarker);
                     }
                 }
 

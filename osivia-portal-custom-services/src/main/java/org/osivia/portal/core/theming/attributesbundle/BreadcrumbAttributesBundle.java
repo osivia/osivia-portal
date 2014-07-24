@@ -268,12 +268,12 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "breadcrumb", null, null, null, null);
 
                         } else {
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), publicationPath, pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "breadcrumb", null, null, null, null);
                         }
 
                         if (cmsItem != null) {

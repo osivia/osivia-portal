@@ -120,8 +120,16 @@ public class ChangeContributionModeCommand extends ControllerCommand {
         cmsCtx.setDisplayLiveVersion("1");
         CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsCtx, docPath);
         
+        EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), window.getId());
+        
+        EditionState newState = new EditionState(newContributionMode, pubInfos.getDocumentPath());
+        if( oldState != null && oldState.getDocPath().equals(pubInfos.getDocumentPath()))   {
+            newState.setBackPageMarker(oldState.getBackPageMarker());
+            newState.setHasBeenModified(oldState.isHasBeenModified());
+        }
+        
    
-        ContributionService.setWindowEditionState(getControllerContext(), poid, new EditionState(newContributionMode, pubInfos.getDocumentPath()));
+        ContributionService.setWindowEditionState(getControllerContext(), poid, newState);
       
         getControllerContext().setAttribute(REQUEST_SCOPE, "osivia.changeContributionMode", "1");
         
