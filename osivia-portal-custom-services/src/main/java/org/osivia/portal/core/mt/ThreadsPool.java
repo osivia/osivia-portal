@@ -31,7 +31,7 @@ public class ThreadsPool {
 	// v.1.0.21 : redimensionnement des pools
     int poolSize = 200;
     
-    int maxPoolSize = 1500;
+    int maxPoolSize = 500;
  
     long keepAliveTime = 30;
  

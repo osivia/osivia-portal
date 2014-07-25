@@ -1646,7 +1646,7 @@ public class CmsCommand extends DynamicCommand {
                 
                 // No automatic back, it's computed at CMS Level
                 if( contextualizationPage != null)
-                    windowProperties.put("osivia.application.close_url", "1");                
+                    windowProperties.put("osivia.dynamic.disable.close", "1");                
                 
                 String ecmActionReturn = getEcmActionReturn();
                 if(StringUtils.isNotBlank(ecmActionReturn)){

@@ -127,17 +127,11 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             boolean computeBackLink = true;
 
-
-            // Pour les éléments contextualisés, le revenir est géré dans la couche CMS (CMSCommand)
-            if ("1".equals(properties.get("osivia.application.close_url")))
-                computeBackLink = false;
-
             // First popup item
-            if ("popup".equals(regionId) && "0".equals(this.addTobreadcrumb))
-                computeBackLink = false;
+            if ("popup".equals(regionId) )
+                properties.put("osivia.dynamic.disable.close", "1");
 
 
-            if (computeBackLink) {
 
                 PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState(this.getControllerContext());
 
@@ -209,7 +203,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                     properties.put("osivia.dynamic.close_url", backUrl);
                 }
 
-            }
+
 
 
             InstanceDefinition instance = this.getControllerContext().getController().getInstanceContainer().getDefinition(this.instanceId);

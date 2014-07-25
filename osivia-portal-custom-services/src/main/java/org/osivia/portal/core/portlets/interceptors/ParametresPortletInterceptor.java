@@ -304,26 +304,29 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                        
                         if( window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
                             
-                            boolean containsBackItem = false;
-                            
-                            // already managed at application level ?
-                            
-                            for(MenubarItem item : menubarItems)    {
-                                if ("BACK".equals(item.getId()))    {
-                                    containsBackItem = true;
-                                    break;
+                                if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
+
+                                    boolean containsBackItem = false;
+
+                                    // already managed at application level ?
+
+                                    for (MenubarItem item : menubarItems) {
+                                        if ("BACK".equals(item.getId())) {
+                                            containsBackItem = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!containsBackItem) {
+                                        MenubarItem backItem = new MenubarItem("BACK", "Revenir", MenubarItem.ORDER_PORTLET_SPECIFIC_CMS,
+                                                window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
+                                        backItem.setGlyphicon("halflings arrow-left");
+                                        backItem.setAjaxDisabled(true);
+                                        backItem.setFirstItem(true);
+                                        menubarItems.add(backItem);
+                                    }
                                 }
                             }
-                            
-                            if( !containsBackItem)  {
-                                MenubarItem backItem = new MenubarItem("BACK", "Revenir", MenubarItem.ORDER_PORTLET_SPECIFIC_CMS, window.getDeclaredProperty("osivia.dynamic.close_url"),
-                                    null, null, null);
-                                backItem.setGlyphicon("halflings arrow-left");
-                                backItem.setAjaxDisabled(true);
-                                backItem.setFirstItem(true);
-                                menubarItems.add(backItem);
-                            }
-                        }
                         
                         
                         
