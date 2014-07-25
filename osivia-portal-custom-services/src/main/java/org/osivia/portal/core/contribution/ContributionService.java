@@ -86,6 +86,24 @@ public class ContributionService implements IContributionService {
         states.clear();
     }
 
+    
+    
+    public static void updateNavigationalState(ControllerContext portalControllerContext, Map<QName, String[]> newState, EditionState state)   {
+        newState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageEditionPath"), new String[]{getStringValue(state)});
+    }
+    
+    public static EditionState getNavigationalState(ControllerContext portalControllerContext, PageNavigationalState pns)   {
+        
+        EditionState editionState = null;
+        
+        String state[] = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageEditionPath"));
+        if ((state != null) && (state.length == 1)) {
+            editionState = fromString(state[0]);
+        }
+        return editionState;
+    }
+    
+    
     /**
      * set the current edition state
      * 
@@ -119,16 +137,12 @@ public class ContributionService implements IContributionService {
                 if ((qNameMap != null) && !qNameMap.isEmpty()) {
 
                     for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
-                        if (!entry.getKey().getLocalPart().equals("osivia.cms.pagePreviewPath"))
+                        if (!entry.getKey().getLocalPart().equals("osivia.cms.pageEditionPath"))
                             newState.put(entry.getKey(), entry.getValue());
                     }
                 }
 
-                // 
-                if (state.getContributionMode().equals(EditionState.CONTRIBUTION_MODE_EDITION)) {
-                    newState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"), new String[]{state.getDocPath()});
-
-                }
+                updateNavigationalState( portalControllerContext, newState, state);
 
 
                 nsContext.setPageNavigationalState(windowID.getPath().getParent().toString(), new PageNavigationalState(newState));
@@ -173,11 +187,11 @@ public class ContributionService implements IContributionService {
     
     
             if ((sNavPath != null) && (sNavPath.length > 0) ) {
-                String cmsPreviewPath[] = null;
+
                 if (pageState != null) {
-                    cmsPreviewPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
-                    if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
-                        EditionState pageEditionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, cmsPreviewPath[0]);
+                    String cmsEditionValue[] = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageEditionPath"));
+                    if ((cmsEditionValue != null) && (cmsEditionValue.length == 1)) {
+                        EditionState pageEditionState = fromString(cmsEditionValue[0]);
                         return pageEditionState;
                     }
                 }

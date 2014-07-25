@@ -54,6 +54,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -476,11 +477,10 @@ public class PageMarkerUtils {
                             ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
                             
                             // Restauration de preview nécessaire pour calcul editableWindows
-                            
-                            String cmsPreviewPath[] = null;
-                            cmsPreviewPath = pns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
-                            if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
-                                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , cmsPreviewPath[0]);
+                            EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
+
+                            if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
+                                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
                             }
                         }
                         

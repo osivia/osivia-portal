@@ -254,7 +254,21 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                Map<String, String[]> params = ((ParametersStateString)navigationalState).getParameters();
                String editionPath[] = params.get(Constants.PORTLET_PARAM_EDITION_PATH);
                if( editionPath != null && editionPath.length > 0){
-                   ContributionService.setWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId(), new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, editionPath[0]));
+                   
+                   EditionState editionState= new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, editionPath[0]);
+                   
+                   // Restore navigation values   
+                   EditionState oldState = ContributionService.getWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
+                   if (oldState != null) {
+                       if (oldState.getDocPath().equals(editionPath[0])) {
+                           editionState.setBackPageMarker(oldState.getBackPageMarker());
+                           editionState.setHasBeenModified(oldState.isHasBeenModified());
+                       }
+                   }   
+                   
+                   
+                   ContributionService.setWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId(), editionState);
+                   
                 }
             }
 

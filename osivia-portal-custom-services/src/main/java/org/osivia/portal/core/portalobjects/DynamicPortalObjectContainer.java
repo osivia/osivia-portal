@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationContext;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.impl.model.portal.ContextImpl;
@@ -58,6 +59,8 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -387,15 +390,11 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 					cmsReadItemContext.setDisplayLiveVersion("0");
 					
-					
-			        String cmsPreviewPath[] = null;
-		            cmsPreviewPath = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"));
-		            if ((cmsPreviewPath != null) && (cmsPreviewPath.length == 1)) {
-		                cmsReadItemContext.setForcedLivePath(cmsPreviewPath[0]);
-		            }
-		            
-		            
 
+                    EditionState state= ContributionService.getNavigationalState(controllerContext, ns);
+                    if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
+                        cmsReadItemContext.setForcedLivePath(state.getDocPath());
+                    }
 
 
 					// SILENT MODE

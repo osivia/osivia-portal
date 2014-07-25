@@ -1288,6 +1288,7 @@ public class CmsCommand extends DynamicCommand {
              * 
              * Préparation des paramètres de la page
              */
+            
 
             if (cmsNav != null) {
 
@@ -1297,7 +1298,7 @@ public class CmsCommand extends DynamicCommand {
                         .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
                 PageNavigationalState previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
-
+ 
                 //
                 Map<QName, String[]> state = new HashMap<QName, String[]>();
 
@@ -1362,11 +1363,10 @@ public class CmsCommand extends DynamicCommand {
                             new String[] { computedPageScope });
                 }
 
+  
+                EditionState editionState = getEditionState(controllerContext, pageIdToDiplay, pubInfos);
+                ContributionService.updateNavigationalState(controllerContext, state, editionState);
                 
-                if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext) || (InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext) && !pubInfos.isLiveSpace())) {
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pagePreviewPath"),
-                            new String[] { this.contentPath });
-                }
                 
                 
                 nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(state));
@@ -1439,6 +1439,14 @@ public class CmsCommand extends DynamicCommand {
 
                 // Réinitialisation des états des fenêtres
                 Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
+                
+                // et des anciens caches 
+                // (si 2 pages P1 et P2 ont des templates différents dans une même page dynamique,
+                // les caches de P1 sont conservés quand va sur P2 et on revient sur P1
+               for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
+                     this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, po.getId().toString());
+                        getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE,   "cached_markup." + po.getId().toString());
+               }
 
                 // Mode normal
                 PageCustomizerInterceptor.unsetMaxMode(windows, controllerContext);
@@ -1603,46 +1611,12 @@ public class CmsCommand extends DynamicCommand {
                 
                 /* Edition state update */
                 
-
-                EditionState editionState =  null;
-                
-                
+               
                 PortalObjectId windowID = new PortalObjectId("", new PortalObjectPath(page.getId().getPath().toString().concat("/")
                         .concat("CMSPlayerWindow"), PortalObjectPath.CANONICAL_FORMAT));
                 
                 
-                
-                // Default initialization of editionState
-                if( pubInfos.isLiveSpace()){
-                    editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
-                }   else    {
-                    if( InternalConstants.PROXY_PREVIEW.equals(this.displayContext)  || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext))
-                        editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
-                    else
-                        editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, this.cmsPath);
-                }
-                    
-                // Restore navigation values   
-                EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), windowID);
-                if (oldState != null) {
-                    if (oldState.getDocPath().equals(pubInfos.getDocumentPath())) {
-                        editionState.setBackPageMarker(oldState.getBackPageMarker());
-                        editionState.setHasBeenModified(oldState.isHasBeenModified());
-                    }
-                }    
-                
-                // Modified indicator
-                boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
-                
-                if (fancyBox) {
-                    editionState.setHasBeenModified(true);
-                }   
-                
-                // page marker initialization ( means an applicative back button)
-                if( ! "breadcrumb".equals(this.displayContext) && ! "menu".equals(displayContext) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
-                    String backCMSPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                    editionState.setBackPageMarker(backCMSPageMarker);
-                }
+                EditionState editionState = getEditionState(controllerContext, windowID, pubInfos);
                 
                 // No automatic back, it's computed at CMS Level
                 if( contextualizationPage != null)
@@ -1670,6 +1644,60 @@ public class CmsCommand extends DynamicCommand {
             throw new ControllerException(e);
         }
 
+    }
+    
+    
+
+    
+    /**
+     * compute edition state relevantly to cms command
+     * 
+     * @param controllerContext
+     * @param poid
+     * @param pubInfos
+     * @return
+     */
+    private EditionState getEditionState(ControllerContext controllerContext, PortalObjectId poid, CMSPublicationInfos pubInfos)   {
+        
+        EditionState editionState =  null;
+        
+        
+        // Default initialization of editionState
+        if( pubInfos.isLiveSpace()){
+            editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
+        }   else    {
+            if( InternalConstants.PROXY_PREVIEW.equals(this.displayContext)  || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext))
+                editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
+            else
+                editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, this.cmsPath);
+        }
+            
+
+        // Restore navigation values   
+        EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), poid);
+        if (oldState != null) {
+            if (oldState.getDocPath().equals(pubInfos.getDocumentPath())) {
+                editionState.setBackPageMarker(oldState.getBackPageMarker());
+                editionState.setHasBeenModified(oldState.isHasBeenModified());
+            }
+        }    
+        
+        
+        
+        // Modified indicator
+        boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
+        
+        if (fancyBox) {
+            editionState.setHasBeenModified(true);
+        }   
+        
+        // page marker initialization ( means an applicative back button)
+        if( ! IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization) && ! "menu".equals(displayContext) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
+            String backCMSPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+            editionState.setBackPageMarker(backCMSPageMarker);
+        }
+
+        return editionState;
     }
 
 }
