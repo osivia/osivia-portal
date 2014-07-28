@@ -24,6 +24,7 @@ package org.osivia.portal.core.deploiement;
 
 import org.jboss.deployment.DeploymentException;
 import org.jboss.portal.common.transaction.TransactionManagerProvider;
+import org.jboss.portal.common.transaction.Transactions;
 import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.controller.coordination.CoordinationConfigurator;
@@ -61,14 +62,46 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 
 	/** . */
 	protected CoordinationConfigurator coordinationConfigurator;
+	
+	   
+    static ICacheService cacheService;
+
+
 
 	public void chargerParametres(File file, MBeanServer mbeanServer) {
 		
 		boolean portalImport = false;
 		
 		try {
-			// v1.0.24 : wait for current transaction stopping
-			ImportInterceptor.isImportRunning = true;
+            cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
+            
+            
+           TransactionManager tm = TransactionManagerProvider.JBOSS_PROVIDER
+                   .getTransactionManager();
+           
+           
+           
+           
+           Transactions.requiresNew(tm, new Transactions.Runnable()
+           {
+              public Object run() throws Exception
+              {
+           
+                 // notify cluster
+                  // must be included in a transaction
+                 cacheService.setImportRunning(true);
+                 ImportInterceptor.isImportRunningLocally = true;
+                  
+                 return true;
+              }
+           });
+           
+           // waiting for cluster notification
+           Thread.sleep(1000L);
+           
+		    
+		    
+		    
 			ImportInterceptor.isPageImportTerminated = false;
 			ImportInterceptor.isPortalImportTerminated = false;
 			
@@ -81,7 +114,7 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 			
 			
 			
-			TransactionManager tm = TransactionManagerProvider.JBOSS_PROVIDER
+			tm = TransactionManagerProvider.JBOSS_PROVIDER
 					.getTransactionManager();
 			ParametresPortailDeployment deploiement = new ParametresPortailDeployment(
 					file.toURL(), mbeanServer, tm, this);

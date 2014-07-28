@@ -166,8 +166,8 @@ public final class RenderPageCommand extends PageCommand
       super.enforceSecurity(pam);
 
       // Check if the user can personalize the page
-      PortalObjectPermission perm = new PortalObjectPermission(page.getId(), PortalObjectPermission.PERSONALIZE_MASK);
-      personalizable = pam.checkPermission(perm);
+//      PortalObjectPermission perm = new PortalObjectPermission(page.getId(), PortalObjectPermission.PERSONALIZE_MASK);
+//      personalizable = pam.checkPermission(perm);
    }
 
    /**

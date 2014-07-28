@@ -106,15 +106,34 @@ $JQry(document).ready(function() {
  		'height': 600,
  		'beforeClose' : function() {
             callback();
-		}
+		},
+		helpers : {
+            title: {
+                type: 'outside',
+                position: 'top'
+            }
+        }
 	});
 	
 
 	$JQry(".fancybox_inline").fancybox({
-		'titlePosition'     : 'inside',
-        'transitionIn'      : 'none',
-        'transitionOut'     : 'none'
-	});
+		openEffect : 'none',
+    	closeEffect	: 'none',
+    	helpers : {
+    		title : null
+    	}
+    });
+	
+	$JQry(".fancybox_inline_title").fancybox({
+		openEffect : 'none',
+    	closeEffect	: 'none',
+    	helpers : {
+            title: {
+                type: 'outside',
+                position: 'top'
+            }
+        }
+    });
 	
 	$JQry(".fancybox_inline_jstree").fancybox({
 		'titlePosition'     : 'inside',

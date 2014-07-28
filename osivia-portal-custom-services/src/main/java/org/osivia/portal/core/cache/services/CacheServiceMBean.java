@@ -4,7 +4,8 @@
 package org.osivia.portal.core.cache.services;
 
 import org.jboss.system.ServiceMBean;
-import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.core.cache.global.ICacheService;
+
 
 
 
@@ -13,9 +14,13 @@ import org.osivia.portal.api.cache.services.ICacheService;
  * @author jss
  *
  */
-public interface CacheServiceMBean extends ServiceMBean,ICacheService {
+public interface CacheServiceMBean extends ServiceMBean,org.osivia.portal.api.cache.services.ICacheService {
 
 	public void startService()throws Exception;
 	
 	public void stopService()throws Exception;
+	
+    public ICacheService getCacheService() ;
+
+    public void setCacheService(ICacheService cacheService) ;
 }

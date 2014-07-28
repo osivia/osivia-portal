@@ -28,5 +28,17 @@ public interface ICacheService {
 	public long getProfilsCount();
 	public void incrementProfilsCount( )	;
 
+	
+	   
+    /* Données paramétrages */
+    
+    public long getGlobalParametersCount() ;
+    public void incrementGlobalParametersCount( )   ;
+    
+    /* Mass import */
+
+    public void setImportRunning(boolean importRunning) ;
+    public boolean isImportRunning() ;
+
 
 }

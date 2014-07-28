@@ -57,7 +57,7 @@ public class MenubarItem {
     /** The dropdown item. */
     private boolean dropdownItem;
     /** The ajax disabled. */
-    private boolean ajaxDisabled;
+    private boolean ajaxDisabled = false;
     /**  This item is the first. */
     private boolean firstItem;
 
@@ -98,6 +98,8 @@ public class MenubarItem {
         item.setStateItem(stateItem);       
         item.setDropdownItem(stateItem);     
         item.setGlyphicon(glyphicon);
+        item.setAjaxDisabled(ajaxDisabled);        
+
         
         return item;
     }

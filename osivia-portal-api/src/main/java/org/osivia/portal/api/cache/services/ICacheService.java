@@ -24,33 +24,23 @@ import org.osivia.portal.api.PortalException;
  */
 public interface ICacheService extends Serializable{
 
-	/**
-	 * Gets the cache.
-	 *
-	 * @param infos the infos
-	 * @return the cache
-	 * @throws PortalException the portal exception
-	 */
-	public Object getCache( CacheInfo infos) throws PortalException;
-	
-	/**
-	 * Gets the cache initialisation ts.
-	 *
-	 * @return the cache initialisation ts
-	 */
-	public long getCacheInitialisationTs() ;
-	
-	/**
-	 * Inits the cache.
-	 *
-	 * @throws Exception the exception
-	 */
-	public void initCache() throws PortalException;
-	
-	/**
-	 * Inits the portal parameters.
-	 */
-	public void initPortalParameters();
+    /**
+     * Gets the cache.
+     *
+     * @param infos the infos
+     * @return the cache
+     * @throws PortalException the portal exception
+     */
+    public Object getCache( CacheInfo infos) throws PortalException;
+    
+
+    /**
+     * Inits the portal parameters.
+     */
+    public void initPortalParameters();
+    
+    public boolean checkIfPortalParametersReloaded( long savedTS);
+
 
 
 	

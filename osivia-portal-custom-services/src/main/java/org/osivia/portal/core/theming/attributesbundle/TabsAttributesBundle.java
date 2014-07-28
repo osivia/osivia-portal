@@ -156,11 +156,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if ((user == null) || (headerUsername != null)) {
                     // Check header and services caches validity
                     if ((headerCount.longValue() == this.globalCacheService.getHeaderCount())
-                            && ((cmsTs > this.servicesCacheService.getCacheInitialisationTs()) && !PageProperties.getProperties().isRefreshingPage())) {
+                            && ( this.servicesCacheService.checkIfPortalParametersReloaded( cmsTs) && !PageProperties.getProperties().isRefreshingPage())) {
                         refreshUserPortal = false;
                     }
                 }
-
                 if (headerCount.longValue() > this.globalCacheService.getHeaderCount()) {
                     // Can occurs if JBoss cache manager has crashed : update global cache with baseline value
                     do {
@@ -301,7 +300,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
             if (curDomain != null) {
                 if (domains.contains(curDomain)) {
-                    break;
+                    continue;
                 }
                 domains.add(curDomain);
 

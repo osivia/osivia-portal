@@ -62,6 +62,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
+    /** Fancybox with title class, required for link. */
+    private static final String CLASS_FANCYBOX_INLINE_TITLE = "fancybox_inline_title";    
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_FRAME = "fancyframe_refresh";
     /** Delete portlet message. */
@@ -373,6 +375,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties) throws RenderException {
         String windowId = windowRendererContext.getId();
         String onclickAction = "windowId = '" + windowId + "'";
+        
+        
+        String windowTitle = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
+        if (windowTitle == null) {
+            windowTitle = StringUtils.EMPTY;
+        }
+
+        String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
+        windowTitle += "   [" + instanceName + "]";
 
         // Commands toolbar
         Element toolbar = new DOMElement(QName.get(HTMLConstants.DIV));
@@ -387,22 +398,22 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Up move command
         String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
-        Element upLink = this.generatePortletCommandLink(upUrl, null, "halflings arrow-up", null);
+        Element upLink = this.generatePortletCommandLink(upUrl, null, "halflings arrow-up", null, null);
         moveGroup.add(upLink);
 
         // Down move command
         String downUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
-        Element downLink = this.generatePortletCommandLink(downUrl, null, "glyphicons halflings arrow-down", null);
+        Element downLink = this.generatePortletCommandLink(downUrl, null, "glyphicons halflings arrow-down", null, null);
         moveGroup.add(downLink);
 
         // Previous region move command
         String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
-        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, "halflings arrow-left", null);
+        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, "halflings arrow-left", null, null);
         moveGroup.add(previousRegionLink);
 
         // Next region move command
         String nextRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
-        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, "halflings arrow-right", null);
+        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, "halflings arrow-right", null, null);
         moveGroup.add(nextRegionLink);
 
 
@@ -413,23 +424,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Window settings display command
         String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
-        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, "halflings uni-wrench", CLASS_FANCYBOX_INLINE);
+        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, "halflings uni-wrench", CLASS_FANCYBOX_INLINE_TITLE, windowTitle);
         settingsGroup.add(displaySettingsLink);
 
         // Portlet administration display command
         Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
         for (ActionRendererContext action : actions) {
             if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
-                String title = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
-                if (title == null) {
-                    title = StringUtils.EMPTY;
-                }
-
                 String link = action.getURL() + "&windowstate=maximized";
-
-                String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
-                title += "   [" + instanceName + "]";
-                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, "halflings cog", CLASS_FANCYBOX_FRAME);
+                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, "halflings cog", CLASS_FANCYBOX_FRAME, windowTitle);
                 settingsGroup.add(displayAdminLink);
             }
         }
@@ -441,7 +444,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Delete portlet command
         String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
-        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, "halflings remove", CLASS_FANCYBOX_INLINE);
+        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, "halflings remove", CLASS_FANCYBOX_INLINE, null);
         deleteGroup.add(deleteLink);
 
 
@@ -458,7 +461,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param additionalHTMLClass additional HTML class
      * @return HTML "a" node
      */
-    private Element generatePortletCommandLink(String href, String onclick, String glyphicon, String additionalHTMLClass) {
+    private Element generatePortletCommandLink(String href, String onclick, String glyphicon, String additionalHTMLClass, String title) {
         // HTML "a" node
         DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
         a.addAttribute(QName.get(HTMLConstants.HREF), href);
@@ -466,6 +469,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
         }
 
+        if( title != null)
+            a.addAttribute(QName.get(HTMLConstants.TITLE), title);
+
+        
         // HTML class
         StringBuilder htmlClass = new StringBuilder();
         htmlClass.append("btn btn-default");

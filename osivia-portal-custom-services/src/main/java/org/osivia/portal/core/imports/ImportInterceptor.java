@@ -1,34 +1,23 @@
-/******************************************************************************
- * JBoss, a division of Red Hat                                               *
- * Copyright 2006, Red Hat Middleware, LLC, and individual                    *
- * contributors as indicated by the @authors tag. See the                     *
- * copyright.txt in the distribution for a full listing of                    *
- * individual contributors.                                                   *
- *                                                                            *
- * This is free software; you can redistribute it and/or modify it            *
- * under the terms of the GNU Lesser General Public License as                *
- * published by the Free Software Foundation; either version 2.1 of           *
- * the License, or (at your option) any later version.                        *
- *                                                                            *
- * This software is distributed in the hope that it will be useful,           *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of             *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU           *
- * Lesser General Public License for more details.                            *
- *                                                                            *
- * You should have received a copy of the GNU Lesser General Public           *
- * License along with this software; if not, write to the Free                *
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA         *
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.                   *
- ******************************************************************************/
+/*
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ */
 package org.osivia.portal.core.imports;
 
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
-import org.jboss.portal.server.ServerInvocationContext;
-import org.jboss.portal.server.ServerRequest;
-
-import java.util.Locale;
+import org.osivia.portal.core.cache.global.ICacheService;
 
 /**
  * Susupension des requetes pendant les imports (à positionner avant la gestion
@@ -36,49 +25,66 @@ import java.util.Locale;
  */
 
 public class ImportInterceptor extends ServerInterceptor {
-	public static boolean isImportRunning = false;
-	
-	public static boolean isPageImportTerminated = false;
-	public static boolean isPortalImportTerminated = false;
-	
-	public static int nbPendingRequest = 0;
 
-	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
+    public static boolean isImportRunningLocally = false;
 
-		if (isImportRunning == true) {
-			while (isImportRunning == true)
-				Thread.sleep(1000L);
-		}
+    public static boolean isPageImportTerminated = false;
+    public static boolean isPortalImportTerminated = false;
 
-		try {
-			nbPendingRequest++;
+    public static int nbPendingRequest = 0;
 
-			invocation.invokeNext();
-		} finally {
-			
-			if( nbPendingRequest > 0)
-				nbPendingRequest--;
-			
-		}
+    protected ICacheService cacheService;
 
-		if (isImportRunning && (isPageImportTerminated || isPortalImportTerminated) ) {
+    public ICacheService getCacheService() {
+        return cacheService;
+    }
 
-			// Wait after the commit for asynchronous updates
-			// (to avoid JCA exception from container)
-			
-			if( isPortalImportTerminated)
-				Thread.sleep(10000L);
-			else
-				Thread.sleep(1000L);				
-			
-			// Eventual loops will be ignored for the next import
-			nbPendingRequest = 0;
+    public void setCacheService(ICacheService cacheService) {
+        this.cacheService = cacheService;
+    }
 
-			// Import is terminated ant transaction is committed
-			// release other threads
-			isImportRunning = false;
+    protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
-		}
 
-	}
+        if (getCacheService().isImportRunning() == true) {
+
+            while (getCacheService().isImportRunning() == true) {
+                Thread.sleep(1000L);
+            }
+        }
+
+        try {
+            nbPendingRequest++;
+
+            invocation.invokeNext();
+        } finally {
+
+            if (nbPendingRequest > 0)
+                nbPendingRequest--;
+
+        }
+
+        if (isImportRunningLocally && (isPageImportTerminated || isPortalImportTerminated)) {
+
+            // Wait after the commit for asynchronous updates
+            // (to avoid JCA exception from container)
+
+            if (isPortalImportTerminated)
+                Thread.sleep(15000L);
+            else
+                Thread.sleep(3000L);
+
+            // Eventual loops will be ignored for the next import
+            nbPendingRequest = 0;
+
+            // Import is terminated ant transaction is committed
+            // release other threads
+            isImportRunningLocally = false;
+
+            // Release cluster nodes
+            getCacheService().setImportRunning(false);
+
+        }
+
+    }
 }

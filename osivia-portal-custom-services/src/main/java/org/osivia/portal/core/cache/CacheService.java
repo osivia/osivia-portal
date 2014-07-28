@@ -132,22 +132,37 @@ public class CacheService extends ServiceMBeanSupport implements  ICacheService,
 	}
 
 
+    public long getGlobalParametersCount() {
+        return getCacheDatas().getGlobalParametersCount();
+
+    }
+
+    public void incrementGlobalParametersCount() {
+        CacheDatas cache = getCacheDatas();
+        cache.setGlobalParametersCount(cache.getGlobalParametersCount() + 1);
+        setCacheDatas(cache);
+    }
+
+
 	public void startService() throws Exception {
 		log.info("start service CacheService");
 	}
 
+    public void setImportRunning(boolean importRunning) {
+        CacheDatas cache = getCacheDatas();
+        cache.setImportRunning(importRunning);
+        setCacheDatas(cache);
+
+    }
+
+    public boolean isImportRunning() {
+        return getCacheDatas().isImportRunning();
+
+    }
+	
 	public void stopService() throws Exception {
 		log.info("stop service CacheService");
 	}
 
-	public long getProfilsTimestamp() {
-		return 0;
-	}
-
-	public void setProfilsTimestamp(long timestamp) {
-	
-	}
-
-	
 	
 }

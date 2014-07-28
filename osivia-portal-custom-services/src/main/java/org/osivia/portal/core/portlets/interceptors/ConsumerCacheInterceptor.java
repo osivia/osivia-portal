@@ -308,11 +308,15 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
 
          // gestion des fermetures de popup
 
-         if( (cachedEntry != null) && (ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed") != null)) {
-             cachedEntry = null;
+         if( cachedEntry != null && window != null && (ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed") != null)) {
+             // Test sur windowID
+
+             String closedWindowID =  (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosedWindowID");
+             PortalObjectId closedWindowOjectID = PortalObjectId.parse(closedWindowID, PortalObjectPath.SAFEST_FORMAT);
+             if( window.getId().equals(closedWindowOjectID))
+                 cachedEntry = null;
          }
-
-
+         
          //
          if ((cachedEntry != null) && (skipNavigationCheck == false))
          {
@@ -427,7 +431,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
          ContentResponse fragment = cachedEntry != null ? cachedEntry.contentRef.getContent() : null;
 
          // If no valid fragment we must invoke
-         if ((fragment == null) || (cachedEntry.expirationTimeMillis < System.currentTimeMillis()) || (cachedEntry.creationTimeMillis < this.getServicesCacheService().getCacheInitialisationTs()) || refresh)
+         if ((fragment == null) || (cachedEntry.expirationTimeMillis < System.currentTimeMillis()) || (! this.getServicesCacheService().checkIfPortalParametersReloaded(cachedEntry.creationTimeMillis) ) || refresh)
          {
             // Set validation token for revalidation only we have have a fragment
             if (fragment != null)
