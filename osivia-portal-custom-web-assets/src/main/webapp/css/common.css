@@ -353,7 +353,15 @@
 /* Bootstrap multi-level list */
 
 ul.list-group.multi-level li.list-group-item {
-	padding: 0 0 1px;
+	padding: 0;
+}
+
+ul.list-group.multi-level > li.list-group-item:LAST-CHILD {
+	padding-bottom: 1px;
+}
+
+ul.list-group.multi-level > li.list-group-item:LAST-CHILD > ul.list-group {
+	margin-bottom: -1px;
 }
 
 ul.list-group.multi-level ul.list-group  li.list-group-item {
