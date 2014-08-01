@@ -18,6 +18,7 @@ import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.system.ServiceMBeanSupport;
+import org.jboss.util.threadpool.ThreadPoolStoppedException;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -71,6 +72,8 @@ public class MultithreadService extends ServiceMBeanSupport  implements
 	public void stopService()throws Exception{
 		InitialContext init = new InitialContext();
 		init.unbind("java:multithread");
+		
+		ThreadsPool.shutdown();
 		
 	}
 }
