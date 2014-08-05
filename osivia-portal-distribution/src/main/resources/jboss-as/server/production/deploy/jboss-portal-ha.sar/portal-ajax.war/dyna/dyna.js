@@ -273,12 +273,11 @@ function bilto(event) {
 		return;
 	}
 
-	var container = Element.up(source, "div.dyna-window");
-	
+	// Container
     var container = null;
-	if( fancyContainerDivId != null)
+	if (fancyContainerDivId != null)
 		container = document.getElementById(fancyContainerDivId);
-	if( container == null)
+	if (container == null)
 		container = Element.up(source, "div.dyna-window");	    
 
 	// We found the window
@@ -294,12 +293,10 @@ function bilto(event) {
 		}
 
 		// if unknow source (IMG, SPAN, ...) , search the ancestor 'A'
-		if (source.nodeName != "A") {
-			if (source.nodeName != "INPUT") {
-				source = Element.up(source, "A");
-				if (source == null)
-					return;
-			}
+		if ((source.nodeName != "A") && (source.nodeName != "INPUT") && (source.nodeName != "BUTTON")) {
+			source = Element.up(source, "A");
+			if (source == null)
+				return;
 		}
 
 		//
@@ -315,7 +312,7 @@ function bilto(event) {
 				// We don't block
 				options.asynchronous = true;
 			}
-		} else if (source.nodeName == "INPUT"
+		} else if ((source.nodeName == "INPUT" || source.nodeName == "BUTTON")
 				&& (source.type == "submit" || source.type == "image")) {
 			// Find enclosing form
 			var current = source.parentNode;
