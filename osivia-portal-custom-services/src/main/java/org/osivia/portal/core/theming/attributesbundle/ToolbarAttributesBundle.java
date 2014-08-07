@@ -279,7 +279,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         PageType pageType = PageType.getPageType(page, context);
 
         // Administration root element
-        Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_TOOLBAR_ADMINISTRATION, null);
+        Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_TOOLBAR_ADMINISTRATION, StringUtils.EMPTY);
 
         if (PageCustomizerInterceptor.isAdministrator(context)) {
             // Configuration menu
