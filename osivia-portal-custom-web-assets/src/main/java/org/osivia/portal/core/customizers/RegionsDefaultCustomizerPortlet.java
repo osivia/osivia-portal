@@ -19,7 +19,6 @@ import java.util.Map;
 import javax.portlet.GenericPortlet;
 import javax.portlet.PortletException;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
@@ -49,6 +48,8 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String FOOTER_PATH_INIT_PARAM = "osivia.portal.customizer.regions.footer.path";
     /** Search path init parameter name. */
     private static final String SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.search.path";
+    /** Tabs path init parameter name. */
+    private static final String HEADER_METADATA_PATH_INIT_PARAM = "osivia.portal.customizer.regions.header.metadata.path";
     /** Tabs path init parameter name. */
     private static final String TABS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.tabs.path";
     /** Toolbar path init parameter name. */
@@ -128,6 +129,9 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
             renderedRegions.defineDefaultRenderedRegion("footer", this.getInitParameter(FOOTER_PATH_INIT_PARAM));
             // Tabs default region
             renderedRegions.defineDefaultRenderedRegion("tabs", this.getInitParameter(TABS_PATH_INIT_PARAM));
+        } else {
+            // SEO default region
+            renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
         }
 
 
