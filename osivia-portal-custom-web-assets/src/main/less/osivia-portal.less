@@ -1,0 +1,403 @@
+//
+// OSIVIA Portal - Custom properties
+// --------------------------------------------------
+
+
+// Core variables and mixins
+@import "variables.less";
+@import "mixins.less";
+
+
+
+// Helper classes
+
+.text-middle {
+    position: relative;
+    top: 50%;
+    
+    .translate(0, -50%);
+}
+
+.hidden-script {
+    display: none;
+}
+
+
+
+// Avatar
+
+.avatar {
+    max-height: 20px;
+    max-width: 30px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 1px;
+    vertical-align: top;
+    
+    &.avatar-big {
+        max-height: 80px;
+        max-width: 120px;
+    }
+}
+
+
+
+// Hide header and footer in mobile navigation
+@media screen and (max-width: @screen-xs-max) {
+    header, footer {
+        position: relative;
+        visibility: hidden;
+        height: 0;
+    }
+}
+
+
+
+// Toolbar
+
+.toolbar {
+    padding-bottom: 50px;
+    
+    .navbar .navbar-header {
+        padding-left: 5px;
+        
+        .btn.navbar-btn {
+            margin-right: 5px;
+            border-color: #ddd;
+            color: #888;
+            
+            &.drawer-toggle-btn {
+                position: relative;
+                max-width: 30%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-left: -9px;
+                padding: 6px 0;
+                
+                & > .glyphicons {
+                    position: absolute;
+                    top: 8px;
+                    left: 0; 
+            
+                    .transition(all 300ms ease-out);
+                }
+                
+                &.active-drawer > .glyphicons {
+                    left: -6px;
+                }
+                
+                & > .text {
+                    padding-left: 20px;
+                    padding-right: 12px;
+                }
+            }
+        }
+        
+        .navbar-form {
+            padding: 0 15px;
+            border: 0;
+            
+            .box-shadow(none);
+                    
+            .input-group {
+                margin-left: 5px;
+            }
+        }
+    }
+}
+
+
+
+// Tabs
+
+.tabs {
+    ul {
+        margin-bottom: 0;
+        padding: 0;
+        
+        li {
+            margin-bottom: 3px;
+        }
+    }
+    
+    @media screen and (max-width: @screen-xs-max) {
+        .tabs-menu {
+            position: absolute;
+            top: 0;
+            left: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: none;
+            visibility: visible;
+            min-width: 160px;
+            padding: 5px 0;
+            margin: 2px 0 0;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: 4px;
+
+            .box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+            
+            &.active {
+                display: block;
+            }
+            
+            li {
+                width: 32%;
+                margin-left: 1%;
+                
+                a {
+                    width: 100%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    border-radius: 4px;
+                }
+            }
+        }
+    }
+}
+
+
+
+// Portlet
+
+.portlet-container {
+    margin-bottom: @line-height-computed;
+    
+    .portlet-header .portlet-mode-container {
+        margin-top: 23px;
+    }
+    
+    .panel-heading .portlet-titlebar-title {
+        margin: 2px 0;
+    }
+    
+    // Menubar
+    .portlet-menubar {
+        margin-bottom: 5px;
+    }
+    
+    // Mobile collapse
+    @media screen and (min-width: @screen-sm-min) {
+        .mobile-collapse {
+            display: block;
+            overflow: hidden;
+        }
+    }
+}
+
+
+
+// CMS portlet
+
+.dyna-window-content.well:HOVER {
+    cursor: move;
+    background-color: lighten(@well-bg, 2%);
+}
+
+
+
+// Drawer
+
+.btn.drawer-toggle-btn {
+    display: none;
+}
+
+.screen-wrapper() {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+@media screen and (max-width: @screen-xs-max) {
+    html {
+        .screen-wrapper();
+    }
+    
+    body {
+        .screen-wrapper();
+        
+        &.with-drawer .drawer-toggle-btn {
+            display: block;
+        }
+    }
+    
+    .wrapper-outer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        .screen-wrapper();
+        
+        .wrapper-inner {
+            position: relative;
+            
+            .screen-wrapper();
+            
+            & > * {
+                max-height: 100%;
+                overflow: auto;
+            }
+        }
+    }
+    
+    #drawer {
+        position: absolute;
+        top: 0;
+        left: -80%;
+        z-index: 120;
+        
+        height: 100%;
+        width: 80%;
+        overflow: auto;
+        
+        background-color: #fff;
+        padding-top: @line-height-computed;
+        
+        .translate3d(0, 0, 0);
+        .backface-visibility(hidden);
+        .transition(all 300ms ease-out);
+        
+        .active {
+            .translate3d(100%, 0, 0);
+        }
+    }
+    
+    #drawer-shadowbox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 110;
+        
+        background-color: #000;
+        opacity: 0;
+        
+        .screen-wrapper();
+    }
+}
+
+
+
+// JSTree
+
+.jstree {
+    width: 280px;
+    min-height: 100px;
+    overflow: auto;
+}
+
+.jstree-filter {
+    margin-bottom: 10px;
+}
+
+
+
+// Portlets list
+
+#add-portlet .table td {
+    vertical-align: middle;
+}
+
+
+
+// Wizard edging
+
+.wizard-edging {
+    border-style: solid;
+    border-width: 1px;
+    padding: 3px;
+    
+    &.region {
+        border-color: rgba(155, 155, 155, 0.8);
+        margin: 10px 0;
+    }
+    
+    &.window {
+        border-color: rgba(125, 119, 96, 0.2);
+        margin: 5px 0;
+    }
+    
+    .btn-toolbar {
+        margin-bottom: 3px;
+    }
+}
+
+
+
+// Accessible dropdown menu without Javascript
+
+.accessible-dropdown-menu {
+    .btn {
+        &:ACTIVE, &:FOCUS {
+            & + .dropdown-menu {
+                display: block;
+            }
+        }
+    }
+    
+    .dropdown-menu {
+        &:FOCUS, &:HOVER {
+            display: block;
+        }
+    }
+}
+
+
+
+// Multi-level list
+
+ul.list-group.multi-level {
+    li.list-group-item {
+        padding: 0;
+        
+        a.list-group-item {
+            border: none;
+            border-radius: 0;
+        }
+    }
+    
+    & > li.list-group-item {
+        &:FIRST-CHILD a.list-group-item {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        
+        &:LAST-CHILD {
+            padding-bottom: 1px;
+            
+            & > ul.list-group {
+                margin-bottom: -1px;
+            }
+        }
+    }
+    
+    ul.list-group {
+        margin: 0;
+        
+        li.list-group-item {
+            border-bottom: none;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            margin-left: 15px;
+            padding-left: 5px;
+            padding-bottom: 0;
+            
+            a.list-group-item {
+                border-radius: 0;
+            }
+        }
+    }
+}
+
+
+
+// Bootstrap bug fix
+
+.form-inline .form-group .input-group {
+    width: 220px;
+}

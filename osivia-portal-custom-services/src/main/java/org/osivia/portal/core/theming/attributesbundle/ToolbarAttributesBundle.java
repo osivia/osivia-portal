@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -82,7 +82,7 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
 
 /**
  * Toolbar attributes bundle.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
@@ -180,7 +180,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Singleton instance access.
-     * 
+     *
      * @return singleton instance
      */
     public static ToolbarAttributesBundle getInstance() {
@@ -209,7 +209,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Person
         DirectoryPerson person = null;
         if (principal != null) {
-            IDirectoryService directoryService = directoryServiceLocator.getDirectoryService();
+            IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
             if (directoryService != null) {
                 person = directoryService.getPerson(principal.getName());
                 attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
@@ -225,7 +225,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             attributes.put(Constants.ATTR_TOOLBAR_MY_SPACE_URL, mySpacePortalUrl.toString());
         }
 
-        
+
         // My profile
         String myProfileUrl = null;
         if (person != null) {
@@ -269,7 +269,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate administration HTML content.
-     * 
+     *
      * @param context controller context
      * @param page current page
      * @return HTML data
@@ -324,7 +324,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate configuration menu for administration toolbar.
-     * 
+     *
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -448,7 +448,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate edition menu for administration toolbar.
-     * 
+     *
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -548,7 +548,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generate web page menu for administration toolbar.
-     * 
+     *
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -791,7 +791,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Utility method used to generation administration toggle version.
-     * 
+     *
      * @param context controller context
      * @param page current page
      * @param administration administration toolbar element
@@ -824,9 +824,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String onlineTitle = this.internationalizationService.getString(InternationalizationConstants.KEY_CMS_PAGE_ONLINE, locale);
 
 
+        // LI
+        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+        administration.add(li);
+
+
         // Buttons group
         Element buttonsGroup = DOM4JUtils.generateDivElement("btn-group navbar-form");
-        administration.add(buttonsGroup);
+        li.add(buttonsGroup);
 
 
         // Online button
@@ -852,7 +857,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ChangeCMSEditionModeCommand previewCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
                 CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_OFF);
         String previewURL = new PortalURLImpl(previewCommand, context, null, null).toString();
-        
+
         Element preview = DOM4JUtils.generateLinkElement(previewURL, null, null, null, null, "eye_open");
 
         if (!CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)
@@ -864,7 +869,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             DOM4JUtils.addAttribute(preview, HTMLConstants.CLASS, "btn btn-default");
             DOM4JUtils.addTooltip(preview, previewTitle);
         }
-        
+
         buttonsGroup.add(preview);
 
 
@@ -872,7 +877,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ChangeCMSEditionModeCommand editionCommand = new ChangeCMSEditionModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
                 CmsPermissionHelper.CMS_VERSION_PREVIEW, CmsPermissionHelper.CMS_EDITION_MODE_ON);
         String editionURL = new PortalURLImpl(editionCommand, context, null, null).toString();
-        
+
         Element edition = DOM4JUtils.generateLinkElement(editionURL, null, null, null, null, "pencil");
 
         if (!CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)
@@ -890,7 +895,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
     /**
      * Fancybox for delete page.
-     * 
+     *
      * @param locale user locale
      * @param urlDelete the command for delete
      * @return fancybox DOM element
@@ -914,11 +919,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, action);
         DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_GET);
         container.add(form);
-        
+
         // Message
         Element message = DOM4JUtils.generateElement(HTMLConstants.P, null, this.internationalizationService.getString("CMS_DELETE_CONFIRM_MESSAGE", locale));
         form.add(message);
-        
+
         // Hidden fields
         for (String arg : args) {
             String[] argSplit = arg.split("=");
@@ -943,11 +948,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         return root;
     }
-    
-    
+
+
     /**
      * Generate userbar HTML content.
-     * 
+     *
      * @param controllerContext controller context
      * @param page current page
      * @param principal principal
@@ -962,13 +967,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Current locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
         // CMS service
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
         cmsCtx.setControllerContext(controllerContext);
 
-        
+
         // User informations
         String userName;
         String userAvatarSrc;
@@ -994,7 +999,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Userbar menu root element
         Element userbarMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
-        
+
         // Userbar menu title
         Element userbarMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null);
         DOM4JUtils.addAttribute(userbarMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
@@ -1008,19 +1013,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
         userbarMenuTitle.add(caret);
         userbarMenu.add(userbarMenuTitle);
-        
+
         // Userbar menu "ul" node
         Element userbarMenuUl = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
         userbarMenu.add(userbarMenuUl);
-        
+
         if (principal != null) {
             // My space
             // Element mySpace = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null,
             // this.internationalizationService.getString(InternationalizationConstants.KEY_MY_SPACE_, locale), "halflings star",
             // AccessibilityRoles.MENU_ITEM);
             // this.addSubMenuElement(userbarMenuUl, mySpace, null, null);
-            
-            
+
+
             if (person != null) {
                 // View profile
 
@@ -1061,12 +1066,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         } catch (IOException e) {
             return StringUtils.EMPTY;
         }
-    }    
+    }
 
 
     /**
      * Add sub-menu element.
-     * 
+     *
      * @param ul current "ul" element
      * @param element element to add, may be null
      * @param htmlClass HTML class, may be null

@@ -6,19 +6,21 @@
 <c:set var="userPages" value="${requestScope['osivia.userPortal'].userPages}" />
 
 
-<nav role="navigation">
+<nav class="tabs" role="navigation">
     <h2 class="hidden"><is:getProperty key="TABS_TITLE" /></h2>
     
     <ul class="btn-toolbar tabs-menu">
         <c:forEach var="userPage" items="${userPages}" varStatus="status">
             <c:if test="${'templates' != fn:toLowerCase(userPage.name)}">
+                <c:set var="url" value="${userPage.url}" />
                 <c:set var="buttonType" value="btn-default" />
                 <c:if test="${userPage.id == requestScope['osivia.currentPageId']}">
+                    <c:set var="url" value="#" />
                     <c:set var="buttonType" value="btn-primary" />
                 </c:if>
                 
                 <li class="btn-group">
-                    <a href="${userPage.url}" class="btn ${buttonType}">
+                    <a href="${url}" class="btn ${buttonType}">
                         <span class="tabs-title">${userPage.name}</span>
                     </a>
                     
