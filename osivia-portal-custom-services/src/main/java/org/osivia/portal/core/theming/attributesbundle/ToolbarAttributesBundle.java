@@ -843,7 +843,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         if (CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)) {
             DOM4JUtils.addAttribute(online, HTMLConstants.CLASS, "btn btn-success active");
-            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, "hidden-xs", onlineTitle);
+            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, onlineTitle);
             online.add(displayText);
         } else {
             DOM4JUtils.addAttribute(online, HTMLConstants.CLASS, "btn btn-default");
@@ -863,7 +863,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (!CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)
                 && CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_OFF)) {
             DOM4JUtils.addAttribute(preview, HTMLConstants.CLASS, "btn btn-info active");
-            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, "hidden-xs", previewTitle);
+            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, previewTitle);
             preview.add(displayText);
         } else {
             DOM4JUtils.addAttribute(preview, HTMLConstants.CLASS, "btn btn-default");
@@ -883,7 +883,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (!CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)
                 && CmsPermissionHelper.getCurrentCmsEditionMode(context).equals(CmsPermissionHelper.CMS_EDITION_MODE_ON)) {
             DOM4JUtils.addAttribute(edition, HTMLConstants.CLASS, "btn btn-warning active");
-            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, "hidden-xs", editionTitle);
+            Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, editionTitle);
             edition.add(displayText);
         } else {
             DOM4JUtils.addAttribute(edition, HTMLConstants.CLASS, "btn btn-default");
