@@ -18,7 +18,7 @@
                 </button>
     
                 <!-- Toggle toolbar menu button -->
-                <button type="button" class="btn navbar-btn visible-xs" data-toggle="collapse" data-target="#toolbar-content">
+                <button type="button" class="btn navbar-btn visible-xs pull-right" data-toggle="collapse" data-target="#toolbar-content">
                     <i class="glyphicons halflings cog"></i>
                 </button>
     
