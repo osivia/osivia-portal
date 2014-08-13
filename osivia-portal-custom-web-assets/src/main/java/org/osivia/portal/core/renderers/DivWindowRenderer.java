@@ -63,7 +63,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** Fancybox with title class, required for link. */
-    private static final String CLASS_FANCYBOX_INLINE_TITLE = "fancybox_inline_title";    
+    private static final String CLASS_FANCYBOX_INLINE_TITLE = "fancybox_inline_title";
     /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_FRAME = "fancyframe_refresh";
     /** Delete portlet message. */
@@ -188,7 +188,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     "halflings pencil");
             DOM4JUtils.addTooltip(edition, editionTitle);
             buttonsGroup.add(edition);
-            
+
             // Delete button
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = this.internationalizationService.getString("CMS_DELETE_FRAGMENT", locale);
@@ -226,9 +226,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Portlet container
         if (bootstrapPanelStyle) {
-            out.print("<div class='panel panel-default portlet-container " + styles + "'>");
+            out.print("<section class='panel panel-default portlet-container " + styles + "'>");
         } else {
-            out.print("<div class='portlet-container " + styles + "'>");
+            out.print("<section class='portlet-container " + styles + "'>");
         }
 
         // Portlet container rendering
@@ -245,13 +245,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 headerClass = "portlet-header";
                 bodyClass = "portlet-content-center";
             }
+            if (!"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
+                headerClass += " hidden";
+            }
 
             // Header
-            if ("1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
-                out.print("<div class='" + headerClass + " clearfix'>");
-                rendererContext.render(wrc.getDecoration());
-                out.print("</div>");
-            }
+            out.print("<div class='" + headerClass + " clearfix'>");
+            rendererContext.render(wrc.getDecoration());
+            out.print("</div>");
 
             // Body
             if (mobileCollapse) {
@@ -300,7 +301,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // Portlet container
-        out.print("</div>");
+        out.print("</section>");
         // Wizard edging
         if (wizard) {
             out.print("</div>");
@@ -375,8 +376,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties) throws RenderException {
         String windowId = windowRendererContext.getId();
         String onclickAction = "windowId = '" + windowId + "'";
-        
-        
+
+
         String windowTitle = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
         if (windowTitle == null) {
             windowTitle = StringUtils.EMPTY;
@@ -472,7 +473,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         if( title != null)
             a.addAttribute(QName.get(HTMLConstants.TITLE), title);
 
-        
+
         // HTML class
         StringBuilder htmlClass = new StringBuilder();
         htmlClass.append("btn btn-default");

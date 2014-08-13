@@ -49,7 +49,7 @@ import org.osivia.portal.core.page.PageProperties;
 
 /**
  * Implementation of a decoration renderer, based on div tags.
- * 
+ *
  * @author <a href="mailto:mholzner@novell.com>Martin Holzner</a>
  * @version $LastChangedRevision: 12912 $, $LastChangedDate: 2009-02-28 11:37:59 -0500 (Sat, 28 Feb 2009) $
  * @see AbstractObjectRenderer
@@ -81,7 +81,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         // Current window identifier
         String currentWindowId = properties.getCurrentWindowId();
         // Current locale
-        Locale locale = getLocale(properties, currentWindowId);
+        Locale locale = this.getLocale(properties, currentWindowId);
 
         // Render title
         this.renderTitle(properties, markup, drc);
@@ -90,8 +90,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         markup.print("<div class='btn-group btn-group-xs'>");
 
         if ("1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"))) {
-            renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
-            renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
+            this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
+            this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
         }
 /*
         String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
@@ -108,7 +108,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
     /**
      * Get current locale
-     * 
+     *
      * @param properties page properties
      * @param currentWindowId current window identifier
      * @return current locale
@@ -153,9 +153,9 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         markup.print("<div class=\"portlet-titlebar-decoration\"></div>");
 
         if (bootstrapPanelStyle) {
-            markup.print("<h3 class='panel-title pull-left portlet-titlebar-title'>");
+            markup.print("<h2 class='panel-title pull-left portlet-titlebar-title'>");
         } else {
-            markup.print("<h3 class='pull-left portlet-titlebar-title'>");
+            markup.print("<h2 class='pull-left portlet-titlebar-title'>");
         }
 
         if (mobileCollapse) {
@@ -166,14 +166,14 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             markup.print(title);
         }
 
-        markup.print("</h3>");
+        markup.print("</h2>");
     }
 
 
 
     /**
      * Render triggerable actions.
-     * 
+     *
      * @param ctx renderer context
      * @param drc decoration renderer context
      * @param selector selector
@@ -199,7 +199,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             if (action.isEnabled() && !"admin".equals(actionName) && !"minimized".equals(actionName)) {
                 // Title
                 String title = this.internationalizationService.getString(StringUtils.upperCase(actionName), locale);
-                
+
                 // Glyphicon
                 String glyphicon = "asterisk";
                 if ("maximized".equals(actionName)) {
