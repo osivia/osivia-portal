@@ -4,10 +4,10 @@
 
 <head>
 
-	<link rel="stylesheet" media="print" type="text/css" href="/osivia-portal-custom-web-assets/print/print.css" />
-	<link rel="stylesheet" media="screen" type="text/css" href="/osivia-portal-custom-web-assets/print/print.css" />
+	<link rel="stylesheet" media="print" type="text/css" href="/osivia-portal-custom-web-assets/js/print/print.css" />
+	<link rel="stylesheet" media="screen" type="text/css" href="/osivia-portal-custom-web-assets/js/print/print.css" />
 	
-	<script type="text/javascript" src="/osivia-portal-custom-web-assets/js/jquery.js"></script>	
+	<script type="text/javascript" src="/osivia-portal-custom-web-assets/js/jquery/jquery-1.8.3.min.js"></script>	
 	<script type='text/javascript' src='/portal-ajax/dyna/prototype.js'></script>
 	<script type='text/javascript' src='/portal-ajax/dyna/effects.js'></script>
 	<script type='text/javascript' src='/portal-ajax/dyna/dyna.js'></script>
