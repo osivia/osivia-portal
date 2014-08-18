@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -32,7 +32,7 @@ public interface ICMSService {
 
     /**
      * Retourne un ensemble d'informations liées à l'espace de publication contenant le document dont le chemin est passé en paramètre.
-     * 
+     *
      * @param ctx contexte du CMSService
      * @param path chemin d'un document
      * @return l' ensemble des informations liées à l'espace de publication dans un objet de type CMSPublicationInfos
@@ -44,7 +44,7 @@ public interface ICMSService {
 
     /**
      * Get portal navigation CMS item.
-     * 
+     *
      * @param ctx CMS service context
      * @param publishSpacePath publish space path
      * @param path current path
@@ -55,7 +55,7 @@ public interface ICMSService {
 
     /**
      * Get portal navigation CMS sub-items.
-     * 
+     *
      * @param ctx CMS service context
      * @param publishSpacePath publish space path
      * @param path current path
@@ -66,7 +66,7 @@ public interface ICMSService {
 
     /**
      * Get portal CMS sub-items.
-     * 
+     *
      * @param cmsContext CMS service context
      * @param path current path
      * @return portal CMS sub-items
@@ -82,7 +82,7 @@ public interface ICMSService {
 
     /**
      * Transform webid path in cms path
-     * 
+     *
      * @param cmsCtx context
      * @param requestPath the path given in webid
      * @return path adapted
@@ -95,7 +95,7 @@ public interface ICMSService {
 
     /**
      * Build and return all windows included in the page.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @return the windows
@@ -105,7 +105,7 @@ public interface ICMSService {
 
     /**
      * Get base URL to access ECM.
-     * 
+     *
      * @param cmsCtx context
      * @return url
      * @throws CMSException
@@ -114,7 +114,7 @@ public interface ICMSService {
 
     /**
      * Get urls used to access ECM specific views.
-     * 
+     *
      * @param cmsCtx context
      * @param command type of command acceded (ex : create, edit, etc.)
      * @param path the path of the page
@@ -126,7 +126,7 @@ public interface ICMSService {
 
     /**
      * Remove a CMS fragment on a page.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @param refURI an unique identifier on the fragment to delete in the current page
@@ -136,7 +136,7 @@ public interface ICMSService {
 
     /**
      * Move a CMS fragment on a page (drag & drop).
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @param fromRegion the identifier of the region from the fragment is moved
@@ -152,7 +152,7 @@ public interface ICMSService {
 
     /**
      * Return true if the document type is allowed in CMS mode for creation and edition.
-     * 
+     *
      * @param cmsCtx context
      * @param type the type name
      * @return the permission
@@ -161,7 +161,7 @@ public interface ICMSService {
 
     /**
      * Publish the current live version of a document online.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
@@ -170,43 +170,43 @@ public interface ICMSService {
 
     /**
      * Unpublish the current online version.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void unpublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
-    
+
     /**
      * Start Publication workflow.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void askToPublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
-    
+
     /**
      * Cancel Publication workflow.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void cancelPublishWorkflow(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
-    
+
     /**
      * Accept publication of current document.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void validatePublicationOfDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
-    
+
     /**
      * Reject publication of current document.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
@@ -215,7 +215,7 @@ public interface ICMSService {
 
     /**
      * Delete the document.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
@@ -225,7 +225,7 @@ public interface ICMSService {
 
     /**
      * Put the document in a deleted state.
-     * 
+     *
      * @param cmsCtx context
      * @param pagePath the path of the page
      * @throws CMSException
@@ -234,7 +234,7 @@ public interface ICMSService {
 
     /**
      * Get the user avatar
-     * 
+     *
      * @param cmsCtx
      * @param username the user id
      * @return
@@ -243,11 +243,20 @@ public interface ICMSService {
 
     /**
      * Refresh the user avatar
-     * 
+     *
      * @param cmsCtx cms context
      * @param username username
      * @return the timestamp associated with the refresh event
      */
     String refreshUserAvatar(CMSServiceCtx cmsCtx, String username);
+
+
+    /**
+     * Get navigation menu templates.
+     *
+     * @param cmsContext CMS context
+     * @return templates
+     */
+    Map<String, String> getMenuTemplates(CMSServiceCtx cmsContext);
 
 }
