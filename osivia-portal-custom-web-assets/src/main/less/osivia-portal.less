@@ -42,17 +42,6 @@
 
 
 
-// Hide header and footer in mobile navigation
-@media screen and (max-width: @screen-xs-max) {
-    header, footer {
-        position: relative;
-        visibility: hidden;
-        height: 0;
-    }
-}
-
-
-
 // Toolbar
 
 .toolbar {
@@ -235,8 +224,22 @@
     body {
         .screen-wrapper();
         
-        &.with-drawer .drawer-toggle-btn {
-            display: block;
+        &.with-drawer {
+            header, footer {
+                position: relative;
+                visibility: hidden;
+                height: 0;
+            }
+            
+            .drawer-toggle-btn {
+                display: block;
+            }
+        }
+        
+        &:NOT(.with-drawer) {
+            header, footer {
+                display: none;
+            }
         }
     }
     
