@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -51,7 +51,14 @@ public class BundleFactory implements IBundleFactory {
      * {@inheritDoc}
      */
     public Bundle getBundle(Locale locale) {
-        return new Bundle(this.internationalizationService, this.classLoader, locale);
+        Bundle bundle;
+        if (locale == null) {
+            bundle = new Bundle(this.internationalizationService, this.classLoader, Locale.getDefault());
+        } else {
+            bundle = new Bundle(this.internationalizationService, this.classLoader, locale);
+        }
+
+        return bundle;
     }
 
 }
