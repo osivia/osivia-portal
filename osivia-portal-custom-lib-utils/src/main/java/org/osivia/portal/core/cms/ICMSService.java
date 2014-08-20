@@ -16,6 +16,7 @@ package org.osivia.portal.core.cms;
 
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.Link;
@@ -257,6 +258,6 @@ public interface ICMSService {
      * @param cmsContext CMS context
      * @return templates
      */
-    Map<String, String> getMenuTemplates(CMSServiceCtx cmsContext);
+    SortedMap<String, String> getMenuTemplates(CMSServiceCtx cmsContext);
 
 }
