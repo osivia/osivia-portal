@@ -122,10 +122,11 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
         // Search default region
         renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
+        // SEO default region
+        renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
 
         if (renderedRegions.isSpaceSite()) {
-            // SEO default region
-            renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
+
             // Web toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(WEB_TOOLBAR_PATH_INIT_PARAM));
         } else {

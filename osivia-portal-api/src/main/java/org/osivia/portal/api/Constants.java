@@ -102,8 +102,10 @@ public final class Constants {
 
     // SEO
 
+    /** content of title tag */
+    public static final String ATTR_HEADER_TITLE = "osivia.header.title";
     /** content of meta tags. */
-    public static final String ATTR_HEADER_METADATA_CONTENT = "osivia.header.metadata.content";
+    public static final String ATTR_HEADER_METADATA = "osivia.header.metadata";
 
 
     // Toolbar

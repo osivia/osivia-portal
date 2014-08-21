@@ -14,22 +14,17 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.dom4j.Element;
-import org.dom4j.QName;
-import org.dom4j.dom.DOMElement;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.cms.CMSException;
@@ -67,7 +62,8 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
 
         // Properties
         this.names = new TreeSet<String>();
-        this.names.add(Constants.ATTR_HEADER_METADATA_CONTENT);
+        this.names.add(Constants.ATTR_HEADER_TITLE);
+        this.names.add(Constants.ATTR_HEADER_METADATA);
     }
 
 
@@ -83,34 +79,20 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         Page page = renderPageCommand.getPage();
 
-        // SEO content
-        String content = this.formatHTMLHeaderMetaDatas(controllerContext, page);
-        attributes.put(Constants.ATTR_HEADER_METADATA_CONTENT, content);
 
-    }
-
-
-    /**
-     * Generate html.
-     *
-     * @param context context
-     * @param page the page
-     * @return html output
-     */
-    private String formatHTMLHeaderMetaDatas(ControllerContext context, Page page) {
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(context.getServerInvocation());
-        cmsCtx.setControllerContext(context);
+        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+        cmsCtx.setControllerContext(controllerContext);
 
         // Get content path
-        String contentPath = PagePathUtils.getContentPath(context, page.getId());
+        String contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
 
         // Get ECM object
         CMSItem doc = null;
-        
-        if( contentPath != null)    {
+
+        if (contentPath != null) {
             try {
-                if (CmsPermissionHelper.getCurrentPageSecurityLevel(context, contentPath) == Level.allowPreviewVersion) {
+                if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, contentPath) == Level.allowPreviewVersion) {
                     cmsCtx.setDisplayLiveVersion("1");
                 }
 
@@ -120,39 +102,25 @@ public class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 // Do nothing
             }
         }
-        String result = "";
-
-        // Generate html
-        Element title = new DOMElement(QName.get(HTMLConstants.TITLE));
-        List<Element> listMeta = new ArrayList<Element>();
-
 
         if (doc != null) {
-
+            Map<String, String> metas = new HashMap<String, String>();
             // if ECM document exists
-            for (Map.Entry<String, String> metas : doc.getMetaProperties().entrySet()) {
-                if (metas.getKey().equals(Constants.HEADER_TITLE)) {
-                    title.setText(metas.getValue());
-                } else if (metas.getKey().startsWith(Constants.HEADER_META)) {
-                    Element meta = new DOMElement(QName.get(HTMLConstants.META));
-                    meta.addAttribute(QName.get(HTMLConstants.NAME), metas.getKey().replace(Constants.HEADER_META.concat("."), ""));
-                    meta.addAttribute(QName.get(HTMLConstants.CONTENT), metas.getValue());
-                    listMeta.add(meta);
+            for (Map.Entry<String, String> property : doc.getMetaProperties().entrySet()) {
+                if (property.getKey().equals(Constants.HEADER_TITLE)) {
+                    attributes.put(Constants.ATTR_HEADER_TITLE, property.getValue());
+                } else if (property.getKey().startsWith(Constants.HEADER_META)) {
+                    metas.put(property.getKey().replace(Constants.HEADER_META.concat("."), ""), property.getValue());
                 }
             }
+            attributes.put(Constants.ATTR_HEADER_METADATA, metas);
 
         } else {
             // else get the default display name of the page
-            String name = PortalObjectUtils.getDisplayName(page, context.getServerInvocation().getRequest().getLocales());
-            title.setText(name);
+            String name = PortalObjectUtils.getDisplayName(page, controllerContext.getServerInvocation().getRequest().getLocales());
+            attributes.put(Constants.ATTR_HEADER_TITLE, name);
         }
 
-        result = title.asXML();
-        for (Element meta : listMeta) {
-            result = result.concat(meta.asXML());
-        }
-
-        return result;
     }
 
 
