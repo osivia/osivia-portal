@@ -13,8 +13,6 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
@@ -28,7 +26,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -305,20 +302,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         // Write HTML content
-        try {
-            StringWriter stringWriter = new StringWriter();
-            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(administration);
-                return stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
-        } catch (IOException e) {
-            return StringUtils.EMPTY;
-        }
+        return DOM4JUtils.write(administration);
     }
 
 
@@ -1052,20 +1036,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         // Write HTML content
-        try {
-            StringWriter stringWriter = new StringWriter();
-            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(userbarMenu);
-                return stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
-        } catch (IOException e) {
-            return StringUtils.EMPTY;
-        }
+        return DOM4JUtils.write(userbarMenu);
     }
 
 

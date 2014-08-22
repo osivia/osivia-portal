@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -13,9 +13,6 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
-import java.awt.MenuBar;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.CDATA;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMCDATA;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
@@ -76,7 +72,7 @@ import org.osivia.portal.core.portalobjects.DynamicWindow;
 
 /**
  * Ajout des attributs spécifiques au PIA dans les requêtes des portlets.
- * 
+ *
  * @see PortletInvokerInterceptor
  */
 public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
@@ -252,7 +248,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 }
 
                 /* v 1.0.14 : affichage d'une barre de menu */
-                
+
                 if(!Boolean.TRUE.equals(attributes.get("osivia.menubar.hide"))){
 
                 if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
@@ -276,8 +272,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             }
                         }
 
-                        
-                        
+
+
                         if ("1".equals(printPortlet)) {
                             // Appel module custom PRINT
                             Map<String, Object> customAttrMap = new HashMap<String, Object>();
@@ -298,12 +294,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             }
                             menubarItems.add(printItem);
                         }
-                        
+
                         /* Add back item */
-                        
-                       
+
+
                         if( window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
-                            
+
                                 if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
 
                                     boolean containsBackItem = false;
@@ -327,10 +323,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     }
                                 }
                             }
-                        
-                        
-                        
-                        
+
+
+
+
 
                         if (menubarItems.size() > 0) {
                             List<MenubarItem> sortedItems = new ArrayList<MenubarItem>(menubarItems);
@@ -421,7 +417,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
     /**
      * Portlet menubar generation.
-     * 
+     *
      * @param controllerContext
      *            controller context
      * @param items
@@ -443,10 +439,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         // Dropdown menu container
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
 
-        
+
         // Menubar left group
         Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
-        
+
         // Menubar left group
         Element leftGroup = DOM4JUtils.generateDivElement("btn-group");
 
@@ -525,25 +521,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         menubar.add(rightGroup);
 
         // Write HTML content
-        try {
-            StringWriter stringWriter = new StringWriter();
-            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(menubarContainer);
-                return stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
-        } catch (IOException e) {
-            return StringUtils.EMPTY;
-        }
+        return DOM4JUtils.write(menubarContainer);
     }
 
     /**
      * Getter for customizationService.
-     * 
+     *
      * @return the customizationService
      */
     public ICustomizationService getCustomizationService() {
@@ -552,7 +535,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
     /**
      * Setter for customizationService.
-     * 
+     *
      * @param customizationService
      *            the customizationService to set
      */
@@ -562,7 +545,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
     /**
      * Getter for internationalizationService.
-     * 
+     *
      * @return the internationalizationService
      */
     public IInternationalizationService getInternationalizationService() {
@@ -571,7 +554,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
     /**
      * Setter for internationalizationService.
-     * 
+     *
      * @param internationalizationService
      *            the internationalizationService to set
      */

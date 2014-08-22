@@ -15,7 +15,6 @@
 package org.osivia.portal.core.notifications;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -197,20 +195,7 @@ public class NotificationsUtils {
         }
 
         // Write HTML content
-        try {
-            StringWriter stringWriter = new StringWriter();
-            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(div1);
-                return stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
-        } catch (IOException e) {
-            return StringUtils.EMPTY;
-        }
+        return DOM4JUtils.write(div1);
     }
 
 

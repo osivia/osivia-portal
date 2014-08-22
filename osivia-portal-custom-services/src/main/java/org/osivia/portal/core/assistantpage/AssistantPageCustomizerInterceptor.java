@@ -4,7 +4,6 @@
 package org.osivia.portal.core.assistantpage;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
-import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
@@ -248,28 +246,30 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
         inheritedLabel = "Hérité du portail [" + inheritedLabel + "]";
 
-        StringBuffer select = new StringBuffer();
+        // Select
+        Element select = DOM4JUtils.generateElement(HTMLConstants.SELECT, "form-control", null);
+        DOM4JUtils.addAttribute(select, HTMLConstants.ID, "cms-filter");
+        DOM4JUtils.addAttribute(select, HTMLConstants.NAME, policyName);
 
-        select.append("<select name=\"" + policyName + "\">");
-
-        if ((selectedPolicy == null) || (selectedPolicy.length() == 0)) {
-            select.append("<option selected=\"selected\" value=\"\">" + inheritedLabel + "</option>");
-        } else {
-            select.append("<option value=\"\">" + inheritedLabel + "</option>");
+        // Default option
+        Element defaultOption = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, inheritedLabel);
+        DOM4JUtils.addAttribute(defaultOption, HTMLConstants.VALUE, StringUtils.EMPTY);
+        if (StringUtils.isEmpty(selectedPolicy)) {
+            DOM4JUtils.addAttribute(defaultOption, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
         }
+        select.add(defaultOption);
 
         for (Entry<String, String> entry : policies.entrySet()) {
-            if ((selectedPolicy != null) && (selectedPolicy.length() != 0) && selectedPolicy.equals(entry.getKey())) {
-                select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
-            } else {
-                select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
+            // Option
+            Element option = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, entry.getValue());
+            DOM4JUtils.addAttribute(option, HTMLConstants.VALUE, entry.getKey());
+            if (entry.getKey().equals(selectedPolicy)) {
+                DOM4JUtils.addAttribute(option, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
             }
+            select.add(option);
         }
 
-        select.append("</select>");
-
-        return select.toString();
-
+        return DOM4JUtils.write(select);
     }
 
 
@@ -294,7 +294,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         if (inheritedLabel == null) {
             inheritedLabel = "Pas de cache";
         }
-        inheritedLabel = "Herité [" + inheritedLabel + "]";
+        inheritedLabel = "Hérité [" + inheritedLabel + "]";
 
         scopes.put("__inherited", inheritedLabel);
 
@@ -306,35 +306,35 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
 
-        StringBuffer select = new StringBuffer();
-
-        String disabled = "";
+        // Select
+        Element select = DOM4JUtils.generateElement(HTMLConstants.SELECT, "form-control", null);
+        DOM4JUtils.addAttribute(select, HTMLConstants.ID, "cms-scope");
+        DOM4JUtils.addAttribute(select, HTMLConstants.NAME, scopeName);
         if (StringUtils.isNotEmpty(po.getDeclaredProperty("osivia.cms.basePath"))) {
-            disabled = " disabled='disabled'";
+            DOM4JUtils.addAttribute(select, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
         }
-
-        select.append("<select id=\"cms-scope\" name=\"" + scopeName + "\" class=\"form-control\" " + disabled + ">");
 
         if (!scopes.isEmpty()) {
-            if ((selectedScope == null) || (selectedScope.length() == 0)) {
-                select.append("<option selected=\"selected\" value=\"\">Pas de cache</option>");
-            } else {
-                select.append("<option value=\"\">Pas de cache</option>");
+            // Default option
+            Element defaultOption = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, "Pas de cache");
+            DOM4JUtils.addAttribute(defaultOption, HTMLConstants.VALUE, StringUtils.EMPTY);
+            if (StringUtils.isEmpty(selectedScope)) {
+                DOM4JUtils.addAttribute(defaultOption, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
             }
+            select.add(defaultOption);
 
             for (Entry<String, String> entry : scopes.entrySet()) {
-                if ((selectedScope != null) && (selectedScope.length() != 0) && selectedScope.equals(entry.getKey())) {
-                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
-                } else {
-                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
+                // Option
+                Element option = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, entry.getValue());
+                DOM4JUtils.addAttribute(option, HTMLConstants.VALUE, entry.getKey());
+                if (entry.getKey().equals(selectedScope)) {
+                    DOM4JUtils.addAttribute(option, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
                 }
+                select.add(option);
             }
         }
 
-        select.append("</select>");
-
-        return select.toString();
-
+        return DOM4JUtils.write(select);
     }
 
 
@@ -390,39 +390,40 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
 
-        inheritedLabel = "Herité [" + inheritedLabel + "]";
+        inheritedLabel = "Hérité [" + inheritedLabel + "]";
 
         versions.put("__inherited", inheritedLabel);
 
 
-        StringBuffer select = new StringBuffer();
-
-        String disabled = "";
+        // Select
+        Element select = DOM4JUtils.generateElement(HTMLConstants.SELECT, "form-control", null);
+        DOM4JUtils.addAttribute(select, HTMLConstants.ID, "cms-version");
+        DOM4JUtils.addAttribute(select, HTMLConstants.NAME, versionName);
         if (StringUtils.isNotEmpty(po.getDeclaredProperty("osivia.cms.basePath"))) {
-            disabled = "disabled='disabled'";
+            DOM4JUtils.addAttribute(select, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
         }
-
-        select.append("<select id=\"cms-scope\" name=\"" + versionName + "\" class=\"form-control\" " + disabled + ">");
 
         if (!versions.isEmpty()) {
-            if ((selectedVersion == null) || (selectedVersion.length() == 0)) {
-                select.append("<option selected=\"selected\" value=\"\">Publiée</option>");
-            } else {
-                select.append("<option value=\"\">Publiée</option>");
+            // Default option
+            Element defaultOption = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, "Publiée");
+            DOM4JUtils.addAttribute(defaultOption, HTMLConstants.VALUE, StringUtils.EMPTY);
+            if (StringUtils.isEmpty(selectedVersion)) {
+                DOM4JUtils.addAttribute(defaultOption, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
             }
+            select.add(defaultOption);
 
             for (Entry<String, String> entry : versions.entrySet()) {
-                if ((selectedVersion != null) && (selectedVersion.length() != 0) && selectedVersion.equals(entry.getKey())) {
-                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
-                } else {
-                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
+                // Option
+                Element option = DOM4JUtils.generateElement(HTMLConstants.OPTION, null, entry.getValue());
+                DOM4JUtils.addAttribute(option, HTMLConstants.VALUE, entry.getKey());
+                if (entry.getKey().equals(selectedVersion)) {
+                    DOM4JUtils.addAttribute(option, HTMLConstants.SELECTED, HTMLConstants.INPUT_SELECTED);
                 }
+                select.add(option);
             }
         }
 
-        select.append("</select>");
-
-        return select.toString();
+        return DOM4JUtils.write(select);
     }
 
 
@@ -787,20 +788,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
 
 
         // Write HTML content
-        try {
-            StringWriter stringWriter = new StringWriter();
-            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(divParent);
-                return stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
-        } catch (IOException e) {
-            return StringUtils.EMPTY;
-        }
+        return DOM4JUtils.write(divParent);
     }
 
 

@@ -1,11 +1,14 @@
 package org.osivia.portal.api.html;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
+import org.dom4j.io.HTMLWriter;
 
 /**
  * Utility class with null-safe methods for DOM4J usage.
@@ -217,7 +220,7 @@ public final class DOM4JUtils {
 
     /**
      * Add tooltip to element.
-     * 
+     *
      * @param element element
      * @param title tooltip title
      */
@@ -231,6 +234,32 @@ public final class DOM4JUtils {
             addAttribute(element, HTMLConstants.DATA_TOGGLE, "tooltip");
             addAttribute(element, HTMLConstants.DATA_PLACEMENT, "bottom");
         }
+    }
+
+
+    /**
+     * Write HTML content.
+     * 
+     * @param element element
+     * @return HTML content
+     */
+    public static String write(Element element) {
+        String html;
+        try {
+            StringWriter stringWriter = new StringWriter();
+            HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(element);
+                html = stringWriter.toString();
+            } finally {
+                stringWriter.close();
+                htmlWriter.close();
+            }
+        } catch (IOException e) {
+            html = StringUtils.EMPTY;
+        }
+        return html;
     }
 
 }

@@ -15,6 +15,7 @@
 package org.osivia.portal.core.cms;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -97,7 +98,7 @@ public interface ICMSService {
     /**
      * Build and return all windows included in the page.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @return the windows
      * @throws CMSException
@@ -107,16 +108,17 @@ public interface ICMSService {
     /**
      * Get base URL to access ECM.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @return url
      * @throws CMSException
      */
     String getEcmDomain(CMSServiceCtx cmsCtx) throws CMSException;
 
+
     /**
      * Get urls used to access ECM specific views.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param command type of command acceded (ex : create, edit, etc.)
      * @param path the path of the page
      * @param requestParameters GET params added in the URL
@@ -125,20 +127,22 @@ public interface ICMSService {
      */
     String getEcmUrl(CMSServiceCtx cmsCtx, EcmCommand command, String path, Map<String, String> requestParameters) throws CMSException;
 
+
     /**
      * Remove a CMS fragment on a page.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @param refURI an unique identifier on the fragment to delete in the current page
      * @throws CMSException
      */
     void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI) throws CMSException;
 
+
     /**
      * Move a CMS fragment on a page (drag & drop).
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @param fromRegion the identifier of the region from the fragment is moved
      * @param fromPos position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region)
@@ -154,96 +158,105 @@ public interface ICMSService {
     /**
      * Return true if the document type is allowed in CMS mode for creation and edition.
      *
-     * @param cmsCtx context
-     * @param type the type name
+     * @param cmsCtx CMS context
+     * @param cmsPath CMS path
      * @return the permission
      */
     boolean isCmsWebPage(CMSServiceCtx cmsCtx, String cmsPath) throws CMSException;
 
+
     /**
      * Publish the current live version of a document online.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void publishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Unpublish the current online version.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void unpublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Start Publication workflow.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void askToPublishDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Cancel Publication workflow.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void cancelPublishWorkflow(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Accept publication of current document.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void validatePublicationOfDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Reject publication of current document.
      *
-     * @param cmsCtx context
+     * @param cmsCtx CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
     void rejectPublicationOfDocument(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
+
     /**
      * Delete the document.
      *
-     * @param cmsCtx context
-     * @param pagePath the path of the page
+     * @param cmsCtx CMS context
+     * @param path page path
      * @throws CMSException
      */
-    void deleteDocument(CMSServiceCtx cmsCtx, String Path) throws CMSException;
+    void deleteDocument(CMSServiceCtx cmsCtx, String path) throws CMSException;
 
 
     /**
      * Put the document in a deleted state.
      *
-     * @param cmsCtx context
-     * @param pagePath the path of the page
+     * @param cmsCtx CMS context
+     * @param docId document identifier
      * @throws CMSException
      */
     void putDocumentInTrash(CMSServiceCtx cmsCtx, String docId) throws CMSException;
 
+
     /**
-     * Get the user avatar
+     * Get user avatar.
      *
-     * @param cmsCtx
-     * @param username the user id
-     * @return
+     * @param cmsCtx CMS context
+     * @param username user identifier
+     * @return user avatar
      */
     Link getUserAvatar(CMSServiceCtx cmsCtx, String username) throws CMSException;
 
+
     /**
-     * Refresh the user avatar
+     * Refresh the user avatar.
      *
      * @param cmsCtx cms context
      * @param username username
@@ -253,11 +266,20 @@ public interface ICMSService {
 
 
     /**
-     * Get navigation menu templates.
+     * Get list templates.
      *
-     * @param cmsContext CMS context
+     * @param locale user locale
      * @return templates
      */
-    SortedMap<String, String> getMenuTemplates(CMSServiceCtx cmsContext);
+    List<ListTemplate> getListTemplates(Locale locale);
+
+
+    /**
+     * Get navigation menu templates.
+     *
+     * @param locale user locale
+     * @return templates
+     */
+    SortedMap<String, String> getMenuTemplates(Locale locale);
 
 }

@@ -34,6 +34,11 @@
     padding: 1px;
     vertical-align: top;
     
+    &.avatar-small {
+        max-height: 16px;
+        max-width: 20px;
+    }
+    
     &.avatar-big {
         max-height: 80px;
         max-width: 120px;
@@ -415,8 +420,16 @@ ul.list-group.multi-level {
 
 
 
-// Bootstrap bug fix
+// Bootstrap bugs fix
 
 .form-inline .form-group .input-group {
     width: 220px;
+}
+
+.form-group .panel {
+    margin-bottom: 0;
+}
+
+.panel pre {
+    white-space: pre-wrap;
 }
