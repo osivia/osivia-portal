@@ -139,42 +139,35 @@
 
 
 
-// Tabs
+// Tabs & navigation menu
 
-.tabs {
-    ul {
-        margin-bottom: 0;
-        padding: 0;
+@media screen and (max-width: @screen-xs-max) {
+    #tabs-menu, #navigation-menu {
+        display: none;
         
-        li {
-            margin-bottom: 3px;
+        &.active {
+            display: block;
         }
-    }
-    
-    @media screen and (max-width: @screen-xs-max) {
-        .tabs-menu {
+        
+        ul {
             position: absolute;
             top: 0;
-            left: 10px;
-            right: 10px;
+            left: @padding-base-horizontal;
+            right: @padding-base-horizontal;
             z-index: 1000;
-            display: none;
             visibility: visible;
             min-width: 160px;
-            padding: 5px 0;
+            padding: @padding-base-vertical 0;
             margin: 2px 0 0;
             background-color: #fff;
             background-clip: padding-box;
             border: 1px solid rgba(0, 0, 0, .15);
             border-radius: 4px;
-
+    
             .box-shadow(0 6px 12px rgba(0, 0, 0, .175));
             
-            &.active {
-                display: block;
-            }
-            
             li {
+                float: left;
                 width: 32%;
                 margin-left: 1%;
                 
@@ -244,28 +237,19 @@
 }
 
 @media screen and (max-width: @screen-xs-max) {
-    html {
-        .screen-wrapper();
-    }
-    
     body {
-        .screen-wrapper();
-        
-        &.with-drawer {
-            header, footer {
-                position: relative;
-                visibility: hidden;
-                height: 0;
-            }
-            
-            .drawer-toggle-btn {
-                display: block;
-            }
+        header, footer {
+            position: absolute;
+            visibility: hidden;
+            width: 100%;
         }
         
-        &:NOT(.with-drawer) {
-            header, footer {
-                display: none;
+        
+        &.with-drawer {
+            .screen-wrapper();
+
+            .drawer-toggle-btn {
+                display: block;
             }
         }
     }

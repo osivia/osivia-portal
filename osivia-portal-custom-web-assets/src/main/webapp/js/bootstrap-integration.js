@@ -8,11 +8,15 @@ $JQry(document).ready(function($) {
 
 
 
-// Responsive tabs submenu
+// Responsive tabs menu & navigation menu
 $JQry(document).ready(function($) {
 	$("[data-toggle=tabs-menu]").click(function() {
-		$(".tabs-menu").toggleClass("active");
+		$("#tabs-menu").toggleClass("active");
     });
+	
+	$("[data-toggle=navigation-menu]").click(function () {
+		$("#navigation-menu").toggleClass("active");
+	});
 });
 
 

@@ -16,6 +16,11 @@
                     <i class="glyphicons show_lines"></i>
                     <span class="text"><is:getProperty key="MENU" /></span>
                 </button>
+                
+                <!-- Toggle navigation menu button -->
+                <button type="button" class="btn navbar-btn visible-xs pull-left" data-toggle="navigation-menu">
+                    <i class="glyphicons halflings th"></i>
+                </button>
     
                 <!-- Toggle toolbar menu button -->
                 <button type="button" class="btn navbar-btn visible-xs pull-right" data-toggle="collapse" data-target="#toolbar-content">
