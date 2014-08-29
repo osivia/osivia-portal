@@ -400,6 +400,40 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
         }
+        
+        
+        
+        
+        
+        /* Desactivation of pagemarker */
+
+        String disablePageMarkerComputed = PageProperties.getProperties().getPagePropertiesMap().get("osivia.portal.disablePageMarkerComputed");
+
+        if (disablePageMarkerComputed == null) {
+
+            PageProperties.getProperties().getPagePropertiesMap().put("osivia.portal.disablePageMarkerComputed", "1");
+
+            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+
+            if (portalName != null) {
+
+                PortalObjectId portalId = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
+
+                PortalObject po = this.portalObjectContainer.getObject(portalId);
+                
+                String disablePageMarker = po.getDeclaredProperty("osivia.portal.disablePageMarker");
+                
+                if( "1".equals(disablePageMarker)){
+                    
+                    HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+
+                     if (request.getUserPrincipal() == null) {
+                          PageProperties.getProperties().getPagePropertiesMap().put("osivia.portal.disablePageMarker", "1");
+                     }
+                }
+            }
+        }
+        
 
 
         /* Le player d'un item CMS doit être rejoué en cas de refresh

@@ -47,6 +47,7 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.page.PagePathUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -101,6 +102,9 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
       
 		
 		boolean pageMarkerInsertion = true;
+		
+		if( "1".equals( PageProperties.getProperties().getPagePropertiesMap().get("osivia.portal.disablePageMarker")))
+            pageMarkerInsertion = false;		    
 		
 		if (cmd instanceof PermLinkCommand) 
 			pageMarkerInsertion = false;
