@@ -79,3 +79,12 @@ $JQry(document).ready(function($) {
 	$("[data-toggle=tooltip]").tooltip({container: 'body'});
 });
 
+
+
+// Forms in dropdown menus
+$JQry(document).ready(function($) {
+	$(".dropdown-menu .form").click(function (e) {
+		e.stopPropagation();
+	});
+});
+

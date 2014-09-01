@@ -350,10 +350,6 @@
         border-color: rgba(125, 119, 96, 0.2);
         margin: 5px 0;
     }
-    
-    .btn-toolbar {
-        margin-bottom: 3px;
-    }
 }
 
 
@@ -426,7 +422,11 @@ ul.list-group.multi-level {
 
 
 
-// Bootstrap bugs fix
+// Bootstrap customization
+
+.btn-toolbar {
+    margin-bottom: @padding-small-vertical;
+}
 
 .form-inline .form-group .input-group {
     width: 220px;
@@ -438,4 +438,8 @@ ul.list-group.multi-level {
 
 .panel pre {
     white-space: pre-wrap;
+}
+
+.dropdown-menu > li > .form {
+    padding: 3px 20px;
 }

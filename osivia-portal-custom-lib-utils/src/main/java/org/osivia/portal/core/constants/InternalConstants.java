@@ -108,7 +108,7 @@ public final class InternalConstants {
     /** Page currentcategory. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY = "osivia.toolbarSettings.pageCategory";
 
-    /** Page category list */
+    /** Page category list. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES = "osivia.toolbarSettings.pageCategories";
 
     /** Layouts list. */
@@ -204,10 +204,10 @@ public final class InternalConstants {
     /** Regions decorators attribute name. */
     public static final String ATTR_REGIONS_DECORATORS = "osivia.regions.decorators";
 
-    /** attribute if user is currently admin */
+    /** attribute if user is currently admin. */
     public static final String ATTR_USER_ADMIN = "osivia.user.administrator";
 
-    /** Requests filtered by ECM references */
+    /** Requests filtered by ECM references. */
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_LOCAL = "local";
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_NO_FILTER = "none";
     public static final String PORTAL_CMS_REQUEST_FILTERING_POLICY_GLOBAL = "global";

@@ -498,8 +498,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (item.isDropdownItem() && item.isStateItem()) {
                 element = DOM4JUtils.generateElement(HTMLConstants.SPAN, linkHTMLClass.toString(), item.getTitle(), item.getGlyphicon(), null);
             } else {
+                AccessibilityRoles role = null;
+                if (item.isDropdownItem()) {
+                    role = AccessibilityRoles.MENU_ITEM;
+                }
                 element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnClickEvent(), linkHTMLClass.toString(), item.getTitle(),
-                        item.getGlyphicon());
+                        item.getGlyphicon(), role);
                 if (item.getUrl() == null) {
                     DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
                 }

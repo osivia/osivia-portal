@@ -3,10 +3,8 @@
  */
 package org.osivia.portal.core.assistantpage;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -56,11 +55,13 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
@@ -94,13 +95,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
     private static ICMSServiceLocator cmsServiceLocator;
 
     public static ICMSService getCMSService() throws Exception {
-
         if (cmsServiceLocator == null) {
             cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
 
         return cmsServiceLocator.getCMSService();
-
     }
 
 
@@ -191,17 +190,17 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Check if the current content is managed as a web page
-     * 
+     *
      * @param ctx the portal context
      * @param page the current page
      * @return true if the type is allowed in CMS edition mode
      * @throws Exception
      */
     public static boolean checkWebPagePermission(ControllerContext ctx, Page page) throws Exception {
-        
+
         String contentPath = PagePathUtils.getContentPath(ctx, page.getId());
         String pagePath = PagePathUtils.getNavigationPath(ctx, page.getId());
-        
+
         if( ! StringUtils.equals(contentPath, pagePath))
             return false;
 
@@ -224,49 +223,58 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    private void injectCMSPortletSetting( Portal portal, Page page, PageRendition rendition, ControllerContext ctx) throws Exception {
-
-
-        Locale locale = ctx.getServerInvocation().getRequest().getLocale();
-
-
-        HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
-
-        List<Window> windows = new ArrayList<Window>();
+    /**
+     * Inject CMS portlet settings.
+     *
+     * @param portal portal
+     * @param page page
+     * @param rendition page rendition
+     * @param controllerContext controller context
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    private void injectCMSPortletSetting(Portal portal, Page page, PageRendition rendition, ControllerContext controllerContext) throws Exception {
+        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
 
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout pageLayout = this.getServiceLayout().getLayout(layoutId, true);
+
+        String pageId = PortalObjectUtils.getHTMLSafeId(page.getId());
+        URLFormat urlFormat = URLFormat.newInstance(true, true);
 
         this.synchronizeRegionContexts(rendition, page);
 
         // Get edit authorization
         CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setControllerContext(ctx);
+        cmsContext.setControllerContext(controllerContext);
 
-        String pagePath = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+        String pagePath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
 
         CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
 
         if (pubInfos.isEditableByUser()) {
-
             // Get live document
             cmsContext.setDisplayLiveVersion("1");
             CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
+            Map<String, RegionInheritance> regionsInheritance = getCMSService().getRegionsInheritance(liveDoc);
+
 
             for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
-
                 RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
 
-                // on vérifie que cette réion fait partie du layout
-                // (elle contient des portlets)
+                // on vérifie que cette région fait partie du layout (elle contient des portlets)
                 if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
-
                     String regionId = renderCtx.getId();
+                    RegionInheritance inheritance = regionsInheritance.get(regionId);
 
-                    Map<String, String> regionPorperties = renderCtx.getProperties();
+                    Map<String, String> regionProperties = renderCtx.getProperties();
 
                     // Set the current edition mode to the region
-                    regionPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
+                    regionProperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(controllerContext).toString());
+                    // Inheritance mode
+                    if (inheritance != null) {
+                        regionProperties.put("osivia.cms.inheritance", inheritance.getValue());
+                    }
 
 
                     // build and set url for create fgt in region in CMS mode
@@ -274,64 +282,66 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     requestParameters.put("region", regionId);
 
                     String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
-                    regionPorperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
-                    regionPorperties.put("osivia.language", locale.getLanguage());
+                    regionProperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
+                    regionProperties.put("osivia.language", locale.getLanguage());
 
-                    URLContext urlContext = ctx.getServerInvocation().getServerContext().getURLContext();
+                    URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-                    String resfreshUrl= ctx.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(true, true));
-                    regionPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
+                    String resfreshUrl = controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
+                    regionProperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
                     String ecmBaseUrl = getCMSService().getEcmDomain(cmsContext);
-                    regionPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
+                    regionProperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
+
+                    // Save inheritance configuration command
+                    ControllerCommand saveInheritanceConfigurationCommand = new SaveInheritanceConfigurationCommand(pageId, liveDoc.getPath(), regionId, null);
+                    String saveInheritanceConfigurationURL = controllerContext.renderURL(saveInheritanceConfigurationCommand, urlContext, urlFormat);
+                    regionProperties.put("osivia.cms.saveInheritanceConfigurationURL", saveInheritanceConfigurationURL);
+
 
                     // Le mode Ajax est incompatble avec le mode "edition cms"
                     // - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
                     // - sur le close, la requete n'est pas traitée en AJAX
                     // DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
-
                     for (Object windowCtx : renderCtx.getWindows()) {
-
                         WindowRendererContext wrc = (WindowRendererContext) windowCtx;
-                        Map<String, String> windowPorperties = wrc.getProperties();
+                        Map<String, String> windowProperties = wrc.getProperties();
                         String windowId = wrc.getId();
 
+                        // Update region properties if it contains inherited window
+                        if (BooleanUtils.toBoolean(windowProperties.get("osivia.cms.inherited"))) {
+                            regionProperties.put("osivia.cms.inherited", String.valueOf(true));
+                        }
+
                         if (!windowId.endsWith("PIA_EMPTY")) {
-
-
-
                             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
                             Window window = (Window) this.getPortalObjectContainer().getObject(poid);
 
                             if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
-
                                 // Set the current edition mode to the window
-                                windowPorperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(ctx).toString());
-
+                                windowProperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(controllerContext).toString());
 
                                 // build and set urls for create/edit fgts in window in CMS mode
                                 String refURI = window.getProperty("osivia.refURI");
-                                windowPorperties.put("osivia.windowId", refURI);
+                                windowProperties.put("osivia.windowId", refURI);
 
                                 requestParameters = new HashMap<String, String>();
                                 requestParameters.put("belowURI", refURI);
 
-                                windowPorperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
+                                windowProperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
                                 String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
-                                windowPorperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
-                                windowPorperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
-
-
+                                windowProperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
+                                windowProperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
                                 requestParameters.put("refURI", refURI);
                                 String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
-                                windowPorperties.put("osivia.cmsEditUrl", cmsEditUrl);
+                                windowProperties.put("osivia.cmsEditUrl", cmsEditUrl);
 
 
                                 // To reload only current window on backup
                                 InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(poid, Mode.VIEW, WindowState.NORMAL);
-                                String url = new PortalURLImpl(endPopupCMD, ctx, null, null).toString();
+                                String url = new PortalURLImpl(endPopupCMD, controllerContext, null, null).toString();
 
 
                                 // 20131004JSS : prise en compte des urls web
@@ -349,34 +359,27 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                                 }
 
 
-                                windowPorperties.put("osivia.cmsEditCallbackUrl", url);
+                                windowProperties.put("osivia.cmsEditCallbackUrl", url);
                                 // Sera ignoré car on n'est pas en ajax
-                                windowPorperties.put("osivia.cmsEditCallbackId", windowId);
+                                windowProperties.put("osivia.cmsEditCallbackId", windowId);
 
+                                // Delete fragment command
+                                ControllerCommand deleteCMD = new CMSDeleteFragmentCommand(pageId, liveDoc.getPath(), refURI);
+                                String deleteFragmentUrl = controllerContext.renderURL(deleteCMD, urlContext, urlFormat);
+                                windowProperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
 
-
-
-
-
-                                CMSDeleteFragmentCommand deleteCMD = new CMSDeleteFragmentCommand(window.getPage().getId().toString(PortalObjectPath.SAFEST_FORMAT), liveDoc.getPath(), refURI);
-                                String deleteFragmentUrl = ctx.renderURL(deleteCMD, urlContext,	URLFormat.newInstance(true, true));
-                                windowPorperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
-
-
-                                windowPorperties.put("osivia.language", locale.getLanguage());
-
+                                // Current locale
+                                windowProperties.put("osivia.language", locale.getLanguage());
                             }
-
                         }
                     }
                 }
             }
         }
-
     }
 
+
     @Override
-    @SuppressWarnings("unchecked")
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
         ControllerResponse resp = (ControllerResponse) cmd.invokeNext();

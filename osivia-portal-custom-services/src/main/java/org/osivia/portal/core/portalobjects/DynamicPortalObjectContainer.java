@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -25,19 +25,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationContext;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.impl.model.portal.ContextImpl;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalImpl;
-import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.impl.model.portal.WindowImpl;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -55,11 +53,9 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cms.CMSEditableWindow;
-import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
@@ -84,13 +80,13 @@ import org.osivia.portal.core.tracker.RequestContextUtil;
 
 public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements IDynamicObjectContainer, Serializable {
 	private final Log logger = LogFactory.getLog(DynamicPortalObjectContainer.class);
-	
+
     private INotificationsService notificationService;
-    
+
     public INotificationsService getNotificationService()   {
-        if( notificationService == null)
-            notificationService = NotificationsUtils.getNotificationsService();
-        return notificationService;
+        if( this.notificationService == null)
+            this.notificationService = NotificationsUtils.getNotificationsService();
+        return this.notificationService;
     }
 
 	private ITracker tracker;
@@ -319,7 +315,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	}
 
 
-	public List<DynamicWindowBean> getEditableWindows(PortalObjectId pageId) {
+    public List<DynamicWindowBean> getEditableWindows(PortalObjectContainer container, PortalObjectId pageId) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
@@ -381,114 +377,141 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 			if (ns != null) {
-				String cmsPath[] = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+                Page page = (Page) this.getObject(container, pageId);
+                Portal portal = page.getPortal();
+                Page defaultPage = portal.getDefaultPage();
 
-				if (cmsPath != null) {
+                // CMS path
+                String[] cmsPath = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+                // CMS base path
+                String cmsBasePath = page.getDeclaredProperty("osivia.cms.basePath");
+                // Site path
+                String sitePath = defaultPage.getDeclaredProperty("osivia.cms.basePath");
 
-					String windowsEditableWindowsMode = "";
+                // Publish space path
+                String publishSpacePath;
+                // Current path
+                String path;
+
+                if ((cmsPath == null) && (cmsBasePath == null)) {
+                    publishSpacePath = null;
+                    path = sitePath;
+                } else if (cmsPath != null) {
+                    PortalObject parent = page.getParent();
+                    publishSpacePath = parent.getDeclaredProperty("osivia.cms.basePath");
+                    path = cmsPath[0];
+                } else {
+                    publishSpacePath = cmsBasePath;
+                    path = cmsBasePath;
+                }
+
+                // Scope
+                String scope = defaultPage.getDeclaredProperty("osivia.cms.navigationScope");
 
 
-					cmsReadItemContext.setDisplayLiveVersion("0");
-					
+                if (path != null) {
+                    String windowsEditableWindowsMode = "";
 
-                    EditionState state= ContributionService.getNavigationalState(controllerContext, ns);
-                    if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
+                    cmsReadItemContext.setDisplayLiveVersion("0");
+
+                    EditionState state = ContributionService.getNavigationalState(controllerContext, ns);
+                    if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
                         cmsReadItemContext.setForcedLivePath(state.getDocPath());
                     }
 
 
-					// SILENT MODE
+                    // SILENT MODE
                     int notificationSized = -1;
-                    if( controllerContext != null)
-                        notificationSized = getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext)).size();
+                    if (controllerContext != null)
+                        notificationSized = this.getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext)).size();
 
- //                  try   {
-					
-                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, cmsPath[0]) == Level.allowPreviewVersion) {
+                    // try {
 
-						cmsReadItemContext.setDisplayLiveVersion("1");
+                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
+
+                        cmsReadItemContext.setDisplayLiveVersion("1");
                         windowsEditableWindowsMode = "preview";
 
                     }
 
-					// Pour performances
-					windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0]);
 
-					if( windows != null)   {
-			            // Réinitialisation par l'utilisateur
+                    // Pour performances
+                    windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows."
+                            + windowsEditableWindowsMode + "." + path);
 
-			            if(  PageProperties.getProperties().isRefreshingPage())  {
-			                if( invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0] + ".resfreshed") == null) {
-			                    invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0] + ".resfreshed", "1");
-			                    windows = null;
-			                }
-			            }
-					}
-
-
-					if (windows == null) {
-						windows = new ArrayList<DynamicWindowBean>();
-
-
-
-						List<CMSEditableWindow> editableWindows = this.getCMSService().getEditableWindows(cmsReadItemContext, cmsPath[0]);
-
-
-						for (CMSEditableWindow editableWindow : editableWindows) {
-							// Création des dynamicWindowBeans
-
-							Map<String, String> dynaProps = new HashMap<String, String>();
-							for (String key : editableWindow.getApplicationProperties().keySet()) {
-								dynaProps.put(key, editableWindow.getApplicationProperties().get(key));
-							}
-							dynaProps.put("osivia.dynamic.unclosable", "1");
-
-							dynaProps.put("osivia.dynamic.cmsEditable", "1");
-							dynaProps.put("osivia.dynamic.cmsEditable.cmsPath", cmsPath[ 0]);
-
-							DynamicWindowBean dynaWindow = new DynamicWindowBean(pageId, editableWindow.getName(),
-									editableWindow.getApplicationID(), dynaProps, null);
-							dynaWindow.setUniqueID(null);
-
-							windows.add(dynaWindow);
-						}
- 
-						invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
-					}
-					
-/*					
-                    } catch( Exception e){
-                        // SILENT MODE > Catch Exceptions 
-                        
-                        invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0], windows);
-                        
-                      
-                        // erreur dues à la confusion entre contribution front office et edition mode page
-                        // des contributions front office 
-                        // CONSTAT : folder live et non publié sont en erreur car sont considérés comme NOT FOUND
-                        // PAS FORCEMENT GRAVE ....
-
+                    if (windows != null) {
+                        // Réinitialisation par l'utilisateur
+                        if (PageProperties.getProperties().isRefreshingPage()) {
+                            if (invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + path
+                                    + ".resfreshed") == null) {
+                                invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + path
+                                        + ".resfreshed", "1");
+                                windows = null;
+                            }
+                        }
                     }
-                    */
+
+
+                    if (windows == null) {
+                        windows = new ArrayList<DynamicWindowBean>();
+
+                        // Editable windows
+                        List<CMSEditableWindow> editableWindows = this.getCMSService().getEditableWindows(cmsReadItemContext, path, publishSpacePath, sitePath,
+                                scope);
+
+
+                        for (CMSEditableWindow editableWindow : editableWindows) {
+                            // Création des dynamicWindowBeans
+
+                            Map<String, String> dynaProps = new HashMap<String, String>();
+                            for (String key : editableWindow.getApplicationProperties().keySet()) {
+                                dynaProps.put(key, editableWindow.getApplicationProperties().get(key));
+                            }
+                            dynaProps.put("osivia.dynamic.unclosable", "1");
+
+                            dynaProps.put("osivia.dynamic.cmsEditable", "1");
+                            dynaProps.put("osivia.dynamic.cmsEditable.cmsPath", path);
+
+                            DynamicWindowBean dynaWindow = new DynamicWindowBean(pageId, editableWindow.getName(), editableWindow.getApplicationID(),
+                                    dynaProps, null);
+                            dynaWindow.setUniqueID(null);
+
+                            windows.add(dynaWindow);
+                        }
+
+                        invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + path, windows);
+                    }
+
+                    /*
+                     * } catch( Exception e){
+                     * // SILENT MODE > Catch Exceptions
+                     *
+                     * invocation.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + windowsEditableWindowsMode + "." + cmsPath[0],
+                     * windows);
+                     *
+                     *
+                     * // erreur dues à la confusion entre contribution front office et edition mode page
+                     * // des contributions front office
+                     * // CONSTAT : folder live et non publié sont en erreur car sont considérés comme NOT FOUND
+                     * // PAS FORCEMENT GRAVE ....
+                     *
+                     * }
+                     */
                     // SILENT MODE > catch notifications
-                   
+
                     // erreur due également à la confusion entre contribution front office et edition mode page
-                    // des contributions front office 
+                    // des contributions front office
                     // (ex: folder live sur PublishInfosCommand est considérée comme inaccessible par CmsPermissionHelper)
-                                        
-                    //TODO : bien distinguer l'edition en mode page et l'edition live
-                    
-                    if( notificationSized != -1)  {
-                        List<Notifications>       notificationsAfter = getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext));
-                        if( notificationsAfter.size() > notificationSized)
-                            notificationsAfter.remove(notificationsAfter.size() -1);
+
+                    // TODO : bien distinguer l'edition en mode page et l'edition live
+
+                    if (notificationSized != -1) {
+                        List<Notifications> notificationsAfter = this.getNotificationService().getNotificationsList(
+                                new PortalControllerContext(controllerContext));
+                        if (notificationsAfter.size() > notificationSized)
+                            notificationsAfter.remove(notificationsAfter.size() - 1);
                     }
-				
-					
-					
-					
-					
-				}
+                }
 			}
 
 		} catch (Exception e) {
@@ -498,7 +521,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		return windows;
 	}
 
-	public List<DynamicWindowBean> getPageWindows(PortalObjectId pageId) {
+    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
@@ -508,7 +531,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}
 		}
 
-		for (DynamicWindowBean windowBean : this.getEditableWindows(pageId)) {
+        for (DynamicWindowBean windowBean : this.getEditableWindows(container, pageId)) {
 			windows.add(windowBean);
 		}
 
@@ -610,10 +633,10 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		}
 
 		PortalObject po = container.getNonDynamicObject(parentId);
-		
+
 		if( po instanceof PageImpl)
 		    return new DynamicPersistentPage(container, (PageImpl) po, this);
-		
+
 		// Page parent non dynamique
 		return container.getObject(parentId);
 	}
@@ -665,7 +688,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 
-		for (DynamicWindowBean dynamicWindow : this.getPageWindows(pageId)) {
+            for (DynamicWindowBean dynamicWindow : this.getPageWindows(container, pageId)) {
 			if (dynamicWindow.getWindowId().equals(id)) {
 
 				Page parentPage = (Page) this.getParent(container, id);
@@ -682,7 +705,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 			DynamicPage dynamicPage =  CMSTemplatePageFactory.getCMSPage(this, container, objectPath);
-			
+
 			return dynamicPage;
 		}
 
@@ -697,14 +720,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			if (page != null) {
 
 				String windowName = id.getPath().getLastComponentName();
-				
+
 				return page.getChild(windowName);
 				/*
 				WindowImpl templateWindow = (WindowImpl) page.getTemplate().getChild(windowName);
 				try {
 				Window window = new DynamicTemplateWindow(page, templateWindow, templateWindow.getName(), ((PageImpl) page.getTemplate())
 						.getObjectNode().getContext(), this);
-				
+
 				return window;
 				} catch( Exception e)   {
 				    e.printStackTrace();
@@ -740,7 +763,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null,this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
-				
+
 				return dynamicPage.getChild(windowName);
 				/*
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);
@@ -777,7 +800,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 						dynamicPageBean.getName(), dynamicPageBean.getDisplayNames(), (PageImpl) template, null, this, dynamicPageBean,
 						templateId);
 				String windowName = id.getPath().getLastComponentName();
-				
+
                 return dynamicPage.getChild(windowName);
                 /*
 				WindowImpl templateWindow = (WindowImpl) template.getChild(windowName);

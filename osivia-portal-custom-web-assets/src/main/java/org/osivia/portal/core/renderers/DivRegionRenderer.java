@@ -24,6 +24,8 @@ package org.osivia.portal.core.renderers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -42,10 +46,14 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 import org.osivia.portal.core.theming.IRegionRendererContext;
@@ -61,8 +69,8 @@ import org.osivia.portal.core.theming.RegionDecorator;
  */
 public class DivRegionRenderer extends AbstractObjectRenderer implements RegionRenderer {
 
-    /** Internationalization service. */
-    private final IInternationalizationService internationalizationService;
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
 
     /** list of regions in head. */
     private final List<String> headerRegions;
@@ -74,7 +82,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public DivRegionRenderer() {
         super();
 
-        this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
         this.headerRegions = new ArrayList<String>();
         this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
@@ -94,6 +104,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         } else {
             locale = Locale.US;
         }
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Wizard mode indicator
         boolean wizard = false;
@@ -124,51 +135,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // in cms mode, create a new fragment on the top of this region
         if (this.showCmsTools(rendererContext, irrc)) {
-            // Add fragment            
-            String addFragmentURL = rendererContext.getProperty("osivia.cmsCreateUrl");
-            StringBuilder addFragmentOnClick = new StringBuilder();
-            addFragmentOnClick.append("callbackUrl='");
-            addFragmentOnClick.append(rendererContext.getProperty("osivia.cmsCreateCallBackURL"));
-            addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
-            addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
-            addFragmentOnClick.append("');");
-            String addFragmentTitle = this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale);
-            
-            Element addFragment = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh",
-                    addFragmentTitle,
-                    "halflings plus");
+            this.printFragmentCommands(rendererContext, irrc, bundle, markup);
 
-            // Empty region indicator
-            Element emptyRegionIndicator = null;
-            if (rrc.getWindows().size() == 1) {
-                WindowRendererContext wrc = (WindowRendererContext) rrc.getWindows().iterator().next();
-                if (wrc.getId().contains("_PIA_EMPTY")) {
-                    String emptyRegionIndicatorTitle = this.internationalizationService.getString("CMS_EMPTY_REGION", locale);
-                    emptyRegionIndicator = DOM4JUtils.generateElement(HTMLConstants.P, "text-muted", emptyRegionIndicatorTitle, "transfer", null);
-                    DOM4JUtils.addAttribute(emptyRegionIndicator, HTMLConstants.ID, "emptyRegion_" + rrc.getId());
-                }
+            if (!BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"))) {
+                // Begin of DIV for Drag n drop
+                // each cms region is a drag n drop zone
+                markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
             }
-
-            // Write HTML
-            HTMLWriter htmlWriter = new HTMLWriter(markup);
-            htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(addFragment);
-                if (emptyRegionIndicator != null) {
-                    htmlWriter.write(emptyRegionIndicator);
-                }
-            } catch (IOException e) {
-                // Do nothing
-            }
-            
-
-            // Begin of DIV for Drag n drop
-            // each cms region is a drag n drop zone
-            markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
         }
 
         // Add portlet link
-        this.addPortletLink(rendererContext, irrc, locale, markup);
+        this.addPortletLink(rendererContext, irrc, bundle, markup);
 
         // Add header decorator
         RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
@@ -203,7 +180,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // End of DIV for Drag n drop
-        if (this.showCmsTools(rendererContext, irrc)) {
+        if (this.showCmsTools(rendererContext, irrc) && !BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"))) {
             markup.print("</div>");
         }
 
@@ -221,14 +198,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param irrc region renderer context
      * @return true if CMS tools must be shown
      */
-    private Boolean showCmsTools(RendererContext rendererContext, IRegionRendererContext irrc) {
-        Boolean showCmsTools = false;
-
-        String property = irrc.getProperty("osivia.cmsShowTools");
-        if (property != null) {
-            showCmsTools = Boolean.valueOf(property);
-        }
-
+    private boolean showCmsTools(RendererContext rendererContext, IRegionRendererContext irrc) {
+        boolean showCmsTools = BooleanUtils.toBoolean(irrc.getProperty("osivia.cmsShowTools"));
         return irrc.isCMS() && showCmsTools;
     }
 
@@ -238,11 +209,11 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      *
      * @param rendererContext renderer context
      * @param irrc region renderer context
-     * @param locale current locale
+     * @param bundle internationalization bundle
      * @param markup markup
      * @throws RenderException
      */
-    private void addPortletLink(RendererContext rendererContext, IRegionRendererContext irrc, Locale locale, PrintWriter markup) throws RenderException {
+    private void addPortletLink(RendererContext rendererContext, IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) throws RenderException {
         // Lien d'ajout de portlet
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
             // Button
@@ -252,11 +223,11 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             String text;
             if (irrc.isCMS()) {
                 href = HTMLConstants.A_HREF_DEFAULT;
-                text = this.internationalizationService.getString("REGION_CMS", locale);
+                text = bundle.getString("REGION_CMS");
                 button.addAttribute(QName.get(HTMLConstants.DISABLED), HTMLConstants.DISABLED);
             } else {
                 href = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
-                text = this.internationalizationService.getString("REGION_TEMPLATE", locale);
+                text = bundle.getString("REGION_TEMPLATE");
                 button.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + irrc.getId() + "'");
 
                 // Glyph
@@ -273,6 +244,155 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
             // Write HTML data
             markup.write(button.asXML());
+        }
+    }
+
+
+    /**
+     * Print fragment commands.
+     *
+     * @param rendererContext renderer context
+     * @param irrc region renderer context
+     * @param bundle internationalization bundle
+     * @param markup print writer markup
+     */
+    private void printFragmentCommands(RendererContext rendererContext, IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
+        RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty("osivia.cms.inheritance"));
+        boolean inherited = BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"));
+        String saveURL = irrc.getProperty("osivia.cms.saveInheritanceConfigurationURL");
+
+
+        // Parent DIV
+        Element parent = DOM4JUtils.generateDivElement(null);
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        parent.add(toolbar);
+
+
+        // Button group #1
+        Element group = DOM4JUtils.generateDivElement("btn-group");
+        toolbar.add(group);
+
+
+        // Add fragment button
+        Element addFragmentButton;
+        String text = bundle.getString("ADD");
+        if (inherited) {
+            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", text, "halflings plus", null);
+        } else {
+            // Add fragment button
+            String addFragmentURL = rendererContext.getProperty("osivia.cmsCreateUrl");
+            StringBuilder addFragmentOnClick = new StringBuilder();
+            addFragmentOnClick.append("callbackUrl='");
+            addFragmentOnClick.append(rendererContext.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
+            addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
+            addFragmentOnClick.append("');");
+
+            addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", text,
+                    "halflings plus");
+        }
+        DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
+        group.add(addFragmentButton);
+
+
+        // Dropdown menu container (button group #2)
+        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
+        toolbar.add(dropdownContainer);
+
+        // Dropdown menu button
+        Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
+                "halflings uni-wrench", null);
+        DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
+        dropdownButton.add(caret);
+        dropdownContainer.add(dropdownButton);
+
+        // Dropdown menu
+        Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null, null, AccessibilityRoles.MENU);
+        dropdownContainer.add(dropdownMenu);
+
+        // Dropdown header
+        Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_INHERITANCE_HEADER"), null,
+                AccessibilityRoles.PRESENTATION);
+        dropdownMenu.add(dropdownHeader);
+
+        // Dropdown item
+        Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+        dropdownMenu.add(dropdownItem);
+
+        // Form
+        Element form = DOM4JUtils.generateElement(HTMLConstants.FORM, "form", null, null, AccessibilityRoles.FORM);
+        DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, StringUtils.substringBefore(saveURL, "?"));
+        DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_GET);
+        dropdownItem.add(form);
+
+        // Hidden inputs
+        for (String parameter : StringUtils.split(StringUtils.substringAfter(saveURL, "?"), "&")) {
+            Element hiddenInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+            DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.TYPE, "hidden");
+            DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.NAME, StringUtils.substringBefore(parameter, "="));
+            try {
+                DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.VALUE, URLDecoder.decode(StringUtils.substringAfter(parameter, "="), CharEncoding.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+            form.add(hiddenInput);
+        }
+
+
+        for (RegionInheritance value : RegionInheritance.values()) {
+            // Radio container
+            Element radioContainer = DOM4JUtils.generateDivElement("radio");
+            form.add(radioContainer);
+
+            // Radio label
+            Element radioLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
+            radioContainer.add(radioLabel);
+
+            // Radio input
+            Element radioInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+            DOM4JUtils.addAttribute(radioInput, HTMLConstants.TYPE, "radio");
+            DOM4JUtils.addAttribute(radioInput, HTMLConstants.NAME, "inheritance");
+            DOM4JUtils.addAttribute(radioInput, HTMLConstants.VALUE, StringUtils.trimToEmpty(value.getValue()));
+            if (value.equals(inheritance)) {
+                DOM4JUtils.addAttribute(radioInput, HTMLConstants.CHECKED, HTMLConstants.CHECKED);
+            }
+            radioLabel.add(radioInput);
+
+            radioLabel.setText(bundle.getString(value.getInternationalizationKey()));
+
+            // Help message
+            Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.SPAN, "help-block", bundle.getString(value.getInternationalizationKey() + "_HELP"));
+            radioLabel.add(radioHelp);
+        }
+
+        // Submit button
+        Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary", bundle.getString("SAVE"));
+        DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
+        form.add(submit);
+
+
+        // Empty region indicator
+        if (irrc.getWindows().size() == 1) {
+            WindowRendererContext wrc = (WindowRendererContext) irrc.getWindows().iterator().next();
+            if (wrc.getId().contains("_PIA_EMPTY")) {
+                String emptyRegionIndicatorTitle = bundle.getString("CMS_EMPTY_REGION");
+                Element emptyRegionIndicator = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default btn-block disabled", emptyRegionIndicatorTitle,
+                        "transfer", null);
+                DOM4JUtils.addAttribute(emptyRegionIndicator, HTMLConstants.ID, "emptyRegion_" + irrc.getId());
+                parent.add(emptyRegionIndicator);
+            }
+        }
+
+        // Write HTML
+        HTMLWriter htmlWriter = new HTMLWriter(markup);
+        htmlWriter.setEscapeText(false);
+        try {
+            htmlWriter.write(parent);
+        } catch (IOException e) {
+            // Do nothing
         }
     }
 

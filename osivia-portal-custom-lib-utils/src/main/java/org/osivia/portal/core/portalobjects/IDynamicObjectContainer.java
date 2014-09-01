@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,23 +24,23 @@ import org.osivia.portal.core.page.PortalObjectContainer;
 
 
 public interface IDynamicObjectContainer {
-	
+
 	public PortalObject getObject(PortalObjectContainer container, PortalObjectId id);
-	
+
 	public void startPersistentIteration();
 	public void stopPersistentIteration();
-	
-	
+
+
 	public void addDynamicWindow( DynamicWindowBean window );
 	public List<DynamicWindowBean> getDynamicWindows( );
-	public void setDynamicWindows( List<DynamicWindowBean> windows);	
-	public void removeDynamicWindow( String dynamicWindowId );	
-	
-	public List<DynamicWindowBean> getPageWindows( PortalObjectId pageId);
-	
+	public void setDynamicWindows( List<DynamicWindowBean> windows);
+	public void removeDynamicWindow( String dynamicWindowId );
+
+    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId);
+
 	public void addDynamicPage( DynamicPageBean window );
 	public List<DynamicPageBean> getDynamicPages( );
-	public void setDynamicPages( List<DynamicPageBean> windows);	
-	public void removeDynamicPage( String dynamicWindowId );	
+	public void setDynamicPages( List<DynamicPageBean> windows);
+	public void removeDynamicPage( String dynamicWindowId );
 
 }

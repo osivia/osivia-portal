@@ -95,15 +95,42 @@ public interface ICMSService {
 
     List<CMSPage> computeUserPreloadedPages(CMSServiceCtx cmsCtx) throws CMSException;
 
+
     /**
-     * Build and return all windows included in the page.
+     * Build and return all editable windows included and inherided in the page.
      *
-     * @param cmsCtx CMS context
-     * @param pagePath the path of the page
-     * @return the windows
+     * @param cmsContext CMS context
+     * @param path current path
+     * @param publishSpacePath publish space path
+     * @param sitePath site path
+     * @param navigationScope navigation scope
+     * @return editable windows
      * @throws CMSException
      */
-    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsContext, String path, String publishSpacePath, String sitePath, String navigationScope)
+            throws CMSException;
+
+
+    /**
+     * Get regions inheritance.
+     *
+     * @param item CMS item
+     * @return regions inheritance
+     */
+    Map<String, RegionInheritance> getRegionsInheritance(CMSItem item);
+
+
+    /**
+     * Save region inheritance configuration.
+     * 
+     * @param cmsContext CMS context
+     * @param path current path
+     * @param regionName region name
+     * @param inheritance region inheritance
+     * @throws CMSException
+     */
+    void saveInheritanceConfiguration(CMSServiceCtx cmsContext, String path, String regionName, RegionInheritance inheritance) throws CMSException;
+
 
     /**
      * Get base URL to access ECM.

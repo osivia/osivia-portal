@@ -46,6 +46,8 @@ import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -69,8 +71,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     /** Delete portlet message. */
     private static final String CMS_DELETE_CONFIRM_MESSAGE = "CMS_DELETE_CONFIRM_MESSAGE";
 
-    /** Internationalization service. */
-    private final IInternationalizationService internationalizationService;
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
 
 
     /**
@@ -79,7 +81,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     public DivWindowRenderer() {
         super();
 
-        this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        // Bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -94,6 +99,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         } else {
             locale = Locale.getDefault();
         }
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         PrintWriter out = rendererContext.getWriter();
 
@@ -160,7 +166,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Delete confirmation fancybox
             Element deleteConfirmation;
             try {
-                deleteConfirmation = this.generateDeleteFancyBox(locale, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
+                deleteConfirmation = this.generateDeleteFancyBox(bundle, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
             } catch (UnsupportedEncodingException e) {
                 throw new RenderException(e);
             }
@@ -183,15 +189,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             editionOnClick.append("'; setCallbackFromEcmParams('', '");
             editionOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             editionOnClick.append("');");
-            String editionTitle = this.internationalizationService.getString("CMS_EDIT_FRAGMENT", locale);
-            Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-default fancyframe_refresh", null,
+            String editionTitle = bundle.getString("CMS_EDIT_FRAGMENT");
+            Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-default fancyframe_refresh", editionTitle,
                     "halflings pencil");
-            DOM4JUtils.addTooltip(edition, editionTitle);
             buttonsGroup.add(edition);
 
             // Delete button
             String deleteURL = "#delete_" + windowId;
-            String deleteTitle = this.internationalizationService.getString("CMS_DELETE_FRAGMENT", locale);
+            String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");
             Element delete = DOM4JUtils.generateLinkElement(deleteURL, null, null, "btn btn-default no-ajax-link fancybox_inline", null, "halflings remove");
             DOM4JUtils.addTooltip(delete, deleteTitle);
             buttonsGroup.add(delete);
@@ -319,9 +324,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
             addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
-            String addFragmentTitle = this.internationalizationService.getString("CMS_ADD_FRAGMENT", locale);
+
             Element addFragment = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh",
-                    addFragmentTitle, "halflings plus");
+                    bundle.getString("ADD"), "halflings plus");
+            DOM4JUtils.addTooltip(addFragment, bundle.getString("CMS_ADD_FRAGMENT"));
 
             // Write HTML
             HTMLWriter htmlWriter = new HTMLWriter(out);
@@ -343,23 +349,18 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param wrc window context
      * @return true if CMS tools must be shown
      */
-    private Boolean showCmsTools(WindowRendererContext wrc) {
-        // Déterminer si la window appartient à une région CMS
-        Boolean regionCms = false;
-        Boolean showCmsTools = false;
+    private boolean showCmsTools(WindowRendererContext wrc) {
+        boolean showCmsTools = false;
+
         if (wrc instanceof WindowContext) {
             WindowContext wc = (WindowContext) wrc;
 
-            if ((wc.getRegionCms() != null) && (wrc.getProperty("osivia.windowId") != null)) {
-                regionCms = wc.getRegionCms();
-            }
-
-            if (regionCms && (wrc.getProperty("osivia.cmsShowTools") != null) && Boolean.valueOf(wrc.getProperty("osivia.cmsShowTools"))) {
-                showCmsTools = true;
-            } else {
-                showCmsTools = false;
+            if (BooleanUtils.isTrue(wc.getRegionCms()) && (wrc.getProperty("osivia.windowId") != null)) {
+                showCmsTools = BooleanUtils.toBoolean(wrc.getProperty("osivia.cmsShowTools"))
+                        && !BooleanUtils.toBoolean(wrc.getProperty("osivia.cms.inherited"));
             }
         }
+
         return showCmsTools;
     }
 
@@ -469,10 +470,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         if (onclick != null) {
             a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
         }
-
-        if( title != null)
+        if (title != null) {
             a.addAttribute(QName.get(HTMLConstants.TITLE), title);
-
+        }
 
         // HTML class
         StringBuilder htmlClass = new StringBuilder();
@@ -498,13 +498,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     /**
      * Prepare a fancybox for deleting the fragment.
      *
-     * @param locale current locale
+     * @param bundle internationalization bundle
      * @param urlDelete delete fragment URL
      * @param fragmentId fragment identifier
      * @return fancybox div
      * @throws UnsupportedEncodingException
      */
-    private Element generateDeleteFancyBox(Locale locale, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
+    private Element generateDeleteFancyBox(Bundle bundle, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
         String id = "delete_".concat(fragmentId);
 
         String[] splitURL = urlDelete.split("\\?");
@@ -527,7 +527,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         container.add(form);
 
         // Message
-        Element message = DOM4JUtils.generateElement(HTMLConstants.P, null, this.internationalizationService.getString(CMS_DELETE_CONFIRM_MESSAGE, locale));
+        Element message = DOM4JUtils.generateElement(HTMLConstants.P, null, bundle.getString(CMS_DELETE_CONFIRM_MESSAGE));
         form.add(message);
 
         // Hidden fields
@@ -541,13 +541,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // OK button
-        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning",
-                this.internationalizationService.getString("YES", locale), "halflings warning-sign", null);
+        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning", bundle.getString("YES"), "halflings warning-sign",
+                null);
         DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         form.add(okButton);
 
         // Cancel button
-        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", this.internationalizationService.getString("NO", locale));
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", bundle.getString("NO"));
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
         form.add(cancelButton);

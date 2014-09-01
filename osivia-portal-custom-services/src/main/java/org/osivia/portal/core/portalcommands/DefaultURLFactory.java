@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -32,6 +32,7 @@ import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
+import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -330,7 +331,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             }
             return asu;
         }
-        
+
         if (cmd instanceof CMSPutDocumentInTrashCommand) {
             CMSPutDocumentInTrashCommand command = (CMSPutDocumentInTrashCommand) cmd;
 
@@ -344,10 +345,10 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
                 asu.setParameterValue("docId", URLEncoder.encode(command.getDocId(), "UTF-8"));
                 asu.setParameterValue("docPath", URLEncoder.encode(command.getDocPath(), "UTF-8"));
-                
+
                 if( command.getBackCMSPageMarker() != null)
                     asu.setParameterValue("backCMSPageMarker", URLEncoder.encode(command.getBackCMSPageMarker(), "UTF-8"));
-                	
+
 
             } catch (UnsupportedEncodingException e) {
                 // ignore
@@ -396,8 +397,8 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             }
             return asu;
         }
-        
-        
+
+
         if (cmd instanceof ChangeContributionModeCommand) {
             ChangeContributionModeCommand command = (ChangeContributionModeCommand) cmd;
 
@@ -418,8 +419,8 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             }
             return asu;
         }
-        
-        
+
+
         if (cmd instanceof PublishContributionCommand) {
             PublishContributionCommand command = (PublishContributionCommand) cmd;
 
@@ -438,6 +439,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             } catch (UnsupportedEncodingException e) {
                 // ignore
             }
+            return asu;
+        }
+
+
+        if (cmd instanceof SaveInheritanceConfigurationCommand) {
+            // Save inheritance configuration
+            SaveInheritanceConfigurationCommand command = (SaveInheritanceConfigurationCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            try {
+                asu.setParameterValue("action", SaveInheritanceConfigurationCommand.ACTION);
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), CharEncoding.UTF_8));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), CharEncoding.UTF_8));
+                asu.setParameterValue("regionName", URLEncoder.encode(command.getRegionName(), CharEncoding.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
             return asu;
         }
 
