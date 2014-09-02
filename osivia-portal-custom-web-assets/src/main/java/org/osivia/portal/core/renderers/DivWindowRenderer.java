@@ -316,6 +316,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // in cms mode, create a new fragment below the current window
         if (this.showCmsTools(wrc)) {
+            // Toolbar
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+
+            // Button group
+            Element group = DOM4JUtils.generateDivElement("btn-group");
+            toolbar.add(group);
+
             // Add fragment
             String addFragmentURL = wrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
@@ -325,15 +332,16 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
 
-            Element addFragment = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh",
-                    bundle.getString("ADD"), "halflings plus");
-            DOM4JUtils.addTooltip(addFragment, bundle.getString("CMS_ADD_FRAGMENT"));
+            Element addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(),
+                    "btn btn-default fancyframe_refresh", bundle.getString("ADD"), "halflings plus");
+            DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
+            group.add(addFragmentButton);
 
             // Write HTML
             HTMLWriter htmlWriter = new HTMLWriter(out);
             htmlWriter.setEscapeText(false);
             try {
-                htmlWriter.write(addFragment);
+                htmlWriter.write(toolbar);
             } catch (IOException e) {
                 // Do nothing
             }
