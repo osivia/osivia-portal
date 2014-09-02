@@ -395,7 +395,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
                 if ((cmsPath == null) && (cmsBasePath == null)) {
                     publishSpacePath = null;
-                    path = sitePath;
+                    path = null;
                 } else if (cmsPath != null) {
                     PortalObject parent = page.getParent();
                     publishSpacePath = parent.getDeclaredProperty("osivia.cms.basePath");
@@ -409,7 +409,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 String scope = defaultPage.getDeclaredProperty("osivia.cms.navigationScope");
 
 
-                if (path != null) {
+                if (sitePath != null) {
                     String windowsEditableWindowsMode = "";
 
                     cmsReadItemContext.setDisplayLiveVersion("0");
@@ -428,10 +428,8 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     // try {
 
                     if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
-
                         cmsReadItemContext.setDisplayLiveVersion("1");
                         windowsEditableWindowsMode = "preview";
-
                     }
 
 
@@ -461,14 +459,12 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
                         for (CMSEditableWindow editableWindow : editableWindows) {
-                            // Création des dynamicWindowBeans
-
+                            // Dynamic window beans creation
                             Map<String, String> dynaProps = new HashMap<String, String>();
                             for (String key : editableWindow.getApplicationProperties().keySet()) {
                                 dynaProps.put(key, editableWindow.getApplicationProperties().get(key));
                             }
                             dynaProps.put("osivia.dynamic.unclosable", "1");
-
                             dynaProps.put("osivia.dynamic.cmsEditable", "1");
                             dynaProps.put("osivia.dynamic.cmsEditable.cmsPath", path);
 
@@ -521,7 +517,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		return windows;
 	}
 
-    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId) {
+    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
@@ -531,8 +527,10 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}
 		}
 
-        for (DynamicWindowBean windowBean : this.getEditableWindows(container, pageId)) {
-			windows.add(windowBean);
+        if (includeCMSWindows) {
+            for (DynamicWindowBean windowBean : this.getEditableWindows(container, pageId)) {
+                windows.add(windowBean);
+            }
 		}
 
 		return windows;
@@ -688,7 +686,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 
-            for (DynamicWindowBean dynamicWindow : this.getPageWindows(container, pageId)) {
+            for (DynamicWindowBean dynamicWindow : this.getPageWindows(container, pageId, false)) {
 			if (dynamicWindow.getWindowId().equals(id)) {
 
 				Page parentPage = (Page) this.getParent(container, id);
@@ -814,7 +812,21 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		}
 	}
 
-		PortalObject object = container.getNonDynamicObject(id);
+
+        PortalObject object = container.getNonDynamicObject(id);
+        // if (object == null) {
+        // PortalObjectPath parentPath = id.getPath().getParent();
+        // if (parentPath != null) {
+        // PortalObjectId parentId = new PortalObjectId(StringUtils.EMPTY, parentPath);
+        // PortalObject parent = container.getNonDynamicObject(parentId);
+        // if (parent instanceof PageImpl) {
+        // PageImpl parentPageImpl = (PageImpl) parent;
+        // DynamicPersistentPage dynamicPersistentPage = new DynamicPersistentPage(container, parentPageImpl, this);
+        //
+        // object = dynamicPersistentPage.getChild(id.getPath().getLastComponentName());
+        // }
+        // }
+        // }
 
 		boolean dynamicPage = false;
 		boolean dynamicPortal = false;

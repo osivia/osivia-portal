@@ -48,10 +48,11 @@ public abstract class DynamicPage extends PageImpl {
 
 
 		if( this.dynamicChilds == null){
+            boolean includeCMSWindows = !(this instanceof DynamicPersistentPage);
 
 			this.dynamicChilds = new HashMap<String, DynamicWindow>();
 
-            for (DynamicWindowBean dynamicWindow : this.dynamicContainer.getPageWindows(this.container, this.getId())) {
+            for (DynamicWindowBean dynamicWindow : this.dynamicContainer.getPageWindows(this.container, this.getId(), includeCMSWindows)) {
 				DynamicWindow child = this.createSessionWindow (dynamicWindow);
 				this.dynamicChilds.put(child.getName(), child);
 			}
