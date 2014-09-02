@@ -15,7 +15,6 @@
                 <c:set var="url" value="${userPage.url}" />
                 <c:set var="buttonType" value="btn-default" />
                 <c:if test="${userPage.id == requestScope['osivia.currentPageId']}">
-                    <c:set var="url" value="#" />
                     <c:set var="buttonType" value="btn-primary" />
                 </c:if>
                 
