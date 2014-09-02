@@ -29,7 +29,7 @@ function callback( )	{
 		if ($f && currentDocumentId) {
 			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
 			redirectUrl = redirectUrl.replace('_LIVE_', live);
-			redirectUrl = redirectUrl.replace('NO', notificationKey);
+			redirectUrl = redirectUrl.replace('_NOTIFKEY_', notificationKey);
 //			if(liveEditLink){
 //				redirectUrl = callbackUrlFromEcm.replace('_LIVEEDIT_', liveEditLink);
 //			}

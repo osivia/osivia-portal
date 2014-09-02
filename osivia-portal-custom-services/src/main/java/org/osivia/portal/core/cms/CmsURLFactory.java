@@ -56,31 +56,31 @@ public class CmsURLFactory extends URLFactoryDelegate
          AbstractServerURL asu = new AbstractServerURL();
          //asu.setPortalRequestPath(path);
          String cmsPath = cmsCommand.getCmsPath();
-         
-         String portalRequestPath = path;
-         
 
-         
+         String portalRequestPath = this.path;
+
+
+
          String portalPersistentName = cmsCommand.getPortalPersistentName();
          if (portalPersistentName != null)
          {
         	 portalRequestPath += CmsCommandFactoryService.PORTAL_NAME + portalPersistentName;
-         }   
-         
-         
-         
-         
-        
+         }
+
+
+
+
+
          if( cmsPath != null)	{
-       	 
+
         	 if( !cmsPath.startsWith("/"))
         		 portalRequestPath += CmsCommandFactoryService.DOC_ID;
-        		 
+
         	 portalRequestPath += cmsPath;
          }
-         
+
          asu.setPortalRequestPath(portalRequestPath);
-         
+
          /*
          if (cmsPath != null)
          {
@@ -94,7 +94,7 @@ public class CmsURLFactory extends URLFactoryDelegate
             }
          }
          */
-         
+
          String pagePath = cmsCommand.getPagePath();
          if (pagePath != null)
          {
@@ -106,8 +106,8 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }         
-         
+         }
+
          Map<String, String> pageParams = cmsCommand.getPageParams();
          if (pagePath != null)
          {
@@ -119,8 +119,8 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }                  
-         
+         }
+
          String contextualization = cmsCommand.getContextualization();
          if (contextualization != null)
          {
@@ -132,8 +132,8 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }             
-         
+         }
+
          String displayContext = cmsCommand.getDisplayContext();
          if (displayContext != null)
          {
@@ -146,11 +146,11 @@ public class CmsURLFactory extends URLFactoryDelegate
                // ignore
             }
             if( "_LIVE_".equals(displayContext))
-                asu.setParameterValue("ecmActionReturn", "NO");
-            
-         }             
-         
-         
+                    asu.setParameterValue("ecmActionReturn", "_NOTIFKEY_");
+
+         }
+
+
          String hideMetaDatas = cmsCommand.getHideMetaDatas();
          if (hideMetaDatas != null)
          {
@@ -162,9 +162,9 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }             
-    
-         
+         }
+
+
          String scope = cmsCommand.getScope();
          if (scope != null)
          {
@@ -176,9 +176,9 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }     
-         
-         
+         }
+
+
          String displayLiveVersion = cmsCommand.getDisplayLiveVersion();
          if (displayLiveVersion != null)
          {
@@ -190,8 +190,8 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }     
-         
+         }
+
          String windowPermReference = cmsCommand.getWindowPermReference();
          if (windowPermReference != null)
          {
@@ -203,8 +203,8 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }     
-         
+         }
+
          String addToBreadcrumb = cmsCommand.getAddToBreadcrumb();
          if (addToBreadcrumb != null)
          {
@@ -216,20 +216,20 @@ public class CmsURLFactory extends URLFactoryDelegate
             {
                // ignore
             }
-         }     
-         
+         }
 
-   
-  
- 
-         
+
+
+
+
+
          return asu;
       }
       return null;
    }
 
 	public String getPath() {
-		return path;
+		return this.path;
 	}
 
 	public void setPath(String path) {

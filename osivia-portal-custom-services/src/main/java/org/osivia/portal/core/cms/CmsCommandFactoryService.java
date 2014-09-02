@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,45 +15,36 @@
 
 package org.osivia.portal.core.cms;
 
-import org.apache.commons.lang.StringUtils;
-import org.jboss.portal.common.util.ParameterMap;
-import org.jboss.portal.core.controller.ControllerCommand;
-import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.NoSuchResourceException;
-import org.jboss.portal.core.controller.SecurityException;
-import org.jboss.portal.core.controller.command.SignOutCommand;
-import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
-import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
-import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
-import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
-import org.osivia.portal.core.urls.WindowPropertiesEncoder;
-
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
+import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.common.util.ParameterMap;
+import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
+import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
 public class CmsCommandFactoryService extends AbstractCommandFactory implements CmsCommandFactory
 {
-	
-   public static final String PORTAL_NAME = "/_PN_/"; 
-   public static final String DOC_ID = "/_ID_/"; 
-   
-	
+
+   public static final String PORTAL_NAME = "/_PN_/";
+   public static final String DOC_ID = "/_ID_/";
+
+
 	private static ICMSServiceLocator cmsServiceLocator ;
 
 	public static ICMSService getCMSService() throws Exception {
-		
+
 		if( cmsServiceLocator == null){
 			cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 		}
-	
+
 		return cmsServiceLocator.getCMSService();
 
 	}
@@ -71,24 +62,24 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 String hideMetaDatas  = null;
 	 String scope  = null;
 	 String displayLiveVersion = null;
-	 String windowPermReference = null;	 
+	 String windowPermReference = null;
 	 String addToBreadcrumb = null;
 	 String portalPersistentName = null;
-	 
+
 	 String toAnalize = requestPath;
-	 
-	 
+
+
 	 ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
-	 
-	 
-	 
+
+
+
 	 /* Check if url is encoded by external system */
-	 
+
 	 Map<String, String> externalCMSCommandProperties = null;
-	 
+
 	 CMSServiceCtx cmsContext = new CMSServiceCtx();
-	 cmsContext.setServerInvocation(invocation);	
-	 
+	 cmsContext.setServerInvocation(invocation);
+
 	 Map<String, String> requestParams= new HashMap<String, String>();
 	 for( String key : parameterMap.keySet())	{
 		 String value[] = parameterMap.get(key);
@@ -100,18 +91,18 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	         catch (UnsupportedEncodingException e)
 	         {
 	            // ignore
-	         }			 
+	         }
 	 }
-	 
-	 
+
+
 	 try {
 		 externalCMSCommandProperties = getCMSService().parseCMSURL(cmsContext, requestPath, requestParams);
 
-	 } 
+	 }
 	 catch (CMSException e) {
 		 // TODO : code retour à affiner
 		 // Pour l'instant, on rentre dans le process d'url standard
-		 
+
 		 // Il faudrait afficher les erreurs adéquates
 		 // Notamment les erreurs du type FORBIDDEN (message ou redirection vers l'accueil, NOT FOUND ...)
 		 externalCMSCommandProperties = null;
@@ -119,35 +110,35 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 catch (Exception e) {
 		 throw new RuntimeException(e);
 	}
-	
-	
+
+
 	if( externalCMSCommandProperties != null){
 		String commandPath =  externalCMSCommandProperties.get("cmsPath");
 		return new CmsCommand( null, commandPath, null, null,  null, null, null, null, null, null, null);
 	}
-	
-	
+
+
 	/* Standard decoding */
-	
+
 	toAnalize = requestPath;
-	 
+
 	 if( toAnalize.startsWith(DOC_ID))	{
 		 if( toAnalize.indexOf('/', DOC_ID.length()) > 0)
 			 cmsPath = toAnalize.substring(DOC_ID.length(), toAnalize.indexOf('/', DOC_ID.length()));
 		 else
 			 cmsPath = toAnalize.substring(DOC_ID.length());
 		 toAnalize = toAnalize.substring(DOC_ID.length() + cmsPath.length());
-	 } 
-	 
-	
+	 }
+
+
 	 if( toAnalize.startsWith((PORTAL_NAME)))	{
 		 portalPersistentName = toAnalize.substring(PORTAL_NAME.length(), toAnalize.indexOf('/', PORTAL_NAME.length()));
 		 toAnalize = toAnalize.substring(PORTAL_NAME.length() + portalPersistentName.length());
-	 } 
-	 
-	 
+	 }
+
+
 	 // No path, get all url
-	 if( cmsPath == null)	 
+	 if( cmsPath == null)
 		 cmsPath = toAnalize;
 
       if (parameterMap != null)
@@ -163,7 +154,7 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          {
             // ignore
          }
-         
+
          try
          {
             if (parameterMap.get("pagePath") != null)
@@ -174,8 +165,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }         
-         
+         }
+
          try
          {
             if (parameterMap.get("cmsPath") != null)
@@ -186,8 +177,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }    
-         
+         }
+
          try
          {
             if (parameterMap.get("pageParams") != null)
@@ -199,8 +190,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }  
-         
+         }
+
          try
          {
             if (parameterMap.get("contextualization") != null)
@@ -211,9 +202,9 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }   
-         
-         
+         }
+
+
 
          try
          {
@@ -225,9 +216,9 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }   
-          
-         
+         }
+
+
 
          try
          {
@@ -239,10 +230,10 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }       
-         
- 
-         
+         }
+
+
+
          try
          {
             if (parameterMap.get("scope") != null)
@@ -253,8 +244,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }       
-         
+         }
+
          try
          {
             if (parameterMap.get("displayLiveVersion") != null)
@@ -265,8 +256,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }      
-         
+         }
+
          try
          {
             if (parameterMap.get("windowPermReference") != null)
@@ -277,8 +268,8 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }      
-         
+         }
+
 
          try
          {
@@ -290,7 +281,7 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }      
+         }
       }
 
 
@@ -299,13 +290,13 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 
          try
          {
-             if (parameterMap.get("skipPortletCacheInitialization") != null)	
+             if (parameterMap.get("skipPortletCacheInitialization") != null)
             	 if ("1".equals( URLDecoder.decode(parameterMap.get("skipPortletCacheInitialization")[0], "UTF-8")))
             			 cmsCommand.setSkipPortletInitialisation(true);
-    	    
-             if (parameterMap.get("ecmActionReturn") != null){ 
+
+             if (parameterMap.get("ecmActionReturn") != null){
                  String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
-                 if (StringUtils.isNotBlank(ecmActionReturn) && !"NO".equals(ecmActionReturn)){
+                if (StringUtils.isNotBlank(ecmActionReturn) && !"_NOTIFKEY_".equals(ecmActionReturn)) {
                          cmsCommand.setEcmActionReturn(ecmActionReturn);
                  }
              }
@@ -313,11 +304,11 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          catch (UnsupportedEncodingException e)
          {
             // ignore
-         }   
+         }
             return cmsCommand;
-     
 
-         
+
+
    }
 
 }
