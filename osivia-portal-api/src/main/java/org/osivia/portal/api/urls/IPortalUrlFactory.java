@@ -268,6 +268,17 @@ public interface IPortalUrlFactory {
      * @return back URL
      */
     String getBackUrl(PortalControllerContext portalControllerContext, boolean refresh);
+
+
+    /**
+     * Get synchronization url
+     * 
+     * @param ctx portal context
+     * @param cmsPath current doc path
+     * @param enableParameter enable or disable synchronization
+     * @return synchro command url
+     */
+    String getSynchronizationCommandUrl(PortalControllerContext ctx, String cmsPath, Boolean enableParameter);
     
 
 

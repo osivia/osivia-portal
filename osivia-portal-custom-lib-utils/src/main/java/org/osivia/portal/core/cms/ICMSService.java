@@ -309,4 +309,14 @@ public interface ICMSService {
      */
     SortedMap<String, String> getMenuTemplates(Locale locale);
 
+    /**
+     * Synchronize or disable synchronization between local folder and ECM folder
+     * 
+     * @param cmsCtx cms context
+     * @param pagePath the current folder
+     * @param enable enable or disable
+     * @throws CMSException
+     */
+    void setSynchronization(CMSServiceCtx cmsCtx, String pagePath, Boolean enable) throws CMSException;
+
 }

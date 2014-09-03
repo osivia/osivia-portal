@@ -33,6 +33,7 @@ import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
+import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -459,6 +460,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 // Do nothing
             }
 
+            return asu;
+        }
+
+        if (cmd instanceof ToggleSynchronizationCommand) {
+            ToggleSynchronizationCommand command = (ToggleSynchronizationCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "ToggleSynchronizationCommand");
+
+                asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
+                asu.setParameterValue("enable", URLEncoder.encode(Boolean.toString(command.getEnable()), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
             return asu;
         }
 

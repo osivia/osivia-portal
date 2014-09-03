@@ -45,6 +45,7 @@ import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
+import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -625,6 +626,22 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new PublishContributionCommand(windowId, docPath, actionCms);
                     }
                 }
+
+                if ("ToggleSynchronizationCommand".equals(action)) {
+
+
+                    String cmsPath = null;
+                    String enable = null;
+
+                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("enable") != null)) {
+                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
+                        enable = URLDecoder.decode(parameterMap.get("enable")[0], "UTF-8");
+
+                        return new ToggleSynchronizationCommand(cmsPath, BooleanUtils.toBooleanObject(enable));
+                    }
+                }
+
+
 
                 if (SaveInheritanceConfigurationCommand.ACTION.equals(action)) {
                     String pageId;

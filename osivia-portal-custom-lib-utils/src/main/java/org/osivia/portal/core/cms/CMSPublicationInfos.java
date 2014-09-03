@@ -65,6 +65,12 @@ public class CMSPublicationInfos {
 	
 	private List<Integer> errorCodes = new ArrayList<Integer>();
 
+    private boolean canSynchronize = false;
+    private boolean canUnsynchronize = false;
+
+    private String synchronizationRootPath = null;
+    private String driveEditURL = null;
+
 	public CMSPublicationInfos() {
 		super();
 	}
@@ -237,5 +243,72 @@ public class CMSPublicationInfos {
 	public void setLiveId(String liveId) {
 		this.liveId = liveId;
 	}
+
+
+    /**
+     * @return the canSynchronize
+     */
+    public boolean isCanSynchronize() {
+        return canSynchronize;
+    }
+
+
+    /**
+     * @param canSynchronize the canSynchronize to set
+     */
+    public void setCanSynchronize(boolean canSynchronize) {
+        this.canSynchronize = canSynchronize;
+    }
+
+
+    /**
+     * @return the canUnsynchronize
+     */
+    public boolean isCanUnsynchronize() {
+        return canUnsynchronize;
+    }
+
+
+    /**
+     * @param canUnsynchronize the canUnsynchronize to set
+     */
+    public void setCanUnsynchronize(boolean canUnsynchronize) {
+        this.canUnsynchronize = canUnsynchronize;
+    }
+
+
+    
+    /**
+     * @return the synchronizationRootPath
+     */
+    public String getSynchronizationRootPath() {
+        return synchronizationRootPath;
+    }
+
+
+    /**
+     * @param synchronizationRootPath the synchronizationRootPath to set
+     */
+    public void setSynchronizationRootPath(String synchronizationRootPath) {
+        this.synchronizationRootPath = synchronizationRootPath;
+    }
+
+
+    /**
+     * @return the driveEditURL
+     */
+    public String getDriveEditURL() {
+        return driveEditURL;
+    }
+
+
+    /**
+     * @param driveEditURL the driveEditURL to set
+     */
+    public void setDriveEditURL(String driveEditURL) {
+        this.driveEditURL = driveEditURL;
+    }
+
+
 
 }

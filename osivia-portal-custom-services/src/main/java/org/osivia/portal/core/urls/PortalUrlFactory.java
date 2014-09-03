@@ -28,7 +28,6 @@ import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -48,6 +47,7 @@ import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -575,7 +575,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
-    
+    /**
+     * {@inheritDoc}
+     */
+    public String getSynchronizationCommandUrl(PortalControllerContext ctx, String cmsPath, Boolean enableParameter) {
+
+        ControllerCommand cmd = new ToggleSynchronizationCommand(cmsPath, enableParameter);
+        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+
+        return portalURL.toString();
+    }
+
     
     /**
      * {@inheritDoc}
