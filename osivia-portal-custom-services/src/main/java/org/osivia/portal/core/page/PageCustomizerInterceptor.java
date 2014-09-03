@@ -881,7 +881,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
                 boolean hideAdvancedSearch = true;
                 for (String selectorId : selectors.keySet()) {
-                    if (!"search".equals(selectorId)) {
+                    if (!"search".equals(selectorId) && !"selectorChanged".equals(selectorId)) {
                         hideAdvancedSearch = false;
                         break;
                     }
