@@ -9,7 +9,7 @@
 <nav id="tabs-menu" role="navigation">
     <h2 class="hidden"><is:getProperty key="TABS_TITLE" /></h2>
     
-    <ul class="btn-toolbar">
+    <ul class="btn-toolbar list-unstyled">
         <c:forEach var="userPage" items="${userPages}" varStatus="status">
             <c:if test="${'templates' != fn:toLowerCase(userPage.name)}">
                 <c:set var="url" value="${userPage.url}" />
