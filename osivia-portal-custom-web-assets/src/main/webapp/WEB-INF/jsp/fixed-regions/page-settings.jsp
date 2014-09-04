@@ -47,6 +47,8 @@ Page currentPage = (Page) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SE
 Boolean cmsTemplated = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
 // Draft page
 Boolean draftPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
+// 
+Boolean selectorsPropation = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);
 // Layout list
 @SuppressWarnings("unchecked")
 List<PortalLayout> layoutsList = (List<PortalLayout>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -93,6 +95,15 @@ String checkDraft = StringUtils.EMPTY;
 if (BooleanUtils.isTrue(draftPage)) {
     checkDraft = "checked";
 }
+
+//Selectors propagation checkbox value
+String checkSelectors = StringUtils.EMPTY;
+if (BooleanUtils.isTrue(selectorsPropation)) {
+    checkSelectors = "checked";
+}
+
+
+
 
 // Template disabled configurations
 String disabledTemplate = StringUtils.EMPTY;
@@ -411,6 +422,16 @@ function toggleRow(link, divClass) {
 	                    </div>
 	                </div>
 	  
+
+
+	                <!-- Propagation des selecteurs -->
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_SELECTOR_PROPAGATION", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="checkbox" name="selectorsPropagation" value="1" <%=checkSelectors %> class="small-input" />                        
+	                    </div>
+	                </div>
+
 	  
 	            </div>
 	            

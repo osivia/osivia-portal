@@ -40,6 +40,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
@@ -96,6 +97,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 		this.pageId = pageId;
 	}
 
+
 	public ControllerResponse execute() throws ControllerException {
 
 		try {
@@ -105,6 +107,8 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
 			Page redirectPage = null;
 			String redirectUrl = null;
+
+			Page pageToRefresh = null;
 
 			if (page == null) {
 				// The session can have expired, no actions
@@ -146,8 +150,13 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     topDeletedPage = (Page) page.getParent();
                 
                 
-				
-				
+				// Remove public state of dynamic child
+                NavigationalStateContext nsContext = (NavigationalStateContext) this.context
+                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+                nsContext.setPageNavigationalState(poid.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + CMSTemplatePage.PAGE_NAME,null);
+                
+                
 
 				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
 						"osivia:service=DynamicPortalObjectContainer");
@@ -198,7 +207,8 @@ public class StopDynamicPageCommand extends DynamicCommand {
 				/* Compute the url */
 				
 				if( ! currentPageDeleted){
-				    redirectPage = currentPage;
+				    pageToRefresh = currentPage;
+	    
 				}   else    {
 				
 				    UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
@@ -252,7 +262,8 @@ public class StopDynamicPageCommand extends DynamicCommand {
             getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1"); 
             
             
-
+            if( pageToRefresh != null)
+                return new UpdatePageResponse(pageToRefresh.getId());
             
             if( redirectUrl == null)    {
                 if( redirectPage == null)

@@ -220,7 +220,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null,
                 // null,
                 // null, portalPersistentName);
-                CmsCommand cmsCommand = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, portalPersistentName);
+                CmsCommand cmsCommand = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
 
                 // Remove default initialisation
                 cmsCommand.setItemScope(null);

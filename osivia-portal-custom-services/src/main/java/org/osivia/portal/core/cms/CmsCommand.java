@@ -1288,6 +1288,38 @@ public class CmsCommand extends DynamicCommand {
                  * if (previousPNS != null) {
                  * state.putAll(previousPNS.getParameters()); }
                  */
+                
+                /* Propagation of selectors in navigation */
+                
+                if( previousPNS != null){
+
+                    Page templatePage = null;
+                    PortalObjectId templateId = null;
+
+                    if (layoutPath != null) {
+                        templateId = PortalObjectId.parse(layoutPath, PortalObjectPath.CANONICAL_FORMAT);
+                    } else {
+                        templateId = pageIdToDiplay;
+                    }
+
+                    templatePage = (Page) controllerContext.getController().getPortalObjectContainer().getObject(templateId);
+
+                    if (templatePage == null) {
+                        logger.error("Le template " + layoutPath + " n'a pas pu être instancié");
+                        return new UnavailableResourceResponse(itemPublicationPath, false);
+                    }
+
+                    if ("1".equals(templatePage.getProperty("osivia.cms.propagateSelectors"))) {
+                        String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+
+                        if (selectors != null) {
+
+                            state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), selectors);
+                        }
+                    }
+                    
+                }
+                                
 
                 if (this.pageParams != null) {
                     for (Map.Entry<String, String> entry : this.pageParams.entrySet()) {
@@ -1349,7 +1381,7 @@ public class CmsCommand extends DynamicCommand {
                             new String[] { this.contentPath });
                 }
                 
-                
+
                 nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(state));
 
                 /*

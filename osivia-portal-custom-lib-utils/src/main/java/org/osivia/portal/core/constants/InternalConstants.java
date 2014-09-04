@@ -105,6 +105,8 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED = "osivia.toolbarSettings.cmsTemplated";
     /** Draft page indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
+    /** Draft page indicator. */
+    public static final String ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION = "osivia.toolbarSettings.selectorsPropagation";
     /** Page currentcategory. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY = "osivia.toolbarSettings.pageCategory";
 

@@ -147,6 +147,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);        
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY); 
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);   
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -245,7 +246,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             Boolean draftPage = "1".equals(page.getDeclaredProperty("osivia.draftPage"));
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE, draftPage);
 
-            
+            // Draft page indicator
+            Boolean selectorsPropagation = "1".equals(page.getDeclaredProperty("osivia.cms.propagateSelectors"));
+            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION, selectorsPropagation);           
             
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
