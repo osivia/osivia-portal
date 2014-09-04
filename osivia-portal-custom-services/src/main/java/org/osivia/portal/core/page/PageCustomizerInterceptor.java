@@ -876,19 +876,26 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if (pageState != null) {
                 sSelector = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
             }
+            
+            boolean hideAdvancedSearchFilters = true;
 
             if ((sSelector != null) && (sSelector.length > 0)) {
                 Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
-                boolean hideAdvancedSearch = true;
+                boolean hideAdvancedSearchLink = true;
                 for (String selectorId : selectors.keySet()) {
                     if (!"search".equals(selectorId) && !"selectorChanged".equals(selectorId)) {
-                        hideAdvancedSearch = false;
+                        hideAdvancedSearchLink = false;
+                        hideAdvancedSearchFilters = false;
                         break;
                     }
                 }
-                if (hideAdvancedSearch) {
+                if (hideAdvancedSearchLink) {
                     cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
                 }
+            }
+            
+            if (hideAdvancedSearchFilters) {
+                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearchFilters", "off");
             }
 
 
