@@ -56,6 +56,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.RegionInheritance;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -270,10 +271,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     Map<String, String> regionProperties = renderCtx.getProperties();
 
                     // Set the current edition mode to the region
-                    regionProperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(controllerContext).toString());
+                    regionProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext).toString());
                     // Inheritance mode
                     if (inheritance != null) {
-                        regionProperties.put("osivia.cms.inheritance", inheritance.getValue());
+                        regionProperties.put(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY, inheritance.getValue());
                     }
 
 
@@ -309,8 +310,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                         String windowId = wrc.getId();
 
                         // Update region properties if it contains inherited window
-                        if (BooleanUtils.toBoolean(windowProperties.get("osivia.cms.inherited"))) {
-                            regionProperties.put("osivia.cms.inherited", String.valueOf(true));
+                        if (BooleanUtils.toBoolean(windowProperties.get(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+                            regionProperties.put(InternalConstants.INHERITANCE_INDICATOR_PROPERTY, String.valueOf(true));
+                        }
+                        // Update region properties if it contains locked window
+                        if (BooleanUtils.toBoolean(windowProperties.get(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY))) {
+                            regionProperties.put(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY, String.valueOf(true));
                         }
 
                         if (!windowId.endsWith("PIA_EMPTY")) {
@@ -319,7 +324,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
                             if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
                                 // Set the current edition mode to the window
-                                windowProperties.put("osivia.cmsShowTools", CmsPermissionHelper.showCmsTools(controllerContext).toString());
+                                windowProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext)
+                                        .toString());
 
                                 // build and set urls for create/edit fgts in window in CMS mode
                                 String refURI = window.getProperty("osivia.refURI");

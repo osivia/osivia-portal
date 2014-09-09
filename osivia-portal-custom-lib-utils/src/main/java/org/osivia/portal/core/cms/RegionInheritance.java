@@ -14,7 +14,9 @@ public enum RegionInheritance {
     /** No inheritance. */
     NO_INHERITANCE("no-inheritance", "CMS_REGION_INHERITANCE_NO_INHERITANCE"),
     /** Propagated. */
-    PROPAGATED("propagated", "CMS_REGION_INHERITANCE_PROPAGATED");
+    PROPAGATED("propagated", "CMS_REGION_INHERITANCE_PROPAGATED"),
+    /** Locked. */
+    LOCKED("locked", "CMS_REGION_INHERITANCE_LOCKED");
 
 
     /** Inheritance property value. */

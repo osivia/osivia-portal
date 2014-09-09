@@ -137,7 +137,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         if (this.showCmsTools(rendererContext, irrc)) {
             this.printFragmentCommands(rendererContext, irrc, bundle, markup);
 
-            if (!BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"))) {
+            if (!BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
                 // Begin of DIV for Drag n drop
                 // each cms region is a drag n drop zone
                 markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
@@ -180,7 +180,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // End of DIV for Drag n drop
-        if (this.showCmsTools(rendererContext, irrc) && !BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"))) {
+        if (this.showCmsTools(rendererContext, irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
             markup.print("</div>");
         }
 
@@ -199,7 +199,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @return true if CMS tools must be shown
      */
     private boolean showCmsTools(RendererContext rendererContext, IRegionRendererContext irrc) {
-        boolean showCmsTools = BooleanUtils.toBoolean(irrc.getProperty("osivia.cmsShowTools"));
+        boolean showCmsTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY))
+                && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
         return irrc.isCMS() && showCmsTools;
     }
 
@@ -257,8 +258,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param markup print writer markup
      */
     private void printFragmentCommands(RendererContext rendererContext, IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
-        RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty("osivia.cms.inheritance"));
-        boolean inherited = BooleanUtils.toBoolean(irrc.getProperty("osivia.cms.inherited"));
+        RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY));
+        boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
         String saveURL = irrc.getProperty("osivia.cms.saveInheritanceConfigurationURL");
 
 

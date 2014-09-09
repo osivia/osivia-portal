@@ -175,6 +175,19 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
 
 
+    /** Show CMS tools indicator window or region property name. */
+    public static final String SHOW_CMS_TOOLS_INDICATOR_PROPERTY = "osivia.cms.showTools";
+
+
+    // Inheritance constants
+    /** Inheritance indicator window or region property name. */
+    public static final String INHERITANCE_INDICATOR_PROPERTY = "osivia.cms.inheritance.indicator";
+    /** Inheritance value region property name. */
+    public static final String INHERITANCE_VALUE_REGION_PROPERTY = "osivia.cms.inheritance.value";
+    /** Inheritance locked indicator window or region property name. */
+    public static final String INHERITANCE_LOCKED_INDICATOR_PROPERTY = "osivia.cms.inheritance.locked";
+
+
     // Transversal constants
     /** Controller context. */
     public static final String ATTR_CONTROLLER_CONTEXT = "osivia.controllerContext";

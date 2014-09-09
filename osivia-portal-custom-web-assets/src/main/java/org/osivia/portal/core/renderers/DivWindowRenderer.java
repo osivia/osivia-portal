@@ -364,8 +364,8 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             WindowContext wc = (WindowContext) wrc;
 
             if (BooleanUtils.isTrue(wc.getRegionCms()) && (wrc.getProperty("osivia.windowId") != null)) {
-                showCmsTools = BooleanUtils.toBoolean(wrc.getProperty("osivia.cmsShowTools"))
-                        && !BooleanUtils.toBoolean(wrc.getProperty("osivia.cms.inherited"));
+                showCmsTools = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY))
+                        && !BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
             }
         }
 
