@@ -70,13 +70,13 @@
                             <li>
                                 <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
                                     <i class="glyphicons halflings log_out"></i>
-                                    <is:getProperty key="LOGOUT" />
+                                    <span class="hidden-sm"><is:getProperty key="LOGOUT" /></span>
                                 </a>
                             </li>
                             <li>
                                 <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
                                     <i class="glyphicons halflings refresh"></i>
-                                    <is:getProperty key="REFRESH_PAGE" />
+                                    <span class="hidden-sm"><is:getProperty key="REFRESH_PAGE" /></span>
                                 </a>
                             </li>
                         </ul>
