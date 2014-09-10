@@ -457,10 +457,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                 windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+                windowProps.put(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR, String.valueOf(true));
 
-                WindowResult wr = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-                WindowContext settings = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", wr);
-                rendition.getPageResult().addWindowContext(settings);
+                WindowResult windowResult = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+                WindowContext windowContext = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", windowResult);
+                rendition.getPageResult().addWindowContext(windowContext);
 
                 renderCtx = rendition.getPageResult().getRegion2(regionName);
 

@@ -133,19 +133,24 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.print(">");
         }
 
-        // in cms mode, create a new fragment on the top of this region
-        if (this.showCmsTools(rendererContext, irrc)) {
-            this.printFragmentCommands(rendererContext, irrc, bundle, markup);
+        // In cms mode, create a new fragment on the top of this region
+        if (this.showCmsTools(irrc)) {
+            // Panel
+            markup.println("<div class='panel panel-default'><div class='panel-body'>");
+            this.printFragmentCommands(irrc, bundle, markup);
 
             if (!BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-                // Begin of DIV for Drag n drop
-                // each cms region is a drag n drop zone
-                markup.println("<div id=\"region_" + rrc.getId() + "\" class=\"dnd-region\">");
+                // Drag'n'drop
+                markup.print("<div id='region_");
+                markup.print(rrc.getId());
+                markup.print("' class='dnd-region' data-empty-title='");
+                markup.print(bundle.getString("CMS_EMPTY_REGION"));
+                markup.println("'>");
             }
         }
 
         // Add portlet link
-        this.addPortletLink(rendererContext, irrc, bundle, markup);
+        this.addPortletLink(irrc, bundle, markup);
 
         // Add header decorator
         RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
@@ -161,7 +166,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
             WindowRendererContext wrc = (WindowRendererContext) i.next();
-            rendererContext.render(wrc);
+            if (!BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR))) {
+                rendererContext.render(wrc);
+            }
         }
     }
 
@@ -179,9 +186,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println(decorator.getFooterContent());
         }
 
-        // End of DIV for Drag n drop
-        if (this.showCmsTools(rendererContext, irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-            markup.print("</div>");
+        if (this.showCmsTools(irrc)) {
+            // Panel
+            markup.print("</div></div>");
+
+            if (!BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+                // Drag'n'drop
+                markup.print("</div>");
+            }
         }
 
         // End of Main DIV region (not shown in <head> tag)
@@ -194,11 +206,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /**
      * Display CMS Tools if region is marked "CMS" (dynamic region) and if the tools are enabled in the session.
      *
-     * @param rendererContext page context
      * @param irrc region renderer context
      * @return true if CMS tools must be shown
      */
-    private boolean showCmsTools(RendererContext rendererContext, IRegionRendererContext irrc) {
+    private boolean showCmsTools(IRegionRendererContext irrc) {
         boolean showCmsTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY))
                 && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
         return irrc.isCMS() && showCmsTools;
@@ -208,15 +219,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /**
      * Utility method used to add portlet link.
      *
-     * @param rendererContext renderer context
      * @param irrc region renderer context
      * @param bundle internationalization bundle
      * @param markup markup
      * @throws RenderException
      */
-    private void addPortletLink(RendererContext rendererContext, IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) throws RenderException {
+    private void addPortletLink(IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) throws RenderException {
         // Lien d'ajout de portlet
-        if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
+        if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(irrc.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
             // Button
             Element button = new DOMElement(QName.get(HTMLConstants.A));
 
@@ -227,7 +237,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 text = bundle.getString("REGION_CMS");
                 button.addAttribute(QName.get(HTMLConstants.DISABLED), HTMLConstants.DISABLED);
             } else {
-                href = rendererContext.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
+                href = irrc.getProperty(InternalConstants.ATTR_WINDOWS_ADD_PORTLET_URL);
                 text = bundle.getString("REGION_TEMPLATE");
                 button.addAttribute(QName.get(HTMLConstants.ONCLICK), "regionId = '" + irrc.getId() + "'");
 
@@ -252,12 +262,11 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /**
      * Print fragment commands.
      *
-     * @param rendererContext renderer context
      * @param irrc region renderer context
      * @param bundle internationalization bundle
      * @param markup print writer markup
      */
-    private void printFragmentCommands(RendererContext rendererContext, IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
+    private void printFragmentCommands(IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
         RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY));
         boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
         String saveURL = irrc.getProperty("osivia.cms.saveInheritanceConfigurationURL");
@@ -278,20 +287,19 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Add fragment button
         Element addFragmentButton;
-        String text = bundle.getString("ADD");
         if (inherited) {
-            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", text, "halflings plus", null);
+            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", null, "halflings plus", null);
         } else {
             // Add fragment button
-            String addFragmentURL = rendererContext.getProperty("osivia.cmsCreateUrl");
+            String addFragmentURL = irrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
             addFragmentOnClick.append("callbackUrl='");
-            addFragmentOnClick.append(rendererContext.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append(irrc.getProperty("osivia.cmsCreateCallBackURL"));
             addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
-            addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
+            addFragmentOnClick.append(irrc.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
 
-            addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", text,
+            addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", null,
                     "halflings plus");
         }
         DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
@@ -374,18 +382,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
         form.add(submit);
 
-
-        // Empty region indicator
-        if (irrc.getWindows().size() == 1) {
-            WindowRendererContext wrc = (WindowRendererContext) irrc.getWindows().iterator().next();
-            if (wrc.getId().contains("_PIA_EMPTY")) {
-                String emptyRegionIndicatorTitle = bundle.getString("CMS_EMPTY_REGION");
-                Element emptyRegionIndicator = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default btn-block disabled", emptyRegionIndicatorTitle,
-                        "transfer", null);
-                DOM4JUtils.addAttribute(emptyRegionIndicator, HTMLConstants.ID, "emptyRegion_" + irrc.getId());
-                parent.add(emptyRegionIndicator);
-            }
-        }
 
         // Write HTML
         HTMLWriter htmlWriter = new HTMLWriter(markup);

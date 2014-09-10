@@ -339,6 +339,42 @@
 
 
 
+// Drag'n'drop
+
+.dnd-region, .dyna-window {
+    &:EMPTY, &.dnd-droppable {
+        border-style: dashed;
+        border-width: 1px;
+        background-color: transparent;
+    }
+    
+    &:EMPTY {
+        border-color: @gray-lighter;
+        
+        text-align: center;
+        
+        &:BEFORE {
+            content: attr(data-empty-title);
+        }
+        
+        & > * {
+            text-align: left;
+        }
+    }
+    
+    &.dnd-droppable {
+        border-color: @brand-success;
+    }
+}
+
+.dnd-handle {
+    cursor: move;
+    position: relative;
+    min-height: 1.2em;
+}
+
+
+
 // Wizard edging
 
 .wizard-edging {
@@ -451,6 +487,10 @@ ul.list-group.multi-level {
 
 .btn-toolbar {
     margin-bottom: @padding-small-vertical;
+}
+
+.panel-heading .btn-toolbar {
+    margin-bottom: 0; 
 }
 
 .form-inline .form-group .input-group {

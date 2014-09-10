@@ -173,6 +173,8 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_NEXT_REGION_COMMAND_URL = "osivia.nextRegionUrl";
     /** Instance display name. */
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
+    /** Empty indicator window property. */
+    public static final String ATTR_WINDOWS_EMPTY_INDICATOR = "osivia.window.empty";
 
 
     /** Show CMS tools indicator window or region property name. */

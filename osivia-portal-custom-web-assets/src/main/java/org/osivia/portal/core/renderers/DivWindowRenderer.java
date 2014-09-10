@@ -156,7 +156,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Dyna window content
         out.print("<div class='dyna-window-content");
         if (this.showCmsTools(wrc)) {
-            out.print(" well well-sm");
+            out.print(" well well-sm clearfix");
         }
         out.print("'>");
 
@@ -333,7 +333,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             addFragmentOnClick.append("');");
 
             Element addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(),
-                    "btn btn-default fancyframe_refresh", bundle.getString("ADD"), "halflings plus");
+                    "btn btn-default fancyframe_refresh", null, "halflings plus");
             DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
             group.add(addFragmentButton);
 
