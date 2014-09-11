@@ -44,7 +44,9 @@ import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
 import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
+import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
+import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
 import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
@@ -641,23 +643,42 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
+                // Toggle advanced CMS tools command
+                if (ToggleAdvancedCMSToolsCommand.ACTION.equals(action)) {
+                    if (parameterMap.get("pageId") != null) {
+                        String pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        return new ToggleAdvancedCMSToolsCommand(pageId);
+                    }
+                }
 
 
+                // Save inheritance configuration command
                 if (SaveInheritanceConfigurationCommand.ACTION.equals(action)) {
-                    String pageId;
-                    String pagePath;
-                    String regionName;
-                    String inheritance;
-
                     if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("regionName") != null)
                             && (parameterMap.get("inheritance") != null)) {
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], CharEncoding.UTF_8);
-                        regionName = URLDecoder.decode(parameterMap.get("regionName")[0], CharEncoding.UTF_8);
-                        inheritance = URLDecoder.decode(parameterMap.get("inheritance")[0], CharEncoding.UTF_8);
+                        String pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        String pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], CharEncoding.UTF_8);
+                        String regionName = URLDecoder.decode(parameterMap.get("regionName")[0], CharEncoding.UTF_8);
+                        String inheritance = URLDecoder.decode(parameterMap.get("inheritance")[0], CharEncoding.UTF_8);
                         return new SaveInheritanceConfigurationCommand(pageId, pagePath, regionName, inheritance);
                     }
                 }
+
+
+                // Save region layout command
+                if (SaveRegionLayoutCommand.ACTION.equals(action) && (parameterMap.get("pagePath") != null) && (parameterMap.get("regionName") != null)
+                        && (parameterMap.get("regionLayout") != null)) {
+                    if (parameterMap.get("pageId") != null) {
+                        String pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                        String pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], CharEncoding.UTF_8);
+                        String regionName = URLDecoder.decode(parameterMap.get("regionName")[0], CharEncoding.UTF_8);
+                        String regionLayoutName = URLDecoder.decode(parameterMap.get("regionLayout")[0], CharEncoding.UTF_8);
+                        return new SaveRegionLayoutCommand(pageId, pagePath, regionName, regionLayoutName);
+                    }
+                }
+
+
+
             }
         } catch (Exception e) {
             // DO NOTHING

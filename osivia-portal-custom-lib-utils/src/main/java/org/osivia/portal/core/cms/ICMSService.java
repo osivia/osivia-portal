@@ -17,6 +17,7 @@ package org.osivia.portal.core.cms;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import org.osivia.portal.api.urls.EcmCommand;
@@ -112,24 +113,57 @@ public interface ICMSService {
 
 
     /**
-     * Get regions inheritance.
+     * Get CMS regions inheritance configuration.
      *
      * @param item CMS item
-     * @return regions inheritance
+     * @return CMS regions inheritance configuration
      */
-    Map<String, RegionInheritance> getRegionsInheritance(CMSItem item);
+    Map<String, RegionInheritance> getCMSRegionsInheritance(CMSItem item);
 
 
     /**
-     * Save region inheritance configuration.
-     * 
+     * Save CMS region inheritance.
+     *
      * @param cmsContext CMS context
      * @param path current path
      * @param regionName region name
-     * @param inheritance region inheritance
+     * @param inheritance CMS region inheritance configuration
      * @throws CMSException
      */
-    void saveInheritanceConfiguration(CMSServiceCtx cmsContext, String path, String regionName, RegionInheritance inheritance) throws CMSException;
+    void saveCMSRegionInheritance(CMSServiceCtx cmsContext, String path, String regionName, RegionInheritance inheritance) throws CMSException;
+
+
+    /**
+     * Get CMS region layouts configuration items.
+     *
+     * @param cmsContext CMS context
+     * @return configuration items
+     * @throws CMSException
+     */
+    Set<CMSConfigurationItem> getCMSRegionLayoutsConfigurationItems(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get CMS regions selected layout.
+     * 
+     * @param item CMS item
+     * @param regionLayouts region layouts
+     * @return CMS regions selected layout
+     * @throws CMSException
+     */
+    Map<String, CMSConfigurationItem> getCMSRegionsSelectedLayout(CMSItem item, Set<CMSConfigurationItem> regionLayouts) throws CMSException;
+
+
+    /**
+     * Save CMS region selected layout.
+     *
+     * @param cmsContext CMS context
+     * @param path current path
+     * @param regionName region name
+     * @param regionLayoutName selected region layout name
+     * @throws CMSException
+     */
+    void saveCMSRegionSelectedLayout(CMSServiceCtx cmsContext, String path, String regionName, String regionLayoutName) throws CMSException;
 
 
     /**
@@ -311,7 +345,7 @@ public interface ICMSService {
 
     /**
      * Synchronize or disable synchronization between local folder and ECM folder
-     * 
+     *
      * @param cmsCtx cms context
      * @param pagePath the current folder
      * @param enable enable or disable

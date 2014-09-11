@@ -428,7 +428,7 @@ function footer() {
 			var toPos = elt["pos"];
 
 			// Ajaxmode : The refURI is under 2 DIV elements
-			var refUri = document.getElementById(toRegionId).childNodes[toPos].children[0].children[0].id;
+			var refUri = document.getElementById(toRegionId).childNodes[toPos].children[0].children[0].children[0].id;
 
 			// recalcul pour igonrer les regions EMPTY
 			// qui ne sont pas des fragments

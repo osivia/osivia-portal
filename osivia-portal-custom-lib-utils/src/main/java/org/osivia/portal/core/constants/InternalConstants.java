@@ -179,6 +179,8 @@ public final class InternalConstants {
 
     /** Show CMS tools indicator window or region property name. */
     public static final String SHOW_CMS_TOOLS_INDICATOR_PROPERTY = "osivia.cms.showTools";
+    /** Show advanced CMS tools indicator window or region property name, and session attribute. */
+    public static final String SHOW_ADVANCED_CMS_TOOLS_INDICATOR = "osivia.cms.showAdvancedTools";
 
 
     // Inheritance constants
@@ -188,6 +190,17 @@ public final class InternalConstants {
     public static final String INHERITANCE_VALUE_REGION_PROPERTY = "osivia.cms.inheritance.value";
     /** Inheritance locked indicator window or region property name. */
     public static final String INHERITANCE_LOCKED_INDICATOR_PROPERTY = "osivia.cms.inheritance.locked";
+    /** Inheritance save URL. */
+    public static final String INHERITANCE_SAVE_URL = "osivia.cms.inheritance.saveURL";
+
+
+    // CMS region layouts
+    /** Selected CMS region layout code property name. */
+    public static final String CMS_REGION_LAYOUT_CODE = "osivia.cms.regionLayout.code";
+    /** Selected CMS region layout class property name. */
+    public static final String CMS_REGION_LAYOUT_CLASS = "osivia.cms.regionLayout.class";
+    /** CMS region layout save URL. */
+    public static final String CMS_REGION_LAYOUT_SAVE_URL = "osivia.cms.regionLayout.saveURL";
 
 
     // Transversal constants

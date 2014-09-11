@@ -121,6 +121,8 @@ public final class InternationalizationConstants {
     public static final String KEY_CMS_DISPLAY_LIVE_VERSION = "SUBMENU_CMS_DISPLAY_LIVE_VERSION";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_DISPLAY_EDITION_MODE = "SUBMENU_CMS_DISPLAY_EDITION_MODE";
+    /** Bundle resource key for CMS edition. */
+    public static final String KEY_CMS_TOGGLE_ADVANCED_TOOLS = "SUBMENU_CMS_TOGGLE_ADVANCED_TOOLS";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_CREATE = "SUBMENU_CMS_PAGE_CREATE";
     /** Bundle resource key for CMS edition */

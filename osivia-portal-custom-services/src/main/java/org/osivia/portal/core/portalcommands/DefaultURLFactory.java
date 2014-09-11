@@ -33,6 +33,8 @@ import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
+import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
+import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
 import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
@@ -444,8 +446,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
         }
 
 
+        if (cmd instanceof ToggleAdvancedCMSToolsCommand) {
+            // Toggle advanced CMS tools command
+            ToggleAdvancedCMSToolsCommand command = (ToggleAdvancedCMSToolsCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            try {
+                asu.setParameterValue("action", ToggleAdvancedCMSToolsCommand.ACTION);
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), CharEncoding.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
+
         if (cmd instanceof SaveInheritanceConfigurationCommand) {
-            // Save inheritance configuration
+            // Save inheritance configuration command
             SaveInheritanceConfigurationCommand command = (SaveInheritanceConfigurationCommand) cmd;
 
             AbstractServerURL asu = new AbstractServerURL();
@@ -462,6 +482,27 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
             return asu;
         }
+
+
+        if (cmd instanceof SaveRegionLayoutCommand) {
+            // Save region layout command
+            SaveRegionLayoutCommand command = (SaveRegionLayoutCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            try {
+                asu.setParameterValue("action", SaveRegionLayoutCommand.ACTION);
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), CharEncoding.UTF_8));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), CharEncoding.UTF_8));
+                asu.setParameterValue("regionName", URLEncoder.encode(command.getRegionName(), CharEncoding.UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
 
         if (cmd instanceof ToggleSynchronizationCommand) {
             ToggleSynchronizationCommand command = (ToggleSynchronizationCommand) cmd;

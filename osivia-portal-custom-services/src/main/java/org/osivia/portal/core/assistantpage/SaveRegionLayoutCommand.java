@@ -16,28 +16,28 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
- * Save inheritance configuration command.
+ * Save region layout command.
  *
  * @author Cédric Krommenhoek
  * @see ControllerCommand
  */
-public class SaveInheritanceConfigurationCommand extends ControllerCommand {
+public class SaveRegionLayoutCommand extends ControllerCommand {
 
     /** Action value. */
-    public static final String ACTION = SaveInheritanceConfigurationCommand.class.getSimpleName();
+    public static final String ACTION = SaveRegionLayoutCommand.class.getSimpleName();
 
-    /** Page identifier. */
+
+    /** Current page identifier. */
     private final String pageId;
     /** Page path. */
     private final String pagePath;
     /** Region name. */
     private final String regionName;
-    /** Inheritance. */
-    private final String inheritance;
+    /** Region layout name. */
+    private final String regionLayoutName;
 
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
@@ -46,20 +46,12 @@ public class SaveInheritanceConfigurationCommand extends ControllerCommand {
     private final CommandInfo commandInfo;
 
 
-    /**
-     * Constructor.
-     *
-     * @param pageId page identifier
-     * @param pagePath page path
-     * @param regionName region name
-     * @param inheritance inheritance
-     */
-    public SaveInheritanceConfigurationCommand(String pageId, String pagePath, String regionName, String inheritance) {
+    public SaveRegionLayoutCommand(String pageId, String pagePath, String regionName, String regionLayoutName) {
         super();
         this.pageId = pageId;
         this.pagePath = pagePath;
         this.regionName = regionName;
-        this.inheritance = inheritance;
+        this.regionLayoutName = regionLayoutName;
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
@@ -103,8 +95,8 @@ public class SaveInheritanceConfigurationCommand extends ControllerCommand {
             Page page = (Page) portalObjectContainer.getObject(pagePortalObjectId);
 
             if (CMSEditionPageCustomizerInterceptor.checkWritePermission(controllerContext, page)) {
-                // Save inheritance configuration
-                cmsService.saveCMSRegionInheritance(cmsContext, this.pagePath, this.regionName, RegionInheritance.fromValue(this.inheritance));
+                // Save region layout
+                cmsService.saveCMSRegionSelectedLayout(cmsContext, this.pagePath, this.regionName, this.regionLayoutName);
 
                 // Force editable windows reload
                 PageProperties.getProperties().setRefreshingPage(true);
@@ -134,7 +126,7 @@ public class SaveInheritanceConfigurationCommand extends ControllerCommand {
 
     /**
      * Getter for pagePath.
-     *
+     * 
      * @return the pagePath
      */
     public String getPagePath() {
@@ -143,7 +135,7 @@ public class SaveInheritanceConfigurationCommand extends ControllerCommand {
 
     /**
      * Getter for regionName.
-     *
+     * 
      * @return the regionName
      */
     public String getRegionName() {
@@ -151,12 +143,12 @@ public class SaveInheritanceConfigurationCommand extends ControllerCommand {
     }
 
     /**
-     * Getter for inheritance.
-     *
-     * @return the inheritance
+     * Getter for regionLayoutName.
+     * 
+     * @return the regionLayoutName
      */
-    public String getInheritance() {
-        return this.inheritance;
+    public String getRegionLayoutName() {
+        return this.regionLayoutName;
     }
 
 }

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
@@ -50,6 +51,7 @@ import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
+import org.osivia.portal.core.cms.CMSConfigurationItem;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -58,6 +60,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PagePathUtils;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -235,6 +238,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
      */
     @SuppressWarnings("unchecked")
     private void injectCMSPortletSetting(Portal portal, Page page, PageRendition rendition, ControllerContext controllerContext) throws Exception {
+        // CMS service
+        ICMSService cmsService = getCMSService();
+
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
 
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
@@ -251,60 +257,95 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
         String pagePath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
 
-        CMSPublicationInfos pubInfos = getCMSService().getPublicationInfos(cmsContext, pagePath);
+        CMSPublicationInfos pubInfos = cmsService.getPublicationInfos(cmsContext, pagePath);
 
         if (pubInfos.isEditableByUser()) {
+            URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+
             // Get live document
             cmsContext.setDisplayLiveVersion("1");
-            CMSItem liveDoc = getCMSService().getContent(cmsContext, pagePath);
-            Map<String, RegionInheritance> regionsInheritance = getCMSService().getRegionsInheritance(liveDoc);
+            CMSItem liveDoc = cmsService.getContent(cmsContext, pagePath);
+
+            // Show advanced CMS tools indicator
+            String advancedCMSTools = String.valueOf(controllerContext.getAttribute(Scope.SESSION_SCOPE, InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
 
 
-            for (Object regionCtxObjet : rendition.getPageResult().getRegions()) {
-                RegionRendererContext renderCtx = (RegionRendererContext) regionCtxObjet;
+            // Regions inheritance
+            Map<String, RegionInheritance> regionsInheritance = cmsService.getCMSRegionsInheritance(liveDoc);
+
+
+            // Regions layout
+            Set<CMSConfigurationItem> regionLayouts = cmsService.getCMSRegionLayoutsConfigurationItems(cmsContext);
+            PageProperties.getProperties().setRegionLayouts(regionLayouts);
+            Map<String, CMSConfigurationItem> regionsSelectedLayout = cmsService.getCMSRegionsSelectedLayout(liveDoc, regionLayouts);
+
+
+            // Refresh page command URL
+            RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+            String resfreshUrl = controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
+
+            // ECM base URL
+            String ecmBaseUrl = cmsService.getEcmDomain(cmsContext);
+
+
+            for (Object regionObject : rendition.getPageResult().getRegions()) {
+                RegionRendererContext region = (RegionRendererContext) regionObject;
 
                 // on vérifie que cette région fait partie du layout (elle contient des portlets)
-                if (pageLayout.getLayoutInfo().getRegionNames().contains(renderCtx.getId())) {
-                    String regionId = renderCtx.getId();
-                    RegionInheritance inheritance = regionsInheritance.get(regionId);
-
-                    Map<String, String> regionProperties = renderCtx.getProperties();
+                if (pageLayout.getLayoutInfo().getRegionNames().contains(region.getId())) {
+                    String regionId = region.getId();
+                    Map<String, String> regionProperties = region.getProperties();
 
                     // Set the current edition mode to the region
                     regionProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext).toString());
+                    // Show advanced CMS tools indicator
+                    regionProperties.put(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR, advancedCMSTools);
+
+
                     // Inheritance mode
+                    RegionInheritance inheritance = regionsInheritance.get(regionId);
                     if (inheritance != null) {
                         regionProperties.put(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY, inheritance.getValue());
                     }
+
+                    // Save inheritance configuration command URL
+                    ControllerCommand saveInheritanceConfigurationCommand = new SaveInheritanceConfigurationCommand(pageId, liveDoc.getPath(), regionId, null);
+                    String saveInheritanceConfigurationURL = controllerContext.renderURL(saveInheritanceConfigurationCommand, urlContext, urlFormat);
+                    regionProperties.put(InternalConstants.INHERITANCE_SAVE_URL, saveInheritanceConfigurationURL);
+
+
+                    // Selected region layout
+                    CMSConfigurationItem regionLayout = regionsSelectedLayout.get(regionId);
+                    if (regionLayout != null) {
+                        regionProperties.put(InternalConstants.CMS_REGION_LAYOUT_CODE, regionLayout.getCode());
+                        regionProperties.put(InternalConstants.CMS_REGION_LAYOUT_CLASS, regionLayout.getAdditionalCode());
+                    }
+
+                    // Save region layout command URL
+                    ControllerCommand saveRegionLayoutCommand = new SaveRegionLayoutCommand(pageId, liveDoc.getPath(), regionId, null);
+                    String saveRegionLayoutURL = controllerContext.renderURL(saveRegionLayoutCommand, urlContext, urlFormat);
+                    regionProperties.put(InternalConstants.CMS_REGION_LAYOUT_SAVE_URL, saveRegionLayoutURL);
 
 
                     // build and set url for create fgt in region in CMS mode
                     Map<String, String> requestParameters = new HashMap<String, String>();
                     requestParameters.put("region", regionId);
-
-                    String ecmCreateInRegionUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
+                    String ecmCreateInRegionUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, liveDoc.getPath(), requestParameters);
                     regionProperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
                     regionProperties.put("osivia.language", locale.getLanguage());
 
-                    URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
-                    RefreshPageCommand resfreshCmd = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-                    String resfreshUrl = controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
+                    // Refresh page command URL
                     regionProperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
-                    String ecmBaseUrl = getCMSService().getEcmDomain(cmsContext);
+                    // ECM base URL
                     regionProperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
-                    // Save inheritance configuration command
-                    ControllerCommand saveInheritanceConfigurationCommand = new SaveInheritanceConfigurationCommand(pageId, liveDoc.getPath(), regionId, null);
-                    String saveInheritanceConfigurationURL = controllerContext.renderURL(saveInheritanceConfigurationCommand, urlContext, urlFormat);
-                    regionProperties.put("osivia.cms.saveInheritanceConfigurationURL", saveInheritanceConfigurationURL);
 
-
-                    // Le mode Ajax est incompatble avec le mode "edition cms"
+                    // Le mode Ajax est incompatible avec le mode "edition cms"
                     // - sur un action Ajax dans un autre portlet, les window de modif / suprpession disparaissement
                     // - sur le close, la requete n'est pas traitée en AJAX
                     // DynaRenderOptions.NO_AJAX.setOptions(regionPorperties);
-                    for (Object windowCtx : renderCtx.getWindows()) {
+                    for (Object windowCtx : region.getWindows()) {
                         WindowRendererContext wrc = (WindowRendererContext) windowCtx;
                         Map<String, String> windowProperties = wrc.getProperties();
                         String windowId = wrc.getId();
@@ -327,6 +368,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                                 windowProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext)
                                         .toString());
 
+
                                 // build and set urls for create/edit fgts in window in CMS mode
                                 String refURI = window.getProperty("osivia.refURI");
                                 windowProperties.put("osivia.windowId", refURI);
@@ -336,12 +378,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
                                 windowProperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
-                                String cmsCreateUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
+                                String cmsCreateUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, liveDoc.getPath(), requestParameters);
                                 windowProperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
                                 windowProperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
                                 requestParameters.put("refURI", refURI);
-                                String cmsEditUrl = getCMSService().getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
+                                String cmsEditUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.editFgt, liveDoc.getPath(), requestParameters);
                                 windowProperties.put("osivia.cmsEditUrl", cmsEditUrl);
 
 

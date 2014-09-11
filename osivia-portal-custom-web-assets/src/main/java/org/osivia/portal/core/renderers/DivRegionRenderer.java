@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -53,9 +54,11 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSConfigurationItem;
 import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 import org.osivia.portal.core.theming.RegionDecorator;
 
@@ -133,21 +136,27 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.print(">");
         }
 
-        // In cms mode, create a new fragment on the top of this region
+
+        // Panel
         if (this.showCmsTools(irrc)) {
-            // Panel
             markup.println("<div class='panel panel-default'><div class='panel-body'>");
             this.printFragmentCommands(irrc, bundle, markup);
-
-            if (!BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-                // Drag'n'drop
-                markup.print("<div id='region_");
-                markup.print(rrc.getId());
-                markup.print("' class='dnd-region' data-empty-title='");
-                markup.print(bundle.getString("CMS_EMPTY_REGION"));
-                markup.println("'>");
-            }
         }
+
+        // Region layout row
+        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE))) {
+            markup.println("<div class='row'>");
+        }
+
+        // Drag'n'drop
+        if (this.showCmsTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+            markup.print("<div id='region_");
+            markup.print(rrc.getId());
+            markup.print("' class='dnd-region clearfix' data-empty-title='");
+            markup.print(bundle.getString("CMS_EMPTY_REGION"));
+            markup.println("'>");
+        }
+
 
         // Add portlet link
         this.addPortletLink(irrc, bundle, markup);
@@ -167,7 +176,16 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
             WindowRendererContext wrc = (WindowRendererContext) i.next();
             if (!BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR))) {
+                String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
+
+                PrintWriter markup = rendererContext.getWriter();
+                markup.print("<div class='");
+                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
+                markup.println("'>");
+
                 rendererContext.render(wrc);
+
+                markup.println("</div>");
             }
         }
     }
@@ -186,15 +204,22 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println(decorator.getFooterContent());
         }
 
-        if (this.showCmsTools(irrc)) {
-            // Panel
-            markup.print("</div></div>");
 
-            if (!BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-                // Drag'n'drop
-                markup.print("</div>");
-            }
+        // Drag'n'drop
+        if (this.showCmsTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+            markup.print("</div>");
         }
+
+        // Region layout row
+        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE))) {
+            markup.println("</div>");
+        }
+
+        // Panel
+        if (this.showCmsTools(irrc)) {
+            markup.print("</div></div>");
+        }
+
 
         // End of Main DIV region (not shown in <head> tag)
         if (!this.headerRegions.contains(rrc.getCSSId())) {
@@ -210,9 +235,12 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @return true if CMS tools must be shown
      */
     private boolean showCmsTools(IRegionRendererContext irrc) {
-        boolean showCmsTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY))
-                && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
-        return irrc.isCMS() && showCmsTools;
+        boolean showCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY));
+        boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+        boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
+        boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
+
+        return irrc.isCMS() && showCMSTools && !locked && (showAdvancedCMSTools || !inherited);
     }
 
 
@@ -267,9 +295,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param markup print writer markup
      */
     private void printFragmentCommands(IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
-        RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY));
+        // Inherited indicator
         boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
-        String saveURL = irrc.getProperty("osivia.cms.saveInheritanceConfigurationURL");
 
 
         // Parent DIV
@@ -280,7 +307,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         parent.add(toolbar);
 
 
-        // Button group #1
+        // Button group
         Element group = DOM4JUtils.generateDivElement("btn-group");
         toolbar.add(group);
 
@@ -306,7 +333,44 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         group.add(addFragmentButton);
 
 
-        // Dropdown menu container (button group #2)
+        // Advanced CMS tools
+        boolean showAdvancedTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+        if (showAdvancedTools) {
+            // Inheritance menu
+            this.generateInheritanceMenu(irrc, toolbar, bundle);
+
+            // Region layout menu
+            this.generateRegionLayoutMenu(irrc, toolbar, bundle);
+        }
+
+        // Write HTML
+        HTMLWriter htmlWriter = new HTMLWriter(markup);
+        htmlWriter.setEscapeText(false);
+        try {
+            htmlWriter.write(parent);
+        } catch (IOException e) {
+            // Do nothing
+        }
+    }
+
+
+    /**
+     * Generate inheritance menu.
+     *
+     * @param irrc region renderer context
+     * @param toolbar parent toolbar DOM element
+     * @param bundle bundle
+     */
+    private void generateInheritanceMenu(IRegionRendererContext irrc, Element toolbar, Bundle bundle) {
+        // Inheritance
+        RegionInheritance inheritance = RegionInheritance.fromValue(irrc.getProperty(InternalConstants.INHERITANCE_VALUE_REGION_PROPERTY));
+        // Save URL
+        String saveURL = irrc.getProperty(InternalConstants.INHERITANCE_SAVE_URL);
+        // Radio name
+        String radioName = "inheritance";
+
+
+        // Dropdown menu container
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
         toolbar.add(dropdownContainer);
 
@@ -343,7 +407,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.TYPE, "hidden");
             DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.NAME, StringUtils.substringBefore(parameter, "="));
             try {
-                DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.VALUE, URLDecoder.decode(StringUtils.substringAfter(parameter, "="), CharEncoding.UTF_8));
+                DOM4JUtils
+                        .addAttribute(hiddenInput, HTMLConstants.VALUE, URLDecoder.decode(StringUtils.substringAfter(parameter, "="), CharEncoding.UTF_8));
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }
@@ -352,44 +417,144 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         for (RegionInheritance value : RegionInheritance.values()) {
-            // Radio container
-            Element radioContainer = DOM4JUtils.generateDivElement("radio");
-            form.add(radioContainer);
-
-            // Radio label
-            Element radioLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
-            radioContainer.add(radioLabel);
-
-            // Radio input
-            Element radioInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
-            DOM4JUtils.addAttribute(radioInput, HTMLConstants.TYPE, "radio");
-            DOM4JUtils.addAttribute(radioInput, HTMLConstants.NAME, "inheritance");
-            DOM4JUtils.addAttribute(radioInput, HTMLConstants.VALUE, StringUtils.trimToEmpty(value.getValue()));
-            if (value.equals(inheritance)) {
-                DOM4JUtils.addAttribute(radioInput, HTMLConstants.CHECKED, HTMLConstants.CHECKED);
-            }
-            radioLabel.add(radioInput);
-
-            radioLabel.setText(bundle.getString(value.getInternationalizationKey()));
-
-            // Help message
-            Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.SPAN, "help-block", bundle.getString(value.getInternationalizationKey() + "_HELP"));
-            radioLabel.add(radioHelp);
+            // Radio
+            String label = bundle.getString(value.getInternationalizationKey());
+            String helpMessage = bundle.getString(value.getInternationalizationKey() + "_HELP");
+            this.generateRadio(form, label, radioName, StringUtils.trimToEmpty(value.getValue()), value.equals(inheritance), helpMessage);
         }
 
         // Submit button
         Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary", bundle.getString("SAVE"));
         DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
         form.add(submit);
+    }
 
 
-        // Write HTML
-        HTMLWriter htmlWriter = new HTMLWriter(markup);
-        htmlWriter.setEscapeText(false);
-        try {
-            htmlWriter.write(parent);
-        } catch (IOException e) {
-            // Do nothing
+    /**
+     * Generate region layout menu.
+     *
+     * @param irrc region renderer context
+     * @param toolbar parent toolbar DOM element
+     * @param bundle bundle
+     */
+    private void generateRegionLayoutMenu(IRegionRendererContext irrc, Element toolbar, Bundle bundle) {
+        // Selected region layout
+        String regionLayoutCode = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE);
+        // Inherited indicator
+        boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
+        // Save URL
+        String saveURL = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_SAVE_URL);
+        // Radio name
+        String radioName = "regionLayout";
+
+
+        // Dropdown menu container
+        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
+        toolbar.add(dropdownContainer);
+
+        // Dropdown menu button
+        Element dropdownButton;
+        if (inherited) {
+            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle disabled", HTMLConstants.TEXT_DEFAULT,
+                    "sampler", null);
+        } else {
+            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT, "sampler", null);
+            DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
+        }
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
+        dropdownButton.add(caret);
+        dropdownContainer.add(dropdownButton);
+
+
+        if (!inherited) {
+            // Dropdown menu
+            Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null, null, AccessibilityRoles.MENU);
+            dropdownContainer.add(dropdownMenu);
+
+            // Dropdown header
+            Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_INHERITANCE_HEADER"), null,
+                    AccessibilityRoles.PRESENTATION);
+            dropdownMenu.add(dropdownHeader);
+
+            // Dropdown item
+            Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+            dropdownMenu.add(dropdownItem);
+
+            // Form
+            Element form = DOM4JUtils.generateElement(HTMLConstants.FORM, "form", null, null, AccessibilityRoles.FORM);
+            DOM4JUtils.addAttribute(form, HTMLConstants.ACTION, StringUtils.substringBefore(saveURL, "?"));
+            DOM4JUtils.addAttribute(form, HTMLConstants.METHOD, HTMLConstants.FORM_METHOD_GET);
+            dropdownItem.add(form);
+
+            // Hidden inputs
+            for (String parameter : StringUtils.split(StringUtils.substringAfter(saveURL, "?"), "&")) {
+                Element hiddenInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+                DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.TYPE, "hidden");
+                DOM4JUtils.addAttribute(hiddenInput, HTMLConstants.NAME, StringUtils.substringBefore(parameter, "="));
+                try {
+                    DOM4JUtils
+                            .addAttribute(hiddenInput, HTMLConstants.VALUE, URLDecoder.decode(StringUtils.substringAfter(parameter, "="), CharEncoding.UTF_8));
+                } catch (UnsupportedEncodingException e) {
+                    // Do nothing
+                }
+                form.add(hiddenInput);
+            }
+
+            // Default region layout radio
+            this.generateRadio(form, bundle.getString("DEFAULT_REGION_LAYOUT"), radioName, StringUtils.EMPTY, StringUtils.isEmpty(regionLayoutCode), null);
+
+            // Region layouts
+            Set<CMSConfigurationItem> regionLayouts = PageProperties.getProperties().getRegionLayouts();
+            for (CMSConfigurationItem regionLayout : regionLayouts) {
+                // Radio
+                boolean selected = StringUtils.equals(regionLayout.getCode(), regionLayoutCode);
+                this.generateRadio(form, regionLayout.getName(), radioName, regionLayout.getCode(), selected, null);
+            }
+
+
+            // Submit button
+            Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary", bundle.getString("SAVE"));
+            DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
+            form.add(submit);
+        }
+    }
+
+
+    /**
+     * Generate radio DOM element.
+     *
+     * @param form parent form DOM element
+     * @param label radio label
+     * @param name radio name
+     * @param value radio value
+     * @param checked radio checked indicator
+     * @param helpMessage help message, may be null
+     */
+    private void generateRadio(Element form, String label, String name, String value, boolean checked, String helpMessage) {
+        // Radio container
+        Element radioContainer = DOM4JUtils.generateDivElement("radio");
+        form.add(radioContainer);
+
+        // Radio label
+        Element radioLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
+        radioContainer.add(radioLabel);
+
+        // Radio input
+        Element radioInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        DOM4JUtils.addAttribute(radioInput, HTMLConstants.TYPE, "radio");
+        DOM4JUtils.addAttribute(radioInput, HTMLConstants.NAME, name);
+        DOM4JUtils.addAttribute(radioInput, HTMLConstants.VALUE, value);
+        if (checked) {
+            DOM4JUtils.addAttribute(radioInput, HTMLConstants.CHECKED, HTMLConstants.CHECKED);
+        }
+        radioLabel.add(radioInput);
+
+        radioLabel.setText(label);
+
+        if (StringUtils.isNotEmpty(helpMessage)) {
+            // Help message
+            Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.SPAN, "help-block", helpMessage);
+            radioLabel.add(radioHelp);
         }
     }
 
