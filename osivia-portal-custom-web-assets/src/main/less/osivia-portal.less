@@ -341,29 +341,26 @@
 
 // Drag'n'drop
 
-.dnd-region, .dyna-window {
-    &:EMPTY, &.dnd-droppable {
+.dnd-region {
+    &:EMPTY, &.dnd-droppable, & > *.dnd-droppable {
         border-style: dashed;
         border-width: 1px;
+        border-color: @brand-success;
         background-color: transparent;
     }
     
     &:EMPTY {
         border-color: @gray-lighter;
         
-        text-align: center;
+        padding: @padding-base-vertical @padding-base-horizontal;
         
         &:BEFORE {
             content: attr(data-empty-title);
         }
         
-        & > * {
-            text-align: left;
+        .row > & {
+            margin: 0 floor((@grid-gutter-width / 2));
         }
-    }
-    
-    &.dnd-droppable {
-        border-color: @brand-success;
     }
 }
 
@@ -373,9 +370,6 @@
     min-height: 1.2em;
 }
 
-.row > .dnd-region:EMPTY {
-    margin: 0 floor((@grid-gutter-width / 2));
-}
 
 
 // Wizard edging

@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -92,13 +93,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * {@inheritDoc}
      */
     public void render(RendererContext rendererContext, WindowRendererContext wrc) throws RenderException {
-        String language = wrc.getProperty("osivia.language");
-        Locale locale;
-        if (language != null) {
-            locale = new Locale(language);
-        } else {
-            locale = Locale.getDefault();
-        }
+        Locale locale = LocaleUtils.toLocale(PageProperties.getProperties().getWindowProperty(wrc.getId(), InternalConstants.LOCALE_PROPERTY));
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
         PrintWriter out = rendererContext.getWriter();

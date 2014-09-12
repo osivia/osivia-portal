@@ -36,6 +36,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -100,13 +101,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         IRegionRendererContext irrc = (IRegionRendererContext) rrc;
 
-        String language = rrc.getProperty("osivia.language");
-        Locale locale = null;
-        if (language != null) {
-            locale = new Locale(language);
-        } else {
-            locale = Locale.US;
-        }
+        Locale locale = LocaleUtils.toLocale(rrc.getProperty(InternalConstants.LOCALE_PROPERTY));
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Wizard mode indicator

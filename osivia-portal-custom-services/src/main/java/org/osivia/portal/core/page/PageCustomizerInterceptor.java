@@ -400,11 +400,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
         }
-        
-        
-        
-        
-        
+
+
+
+
+
         /* Desactivation of pagemarker */
 
         String disablePageMarkerComputed = PageProperties.getProperties().getPagePropertiesMap().get("osivia.portal.disablePageMarkerComputed");
@@ -420,11 +420,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 PortalObjectId portalId = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
 
                 PortalObject po = this.portalObjectContainer.getObject(portalId);
-                
+
                 String disablePageMarker = po.getDeclaredProperty("osivia.portal.disablePageMarker");
-                
+
                 if( "1".equals(disablePageMarker)){
-                    
+
                     HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
                      if (request.getUserPrincipal() == null) {
@@ -433,7 +433,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
         }
-        
+
 
 
         /* Le player d'un item CMS doit être rejoué en cas de refresh
@@ -1202,7 +1202,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Window window = rwc.getWindow();
             String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
-            Map<String,String> windowProperties = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowProperties."+windowId);  
+            Map<String,String> windowProperties = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowProperties."+windowId);
 
 
             // Should we hide the portlet (empty response + hideEmptyPortlet positionned)
@@ -1269,11 +1269,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 // Dynamic styles
 
                 if( windowProperties != null)   {
-                    String dynamicStyles = (String) windowProperties.get( "osivia.dynamicCSSClasses");
-                
+                    String dynamicStyles = windowProperties.get( "osivia.dynamicCSSClasses");
+
                     if( dynamicStyles != null)
                         customStyle += " " + dynamicStyles;
-                    
+
                     properties.setWindowProperty(windowId, "osivia.style",  customStyle);
                 }
             }
@@ -1303,8 +1303,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Set current locale in window properties
             Locale locale = controllerCtx.getServerInvocation().getServerContext().getClientRequest().getLocale();
-            properties.setWindowProperty(windowId, InternalConstants.WINDOW_PROPERTY_LOCALE_LANGUAGE, locale.getLanguage());
-            properties.setWindowProperty(windowId, InternalConstants.WINDOW_PROPERTY_LOCALE_COUNTRY, locale.getCountry());
+            properties.setWindowProperty(windowId, InternalConstants.LOCALE_PROPERTY, locale.toString());
 
 
             /* Ajout script callback (fermeture par la croix des fancybox) */

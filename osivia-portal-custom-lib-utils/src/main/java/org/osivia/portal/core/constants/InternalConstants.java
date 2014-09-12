@@ -177,6 +177,10 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_EMPTY_INDICATOR = "osivia.window.empty";
 
 
+    /** Locale window or region property name. */
+    public static final String LOCALE_PROPERTY = "osivia.locale";
+
+
     /** Show CMS tools indicator window or region property name. */
     public static final String SHOW_CMS_TOOLS_INDICATOR_PROPERTY = "osivia.cms.showTools";
     /** Show advanced CMS tools indicator window or region property name, and session attribute. */
@@ -242,13 +246,6 @@ public final class InternalConstants {
 
     public static final String PORTAL_PROP_NAME_PORTAL_TYPE = "osivia.portal.portalType";
     public static final String PORTAL_PROP_NAME_CMS_REQUEST_FILTERING_POLICY = "osivia.cms.requestFilteringPolicy";
-
-
-    // Window properties
-    /** Locale language window property name. */
-    public static final String WINDOW_PROPERTY_LOCALE_LANGUAGE = "osivia.locale.language";
-    /** Locale country window property name. */
-    public static final String WINDOW_PROPERTY_LOCALE_COUNTRY = "osivia.locale.country";
 
 
     /* Web URLs */

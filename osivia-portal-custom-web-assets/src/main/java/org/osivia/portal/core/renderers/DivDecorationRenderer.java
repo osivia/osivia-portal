@@ -33,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -81,7 +82,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         // Current window identifier
         String currentWindowId = properties.getCurrentWindowId();
         // Current locale
-        Locale locale = this.getLocale(properties, currentWindowId);
+        Locale locale = LocaleUtils.toLocale(properties.getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
+
 
         // Render title
         this.renderTitle(properties, markup, drc);
@@ -103,30 +105,6 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 */
         markup.print("</div>");
         markup.print("</div>");
-    }
-
-
-    /**
-     * Get current locale
-     *
-     * @param properties page properties
-     * @param currentWindowId current window identifier
-     * @return current locale
-     */
-    private Locale getLocale(PageProperties properties, String currentWindowId) {
-        Locale locale;
-        String language = properties.getWindowProperty(currentWindowId, InternalConstants.WINDOW_PROPERTY_LOCALE_LANGUAGE);
-        if (language != null) {
-            String country = properties.getWindowProperty(currentWindowId, InternalConstants.WINDOW_PROPERTY_LOCALE_COUNTRY);
-            if (country != null) {
-                locale = new Locale(language, country);
-            } else {
-                locale = new Locale(language);
-            }
-        } else {
-            locale = Locale.getDefault();
-        }
-        return locale;
     }
 
 
