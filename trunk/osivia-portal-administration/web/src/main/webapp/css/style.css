@@ -1,0 +1,72 @@
+.table {
+	display: table;
+	border-collapse: separate;
+	border-spacing: 20px;
+	margin: -20px;
+	width: 100%
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+	vertical-align: top;
+}
+
+.table-cell.portal-selection {
+	width: 200px;
+	min-height: 300px;
+}
+
+.tab-sub-title {
+	color: blue;
+	font-weight: bold;
+	margin-top: 5px;
+	margin-bottom: 10px;
+	display: block;
+	margin-left: 5px;
+}
+
+.portal-selection select {
+	min-width: 120px;
+	max-width: 160px;
+}
+
+.administration-indent-content {
+	margin-left: 20px;
+	margin-bottom: 15px;
+}
+
+.administration-indent-content a {
+	display: block;
+	margin-bottom: 3px;
+}
+
+.admininistration-adaptive-container {
+	display: inline-block;
+}
+
+.administration-commands {
+	display: block;
+	text-align: center;
+	margin-bottom: 5px;
+}
+
+.administration-command-on {
+	display: none;
+}
+
+.administration-command-off {
+	display: inline;
+}
+
+.messages-display {
+	display: block;
+	margin-top: 15px;
+}
+
+.messages-display.error {
+	color: red;
+}
