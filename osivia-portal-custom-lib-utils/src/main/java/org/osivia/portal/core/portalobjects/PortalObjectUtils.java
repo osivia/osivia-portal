@@ -15,17 +15,21 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PageProperties;
 
 
 /**
  * Utility class with null-safe methods for portal objects.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see PortalObject
  */
@@ -42,8 +46,32 @@ public class PortalObjectUtils {
 
 
     /**
-     * Check if object "po1" is an ancestor of object "po2".
+     * Get current portal from controller context.
      * 
+     * @param controllerContext controller context
+     * @return current portal
+     */
+    public static final Portal getPortal(ControllerContext controllerContext) {
+        Portal portal = null;
+
+        // Portal name
+        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+        if (portalName != null) {
+            PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+            PortalObject portalObject = portalObjectContainer.getObject(PortalObjectId.parse(StringUtils.EMPTY, "/" + portalName,
+                    PortalObjectPath.CANONICAL_FORMAT));
+            if (portalObject instanceof Portal) {
+                portal = (Portal) portalObject;
+            }
+        }
+
+        return portal;
+    }
+
+
+    /**
+     * Check if object "po1" is an ancestor of object "po2".
+     *
      * @param po1 first object, perhaps ancestor of the second, may be null
      * @param po2 second object, perhaps child of the first, may be null
      * @return true if the first objet is an ancestor of the second (they are both not null)
@@ -66,7 +94,7 @@ public class PortalObjectUtils {
 
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
-     * 
+     *
      * @param po portal object, may be null
      * @param locales locales, may be null
      * @return the display name
@@ -117,7 +145,7 @@ public class PortalObjectUtils {
 
     /**
      * Return the display name of object "po", in the most accurate locale, otherwise the technical name.
-     * 
+     *
      * @param po portal object, may be null
      * @param locales locales, may be null
      * @return the display name
@@ -140,7 +168,7 @@ public class PortalObjectUtils {
 
     /**
      * Return the display name of object "po", in the specified locale, otherwise the technical name.
-     * 
+     *
      * @param po portal object, may be null
      * @param locale locale, may be null
      * @return the display name
@@ -157,7 +185,7 @@ public class PortalObjectUtils {
 
     /**
      * Check if portal object is a template.
-     * 
+     *
      * @param po portal object to check, may be null
      * @return true if portal object is a template
      */
@@ -180,7 +208,7 @@ public class PortalObjectUtils {
     /**
      * Access to the templates root of the current portal objects tree.
      * If the templates root does not exist, it will be created.
-     * 
+     *
      * @param po a portal object of the current tree
      * @return templates root
      */
@@ -218,7 +246,7 @@ public class PortalObjectUtils {
 
     /**
      * Check if a portal object belongs to a portal type "space".
-     * 
+     *
      * @param po portal object to check, may be null
      * @return true if portal object belongs to a space site
      */
@@ -245,7 +273,7 @@ public class PortalObjectUtils {
 
     /**
      * Check if a portal object is contained in JBoss Portal administration.
-     * 
+     *
      * @param po portal object to check, may be null
      * @return true if portal object is contained in JBoss Portal administration
      */
@@ -271,7 +299,7 @@ public class PortalObjectUtils {
 
     /**
      * Return HTML safe portal object identifier.
-     * 
+     *
      * @param id portal object identifier
      * @return HTML safe identifier
      */
@@ -291,7 +319,7 @@ public class PortalObjectUtils {
 
     /**
      * Check if a portal object is the portal default page.
-     * 
+     *
      * @param po portal object to check
      * @return true if portal object is the portal default page
      */
