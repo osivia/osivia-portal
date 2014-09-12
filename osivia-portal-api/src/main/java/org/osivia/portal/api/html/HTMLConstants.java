@@ -164,6 +164,8 @@ public final class HTMLConstants {
     public static final String A_HREF_DEFAULT = "#";
     /** HTML form method "get" value. */
     public static final String FORM_METHOD_GET = "get";
+    /** HTML form method "post" value. */
+    public static final String FORM_METHOD_POST = "post";
     /** HTML input checkbox checked value. */
     public static final String INPUT_CHECKED = "checked";
     /** HTML input select selected value. */
