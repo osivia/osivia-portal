@@ -256,20 +256,19 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                 cmsContext.setDisplayLiveVersion("1");
             }
 
-            // Page path
-            String pagePath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+            // Page CMS path
+            String pageCMSPath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
+            if (StringUtils.isNotEmpty(pageCMSPath)) {
+                // Fetch document
+                CMSItem cmsItem = cmsService.getContent(cmsContext, pageCMSPath);
 
-            // Fetch document
-            CMSItem cmsItem = cmsService.getContent(cmsContext, pagePath);
+                // Global configuration
+                this.injectCMSPorletGlobalConfiguration(controllerContext, cmsContext, cmsItem, rendition, page);
 
-
-            // Global configuration
-            this.injectCMSPorletGlobalConfiguration(controllerContext, cmsContext, cmsItem, rendition, page);
-
-
-            if (!online && checkWritePermission(controllerContext, page)) {
-                // Edition tools
-                this.injectCMSPortletEditionTools(controllerContext, cmsContext, cmsItem, rendition, page);
+                if (!online && checkWritePermission(controllerContext, page)) {
+                    // Edition tools
+                    this.injectCMSPortletEditionTools(controllerContext, cmsContext, cmsItem, rendition, page);
+                }
             }
         }
 
@@ -279,7 +278,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Inject CMS portlet global configuration.
-     * 
+     *
      * @param controllerContext controller context
      * @param cmsContext CMS context
      * @param cmsItem current CMS item
