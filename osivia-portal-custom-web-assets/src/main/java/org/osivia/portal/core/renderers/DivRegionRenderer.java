@@ -174,13 +174,20 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
 
                 PrintWriter markup = rendererContext.getWriter();
-                markup.print("<div class='");
-                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
-                markup.println("'>");
+                
+                if (!this.headerRegions.contains(rrc.getCSSId())) {
+	                
+	                markup.print("<div class='");
+	                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
+	                markup.println("'>");
+                }
 
                 rendererContext.render(wrc);
 
-                markup.println("</div>");
+                if (!this.headerRegions.contains(rrc.getCSSId())) {
+                	markup.println("</div>");
+                }
+                	
             }
         }
     }
@@ -467,7 +474,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             dropdownContainer.add(dropdownMenu);
 
             // Dropdown header
-            Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_INHERITANCE_HEADER"), null,
+            Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_LAYOUT_HEADER"), null,
                     AccessibilityRoles.PRESENTATION);
             dropdownMenu.add(dropdownHeader);
 
