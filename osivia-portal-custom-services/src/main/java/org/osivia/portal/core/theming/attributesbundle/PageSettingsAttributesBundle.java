@@ -65,7 +65,6 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
-import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
 import org.osivia.portal.core.assistantpage.PortalThemeComparator;
@@ -214,8 +213,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
-        // URL context
-        URLContext urlContext = serverContext.getURLContext();
 
         Locale locale = serverContext.getClientRequest().getLocale();
 

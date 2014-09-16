@@ -124,7 +124,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_ADVANCED_SEARCH_URL, advancedSearchCommandUrl);
 
         // Search web URL
-        String searchWebURL = portalContextPath + "/web/search";
+        String searchWebURL = portalContextPath + "/web/search.html";
         attributes.put(Constants.ATTR_SEARCH_WEB_URL, searchWebURL);
     }
 

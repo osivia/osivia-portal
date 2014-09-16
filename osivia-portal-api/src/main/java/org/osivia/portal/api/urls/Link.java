@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,96 +10,80 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.api.urls;
 
 
 /**
- * The Class Link.
+ * Link java-bean.
  */
 public class Link {
-	
-	/** The external. */
-	private boolean external = false;
-	
-	/** The downloadable. */
-	private boolean downloadable = false;
-	
-	/** The url. */
-	private String url;
-	
-	/**
-	 * Checks if is downloadable.
-	 *
-	 * @return true, if is downloadable
-	 */
-	public boolean isDownloadable() {
-		return downloadable;
-	}
 
-	/**
-	 * Sets the downloadable.
-	 *
-	 * @param downloadable the new downloadable
-	 */
-	public void setDownloadable(boolean downloadable) {
-		this.downloadable = downloadable;
-	}
+    /** Link URL. */
+    private final String url;
+    /** External link indicator. */
+    private final boolean external;
+
+    /** Downloadable link indicator. */
+    private boolean downloadable;
 
 
+    /**
+     * Constructor.
+     *
+     * @param url link URL
+     * @param external external link indicator
+     */
+    public Link(String url, boolean external) {
+        super();
+        this.url = url;
+        this.external = external;
+    }
 
-	/**
-	 * Checks if is external.
-	 *
-	 * @return true, if is external
-	 */
-	public boolean isExternal() {
-		return external;
-	}
 
-	/**
-	 * Sets the external.
-	 *
-	 * @param external the new external
-	 */
-	public void setExternal(boolean external) {
-		this.external = external;
-	}
-	
-	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Link [url=" + this.url + "]";
+    }
 
-	/**
-	 * Gets the url.
-	 *
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
 
-	/**
-	 * Sets the url.
-	 *
-	 * @param url the new url
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    /**
+     * Getter for downloadable.
+     *
+     * @return the downloadable
+     */
+    public boolean isDownloadable() {
+        return this.downloadable;
+    }
 
-	/**
-	 * Instantiates a new link.
-	 *
-	 * @param url the url
-	 * @param external the external
-	 */
-	public Link( String url, boolean external) {
-		super();
-		this.external = external;
-		this.url = url;
-	}
-	
-	
-	
+    /**
+     * Setter for downloadable.
+     *
+     * @param downloadable the downloadable to set
+     */
+    public void setDownloadable(boolean downloadable) {
+        this.downloadable = downloadable;
+    }
+
+    /**
+     * Getter for url.
+     *
+     * @return the url
+     */
+    public String getUrl() {
+        return this.url;
+    }
+
+    /**
+     * Getter for external.
+     *
+     * @return the external
+     */
+    public boolean isExternal() {
+        return this.external;
+    }
 
 }

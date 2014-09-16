@@ -14,7 +14,6 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import org.osivia.portal.api.theming.IAttributesBundle;
 
 /**
  * Orderable category
@@ -29,15 +28,15 @@ public class OrderedPageCategory implements Comparable<OrderedPageCategory> {
     private String label;
     
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     public String getCode() {
-        return code;
+        return this.code;
     }
 
     public int getOrder() {
-        return order;
+        return this.order;
     }
 
     public OrderedPageCategory(int order, String code, String label) {
