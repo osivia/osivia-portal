@@ -27,11 +27,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -412,6 +410,32 @@ public class PageMarkerUtils {
             }
         }
 
+
+        /*
+         * Restauration automatique si pagemarker désactivé
+         * (utile uniquement sur les fermetures de popup pour propager popupModeClosing
+         */
+        if (currentPageMarker == null) {
+            String lastPageMarker = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, "lastSavedPageMarker");
+            if (lastPageMarker != null) {
+                Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
+                try {
+                    PageMarkerInfo markerInfo = markers.get(lastPageMarker);
+                    if (markerInfo != null && markerInfo.getPageId() != null) {
+                        Page page = null;
+                        page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+                        if ("1".equals(page.getProperty("osivia.portal.disablePageMarker"))) {
+                            currentPageMarker = lastPageMarker;
+                        }
+                    }
+                } catch (ClassCastException e) {
+                    // Cas d'un redéploiement à chaud
+                }
+
+            }
+        }
+
+
         /**********************************************************************
          * Restauration de l'état des windows en fonction du marqueur de
          * page
@@ -467,15 +491,15 @@ public class PageMarkerUtils {
                         // !currentPageMarker.equals(lastSavedPageMarker))
                         // {
 
-                        
+
                         // Restautation etat page
                         NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                         PageNavigationalState pns = markerInfo.getPageNavigationState();
                         if (pns != null) {
-                            
-                            // 
+
+                            //
                             ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
-                            
+
                             // Restauration de preview nécessaire pour calcul editableWindows
                             EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
 
@@ -483,9 +507,9 @@ public class PageMarkerUtils {
                                 controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
                             }
                         }
-                        
-                        
-                        
+
+
+
                         // Restauration des pages dynamiques
                         IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
                         poc.setDynamicPages(markerInfo.getDynamicPages());
@@ -701,11 +725,11 @@ public class PageMarkerUtils {
         return markerInfo;
     }
 
-    
+
     public static PageMarkerInfo  getPageMarkerInfo(ControllerContext controllerContext, String pageMarker)  {
-        
+
         PageMarkerInfo markerInfo = null;
-        
+
         Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
         if (markers != null) {
             try {
@@ -713,10 +737,10 @@ public class PageMarkerUtils {
             } catch (ClassCastException e) {
                 // Cas d'un redéploiement à chaud
             }
-        }        
-        
+        }
+
         return markerInfo;
     }
 
-    
+
 }
