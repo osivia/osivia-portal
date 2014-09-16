@@ -153,6 +153,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     private static ICMSServiceLocator cmsServiceLocator;
     /** Internationalization service. */
     private IInternationalizationService internationalizationService;
+    /** WebId service. */
+    private IWebIdService webIdService;
 
 
     /**
@@ -594,8 +596,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     if (!"true".equals(request.getParameter("edit-template-mode"))) {
                         // Redirection en mode CMS
 
+
+                        String path = rpc.getPage().getDeclaredProperty("osivia.cms.basePath");
+
+                        if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
+                            path = this.webIdService.itemToPageUrl(pagePublishSpaceConfig);
+                        }
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
-                                rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), rpc.getPage().getDeclaredProperty("osivia.cms.basePath"),
+                                rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
@@ -1651,6 +1659,24 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {
         this.internationalizationService = internationalizationService;
+    }
+
+    /**
+     * Getter for webIdService.
+     * 
+     * @return the webIdService
+     */
+    public IWebIdService getWebIdService() {
+        return this.webIdService;
+    }
+
+    /**
+     * Setter for webIdService.
+     * 
+     * @param webIdService the webIdService to set
+     */
+    public void setWebIdService(IWebIdService webIdService) {
+        this.webIdService = webIdService;
     }
 
 }

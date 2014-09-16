@@ -242,6 +242,9 @@
         <depends
             optional-attribute-name="InternationalizationService"
             proxy-type="attribute">osivia:service=InternationalizationService</depends>
+        <depends
+            optional-attribute-name="WebIdService"
+            proxy-type="attribute">osivia:service=webIdService</depends>
     </mbean>
 
 

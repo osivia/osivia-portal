@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -73,7 +73,7 @@ import org.osivia.portal.core.utils.URLUtils;
 
 /**
  * Portal URL factory implementation.
- * 
+ *
  * @author Jean-Sébastien Steux
  * @see IPortalUrlFactory
  */
@@ -88,7 +88,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Static access to CMS service.
-     * 
+     *
      * @return CMS service
      */
     private static ICMSService getCMSService() {
@@ -101,7 +101,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Utility method used to compute add to breadcrumb indicator.
-     * 
+     *
      * @param request portlet request
      * @return add to breadcrumb indicator
      */
@@ -357,25 +357,48 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) {
-        String url = originalUrl;
+        // Controller context
+        ControllerContext controllerContext = (ControllerContext) portalCtx.getControllerCtx();
+        // Server context
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+        // Portal context path
+        String portalContextPath = serverContext.getPortalContextPath();
 
-        int insertIndex = originalUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
-        if (insertIndex == -1) {
-            // Web command
-            insertIndex = originalUrl.indexOf("/web/");
+
+        String prefix = StringUtils.substringBefore(originalUrl, portalContextPath);
+        String suffix = StringUtils.substringAfter(originalUrl, portalContextPath);
+
+        boolean auth = false;
+        if (suffix.startsWith("/auth/")) {
+            suffix = StringUtils.removeStart(suffix, "/auth/");
+            auth = true;
+        } else {
+            suffix = StringUtils.removeStart(suffix, "/");
         }
 
-        if (insertIndex != -1) {
-            if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) {
-                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_CLOSE_PATH + url.substring(insertIndex + 1);
-            } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN) {
-                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_OPEN_PATH + url.substring(insertIndex + 1);
-            } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION) {
-                url = url.substring(0, insertIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(insertIndex + 1);
-            }
+        // Popup command
+        String popupCommand = null;
+        if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) {
+            popupCommand = PortalCommandFactory.POPUP_CLOSE_PATH;
+        } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN) {
+            popupCommand = PortalCommandFactory.POPUP_OPEN_PATH;
+        } else if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSED_NOTIFICATION) {
+            popupCommand = PortalCommandFactory.POPUP_CLOSED_PATH;
         }
 
-        return url;
+        // URL
+        StringBuilder url = new StringBuilder();
+        url.append(prefix);
+        url.append(portalContextPath);
+        if (auth) {
+            url.append("/auth");
+        }
+        if (popupCommand != null) {
+            url.append(popupCommand);
+        }
+        url.append(suffix);
+
+        return url.toString();
     }
 
 
@@ -434,7 +457,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Utility method used to simplify calls to portlet within an other portlet.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param portletInstance portlet instance
      * @param windowProperties window properties
@@ -545,29 +568,29 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getPutDocumentInTrashUrl(PortalControllerContext ctx, String docId, String docPath) {
-    	
+
     	String backPageMarker = null;
-    	
-     	
+
+
         Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
         if (window != null) {
         	// Deleted doc is equals to CMS doc
         	// Navigation is managed by portal (not inside a portlet)
         	// So go back to previous state
-            
+
             EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
 
                 // Deleted doc is equals to CMS doc
                 // Navigation is managed by portal (not inside a portlet)
-                // So go back to previous state           
+                // So go back to previous state
                 if( curState != null && curState.getDocPath().equals(window.getDeclaredProperty(Constants.WINDOW_PROP_URI)))    {
                     backPageMarker = curState.getBackPageMarker();
 
             }
 
         }
-   	
-    	
+
+
         ControllerCommand cmd = new CMSPutDocumentInTrashCommand(docId, docPath, backPageMarker);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
@@ -586,7 +609,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return portalURL.toString();
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
@@ -595,7 +618,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         String backPageMarker = null;
 
         EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
-        
+
 
         backPageMarker = curState.getBackPageMarker();
 
@@ -627,11 +650,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return backURL;
 
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * {@inheritDoc}
      */
@@ -646,7 +669,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Getter for tracker.
-     * 
+     *
      * @return the tracker
      */
     public ITracker getTracker() {
@@ -655,7 +678,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Setter for tracker.
-     * 
+     *
      * @param tracker the tracker to set
      */
     public void setTracker(ITracker tracker) {
@@ -664,7 +687,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Getter for profilManager.
-     * 
+     *
      * @return the profilManager
      */
     public IProfilManager getProfilManager() {
@@ -673,7 +696,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
     /**
      * Setter for profilManager.
-     * 
+     *
      * @param profilManager the profilManager to set
      */
     public void setProfilManager(IProfilManager profilManager) {
