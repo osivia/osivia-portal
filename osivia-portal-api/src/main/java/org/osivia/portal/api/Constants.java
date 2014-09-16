@@ -98,6 +98,8 @@ public final class Constants {
     public static final String ATTR_SEARCH_URL = "osivia.search.url";
     /** Advanced search URL attribute name. */
     public static final String ATTR_ADVANCED_SEARCH_URL = "osivia.advancedSearch.url";
+    /** Search web URL attribute name. */
+    public static final String ATTR_SEARCH_WEB_URL = "osivia.search.web.url";
 
 
     // SEO
@@ -151,9 +153,9 @@ public final class Constants {
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
-   
+
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
-    
+
 
 
     //PORTLET - OUTPUT

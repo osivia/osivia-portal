@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,9 +14,16 @@
  */
 package org.osivia.portal.core.web;
 
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
@@ -39,11 +46,11 @@ import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.page.PagePathUtils;
 
 /**
- * 
+ *
  * Format unifié d'url pour les PORTAL_SITE
- * 
+ *
  * @author jeanseb
- * 
+ *
  */
 public class WebCommand extends DynamicCommand {
 
@@ -62,20 +69,20 @@ public class WebCommand extends DynamicCommand {
     private boolean supportingPageMarker = true;
 
 
-      
+
     public boolean isSupportingPageMarker() {
-        return supportingPageMarker;
+        return this.supportingPageMarker;
     }
 
 
-    
+
     public void setSupportingPageMarker(boolean supportingPageMarker) {
         this.supportingPageMarker = supportingPageMarker;
     }
 
 
     public String getWindowName() {
-        return windowName;
+        return this.windowName;
     }
 
 
@@ -88,7 +95,7 @@ public class WebCommand extends DynamicCommand {
     }
 
     public String getWebPath() {
-        return webPath;
+        return this.webPath;
     }
 
     public WebCommand() {
@@ -117,49 +124,61 @@ public class WebCommand extends DynamicCommand {
 
     public IPortalUrlFactory getUrlFactory() throws Exception {
 
-        if (urlFactory == null)
-            urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        if (this.urlFactory == null)
+            this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
 
-        return urlFactory;
+        return this.urlFactory;
     }
 
-    
-    ControllerResponse pageResponse;
-   
-    
-   
-    
-    private ControllerResponse getPageResponse(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
-       
-       if( pageResponse == null){
-           
-           // Transformation du requestpath
-           CmsCommand cmsCmd = new CmsCommand();
-           
-           String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, webPath);
-           cmsCmd.setCmsPath(cmsPath);
-      
-           
-           
-           pageResponse = controllerCtx.execute(cmsCmd);
 
-       }
-       
-       return pageResponse;
-       
-   }
-    
-    
+    ControllerResponse pageResponse;
+
+
+
+
+    private ControllerResponse getPageResponse(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
+        if (this.pageResponse == null) {
+
+            // Transformation du requestpath
+            CmsCommand cmsCmd = new CmsCommand();
+
+            // CMS path
+            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath);
+            cmsCmd.setCmsPath(cmsPath);
+
+            // Page parameters
+            Map<String, String> pageParameters = new HashMap<String, String>();
+            cmsCmd.setPageParams(pageParameters);
+
+
+            ParameterMap parameterMap = controllerCtx.getServerInvocation().getServerContext().getQueryParameterMap();
+
+            // Search query parameter
+            if (parameterMap.containsKey("q")) {
+                String[] searchQueryParameter = parameterMap.get("q");
+                if (ArrayUtils.isNotEmpty(searchQueryParameter)) {
+                    String searchQuery = URLDecoder.decode(searchQueryParameter[0], CharEncoding.UTF_8);
+                    pageParameters.put("osivia.keywords", searchQuery);
+                }
+            }
+
+            this.pageResponse = controllerCtx.execute(cmsCmd);
+        }
+
+        return this.pageResponse;
+    }
+
+
     private PortalObjectId getPageId(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
-        
+
        // Transformation du requestpath
        CmsCommand cmsCmd = new CmsCommand();
-       
-       
-       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, webPath);
+
+
+       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath);
        cmsCmd.setCmsPath(cmsPath);
-       
-       
+
+
         // on regarde si la page courante pointe déja sur le contenu
         PortalObjectId pageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
         if( pageId != null){
@@ -173,30 +192,30 @@ public class WebCommand extends DynamicCommand {
                 }
             }
          }
-            
+
         if( pageId == null ){
                 // Pour obtenir la page de contextualisation courante
-            ControllerResponse ctrlResp = getPageResponse(controllerCtx);
-            
+            ControllerResponse ctrlResp = this.getPageResponse(controllerCtx);
+
             if( ctrlResp instanceof UpdatePageResponse)
                 pageId = ((UpdatePageResponse) ctrlResp).getPageId();
         }
-        
+
         return pageId;
-        
+
     }
-    
-    
-    
+
+
+
     public PortalObjectId getWindowId( ControllerContext controllerCtx)  {
-        
+
         try {
-         
-        if (windowName != null) {
-            
-             PortalObjectId pageId = getPageId(controllerCtx );
-             
-             PortalObjectId windowID =  new PortalObjectId("", new PortalObjectPath( pageId.getPath().toString().concat("/").concat(windowName), PortalObjectPath.CANONICAL_FORMAT));
+
+        if (this.windowName != null) {
+
+             PortalObjectId pageId = this.getPageId(controllerCtx );
+
+             PortalObjectId windowID =  new PortalObjectId("", new PortalObjectPath( pageId.getPath().toString().concat("/").concat(this.windowName), PortalObjectPath.CANONICAL_FORMAT));
              return windowID;
          }
 
@@ -205,42 +224,42 @@ public class WebCommand extends DynamicCommand {
             throw new RuntimeException(e);
         }
     }
-    
-    
 
-    @Override 
+
+
+    @Override
     public ControllerResponse execute() throws ControllerException {
 
         try {
 
-            PortalObjectId windowID = getWindowId( context);
-            
+            PortalObjectId windowID = this.getWindowId( this.context);
+
             if( windowID != null)   {
- 
+
                 String originalPath = "/portal" + windowID;
 
                 // create original command
 
                 // remove non specific parameters
 
-                ServerInvocation invocation = getControllerContext().getServerInvocation();
-                
-                 
-                ControllerCommand originalCmd = getControllerContext()
+                ServerInvocation invocation = this.getControllerContext().getServerInvocation();
+
+
+                ControllerCommand originalCmd = this.getControllerContext()
                         .getController()
                         .getCommandFactory()
-                        .doMapping(getControllerContext(), invocation, invocation.getServerContext().getPortalHost(),
+                        .doMapping(this.getControllerContext(), invocation, invocation.getServerContext().getPortalHost(),
                                 invocation.getServerContext().getPortalContextPath(), originalPath);
-              
 
 
 
-                return context.execute(originalCmd);
+
+                return this.context.execute(originalCmd);
 
             }
 
             // Affichage de la commande CMS
-            return getPageResponse(context);
+            return this.getPageResponse(this.context);
 
 
         } catch (Exception e) {

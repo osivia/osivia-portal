@@ -48,6 +48,8 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String FOOTER_PATH_INIT_PARAM = "osivia.portal.customizer.regions.footer.path";
     /** Search path init parameter name. */
     private static final String SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.search.path";
+    /** Web search path init parameter name. */
+    private static final String WEB_SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.search.path";
     /** Tabs path init parameter name. */
     private static final String HEADER_METADATA_PATH_INIT_PARAM = "osivia.portal.customizer.regions.header.metadata.path";
     /** Tabs path init parameter name. */
@@ -120,18 +122,20 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
 
         // Breadcrumb default region
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
-        // Search default region
-        renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
+
         // SEO default region
         renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
 
         if (renderedRegions.isSpaceSite()) {
-
             // Web toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(WEB_TOOLBAR_PATH_INIT_PARAM));
+            // Web search default region
+            renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(WEB_SEARCH_PATH_INIT_PARAM));
         } else {
             // Toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(TOOLBAR_PATH_INIT_PARAM));
+            // Search default region
+            renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
             // Tabs default region
             renderedRegions.defineDefaultRenderedRegion("tabs", this.getInitParameter(TABS_PATH_INIT_PARAM));
             // Footer default region

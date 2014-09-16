@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,6 +24,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -63,6 +64,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_SEARCH_URL);
         this.names.add(Constants.ATTR_ADVANCED_SEARCH_URL);
+        this.names.add(Constants.ATTR_SEARCH_WEB_URL);
     }
 
 
@@ -85,8 +87,12 @@ public final class SearchAttributesBundle implements IAttributesBundle {
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Server context
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+        // Portal context path
+        String portalContextPath = serverContext.getPortalContextPath();
         // URL context
-        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        URLContext urlContext = serverContext.getURLContext();
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Portal identifier
@@ -116,6 +122,10 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         AdvancedSearchCommand advancedSearchCommand = new AdvancedSearchCommand(pageId, StringUtils.EMPTY, true);
         String advancedSearchCommandUrl = controllerContext.renderURL(advancedSearchCommand, urlContext, null);
         attributes.put(Constants.ATTR_ADVANCED_SEARCH_URL, advancedSearchCommandUrl);
+
+        // Search web URL
+        String searchWebURL = portalContextPath + "/web/search";
+        attributes.put(Constants.ATTR_SEARCH_WEB_URL, searchWebURL);
     }
 
 
