@@ -145,6 +145,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
         String portalPersistentName = null;
 
+        boolean popup = false;
         if (ctx.getControllerCtx() != null) {
             String portalName = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
 
@@ -152,15 +153,29 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                     .getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
-                portalPersistentName = portalName;
+                if (!StringUtils.equals(portalName, "osivia-util")) {
+                    portalPersistentName = portalName;
+                }   else    {
+                    popup = true;
+                    portalPersistentName = defaultPortal.getName();
+                    pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                }
             }
         }
 
         ControllerCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext, hideMetaDatas, scope, displayLiveVersion,
                 windowPermReference, this.addToBreadcrumb(ctx.getRequest()), portalPersistentName);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+        
+        
+        
+        String url = portalURL.toString();
+        if( popup)
+            url= adaptPortalUrlToPopup(ctx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+        
+        
 
-        return portalURL.toString();
+        return url;
     }
 
 
@@ -211,7 +226,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                         .getDefaultPortal();
 
                 if (!defaultPortal.getName().equals(portalName)) {
-                    portalPersistentName = portalName;
+                    if (!StringUtils.equals(portalName, "osivia-util"))
+                        portalPersistentName = portalName;
                 }
             }
 
