@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.theming;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -20,9 +21,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.deployment.PortalWebApp;
 import org.osivia.portal.core.constants.InternalConstants;
 
@@ -40,6 +43,8 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
     private static final String MANIFEST_RESOURCE_PATH = "/META-INF/MANIFEST.MF";
     /** Manifest attribute name for maven-generated version number. */
     private static final String MAVEN_VERSION_MANIFEST_ATTRIBUTE = "Implementation-Version";
+    /** Portal default context path. */
+    private static final String PORTAL_DEFAULT_CONTEXT_PATH = "/osivia-portal-custom-web-assets";
 
     /** Page header resource cache. */
     private final PageHeaderResourceCache cache;
@@ -65,10 +70,7 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
         ServletContext servletContext = portalWebApp.getServletContext();
         if (servletContext != null) {
             try {
-                URL url = servletContext.getResource(MANIFEST_RESOURCE_PATH);
-                Manifest manifest = new Manifest(url.openStream());
-                Attributes attributes = manifest.getMainAttributes();
-                String version = attributes.getValue(MAVEN_VERSION_MANIFEST_ATTRIBUTE);
+                String version = this.getServletVersion(servletContext);
                 this.cache.addVersion(portalWebApp.getContextPath(), version);
             } catch (Exception e) {
                 // Do nothing
@@ -102,7 +104,7 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
                     String contextPath = matcher.group(4);
                     if (StringUtils.startsWith(contextPath, "/portal-")) {
                         // Example : /portal-ajax
-                        contextPath = "/osivia-portal-custom-web-assets";
+                        contextPath = PORTAL_DEFAULT_CONTEXT_PATH;
                     }
                     // Version
                     String version = this.cache.getVersion(contextPath);
@@ -123,6 +125,37 @@ public class PageHeaderResourceService implements IPageHeaderResourceService {
             this.cache.addAdaptedElement(originalElement, adaptedElement);
         }
         return adaptedElement;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getPortalVersion(ControllerContext controllerContext) {
+        String version = null;
+        try {
+            HttpSession session = controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession();
+            ServletContext servletContext = session.getServletContext().getContext(PORTAL_DEFAULT_CONTEXT_PATH);
+            version = this.getServletVersion(servletContext);
+        } catch (Exception e) {
+            // Do nothing
+        }
+        return version;
+    }
+
+
+    /**
+     * Get servlet version.
+     *
+     * @param servletContext servlet context
+     * @return servlet version
+     * @throws IOException
+     */
+    private String getServletVersion(ServletContext servletContext) throws IOException {
+        URL url = servletContext.getResource(MANIFEST_RESOURCE_PATH);
+        Manifest manifest = new Manifest(url.openStream());
+        Attributes attributes = manifest.getMainAttributes();
+        return attributes.getValue(MAVEN_VERSION_MANIFEST_ATTRIBUTE);
     }
 
 }

@@ -2,6 +2,6 @@
 <themes>
 	<theme>
 		<name>osivia-popup</name>
-		<link rel="stylesheet" id="popup_css" href="/css/popup.css" type="text/css"/>
+		<link rel="stylesheet" href="/css/popup.css" />
 	</theme>
 </themes>

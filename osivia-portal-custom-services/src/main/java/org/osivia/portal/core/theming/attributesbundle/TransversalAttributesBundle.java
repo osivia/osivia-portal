@@ -43,6 +43,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Transversal attributes bundle.
@@ -90,6 +91,7 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_URL_FACTORY);
         this.names.add(Constants.ATTR_PORTAL_HOME_URL);
         this.names.add(Constants.ATTR_WIZARD_MODE);
+        this.names.add(Constants.ATTR_SPACE_SITE_INDICATOR);
     }
 
 
@@ -154,11 +156,10 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
         CMSItem spaceItem;
         try {
             spaceItem = (CMSItem) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
-
         } catch (Exception e) {
-           throw new ControllerException(e);
+            throw new ControllerException(e);
         }
-        if( spaceItem != null) {
+        if (spaceItem != null) {
             attributes.put(Constants.ATTR_SPACE_CONFIG, spaceItem.getNativeItem());
         }
 
@@ -167,10 +168,13 @@ public final class TransversalAttributesBundle implements IAttributesBundle {
 
         // Portal home page URL
         attributes.put(Constants.ATTR_PORTAL_HOME_URL, serverContext.getPortalContextPath());
-        
+
         // Wizard mode indicator
         String mode = (String) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
         attributes.put(Constants.ATTR_WIZARD_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode));
+
+        // Space site indicator
+        attributes.put(Constants.ATTR_SPACE_SITE_INDICATOR, PortalObjectUtils.isSpaceSite(page));
     }
 
 

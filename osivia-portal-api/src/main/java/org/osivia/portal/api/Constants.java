@@ -84,6 +84,8 @@ public final class Constants {
     public static final String ATTR_SPACE_CONFIG = "osivia.cms.spaceConfig";
     /** Wizard mode indicator. */
     public static final String ATTR_WIZARD_MODE = "osivia.wizard";
+    /** Space site indicator. */
+    public static final String ATTR_SPACE_SITE_INDICATOR = "osivia.spaceSite";
 
 
     // Breadcrumb
@@ -108,6 +110,10 @@ public final class Constants {
     public static final String ATTR_HEADER_TITLE = "osivia.header.title";
     /** content of meta tags. */
     public static final String ATTR_HEADER_METADATA = "osivia.header.metadata";
+    /** Portal base URL. */
+    public static final String ATTR_HEADER_PORTAL_BASE_URL = "osivia.header.portal.url";
+    /** Canonical URL. */
+    public static final String ATTR_HEADER_CANONICAL_URL = "osivia.header.canonical.url";
 
 
     // Toolbar

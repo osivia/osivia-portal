@@ -24,7 +24,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
-import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -33,6 +32,7 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
+import org.osivia.portal.core.web.IWebIdService;
 
 /**
  * Search attributes bundle.
@@ -47,7 +47,9 @@ public final class SearchAttributesBundle implements IAttributesBundle {
 
 
     /** Portal URL factory. */
-    private final IPortalUrlFactory urlFactory;
+    private final IPortalUrlFactory portalURLFactory;
+    /** WebId service. */
+    private final IWebIdService webIdService;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -59,7 +61,10 @@ public final class SearchAttributesBundle implements IAttributesBundle {
     private SearchAttributesBundle() {
         super();
 
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        // Portal URL factory
+        this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        // WebId service
+        this.webIdService = Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_SEARCH_URL);
@@ -87,12 +92,8 @@ public final class SearchAttributesBundle implements IAttributesBundle {
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
-        // Server context
-        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
-        // Portal context path
-        String portalContextPath = serverContext.getPortalContextPath();
         // URL context
-        URLContext urlContext = serverContext.getURLContext();
+        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Portal identifier
@@ -110,7 +111,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
 
         try {
             // v1.0.13 : always open the same page
-            String searchUrl = this.urlFactory
+            String searchUrl = this.portalURLFactory
                     .getStartPageUrl(portalControllerContext, portalId, "search", "/default/templates/search", properties,
                     parameters);
             attributes.put(Constants.ATTR_SEARCH_URL, searchUrl);
@@ -124,7 +125,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_ADVANCED_SEARCH_URL, advancedSearchCommandUrl);
 
         // Search web URL
-        String searchWebURL = portalContextPath + "/web/search.html";
+        String searchWebURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, "search");
         attributes.put(Constants.ATTR_SEARCH_WEB_URL, searchWebURL);
     }
 

@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -14,25 +14,40 @@
 package org.osivia.portal.core.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.server.ServerInvocationContext;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
 
 /**
- * Implementation of IWebIdService
- * 
- * @author lbi
- * 
+ * Implementation of IWebIdService.
+ *
+ * @author Loïc Billon
+ * @see IWebIdService
  */
 public class WebIdService implements IWebIdService {
 
-
+    /** Slash separator. */
     private static final String SLASH = "/";
+    /** Dot separator. */
     private static final String DOT = ".";
 
+
+    /** Portal URL factory. */
+    private IPortalUrlFactory portalURLFactory;
+
+
     /**
-     * Get Url for FetchPublicationInfos service
-     * 
-     * @param webpath full webpath
-     * @return webId:domain-id/webid for fetchPublicationInfos
+     * Default constructor.
+     */
+    public WebIdService() {
+        super();
+    }
+
+
+    /**
+     * {@inheritDoc}
      */
     public String webPathToFetchInfoService(String webpath) {
         String[] segments = webpath.split(SLASH);
@@ -43,12 +58,9 @@ public class WebIdService implements IWebIdService {
         return webid;
     }
 
+
     /**
-     * Get Url for FetchPublicationInfos service
-     * 
-     * @param domainId domainid
-     * @param webid webid
-     * @return webId:domain-id/webid for fetchPublicationInfos
+     * {@inheritDoc}
      */
     public String domainAndIdToFetchInfoService(String domainId, String webid) {
         String cmsPath = PREFIX_WEBID_FETCH_PUB_INFO.concat(domainId).concat(SLASH).concat(webid);
@@ -56,11 +68,9 @@ public class WebIdService implements IWebIdService {
         return cmsPath;
     }
 
+
     /**
-     * Get Url for FetchPublicationInfos service
-     * 
-     * @param pageUrl /_webid/a/path
-     * @return webId:domain-id/webid for fetchPublicationInfos
+     * {@inheritDoc}
      */
     public String pageUrlToFetchInfoService(String pageUrl) {
 
@@ -80,22 +90,15 @@ public class WebIdService implements IWebIdService {
 
 
     /**
-     * Get Url shown as a page url
-     * 
-     * @param webpath full webpath
-     * @return /_webid/full/web/path.html
+     * {@inheritDoc}
      */
     public String webPathToPageUrl(String webpath) {
         return PREFIX_WEBPATH.concat(SLASH).concat(webpath).concat(SUFFIX_WEBPATH);
     }
 
 
-
     /**
-     * Get Url shown as a page url from an ECM document
-     * 
-     * @param item the ECM item
-     * @return /_webid/full/web/path.html
+     * {@inheritDoc}
      */
     public String itemToPageUrl(CMSItem item) {
 
@@ -108,14 +111,14 @@ public class WebIdService implements IWebIdService {
         if (StringUtils.isNotEmpty(webid) && StringUtils.isNotEmpty(domainId)) {
             webpath = SLASH.concat(domainId).concat(SLASH);
 
-            if (StringUtils.isNotEmpty(explicitUrl) ) {
+            if (StringUtils.isNotEmpty(explicitUrl)) {
                 webpath = webpath.concat(explicitUrl).concat(SLASH);
             }
 
             webpath = webpath.concat(webid);
 
 
-            if (item.getType() != null && item.getType().equals("File")) {
+            if ((item.getType() != null) && item.getType().equals("File")) {
                 if (extension != null) {
                     webpath = webpath.concat(DOT).concat(extension);
                 }
@@ -130,10 +133,7 @@ public class WebIdService implements IWebIdService {
 
 
     /**
-     * Get only webid in a webpath
-     * 
-     * @param webpath : /_webid/full/web/path.html
-     * @return webid : "path"
+     * {@inheritDoc}
      */
     public String webPathToWebId(String webpath) {
 
@@ -149,7 +149,61 @@ public class WebIdService implements IWebIdService {
 
             return webid;
 
-        } else
+        } else {
             return webpath;
+        }
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String generateCanonicalWebURL(PortalControllerContext portalControllerContext, String domainId, String webId) {
+        StringBuilder url = new StringBuilder();
+
+        // Controller context
+        ControllerContext controllerContext = (ControllerContext) portalControllerContext.getControllerCtx();
+        // Server context
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+        // Portal base URL
+        url.append(this.portalURLFactory.getBasePortalUrl(portalControllerContext));
+        // Portal context path
+        url.append(serverContext.getPortalContextPath());
+
+        url.append("/web");
+
+        // DomainId
+        if (StringUtils.isNotBlank(domainId)) {
+            url.append("/");
+            url.append(domainId);
+        }
+
+        // WebId
+        url.append("/");
+        url.append(webId);
+        url.append(".html");
+
+        return url.toString();
+    }
+
+
+    /**
+     * Getter for portalURLFactory.
+     *
+     * @return the portalURLFactory
+     */
+    public IPortalUrlFactory getPortalURLFactory() {
+        return this.portalURLFactory;
+    }
+
+    /**
+     * Setter for portalURLFactory.
+     *
+     * @param portalURLFactory the portalURLFactory to set
+     */
+    public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
+        this.portalURLFactory = portalURLFactory;
+    }
+
 }

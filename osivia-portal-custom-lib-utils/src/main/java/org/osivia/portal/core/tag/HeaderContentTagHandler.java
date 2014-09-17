@@ -50,19 +50,17 @@ import org.w3c.dom.Element;
 public class HeaderContentTagHandler extends SimpleTagSupport {
 
     /** Page header resource service. */
-    private IPageHeaderResourceService pageHeaderResourceService;
+    private final IPageHeaderResourceService pageHeaderResourceService;
 
 
     /**
-     * Get page header resource service.
-     *
-     * @return page header resource service
+     * Constructor.
      */
-    private IPageHeaderResourceService getPageHeaderResourceService() {
-        if( this.pageHeaderResourceService == null) {
-            this.pageHeaderResourceService = Locator.findMBean(IPageHeaderResourceService.class, "osivia:service=PageHeaderResourceService");
-        }
-        return this.pageHeaderResourceService;
+    public HeaderContentTagHandler() {
+        super();
+
+        // Page header resource service
+        this.pageHeaderResourceService = Locator.findMBean(IPageHeaderResourceService.class, IPageHeaderResourceService.MBEAN_NAME);
     }
 
 
@@ -120,7 +118,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             if (headElements != null) {
                 for (Element element : headElements) {
                     if (!"title".equals(element.getNodeName().toLowerCase())) {
-                        String ref = this.getPageHeaderResourceService().adaptResourceElement(element.toString());
+                        String ref = this.pageHeaderResourceService.adaptResourceElement(element.toString());
 
                         // PIA : Test d'insertion
                         if (!insertedRefs.contains(ref)) {
@@ -135,32 +133,33 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         }
 
         // post messages API (must be loaded before fancy integration)
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/postmessage.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/postmessage.js'></script>");
 
         // Print
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/print/print.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/print/print.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap.custom.min.css' type='text/css'/>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/bootstrap-integration.js'></script>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap.custom.min.css' title='Bootstrap'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/osivia.min.css'>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/bootstrap-integration.js'></script>");
 
         // Fancybox
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.css' type='text/css'/>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.pack.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/fancy-integration.js'></script>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.css'>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.pack.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/fancy-integration.js'></script>");
 
         // JSTree
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jstree/jquery.jstree.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jstree-integration.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/jstree/jquery.jstree.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/jstree-integration.js'></script>");
 
         // Glyphicons
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.css' type='text/css'/>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.css'>");
 
         // No JavaScript CSS styles
         out.write("<noscript>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.css' type='text/css'/>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.css'>");
         out.write("</noscript>");
     }
 
@@ -173,7 +172,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
      * @throws IOException
      */
     private void writeResource(JspWriter out, String resource) throws IOException {
-        out.write(this.getPageHeaderResourceService().adaptResourceElement(resource));
+        out.write(this.pageHeaderResourceService.adaptResourceElement(resource));
     }
 
 }

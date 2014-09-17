@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.theming;
 
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.deployment.PortalWebApp;
 
 
@@ -23,6 +24,10 @@ import org.jboss.portal.server.deployment.PortalWebApp;
  * @author Cédric Krommenhoek
  */
 public interface IPageHeaderResourceService {
+
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=PageHeaderResourceService";
+
 
     /**
      * Portal web-app deployment.
@@ -42,10 +47,19 @@ public interface IPageHeaderResourceService {
 
     /**
      * Adapt resource element.
-     * 
+     *
      * @param originalElement original resource element
      * @return adapted resource element
      */
     String adaptResourceElement(String originalElement);
+
+
+    /**
+     * Get portal version.
+     *
+     * @param controllerContext controller context
+     * @return portal version
+     */
+    String getPortalVersion(ControllerContext controllerContext);
 
 }

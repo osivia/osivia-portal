@@ -86,6 +86,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
 
+
+    /**
+     * Default constructor.
+     */
+    public PortalUrlFactory() {
+        super();
+    }
+
+
     /**
      * Static access to CMS service.
      *
