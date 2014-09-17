@@ -248,7 +248,14 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
             // Draft page indicator
             Boolean selectorsPropagation = "1".equals(page.getDeclaredProperty("osivia.cms.propagateSelectors"));
-            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION, selectorsPropagation);           
+            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION, selectorsPropagation);       
+            
+   
+            String  advancedSearchSelectors = page.getDeclaredProperty("osivia.advancedSearchSelectors");
+            if( advancedSearchSelectors == null)
+                advancedSearchSelectors = StringUtils.EMPTY;
+            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_ADVANCED_SEARCH_SELECTORS, advancedSearchSelectors);       
+ 
             
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);

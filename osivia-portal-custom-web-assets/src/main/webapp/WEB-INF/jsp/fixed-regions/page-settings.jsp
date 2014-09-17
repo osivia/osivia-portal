@@ -49,6 +49,9 @@ Boolean cmsTemplated = (Boolean) request.getAttribute(InternalConstants.ATTR_TOO
 Boolean draftPage = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
 // 
 Boolean selectorsPropation = (Boolean) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);
+
+String advancedSearchSelectors = (String) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_ADVANCED_SEARCH_SELECTORS);
+
 // Layout list
 @SuppressWarnings("unchecked")
 List<PortalLayout> layoutsList = (List<PortalLayout>) request.getAttribute(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -429,6 +432,14 @@ function toggleRow(link, divClass) {
 	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_SELECTOR_PROPAGATION", locale) %></div>
 	                    <div class="fancybox-table-cell">
 	                        <input type="checkbox" name="selectorsPropagation" value="1" <%=checkSelectors %> class="small-input" />                        
+	                    </div>
+	                </div>
+	                
+	                
+	                <div class="fancybox-table-row">
+	                    <div class="fancybox-table-cell fancybox-label"><%=is.getString("PAGE_ADVANCED_SEARCH_SELECTORS", locale) %></div>
+	                    <div class="fancybox-table-cell">
+	                        <input type="text" name="advancedSearchSelectors" value="<%=advancedSearchSelectors %>" required />                    
 	                    </div>
 	                </div>
 

@@ -16,6 +16,7 @@ package org.osivia.portal.core.page;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -877,7 +878,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 sSelector = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
             }
             
-            boolean hideAdvancedSearchFilters = true;
+
 
             if ((sSelector != null) && (sSelector.length > 0)) {
                 Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
@@ -885,7 +886,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 for (String selectorId : selectors.keySet()) {
                     if (!"search".equals(selectorId) && !"selectorChanged".equals(selectorId)) {
                         hideAdvancedSearchLink = false;
-                        hideAdvancedSearchFilters = false;
                         break;
                     }
                 }
@@ -894,8 +894,33 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
             
-            if (hideAdvancedSearchFilters) {
-                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearchFilters", "off");
+            /* Masquage de la region advanced search */
+            
+            if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
+         
+
+                boolean hideAdvancedSearchFilters = false;
+
+                String advancedSelectors = page.getProperty("osivia.advancedSearchSelectors");
+                if (StringUtils.isNotEmpty(advancedSelectors)) {
+                    hideAdvancedSearchFilters = true;
+                    List<String> selectorsToCheck = Arrays.asList(advancedSelectors.split(","));
+                    if ((sSelector != null) && (sSelector.length > 0)) {
+                        Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
+
+                        for (String selectorId : selectors.keySet()) {
+                            if (selectorsToCheck.contains(selectorId)) {
+                                hideAdvancedSearchFilters = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+                if (hideAdvancedSearchFilters) {
+                    cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearchFilters", "off");
+                }
             }
 
 

@@ -271,8 +271,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                         String printPortlet = null;
 
-                        if (popupWindowId == null) {
-
 
                             // v1.0.14 : ajout impression
                             printPortlet = window.getDeclaredProperty("osivia.printPortlet");
@@ -281,8 +279,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     printPortlet = "1";
                                 }
                             }
-                        }
-
+ 
 
                         if ("1".equals(printPortlet)) {
 

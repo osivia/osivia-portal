@@ -312,7 +312,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectorsPropagation = URLDecoder.decode(parameterMap.get("selectorsPropagation")[0], CharEncoding.UTF_8);
                         }
 
-                        return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme, category, selectorsPropagation);
+                        // Selectors
+                        String advancedSearchSelectors = null;
+                        if (parameterMap.get("advancedSearchSelectors") != null) {
+                            advancedSearchSelectors = URLDecoder.decode(parameterMap.get("advancedSearchSelectors")[0], CharEncoding.UTF_8);
+                        }
+
+                        
+                        return new ChangePagePropertiesCommand(pageId, displayName, draftPage, layout, theme, category, selectorsPropagation, advancedSearchSelectors);
                     }
                 }
 
