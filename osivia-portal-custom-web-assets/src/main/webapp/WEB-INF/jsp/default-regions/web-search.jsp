@@ -14,7 +14,7 @@
                 <input id="search-input" type="text" name="q" class="form-control" placeholder="${searchPlaceholder}">
                 <span class="input-group-btn">
                     <button type="submit" class="btn btn-default" title="${searchTitle}" data-toggle="tooltip" data-placement="bottom">
-                        <span class="glyphicons halflings search"></span>
+                        <i class="glyphicons halflings search"></i>
                     </button>
                 </span>
             </div>
