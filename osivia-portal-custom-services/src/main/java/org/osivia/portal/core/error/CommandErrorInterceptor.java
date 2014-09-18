@@ -3,197 +3,187 @@
  */
 package org.osivia.portal.core.error;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.BooleanUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.ErrorResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
-import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
-import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.notifications.NotificationsUtils;
-import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.web.WebCommand;
 
 /**
  * Command error interceptor.
- * 
+ *
  * @see ControllerInterceptor
  */
 public class CommandErrorInterceptor extends ControllerInterceptor {
 
-    
-    
-    
+    /** Dynamic error indicator request attribute name. */
+    private static final String DYNAMIC_ERROR_ATTRIBUTE = "osivia.dynamicError";
+
+
     /** Internationalization service. */
     private IInternationalizationService internationalizationService;
-    
 
-    private static final Log logger = LogFactory.getLog(CommandErrorInterceptor.class);
+
+    /**
+     * Default constructor.
+     */
+    public CommandErrorInterceptor() {
+        super();
+    }
 
 
     /**
      * For sites, try to display a templated error page.
-     * 
-     * @param cmd command
-     * @param resp response
+     *
+     * @param command command
+     * @param response response
      * @param errorCode error id incremented
      * @return response
      * @throws Exception
      */
-    public ControllerResponse displayError(ControllerCommand cmd, ControllerResponse resp, long errorCode) throws Exception {
-    
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+    public ControllerResponse displayError(ControllerCommand command, ControllerResponse response, long errorCode) throws Exception {
+        // Controller context
+        ControllerContext controllerContext = command.getControllerContext();
+        // Portal
+        Portal portal = PortalObjectUtils.getPortal(controllerContext);
 
-        if (portalName != null) {
+        // Error response
+        ControllerResponse errorResponse;
+        if (PortalObjectUtils.isSpaceSite(portal)) {
+            // Client request
+            HttpServletRequest clientRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+            // Bundle
+            IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+            Bundle bundle = bundleFactory.getBundle(clientRequest.getLocale());
 
+            // Indicator used to prevent error loop
+            clientRequest.setAttribute(DYNAMIC_ERROR_ATTRIBUTE, true);
 
-            PortalObjectId poid = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
-            PortalObject portal = cmd.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
+            // Command
+            WebCommand webCommand = new WebCommand("error");
+            errorResponse = controllerContext.execute(webCommand);
 
-            // For sites, display templated error page
-            if (InternalConstants.PORTAL_TYPE_SPACE.equals(portal.getDeclaredProperty("osivia.portal.portalType"))) {
-                // TODO : internationaliser
-                Map<String, String> props = new HashMap<String, String>();
-
-                cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.dynamicerrorpage", "1");
-
-
-                // get a template named "error"
-                StartDynamicPageCommand dynaPageCmd = new StartDynamicPageCommand(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), "error", null,
-                        PortalObjectId.parse("/default/templates/error", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), props,
-                        new HashMap<String, String>());
-
-                try {
-                    UpdatePageResponse errorResp = ((UpdatePageResponse) cmd.getControllerContext().execute(dynaPageCmd));
-
-                    Locale locale = cmd.getControllerContext().getServerInvocation().getRequest().getLocale();
-
-                    String errorLabel;
-
-                    // response is an error, functionnal error cases are managed with a notification.
-                    if (resp instanceof UnavailableResourceResponse) {
-                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_NOT_FOUND, locale);
-                    } else if (resp instanceof SecurityErrorResponse) {
-                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN, locale);
-                    } else {
-                        errorLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED, locale);
-                    }
-
-
-                    NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(cmd.getControllerContext()), errorLabel,
-                            NotificationsType.ERROR, errorCode);
-
-                    return errorResp;
-
-
-                } catch (Exception e2) {
-
-                    // response throws an exception, technical error cases are managed above in invoke method
-                    throw e2;
-                }
+            // Error label
+            String errorLabel;
+            if (response instanceof UnavailableResourceResponse) {
+                errorLabel = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_NOT_FOUND);
+            } else if (response instanceof SecurityErrorResponse) {
+                errorLabel = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_FORBIDDEN);
+            } else {
+                errorLabel = bundle.getString(InternationalizationConstants.KEY_ERROR_MESSAGE_ERROR_HAS_OCCURED);
             }
+
+            // Add notification
+            NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(command.getControllerContext()), errorLabel,
+                    NotificationsType.ERROR, errorCode);
+        } else {
+            errorResponse = response;
         }
 
-        return resp;
+        return errorResponse;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
-        ControllerResponse resp = null;
+    public ControllerResponse invoke(ControllerCommand command) throws Exception {
+        // Response
+        ControllerResponse response;
+        // Controller context
+        ControllerContext controllerContext = command.getControllerContext();
+        // Client request
+        HttpServletRequest clientRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
         try {
-            resp = (ControllerResponse) cmd.invokeNext();
+            response = (ControllerResponse) command.invokeNext();
 
-            // * functionnal errors, see displayError
-            if (resp instanceof ErrorResponse || resp instanceof UnavailableResourceResponse) {
-                return this.displayError(cmd, resp, -1);
+            // Functionnal errors, see displayError
+            if (response instanceof ErrorResponse || response instanceof UnavailableResourceResponse) {
+                if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
+                    response = this.displayError(command, response, -1);
+                } else {
+                    throw new PortalException("Missing error page");
+                }
             }
-            
-
         } catch (UserNotificationsException e) {
-            // * known technical errors, notification is added in the current page
+            // Known technical errors, notification is added in the current page
 
             // Business exception are displayed in current page
-            PortalObjectId portalObjectId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+            PortalObjectId portalObjectId = (PortalObjectId) command.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                    "osivia.currentPageId");
             if (portalObjectId != null) {
                 Notifications notifications = e.getNotifications();
-                PortalControllerContext portalControllerContext = new PortalControllerContext(cmd.getControllerContext());
+                PortalControllerContext portalControllerContext = new PortalControllerContext(command.getControllerContext());
                 NotificationsUtils.getNotificationsService().addNotifications(portalControllerContext, notifications);
-                return new UpdatePageResponse(portalObjectId);
+                response = new UpdatePageResponse(portalObjectId);
             } else {
-                this.injectIntoValve(cmd, e);
+                response = this.injectIntoValve(command, e);
             }
         } catch (Exception e) {
-            // * unknown technical errors, try to display it in the 'error' template, see displayError
+            // Unknown technical errors, try to display it in the 'error' template, see displayError
 
             try {
+                // User identifier
+                String userId = clientRequest.getRemoteUser();
+                // Error descriptor
+                ErrorDescriptor errorDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, e.getMessage(), userId, null);
 
-                String userId = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getRemoteUser();
-                ErrorDescriptor errDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, e.getMessage(), userId, null);
-
-                // print stack in server.log and portal_user_error.log
-                long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
-
-                if (cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.dynamicerrorpage") == null) {
-                    ControllerResponse errResp = this.displayError(cmd, resp, errId);
-                    if (errResp != null) {
-                        return errResp;
-                    }
+                // Print stack in server.log and portal_user_error.log
+                long errId = GlobalErrorHandler.getInstance().logError(errorDescriptor);
+                if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
+                    // Error response
+                    response = this.displayError(command, null, errId);
+                } else {
+                    response = this.injectIntoValve(command, e);
                 }
-
-                // * unknown technical errors and template 'error' can not display it, return the default error page
             } catch (Exception errorExc) {
-
+                // Unknown technical errors and template 'error' can not display it, return the default error page
+                response = this.injectIntoValve(command, e);
             }
-
-            return this.injectIntoValve(cmd, e);
         }
 
-
-        return resp;
+        return response;
     }
 
 
     /**
      * Inject exception into valve.
-     * 
-     * @param cmd controller command
-     * @param e exception to inject
+     *
+     * @param command controller command
+     * @param exception exception to inject
      * @return controller response
      */
-    private ControllerResponse injectIntoValve(ControllerCommand cmd, Exception e) {
-        cmd.getControllerContext().getServerInvocation().setAttribute(Scope.REQUEST_SCOPE, "osivia.error_exception", e);
+    private ControllerResponse injectIntoValve(ControllerCommand command, Exception exception) {
+        command.getControllerContext().getServerInvocation().setAttribute(Scope.REQUEST_SCOPE, "osivia.error_exception", exception);
         return new ErrorResponse("Portal exception", false);
     }
 
-    
-    
 
     /**
      * Getter for internationalizationService.
-     * 
+     *
      * @return the internationalizationService
      */
     public IInternationalizationService getInternationalizationService() {
@@ -202,11 +192,11 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 
     /**
      * Setter for internationalizationService.
-     * 
+     *
      * @param internationalizationService the internationalizationService to set
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {
         this.internationalizationService = internationalizationService;
     }
-    
+
 }
