@@ -190,15 +190,17 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
 
             // Canonical URL
             String canonicalURL = null;
-            if (StringUtils.isEmpty(document.getWebId())) {
+            if (PortalObjectUtils.isSpaceSite(page) && StringUtils.isNotEmpty(document.getWebId())) {
+                // Web URL
+                canonicalURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, document.getWebId());
+            } else {
+                // CMS permalink
                 try {
                     canonicalURL = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, document.getPath(),
                             IPortalUrlFactory.PERM_LINK_TYPE_CMS);
                 } catch (PortalException e) {
                     // Do nothing
                 }
-            } else {
-                canonicalURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, document.getWebId());
             }
             attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, canonicalURL);
         }
