@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
@@ -276,7 +277,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             printPortlet = window.getDeclaredProperty("osivia.printPortlet");
                             if (printPortlet == null) {
                                 if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-                                    printPortlet = "1";
+                                    if( ! Mode.ADMIN.equals(invocation.getMode()))
+                                            printPortlet = "1";
                                 }
                             }
  

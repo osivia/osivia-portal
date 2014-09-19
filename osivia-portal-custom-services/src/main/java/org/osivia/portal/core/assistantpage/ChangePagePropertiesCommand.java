@@ -57,8 +57,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
     private String category;
     /** Page selectors propagation. */  
     private String selectorsPropagation;
-    /**Advanced search selectors */     
-    private String advancedSearchSelectors;
+
 
 
     /**
@@ -76,7 +75,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
      * @param layout page layout
      * @param theme page theme
      */
-    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme,  String category, String selectorsPropagation, String advancedSearchSelectors) {
+    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme,  String category, String selectorsPropagation) {
         super();
         this.pageId = pageId;
         this.displayName = displayName;
@@ -85,7 +84,6 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
         this.theme = theme;
         this.category = category;
         this.selectorsPropagation = selectorsPropagation;
-        this.advancedSearchSelectors = advancedSearchSelectors;
     }
 
 
@@ -156,12 +154,6 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
             page.setDeclaredProperty("osivia.cms.propagateSelectors", null);
         }
         
-        // Advanced search selectors
-        if ((this.advancedSearchSelectors != null) && (this.advancedSearchSelectors.length() != 0)) {
-            page.setDeclaredProperty("osivia.advancedSearchSelectors", advancedSearchSelectors);
-        } else {
-            page.setDeclaredProperty("osivia.advancedSearchSelectors", null);
-        }
         
         // Caches impact
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");
