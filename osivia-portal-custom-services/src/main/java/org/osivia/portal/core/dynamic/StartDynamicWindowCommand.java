@@ -43,15 +43,18 @@ import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
@@ -193,6 +196,9 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
                     backUrl = url.toString();
                     backUrl +=  "?unsetMaxMode=true";
+                    
+                    
+                    
                     //					}
                 }
 
@@ -200,6 +206,25 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                     String pageMarker = markerInfo.getPageMarker();
                     backUrl =  backUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+pageMarker+"/");
                 }
+                
+                
+
+                // Add REFRESH URL
+                if( "1".equals(this.dynaProps.get("osivia.close.refreshPage")))  {
+                    int insertIndex = backUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+                    if (insertIndex == -1) {
+                        // Web command
+                        insertIndex = backUrl.indexOf("/web/");
+                    }
+
+                    if (insertIndex != -1) {
+
+                        backUrl = backUrl.substring(0, insertIndex) + PortalCommandFactory.REFRESH_PATH + backUrl.substring(insertIndex + 1);
+                    }
+                }
+
+                
+                
                 properties.put("osivia.dynamic.close_url",backUrl);
             }
 

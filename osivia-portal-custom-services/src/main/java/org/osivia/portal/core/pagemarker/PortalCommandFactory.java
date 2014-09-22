@@ -67,6 +67,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public static String POPUP_CLOSE_PATH = "/popup_close/";
     public static String POPUP_CLOSED_PATH = "/popup_closed/";
     public static String POPUP_REFRESH_PATH = "/popup_refresh/";
+    public static String REFRESH_PATH = "/refresh/";
 
     public IDynamicObjectContainer dynamicCOntainer;
     public PortalObjectContainer portalObjectContainer;
@@ -206,6 +207,14 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             // Fait pour utiliser le mode refresh (portlet + CMS) pour un portlet
             // NON VALIDE car mode AJAX non activé en CMS
             path = requestPath.substring(POPUP_REFRESH_PATH.length() - 1);
+            PageProperties.getProperties().setRefreshingPage(true);
+        }
+        
+        
+        if (requestPath.startsWith(REFRESH_PATH)) {
+            // Fait pour utiliser le mode refresh (portlet + CMS) pour un portlet
+            // NON VALIDE car mode AJAX non activé en CMS
+            path = requestPath.substring(REFRESH_PATH.length() - 1);
             PageProperties.getProperties().setRefreshingPage(true);
         }
 

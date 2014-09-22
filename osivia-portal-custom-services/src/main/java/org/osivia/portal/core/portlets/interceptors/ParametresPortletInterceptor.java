@@ -275,9 +275,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                             // v1.0.14 : ajout impression
                             printPortlet = window.getDeclaredProperty("osivia.printPortlet");
-                            if (printPortlet == null) {
+                            if (printPortlet == null && popupWindowId == null) {
                                 if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-                                    if( ! Mode.ADMIN.equals(invocation.getMode()))
                                             printPortlet = "1";
                                 }
                             }
