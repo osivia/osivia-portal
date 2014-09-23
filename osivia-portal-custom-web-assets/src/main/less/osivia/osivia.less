@@ -34,8 +34,8 @@
     padding: 1px;
     vertical-align: top;
     
-    &.avatar-small {
-        max-height: 15px;
+    .small &, &.small {
+        max-height: 16px;
         max-width: 20px;
     }
     
@@ -188,6 +188,10 @@
 
 .portlet-container {
     margin-bottom: @line-height-computed;
+    
+    #popup-body & {
+        margin-bottom: 0;
+    }
     
     .portlet-header .portlet-mode-container {
         margin-top: 23px;
@@ -508,4 +512,14 @@ ul.list-group.multi-level {
 
 .dropdown-menu > li > .form {
     padding: 3px 20px;
+}
+
+img {
+   &.pull-left {
+       margin-right: @padding-base-horizontal;
+   }
+   
+   &.pull-right {
+       margin-left: @padding-base-horizontal;
+   }
 }

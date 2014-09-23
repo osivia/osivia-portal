@@ -432,11 +432,11 @@ var currentPageId = '${currentPageId}';
                 <input type="hidden" name="action" value="deletePage" />
                 <input type="hidden" name="pageId" value="${currentPageId}" />            
                 <div class="form-group">
-                    <p class="help-block"><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+                    <p><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-default btn-warning">
-                            <span class="glyphicons halflings warning-sign"></span>
-                            <is:getProperty key="YES" />
+                        <button type="submit" class="btn btn-warning">
+                            <i class="glyphicons halflings warning-sign"></i>
+                            <span><is:getProperty key="YES" /></span>
                         </button>
                         <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
                     </div>
@@ -481,11 +481,11 @@ var currentPageId = '${currentPageId}';
                 <input type="hidden" name="action" value="deleteWindow" />
                 <input type="hidden" name="windowId" />
     
-                <p class="help-block"><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+                <p><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-default btn-warning" onclick="selectWindow(this.form)">
-                        <span class="glyphicons halflings warning-sign"></span>
-                        <is:getProperty key="YES" />
+                    <button type="submit" class="btn btn-warning">
+                        <i class="glyphicons halflings warning-sign"></i>
+                        <span><is:getProperty key="YES" /></span>
                     </button>
                     <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
                 </div>
