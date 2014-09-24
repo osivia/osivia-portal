@@ -88,20 +88,29 @@ public class MenubarItem {
     }
 
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#clone()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public MenubarItem clone()  {
-        MenubarItem item = new MenubarItem(id, title, ORDER_PORTLET_GENERIC, url, onClickEvent, className, target);
-        item.setAssociatedHtml(associatedHtml);  
-        item.setStateItem(stateItem);       
-        item.setDropdownItem(stateItem);     
-        item.setGlyphicon(glyphicon);
-        item.setAjaxDisabled(ajaxDisabled);        
+        MenubarItem item = new MenubarItem(this.id, this.title, ORDER_PORTLET_GENERIC, this.url, this.onClickEvent, this.className, this.target);
+        item.setAssociatedHtml(this.associatedHtml);
+        item.setStateItem(this.stateItem);
+        item.setDropdownItem(this.stateItem);
+        item.setGlyphicon(this.glyphicon);
+        item.setAjaxDisabled(this.ajaxDisabled);
 
-        
+
         return item;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "MenubarItem [title=" + this.title + "]";
     }
 
 
@@ -350,14 +359,14 @@ public class MenubarItem {
         this.ajaxDisabled = ajaxDisabled;
     }
 
-    
+
     /**
      * Checks if is first item.
      *
      * @return true, if is first item
      */
     public boolean isFirstItem() {
-		return firstItem;
+		return this.firstItem;
 	}
 
 
@@ -369,5 +378,5 @@ public class MenubarItem {
 	public void setFirstItem(boolean firstItem) {
 		this.firstItem = firstItem;
 	}
-    
+
 }
