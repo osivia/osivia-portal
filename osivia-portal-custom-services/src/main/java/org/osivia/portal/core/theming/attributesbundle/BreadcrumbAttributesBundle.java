@@ -10,7 +10,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
@@ -84,7 +83,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-    /** WebId service */
+    /** WebId service. */
     private final IWebIdService webIdService;
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
@@ -248,28 +247,25 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 }
 
                 while (StringUtils.contains(publicationPath, basePath)) {
-                    
-                    // Exclude root publish Site for domain 
+                    // Exclude root publish Site for domain
                     // (will be computed later, the same as others spaces)
-                    if(publicationPath.equals(basePath) &&  TabsCustomizerInterceptor.getDomain(basePath) != null) {
+                    if (publicationPath.equals(basePath) && TabsCustomizerInterceptor.getDomain(basePath) != null) {
                         String baseName = basePath.substring(basePath.lastIndexOf('/') + 1);
-                        if( baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName()))
+                        if (baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName()))
                             break;
                     }
-                    
+
                     Map<String, String> pageParams = new HashMap<String, String>();
 
                     try {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         String url;
-                        if (cmsItem != null && StringUtils.isNotEmpty(cmsItem.getWebId())) {
-
-                            String webPath = webIdService.itemToPageUrl(cmsItem);
+                        if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
+                            String webPath = this.webIdService.itemToPageUrl(cmsItem);
 
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
                                     IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "breadcrumb", null, null, null, null);
-
                         } else {
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), publicationPath, pageParams,
@@ -289,15 +285,12 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     CMSObjectPath parent = CMSObjectPath.parse(publicationPath).getParent();
                     publicationPath = parent.toString();
                 }
-                
-                
-                
-                /* add domain site item */
-                
-                
+
+
+                // Add domain site item
                 String pubDomain = TabsCustomizerInterceptor.getDomain(basePath);
 
-                if( pubDomain != null) {
+                if (pubDomain != null) {
 
                     try {
                         CMSServiceCtx userCtx = new CMSServiceCtx();
@@ -311,7 +304,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             Map<String, String> pageParams = new HashMap<String, String>();
 
 
-                            String url = urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
+                            String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
                                     "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
                                     IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, null, null, null, null, null);
@@ -322,11 +315,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         }
                     } catch (CMSException e) {
                         throw new ControllerException(e);
-                    }                        
-                       
-                }   
-                
-                
+                    }
+                }
             }
         }
 
@@ -429,16 +419,16 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             }
 
                             // Add public parameters
-                            if( pageState != null){
-                            Map<QName, String[]> ps = pageState.getParameters();
-                            for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
-                                if (parameters.getValue(pageEntry.getKey().toString()) == null) {
-                                    if (pageEntry.getValue().length > 0) {
-                                        if( ! "init-state".equals(pageEntry.getKey().toString()) && ! "unsetMaxMode".equals(pageEntry.getKey().toString()))
-                                        parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
+                            if (pageState != null) {
+                                Map<QName, String[]> ps = pageState.getParameters();
+                                for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
+                                    if (parameters.getValue(pageEntry.getKey().toString()) == null) {
+                                        if (pageEntry.getValue().length > 0) {
+                                            if (!"init-state".equals(pageEntry.getKey().toString()) && !"unsetMaxMode".equals(pageEntry.getKey().toString()))
+                                                parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
+                                        }
                                     }
                                 }
-                            }
                             }
 
                             PortalObjectId targetWindowId = PortalObjectId.parse(windowContext.getId(), PortalObjectPath.SAFEST_FORMAT);
