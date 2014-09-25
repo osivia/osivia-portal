@@ -133,7 +133,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Panel
-        if (this.showCmsTools(irrc)) {
+        if (this.showCMSTools(irrc)) {
             markup.println("<div class='panel panel-default'><div class='panel-body'>");
             this.printFragmentCommands(irrc, bundle, markup);
         }
@@ -144,7 +144,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Drag'n'drop
-        if (this.showCmsTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+        if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
             markup.print("<div id='region_");
             markup.print(rrc.getId());
             markup.print("' class='dnd-region clearfix' data-empty-title='");
@@ -168,15 +168,18 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * {@inheritDoc}
      */
     public void renderBody(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
+        IRegionRendererContext irrc = (IRegionRendererContext) rrc;
+        boolean showCMSTools = this.showCMSTools(irrc);
+
         for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
             WindowRendererContext wrc = (WindowRendererContext) i.next();
-            if (!BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR))) {
+            if (showCMSTools || !BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR))) {
                 String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
 
                 PrintWriter markup = rendererContext.getWriter();
-                
+
                 if (!this.headerRegions.contains(rrc.getCSSId())) {
-	                
+
 	                markup.print("<div class='");
 	                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
 	                markup.println("'>");
@@ -187,7 +190,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 if (!this.headerRegions.contains(rrc.getCSSId())) {
                 	markup.println("</div>");
                 }
-                	
             }
         }
     }
@@ -208,7 +210,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Drag'n'drop
-        if (this.showCmsTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+        if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
             markup.print("</div>");
         }
 
@@ -218,7 +220,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Panel
-        if (this.showCmsTools(irrc)) {
+        if (this.showCMSTools(irrc)) {
             markup.print("</div></div>");
         }
 
@@ -236,7 +238,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param irrc region renderer context
      * @return true if CMS tools must be shown
      */
-    private boolean showCmsTools(IRegionRendererContext irrc) {
+    private boolean showCMSTools(IRegionRendererContext irrc) {
         boolean showCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY));
         boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
         boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));

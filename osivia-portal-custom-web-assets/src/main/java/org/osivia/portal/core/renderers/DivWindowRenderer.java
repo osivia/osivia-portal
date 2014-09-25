@@ -102,17 +102,19 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Set current window identifier for decorators
         properties.setCurrentWindowId(wrc.getId());
 
+        // Show CMS tools indicator
+        boolean showCMSTools = this.showCMSTools(wrc);
 
         // Mobile collapse indicator
         boolean mobileCollapse = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.mobileCollapse"));
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.bootstrapPanelStyle"));
         // Hide portlet indicator
-        String hidePortlet = properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet");
+        boolean hidePortlet = !showCMSTools && "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet"));
         // AJAX links indicator
-        String ajaxLink = properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink");
+        boolean ajaxLink = "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink"));
 
-        if ("1".equals(hidePortlet)) {
+        if (hidePortlet) {
             // v2.0.22 : portlet vide non rafraichi en ajax
             out.println("<div class=\"dyna-window-content\" ></div>");
             return;
@@ -142,7 +144,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print(windowId);
             out.print("'");
         }
-        if (!"1".equals(ajaxLink) || wizard) {
+        if (!ajaxLink || wizard) {
             out.print(" class='no-ajax-link'");
         }
         out.print(">");
@@ -150,14 +152,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Dyna window content
         out.print("<div class='dyna-window-content");
-        if (this.showCmsTools(wrc)) {
+        if (showCMSTools) {
             out.print(" well well-sm clearfix");
         }
         out.print("'>");
 
 
         // Edit / remove fragment actions
-        if (this.showCmsTools(wrc)) {
+        if (showCMSTools) {
             // Delete confirmation fancybox
             Element deleteConfirmation;
             try {
@@ -310,7 +312,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print("</div>");
 
         // in cms mode, create a new fragment below the current window
-        if (this.showCmsTools(wrc)) {
+        if (showCMSTools) {
             // Toolbar
             Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
 
@@ -352,7 +354,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param wrc window context
      * @return true if CMS tools must be shown
      */
-    private boolean showCmsTools(WindowRendererContext wrc) {
+    private boolean showCMSTools(WindowRendererContext wrc) {
         boolean showCmsTools = false;
 
         if (wrc instanceof WindowContext) {
