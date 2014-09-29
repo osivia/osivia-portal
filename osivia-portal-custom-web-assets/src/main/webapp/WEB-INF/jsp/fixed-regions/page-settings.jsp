@@ -483,7 +483,7 @@ var currentPageId = '${currentPageId}';
     
                 <p><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-warning"  onclick="selectWindow(this.form)">
                         <i class="glyphicons halflings warning-sign"></i>
                         <span><is:getProperty key="YES" /></span>
                     </button>
