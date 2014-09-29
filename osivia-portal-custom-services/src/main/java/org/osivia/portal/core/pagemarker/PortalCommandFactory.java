@@ -40,6 +40,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -256,6 +257,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+        
+        
+        if( cmd instanceof CmsCommand){
+            // Le mode CMS déseactive les popup
+            // Corrige le bug du permlink alors qu'une popup est ouverte
+            if(popupOpened == false && closePopup == false){
+                if( controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null)  {
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);            
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);        
+                }
+            }
+        }
         
         if( cmd instanceof InvokePortletWindowRenderCommand)    {
             StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
