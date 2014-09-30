@@ -375,6 +375,11 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String ecmBaseUrl = cmsService.getEcmDomain(cmsContext);
 
 
+        // Show CMS tools indicator
+        boolean showCMSTools = CmsPermissionHelper.showCmsTools(controllerContext)
+                && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(controllerContext, page);
+
+
         for (Object regionObject : rendition.getPageResult().getRegions()) {
             // Region
             RegionRendererContext region = (RegionRendererContext) regionObject;
@@ -388,7 +393,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 
                 // Show CMS tools indicator
-                regionProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext).toString());
+                regionProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, String.valueOf(showCMSTools));
                 // Show advanced CMS tools indicator
                 regionProperties.put(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR, advancedCMSTools);
 
@@ -442,8 +447,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
                         if ("1".equals(window.getDeclaredProperty("osivia.dynamic.cmsEditable"))) {
                             // Set the current edition mode to the window
-                            windowProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, CmsPermissionHelper.showCmsTools(controllerContext)
-                                    .toString());
+                            windowProperties.put(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY, String.valueOf(showCMSTools));
 
 
                             // build and set urls for create/edit fgts in window in CMS mode
