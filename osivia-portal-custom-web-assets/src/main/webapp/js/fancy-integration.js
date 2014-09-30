@@ -154,6 +154,18 @@ $JQry(document).ready(function() {
 	    'overlayShow'	:	true
     });
     
+    
+    $JQry(".fancybox.thumbnail").fancybox({
+    	openEffect	: 'elastic',
+    	closeEffect	: 'elastic',
+
+    	helpers : {
+    		title : {
+    			type : 'inside'
+    		}
+    	}
+    });
+    
 });
 
 
