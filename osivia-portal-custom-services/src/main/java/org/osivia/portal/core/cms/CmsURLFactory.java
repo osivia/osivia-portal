@@ -109,17 +109,17 @@ public class CmsURLFactory extends URLFactoryDelegate
          }
 
          Map<String, String> pageParams = cmsCommand.getPageParams();
-         if (pagePath != null)
+         if (pageParams != null)
          {
             try
             {
-               asu.setParameterValue("pageParams", WindowPropertiesEncoder.encodeProperties(pageParams));
+               asu.setParameterValue("pageParams",  URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams),"UTF-8"));
             }
             catch (Exception e)
             {
                // ignore
             }
-         }
+         }    
 
          String contextualization = cmsCommand.getContextualization();
          if (contextualization != null)

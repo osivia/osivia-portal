@@ -10,7 +10,10 @@
 <c:set var="currentPageDisplayName"><formatter:displayName object="${currentPage}"/></c:set>
 
 <c:if test="${requestScope['osivia.toolbarSettings.draftPage']}">
-    <c:set var="draftModeChecked" value="checked" />
+</c:if>
+
+<c:if test="${requestScope['osivia.toolbarSettings.selectorsPropagation']}">
+    <c:set var="selectorsPropationChecked" value="checked" />
 </c:if>
 
 <c:if test="${requestScope['osivia.toolbarSettings.cmsTemplated']}">
@@ -292,6 +295,16 @@ var currentPageId = '${currentPageId}';
                     </div>
                 </div>
                 
+                 <!-- Selectors propagation mode -->
+                <div class="form-group">
+                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><is:getProperty key="PAGE_SELECTOR_PROPAGATION" /></label>
+                    <div class="col-sm-8">
+                        <div class="checkbox">
+                            <input id="properties-page-draft-mode" type="checkbox" name="selectorsPropagation" value="1" ${selectorsPropationChecked} ${propertiesDisabled} />
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-8">
                         <c:if test="${currentPageTemplateIndicator}">
@@ -301,6 +314,9 @@ var currentPageId = '${currentPageId}';
                         <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
                     </div>
                 </div>
+                
+                
+                
             </form>
         </div>
         

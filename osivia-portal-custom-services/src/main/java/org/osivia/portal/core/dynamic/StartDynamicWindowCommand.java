@@ -51,6 +51,7 @@ import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
@@ -196,6 +197,23 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                         // }
                     }
 
+                    // Add REFRESH URL
+                    if( "1".equals(this.dynaProps.get("osivia.close.refreshPage")))  {
+                        int insertIndex = backUrl.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
+                        if (insertIndex == -1) {
+                            // Web command
+                            insertIndex = backUrl.indexOf("/web/");
+                        }
+
+                        if (insertIndex != -1) {
+
+                            backUrl = backUrl.substring(0, insertIndex) + PortalCommandFactory.REFRESH_PATH + backUrl.substring(insertIndex + 1);
+                        }
+                    }
+
+     
+                    
+                    
                     if (backUrl.indexOf("/pagemarker/") != -1) {
                         String pageMarker = markerInfo.getPageMarker();
                         backUrl = backUrl.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/");

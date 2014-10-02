@@ -40,6 +40,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -67,6 +68,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public static String POPUP_CLOSE_PATH = "/popup_close/";
     public static String POPUP_CLOSED_PATH = "/popup_closed/";
     public static String POPUP_REFRESH_PATH = "/popup_refresh/";
+    public static String REFRESH_PATH = "/refresh/";    
 
     public IDynamicObjectContainer dynamicCOntainer;
     public PortalObjectContainer portalObjectContainer;
@@ -208,6 +210,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             path = requestPath.substring(POPUP_REFRESH_PATH.length() - 1);
             PageProperties.getProperties().setRefreshingPage(true);
         }
+        
+        if (requestPath.startsWith(REFRESH_PATH)) {
+            path = requestPath.substring(REFRESH_PATH.length() - 1);
+            PageProperties.getProperties().setRefreshingPage(true);
+        }
 
         if (requestPath.startsWith(POPUP_OPEN_PATH)) {
             path = requestPath.substring(POPUP_OPEN_PATH.length() - 1);
@@ -247,6 +254,17 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+        
+        if( cmd instanceof CmsCommand){
+            // Le mode CMS déseactive les popup
+            // Corrige le bug du permlink alors qu'une popup est ouverte
+            if(popupOpened == false && closePopup == false){
+                if( controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null)  {
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);            
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);        
+                }
+            }
+        }
         
         if( cmd instanceof InvokePortletWindowRenderCommand)    {
             StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();

@@ -54,7 +54,6 @@ public final class InternalConstants {
     public static final String ENV_LDAP_CREDENTIALS = "ldap.manager.pswd";
     /** LDAP users base DN. */
     public static final String ENV_LDAP_USERS_BASE_DN = "ldap.users.base.dn";
-    /** LDAP groups base DN. */
     public static final String ENV_LDAP_GROUPS_BASE_DN = "ldap.groups.base.dn";
 
 
@@ -105,6 +104,11 @@ public final class InternalConstants {
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED = "osivia.toolbarSettings.cmsTemplated";
     /** Draft page indicator. */
     public static final String ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE = "osivia.toolbarSettings.draftPage";
+    /** Selectors propagation page indicator. */
+    public static final String ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION = "osivia.toolbarSettings.selectorsPropagation";
+    /** Adanced search selectors. */
+    public static final String ATTR_TOOLBAR_SETTINGS_ADVANCED_SEARCH_SELECTORS = "osivia.toolbarSettings.advancedSearchSelectors";
+     
     /** Page currentcategory. */
     public static final String ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY = "osivia.toolbarSettings.pageCategory";
 

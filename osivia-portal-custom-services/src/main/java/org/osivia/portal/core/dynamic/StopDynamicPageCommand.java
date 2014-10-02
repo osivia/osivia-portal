@@ -148,7 +148,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     topDeletedPage = (Page) page.getParent();
                 
                 
-				
+                // Remove public state of dynamic child
+                NavigationalStateContext nsContext = (NavigationalStateContext) this.context
+                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+
+                nsContext.setPageNavigationalState(poid.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + CMSTemplatePage.PAGE_NAME,null);
+ 				
 				
 
 				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,

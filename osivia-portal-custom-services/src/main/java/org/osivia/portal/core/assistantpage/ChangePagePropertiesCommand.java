@@ -55,6 +55,10 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
     private String theme;
     /** Page category. */    
     private String category;
+    /** Page selectors propagation. */  
+    private String selectorsPropagation;
+
+
 
 
     /**
@@ -72,7 +76,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
      * @param layout page layout
      * @param theme page theme
      */
-    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme,  String category) {
+    public ChangePagePropertiesCommand(String pageId, String displayName, String draftPage, String layout, String theme,  String category, String selectorsPropagation) {
         super();
         this.pageId = pageId;
         this.displayName = displayName;
@@ -80,6 +84,7 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
         this.layout = layout;
         this.theme = theme;
         this.category = category;
+        this.selectorsPropagation = selectorsPropagation;
     }
 
 
@@ -141,6 +146,17 @@ public class ChangePagePropertiesCommand extends AssistantCommand {
                 page.setDeclaredProperty("osivia.pageCategory", null);
             }
         }
+        
+       
+        
+        // Selectors propagation
+        if ("1".equals(this.selectorsPropagation)) {
+            page.setDeclaredProperty("osivia.cms.propagateSelectors", "1");
+        } else if (page.getDeclaredProperty("osivia.cms.propagateSelectors") != null) {
+            page.setDeclaredProperty("osivia.cms.propagateSelectors", null);
+        }
+        
+
         
         // Caches impact
         ICacheService cacheService = Locator.findMBean(ICacheService.class, "osivia:service=Cache");

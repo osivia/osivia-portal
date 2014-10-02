@@ -178,6 +178,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
         String portalPersistentName = null;
 
+        boolean popup = false;
         if (ctx.getControllerCtx() != null) {
             String portalName = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
 
@@ -185,7 +186,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                     .getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
-                portalPersistentName = portalName;
+                if (!StringUtils.equals(portalName, "osivia-util")) {
+                    portalPersistentName = portalName;
+                }   else    {
+                    popup = true;
+                    portalPersistentName = defaultPortal.getName();
+                    pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                }
             }
         }
 
@@ -193,7 +200,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowPermReference, this.addToBreadcrumb(ctx.getRequest()), portalPersistentName);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
-        return portalURL.toString();
+        String url = portalURL.toString();
+        if( popup)
+            url= adaptPortalUrlToPopup(ctx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+        
+        
+
+        return url;
     }
 
     /**
@@ -263,16 +276,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                         .getDefaultPortal();
 
                 if (!defaultPortal.getName().equals(portalName)) {
-                    portalPersistentName = portalName;
+                    if (!StringUtils.equals(portalName, "osivia-util"))
+                        portalPersistentName = portalName;
                 }
             }
 
             // Direct CMS Link : use CMSCommand
             if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
-                // CmsCommand cmsCommand = new CmsCommand(null, cmsPath, parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "permlink", null, null, null,
-                // null,
-                // null, portalPersistentName);
-                CmsCommand cmsCommand = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, portalPersistentName);
+
+                CmsCommand cmsCommand = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
 
                 // Remove default initialisation
                 cmsCommand.setItemScope(null);
