@@ -173,7 +173,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
             WindowRendererContext wrc = (WindowRendererContext) i.next();
-            if (showCMSTools || !BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR))) {
+            boolean empty = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR));
+            boolean hidden = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR));
+
+            if (!(hidden || (!showCMSTools && empty))) {
                 String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
 
                 PrintWriter markup = rendererContext.getWriter();

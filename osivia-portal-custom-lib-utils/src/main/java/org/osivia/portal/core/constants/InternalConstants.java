@@ -179,6 +179,8 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_INSTANCE_DISPLAY_NAME = "osivia.instanceDisplayName";
     /** Empty indicator window property. */
     public static final String ATTR_WINDOWS_EMPTY_INDICATOR = "osivia.window.empty";
+    /** Hidden indicator window property. */
+    public static final String ATTR_WINDOWS_HIDDEN_INDICATOR = "osivia.window.hidden";
 
 
     /** Locale window or region property name. */

@@ -203,8 +203,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String contentPath = PagePathUtils.getContentPath(ctx, page.getId());
         String pagePath = PagePathUtils.getNavigationPath(ctx, page.getId());
 
-        if( ! StringUtils.equals(contentPath, pagePath))
+        if( ! StringUtils.equals(contentPath, pagePath)) {
             return false;
+        }
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setServerInvocation(ctx.getServerInvocation());
@@ -529,7 +530,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                 windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-                windowProps.put(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR, String.valueOf(true));
+                windowProps.put(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR, String.valueOf(true));
 
                 WindowResult windowResult = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
                 WindowContext windowContext = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", windowResult);
