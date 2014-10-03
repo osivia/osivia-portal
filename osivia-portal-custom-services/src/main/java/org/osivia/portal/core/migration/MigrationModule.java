@@ -18,6 +18,9 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 
 public abstract class MigrationModule {
   public abstract int getModuleId();
+  public boolean isOnlyOnceModule() {
+      return false;
+  }
   public abstract void execute ()  throws Exception;
   
 	public PortalObjectContainer portalObjectContainer;
