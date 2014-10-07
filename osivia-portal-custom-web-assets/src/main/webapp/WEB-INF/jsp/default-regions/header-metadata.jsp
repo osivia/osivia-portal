@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="internationalization" prefix="is" %>
 
 
@@ -6,7 +7,7 @@
 <title>${requestScope['osivia.header.title']} - <is:getProperty key="BRAND" /></title>
 
 <c:forEach var="meta" items="${requestScope['osivia.header.metadata']}">
-<meta name="${meta.key}" content="${meta.value}">
+<meta name="${meta.key}" content="${fn:escapeXml(meta.value)}">
 </c:forEach>
 
 <c:if test="${not empty requestScope['osivia.header.canonical.url']}">
