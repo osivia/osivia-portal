@@ -1295,61 +1295,24 @@ public class CmsCommand extends DynamicCommand {
              * Préparation des paramètres de la page
              */
 
+            PageNavigationalState previousPNS = null;
 
+            NavigationalStateContext nsContext = (NavigationalStateContext) this.context
+                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);            
+
+            Map<QName, String[]> pageState = new HashMap<QName, String[]>();
+            
             if (cmsNav != null) {
 
                 /* Mise à jour paramètre public page courante */
 
-                NavigationalStateContext nsContext = (NavigationalStateContext) this.context
-                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
-                PageNavigationalState previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
+                previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
 
-                //
-                Map<QName, String[]> state = new HashMap<QName, String[]>();
-
-                // Clone the previous state if needed
-
-                /*
-                 * if (previousPNS != null) {
-                 * state.putAll(previousPNS.getParameters()); }
-                 */
-                
-                /* Propagation of selectors in navigation */
-                
-                if( previousPNS != null){
-
-                    Page templatePage = null;
-                    PortalObjectId templateId = null;
-
-                    if (layoutPath != null) {
-                        templateId = PortalObjectId.parse(layoutPath, PortalObjectPath.CANONICAL_FORMAT);
-                    } else {
-                        templateId = pageIdToDiplay;
-                    }
-
-                    templatePage = (Page) controllerContext.getController().getPortalObjectContainer().getObject(templateId);
-
-                    if (templatePage == null) {
-                        logger.error("Le template " + layoutPath + " n'a pas pu être instancié");
-                        return new UnavailableResourceResponse(itemPublicationPath, false);
-                    }
-
-                    if ("1".equals(templatePage.getProperty("osivia.cms.propagateSelectors"))) {
-                        String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
-
-                        if (selectors != null) {
-
-                            state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), selectors);
-                        }
-                    }
-                    
-                }
-                     
 
                 if (this.pageParams != null) {
                     for (Map.Entry<String, String> entry : this.pageParams.entrySet()) {
-                        state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, entry.getKey()),
+                        pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, entry.getKey()),
                                 new String[] { entry.getValue() });
                     }
                 }
@@ -1359,21 +1322,21 @@ public class CmsCommand extends DynamicCommand {
                 if (itemPublicationPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
                     //String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
                     String relPath = itemPublicationPath.substring(basePublishPath.length());
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"),
+                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"),
                             new String[] { relPath });
                 }
 
-                state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
+                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[] { cmsNav.getPath() });
 
                 String webId = cmsNav.getWebId();
 
                 if (webId != null) {
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.webid"), new String[]{cmsNav.getWebId()});
+                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.webid"), new String[]{cmsNav.getWebId()});
                 }
 
 
                 // Mise à jour du path de contenu
-                state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"),
+                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"),
                         new String[] { this.contentPath });
 
 
@@ -1383,31 +1346,31 @@ public class CmsCommand extends DynamicCommand {
                  *
                  *  */
 
-                state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"), new String[] { ""+System.currentTimeMillis() });
+                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"), new String[] { ""+System.currentTimeMillis() });
 
                 if (layoutPath != null) {
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),
+                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),
                             new String[] { layoutPath });
                 }
 
                 if( layoutPath != null && ECMPageTheme != null){
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.theme_path"),
+                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.theme_path"),
                             new String[] { ECMPageTheme });
                 }
 
                 // Mise à jour du scope de la page
                 if (computedPageScope != null && computedPageScope.length() > 0) {
-                    state.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"),
+                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"),
                             new String[] { computedPageScope });
                 }
 
 
                 EditionState editionState = this.getEditionState(controllerContext, pageIdToDiplay, pubInfos);
-                ContributionService.updateNavigationalState(controllerContext, state, editionState);
+                ContributionService.updateNavigationalState(controllerContext, pageState, editionState);
 
 
 
-                nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(state));
+                nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(pageState));
 
                 /*
                  * Layout has been computed and copied to page state It's time
@@ -1440,6 +1403,25 @@ public class CmsCommand extends DynamicCommand {
                 return new UnavailableResourceResponse(itemPublicationPath, false);
             }
 
+            
+            /* Propagation des selecteurs */
+            
+            
+            if( previousPNS != null){
+                if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
+                    String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+
+                    if (selectors != null) {
+                        previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
+                        pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), selectors);
+                        nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(pageState));
+                    }
+                }
+            }           
+            
+            
+            
+            
 
 
             boolean isPageToDisplayUncontextualized = false;
