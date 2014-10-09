@@ -201,8 +201,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
         String url = portalURL.toString();
-        if( popup)
+        if( popup)  {
             url= adaptPortalUrlToPopup(ctx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+
+        }
         
         
 
@@ -378,6 +380,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) {
+        
+        
+        
         // Controller context
         ControllerContext controllerContext = (ControllerContext) portalCtx.getControllerCtx();
         // Server context
@@ -388,6 +393,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String prefix = StringUtils.substringBefore(originalUrl, portalContextPath);
         String suffix = StringUtils.substringAfter(originalUrl, portalContextPath);
+        
+        if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) 
+            if( StringUtils.startsWith(suffix, PortalCommandFactory.POPUP_CLOSE_PATH ))
+                return originalUrl;
 
         boolean auth = false;
         if (suffix.startsWith("/auth/")) {

@@ -20,6 +20,15 @@
     </portlet>
     
     <portlet>
+        <portlet-name>osivia-portal-custom-web-assets-sitemapPortlet</portlet-name>
+  
+        <transaction>
+            <trans-attribute>Required</trans-attribute>            
+        </transaction>
+        
+    </portlet>
+    
+    <portlet>
         <portlet-name>osivia-portal-regions-customizerPortlet</portlet-name>
     </portlet>
     
