@@ -31,7 +31,21 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-theme-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+             <scope>compile</scope>
+        </dependency>
         
+
+        <dependency>
+            <groupId>org.jboss.portal</groupId>
+            <artifactId>portal-api-lib</artifactId>
+            <version>${jboss.portal.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Commons -->
 

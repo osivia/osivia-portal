@@ -157,9 +157,22 @@ public class ServicesInvoker {
     public ControllerResponse render()	throws Exception {
 
 
+        // Mode anonyme
+        HttpServletRequest request = context.getServerInvocation().getServerContext().getClientRequest();
 
+        Map pageProps = new HashMap(this.page.getProperties());
+        String rendering = request.getParameter("_rendering");
+        if( rendering != null) {
+            pageProps.put(ThemeConstants.PORTAL_PROP_RENDERSET, rendering);
+        }
+        
         // Call the portlet container to create the markup fragment(s) for each portlet that needs to render itself
-        PageResult pageResult = new PageResult(this.page.getName(), new HashMap(this.page.getProperties()));
+        PageResult pageResult = new PageResult(this.page.getName(), pageProps);
+        
+        if( rendering != null) {
+            pageResult.setLayoutState(rendering);
+        }
+        
 
         // The window context factory
         WindowContextFactory wcFactory = new WindowContextFactory(this.context);
@@ -191,7 +204,7 @@ public class ServicesInvoker {
 
 					windowlogger.debug("-------------- DEBUT DUMP ServicesInvoker "+ this.context + " w:" + window.getId());
 
-					HttpServletRequest request = this.context.getServerInvocation().getServerContext().getClientRequest();
+
 					HttpSession session = this.context.getServerInvocation().getServerContext().getClientRequest().getSession(false);
 
 
