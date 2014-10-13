@@ -145,7 +145,7 @@ public interface ICMSService {
 
     /**
      * Get CMS regions selected layout.
-     * 
+     *
      * @param item CMS item
      * @param regionLayouts region layouts
      * @return CMS regions selected layout
@@ -342,6 +342,16 @@ public interface ICMSService {
      * @return templates
      */
     SortedMap<String, String> getMenuTemplates(Locale locale);
+
+
+    /**
+     * Get fragment types.
+     * 
+     * @param locale user locale
+     * @return fragment types
+     */
+    List<FragmentType> getFragmentTypes(Locale locale);
+
 
     /**
      * Synchronize or disable synchronization between local folder and ECM folder
