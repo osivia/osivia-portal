@@ -17,8 +17,13 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 
 /**
  * Implementation of IWebIdService.
@@ -37,12 +42,19 @@ public class WebIdService implements IWebIdService {
     /** Portal URL factory. */
     private IPortalUrlFactory portalURLFactory;
 
+	/** CMS service locator. */
+	private final ICMSServiceLocator cmsServiceLocator;
 
     /**
      * Default constructor.
      */
     public WebIdService() {
+
         super();
+		// CMS service locator
+		this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class,
+				"osivia:service=CmsServiceLocator");
+
     }
 
 
@@ -100,7 +112,7 @@ public class WebIdService implements IWebIdService {
     /**
      * {@inheritDoc}
      */
-    public String itemToPageUrl(CMSItem item) {
+	public String itemToPageUrl(ControllerContext ctx, CMSItem item) {
 
         String domainId = item.getProperties().get(DOMAIN_ID);
         String webid = item.getWebId();
@@ -108,12 +120,45 @@ public class WebIdService implements IWebIdService {
         String extension = item.getProperties().get(EXTENSION_URL);
         String webpath = null;
 
+		// compute a path with webIDs of the parents
+		ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+		CMSServiceCtx cmsCtx = new CMSServiceCtx();
+		cmsCtx.setControllerContext(ctx);
+
+		String[] paths = item.getPath().split(SLASH);
+		String pathToCheck = "";
+		String parentWebIdPath = "";
+		for (int i = 1; i <= paths.length - 2; i++) {
+
+			pathToCheck = pathToCheck + SLASH + paths[i];
+
+			try {
+				CMSItem parentItem = cmsService.getContent(cmsCtx, pathToCheck);
+				String parentWebId = parentItem.getWebId();
+
+				if (parentWebId != null) {
+					if (StringUtils.isNotBlank(parentWebIdPath)) {
+						parentWebIdPath = parentWebIdPath + SLASH;
+					}
+
+					parentWebIdPath = parentWebId;
+				}
+
+			} catch (CMSException e) {
+				// do nothing, url not generated
+			}
+		}
+
+
         if (StringUtils.isNotEmpty(webid) && StringUtils.isNotEmpty(domainId)) {
             webpath = SLASH.concat(domainId).concat(SLASH);
 
-            if (StringUtils.isNotEmpty(explicitUrl)) {
-                webpath = webpath.concat(explicitUrl).concat(SLASH);
+			if (StringUtils.isNotEmpty(parentWebIdPath)) {
+				webpath = webpath.concat(parentWebIdPath).concat(SLASH);
             }
+			if (StringUtils.isNotEmpty(explicitUrl)) {
+				webpath = webpath.concat(explicitUrl).concat(SLASH);
+			}
 
             webpath = webpath.concat(webid);
 

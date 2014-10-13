@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.web;
 
+import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSItem;
 
@@ -85,7 +86,7 @@ public interface IWebIdService {
      * @param item the ECM item
      * @return /_webid/full/web/path.html
      */
-    String itemToPageUrl(CMSItem item);
+	String itemToPageUrl(ControllerContext ctx, CMSItem item);
 
 
     /**

@@ -601,7 +601,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         String path = rpc.getPage().getDeclaredProperty("osivia.cms.basePath");
 
                         if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
-                            path = this.webIdService.itemToPageUrl(pagePublishSpaceConfig);
+							path = this.webIdService.itemToPageUrl(cmd.getControllerContext(), pagePublishSpaceConfig);
                         }
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,

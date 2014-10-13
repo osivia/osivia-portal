@@ -261,7 +261,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         String url;
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
-                            String webPath = this.webIdService.itemToPageUrl(cmsItem);
+							String webPath = this.webIdService.itemToPageUrl(
+									controllerContext, cmsItem);
 
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
