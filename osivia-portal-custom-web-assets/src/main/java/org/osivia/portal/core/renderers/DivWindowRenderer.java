@@ -260,7 +260,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             if (mobileCollapse) {
                 out.print("<div id='body_");
                 out.print(wrc.getId());
-                out.print("' class='panel-collapse collapse mobile-collapse");
+                out.print("' class='panel-collapse collapse");
 
                 if (BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.collapse.forceDisplay"))) {
                     out.print(" in");

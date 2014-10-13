@@ -137,7 +137,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         }
 
         if (mobileCollapse) {
-            markup.print("<a href='#' class='no-ajax-link' data-toggle='collapse' data-target='#body_" + currentWindowId + "'>");
+            markup.print("<a href='#body_" + currentWindowId + "' class='no-ajax-link' data-toggle='collapse'>");
             markup.print(title);
             markup.print("</a>");
         } else {
