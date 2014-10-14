@@ -3,7 +3,7 @@
 <%@ taglib uri="internationalization" prefix="is" %>
 
 
-<c:if test="${not requestScope['osivia.user.administrator']}">
+<c:if test="${empty requestScope['osivia.toolbar.principal']}">
     <c:set var="toolbarDisplayClass" value="visible-xs" />
 </c:if>
 
