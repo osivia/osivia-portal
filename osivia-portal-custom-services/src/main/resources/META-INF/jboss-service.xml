@@ -813,14 +813,26 @@
             optional-attribute-name="PortalURLFactory"
             proxy-type="attribute">osivia:service=UrlFactory</depends>
     </mbean>
-    
-    
-        <mbean
+
+    <!-- Page header resource service -->
+    <mbean
         code="org.osivia.portal.core.theming.PageHeaderResourceService"
         name="osivia:service=PageHeaderResourceService"
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
+    </mbean>
+    
+    <!-- Project customizer interceptor -->
+    <mbean
+        code="org.osivia.portal.core.customization.ProjectCustomizerInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=ProjectCustomizer"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CustomizationService"
+            proxy-type="attribute">osivia:service=CustomizationService</depends>
     </mbean>
     
 </server>
