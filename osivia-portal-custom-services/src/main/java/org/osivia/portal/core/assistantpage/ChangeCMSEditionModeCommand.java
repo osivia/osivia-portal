@@ -30,9 +30,11 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
@@ -164,11 +166,17 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
 
             String currentCmsVersion = CmsPermissionHelper.getCurrentCmsVersion(context);
             CmsPermissionHelper.changeCmsMode(getControllerContext(), pagePath, version, editionMode);
-
-            // if current version is changed, reload the navigation tree and page
+            
+            
+             // if current version is changed, reload the navigation tree and page
             if (!currentCmsVersion.equals(version)) {
                 PageProperties.getProperties().setRefreshingPage(true);
             }
+            
+            CmsCommand cmsCommand = new CmsCommand(null, pagePath,null, null, null, null, null, null, null, null, null);
+
+            return this.context.execute(cmsCommand);
+
 
 
         } catch (CMSException e) {
@@ -177,7 +185,6 @@ public class ChangeCMSEditionModeCommand extends ControllerCommand {
             throw new ControllerException(e);
         }
 
-        return new UpdatePageResponse(page.getId());
 
     }
 
