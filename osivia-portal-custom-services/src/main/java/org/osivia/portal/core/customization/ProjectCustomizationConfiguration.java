@@ -10,6 +10,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
@@ -29,8 +30,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
 
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-    /** Controller context. */
-    private final ControllerContext controllerContext;
+    /** Portal controller context. */
+    private final PortalControllerContext portalControllerContext;
     /** Current page. */
     private final Page page;
 
@@ -41,12 +42,12 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     /**
      * Constructor.
      *
-     * @param controllerContext controller context
+     * @param portalControllerContext portal controller context
      * @param page current page
      */
-    public ProjectCustomizationConfiguration(ControllerContext controllerContext, Page page) {
+    public ProjectCustomizationConfiguration(PortalControllerContext portalControllerContext, Page page) {
         super();
-        this.controllerContext = controllerContext;
+        this.portalControllerContext = portalControllerContext;
         this.page = page;
 
         // CMS service locator
@@ -88,7 +89,7 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setControllerContext(this.controllerContext);
+        cmsContext.setPortalControllerContext(this.portalControllerContext);
 
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
@@ -110,9 +111,10 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * @return publication path
      */
     private String getPublicationPath() {
+        // Controller context
+        ControllerContext controllerContext = (ControllerContext) this.portalControllerContext.getControllerCtx();
         // State context
-        NavigationalStateContext stateContext = (NavigationalStateContext) this.controllerContext
-                .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+        NavigationalStateContext stateContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
         // Current page state
         PageNavigationalState pageState = stateContext.getPageNavigationalState(this.page.getId().toString());
 

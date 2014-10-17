@@ -11,8 +11,6 @@ public interface IProjectCustomizationConfiguration {
     String CUSTOMIZER_ID = "osivia.project.customizer.id";
     /** Project customizer configuration attribute name. */
     String CUSTOMIZER_ATTRIBUTE_CONFIGURATION = "osivia.project.customizer.configuration";
-    /** Project customizer controller context attribute name. */
-    String CUSTOMIZER_ATTRIBUTE_CONTROLLER_CONTEXT = "osivia.project.customizer.controllerContext";
 
 
     /**

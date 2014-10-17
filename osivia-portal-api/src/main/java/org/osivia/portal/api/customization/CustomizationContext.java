@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,43 +10,77 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.api.customization;
 
 import java.util.Map;
 
+import org.osivia.portal.api.context.PortalControllerContext;
+
 
 /**
- * The Class CustomizationContext.
- * 
- * Identifies inputs ant outputs of a customization point
- * 
+ * Customization context.
+ * Identifies inputs ant outputs of a customization point.
+ *
  * @author Jean-Sébastien Steux
  */
 public class CustomizationContext {
-	
-	/**
-	 * Instantiates a new customization context.
-	 *
-	 * @param attributes the attributes
-	 */
-	public CustomizationContext(Map<String, Object> attributes) {
-		super();
-		this.attributes = attributes;
-	}
 
-	/** The attributes. */
-	private Map<String, Object> attributes;
+    /** Customization attributes. */
+    private final Map<String, Object> attributes;
 
-	/**
-	 * Gets the attributes.
-	 *
-	 * @return the attributes
-	 */
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
-	
+    /** Portal controller context. */
+    private PortalControllerContext portalControllerContext;
+
+
+    /**
+     * Constructor.
+     *
+     * @param attributes customization attributes
+     */
+    public CustomizationContext(Map<String, Object> attributes) {
+        super();
+        this.attributes = attributes;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param attributes customization attributes
+     * @param portalControllerContext portal controller context
+     */
+    public CustomizationContext(Map<String, Object> attributes, PortalControllerContext portalControllerContext) {
+        super();
+        this.attributes = attributes;
+        this.portalControllerContext = portalControllerContext;
+    }
+
+
+    /**
+     * Getter for portalControllerContext.
+     *
+     * @return the portalControllerContext
+     */
+    public PortalControllerContext getPortalControllerContext() {
+        return this.portalControllerContext;
+    }
+
+    /**
+     * Setter for portalControllerContext.
+     *
+     * @param portalControllerContext the portalControllerContext to set
+     */
+    public void setPortalControllerContext(PortalControllerContext portalControllerContext) {
+        this.portalControllerContext = portalControllerContext;
+    }
+
+    /**
+     * Getter for attributes.
+     *
+     * @return the attributes
+     */
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
 
 }

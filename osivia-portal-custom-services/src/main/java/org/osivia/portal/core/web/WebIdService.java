@@ -24,6 +24,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
  * Implementation of IWebIdService.
@@ -128,7 +129,7 @@ public class WebIdService implements IWebIdService {
 		String[] paths = item.getPath().split(SLASH);
 		String pathToCheck = "";
 		String parentWebIdPath = "";
-		for (int i = 1; i <= paths.length - 2; i++) {
+		for (int i = 1; i <= (paths.length - 2); i++) {
 
 			pathToCheck = pathToCheck + SLASH + paths[i];
 
@@ -207,7 +208,7 @@ public class WebIdService implements IWebIdService {
         StringBuilder url = new StringBuilder();
 
         // Controller context
-        ControllerContext controllerContext = (ControllerContext) portalControllerContext.getControllerCtx();
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
 

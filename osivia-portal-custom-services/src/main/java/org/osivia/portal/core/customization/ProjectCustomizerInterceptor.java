@@ -11,6 +11,7 @@ import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
 
@@ -47,16 +48,17 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             RenderPageCommand renderPageCommand = (RenderPageCommand) controllerCommand;
             // Controller context
             ControllerContext controllerContext = renderPageCommand.getControllerContext();
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
             // Project customization configuration
-            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(controllerContext, renderPageCommand.getPage());
+            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, renderPageCommand.getPage());
 
             // Customizer attributes
             Map<String, Object> customizerAttributes = new HashMap<String, Object>();
             customizerAttributes.put(IProjectCustomizationConfiguration.CUSTOMIZER_ATTRIBUTE_CONFIGURATION, configuration);
-            customizerAttributes.put(IProjectCustomizationConfiguration.CUSTOMIZER_ATTRIBUTE_CONTROLLER_CONTEXT, controllerContext);
             // Customizer context
-            CustomizationContext context = new CustomizationContext(customizerAttributes);
+            CustomizationContext context = new CustomizationContext(customizerAttributes, portalControllerContext);
 
 
             // Customization
