@@ -156,6 +156,7 @@ $JQry(document).ready(function() {
     
     
     $JQry(".fancybox.thumbnail").fancybox({
+    	type        : 'image',
     	openEffect	: 'elastic',
     	closeEffect	: 'elastic',
 
