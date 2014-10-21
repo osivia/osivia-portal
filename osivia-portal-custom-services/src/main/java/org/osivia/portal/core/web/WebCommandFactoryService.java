@@ -17,6 +17,9 @@ package org.osivia.portal.core.web;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -80,11 +83,24 @@ public class WebCommandFactoryService extends AbstractCommandFactory  {
                     if (parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW) != null) {
                         cmsCommand.setWindowName(URLDecoder.decode(parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW)[0], "UTF-8"));
                     }
+                    
+                    
+                    if( parameterMap.size() == 0)   {
+                        // pas de paramètre : partage en mode anonyme
+                        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+                        
+                        if (request.getUserPrincipal() == null) {
+                            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
+                            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.skipCacheNavigationControl", "1");
+                        }
+                    }
+                    
+                    
                 } catch (UnsupportedEncodingException e) {
                     // ignore
                 }
 
-            }
+            }   
 
             // Remove implicit parameters
             parameterMap.remove(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW);

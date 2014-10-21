@@ -17,6 +17,7 @@ package org.osivia.portal.core.cms;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.ServerInvocation;
@@ -81,7 +82,20 @@ public class CMSServiceCtx {
     }
 
     private PortletRequest request;
-	private PortletContext portletCtx;
+    private HttpServletRequest servletRequest;
+	
+    public HttpServletRequest getServletRequest() {
+        return servletRequest;
+    }
+
+
+
+    
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+
+    private PortletContext portletCtx;
 	private RenderResponse response;
 	private String pageId;
 	private Object doc;

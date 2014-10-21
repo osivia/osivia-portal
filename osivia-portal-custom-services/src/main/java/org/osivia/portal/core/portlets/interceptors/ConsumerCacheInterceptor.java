@@ -561,17 +561,29 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor
                if(  "1".equals(ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.useGlobalWindowCaches")))	{
 
             	   HttpServletRequest request = ctx.getServerInvocation().getServerContext().getClientRequest();
+            	   
+                   Boolean skipNavigationControls = "1".equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.skipCacheNavigationControl"));
+                   
+                   boolean storeCache = true;
+                   
+                   if( !skipNavigationControls) {
+                       storeCache = false;
 
-            	   // On controle que l'état permet une mise dans le cache global
+                       // On controle que l'état permet une mise dans le cache global
 
-            	   if( (navigationalState == null)
-            			   && ((publicNavigationalState == null) || (publicNavigationalState.size() == 0))
-            			   && ((windowState == null) || WindowState.NORMAL.equals(windowState))
-            			   && ((mode == null) || Mode.VIEW.equals(mode))
-            			   && ((window != null) && ( window instanceof DynamicPersistentWindow))
-            			   // Pas de cache sur les deconnexions
-            			   && (request.getCookies() == null)
-            		)	{
+                       if( (navigationalState == null)
+                               && ((publicNavigationalState == null) || (publicNavigationalState.size() == 0))
+                               && ((windowState == null) || WindowState.NORMAL.equals(windowState))
+                               && ((mode == null) || Mode.VIEW.equals(mode))
+                               && ((window != null) && ( window instanceof DynamicPersistentWindow))
+                               // Pas de cache sur les deconnexions
+                               && (request.getCookies() == null)
+                        )
+                           storeCache = true;
+                   }
+                           
+                   
+                   if( storeCache)	{
 
 
             		   CacheEntry initCacheEntry = new CacheEntry(
