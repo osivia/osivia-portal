@@ -15,10 +15,8 @@
 package org.osivia.portal.core.cms;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.Link;
@@ -324,33 +322,6 @@ public interface ICMSService {
      * @return the timestamp associated with the refresh event
      */
     String refreshUserAvatar(CMSServiceCtx cmsCtx, String username);
-
-
-    /**
-     * Get list templates.
-     *
-     * @param locale user locale
-     * @return templates
-     */
-    List<ListTemplate> getListTemplates(Locale locale);
-
-
-    /**
-     * Get navigation menu templates.
-     *
-     * @param locale user locale
-     * @return templates
-     */
-    SortedMap<String, String> getMenuTemplates(Locale locale);
-
-
-    /**
-     * Get fragment types.
-     * 
-     * @param locale user locale
-     * @return fragment types
-     */
-    List<FragmentType> getFragmentTypes(Locale locale);
 
 
     /**
