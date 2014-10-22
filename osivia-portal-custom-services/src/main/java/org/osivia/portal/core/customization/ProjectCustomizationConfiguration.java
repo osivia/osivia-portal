@@ -93,11 +93,13 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
 
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
-            String pageDomainId = cmsItem.getProperties().get(IWebIdService.DOMAIN_ID);
-            String pageWebId = cmsItem.getWebId();
+            if (cmsItem != null) {
+                String pageDomainId = cmsItem.getProperties().get(IWebIdService.DOMAIN_ID);
+                String pageWebId = cmsItem.getWebId();
 
-            if ((StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId)) {
-                this.redirectionURL = redirectionURL;
+                if ((StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId)) {
+                    this.redirectionURL = redirectionURL;
+                }
             }
         } catch (CMSException e) {
             // Do nothing
