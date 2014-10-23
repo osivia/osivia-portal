@@ -328,6 +328,23 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                     regionProperties.put(InternalConstants.CMS_REGION_LAYOUT_CODE, regionLayout.getCode());
                     regionProperties.put(InternalConstants.CMS_REGION_LAYOUT_CLASS, regionLayout.getAdditionalCode());
                 }
+
+
+                // Region windows
+                for (Object windowObject : region.getWindows()) {
+                    WindowRendererContext windowRendererContext = (WindowRendererContext) windowObject;
+                    Map<String, String> windowProperties = windowRendererContext.getProperties();
+                    String windowId = windowRendererContext.getId();
+
+                    if (!windowId.endsWith("PIA_EMPTY")) {
+                        PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
+                        Window window = (Window) this.getPortalObjectContainer().getObject(poid);
+
+                        // Ref URI
+                        String refURI = window.getProperty("osivia.refURI");
+                        windowProperties.put("osivia.windowId", refURI);
+                    }
+                }
             }
         }
     }
@@ -453,7 +470,6 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
                             // build and set urls for create/edit fgts in window in CMS mode
                             String refURI = window.getProperty("osivia.refURI");
-                            windowProperties.put("osivia.windowId", refURI);
 
                             requestParameters = new HashMap<String, String>();
                             requestParameters.put("belowURI", refURI);
