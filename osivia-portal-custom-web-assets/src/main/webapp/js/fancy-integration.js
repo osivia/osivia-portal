@@ -153,8 +153,7 @@ $JQry(document).ready(function() {
 	    'speedOut'		:	200, 
 	    'overlayShow'	:	true
     });
-    
-    
+
     $JQry(".fancybox.thumbnail").fancybox({
     	type        : 'image',
     	openEffect	: 'elastic',
@@ -164,6 +163,19 @@ $JQry(document).ready(function() {
     		title : {
     			type : 'inside'
     		}
+    	}
+    });
+    
+    $JQry(".fancybox_video.thumbnail").fancybox({
+    	openEffect	: 'elastic',
+    	closeEffect	: 'elastic',
+    	
+    	aspectRatio : true,
+        scrolling   : 'no',
+
+    	afterShow	: function() {
+    		var $video = $JQry(this.href).find("video");
+    		$video[0].play();
     	}
     });
     
