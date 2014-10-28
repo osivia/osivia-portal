@@ -129,7 +129,7 @@ public class WebIdService implements IWebIdService {
 		String[] paths = item.getPath().split(SLASH);
 		String pathToCheck = "";
 		String parentWebIdPath = "";
-		for (int i = 1; i <= (paths.length - 2); i++) {
+		for (int i = 2; i <= (paths.length - 2); i++) {
 
 			pathToCheck = pathToCheck + SLASH + paths[i];
 
