@@ -14,30 +14,38 @@ public interface IProjectCustomizationConfiguration {
 
 
     /**
-     * Create CMS redirection.
+     * Compare current item CMS path with provided CMS path.
      *
      * @param cmsPath CMS path
-     * @param redirectionURL redirection URL
+     * @return true if CMS paths are equal
      */
-    void createCMSRedirection(String cmsPath, String redirectionURL);
+    boolean equalsCMSPath(String cmsPath);
 
 
     /**
-     * Create web redirection.
-     * 
-     * @param webId web ID
-     * @param redirectionURL redirection URL
+     * Compare current item web identifier with provided identifier.
+     *
+     * @param webId web identifier
+     * @return true if web identifiers are equal
      */
-    void createWebRedirection(String webId, String redirectionURL);
+    boolean equalsWebId(String webId);
 
 
     /**
-     * Create web redirection.
+     * Compare current item domain and web identifiers with provided identifiers.
+     *
+     * @param domainId domain identifier
+     * @param webId web identifier
+     * @return true if domain and web identifiers are equal
+     */
+    boolean equalsWebId(String domainId, String webId);
+
+
+    /**
+     * Set portal redirection URL.
      * 
-     * @param domainId domain ID
-     * @param webId web ID
      * @param redirectionURL redirection URL
      */
-    void createWebRedirection(String domainId, String webId, String redirectionURL);
+    void setRedirectionURL(String redirectionURL);
 
 }

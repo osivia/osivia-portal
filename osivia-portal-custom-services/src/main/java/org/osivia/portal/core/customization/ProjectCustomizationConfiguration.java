@@ -58,28 +58,28 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     /**
      * {@inheritDoc}
      */
-    public void createCMSRedirection(String cmsPath, String redirectionURL) {
+    public boolean equalsCMSPath(String cmsPath) {
         // Page CMS path
         String pageCMSPath = this.getPublicationPath();
 
-        if (StringUtils.equals(cmsPath, pageCMSPath)) {
-            this.redirectionURL = redirectionURL;
-        }
+        return StringUtils.equals(cmsPath, pageCMSPath);
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public void createWebRedirection(String webId, String redirectionURL) {
-        this.createWebRedirection(null, webId, redirectionURL);
+    public boolean equalsWebId(String webId) {
+        return this.equalsWebId(null, webId);
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public void createWebRedirection(String domainId, String webId, String redirectionURL) {
+    public boolean equalsWebId(String domainId, String webId) {
+        boolean result = false;
+
         // Current CMS base path
         String basePath = this.page.getProperty("osivia.cms.basePath");
         // Current publication path
@@ -97,13 +97,13 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
                 String pageDomainId = cmsItem.getProperties().get(IWebIdService.DOMAIN_ID);
                 String pageWebId = cmsItem.getWebId();
 
-                if ((StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId)) {
-                    this.redirectionURL = redirectionURL;
-                }
+                result = (StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId);
             }
         } catch (CMSException e) {
             // Do nothing
         }
+
+        return result;
     }
 
 
@@ -140,6 +140,14 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      */
     public String getRedirectionURL() {
         return this.redirectionURL;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setRedirectionURL(String redirectionURL) {
+        this.redirectionURL = redirectionURL;
     }
 
 }
