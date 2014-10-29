@@ -266,7 +266,8 @@ public class PageMarkerUtils {
         markerInfo.setPopupMode(popupMode);
         PortalObjectId popupModeWindowID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
         markerInfo.setPopupModeWindowID(popupModeWindowID);
-
+        PortalObjectId popupModeOrginalPageID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID");
+        markerInfo.setPopupModeOrginalPageID(popupModeOrginalPageID);
 
         // Sauvegarde de l'ensemble des sélections
         Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
@@ -637,6 +638,9 @@ public class PageMarkerUtils {
                         if (markerInfo.isClosingPopupAction()) {
                             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing", "1");
                         }
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID", markerInfo.getPopupModeOriginalPageID());
+
+                        
 
                         // Restauration de l'ensemble des sélection
                         Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();

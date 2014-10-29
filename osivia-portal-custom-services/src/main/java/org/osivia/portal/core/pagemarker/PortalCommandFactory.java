@@ -34,6 +34,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSItem;
@@ -46,6 +47,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -200,6 +202,12 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         // 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
+            // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
+            // The cause: the close associated command is executed twice (during the close and the closed phase)
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+            NotificationsUtils.getNotificationsService().getNotificationsList(portalControllerContext).clear();
+            
+            
             path = requestPath.substring(POPUP_CLOSED_PATH.length() - 1);
             popupClosed = true;
         }
@@ -219,6 +227,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if (requestPath.startsWith(POPUP_OPEN_PATH)) {
             path = requestPath.substring(POPUP_OPEN_PATH.length() - 1);
             popupOpened = true;
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID",    (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID));           
         }
         if (requestPath.startsWith(POPUP_CLOSE_PATH)) {
             path = requestPath.substring(POPUP_CLOSE_PATH.length() - 1);
@@ -229,14 +238,17 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 
         if (popupClosed) {
+            
+            // For error displaying in master page
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID"));    
+         
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed", "1");
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosedWindowID", "1");
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
-        }
+         }
 
         if (closePopup) {
-            // controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", "1");
             controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.saveClosingAction", "1");
             controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
         }
@@ -313,6 +325,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID",
                     new PortalObjectId("", PortalObjectPath.parse(windowPath, PortalObjectPath.CANONICAL_FORMAT)));
         }
+
 
         if (closePopup) {
             // On memorise la commande qui sera executée au retour

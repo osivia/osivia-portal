@@ -57,6 +57,17 @@ public class PageMarkerInfo implements Serializable {
 
     String popupMode;
     PortalObjectId popupModeWindowID;
+    PortalObjectId popupModeOriginalPageID;
+
+    
+    public PortalObjectId getPopupModeOriginalPageID() {
+        return popupModeOriginalPageID;
+    }
+
+    
+    public void setPopupModeOrginalPageID(PortalObjectId popupModeOriginalPageID) {
+        this.popupModeOriginalPageID = popupModeOriginalPageID;
+    }
 
     /** Closing popup action indicator. */
     private boolean closingPopupAction;
