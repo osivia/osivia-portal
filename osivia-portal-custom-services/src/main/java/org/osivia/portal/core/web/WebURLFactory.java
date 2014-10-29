@@ -320,7 +320,11 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
             if (cmsPath != null) {
-
+                // Incohérence : le webpath contient un WebID
+                // WebCommand, non construit par une CMSCommand ou PortalObjectCommand mais par le WebCommandFactory
+                // Il faudrait 2 champs différents dans WebCommand
+                if( !cmsPath.startsWith("/"))
+                    cmsPath = "/" + cmsPath.concat(WebIdService.SUFFIX_WEBPATH);
 
                 portalRequestPath += cmsPath;
             }
