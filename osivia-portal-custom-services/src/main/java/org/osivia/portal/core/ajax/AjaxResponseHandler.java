@@ -53,6 +53,7 @@ import org.jboss.portal.core.model.portal.command.response.PortletWindowActionRe
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateChange;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
@@ -231,6 +232,9 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                         // Collect the dirty window id
                         dirtyWindowIds.add(key.getId());
+                    }   else   if (type == PageNavigationalState.class) { 
+                        fullRefresh = true;
+                        break;
                     }
                     /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
 
