@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -34,6 +34,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
@@ -46,7 +47,7 @@ import org.osivia.portal.core.web.IWebIdService;
 public class ServerTrackerInterceptor extends ServerInterceptor {
 
 	protected static final Log logger = LogFactory.getLog(ServerTrackerInterceptor.class);
-	
+
     private static ICMSServiceLocator cmsServiceLocator;
 
 	private ITracker tracker;
@@ -72,7 +73,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         }
         return cmsServiceLocator.getCMSService();
     }
-	
+
 	public PortalObjectContainer getPortalObjectContainer() {
 
 		if (this.portalObjectContainer == null) {
@@ -82,7 +83,8 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 		return this.portalObjectContainer;
 	}
 
-	protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
+	@Override
+    protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
 
 		// réinitialisation des propriétes des windows
@@ -137,7 +139,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         }
 
         PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
-        
+
         /* Récupération du domainID */
 
         String domainComputed = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId.computed");
@@ -151,9 +153,9 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
                 PortalObjectId portalId = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT);
 
-                PortalObject po = portalObjectContainer.getObject(portalId);
+                PortalObject po = this.portalObjectContainer.getObject(portalId);
 
-                // Pas de page par defaut pour le portail util (NPE) !!!! 
+                // Pas de page par defaut pour le portail util (NPE) !!!!
                 Page defPage = ((Portal) po).getDefaultPage();
 
                 if (defPage != null) {
@@ -165,14 +167,21 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
                     if (basePath != null) {
                         CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                         cmsReadItemContext.setServerInvocation(invocation);
+                        cmsReadItemContext.setScope("superuser_context");
 
-                        CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
+                        CMSItem spaceConfig = null;
+                        try {
+                            spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
+                        } catch (CMSException e) {
+                            logger.error("Space config unavailable.", e);
+                        }
 
                         if (spaceConfig != null) {
                             String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
 
-                            if (!StringUtils.isEmpty(domainId))
+                            if (!StringUtils.isEmpty(domainId)) {
                                 PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
+                            }
                         }
                     }
                 }
