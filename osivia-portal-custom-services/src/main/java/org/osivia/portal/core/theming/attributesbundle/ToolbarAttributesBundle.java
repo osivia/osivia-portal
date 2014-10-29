@@ -429,8 +429,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String cachesInitializationURL = new PortalURLImpl(cachesInitializationCommand, context, null, null).toString();
         cachesInitializationURL += "?init-cache=true";
         String cachesInitializationTitle = bundle.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION);
-        Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, null, cachesInitializationTitle,
-                "halflings refresh", AccessibilityRoles.MENU_ITEM);
+        Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, null, cachesInitializationTitle, "restart",
+                AccessibilityRoles.MENU_ITEM);
         this.addSubMenuElement(configurationMenuUL, cachesInitialization, null);
     }
 
