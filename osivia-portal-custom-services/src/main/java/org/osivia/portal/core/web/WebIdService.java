@@ -119,62 +119,65 @@ public class WebIdService implements IWebIdService {
         String webid = item.getWebId();
         String explicitUrl = item.getProperties().get(EXPLICIT_URL);
         String extension = item.getProperties().get(EXTENSION_URL);
-        String webpath = null;
 
 		// compute a path with webIDs of the parents
 		ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 		CMSServiceCtx cmsCtx = new CMSServiceCtx();
 		cmsCtx.setControllerContext(ctx);
 
-		String[] paths = item.getPath().split(SLASH);
-		String pathToCheck = "";
-		String parentWebIdPath = "";
-		for (int i = 2; i <= (paths.length - 2); i++) {
+        String[] splittedPath = StringUtils.split(item.getPath(), SLASH);
+        StringBuilder pathToCheck = new StringBuilder();
+        pathToCheck.append(SLASH);
+        pathToCheck.append(splittedPath[0]);
+        StringBuilder parentWebIdPath = new StringBuilder();
+        for (int i = 1; i < (splittedPath.length - 1); i++) {
+            pathToCheck.append(SLASH);
+            pathToCheck.append(splittedPath[i]);
 
-			pathToCheck = pathToCheck + SLASH + paths[i];
+            try {
+                CMSItem parentItem = cmsService.getContent(cmsCtx, pathToCheck.toString());
+                String parentWebId = parentItem.getWebId();
 
-			try {
-				CMSItem parentItem = cmsService.getContent(cmsCtx, pathToCheck);
-				String parentWebId = parentItem.getWebId();
-
-				if (parentWebId != null) {
-					if (StringUtils.isNotBlank(parentWebIdPath)) {
-						parentWebIdPath = parentWebIdPath + SLASH;
-					}
-
-					parentWebIdPath = parentWebId;
-				}
-
-			} catch (CMSException e) {
-				// do nothing, url not generated
-			}
-		}
+                if (parentWebId != null) {
+                    if (StringUtils.isNotBlank(parentWebIdPath.toString())) {
+                        parentWebIdPath.append(SLASH);
+                    }
+                    parentWebIdPath.append(parentWebId);
+                }
+            } catch (CMSException e) {
+                // Do nothing
+            }
+        }
 
 
+        StringBuilder webPath = new StringBuilder();
         if (StringUtils.isNotEmpty(webid) && StringUtils.isNotEmpty(domainId)) {
-            webpath = SLASH.concat(domainId).concat(SLASH);
+            webPath.append(PREFIX_WEBPATH);
+            webPath.append(SLASH);
+            webPath.append(domainId);
+            webPath.append(SLASH);
 
-			if (StringUtils.isNotEmpty(parentWebIdPath)) {
-				webpath = webpath.concat(parentWebIdPath).concat(SLASH);
+            if (StringUtils.isNotEmpty(parentWebIdPath.toString())) {
+                webPath.append(parentWebIdPath);
+                webPath.append(SLASH);
             }
 			if (StringUtils.isNotEmpty(explicitUrl)) {
-				webpath = webpath.concat(explicitUrl).concat(SLASH);
+                webPath.append(explicitUrl);
+                webPath.append(SLASH);
 			}
 
-            webpath = webpath.concat(webid);
-
+            webPath.append(webid);
 
             if ((item.getType() != null) && item.getType().equals("File")) {
                 if (extension != null) {
-                    webpath = webpath.concat(DOT).concat(extension);
+                    webPath.append(DOT);
+                    webPath.append(extension);
                 }
             }
 
-            return PREFIX_WEBPATH.concat(webpath).concat(SUFFIX_WEBPATH);
-
+            webPath.append(SUFFIX_WEBPATH);
         }
-
-        return null;
+        return StringUtils.trimToNull(webPath.toString());
     }
 
 
