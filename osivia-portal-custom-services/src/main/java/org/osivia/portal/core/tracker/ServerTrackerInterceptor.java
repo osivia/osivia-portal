@@ -41,7 +41,6 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
-import org.osivia.portal.core.web.IWebIdService;
 
 
 public class ServerTrackerInterceptor extends ServerInterceptor {
@@ -177,7 +176,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
                         }
 
                         if (spaceConfig != null) {
-                            String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+                            String domainId = spaceConfig.getDomainId();
 
                             if (!StringUtils.isEmpty(domainId)) {
                                 PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);

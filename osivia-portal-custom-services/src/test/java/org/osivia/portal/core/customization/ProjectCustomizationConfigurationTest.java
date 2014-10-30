@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +25,6 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.web.IWebIdService;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -153,12 +149,6 @@ public class ProjectCustomizationConfigurationTest {
         String domainId = "domain";
         String webId = "page-to-redirect";
 
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put(IWebIdService.DOMAIN_ID, domainId);
-        Map<String, String> wrongProperties = new HashMap<String, String>();
-        wrongProperties.put(IWebIdService.DOMAIN_ID, "other-domain");
-        Map<String, String> emptyProperties = new HashMap<String, String>();
-
         // CMS item
         CMSItem cmsItemMock = EasyMock.createMock("CMSItem", CMSItem.class);
         EasyMock.replay(cmsItemMock);
@@ -173,7 +163,7 @@ public class ProjectCustomizationConfigurationTest {
         // Test 1 : equals
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getProperties()).andReturn(properties).anyTimes();
+        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
         boolean result1 = this.configuration.equalsWebId(webId);
@@ -185,7 +175,7 @@ public class ProjectCustomizationConfigurationTest {
         // Test 2 : not equals
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn("other-page").anyTimes();
-        EasyMock.expect(cmsItemMock.getProperties()).andReturn(wrongProperties).anyTimes();
+        EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
         EasyMock.replay(cmsItemMock);
 
         boolean result2 = this.configuration.equalsWebId(webId);
@@ -197,7 +187,7 @@ public class ProjectCustomizationConfigurationTest {
         // Test 3 : empty domain
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getProperties()).andReturn(emptyProperties).anyTimes();
+        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(null).anyTimes();
         EasyMock.replay(cmsItemMock);
 
         boolean result3 = this.configuration.equalsWebId(webId);
@@ -209,7 +199,7 @@ public class ProjectCustomizationConfigurationTest {
         // Test 4 : wrong web identifier
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn("other-page").anyTimes();
-        EasyMock.expect(cmsItemMock.getProperties()).andReturn(properties).anyTimes();
+        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
         boolean result4 = this.configuration.equalsWebId(webId);
@@ -221,7 +211,7 @@ public class ProjectCustomizationConfigurationTest {
         // Test 5 : wrong domain
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getProperties()).andReturn(wrongProperties).anyTimes();
+        EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
         EasyMock.replay(cmsItemMock);
 
         boolean result5 = this.configuration.equalsWebId(webId);

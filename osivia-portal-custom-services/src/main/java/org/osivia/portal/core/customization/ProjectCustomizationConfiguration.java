@@ -18,7 +18,6 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.web.IWebIdService;
 
 /**
  * Project customization configuration implementation.
@@ -94,7 +93,7 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
             if (cmsItem != null) {
-                String pageDomainId = cmsItem.getProperties().get(IWebIdService.DOMAIN_ID);
+                String pageDomainId = cmsItem.getDomainId();
                 String pageWebId = cmsItem.getWebId();
 
                 result = (StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId);

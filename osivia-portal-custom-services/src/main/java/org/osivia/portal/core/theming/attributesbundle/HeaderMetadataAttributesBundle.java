@@ -188,19 +188,22 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             // Keywords
             metadata.put("keywords", documentMetaProperties.get("osivia.header.meta.keywords"));
 
-            // Canonical URL
-            String canonicalURL = null;
+            // CMS path
+            String cmsPath;
             if (PortalObjectUtils.isSpaceSite(page) && StringUtils.isNotEmpty(document.getWebId())) {
                 // Web URL
-                canonicalURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, document.getWebId());
+                cmsPath = this.webIdService.itemToPageUrl(cmsCtx, document);
             } else {
                 // CMS permalink
-                try {
-                    canonicalURL = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, document.getPath(),
-                            IPortalUrlFactory.PERM_LINK_TYPE_CMS);
-                } catch (PortalException e) {
-                    // Do nothing
-                }
+                cmsPath = document.getPath();
+            }
+
+            // Canonical URL
+            String canonicalURL;
+            try {
+                canonicalURL = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, cmsPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+            } catch (PortalException e) {
+                canonicalURL = null;
             }
             attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, canonicalURL);
         }

@@ -249,10 +249,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 while (StringUtils.contains(publicationPath, basePath)) {
                     // Exclude root publish Site for domain
                     // (will be computed later, the same as others spaces)
-                    if (publicationPath.equals(basePath) && TabsCustomizerInterceptor.getDomain(basePath) != null) {
+                    if (publicationPath.equals(basePath) && (TabsCustomizerInterceptor.getDomain(basePath) != null)) {
                         String baseName = basePath.substring(basePath.lastIndexOf('/') + 1);
-                        if (baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName()))
+                        if (baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName())) {
                             break;
+                        }
                     }
 
                     Map<String, String> pageParams = new HashMap<String, String>();
@@ -261,8 +262,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         String url;
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
-							String webPath = this.webIdService.itemToPageUrl(
-									controllerContext, cmsItem);
+                            String webPath = this.webIdService.itemToPageUrl(cmxCtx, cmsItem);
 
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
@@ -425,8 +425,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                                 for (Entry<QName, String[]> pageEntry : ps.entrySet()) {
                                     if (parameters.getValue(pageEntry.getKey().toString()) == null) {
                                         if (pageEntry.getValue().length > 0) {
-                                            if (!"init-state".equals(pageEntry.getKey().toString()) && !"unsetMaxMode".equals(pageEntry.getKey().toString()))
+                                            if (!"init-state".equals(pageEntry.getKey().toString()) && !"unsetMaxMode".equals(pageEntry.getKey().toString())) {
                                                 parameters.setValue(pageEntry.getKey().toString(), pageEntry.getValue()[0]);
+                                            }
                                         }
                                     }
                                 }

@@ -86,7 +86,6 @@ public class WebIdService implements IWebIdService {
      * {@inheritDoc}
      */
     public String pageUrlToFetchInfoService(String pageUrl) {
-
         String[] split = pageUrl.split("/");
         String domainId = split[2];
         String webid = split[split.length - 1];
@@ -105,27 +104,16 @@ public class WebIdService implements IWebIdService {
     /**
      * {@inheritDoc}
      */
-    public String webPathToPageUrl(String webpath) {
-        return PREFIX_WEBPATH.concat(SLASH).concat(webpath).concat(SUFFIX_WEBPATH);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-	public String itemToPageUrl(ControllerContext ctx, CMSItem item) {
-
-        String domainId = item.getProperties().get(DOMAIN_ID);
-        String webid = item.getWebId();
-        String explicitUrl = item.getProperties().get(EXPLICIT_URL);
-        String extension = item.getProperties().get(EXTENSION_URL);
+    public String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem) {
+        String domainId = cmsItem.getDomainId();
+        String webid = cmsItem.getWebId();
+        String explicitUrl = cmsItem.getProperties().get(EXPLICIT_URL);
+        String extension = cmsItem.getProperties().get(EXTENSION_URL);
 
 		// compute a path with webIDs of the parents
 		ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-		CMSServiceCtx cmsCtx = new CMSServiceCtx();
-		cmsCtx.setControllerContext(ctx);
 
-        String[] splittedPath = StringUtils.split(item.getPath(), SLASH);
+        String[] splittedPath = StringUtils.split(cmsItem.getPath(), SLASH);
         StringBuilder pathToCheck = new StringBuilder();
         pathToCheck.append(SLASH);
         pathToCheck.append(splittedPath[0]);
@@ -135,7 +123,7 @@ public class WebIdService implements IWebIdService {
             pathToCheck.append(splittedPath[i]);
 
             try {
-                CMSItem parentItem = cmsService.getContent(cmsCtx, pathToCheck.toString());
+                CMSItem parentItem = cmsService.getContent(cmsContext, pathToCheck.toString());
                 String parentWebId = parentItem.getWebId();
 
                 if (parentWebId != null) {
@@ -168,7 +156,7 @@ public class WebIdService implements IWebIdService {
 
             webPath.append(webid);
 
-            if ((item.getType() != null) && item.getType().equals("File")) {
+            if ((cmsItem.getType() != null) && cmsItem.getType().equals("File")) {
                 if (extension != null) {
                     webPath.append(DOT);
                     webPath.append(extension);

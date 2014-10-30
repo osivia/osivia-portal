@@ -13,9 +13,9 @@
  */
 package org.osivia.portal.core.web;
 
-import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 
 /**
  * Perform transformation for url in webid formats.
@@ -28,8 +28,6 @@ public interface IWebIdService {
     String EXTENSION_URL = "extensionUrl";
     /** Explicit segment of the URL (not involved on the resolution of the document). */
     String EXPLICIT_URL = "explicitUrl";
-    /** Domain where the document is. */
-    String DOMAIN_ID = "domainID";
 
     /** Prefix used to query document in the ECM. */
     String PREFIX_WEBID_FETCH_PUB_INFO = "webId:";
@@ -72,21 +70,13 @@ public interface IWebIdService {
 
 
     /**
-     * Get URL shown as a page URL.
-     *
-     * @param webpath full webpath
-     * @return /_webid/full/web/path.html
-     */
-    String webPathToPageUrl(String webpath);
-
-
-    /**
      * Get URL shown as a page URL from an ECM document.
      *
-     * @param item the ECM item
+     * @param cmsContext CMS context
+     * @param cmsItem CMS item
      * @return /_webid/full/web/path.html
      */
-	String itemToPageUrl(ControllerContext ctx, CMSItem item);
+    String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem);
 
 
     /**
@@ -101,7 +91,7 @@ public interface IWebIdService {
     /**
      * Generate canonical web URL.
      * Example : http://www.example.com/portal/web/home.html
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param domainId domainId, must be null for current domain
      * @param webId webId

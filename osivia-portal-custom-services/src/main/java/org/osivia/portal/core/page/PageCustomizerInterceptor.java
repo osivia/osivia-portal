@@ -393,7 +393,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
 
                         if (spaceConfig != null) {
-                            String domainId = spaceConfig.getProperties().get(IWebIdService.DOMAIN_ID);
+                            String domainId = spaceConfig.getDomainId();
 
                             if (!StringUtils.isEmpty(domainId)) {
                                 PageProperties.getProperties().getPagePropertiesMap().put("osivia.cms.domainId", domainId);
@@ -601,7 +601,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         String path = rpc.getPage().getDeclaredProperty("osivia.cms.basePath");
 
                         if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
-							path = this.webIdService.itemToPageUrl(cmd.getControllerContext(), pagePublishSpaceConfig);
+                            CMSServiceCtx cmsContext = new CMSServiceCtx();
+                            cmsContext.setControllerContext(controllerCtx);
+                            path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
                         }
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
@@ -904,12 +906,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
 
-    
+
             String sSelector[] = null;
             if (pageState != null) {
                 sSelector = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
             }
-            
+
 
 
             if ((sSelector != null) && (sSelector.length > 0)) {
@@ -925,11 +927,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
                 }
             }
-            
+
             /* Masquage de la region advanced search */
-            
+
             if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
-         
+
 
                 boolean hideAdvancedSearchFilters = false;
 
@@ -1312,8 +1314,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 if( windowProperties != null)   {
                     String dynamicStyles = windowProperties.get( "osivia.dynamicCSSClasses");
 
-                    if( dynamicStyles != null)
+                    if( dynamicStyles != null) {
                         customStyle += " " + dynamicStyles;
+                    }
 
                     properties.setWindowProperty(windowId, "osivia.style",  customStyle);
                 }
@@ -1696,7 +1699,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Getter for webIdService.
-     * 
+     *
      * @return the webIdService
      */
     public IWebIdService getWebIdService() {
@@ -1705,7 +1708,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
     /**
      * Setter for webIdService.
-     * 
+     *
      * @param webIdService the webIdService to set
      */
     public void setWebIdService(IWebIdService webIdService) {
