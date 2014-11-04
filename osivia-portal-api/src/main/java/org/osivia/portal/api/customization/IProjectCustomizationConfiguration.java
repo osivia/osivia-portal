@@ -1,5 +1,9 @@
 package org.osivia.portal.api.customization;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.jboss.portal.core.model.portal.Page;
+
 /**
  * Project customization configuration interface.
  *
@@ -14,36 +18,56 @@ public interface IProjectCustomizationConfiguration {
 
 
     /**
-     * Compare current item CMS path with provided CMS path.
+     * Get current CMS path.
      *
-     * @param cmsPath CMS path
-     * @return true if CMS paths are equal
+     * @return CMS path
      */
-    boolean equalsCMSPath(String cmsPath);
+    String getCMSPath();
 
 
     /**
-     * Compare current item web identifier with provided identifier.
+     * Get current domain and web identifiers.
      *
-     * @param webId web identifier
-     * @return true if web identifiers are equal
+     * @return domain and web identifiers, eg. [domainId, webId]
      */
-    boolean equalsWebId(String webId);
+    String[] getDomainAndWebId();
 
 
     /**
-     * Compare current item domain and web identifiers with provided identifiers.
+     * Get current page.
      *
-     * @param domainId domain identifier
-     * @param webId web identifier
-     * @return true if domain and web identifiers are equal
+     * @return page
      */
-    boolean equalsWebId(String domainId, String webId);
+    Page getPage();
+
+
+    /**
+     * Check if customization occurs before invocation.
+     *
+     * @return true if customization occurs before invocation
+     */
+    boolean isBeforeInvocation();
+
+
+    /**
+     * Get HTTP servlet request.
+     *
+     * @return HTTP servlet request
+     */
+    HttpServletRequest getHttpServletRequest();
+
+
+    /**
+     * Get theme name.
+     * 
+     * @return theme name
+     */
+    String getThemeName();
 
 
     /**
      * Set portal redirection URL.
-     * 
+     *
      * @param redirectionURL redirection URL
      */
     void setRedirectionURL(String redirectionURL);

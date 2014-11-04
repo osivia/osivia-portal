@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
@@ -43,6 +44,7 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
@@ -285,8 +287,39 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             } catch (UnsupportedEncodingException e) {
                 // ignore
             }
+        }
 
 
+        // Parameterized command
+        if (cmd instanceof ParameterizedCommand) {
+            ParameterizedCommand parameterizedCommand = (ParameterizedCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, ParameterizedCommand.ACTION);
+            try {
+                // CMS path
+                asu.setParameterValue(ParameterizedCommand.CMS_PATH_PARAMETER, URLEncoder.encode(parameterizedCommand.getCmsPath(), CharEncoding.UTF_8));
+
+                // Template
+                if (StringUtils.isNotEmpty(parameterizedCommand.getTemplate())) {
+                    asu.setParameterValue(ParameterizedCommand.TEMPLATE_PARAMETER, URLEncoder.encode(parameterizedCommand.getTemplate(), CharEncoding.UTF_8));
+                }
+
+                // Renderset
+                if (StringUtils.isNotEmpty(parameterizedCommand.getRenderset())) {
+                    asu.setParameterValue(ParameterizedCommand.RENDERSET_PARAMETER, URLEncoder.encode(parameterizedCommand.getRenderset(), CharEncoding.UTF_8));
+                }
+
+                // Layout state
+                if (StringUtils.isNotEmpty(parameterizedCommand.getLayoutState())) {
+                    asu.setParameterValue(ParameterizedCommand.LAYOUT_STATE_PARAMETER,
+                            URLEncoder.encode(parameterizedCommand.getLayoutState(), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+            return asu;
         }
 
 
@@ -349,8 +382,9 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 asu.setParameterValue("docId", URLEncoder.encode(command.getDocId(), "UTF-8"));
                 asu.setParameterValue("docPath", URLEncoder.encode(command.getDocPath(), "UTF-8"));
 
-                if( command.getBackCMSPageMarker() != null)
+                if( command.getBackCMSPageMarker() != null) {
                     asu.setParameterValue("backCMSPageMarker", URLEncoder.encode(command.getBackCMSPageMarker(), "UTF-8"));
+                }
 
 
             } catch (UnsupportedEncodingException e) {

@@ -55,6 +55,7 @@ import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
@@ -524,6 +525,41 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     return new PermLinkCommand(permMlinkRef, params, templateInstanciationParentId, cmsPath, permLinkType, portalPersistentName);
                 }
 
+
+                // Parameterized command
+                if (ParameterizedCommand.ACTION.equals(action)) {
+                    // CMS path
+                    String cmsPath = null;
+                    String[] cmsPathParameterMap = parameterMap.get(ParameterizedCommand.CMS_PATH_PARAMETER);
+                    if (cmsPathParameterMap != null) {
+                        cmsPath = URLDecoder.decode(cmsPathParameterMap[0], CharEncoding.UTF_8);
+                    }
+
+                    // Template
+                    String template = null;
+                    String[] templateParameterMap = parameterMap.get(ParameterizedCommand.TEMPLATE_PARAMETER);
+                    if (templateParameterMap != null) {
+                        template = URLDecoder.decode(templateParameterMap[0], CharEncoding.UTF_8);
+                    }
+
+                    // Renderset
+                    String renderset = null;
+                    String[] rendersetParameterMap = parameterMap.get(ParameterizedCommand.RENDERSET_PARAMETER);
+                    if (rendersetParameterMap != null) {
+                        renderset = URLDecoder.decode(rendersetParameterMap[0], CharEncoding.UTF_8);
+                    }
+
+                    // Layout state
+                    String layoutState = null;
+                    String[] layoutStateParameterMap = parameterMap.get(ParameterizedCommand.LAYOUT_STATE_PARAMETER);
+                    if (layoutStateParameterMap != null) {
+                        layoutState = URLDecoder.decode(layoutStateParameterMap[0], CharEncoding.UTF_8);
+                    }
+
+                    return new ParameterizedCommand(cmsPath, template, renderset, layoutState);
+                }
+
+
                 // Advanced search command
                 if (AdvancedSearchCommand.COMMAND_ACTION_VALUE.equals(action)) {
                     String[] pageIdParameterMap = parameterMap.get(AdvancedSearchCommand.PAGE_ID_PARAMETER_NAME);
@@ -598,8 +634,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     if ((parameterMap.get("docId") != null) && (parameterMap.get("docPath") != null)) {
                         docId = URLDecoder.decode(parameterMap.get("docId")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
-                        if( parameterMap.get("backCMSPageMarker") != null)
-                        	backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
+                        if( parameterMap.get("backCMSPageMarker") != null) {
+                            backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
+                        }
 
                         return new CMSPutDocumentInTrashCommand(docId, docPath, backCMSPageMarker);
                     }

@@ -370,12 +370,12 @@ public class CmsCommand extends DynamicCommand {
 
         String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
-        if (pageBasePath != null && cmsPath != null && cmsPath.contains(pageBasePath))	{
+        if ((pageBasePath != null) && (cmsPath != null) && cmsPath.contains(pageBasePath))	{
 
 
             CMSItem publishSpaceConfig =  getPagePublishSpaceConfig(ctx,  currentPage);
 
-            if( publishSpaceConfig != null && "1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
+            if( (publishSpaceConfig != null) && "1".equals(publishSpaceConfig.getProperties().get("contextualizeInternalContents")))	{
                 return true;
             }
         }
@@ -441,7 +441,7 @@ public class CmsCommand extends DynamicCommand {
 
 
         // On regarde dans les autres portails
-        if( po instanceof Portal && page == null){
+        if( (po instanceof Portal) && (page == null)){
             Collection<PortalObject> portals = ctx.getController().getPortalObjectContainer().getContext().getChildren(PortalObject.PORTAL_MASK);
             for(PortalObject portal: portals){
                 // Uniquement si ils sont en mode publication satellite
@@ -559,10 +559,11 @@ public class CmsCommand extends DynamicCommand {
 
 
             Map displayNames = new HashMap();
-            if( displayName != null)
+            if( displayName != null) {
                 displayNames.put(Locale.FRENCH, displayName);
-            else
+            } else {
                 displayNames.put(Locale.FRENCH, portalSite.getProperties().get("displayName"));
+            }
 
 
 
@@ -788,9 +789,9 @@ public class CmsCommand extends DynamicCommand {
 
             boolean contextualizeinPage = false;
 
-            if (itemPublicationPath != null && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
+            if ((itemPublicationPath != null) && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
 
-                if (currentPage != null && currentPage.getProperty("osivia.cms.basePath") != null) {
+                if ((currentPage != null) && (currentPage.getProperty("osivia.cms.basePath") != null)) {
 
                     if (IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization)) {
                         contextualizeinPage = true;
@@ -798,7 +799,7 @@ public class CmsCommand extends DynamicCommand {
 
                     // v2.0-rc7
                     //if ("1".equals(currentPage.getProperty("osivia.cms.pageContextualizationSupport")))
-                    if( pagePublishSpaceConfig != null && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
+                    if( (pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
                         contextualizeinPage = true;
                     }
 
@@ -811,10 +812,10 @@ public class CmsCommand extends DynamicCommand {
                     Page searchPage = null;
 
                     PortalObject po = currentPage;
-                    while (po instanceof Page && po.getDeclaredProperty("osivia.cms.basePath") == null) {
+                    while ((po instanceof Page) && (po.getDeclaredProperty("osivia.cms.basePath") == null)) {
                         po = po.getParent();
                     }
-                    if (po.getDeclaredProperty("osivia.cms.basePath") != null && po instanceof Page) {
+                    if ((po.getDeclaredProperty("osivia.cms.basePath") != null) && (po instanceof Page)) {
                         searchPage = (Page) po;
                     }
 
@@ -843,7 +844,7 @@ public class CmsCommand extends DynamicCommand {
                         if ("1".equals(currentPage.getProperty("osivia.cms.directContentPublisher"))) {
                             String pageBasePath = currentPage.getProperty("osivia.cms.basePath");
 
-                            if (pageBasePath != null && pageBasePath.equals(itemPublicationPath)) {
+                            if ((pageBasePath != null) && pageBasePath.equals(itemPublicationPath)) {
                                 contextualizationPage = currentPage;
                             }
                         }
@@ -887,7 +888,7 @@ public class CmsCommand extends DynamicCommand {
 
                             if (currentPage.getProperty("osivia.cms.basePath") != null) {
 
-                                if (pagePublishSpaceConfig != null
+                                if ((pagePublishSpaceConfig != null)
                                         && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeExternalContents"))) {
                                     contextualizeinPortal = true;
                                 }
@@ -944,7 +945,7 @@ public class CmsCommand extends DynamicCommand {
                         String host = pubPortal.getDeclaredProperty("osivia.site.hostName");
                         String reqHost = controllerContext.getServerInvocation().getServerContext().getClientRequest().getServerName();
 
-                        if( host != null && !reqHost.equals(host))	{
+                        if( (host != null) && !reqHost.equals(host))	{
                             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
 
                             String url = this.getUrlFactory().getPermaLink(
@@ -988,8 +989,8 @@ public class CmsCommand extends DynamicCommand {
 
                         } catch (CMSException e) {
 
-                            if (e.getErrorCode() != CMSException.ERROR_FORBIDDEN
-                                    && e.getErrorCode() != CMSException.ERROR_NOTFOUND) {
+                            if ((e.getErrorCode() != CMSException.ERROR_FORBIDDEN)
+                                    && (e.getErrorCode() != CMSException.ERROR_NOTFOUND)) {
                                 throw e;
                             }
 
@@ -1013,7 +1014,7 @@ public class CmsCommand extends DynamicCommand {
 
                         // Create empty page if no current page spécified
 
-                        if (contextualizationPage == null && currentPage == null) {
+                        if ((contextualizationPage == null) && (currentPage == null)) {
 
                             contextualizationPage = this.getContentPublishPage(portal, cmsItem);
 
@@ -1071,7 +1072,7 @@ public class CmsCommand extends DynamicCommand {
                 }
             }
 
-            if (baseCMSPublicationPage != null
+            if ((baseCMSPublicationPage != null)
                     && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
 
                 if ("1".equals(baseCMSPublicationPage.getProperty("osivia.cms.directContentPublisher"))) {
@@ -1117,7 +1118,7 @@ public class CmsCommand extends DynamicCommand {
 
                                 }
 
-                                if (cmsNav == null && isNavigationElement) {
+                                if ((cmsNav == null) && isNavigationElement) {
                                     cmsNav = cmsItemNav;
                                 }
 
@@ -1201,7 +1202,7 @@ public class CmsCommand extends DynamicCommand {
             String layoutType = null;
             String layoutPath = null;
 
-            if (baseCMSPublicationPage != null && cmsNav != null) {
+            if ((baseCMSPublicationPage != null) && (cmsNav != null)) {
 
                 layoutType = baseCMSPublicationPage.getProperty("osivia.cms.layoutType");
 
@@ -1298,10 +1299,10 @@ public class CmsCommand extends DynamicCommand {
             PageNavigationalState previousPNS = null;
 
             NavigationalStateContext nsContext = (NavigationalStateContext) this.context
-                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);            
+                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             Map<QName, String[]> pageState = new HashMap<QName, String[]>();
-            
+
             if (cmsNav != null) {
 
                 /* Mise à jour paramètre public page courante */
@@ -1348,18 +1349,25 @@ public class CmsCommand extends DynamicCommand {
 
                 pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"), new String[] { ""+System.currentTimeMillis() });
 
+
+                // Parameterized template
+                Object parameterizedTemplate = this.context.getAttribute(REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
+                if (parameterizedTemplate != null) {
+                    layoutPath = "/default/templates/" + parameterizedTemplate.toString();
+                }
+
                 if (layoutPath != null) {
                     pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"),
                             new String[] { layoutPath });
                 }
 
-                if( layoutPath != null && ECMPageTheme != null){
+                if( (layoutPath != null) && (ECMPageTheme != null)){
                     pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.theme_path"),
                             new String[] { ECMPageTheme });
                 }
 
                 // Mise à jour du scope de la page
-                if (computedPageScope != null && computedPageScope.length() > 0) {
+                if ((computedPageScope != null) && (computedPageScope.length() > 0)) {
                     pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"),
                             new String[] { computedPageScope });
                 }
@@ -1403,10 +1411,10 @@ public class CmsCommand extends DynamicCommand {
                 return new UnavailableResourceResponse(itemPublicationPath, false);
             }
 
-            
+
             /* Propagation des selecteurs */
-            
-            
+
+
             if( previousPNS != null){
                 if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
                     String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
@@ -1417,11 +1425,11 @@ public class CmsCommand extends DynamicCommand {
                         nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(pageState));
                     }
                 }
-            }           
-            
-            
-            
-            
+            }
+
+
+
+
 
 
             boolean isPageToDisplayUncontextualized = false;
@@ -1430,14 +1438,14 @@ public class CmsCommand extends DynamicCommand {
 
                 // Pb sur la navigation, on affiche le contenu sauf si le contenu est la page
                 // auquel cas, on reste sur la page (cas d'une page mal définie pointant vers un path cms qui n'est pas un espace de publication)
-                if(itemPublicationPath != null && itemPublicationPath.equals(page.getProperty("osivia.cms.basePath"))) {
+                if((itemPublicationPath != null) && itemPublicationPath.equals(page.getProperty("osivia.cms.basePath"))) {
                     isPageToDisplayUncontextualized = true;
                 }
             }
 
 
 
-            if ( ((cmsNav != null || isPageToDisplayUncontextualized )) && !this.skipPortletInitialisation ){
+            if ( (((cmsNav != null) || isPageToDisplayUncontextualized )) && !this.skipPortletInitialisation ){
 
                 /* Reinitialisation des renders parameters et de l'état */
 
@@ -1582,7 +1590,7 @@ public class CmsCommand extends DynamicCommand {
                     if (!"1".equals(page.getProperty("osivia.cms.directContentPublisher")))	{
                         handlerCtx.setContextualizationBasePath(basePublishPath);
                     }
-                    if( pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
+                    if( (pubInfos.getPublishSpacePath() != null) && pubInfos.isLiveSpace()) {
                         handlerCtx.setDisplayLiveVersion("1");
                     }
 
@@ -1606,7 +1614,7 @@ public class CmsCommand extends DynamicCommand {
                 Map<String, String> params = new HashMap<String, String>();
 
                 String addPortletToBreadcrumb = "0";
-                if (cmsNav == null && !"0".equals(this.addToBreadcrumb)) {
+                if ((cmsNav == null) && !"0".equals(this.addToBreadcrumb)) {
                     addPortletToBreadcrumb = "1";
                 }
                 if (navigationPlayer == true) {
@@ -1639,8 +1647,9 @@ public class CmsCommand extends DynamicCommand {
                 EditionState editionState = this.getEditionState(controllerContext, windowID, pubInfos);
 
                 // No automatic back, it's computed at CMS Level
-                if( contextualizationPage != null)
+                if( contextualizationPage != null) {
                     windowProperties.put("osivia.dynamic.disable.close", "1");
+                }
 
                 String ecmActionReturn = this.getEcmActionReturn();
                 if(StringUtils.isNotBlank(ecmActionReturn)){
@@ -1686,10 +1695,11 @@ public class CmsCommand extends DynamicCommand {
         if( pubInfos.isLiveSpace()){
             editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
         }   else    {
-            if( InternalConstants.PROXY_PREVIEW.equals(this.displayContext)  || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext))
+            if( InternalConstants.PROXY_PREVIEW.equals(this.displayContext)  || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)|| InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
                 editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
-            else
+            } else {
                 editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, this.cmsPath);
+            }
         }
 
 

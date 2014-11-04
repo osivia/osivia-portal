@@ -52,7 +52,8 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
             // Project customization configuration
-            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, renderPageCommand.getPage());
+            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, renderPageCommand);
+            configuration.setBeforeInvocation(true);
 
             // Customizer attributes
             Map<String, Object> customizerAttributes = new HashMap<String, Object>();
@@ -61,7 +62,7 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             CustomizationContext context = new CustomizationContext(customizerAttributes, portalControllerContext);
 
 
-            // Customization
+            // Customization call #1
             this.customizationService.customize(IProjectCustomizationConfiguration.CUSTOMIZER_ID, context);
 
 
@@ -69,10 +70,18 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             String redirectionURL = configuration.getRedirectionURL();
             if (StringUtils.isNotEmpty(redirectionURL)) {
                 response = new RedirectionResponse(redirectionURL);
-            }
-        }
+            } else {
+                // Invoke next
+                response = (ControllerResponse) controllerCommand.invokeNext();
 
-        if (response == null) {
+
+                // Update project customization configuration
+                configuration.setBeforeInvocation(false);
+
+                // Customization call #2
+                this.customizationService.customize(IProjectCustomizationConfiguration.CUSTOMIZER_ID, context);
+            }
+        } else {
             // Invoke next
             response = (ControllerResponse) controllerCommand.invokeNext();
         }

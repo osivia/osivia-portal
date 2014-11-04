@@ -1,15 +1,19 @@
 package org.osivia.portal.core.customization;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.jboss.portal.theme.PortalTheme;
+import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.ThemeService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
 import org.osivia.portal.api.locator.Locator;
@@ -18,6 +22,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
  * Project customization configuration implementation.
@@ -31,9 +36,15 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     private final ICMSServiceLocator cmsServiceLocator;
     /** Portal controller context. */
     private final PortalControllerContext portalControllerContext;
-    /** Current page. */
+    /** Render page command. */
+    private final RenderPageCommand renderPageCommand;
+    /** Page. */
     private final Page page;
+    /** HTTP servlet request. */
+    private final HttpServletRequest httpServletRequest;
 
+    /** Before invocation indicator. */
+    private boolean beforeInvocation;
     /** Redirection URL. */
     private String redirectionURL;
 
@@ -42,12 +53,18 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * Constructor.
      *
      * @param portalControllerContext portal controller context
-     * @param page current page
+     * @param renderPageCommand render page command
      */
-    public ProjectCustomizationConfiguration(PortalControllerContext portalControllerContext, Page page) {
+    public ProjectCustomizationConfiguration(PortalControllerContext portalControllerContext, RenderPageCommand renderPageCommand) {
         super();
         this.portalControllerContext = portalControllerContext;
-        this.page = page;
+        this.renderPageCommand = renderPageCommand;
+        this.page = renderPageCommand.getPage();
+
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // HTTP client request
+        this.httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
@@ -57,27 +74,16 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     /**
      * {@inheritDoc}
      */
-    public boolean equalsCMSPath(String cmsPath) {
-        // Page CMS path
-        String pageCMSPath = this.getPublicationPath();
-
-        return StringUtils.equals(cmsPath, pageCMSPath);
+    public String getCMSPath() {
+        return this.getPublicationPath();
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public boolean equalsWebId(String webId) {
-        return this.equalsWebId(null, webId);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean equalsWebId(String domainId, String webId) {
-        boolean result = false;
+    public String[] getDomainAndWebId() {
+        String[] result = null;
 
         // Current CMS base path
         String basePath = this.page.getProperty("osivia.cms.basePath");
@@ -93,10 +99,10 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
             if (cmsItem != null) {
-                String pageDomainId = cmsItem.getDomainId();
-                String pageWebId = cmsItem.getWebId();
+                String domainId = cmsItem.getDomainId();
+                String webId = cmsItem.getWebId();
 
-                result = (StringUtils.isEmpty(domainId) || StringUtils.equals(domainId, pageDomainId)) && StringUtils.equals(webId, pageWebId);
+                result = new String[]{domainId, webId};
             }
         } catch (CMSException e) {
             // Do nothing
@@ -133,12 +139,37 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
 
 
     /**
-     * Getter for redirectionURL.
-     *
-     * @return the redirectionURL
+     * {@inheritDoc}
      */
-    public String getRedirectionURL() {
-        return this.redirectionURL;
+    public Page getPage() {
+        return this.page;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isBeforeInvocation() {
+        return this.beforeInvocation;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public HttpServletRequest getHttpServletRequest() {
+        return this.httpServletRequest;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getThemeName() {
+        ThemeService themeService = this.renderPageCommand.getControllerContext().getController().getPageService().getThemeService();
+        String themeId = this.page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+        PortalTheme theme = themeService.getThemeById(themeId);
+        return theme.getThemeInfo().getName();
     }
 
 
@@ -147,6 +178,25 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      */
     public void setRedirectionURL(String redirectionURL) {
         this.redirectionURL = redirectionURL;
+    }
+
+
+    /**
+     * Setter for beforeInvocation.
+     *
+     * @param beforeInvocation the beforeInvocation to set
+     */
+    public void setBeforeInvocation(boolean beforeInvocation) {
+        this.beforeInvocation = beforeInvocation;
+    }
+
+    /**
+     * Getter for redirectionURL.
+     *
+     * @return the redirectionURL
+     */
+    public String getRedirectionURL() {
+        return this.redirectionURL;
     }
 
 }

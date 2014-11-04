@@ -61,6 +61,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -202,11 +203,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String url = portalURL.toString();
         if( popup)  {
-            url= adaptPortalUrlToPopup(ctx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+            url= this.adaptPortalUrlToPopup(ctx, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
 
         }
-        
-        
+
+
 
         return url;
     }
@@ -278,8 +279,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                         .getDefaultPortal();
 
                 if (!defaultPortal.getName().equals(portalName)) {
-                    if (!StringUtils.equals(portalName, "osivia-util"))
+                    if (!StringUtils.equals(portalName, "osivia-util")) {
                         portalPersistentName = portalName;
+                    }
                 }
             }
 
@@ -380,9 +382,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String adaptPortalUrlToPopup(PortalControllerContext portalCtx, String originalUrl, int popupAdapter) {
-        
-        
-        
+
+
+
         // Controller context
         ControllerContext controllerContext = (ControllerContext) portalCtx.getControllerCtx();
         // Server context
@@ -393,10 +395,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String prefix = StringUtils.substringBefore(originalUrl, portalContextPath);
         String suffix = StringUtils.substringAfter(originalUrl, portalContextPath);
-        
-        if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) 
-            if( StringUtils.startsWith(suffix, PortalCommandFactory.POPUP_CLOSE_PATH ))
+
+        if (popupAdapter == IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE) {
+            if( StringUtils.startsWith(suffix, PortalCommandFactory.POPUP_CLOSE_PATH )) {
                 return originalUrl;
+            }
+        }
 
         boolean auth = false;
         if (suffix.startsWith("/auth/")) {
@@ -613,7 +617,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 // Deleted doc is equals to CMS doc
                 // Navigation is managed by portal (not inside a portlet)
                 // So go back to previous state
-                if( curState != null && curState.getDocPath().equals(window.getDeclaredProperty(Constants.WINDOW_PROP_URI)))    {
+                if( (curState != null) && curState.getDocPath().equals(window.getDeclaredProperty(Constants.WINDOW_PROP_URI)))    {
                     backPageMarker = curState.getBackPageMarker();
 
             }
@@ -694,6 +698,25 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         String uri = System.getProperty("error.defaultPageUri");
         String url = URLUtils.createUrl(request, uri, null);
         return URLUtils.addParameter(url, "httpCode", String.valueOf(httpErrorCode));
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // URL context
+        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        // URL format
+        URLFormat urlFormat = URLFormat.newInstance(false, true);
+
+        // Command
+        ControllerCommand command = new ParameterizedCommand(cmsPath, template, renderset, layoutState);
+
+        // URL
+        return controllerContext.renderURL(command, urlContext, urlFormat);
     }
 
 

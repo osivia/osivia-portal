@@ -2,6 +2,7 @@ package org.osivia.portal.core.customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
@@ -13,8 +14,11 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +40,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @see ProjectCustomizationConfiguration
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Locator.class)
+@PrepareForTest({Locator.class, RenderPageCommand.class})
 public class ProjectCustomizationConfigurationTest {
 
     /** Project customization configuration. */
@@ -48,8 +52,6 @@ public class ProjectCustomizationConfigurationTest {
     private PageNavigationalState pageNavigationalStateMock;
     /** Portal controller context mock. */
     private PortalControllerContext portalControllerContextMock;
-    /** Portal page mock. */
-    private Page pageMock;
 
 
     @Before
@@ -79,9 +81,19 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(navigationalStateContextMock.getPageNavigationalState(EasyMock.anyObject(String.class))).andStubReturn(this.pageNavigationalStateMock);
         EasyMock.replay(navigationalStateContextMock);
 
+        // Server context
+        ServerInvocationContext serverContextMock = EasyMock.createNiceMock(ServerInvocationContext.class);
+        EasyMock.replay(serverContextMock);
+
+        // Server invocation
+        ServerInvocation serverInvocationMock = EasyMock.createNiceMock(ServerInvocation.class);
+        EasyMock.expect(serverInvocationMock.getServerContext()).andStubReturn(serverContextMock);
+        EasyMock.replay(serverInvocationMock);
+
         // Controller context
         ControllerContext controllerContextMock = EasyMock.createNiceMock(ControllerContext.class);
         EasyMock.expect(controllerContextMock.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE)).andStubReturn(navigationalStateContextMock);
+        EasyMock.expect(controllerContextMock.getServerInvocation()).andStubReturn(serverInvocationMock);
         EasyMock.replay(controllerContextMock);
 
         // Portal controller context
@@ -93,17 +105,21 @@ public class ProjectCustomizationConfigurationTest {
         PortalObjectId portalObjectId = PortalObjectId.parse(StringUtils.EMPTY, path, PortalObjectPath.CANONICAL_FORMAT);
 
         // Portal page
-        this.pageMock = EasyMock.createMock("Page", Page.class);
-        EasyMock.expect(this.pageMock.getId()).andReturn(portalObjectId).anyTimes();
-        EasyMock.expect(this.pageMock.getProperty("osivia.cms.basePath")).andReturn(path).anyTimes();
-        EasyMock.replay(this.pageMock);
+        Page pageMock = EasyMock.createNiceMock(Page.class);
+        EasyMock.expect(pageMock.getId()).andReturn(portalObjectId).anyTimes();
+        EasyMock.expect(pageMock.getProperty("osivia.cms.basePath")).andReturn(path).anyTimes();
+        EasyMock.replay(pageMock);
+
+        // Render page command
+        RenderPageCommand renderPageCommandMock = PowerMock.createNiceMock(RenderPageCommand.class);
+        EasyMock.expect(renderPageCommandMock.getPage()).andStubReturn(pageMock);
 
 
         PowerMock.replayAll();
 
 
         // Object under test
-        this.configuration = new ProjectCustomizationConfiguration(this.portalControllerContextMock, this.pageMock);
+        this.configuration = new ProjectCustomizationConfiguration(this.portalControllerContextMock, renderPageCommandMock);
     }
 
 
@@ -119,7 +135,7 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(this.pageNavigationalStateMock.getParameter(EasyMock.anyObject(QName.class))).andReturn(sPath1);
         EasyMock.replay(this.pageNavigationalStateMock);
 
-        boolean result1 = this.configuration.equalsCMSPath(cmsPath);
+        boolean result1 = StringUtils.equals(cmsPath, this.configuration.getCMSPath());
         assertTrue(result1);
 
 
@@ -129,7 +145,7 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(this.pageNavigationalStateMock.getParameter(EasyMock.anyObject(QName.class))).andReturn(sPath2);
         EasyMock.replay(this.pageNavigationalStateMock);
 
-        boolean result2 = this.configuration.equalsCMSPath(cmsPath);
+        boolean result2 = StringUtils.equals(cmsPath, this.configuration.getCMSPath());
         assertFalse(result2);
 
 
@@ -139,7 +155,7 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(this.pageNavigationalStateMock.getParameter(EasyMock.anyObject(QName.class))).andReturn(sPath3);
         EasyMock.replay(this.pageNavigationalStateMock);
 
-        boolean result3 = this.configuration.equalsCMSPath(cmsPath);
+        boolean result3 = StringUtils.equals(cmsPath, this.configuration.getCMSPath());
         assertFalse(result3);
     }
 
@@ -166,9 +182,10 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        boolean result1 = this.configuration.equalsWebId(webId);
+        String[] domainAndWebId1 = this.configuration.getDomainAndWebId();
+        boolean result1 = StringUtils.equals(domainId, domainAndWebId1[0]);
         assertTrue(result1);
-        boolean result1bis = this.configuration.equalsWebId(domainId, webId);
+        boolean result1bis = StringUtils.equals(webId, domainAndWebId1[1]);
         assertTrue(result1bis);
 
 
@@ -178,9 +195,10 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        boolean result2 = this.configuration.equalsWebId(webId);
+        String[] domainAndWebId2 = this.configuration.getDomainAndWebId();
+        boolean result2 = StringUtils.equals(domainId, domainAndWebId2[0]);
         assertFalse(result2);
-        boolean result2bis = this.configuration.equalsWebId(domainId, webId);
+        boolean result2bis = StringUtils.equals(webId, domainAndWebId2[1]);
         assertFalse(result2bis);
 
 
@@ -190,10 +208,10 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(cmsItemMock.getDomainId()).andReturn(null).anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        boolean result3 = this.configuration.equalsWebId(webId);
-        assertTrue(result3);
-        boolean result3bis = this.configuration.equalsWebId(domainId, webId);
-        assertFalse(result3bis);
+        String[] domainAndWebId3 = this.configuration.getDomainAndWebId();
+        assertNull(domainAndWebId3[0]);
+        boolean result3bis = StringUtils.equals(webId, domainAndWebId3[1]);
+        assertTrue(result3bis);
 
 
         // Test 4 : wrong web identifier
@@ -202,9 +220,10 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        boolean result4 = this.configuration.equalsWebId(webId);
-        assertFalse(result4);
-        boolean result4bis = this.configuration.equalsWebId(domainId, webId);
+        String[] domainAndWebId4 = this.configuration.getDomainAndWebId();
+        boolean result4 = StringUtils.equals(domainId, domainAndWebId4[0]);
+        assertTrue(result4);
+        boolean result4bis = StringUtils.equals(webId, domainAndWebId4[1]);
         assertFalse(result4bis);
 
 
@@ -214,10 +233,11 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        boolean result5 = this.configuration.equalsWebId(webId);
-        assertTrue(result5);
-        boolean result5bis = this.configuration.equalsWebId(domainId, webId);
-        assertFalse(result5bis);
+        String[] domainAndWebId5 = this.configuration.getDomainAndWebId();
+        boolean result5 = StringUtils.equals(domainId, domainAndWebId5[0]);
+        assertFalse(result5);
+        boolean result5bis = StringUtils.equals(webId, domainAndWebId5[1]);
+        assertTrue(result5bis);
     }
 
 

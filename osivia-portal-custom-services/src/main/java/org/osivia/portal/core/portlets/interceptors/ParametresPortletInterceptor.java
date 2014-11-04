@@ -99,12 +99,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     @Override
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         // Controller context
-        ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+        ControllerContext controllerContext = (ControllerContext) invocation.getAttribute("controller_context");
 
         Window window = null;
 
-        if (ctx != null) {
-
+        if (controllerContext != null) {
             Map<String, Object> attributes = invocation.getRequestAttributes();
             if (attributes == null) {
                 attributes = new HashMap<String, Object>();
@@ -115,7 +114,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (windowId.charAt(0) == CanonicalFormat.PATH_SEPARATOR) {
                 PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
 
-                window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                window = (Window) controllerContext.getController().getPortalObjectContainer().getObject(poid);
 
                 attributes.put("osivia.window", window);
 
@@ -132,7 +131,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 /* Le path CMS identifie de manière unique la session */
 
-                NavigationalStateContext nsContext = (NavigationalStateContext) ctx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
+                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                 PageNavigationalState pageState = nsContext.getPageNavigationalState(window.getPage().getId().toString());
 
                 if (window instanceof DynamicWindow) {
@@ -153,38 +153,38 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                     }
                 }
 
-                EditionState editionState = ContributionService.getWindowEditionState(ctx, window.getId());
+                EditionState editionState = ContributionService.getWindowEditionState(controllerContext, window.getId());
                 attributes.put("osivia.editionState", editionState);
 
-                String webPagePath = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.webPagePath");
+                String webPagePath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.webPagePath");
                 if (webPagePath != null) {
                     attributes.put("osivia.cms.webPagePath", webPagePath);
                 }
 
             }
 
-            if ("wizzard".equals(ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
+            if ("wizzard".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
                 attributes.put("osivia.window.wizzard", "true");
             }
 
             // Ajout de l'identifiant CMS
-            String contentId = (String) ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.content.id");
+            String contentId = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.content.id");
             if (contentId != null) {
                 attributes.put("osivia.content.id", contentId);
             }
 
             // Ajout du controleur
-            attributes.put("osivia.controller", ctx);
+            attributes.put("osivia.controller", controllerContext);
 
             // Ajout du mode admin
-            if (PageCustomizerInterceptor.isAdministrator(ctx)) {
+            if (PageCustomizerInterceptor.isAdministrator(controllerContext)) {
                 attributes.put(InternalConstants.ADMINISTRATOR_INDICATOR_ATTRIBUTE_NAME, true);
             }
 
             // Pour l'instant les pages markers ne sont pas gérés pour les
             // ressources
             if (!(invocation instanceof ResourceInvocation)) {
-                attributes.put("osivia.pageMarker", PageMarkerUtils.getCurrentPageMarker(ctx));
+                attributes.put("osivia.pageMarker", PageMarkerUtils.getCurrentPageMarker(controllerContext));
             }
 
             // v 1.0.14 : gestion de la barre de menu
@@ -196,29 +196,37 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             }
 
             // v2.0 : user datas
-            Map<String, Object> userDatas = (Map<String, Object>) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
+            Map<String, Object> userDatas = (Map<String, Object>) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas");
             if (userDatas != null) {
                 attributes.put(Constants.PORTLET_ATTR_USER_DATAS, userDatas);
             }
 
             // v3.3 : new user object
-            DirectoryPerson person = (DirectoryPerson) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON);
+            DirectoryPerson person = (DirectoryPerson) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON);
             if (person != null) {
                 attributes.put(Constants.ATTR_LOGGED_PERSON, person);
             }
 
             // user datas timestamp
-            Long userDatasTs = (Long) ctx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp");
+            Long userDatasTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp");
             attributes.put(Constants.PORTLET_ATTR_USER_DATAS_REFRESH_TS, userDatasTs);
 
             // HTTP Request
-            HttpServletRequest httpRequest = ctx.getServerInvocation().getServerContext().getClientRequest();
+            HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
             attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
 
-            Object spaceConfig = ctx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
+            // Space config
+            Object spaceConfig = controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
             if (spaceConfig != null) {
                 attributes.put(Constants.PORTLET_ATTR_SPACE_CONFIG, ((CMSItem) spaceConfig).getNativeItem());
             }
+
+            // Renderset
+            Object renderset = controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE);
+            if (renderset != null) {
+                attributes.put(InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE, renderset);
+            }
+
 
             // Set attributes
             invocation.setRequestAttributes(attributes);
@@ -243,7 +251,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("osivia.portletPath");
                 if (portletPath != null) {
                     if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
-                        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);
+                        controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);
                     }
                 }
 
@@ -251,7 +259,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 if(!Boolean.TRUE.equals(attributes.get("osivia.menubar.hide"))){
 
-                if (Boolean.TRUE.equals(ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
+                    if (Boolean.TRUE.equals(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
                     List<MenubarItem> menubarItems = (List<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
                     if (menubarItems != null) {
                         String title = window.getDeclaredProperty("osivia.title");
@@ -259,14 +267,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             title = fr.getTitle();
                         }
 
-                        PortalObjectId popupWindowId = (PortalObjectId) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+                            PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                                    "osivia.popupModeWindowID");
 
                         String printPortlet = null;
 
 
                         // impression
                         printPortlet = window.getDeclaredProperty("osivia.printPortlet");
-                        if (printPortlet == null && popupWindowId == null) {
+                        if ((printPortlet == null) && (popupWindowId == null)) {
                             if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
                                         printPortlet = "1";
                             }
@@ -279,7 +288,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             customAttrMap.put("title", title);
                             customAttrMap.put("menuBar", menubarItems);
                             customAttrMap.put("windowId", windowId);
-                            customAttrMap.put("themePath", ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
+                                customAttrMap.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
                             CustomizationContext customCtx = new CustomizationContext(customAttrMap);
                             this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
@@ -342,7 +351,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 updatedFragment = pre + updatedFragment + post;
                             }
 
-                            updatedFragment = this.generatePortletMenubar(ctx, sortedItems) + updatedFragment;
+                                updatedFragment = this.generatePortletMenubar(controllerContext, sortedItems) + updatedFragment;
                         }
                     }
                 }
@@ -369,7 +378,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                     ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT),
                             invocation.getMode(), invocation.getWindowState(), navState);
 
-                    PortalURL portalURL = new PortalURLImpl(renderCmd, ctx, null, null);
+                    PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
 
                     StringBuffer reloadingCode = new StringBuffer();
 
@@ -397,16 +406,16 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             String synchro = (String) attributes.get(Constants.PORTLET_ATTR_REFRESH_PAGE);
 
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(synchro)) {
-                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
             }
 
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UNSET_MAX_MODE))) {
-                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
 
             // v2.0.22-RC6 Force to reload portlets and CMS resources
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS))) {
-                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
             }
 
         }
