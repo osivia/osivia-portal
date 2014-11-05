@@ -221,10 +221,16 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 attributes.put(Constants.PORTLET_ATTR_SPACE_CONFIG, ((CMSItem) spaceConfig).getNativeItem());
             }
 
-            // Renderset
+            // Parameterized renderset
             Object renderset = controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE);
             if (renderset != null) {
                 attributes.put(InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE, renderset);
+            }
+
+            // Parameterized permalinks indicator
+            Object permalinks = controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE);
+            if (permalinks != null) {
+                attributes.put(InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE, permalinks);
             }
 
 

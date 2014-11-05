@@ -556,7 +556,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         layoutState = URLDecoder.decode(layoutStateParameterMap[0], CharEncoding.UTF_8);
                     }
 
-                    return new ParameterizedCommand(cmsPath, template, renderset, layoutState);
+                    // Permalinks indicator
+                    Boolean permalinks = null;
+                    String[] permalinksParameterMap = parameterMap.get(ParameterizedCommand.PERMALINKS_PARAMETER);
+                    if (permalinksParameterMap != null) {
+                        permalinks = BooleanUtils.toBooleanObject(URLDecoder.decode(permalinksParameterMap[0], CharEncoding.UTF_8));
+                    }
+
+                    return new ParameterizedCommand(cmsPath, template, renderset, layoutState, permalinks);
                 }
 
 

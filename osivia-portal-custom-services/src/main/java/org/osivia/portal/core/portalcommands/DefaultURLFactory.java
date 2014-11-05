@@ -316,6 +316,12 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                     asu.setParameterValue(ParameterizedCommand.LAYOUT_STATE_PARAMETER,
                             URLEncoder.encode(parameterizedCommand.getLayoutState(), CharEncoding.UTF_8));
                 }
+
+                // Permalinks indicator
+                if (parameterizedCommand.getPermalinks() != null) {
+                    asu.setParameterValue(ParameterizedCommand.PERMALINKS_PARAMETER,
+                            URLEncoder.encode(parameterizedCommand.getPermalinks().toString(), CharEncoding.UTF_8));
+                }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }

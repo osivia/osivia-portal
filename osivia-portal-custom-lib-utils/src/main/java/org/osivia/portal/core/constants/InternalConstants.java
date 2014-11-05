@@ -272,6 +272,8 @@ public final class InternalConstants {
     public static final String PARAMETERIZED_RENDERSET_ATTRIBUTE = "osivia.parameterized.renderset";
     /** Parameterized command layout state attribute name. */
     public static final String PARAMETERIZED_LAYOUT_STATE_ATTRIBUTE = "osivia.parameterized.layoutState";
+    /** Parameterized command permalinks indicator attribute name. */
+    public static final String PARAMETERIZED_PERMALINKS_ATTRIBUTE = "osivia.parameterized.permalinks";
 
 
     // Various technical constants

@@ -28,6 +28,8 @@ public class ParameterizedCommand extends ControllerCommand {
     public static final String RENDERSET_PARAMETER = "renderset";
     /** Layout state parameter name. */
     public static final String LAYOUT_STATE_PARAMETER = "layoutState";
+    /** Permalinks indicator parameter name. */
+    public static final String PERMALINKS_PARAMETER = "permalinks";
 
     /** Command info. */
     private final CommandInfo info;
@@ -39,18 +41,27 @@ public class ParameterizedCommand extends ControllerCommand {
     private final String renderset;
     /** Layout state. */
     private final String layoutState;
+    /** Permalinks indicator. */
+    private final Boolean permalinks;
 
 
     /**
      * Constructor.
+     *
+     * @param cmsPath CMS path
+     * @param template template
+     * @param renderset renderset
+     * @param layoutState layout state
+     * @param permalinks permalinks indicator
      */
-    public ParameterizedCommand(String cmsPath, String template, String renderset, String layoutState) {
+    public ParameterizedCommand(String cmsPath, String template, String renderset, String layoutState, Boolean permalinks) {
         super();
         this.info = new ActionCommandInfo(false);
         this.cmsPath = cmsPath;
         this.template = template;
         this.renderset = renderset;
         this.layoutState = layoutState;
+        this.permalinks = permalinks;
     }
 
 
@@ -83,6 +94,11 @@ public class ParameterizedCommand extends ControllerCommand {
             this.context.setAttribute(REQUEST_SCOPE, InternalConstants.PARAMETERIZED_LAYOUT_STATE_ATTRIBUTE, this.layoutState);
         }
 
+        // Authenticated indicator
+        if (this.permalinks != null) {
+            this.context.setAttribute(REQUEST_SCOPE, InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE, this.permalinks);
+        }
+
         CmsCommand cmsCommand = new CmsCommand(null, this.cmsPath, null, null, null, null, null, null, null, null, null);
         return this.context.execute(cmsCommand);
     }
@@ -93,8 +109,39 @@ public class ParameterizedCommand extends ControllerCommand {
      */
     @Override
     public String toString() {
-        return "ParameterizedCommand [cmsPath=" + this.cmsPath + ", template=" + this.template + ", renderset=" + this.renderset + ", layoutState="
-                + this.layoutState + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("ParameterizedCommand [");
+        if (this.info != null) {
+            builder.append("info=");
+            builder.append(this.info);
+            builder.append(", ");
+        }
+        if (this.cmsPath != null) {
+            builder.append("cmsPath=");
+            builder.append(this.cmsPath);
+            builder.append(", ");
+        }
+        if (this.template != null) {
+            builder.append("template=");
+            builder.append(this.template);
+            builder.append(", ");
+        }
+        if (this.renderset != null) {
+            builder.append("renderset=");
+            builder.append(this.renderset);
+            builder.append(", ");
+        }
+        if (this.layoutState != null) {
+            builder.append("layoutState=");
+            builder.append(this.layoutState);
+            builder.append(", ");
+        }
+        if (this.permalinks != null) {
+            builder.append("permalinks=");
+            builder.append(this.permalinks);
+        }
+        builder.append("]");
+        return builder.toString();
     }
 
 
@@ -132,6 +179,15 @@ public class ParameterizedCommand extends ControllerCommand {
      */
     public String getLayoutState() {
         return this.layoutState;
+    }
+
+    /**
+     * Getter for permalinks.
+     *
+     * @return the permalinks
+     */
+    public Boolean getPermalinks() {
+        return this.permalinks;
     }
 
 }

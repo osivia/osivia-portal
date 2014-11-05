@@ -289,8 +289,10 @@ public interface IPortalUrlFactory {
      * @param template template, may be null
      * @param renderset renderset, may be null
      * @param layoutState layout state, may be null
+     * @param permalinks permalinks indicator, may be null
      * @return parameterized URL
      */
-    String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState);
+    String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState,
+            Boolean permalinks);
 
 }

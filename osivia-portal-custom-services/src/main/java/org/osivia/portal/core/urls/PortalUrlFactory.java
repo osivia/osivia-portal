@@ -704,7 +704,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState) {
+    public String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState,
+            Boolean permalinks) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // URL context
@@ -713,7 +714,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         URLFormat urlFormat = URLFormat.newInstance(false, true);
 
         // Command
-        ControllerCommand command = new ParameterizedCommand(cmsPath, template, renderset, layoutState);
+        ControllerCommand command = new ParameterizedCommand(cmsPath, template, renderset, layoutState, permalinks);
 
         // URL
         return controllerContext.renderURL(command, urlContext, urlFormat);
