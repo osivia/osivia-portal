@@ -422,11 +422,14 @@ public class PageMarkerUtils {
                 Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
                 try {
                     PageMarkerInfo markerInfo = markers.get(lastPageMarker);
-                    if (markerInfo != null && markerInfo.getPageId() != null) {
-                        Page page = null;
-                        page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
-                        if ("1".equals(page.getProperty("osivia.portal.disablePageMarker"))) {
-                            currentPageMarker = lastPageMarker;
+                    if ((markerInfo != null) && (markerInfo.getPageId() != null)) {
+                        try {
+                            Page page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+                            if ("1".equals(page.getProperty("osivia.portal.disablePageMarker"))) {
+                                currentPageMarker = lastPageMarker;
+                            }
+                        } catch (Exception e) {
+                            // Do nothing
                         }
                     }
                 } catch (ClassCastException e) {
@@ -504,7 +507,7 @@ public class PageMarkerUtils {
                             // Restauration de preview nécessaire pour calcul editableWindows
                             EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
 
-                            if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
+                            if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
                                 controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
                             }
                         }
@@ -640,7 +643,7 @@ public class PageMarkerUtils {
                         }
                         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID", markerInfo.getPopupModeOriginalPageID());
 
-                        
+
 
                         // Restauration de l'ensemble des sélection
                         Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();

@@ -25,6 +25,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -80,6 +81,11 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             // Indicator used to prevent error loop
             clientRequest.setAttribute(DYNAMIC_ERROR_ATTRIBUTE, true);
 
+            // Reset parameterized command attributes
+            controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
+            controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE);
+            controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_LAYOUT_STATE_ATTRIBUTE);
+
             // Command
             WebCommand webCommand = new WebCommand("error");
             errorResponse = controllerContext.execute(webCommand);
@@ -120,7 +126,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             response = (ControllerResponse) command.invokeNext();
 
             // Functionnal errors, see displayError
-            if (response instanceof ErrorResponse || response instanceof UnavailableResourceResponse) {
+            if ((response instanceof ErrorResponse) || (response instanceof UnavailableResourceResponse)) {
                 if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
                     response = this.displayError(command, response, -1);
                 } else {
