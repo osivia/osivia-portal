@@ -5,6 +5,7 @@
 
 <meta charset="UTF-8">
 <title>${requestScope['osivia.header.title']} - <is:getProperty key="BRAND" /></title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <c:forEach var="meta" items="${requestScope['osivia.header.metadata']}">
 <meta name="${meta.key}" content="${fn:escapeXml(meta.value)}">
