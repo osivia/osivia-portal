@@ -85,6 +85,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_RENDERSET_ATTRIBUTE);
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_LAYOUT_STATE_ATTRIBUTE);
+            controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE);
 
             // Command
             WebCommand webCommand = new WebCommand("error");
