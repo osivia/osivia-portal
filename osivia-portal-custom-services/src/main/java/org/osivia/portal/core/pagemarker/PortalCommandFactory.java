@@ -18,18 +18,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
@@ -45,6 +51,8 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
+import org.osivia.portal.core.dynamic.RestorablePageUtils;
+import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
@@ -148,6 +156,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 String pageName = "portalSite"
                         + (new CMSObjectPath(publishSpace.getPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
+                
+                
 
                 props.put("osivia.cms.basePath", publishSpace.getPath());
 
@@ -161,8 +171,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
+                
+                String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName, PortalObjectId.parse("/default/templates/publish",PortalObjectPath.CANONICAL_FORMAT).toString( PortalObjectPath.CANONICAL_FORMAT), publishSpace.getPath(), displayNames, props, new HashMap<String, String>());
 
-                DynamicPageBean dynaPage = new DynamicPageBean(parent, pageName, displayNames, PortalObjectId.parse("/default/templates/publish",
+
+                DynamicPageBean dynaPage = new DynamicPageBean(parent, restorablePageName, pageName, displayNames, PortalObjectId.parse("/default/templates/publish",
                         PortalObjectPath.CANONICAL_FORMAT), props);
                 dynaPage.setOrder(order);
 
@@ -257,6 +270,55 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+        
+        
+    
+        /* Restauration of pages in case of loose of sessions */
+        
+        boolean enableRestoredPages = "1".equals(System.getProperty("osivia.url.enableRestoredPages"));
+        
+        if( enableRestoredPages){
+        
+            if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand) {
+
+                if (!StringUtils.isEmpty(newPath)) {
+
+                    PortalObjectId targetIdObject = ((PortalObjectCommand) cmd).getTargetId();
+
+                    PortalObjectPath poPath = PortalObjectPath.parse(newPath, PortalObjectPath.CANONICAL_FORMAT);
+                    int pathLenth = poPath.getLength();
+
+                    int targetLength = targetIdObject.getPath().getLength();
+
+                    // one part of url has been missed, might bu due to a lose of session
+                    // (_CMS_LAYOUT, dynamic templated page, ...)
+                    // We try to restore from url
+
+                    if (pathLenth > targetLength + 1) {
+
+                        String pagePath = poPath.getName(2);
+
+                        // Dynamic page creation : session may have been lost
+
+                        if (RestorablePageUtils.isRestorable(pagePath)) {
+
+                            PortalObjectId portalId = null;
+                            if (cmd instanceof ViewPortalCommand)
+                                portalId = targetIdObject;
+                            else {
+                                PortalObjectPath parentPath = targetIdObject.getPath().getParent();
+                                portalId = new PortalObjectId("", parentPath);
+                            }
+
+                            // Restore the page
+                            RestorablePageUtils.restore(controllerContext, portalId, pagePath);
+                            cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+                        }
+                    }
+                }
+
+            }
+        }
         
         
         if( cmd instanceof CmsCommand){

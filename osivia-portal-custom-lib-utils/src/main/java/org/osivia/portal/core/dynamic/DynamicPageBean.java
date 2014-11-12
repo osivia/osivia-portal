@@ -29,7 +29,11 @@ public class DynamicPageBean implements Serializable {
 	private static final long serialVersionUID = 3801681183296702167L;
 	
 	protected PortalObjectId pageId  = null;
-	protected PortalObjectId parentId  = null;	
+	protected PortalObjectId pageBusinessId  = null;
+	
+
+
+    protected PortalObjectId parentId  = null;	
 	protected PortalObjectId templateId = null;
 	protected int order= -1;
 	public String uniqueID = null;
@@ -102,15 +106,20 @@ public class DynamicPageBean implements Serializable {
 
 
 	protected String name = null;
+    protected String functionalName = null;
 
-
-	public DynamicPageBean(PortalObject parent, String name, Map displayName, PortalObjectId templateId, Map<String, String> pageProperties) {
+	
+    public DynamicPageBean(PortalObject parent, String name, String businessName, Map displayName, PortalObjectId templateId, Map<String, String> pageProperties) {
 		super();
 		
 		pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
 				.concat("/").concat(name), PortalObjectPath.CANONICAL_FORMAT));
-
-
+		
+		if( businessName != null)
+		    pageBusinessId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
+	                .concat("/").concat(businessName), PortalObjectPath.CANONICAL_FORMAT));
+		else    
+		    pageBusinessId = pageId;
 		this.parentId = parent.getId();
 		this.name = name;
 		this.displayNames = displayName;
@@ -120,6 +129,13 @@ public class DynamicPageBean implements Serializable {
 
 
 	}
+    
+    
+
+    public PortalObjectId getPageBusinessId() {
+        return pageBusinessId;
+    }
+
 		
 	public String getName() {
 		return name;

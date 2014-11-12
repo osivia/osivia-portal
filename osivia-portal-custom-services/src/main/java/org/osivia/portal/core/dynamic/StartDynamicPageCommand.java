@@ -16,6 +16,7 @@ package org.osivia.portal.core.dynamic;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,13 +49,14 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 	private static final CommandInfo info = new ActionCommandInfo(false);
 	protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
+	
 
 	public CommandInfo getInfo() {
 		return info;
 	}
 	String parentId ;
 	String templateId ;
-	String pageName;
+	String businessName;
 	Map displayNames;
 	Map<String, String> props;
 	Map<String, String> params;
@@ -64,31 +66,50 @@ public class StartDynamicPageCommand extends DynamicCommand {
 	public StartDynamicPageCommand() {
 	}
 
-	public StartDynamicPageCommand(String parentId,  String pageName,  Map displayNames, String templateId,
+	public StartDynamicPageCommand(String parentId,  String businessName,  Map displayNames, String templateId,
 			Map<String, String> props, Map<String, String> params) {
 		this.parentId = parentId;
-		this.pageName = pageName;
+		this.businessName = businessName;
 		this.templateId = templateId;
 
 		this.displayNames = displayNames;
 		this.props = props;
 		this.params = params;
 	}
+	
 
 	public ControllerResponse execute() throws ControllerException {
 
 		try {
+		    
+		    boolean enableRestoredPages = "1".equals(System.getProperty("osivia.url.enableRestoredPages"));
 
 			// Récupération page
 			PortalObjectId poid = PortalObjectId.parse(this.parentId, PortalObjectPath.SAFEST_FORMAT);
 			PortalObject parent = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
-
-			PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
-					.concat("/").concat(this.pageName), PortalObjectPath.CANONICAL_FORMAT));
-
+	
 
 			PortalObjectId potemplateid = PortalObjectId.parse(this.templateId, PortalObjectPath.SAFEST_FORMAT);
 			String potemplatepath = potemplateid.toString( PortalObjectPath.CANONICAL_FORMAT);
+			
+			
+			String cmsPath = null;
+			if( props != null)   {
+			    cmsPath = props.get("osivia.cms.basePath");
+			}
+
+			String pageName = businessName;
+			String pageUniqueName = null;
+			if( enableRestoredPages){
+			    pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.businessName, templateId, cmsPath, displayNames, props, params);
+			    pageUniqueName = businessName;
+			}
+			
+
+ 
+            PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
+                    .concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
+			
 
 	         PortalObject currentPortal = parent;
              while (! (currentPortal instanceof Portal))    {
@@ -136,7 +157,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 
 
-			DynamicPageBean pageBean = new DynamicPageBean(parent, this.pageName, this.displayNames, potemplateid, properties);
+			DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageUniqueName, this.displayNames, potemplateid, properties);
 
 
 

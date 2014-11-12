@@ -182,8 +182,8 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		// Reconstruction du tableau
 
 		for (DynamicPageBean page : pages) {
-			if (!page.getPageId().toString(PortalObjectPath.SAFEST_FORMAT)
-					.equals(newPage.getPageId().toString(PortalObjectPath.SAFEST_FORMAT))) {
+			if (!page.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT)
+					.equals(newPage.getPageBusinessId().toString(PortalObjectPath.SAFEST_FORMAT))) {
 				newPages.add(page);
 				if (page.getOrder() > maxOrder) {
                     maxOrder = page.getOrder();
