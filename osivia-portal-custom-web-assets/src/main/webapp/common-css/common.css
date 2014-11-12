@@ -301,6 +301,10 @@ form.fancybox-form .required:BEFORE {
     overflow: auto;
 }
 
+.jstree-nav a.current {
+    font-weight: bold;
+}
+
 input.filter {
     width: 180px;
 }
@@ -322,6 +326,9 @@ input.inline-checkbox {
 	width:100%;
 	
 }
+
+
+
 
 /* Notifications default style */
 
