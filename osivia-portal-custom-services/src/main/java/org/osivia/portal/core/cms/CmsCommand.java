@@ -541,11 +541,13 @@ public class CmsCommand extends DynamicCommand {
 
 
 
-
             StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(
                     PortalObjectPath.SAFEST_FORMAT), pageName, displayNames, PortalObjectId.parse(
                             "/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(
                                     PortalObjectPath.SAFEST_FORMAT), props, new HashMap<String, String>());
+            
+            
+            cmd.setCmsParams(this.pageParams);
 
             PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(cmd)).getPageId();
 

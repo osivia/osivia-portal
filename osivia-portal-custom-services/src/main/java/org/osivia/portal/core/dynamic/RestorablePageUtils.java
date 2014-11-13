@@ -22,8 +22,8 @@ public class RestorablePageUtils {
     private static final String TEMPLATE_ID = "templateId:";
     private static final String CMS_PATH = "cms:";
 
-    private static final String EMPTY_VALUE = "__EMPTY__";
-    private static final String NULL_VALUE = "__NULL__";
+    private static final String EMPTY_VALUE = "__E__";
+    private static final String NULL_VALUE = "__N__";
     
     public static boolean isRestorable(String completeName) {
         if (completeName.startsWith(PREFIX))
@@ -79,9 +79,34 @@ public class RestorablePageUtils {
     }
 
     public static String createRestorableName(ControllerContext controllerContext, String businessName, String templateId, String cmsPath, Map displayNames,
-            Map<String, String> props, Map<String, String> params) {
+            Map<String, String> props, Map<String, String> params, Map<String, String> cmsPublicParams) {
+       /*
+        if(true)
+        return businessName;
+        */
+
+        boolean enableRestoredPages = "1".equals(System.getProperty("osivia.url.enableRestoredPages"));
+        if( !enableRestoredPages)
+            return businessName;
+
+        
         String completePageName = "";
 
+
+        Map<String, String> pageParams = params;
+        Map<String, String> pageProps = props;   
+        Map pageDisplayName = displayNames; 
+        
+        
+        if( cmsPath != null)   {
+            // To restore cms params
+            pageParams = cmsPublicParams;
+            pageDisplayName = null;
+            pageProps= null;
+        }
+        
+        
+        
         String names[] = new String[5];
         names[0] = encodePath(businessName);
 
@@ -91,18 +116,22 @@ public class RestorablePageUtils {
             pageType = TEMPLATE_ID + templateId;
         if (cmsPath != null)
             pageType = CMS_PATH + cmsPath;
+         
 
         names[1] = encodePath(pageType);
-        names[2] = encodePath(encodeMap(props));
-        names[3] = encodePath(encodeMap(params));
+        
+        names[2] = encodePath(encodeMap(pageProps));
+        
+        names[3] = encodePath(encodeMap(pageParams));
         Map<String, String> i18Names = null;
-        if (displayNames != null) {
+        if (pageDisplayName != null) {
             i18Names = new HashMap<String, String>();
-            for (Object key : displayNames.keySet()) {
-                i18Names.put(key.toString(), displayNames.get(key).toString());
+            for (Object key : pageDisplayName.keySet()) {
+                i18Names.put(key.toString(), pageDisplayName.get(key).toString());
             }
         }
         names[4] = encodePath(encodeMap(i18Names));
+     
 
         completePageName = PREFIX + PortalObjectPath.LEGACY_BASE64_FORMAT.toString(names, 0, names.length);
 

@@ -61,9 +61,19 @@ public class StartDynamicPageCommand extends DynamicCommand {
 	Map<String, String> props;
 	Map<String, String> params;
 
+    Map<String, String> cmsParams;
 
+	
+    public Map<String, String> getCmsParams() {
+        return cmsParams;
+    }
 
-	public StartDynamicPageCommand() {
+    
+    public void setCmsParams(Map<String, String> cmsParams) {
+        this.cmsParams = cmsParams;
+    }
+
+    public StartDynamicPageCommand() {
 	}
 
 	public StartDynamicPageCommand(String parentId,  String businessName,  Map displayNames, String templateId,
@@ -82,7 +92,6 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 		try {
 		    
-		    boolean enableRestoredPages = "1".equals(System.getProperty("osivia.url.enableRestoredPages"));
 
 			// Récupération page
 			PortalObjectId poid = PortalObjectId.parse(this.parentId, PortalObjectPath.SAFEST_FORMAT);
@@ -92,18 +101,16 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			PortalObjectId potemplateid = PortalObjectId.parse(this.templateId, PortalObjectPath.SAFEST_FORMAT);
 			String potemplatepath = potemplateid.toString( PortalObjectPath.CANONICAL_FORMAT);
 			
-			
-			String cmsPath = null;
-			if( props != null)   {
-			    cmsPath = props.get("osivia.cms.basePath");
-			}
+             
+			 String cmsPath = props.get("osivia.cms.basePath");
 
-			String pageName = businessName;
-			String pageUniqueName = null;
-			if( enableRestoredPages){
-			    pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.businessName, templateId, cmsPath, displayNames, props, params);
-			    pageUniqueName = businessName;
-			}
+			
+
+			 
+
+			String pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.businessName, templateId, cmsPath, displayNames, props, params, cmsParams);
+		    String pageUniqueName = businessName;
+		
 			
 
  

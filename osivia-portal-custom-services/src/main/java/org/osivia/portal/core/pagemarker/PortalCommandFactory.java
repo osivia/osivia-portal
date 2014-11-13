@@ -172,7 +172,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
                 
-                String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName, PortalObjectId.parse("/default/templates/publish",PortalObjectPath.CANONICAL_FORMAT).toString( PortalObjectPath.CANONICAL_FORMAT), publishSpace.getPath(), displayNames, props, new HashMap<String, String>());
+                String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName, PortalObjectId.parse("/default/templates/publish",PortalObjectPath.CANONICAL_FORMAT).toString( PortalObjectPath.CANONICAL_FORMAT), publishSpace.getPath(), null, null, null, null );
 
 
                 DynamicPageBean dynaPage = new DynamicPageBean(parent, restorablePageName, pageName, displayNames, PortalObjectId.parse("/default/templates/publish",
@@ -275,50 +275,46 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     
         /* Restauration of pages in case of loose of sessions */
         
-        boolean enableRestoredPages = "1".equals(System.getProperty("osivia.url.enableRestoredPages"));
-        
-        if( enableRestoredPages){
-        
-            if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand) {
+        if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand) {
 
-                if (!StringUtils.isEmpty(newPath)) {
+            if (!StringUtils.isEmpty(newPath)) {
 
-                    PortalObjectId targetIdObject = ((PortalObjectCommand) cmd).getTargetId();
+                PortalObjectId targetIdObject = ((PortalObjectCommand) cmd).getTargetId();
 
-                    PortalObjectPath poPath = PortalObjectPath.parse(newPath, PortalObjectPath.CANONICAL_FORMAT);
-                    int pathLenth = poPath.getLength();
+                PortalObjectPath poPath = PortalObjectPath.parse(newPath, PortalObjectPath.CANONICAL_FORMAT);
+                int pathLenth = poPath.getLength();
 
-                    int targetLength = targetIdObject.getPath().getLength();
+                int targetLength = targetIdObject.getPath().getLength();
 
-                    // one part of url has been missed, might bu due to a lose of session
-                    // (_CMS_LAYOUT, dynamic templated page, ...)
-                    // We try to restore from url
+                // one part of url has been missed, might bu due to a lose of session
+                // (_CMS_LAYOUT, dynamic templated page, ...)
+                // We try to restore from url
 
-                    if (pathLenth > targetLength + 1) {
+                if (pathLenth > targetLength + 1) {
 
-                        String pagePath = poPath.getName(2);
+                    String pagePath = poPath.getName(2);
 
-                        // Dynamic page creation : session may have been lost
+                    // Dynamic page creation : session may have been lost
 
-                        if (RestorablePageUtils.isRestorable(pagePath)) {
+                    if (RestorablePageUtils.isRestorable(pagePath)) {
 
-                            PortalObjectId portalId = null;
-                            if (cmd instanceof ViewPortalCommand)
-                                portalId = targetIdObject;
-                            else {
-                                PortalObjectPath parentPath = targetIdObject.getPath().getParent();
-                                portalId = new PortalObjectId("", parentPath);
-                            }
-
-                            // Restore the page
-                            RestorablePageUtils.restore(controllerContext, portalId, pagePath);
-                            cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+                        PortalObjectId portalId = null;
+                        if (cmd instanceof ViewPortalCommand)
+                            portalId = targetIdObject;
+                        else {
+                            PortalObjectPath parentPath = targetIdObject.getPath().getParent();
+                            portalId = new PortalObjectId("", parentPath);
                         }
+
+                        // Restore the page
+                        RestorablePageUtils.restore(controllerContext, portalId, pagePath);
+                        cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
                     }
                 }
-
             }
+
         }
+
         
         
         if( cmd instanceof CmsCommand){
