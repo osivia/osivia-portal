@@ -47,4 +47,7 @@ public enum EcmCommand {
 
     /** Go to the current media library in back office */
     gotoMediaLibrary,
+    
+    /** open document on the desktop */
+    openDocument,
 }
