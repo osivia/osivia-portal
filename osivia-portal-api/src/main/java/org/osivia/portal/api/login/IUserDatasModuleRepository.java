@@ -21,6 +21,9 @@ import javax.portlet.PortletRequest;
  */
 public interface IUserDatasModuleRepository {
 	
+	/** MBean JBoss */
+	String MBEAN_NAME = "osivia:service=Interceptor,type=Server,name=ServerLogin";
+
 	/**
 	 * Register.
 	 *

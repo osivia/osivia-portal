@@ -236,7 +236,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 PortalObjectId portalId = page.getPortal().getId();
 
                 Map<String, String> properties = new HashMap<String, String>();
-                properties.put("osivia.title", person.getDisplayName());
+				// properties.put("osivia.title", person.getDisplayName());
 
                 Map<String, String> parameters = new HashMap<String, String>();
 

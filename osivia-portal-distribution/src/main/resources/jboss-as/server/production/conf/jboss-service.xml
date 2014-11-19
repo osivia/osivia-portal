@@ -43,7 +43,8 @@
          name="jboss:type=Service,name=SystemProperties">
 
       <attribute name="URLList">
-        ../../../custom/params/environnement_portail.properties
+        ../../../custom/params/environnement_portail.properties,
+        ../../../custom/params/identity.properties
       </attribute>
 
     </mbean>
