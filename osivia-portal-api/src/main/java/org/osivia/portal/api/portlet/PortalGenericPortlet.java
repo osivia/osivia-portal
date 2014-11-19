@@ -1,3 +1,17 @@
+/*
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ */
 package org.osivia.portal.api.portlet;
 
 import javax.portlet.GenericPortlet;
@@ -13,6 +27,13 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 
+/**
+ * Abstract portlet class used to access basic services such as notification,
+ * directories, etc.
+ * 
+ * @author lbillon
+ * 
+ */
 public abstract class PortalGenericPortlet extends GenericPortlet {
 
 	
@@ -64,6 +85,15 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 		return portalUrlFactory;
 	}
 
+	/**
+	 * Display a notification with a key label
+	 * 
+	 * @param pcc
+	 * @param label
+	 *            the key in resources bundle
+	 * @param notificationType
+	 *            the notification type
+	 */
 	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType) {
 		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
 		String string = bundle.getString(label);
