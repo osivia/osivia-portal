@@ -25,6 +25,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
@@ -35,12 +36,12 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
- * portal command to toggle synchronization on / off between local folder and ecm
+ * portal command to send ECM commands like synchronizing folder or check out documents 
  * 
  * @author lbi
  * 
  */
-public class ToggleSynchronizationCommand extends ControllerCommand {
+public class EcmFilesManagementCommand extends ControllerCommand {
 
 
     private static final String SUCCESS_MESSAGE_SYNCHRO = "SUCCESS_MESSAGE_SYNCHRO";
@@ -64,13 +65,13 @@ public class ToggleSynchronizationCommand extends ControllerCommand {
     }
 
     private static final CommandInfo info = new ActionCommandInfo(false);
-    protected static final Log logger = LogFactory.getLog(ToggleSynchronizationCommand.class);
+    protected static final Log logger = LogFactory.getLog(EcmFilesManagementCommand.class);
 
     /** cms path used by the ECM */
     private String cmsPath;
 
-    /** enable or disable synchronization */
-    private Boolean enable;
+    /** ECM command */
+    private EcmFilesCommand command;
 
 
     /**
@@ -80,8 +81,21 @@ public class ToggleSynchronizationCommand extends ControllerCommand {
         return cmsPath;
     }
 
+    
 
-    /**
+    public EcmFilesCommand getCommand() {
+		return command;
+	}
+
+
+
+	public void setCommand(EcmFilesCommand command) {
+		this.command = command;
+	}
+
+
+
+	/**
      * @param cmsPath the cmsPath to set
      */
     public void setCmsPath(String cmsPath) {
@@ -89,17 +103,10 @@ public class ToggleSynchronizationCommand extends ControllerCommand {
     }
 
 
-    /**
-     * @return the enable
-     */
-    public Boolean getEnable() {
-        return enable;
-    }
 
-
-    public ToggleSynchronizationCommand(String cmsPath, Boolean enable) {
+    public EcmFilesManagementCommand(String cmsPath, EcmFilesCommand command) {
         this.cmsPath = cmsPath;
-        this.enable = enable;
+        this.command = command;
     }
 
     public CommandInfo getInfo() {
@@ -120,12 +127,12 @@ public class ToggleSynchronizationCommand extends ControllerCommand {
             PortalControllerContext pcc = new PortalControllerContext(getControllerContext());
 
 
-            getCMSService().setSynchronization(cmsCtx, cmsPath, enable);
+            getCMSService().getEcmFilesUrl(cmsCtx, cmsPath, command);
 
-            if (enable) {
+            if (command.equals(EcmFilesCommand.synchronizeFolder)) {
                 String success = itlzService.getString(SUCCESS_MESSAGE_SYNCHRO, getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
-            } else {
+            } else if (command.equals(EcmFilesCommand.unsynchronizeFolder)) {
                 String success = itlzService.getString(SUCCESS_MESSAGE_UNSYNCHRO, getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
             }

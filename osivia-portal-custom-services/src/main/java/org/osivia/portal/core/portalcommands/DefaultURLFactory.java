@@ -36,7 +36,7 @@ import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
 import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
-import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
+import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -544,8 +544,8 @@ public class DefaultURLFactory extends URLFactoryDelegate {
         }
 
 
-        if (cmd instanceof ToggleSynchronizationCommand) {
-            ToggleSynchronizationCommand command = (ToggleSynchronizationCommand) cmd;
+        if (cmd instanceof EcmFilesManagementCommand) {
+            EcmFilesManagementCommand command = (EcmFilesManagementCommand) cmd;
 
             //
             AbstractServerURL asu = new AbstractServerURL();
@@ -553,10 +553,10 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
 
             try {
-                asu.setParameterValue("action", "ToggleSynchronizationCommand");
+                asu.setParameterValue("action", "EcmFilesManagementCommand");
 
                 asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
-                asu.setParameterValue("enable", URLEncoder.encode(Boolean.toString(command.getEnable()), "UTF-8"));
+                asu.setParameterValue("command", URLEncoder.encode(command.getCommand().name(), "UTF-8"));
 
             } catch (UnsupportedEncodingException e) {
                 // ignore

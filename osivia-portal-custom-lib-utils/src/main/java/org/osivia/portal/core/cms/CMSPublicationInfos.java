@@ -70,6 +70,9 @@ public class CMSPublicationInfos {
 
     private String synchronizationRootPath = null;
     private String driveEditURL = null;
+    
+    private boolean canCheckOut = false;
+    private boolean canCheckIn = false;
 
 	public CMSPublicationInfos() {
 		super();
@@ -309,6 +312,22 @@ public class CMSPublicationInfos {
         this.driveEditURL = driveEditURL;
     }
 
+	public boolean isCanCheckOut() {
+		return canCheckOut;
+	}
 
+	public void setCanCheckOut(boolean canCheckOut) {
+		this.canCheckOut = canCheckOut;
+	}
+
+	public boolean isCanCheckIn() {
+		return canCheckIn;
+	}
+
+	public void setCanCheckIn(boolean canCheckIn) {
+		this.canCheckIn = canCheckIn;
+	}
+
+    
 
 }

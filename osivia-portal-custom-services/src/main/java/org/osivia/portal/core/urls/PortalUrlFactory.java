@@ -46,8 +46,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
+import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
+import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -635,9 +636,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getSynchronizationCommandUrl(PortalControllerContext ctx, String cmsPath, Boolean enableParameter) {
+    public String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmFilesCommand parameter) {
 
-        ControllerCommand cmd = new ToggleSynchronizationCommand(cmsPath, enableParameter);
+        ControllerCommand cmd = new EcmFilesManagementCommand(cmsPath, parameter);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
         return portalURL.toString();

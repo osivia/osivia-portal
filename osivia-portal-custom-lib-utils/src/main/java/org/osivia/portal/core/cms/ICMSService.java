@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.osivia.portal.api.urls.EcmCommand;
+import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.api.urls.Link;
 
 /**
@@ -333,5 +334,16 @@ public interface ICMSService {
      * @throws CMSException
      */
     void setSynchronization(CMSServiceCtx cmsCtx, String pagePath, Boolean enable) throws CMSException;
+
+    
+    /**
+     * Maange synchronization and checkouts from ECM folder
+     *
+     * @param cmsCtx cms context
+     * @param pagePath the current folder
+     * @param enable enable or disable
+     * @throws CMSException
+     */
+    void getEcmFilesUrl(CMSServiceCtx cmsCtx, String pagePath, EcmFilesCommand filesCommand) throws CMSException;
 
 }

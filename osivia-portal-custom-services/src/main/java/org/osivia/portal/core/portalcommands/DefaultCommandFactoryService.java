@@ -28,6 +28,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
@@ -47,7 +48,7 @@ import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
 import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
-import org.osivia.portal.core.assistantpage.ToggleSynchronizationCommand;
+import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -678,17 +679,18 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
-                if ("ToggleSynchronizationCommand".equals(action)) {
+                if ("EcmFilesManagementCommand".equals(action)) {
 
 
                     String cmsPath = null;
-                    String enable = null;
+                    String command = null;
 
-                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("enable") != null)) {
+                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
                         cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
-                        enable = URLDecoder.decode(parameterMap.get("enable")[0], "UTF-8");
-
-                        return new ToggleSynchronizationCommand(cmsPath, BooleanUtils.toBooleanObject(enable));
+                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
+                        
+                        EcmFilesCommand ecmCOmmand = EcmFilesCommand.valueOf(command);
+                        return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
                     }
                 }
 
