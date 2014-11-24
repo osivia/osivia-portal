@@ -19,7 +19,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.Constants;
 
-
+/**
+ * Used to provided beans from service-directory portlet to client portlets
+ * 
+ * @author lbillon
+ * 
+ */
 public abstract class ForeignBeanProvider {
 
 
@@ -50,20 +55,48 @@ public abstract class ForeignBeanProvider {
             return null;
     }
 
+	/**
+	 * get a bean in the service-directory spring context
+	 * 
+	 * @param name
+	 *            name of the bean
+	 * @param type
+	 *            classType of the bean
+	 * @return
+	 */
+	public synchronized <T extends DirectoryBean> T getForeignBean(String name, Class<T> type) {
+		T directoryBean = null;
 
-    public <T extends DirectoryBean> T getForeignBean(String name, Class<T> type) {
-        if (getPortletContext() != null) {
-            IDirectoryService directoryService = getDirectoryServiceLocator().getDirectoryService();
-            T directoryBean = directoryService.getDirectoryBean(name, type);
+		if (getPortletContext() != null) {
+			IDirectoryService directoryService = getDirectoryServiceLocator().getDirectoryService();
+			int tempo = 0;
 
-            logger.info("---- get : " + name + " : " + directoryBean);
+			// TODO, tempo inutile refs #726
+			// while (directoryService == null && tempo <= 60) {
+			// try {
+			// logger.warn("gusseing " + name +
+			// ", waiting for identity service");
+			// this.wait(5000);
+			// tempo = tempo + 5;
+			//
+			// } catch (InterruptedException e) {
+			//
+			// }
+			//
+			// directoryService =
+			// getDirectoryServiceLocator().getDirectoryService();
+			//
+			// }
 
-            return directoryBean;
-        } else
+			if(directoryService != null) {
+				directoryBean = directoryService.getDirectoryBean(name, type);
+			}
+			else {
+				logger.warn("no identity service registered!");
+			}
+		}
 
-            logger.info("---- get : " + name + " : no portletCtx");
-
-            return null;
-    }
+		return directoryBean;
+	}
 
 }
