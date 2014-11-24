@@ -372,6 +372,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 jbossAdministrationTitle, "halflings new_window", AccessibilityRoles.MENU_ITEM);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
+		// Identity administration
+		PortalObjectId portalId = page.getPortal().getId();
+		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> parameters = new HashMap<String, String>();
+
+		try {
+			String identityAdministrationURL = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "usermanagement",
+					"/default/templates/usermanagement", properties, parameters);
+
+			String identityAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION);
+
+			Element identityAdministration = DOM4JUtils.generateLinkElement(identityAdministrationURL, null, null, null,
+					identityAdministrationTitle, "group", AccessibilityRoles.MENU_ITEM);
+			this.addSubMenuElement(configurationMenuUL, identityAdministration, null);
+		} catch (PortalException e) {
+			// no item if portlet is not present
+		}
+
+
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
         Element pagesList = DOM4JUtils.generateLinkElement(URL_PAGES_LIST, null, null, HTML_CLASS_FANCYBOX_INLINE, pagesListTitle, "halflings list",
