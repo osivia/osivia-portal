@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <themes>
-	<theme>
-		<name>osivia-popup</name>
-		<link rel="stylesheet" href="/css/popup.css" />
-	</theme>
+    <theme>
+        <name>osivia-popup</name>
+    </theme>
 </themes>
