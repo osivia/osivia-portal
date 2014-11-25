@@ -3,7 +3,7 @@
 // --------------------------------------------------
 
 
-// Core variables and mixins
+// Bootstrap variables and mixins
 @import "../bootstrap/variables.less";
 @import "../bootstrap/mixins.less";
 
@@ -15,7 +15,7 @@
     position: relative;
     top: 50%;
     
-    .translate(0, -50%);
+    .translate(@x: 0, @y: -50%);
 }
 
 .hidden-script {
@@ -29,8 +29,10 @@
 .avatar {
     max-height: 20px;
     max-width: 30px;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background-color: @body-bg;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ccc;
     padding: 1px;
     vertical-align: top;
     
@@ -101,7 +103,7 @@
                             top: 8px;
                             left: 0; 
                     
-                            .transition(all 300ms ease-out);
+                            .transition(@transition: all 300ms ease-out);
                         }
                         
                         &.active-drawer > .glyphicons {
@@ -120,7 +122,7 @@
                 padding: 0 15px;
                 border-style: none;
                 
-                .box-shadow(none);
+                .box-shadow(@shadow: none);
                         
                 .input-group {
                     margin-left: 5px;
@@ -166,7 +168,7 @@
             border: 1px solid rgba(0, 0, 0, .15);
             border-radius: 4px;
     
-            .box-shadow(0 6px 12px rgba(0, 0, 0, .175));
+            .box-shadow(@shadow: 0 6px 12px rgba(0, 0, 0, .175));
             
             li {
                 float: left;
@@ -302,12 +304,12 @@
         background-color: #fff;
         padding-top: @line-height-computed;
         
-        .translate3d(0, 0, 0);
-        .backface-visibility(hidden);
-        .transition(all 300ms ease-out);
+        .translate3d(@x: 0, @y: 0, @z: 0);
+        .backface-visibility(@visibility: hidden);
+        .transition(@transition: all 300ms ease-out);
         
         &.active {
-            .translate3d(100%, 0, 0);
+            .translate3d(@x: 100%, @y: 0, @z: 0);
         }
     }
     
@@ -445,11 +447,11 @@ ul.list-group {
         }
         
         &:FIRST-CHILD a.list-group-item {
-            .border-top-radius(@list-group-border-radius);
+            .border-top-radius(@radius: @list-group-border-radius);
         }
         
         &:LAST-CHILD a.list-group-item {
-            .border-bottom-radius(@list-group-border-radius);
+            .border-bottom-radius(@radius: @list-group-border-radius);
         }
     }
 }
@@ -488,14 +490,14 @@ ul.list-group.multi-level {
     
     & > li.list-group-item {
         &:FIRST-CHILD > a.list-group-item {
-            .border-top-radius(@list-group-border-radius);
+            .border-top-radius(@radius: @list-group-border-radius);
         }
         
         &:LAST-CHILD {
             padding-bottom: 1px;
             
             & > a.list-group-item {
-                .border-bottom-radius(@list-group-border-radius);
+                .border-bottom-radius(@radius: @list-group-border-radius);
             }
         }
     }
@@ -537,4 +539,10 @@ img {
    &.pull-right {
        margin-left: @padding-base-horizontal;
    }
+}
+
+caption {
+    padding: @padding-base-vertical 0;
+    color: @gray-light;
+    text-align: left;
 }
