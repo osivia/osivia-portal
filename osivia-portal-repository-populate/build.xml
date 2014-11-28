@@ -63,8 +63,6 @@
 	<target name="deploy-libs" description="registers libs into maven local repo">
 
 
-
-
 <!-- JBOSS PORTAL -->
 
 		<maven-deploy-file file="portal-api-lib.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" />
@@ -115,6 +113,7 @@
 		<maven-deploy-file file="jboss-cache-jdk50.jar" groupId="jboss" artifactId="jboss-cache-jdk50" version="${jboss.version}" />
 		<maven-deploy-file file="jboss-j2ee.jar" groupId="jboss" artifactId="jboss-j2ee" version="${jboss.version}" />
 		<maven-deploy-file file="jgroups.jar" groupId="jboss" artifactId="jgroups" version="${jboss.version}" />
+		<maven-deploy-file file="jboss.jar" groupId="jboss" artifactId="jboss" version="${jboss.version}" />
  	    <maven-deploy-file file="jboss-epp-4.3.GA_CP06.zip" groupId="jboss" artifactId="jboss-epp" version="4.3.GA_CP06" packaging="zip" />	
 
 

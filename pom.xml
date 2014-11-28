@@ -163,6 +163,14 @@
                 <version>${jboss.version}</version>
                 <scope>provided</scope>
             </dependency>
+            
+             <dependency>
+                <groupId>jboss</groupId>
+                <artifactId>jboss</artifactId>
+                <version>${jboss.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
 
             <dependency>
                 <groupId>org.jboss.portal</groupId>
@@ -553,6 +561,13 @@
             <groupId>jboss</groupId>
             <artifactId>jgroups</artifactId>
         </dependency>
+        
+        
+        <dependency>
+            <groupId>jboss</groupId>
+            <artifactId>jboss</artifactId>
+        </dependency>
+        
 
         <dependency>
             <groupId>org.jboss.portal</groupId>
