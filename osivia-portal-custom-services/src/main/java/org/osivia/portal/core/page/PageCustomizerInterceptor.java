@@ -509,13 +509,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         // v2.0.22-RC6 Force to reload resources
         if ((cmd instanceof RenderPageCommand) || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
+            
+            //if window is closing, refresh information must be preserved for next output
 
+            if (!"1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+            
+                if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
+                    PageProperties.getProperties().setRefreshingPage(true);
 
-            if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
-                PageProperties.getProperties().setRefreshingPage(true);
+                    cmd.getControllerContext().removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
+                }
+                
+             }
 
-                cmd.getControllerContext().removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
-            }
+            
         }
 
 
@@ -1050,8 +1057,24 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
+                    
+                    String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
+                    
+                    
+                    if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage"))) {
+                        
+                        // Remove AJAX from current request
+                        
+                        PortalObjectId pageID =    (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID");     
+                        endPopupCMD = new ViewPageCommand(pageID);
+                        callbackId = null;
+                        
+                        cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", null);
+                        
+                    }
+                    
                     if (endPopupCMD == null) {
-                        endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, null);
+                         endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, null);
                     }
 
                     String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
@@ -1073,7 +1096,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                     if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
-                        String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
                         popupContent.append("  parent.setCallbackParams(  '" + callbackId + "',    '" + url + "');");
                         popupContent.append("  parent.jQuery.fancybox.close();");
                     }
@@ -1116,6 +1138,27 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
+
+        /** Fermeture popup suite à une action **/
+        
+        if (cmd instanceof InvokePortletWindowActionCommand ) {
+            
+            // In session because closing popup generates a redirection and attributes are lost
+            
+            if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction"))) {
+                cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.closePopupOnAction", "1");
+
+                if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
+
+                    cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", "true");
+                }
+            }
+
+        }
+
+        
+        
+        
         if ((cmd instanceof InvokePortletWindowActionCommand) || (cmd instanceof InvokePortletWindowRenderCommand)) {
             // Current window
             Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
@@ -1131,15 +1174,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // v2.0.22-RC6 Force to reload resources
             if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents"))) {
-
                 cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
             }
+            
 
             // Display collapse window content
             controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId", window.getId());
         }
 
 
+
+        
+        
+        
         /*************************************************************************/
         /* Pour éviter que 2 fenetres soient en mode MAXIMIZE suite à une action */
         /*************************************************************************/

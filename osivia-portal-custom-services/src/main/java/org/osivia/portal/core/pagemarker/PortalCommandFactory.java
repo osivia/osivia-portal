@@ -235,6 +235,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         String newPath = PageMarkerUtils.restorePageState(controllerContext, path);
+        
+        
+        /* Applicative close */
+        
+        if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.closePopupOnAction"))) {
+            closePopup = true;
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.closePopupOnAction", null);
+        }
+        
+        
 
 
         if (popupClosed) {

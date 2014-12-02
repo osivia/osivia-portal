@@ -166,13 +166,15 @@ public final class Constants {
 
     //PORTLET - OUTPUT
 
-    /** To refresh all page. */
-    public static final String PORTLET_ATTR_REFRESH_PAGE = "osivia.refreshPage";
+    /** To redisplay the whole all page. */
+    public static final String PORTLET_ATTR_DISPLAY_PAGE = "osivia.displayPage";
     /** To return to normal mode. */
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
-    /** To refresh all CMS Contents. */
+    /** To refresh all Contents (portlets + CMS). */
     public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
-
+    /** To close popup. */   
+    public static final String PORTLET_ATTR_POPUP_CLOSE = "osivia.closePopup";
+  
     public static final String PORTLET_VALUE_ACTIVATE = "true";
 
 

@@ -409,7 +409,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         if (response instanceof UpdateNavigationalStateResponse) {
 
             Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
-            String synchro = (String) attributes.get(Constants.PORTLET_ATTR_REFRESH_PAGE);
+            String synchro = (String) attributes.get(Constants.PORTLET_ATTR_DISPLAY_PAGE);
 
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(synchro)) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage", "true");
@@ -419,11 +419,17 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
 
-            // v2.0.22-RC6 Force to reload portlets and CMS resources
+             
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
             }
+            
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_POPUP_CLOSE))) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction", "true");
+            }
 
+
+            
         }
 
         return response;
