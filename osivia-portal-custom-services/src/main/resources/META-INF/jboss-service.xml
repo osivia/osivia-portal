@@ -733,9 +733,9 @@
         <xmbean />
     </mbean>
 
-    <!-- Manage AJAX actions used by the CMS edition mode -->
+    <!-- Manage AJAX actions -->
     <mbean
-        code="org.osivia.portal.core.assistantpage.CmsAjaxCommandFactory"
+        code="org.osivia.portal.core.assistantpage.CMSAjaxCommandFactory"
         name="portal:commandFactory=cmsAjax"
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">

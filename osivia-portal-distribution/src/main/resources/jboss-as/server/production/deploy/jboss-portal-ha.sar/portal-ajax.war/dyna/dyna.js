@@ -73,6 +73,10 @@ function onAjaxSuccess(t, callerId) {
 			} else {
 				alert("No view state");
 			}
+			
+			
+			// Call jQuery.ready() events
+			$JQry(document).ready();
 		}
 
 		if (resp.type == "update_page") {

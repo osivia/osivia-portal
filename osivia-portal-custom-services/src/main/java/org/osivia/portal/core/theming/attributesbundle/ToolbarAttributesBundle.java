@@ -369,7 +369,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String jbossAdministrationURL = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
         Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, HTMLConstants.TARGET_NEW_WINDOW, null, null,
-                jbossAdministrationTitle, "halflings new_window", AccessibilityRoles.MENU_ITEM);
+                jbossAdministrationTitle, "halflings list-alt", AccessibilityRoles.MENU_ITEM);
+        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.I, "glyphicons new_window_alt", StringUtils.EMPTY);
+        jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
 		// Identity administration
@@ -380,9 +382,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		try {
 			String identityAdministrationURL = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "usermanagement",
 					"/default/templates/usermanagement", properties, parameters);
-
 			String identityAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION);
-
 			Element identityAdministration = DOM4JUtils.generateLinkElement(identityAdministrationURL, null, null, null,
 					identityAdministrationTitle, "group", AccessibilityRoles.MENU_ITEM);
 			this.addSubMenuElement(configurationMenuUL, identityAdministration, null);
@@ -393,18 +393,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
-        Element pagesList = DOM4JUtils.generateLinkElement(URL_PAGES_LIST, null, null, HTML_CLASS_FANCYBOX_INLINE, pagesListTitle, "halflings list",
-                AccessibilityRoles.MENU_ITEM);
+        Element pagesList = DOM4JUtils.generateLinkElement(URL_PAGES_LIST, null, null, HTML_CLASS_FANCYBOX_INLINE, pagesListTitle,
+                "halflings sort-by-alphabet", AccessibilityRoles.MENU_ITEM);
         this.addSubMenuElement(configurationMenuUL, pagesList, null);
 
         // Divider
         this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
-
-        // Creation dropdown header
-        String creationHeaderTitle = bundle.getString(InternationalizationConstants.KEY_CREATION_HEADER);
-        Element creationHeader = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, creationHeaderTitle);
-        this.addSubMenuElement(configurationMenuUL, creationHeader, HTML_CLASS_DROPDOWN_HEADER);
-
 
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation

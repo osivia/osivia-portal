@@ -61,13 +61,13 @@ var currentPageId = '${currentPageId}';
     }
     
     // Window properties : mobile collapse check event
-    $JQry(document).ready(function($) {
-        $("input[name=mobileCollapse]").change(function() {
-        	var $form = $(this).parents("form");
+    $JQry(document).ready(function() {
+        $JQry("input[name=mobileCollapse]").change(function() {
+        	var $form = $JQry(this).parents("form");
         	var $displayTitle = $form.find("input[name=displayTitle]");
         	var $bootstrapPanelStyle = $form.find("input[name=bootstrapPanelStyle]");
         	
-        	var checked = $(this).is(":checked");
+        	var checked = $JQry(this).is(":checked");
         	
         	if (checked) {
         		// Force checked value

@@ -90,8 +90,6 @@ function asyncUpdatePortlet(windowId, url)	{
 
 
 
-var $JQry = jQuery.noConflict();
-
 $JQry(document).ready(function() {
 	
 	$JQry(".fancyframe").fancybox({

@@ -105,6 +105,8 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // JQuery 1.8.3 for fancybox 2.1.3 compatibility
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jquery/jquery-1.8.3.min.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jquery-integration.js'></script>");
+
         // JQuery Mobile
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jquery/jquery.mobile-1.4.2.custom.min.js'></script>");
 

@@ -31,7 +31,7 @@ import org.osivia.portal.core.error.UserNotificationsException;
 /**
  * CMS command used when a fragment is dragged and dropped in other place in the page
  */
-public class CmsMoveFragmentCommand extends ControllerCommand {
+public class CMSMoveFragmentCommand extends ControllerCommand {
 
 
     ICMSService cmsService;
@@ -67,7 +67,7 @@ public class CmsMoveFragmentCommand extends ControllerCommand {
     private final String refUri;
 
 
-    public CmsMoveFragmentCommand(String pagePath, String fromRegion, Integer fromPosInt, String toRegion, Integer toPosInt, String refUri) {
+    public CMSMoveFragmentCommand(String pagePath, String fromRegion, Integer fromPosInt, String toRegion, Integer toPosInt, String refUri) {
         this.pagePath = pagePath;
 
         this.fromRegion = fromRegion.replaceAll("^region_", "");

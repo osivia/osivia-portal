@@ -1,29 +1,27 @@
-var $JQry = jQuery.noConflict();
-
 
 // Accessible dropdown menu without Javascript
-$JQry(document).ready(function($) {
-	$("*").removeClass("accessible-dropdown-menu");
+$JQry(document).ready(function() {
+	$JQry("*").removeClass("accessible-dropdown-menu");
 });
 
 
 
 // Responsive tabs menu & navigation menu
-$JQry(document).ready(function($) {
-	$("[data-toggle=tabs-menu]").click(function() {
-		$("#tabs-menu").toggleClass("active");
+$JQry(document).ready(function() {
+	$JQry("[data-toggle=tabs-menu]").click(function() {
+		$JQry("#tabs-menu").toggleClass("active");
     });
 	
-	$("[data-toggle=navigation-menu]").click(function () {
-		$("#navigation-menu").toggleClass("active");
+	$JQry("[data-toggle=navigation-menu]").click(function () {
+		$JQry("#navigation-menu").toggleClass("active");
 	});
 });
 
 
 
 // Drawer
-$JQry(document).ready(function($) {
-	$("[data-toggle=drawer]").click(toggleDrawer);
+$JQry(document).ready(function() {
+	$JQry("[data-toggle=drawer]").click(toggleDrawer);
 });
 function toggleDrawer() {
 	var $drawer = $JQry("#drawer");
@@ -75,15 +73,15 @@ $JQry(window).on("swipeleft", function(event) {
 
 
 // Tooltips initialization
-$JQry(document).ready(function($) {
-	$("[data-toggle=tooltip]").tooltip({container: 'body'});
+$JQry(document).ready(function() {
+	$JQry("[data-toggle=tooltip]").tooltip({container: 'body'});
 });
 
 
 
 // Forms in dropdown menus
-$JQry(document).ready(function($) {
-	$(".dropdown-menu .form").click(function (e) {
+$JQry(document).ready(function() {
+	$JQry(".dropdown-menu .form").click(function (e) {
 		e.stopPropagation();
 	});
 });
