@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * CMS item type java-bean.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public class CMSItemType {
@@ -39,11 +39,13 @@ public class CMSItemType {
     private final List<String> portalFormSubTypes;
     /** CMS item default template path, may be null for global default template path. */
     private final String defaultTemplate;
+    /** CMS item glyph, may be null for default glyph. */
+    private final String glyph;
 
 
     /**
      * Constructor.
-     * 
+     *
      * @param name CMS item type name
      * @param folderish CMS item type is folderish indicator
      * @param navigable CMS item navigable indicator
@@ -55,6 +57,25 @@ public class CMSItemType {
      */
     public CMSItemType(String name, boolean folderish, boolean navigable, boolean ordered, boolean forcePortalContextualization, boolean supportsPortalForms,
             List<String> portalFormSubTypes, String defaultTemplate) {
+        this(name, folderish, navigable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, null);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param name CMS item type name
+     * @param folderish CMS item type is folderish indicator
+     * @param navigable CMS item navigable indicator
+     * @param ordered CMS item type is ordered indicator
+     * @param forcePortalContextualization CMS item force portal contextualization indicator
+     * @param supportsPortalForms CMS item type supports portal forms indicator
+     * @param portalFormSubTypes CMS item type portal from sub types
+     * @param defaultTemplate CMS item default template path, may be null for global default template path
+     * @param glyph CMS item customized glyph, may be null for default glyph
+     */
+    public CMSItemType(String name, boolean folderish, boolean navigable, boolean ordered, boolean forcePortalContextualization, boolean supportsPortalForms,
+            List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
         super();
         this.name = name;
         this.folderish = folderish;
@@ -64,6 +85,7 @@ public class CMSItemType {
         this.supportsPortalForms = supportsPortalForms;
         this.portalFormSubTypes = portalFormSubTypes;
         this.defaultTemplate = defaultTemplate;
+        this.glyph = glyph;
     }
 
 
@@ -74,7 +96,7 @@ public class CMSItemType {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = (prime * result) + ((this.name == null) ? 0 : this.name.hashCode());
         return result;
     }
 
@@ -115,7 +137,7 @@ public class CMSItemType {
 
     /**
      * Getter for name.
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -124,7 +146,7 @@ public class CMSItemType {
 
     /**
      * Getter for folderish.
-     * 
+     *
      * @return the folderish
      */
     public boolean isFolderish() {
@@ -133,7 +155,7 @@ public class CMSItemType {
 
     /**
      * Getter for ordered.
-     * 
+     *
      * @return the ordered
      */
     public boolean isOrdered() {
@@ -142,7 +164,7 @@ public class CMSItemType {
 
     /**
      * Getter for supportsPortalForms.
-     * 
+     *
      * @return the supportsPortalForms
      */
     public boolean isSupportsPortalForms() {
@@ -151,7 +173,7 @@ public class CMSItemType {
 
     /**
      * Getter for portalFormSubTypes.
-     * 
+     *
      * @return the portalFormSubTypes
      */
     public List<String> getPortalFormSubTypes() {
@@ -160,29 +182,38 @@ public class CMSItemType {
 
     /**
      * Getter for navigable.
-     * 
+     *
      * @return the navigable
      */
     public boolean isNavigable() {
-        return navigable;
+        return this.navigable;
     }
 
     /**
      * Getter for forcePortalContextualization.
-     * 
+     *
      * @return the forcePortalContextualization
      */
     public boolean isForcePortalContextualization() {
-        return forcePortalContextualization;
+        return this.forcePortalContextualization;
     }
 
     /**
      * Getter for defaultTemplate.
-     * 
+     *
      * @return the defaultTemplate
      */
     public String getDefaultTemplate() {
-        return defaultTemplate;
+        return this.defaultTemplate;
+    }
+
+    /**
+     * Getter for glyph.
+     *
+     * @return the glyph
+     */
+    public String getGlyph() {
+        return this.glyph;
     }
 
 }
