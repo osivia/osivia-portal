@@ -18,6 +18,7 @@ package org.osivia.portal.core.dynamic;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
@@ -296,12 +297,14 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                 parameters.put(keyParam, new String[]{this.params.get(keyParam)});
             }
 
+            if( !StringUtils.equals(this.dynaProps.get("osivia.windowState"), "normal"))    {
 
-            // On force la maximisation
-            WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
+                // On force la maximisation
+                WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.MAXIMIZED, windowNavState.getMode(),
                     ParametersStateString.create(parameters));
 
-            this.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+                this.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+            }
 
             // Mise à jour des public parameters
             /*

@@ -54,6 +54,7 @@ import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.ParameterizedCommand;
@@ -436,6 +437,33 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                                 WindowPropertiesEncoder.decodeProperties(params), addToBreadcrumb, null);
                     }
                 }
+                
+                if ("startDynamicWindowInNewPage".equals(action)) {
+
+                    String parentId = null;
+                    String pageName = null;
+                    String pageDisplayName = null;
+                    String instanceId = null;
+                    String windowProps = null;
+                    String params = null;
+
+
+
+                    if ((parameterMap.get("parentId") != null) && (parameterMap.get("instanceId") != null)) {
+
+                        parentId = URLDecoder.decode(parameterMap.get("parentId")[0], CharEncoding.UTF_8);
+                        pageName = URLDecoder.decode(parameterMap.get("pageName")[0], CharEncoding.UTF_8);
+                        pageDisplayName = URLDecoder.decode(parameterMap.get("pageDisplayName")[0], CharEncoding.UTF_8);
+                        instanceId = URLDecoder.decode(parameterMap.get("instanceId")[0], CharEncoding.UTF_8);
+                        windowProps = URLDecoder.decode(parameterMap.get("props")[0], CharEncoding.UTF_8);
+                        params = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
+
+
+                        return new StartDynamicWindowInNewPageCommand(parentId, pageName, pageDisplayName, instanceId, WindowPropertiesEncoder.decodeProperties(windowProps),
+                                WindowPropertiesEncoder.decodeProperties(params));
+                    }
+                }
+                
 
                 if ("destroyDynamicWindow".equals(action)) {
 

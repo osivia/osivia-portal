@@ -59,6 +59,7 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.PageProperties;
@@ -574,6 +575,64 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties,
+            Map<String, String> params) throws PortalException {
+
+        try {
+            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+            // if (portalName == null)
+            // portalName = "default";
+
+            portalName = "/" + portalName;
+            
+            
+            // Maps initialization
+            if (windowProperties == null) {
+                windowProperties = new HashMap<String, String>();
+            }
+            if (params == null) {
+                params = new HashMap<String, String>();
+            }
+
+            ControllerCommand cmd = new StartDynamicWindowInNewPageCommand();
+            PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalCtx), null, null);
+
+            // Valeurs par défaut
+            if (windowProperties.get("osivia.hideDecorators") == null) {
+                windowProperties.put("osivia.hideDecorators", "1");
+            }
+            if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
+                windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+            }
+
+            
+            String parentId = URLEncoder.encode(PortalObjectId.parse(portalName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
+                    "UTF-8");
+
+           
+            StringBuffer url = new StringBuffer(portalURL.toString());
+            url.append("&parentId="+parentId);
+            
+            if( pageName != null)
+                url.append("&pageName="+URLEncoder.encode(pageName,"UTF-8"));
+            if( pageDisplayName != null)
+                url.append("&pageDisplayName="+URLEncoder.encode(pageDisplayName,"UTF-8"));
+            
+            url.append("&instanceId=" + portletInstance +  "&props="
+                    + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params));
+                    
+            return url.toString();
+
+        } catch (Exception e) {
+            throw new PortalException(e);
+        }
+    }
+
+    
+    
     /**
      * {@inheritDoc}
      */

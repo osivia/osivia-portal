@@ -186,6 +186,20 @@ public interface IPortalUrlFactory {
 
 
     /**
+     * Gets the start portlet URL in new page.
+     *
+     * @param portalCtx the portal ctx
+     * @param pageName the page name (assumes the unicity of the page)
+     * @param pageDisplayName the page display name
+     * @param portletInstance the portlet instance
+     * @param windowProperties the window properties
+     * @param windowParams the window parameters
+     * @return the start portlet in new page
+     */
+    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties,
+            Map<String, String> windowParams) throws PortalException;
+    
+    /**
      * Get start portlet in region URL.
      * 
      * @param portalControllerContext portal controller context

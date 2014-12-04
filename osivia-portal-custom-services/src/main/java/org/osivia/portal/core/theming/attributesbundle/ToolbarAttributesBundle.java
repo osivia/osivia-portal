@@ -39,6 +39,7 @@ import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -380,12 +381,17 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		try {
-			String identityAdministrationURL = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "usermanagement",
-					"/default/templates/usermanagement", properties, parameters);
-			String identityAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION);
-			Element identityAdministration = DOM4JUtils.generateLinkElement(identityAdministrationURL, null, null, null,
-					identityAdministrationTitle, "group", AccessibilityRoles.MENU_ITEM);
-			this.addSubMenuElement(configurationMenuUL, identityAdministration, null);
+		    
+            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+            properties.put("osivia.ajaxLink", "1");
+            
+            String identityAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement", bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION), "toutatice-identite-gestionpersonnes-portailPortletInstance", properties, parameters);
+                    
+
+            String identityAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION);
+            Element identityAdministration = DOM4JUtils.generateLinkElement(identityAdministrationURL, null, null, null,
+                    identityAdministrationTitle, "group", AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(configurationMenuUL, identityAdministration, null);
 		} catch (PortalException e) {
 			// no item if portlet is not present
 		}

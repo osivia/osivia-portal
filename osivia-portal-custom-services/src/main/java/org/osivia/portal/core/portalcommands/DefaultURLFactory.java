@@ -42,6 +42,7 @@ import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.page.ParameterizedCommand;
@@ -225,6 +226,15 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             asu.setParameterValue("action", "startDynamicPage");
             return asu;
         }
+        
+        if (cmd instanceof StartDynamicWindowInNewPageCommand) {
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            asu.setParameterValue("action", "startDynamicWindowInNewPage");
+            return asu;
+        }
+
 
 
         if (cmd instanceof StopDynamicWindowCommand) {
