@@ -203,6 +203,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // Current page
         Page page = renderPageCommand.getPage();
+		// Bundle
+		Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
 
         // Principal
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
@@ -237,12 +239,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 PortalObjectId portalId = page.getPortal().getId();
 
                 Map<String, String> properties = new HashMap<String, String>();
-				// properties.put("osivia.title", person.getDisplayName());
+				properties.put("osivia.hideTitle", "1");
 
                 Map<String, String> parameters = new HashMap<String, String>();
 
-                myProfileUrl = this.urlFactory.getStartPageUrl(portalControllerContext, portalId.toString(), "userprofile", "/default/templates/userprofile",
-                        properties, parameters);
+				myProfileUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "myprofile",
+						bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "toutatice-identite-fichepersonne-portailPortletInstance", properties,
+						parameters);
+
             } catch (PortalException e) {
                 // Do nothing
             }
@@ -375,8 +379,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
+		// Divider
+		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+
 		// Identity administration
-		PortalObjectId portalId = page.getPortal().getId();
+
+		// users
 		Map<String, String> properties = new HashMap<String, String>();
 		Map<String, String> parameters = new HashMap<String, String>();
 
@@ -384,18 +392,38 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		    
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
             properties.put("osivia.ajaxLink", "1");
+			properties.put("osivia.hideTitle", "1");
             
-            String identityAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement", bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION), "toutatice-identite-gestionpersonnes-portailPortletInstance", properties, parameters);
-                    
+			String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
+					bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "toutatice-identite-gestionpersonnes-portailPortletInstance",
+					properties, parameters);
 
-            String identityAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_IDENTITY_ADMINISTRATION);
-            Element identityAdministration = DOM4JUtils.generateLinkElement(identityAdministrationURL, null, null, null,
-                    identityAdministrationTitle, "group", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, identityAdministration, null);
+			String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
+			Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle, "parents",
+					AccessibilityRoles.MENU_ITEM);
+			this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
 		} catch (PortalException e) {
 			// no item if portlet is not present
 		}
 
+		try {
+
+			String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
+					bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "toutatice-identite-gestiongroupes-portailPortletInstance",
+					properties, parameters);
+                    
+
+			String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
+			Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle, "group",
+					AccessibilityRoles.MENU_ITEM);
+			this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
+		} catch (PortalException e) {
+			// no item if portlet is not present
+		}
+
+
+		// Divider
+		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
@@ -440,8 +468,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, "disabled");
         }
 
-        // Divider
-        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Caches initialization
         ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
