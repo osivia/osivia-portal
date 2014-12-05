@@ -94,8 +94,6 @@ public class DirectoryPerson {
     private Link avatar = new Link("", false);
 
 
-    /** LDAP native item. */
-    private Object nativeItem;
 
     // ------------------------------------------------------------------------------------------------------------------------
     // GETTERS ET SETTERS
@@ -318,22 +316,6 @@ public class DirectoryPerson {
      */
     public void setAvatar(Link avatar) {
         this.avatar = avatar;
-    }
-
-
-    /**
-     * @return the nativeItem
-     */
-    public Object getNativeItem() {
-        return nativeItem;
-    }
-
-
-    /**
-     * @param nativeItem the nativeItem to set
-     */
-    public void setNativeItem(Object nativeItem) {
-        this.nativeItem = nativeItem;
     }
 
 
