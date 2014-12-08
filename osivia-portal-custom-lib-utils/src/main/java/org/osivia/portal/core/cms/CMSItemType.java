@@ -29,6 +29,8 @@ public class CMSItemType {
     private final boolean folderish;
     /** CMS item navigable indicator. */
     private final boolean navigable;
+    /** CMS item browsable indicator. */
+    private final boolean browsable;
     /** CMS item type ordered indicator. */
     private final boolean ordered;
     /** CMS item force portal contextualization indicator. */
@@ -45,19 +47,20 @@ public class CMSItemType {
 
     /**
      * Constructor.
-     *
+     * 
      * @param name CMS item type name
      * @param folderish CMS item type is folderish indicator
      * @param navigable CMS item navigable indicator
+     * @param browsable CMS item browsable indicator
      * @param ordered CMS item type is ordered indicator
      * @param forcePortalContextualization CMS item force portal contextualization indicator
      * @param supportsPortalForms CMS item type supports portal forms indicator
      * @param portalFormSubTypes CMS item type portal from sub types
      * @param defaultTemplate CMS item default template path, may be null for global default template path
      */
-    public CMSItemType(String name, boolean folderish, boolean navigable, boolean ordered, boolean forcePortalContextualization, boolean supportsPortalForms,
-            List<String> portalFormSubTypes, String defaultTemplate) {
-        this(name, folderish, navigable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, null);
+    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate) {
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, null);
     }
 
 
@@ -67,6 +70,7 @@ public class CMSItemType {
      * @param name CMS item type name
      * @param folderish CMS item type is folderish indicator
      * @param navigable CMS item navigable indicator
+     * @param browsable CMS item browsable indicator
      * @param ordered CMS item type is ordered indicator
      * @param forcePortalContextualization CMS item force portal contextualization indicator
      * @param supportsPortalForms CMS item type supports portal forms indicator
@@ -74,12 +78,13 @@ public class CMSItemType {
      * @param defaultTemplate CMS item default template path, may be null for global default template path
      * @param glyph CMS item customized glyph, may be null for default glyph
      */
-    public CMSItemType(String name, boolean folderish, boolean navigable, boolean ordered, boolean forcePortalContextualization, boolean supportsPortalForms,
-            List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
+    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
         super();
         this.name = name;
         this.folderish = folderish;
         this.navigable = navigable;
+        this.browsable = browsable;
         this.ordered = ordered;
         this.forcePortalContextualization = forcePortalContextualization;
         this.supportsPortalForms = supportsPortalForms;
@@ -154,12 +159,39 @@ public class CMSItemType {
     }
 
     /**
+     * Getter for navigable.
+     *
+     * @return the navigable
+     */
+    public boolean isNavigable() {
+        return this.navigable;
+    }
+
+    /**
+     * Getter for browsable.
+     *
+     * @return the browsable
+     */
+    public boolean isBrowsable() {
+        return this.browsable;
+    }
+
+    /**
      * Getter for ordered.
      *
      * @return the ordered
      */
     public boolean isOrdered() {
         return this.ordered;
+    }
+
+    /**
+     * Getter for forcePortalContextualization.
+     *
+     * @return the forcePortalContextualization
+     */
+    public boolean isForcePortalContextualization() {
+        return this.forcePortalContextualization;
     }
 
     /**
@@ -178,24 +210,6 @@ public class CMSItemType {
      */
     public List<String> getPortalFormSubTypes() {
         return this.portalFormSubTypes;
-    }
-
-    /**
-     * Getter for navigable.
-     *
-     * @return the navigable
-     */
-    public boolean isNavigable() {
-        return this.navigable;
-    }
-
-    /**
-     * Getter for forcePortalContextualization.
-     *
-     * @return the forcePortalContextualization
-     */
-    public boolean isForcePortalContextualization() {
-        return this.forcePortalContextualization;
     }
 
     /**

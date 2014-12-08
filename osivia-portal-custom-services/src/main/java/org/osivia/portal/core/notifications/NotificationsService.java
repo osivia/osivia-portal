@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,6 +26,7 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
  * Notifications service implementation.
@@ -79,15 +80,23 @@ public class NotificationsService implements INotificationsService {
      */
     @SuppressWarnings("unchecked")
     public final List<Notifications> getNotificationsList(PortalControllerContext portalControllerContext) {
-        
-        
-        ControllerContext controllerContext = (ControllerContext) portalControllerContext.getControllerCtx();
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         List<Notifications> notificationsList = (List<Notifications>) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE,
                 InternalConstants.ATTR_NOTIFICATIONS);
         if (notificationsList == null) {
             notificationsList = new ArrayList<Notifications>();
         }
-        return notificationsList;
+
+        // Remove expired notifications
+        long currentTime = new Date().getTime();
+        List<Notifications> refinedNotificationsList = new ArrayList<Notifications>(notificationsList.size());
+        for (Notifications notifications : notificationsList) {
+            if ((notifications.getExpirationTime() == 0) || (notifications.getExpirationTime() > currentTime)) {
+                refinedNotificationsList.add(notifications);
+            }
+        }
+
+        return refinedNotificationsList;
     }
 
 
