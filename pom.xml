@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.portal.core</groupId>
     <artifactId>parent</artifactId>
-    <version>3.4.1-SNAPSHOT</version>
+    <version>3.4.1</version>
     <packaging>pom</packaging>
     <name>OSIVIA Portal - Parent</name>
 
@@ -778,7 +778,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/branches/3.4-maintenance</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/3.4.1</developerConnection>
     </scm>
 
 
