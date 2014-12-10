@@ -22,8 +22,10 @@
  ******************************************************************************/
 package org.jboss.portal.core.model.portal.command.render;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.AccessDeniedException;
@@ -40,11 +42,14 @@ import org.jboss.portal.core.controller.command.info.ViewCommandInfo;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PageCommand;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.core.theme.WindowContextFactory;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
@@ -60,6 +65,7 @@ import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.mt.IMultithreadService;
 import org.osivia.portal.core.profils.IProfilManager;
@@ -74,6 +80,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Render a full page.
@@ -169,6 +176,7 @@ public final class RenderPageCommand extends PageCommand
 //      PortalObjectPermission perm = new PortalObjectPermission(page.getId(), PortalObjectPermission.PERSONALIZE_MASK);
 //      personalizable = pam.checkPermission(perm);
    }
+   
 
    /**
     * execute the command
@@ -276,6 +284,12 @@ public final class RenderPageCommand extends PageCommand
              isMultiThreadEnabled = false;
          }
          
+         
+         Set<String> visibleRegions = (Set<String>) getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS);
+         String visibleRegionsLayoutState = (String) getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE);  
+         
+         String warningMsg = null;
+         
          for (PortalObject window: windows){
         	 if( window instanceof Window){
         		 
@@ -293,9 +307,6 @@ public final class RenderPageCommand extends PageCommand
                              addWindow = false;
                      }
                  }
-
-
-        		 
         		 
         		 // Affichage conditionnel / profil
         		 String conditionalScope =  window.getProperty("osivia.conditionalScope");
@@ -313,10 +324,56 @@ public final class RenderPageCommand extends PageCommand
         			 }
         		 }
         		 
+        		 
+        		 /*
+        		  * Is this window defined in a visible region ????
+        		  */
+        		 
+        		 if(addWindow && visibleRegions != null){
+        		     
+        		      String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);
+       		      
+        		      if( !visibleRegions.contains(region))   {
+
+        		           NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+
+        		            WindowNavigationalState windowNavState = (WindowNavigationalState) ((ControllerContext)getContext()).getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+        		            // On regarde si la fenêtre est en vue MAXIMIZED
+
+
+        		            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+        		               // Current window is maximized
+        		               // Must be displayed even if its original region is hidden
+        		                
+        		            } else    {
+                                if (StringUtils.equals("virtual", region)) {
+                                    // virtual window doesn't exist in normal mode
+                                    addWindow = false;
+                                } else {
+                                    // ACTION : remove or warn
+                                    
+                                    // remove window only in maximized mode
+                                    if (StringUtils.equals("maximized", visibleRegionsLayoutState)) {
+                                        addWindow = false;
+                                    } else {
+                                        // otherwise warn
+                                        log.warn("this window seems not to be present in any visible region, should check ... : "
+                                                + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                                    }
+                                }
+        		            }
+        		      }
+        		 }
+        		 
         		 if( addWindow)
         			 filteredWindows.add( (Window) window);
         	 }
          }
+         
+         
+    /* controle des regions */
+         
+    
          
 	if( multithreadService != null && isMultiThreadEnabled)	{
          

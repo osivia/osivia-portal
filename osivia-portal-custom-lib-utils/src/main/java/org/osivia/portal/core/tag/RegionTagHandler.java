@@ -16,7 +16,10 @@ package org.osivia.portal.core.tag;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -90,6 +93,10 @@ public class RegionTagHandler extends SimpleTagSupport {
      * @param request current HTTP servlet request
      */
     private void parseRegionAttributes(HttpServletRequest request) {
+        
+        Set<String> visibleRegions = (Set<String>) request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS);
+        visibleRegions.add(regionName);
+        
         // Check if layout contains CMS
         Boolean cms = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         if (BooleanUtils.isNotTrue(cms)) {

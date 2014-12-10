@@ -202,6 +202,12 @@ public final class InternalConstants {
 
     /** Layout parsing attribute name. */
     public static final String ATTR_LAYOUT_PARSING = "osivia.layout.parsing";
+    
+    /** Layout visible regions attribute name. */
+    public static final String ATTR_LAYOUT_VISIBLE_REGIONS = "osivia.layout.visibleRegions";
+    
+    /** Layout uri for computing visible regions attribute name. */
+    public static final String ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE = "osivia.layout.visibleRegions.parserState";
 
     /** Layout CMS indicator attribute name. */
     public static final String ATTR_LAYOUT_CMS_INDICATOR = "osivia.layout.cms";

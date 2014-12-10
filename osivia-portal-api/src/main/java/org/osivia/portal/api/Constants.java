@@ -133,7 +133,8 @@ public class Constants {
     public static final String PORTLET_ATTR_HTTP_REQUEST = "osivia.httpRequest";
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
-    
+    /** Redirection URL  */
+    public static final String PORTLET_ATTR_REDIRECTION_URL =  "osivia.redirection.url";    
    
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
     

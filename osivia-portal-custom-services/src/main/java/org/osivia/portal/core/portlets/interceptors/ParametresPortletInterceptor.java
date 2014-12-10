@@ -519,7 +519,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS)))
                  ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
 
-
+            String url = (String) attributes.get("osivia.redirection.url");
+            if( url != null)    {
+                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);
+            }
         }
 
         return response;
