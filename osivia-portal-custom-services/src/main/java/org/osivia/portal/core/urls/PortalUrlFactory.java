@@ -525,6 +525,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return this.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN);
     }
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getStartPortletUrl(PortalControllerContext portalCtx, String portletInstance, Map<String, String> windowProperties, boolean popup)
+			throws PortalException {
+
+		return getStartPortletUrl(portalCtx, portletInstance, windowProperties, null, popup);
+
+	}
 
     /**
      * {@inheritDoc}
