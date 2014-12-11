@@ -294,21 +294,27 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         List<String> domains = new ArrayList<String>();
 
         for (Page child : sortedPages) {
-
-            // get domain
+            // Page name
+            String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
+            // Default page indicator
+            boolean isDefaultPage = child.equals(defaultPage);
+            
+            // Hide templates
+            if ("templates".equalsIgnoreCase(name)) {
+                continue;
+            }
+            
+            // Get domain
             String curDomain = TabsCustomizerInterceptor.getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
-
             if (curDomain != null) {
                 if (domains.contains(curDomain)) {
                     continue;
                 }
                 domains.add(curDomain);
-
             }
 
-
-            // Check if child must be hidden
-            if (hideDefaultPage && child.equals(defaultPage)) {
+            // Check if default page must be hidden
+            if (hideDefaultPage && isDefaultPage) {
                 continue;
             }
 
@@ -352,10 +358,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     userPage.setUrl(url + "?init-state=true");
                 }
 
-                String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
+                
                 userPage.setName(name);
 
-
+                userPage.setDefaultPage(isDefaultPage);
 
 
                 if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {

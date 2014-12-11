@@ -145,6 +145,8 @@
 
 // Tabs & navigation menu
 
+@active-min-width: 10%;
+
 .make-fixed-nav-osivia(@class) {
     &.fixed-@{class} {
         display: table;
@@ -154,15 +156,14 @@
         & > li {
             display: table-cell;
             
-            .fixed-nav-osivia-width(@count: 12);
+            .fixed-nav-osivia-width(@count: 25);
         }
     }
 }
 
 .fixed-nav-osivia-width(@count) when (@count > 0) {    
     &:first-child:nth-last-child(@{count}) {
-        width: 100% / @count;
-        
+        .calc-nav-osivia-width(@count);
         .fixed-nav-osivia-subitem-width(@count);
     }
     
@@ -172,7 +173,15 @@
 
 .fixed-nav-osivia-subitem-width(@count) when (@count > 1) {
     & ~ li {
-        width: 100% / @count;
+        .calc-nav-osivia-width(@count);
+    }
+}
+
+.calc-nav-osivia-width(@count) {
+    width: (100% - @active-min-width) / @count;
+    
+    &.active {
+        width: ((100% - @active-min-width) / @count) + @active-min-width;
     }
 }
 
@@ -189,10 +198,12 @@
         
         & > div {
             margin-right: -1px;
+            
+            border-radius: @border-radius-base @border-radius-base 0 0;
 
             a {
                 display: block;
-                padding: @padding-large-vertical @padding-large-horizontal;
+                padding: @padding-large-vertical @padding-base-horizontal;
                 
                 border-style: solid;
                 border-width: 1px;
