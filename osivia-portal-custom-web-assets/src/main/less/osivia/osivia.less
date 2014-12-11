@@ -145,6 +145,143 @@
 
 // Tabs & navigation menu
 
+.make-fixed-nav-osivia(@class) {
+    &.fixed-@{class} {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        
+        & > li {
+            display: table-cell;
+            
+            .fixed-nav-osivia-width(@count: 12);
+        }
+    }
+}
+
+.fixed-nav-osivia-width(@count) when (@count > 0) {    
+    &:first-child:nth-last-child(@{count}) {
+        width: 100% / @count;
+        
+        .fixed-nav-osivia-subitem-width(@count);
+    }
+    
+    // Loop
+    .fixed-nav-osivia-width(@count - 1);
+}
+
+.fixed-nav-osivia-subitem-width(@count) when (@count > 1) {
+    & ~ li {
+        width: 100% / @count;
+    }
+}
+
+.nav.nav-osivia {
+    max-width: 100%;
+    
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #ccc;
+    
+    & > li {
+        float: left;
+        margin-bottom: -1px;
+        
+        & > div {
+            margin-right: -1px;
+
+            a {
+                display: block;
+                padding: @padding-large-vertical @padding-large-horizontal;
+                
+                border-style: solid;
+                border-width: 1px;
+                border-color: @gray-lighter @gray-lighter #ccc;
+                border-radius: @border-radius-base @border-radius-base 0 0;
+                
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                
+                color: @gray;
+                text-decoration: none;
+                
+                &.page-close {
+                    float: right;
+                    padding-left: @padding-xs-horizontal;
+                    padding-right: @padding-small-horizontal;
+                    width: @padding-xs-horizontal + @padding-small-horizontal + @font-size-base;
+                    
+                    border-left-style: none;
+                    border-top-left-radius: 0;
+                    
+                    & ~ div {
+                        overflow: hidden;
+                        margin-right: @padding-xs-horizontal + @padding-small-horizontal + @font-size-base;
+                        
+                        a {
+                            padding-right: @padding-xs-horizontal;
+                            
+                            border-right-style: none;
+                            border-top-right-radius: 0; 
+                        }
+                    }
+                }
+                
+                &:hover, &:focus {
+                    color: @gray-dark;
+                }
+            }
+            
+            &:hover, &:focus {
+                background-color: @gray-lighter;
+            }
+        }
+        
+        &:last-child > div {
+            margin-right: 0;
+        }
+        
+        &.active {
+            & > div {
+                margin-right: 1px;
+                
+                background-color: transparent;
+                
+                a {
+                    border-color: #ccc #ccc @body-bg;
+                    
+                    color: @brand-primary;
+                    font-weight: bold;
+                    
+                    &:hover, &:focus {
+                        color: @link-hover-color;
+                    }
+                }
+            }
+            
+            & + li > div {
+                margin-left: -1px;
+                
+                a {
+                    border-left-style: none;
+                }
+            }
+        }
+    }
+    
+    .make-fixed-nav-osivia(@class: lg);
+    
+    @media screen and (max-width: @screen-md-max) {
+        .make-fixed-nav-osivia(@class: md);
+    }
+    
+    @media screen and (max-width: @screen-sm-max) {
+        .make-fixed-nav-osivia(@class: sm);
+    }
+}
+
+
 @media screen and (max-width: @screen-xs-max) {
     #tabs-menu, #navigation-menu {
         display: none;
