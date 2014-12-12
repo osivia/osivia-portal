@@ -32,6 +32,11 @@
                 <c:set var="active" value="active" />
             </c:if>
             
+            <!-- Tooltip data -->
+            <c:if test="${fn:length(userPages) > 6}">
+                <c:set var="tooltipData" value="title='${userPage.name}' data-toggle='tooltip' data-placement='bottom'" />
+            </c:if>
+            
             
             <li class="${active}" role="presentation">
                 <div class="text-center clearfix">
@@ -45,13 +50,13 @@
                  <div>
                     <c:choose>
                         <c:when test="${userPage.defaultPage}">
-                            <a href="${userPage.url}">
+                            <a href="${userPage.url}" title="${userPage.name}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="glyphicons halflings home"></i>
                             </a>
                         </c:when>
                         
                         <c:otherwise>
-                            <a href="${userPage.url}">${userPage.name}</a>
+                            <a href="${userPage.url}" ${tooltipData}>${userPage.name}</a>
                         </c:otherwise>
                     </c:choose>
                  </div>
