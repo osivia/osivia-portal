@@ -40,26 +40,26 @@
             
             <li class="${active}" role="presentation">
                 <div class="text-center clearfix">
-                 <!-- Close -->
-                 <c:if test="${not empty userPage.closePageUrl}">
-                    <a href="${userPage.closePageUrl}" class="page-close">
-                        <i class="glyphicons halflings remove"></i>
-                    </a>
-                 </c:if>
-                 
-                 <div>
-                    <c:choose>
-                        <c:when test="${userPage.defaultPage}">
-                            <a href="${userPage.url}" title="${userPage.name}" data-toggle="tooltip" data-placement="bottom">
-                                <i class="glyphicons halflings home"></i>
-                            </a>
-                        </c:when>
-                        
-                        <c:otherwise>
-                            <a href="${userPage.url}" ${tooltipData}>${userPage.name}</a>
-                        </c:otherwise>
-                    </c:choose>
-                 </div>
+                    <!-- Close -->
+                    <c:if test="${not empty userPage.closePageUrl}">
+                        <a href="${userPage.closePageUrl}" class="page-close">
+                            <i class="glyphicons halflings remove"></i>
+                        </a>
+                    </c:if>
+                    
+                    <div>
+                        <c:choose>
+                            <c:when test="${userPage.defaultPage}">
+                                <a href="${userPage.url}" title="${userPage.name}" data-toggle="tooltip" data-placement="bottom">
+                                    <i class="glyphicons halflings home"></i>
+                                </a>
+                            </c:when>
+                            
+                            <c:otherwise>
+                                <a href="${userPage.url}" ${tooltipData}>${userPage.name}</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
             </li>
         </c:forEach>
