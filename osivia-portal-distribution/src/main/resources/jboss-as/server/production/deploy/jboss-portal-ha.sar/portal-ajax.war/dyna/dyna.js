@@ -241,7 +241,7 @@ function updatePortletContent(item, url) {
 		ajaxCall = false;
 	}
 
-	if (Element.up(item, "div.no-ajax-link") != null) {
+	if (Element.up(item, ".no-ajax-link") != null) {
 		ajaxCall = false;
 	}
 
@@ -272,8 +272,7 @@ function bilto(event) {
 
 	//PIA : desactivation des liens en ajax
 	if (!source.classList.contains("ajax-link")
-			&& ((Element.up(source, ".no-ajax-link") != null) || source
-					.hasClassName("no-ajax-link"))) {
+			&& ((Element.up(source, ".no-ajax-link") != null) || source.hasClassName("no-ajax-link"))) {
 		return;
 	}
 

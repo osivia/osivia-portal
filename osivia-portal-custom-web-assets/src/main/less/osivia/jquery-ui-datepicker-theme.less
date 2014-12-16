@@ -1,0 +1,103 @@
+// jQuery UI datepicker theme
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+// Variables
+@datepicker-bg: #fff;
+@datepicker-border-color: #ddd;
+@datepicker-border-radius: 4px;
+@datepicker-heading-bg: #f5f5f5;
+@datepicker-padding: 10px;
+
+
+// Outer container of the datepicker
+.ui-datepicker {
+    padding: 0 @datepicker-padding;
+    z-index: 5;
+    
+    background-color: @datepicker-bg;
+    
+    border-style: solid;
+    border-width: 1px;
+    border-color: @datepicker-border-color;
+    border-radius: @datepicker-border-radius;
+    
+    .box-shadow(@shadow: 0 1px 1px fade(#000, 5%));
+    
+    
+    // Container for the datepicker's header
+    .ui-datepicker-header {
+        margin: 0 -@datepicker-padding;
+        
+        background-color: @datepicker-heading-bg;
+        
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-bottom-color: @datepicker-border-color;
+        
+        .border-top-radius(@radius: @datepicker-border-radius);
+    }
+    
+    
+    // Table that contains the calendar itself
+    table.ui-datepicker-calendar {
+        margin-bottom: @datepicker-padding;
+        
+        .clearfix;
+        
+        
+        // Default cell
+        .ui-state-default {
+            border-style: solid;
+            border-width: 1px;
+            border-color: @datepicker-heading-bg;
+        }
+        
+        
+        // Hovered cell
+        .ui-state-hover {
+            border-color: initial;
+        }
+        
+        
+        // Cells containing days that are not selectable by the user
+        .ui-datepicker-unselectable {
+            .ui-state-default {
+                border-style: none;
+            }
+        }
+        
+
+        // Cell containing today's date
+        .ui-datepicker-today {
+            .ui-state-default {
+                background-color: @datepicker-heading-bg;
+                border-color: #ccc;
+            }
+            .ui-state-hover {
+                border-color: initial;
+            }
+        }
+        
+        
+        // Cell containing the selected day
+        .ui-datepicker-current-day {
+            .ui-state-default {
+                margin: -1px;
+                
+                border-color: initial;
+                border-width: 2px;
+                
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+
+
+

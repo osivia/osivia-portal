@@ -97,8 +97,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private static final String HTML_CLASS_DROPDOWN_TOGGLE = "dropdown-toggle";
     /** HTML class "dropdown-menu". */
     private static final String HTML_CLASS_DROPDOWN_MENU = "dropdown-menu";
-    /** HTML class "dropdown-header". */
-    private static final String HTML_CLASS_DROPDOWN_HEADER = "dropdown-header";
     /** HTML class "caret". */
     private static final String HTML_CLASS_DROPDOWN_CARET = "caret";
     /** HTML class "divider". */
@@ -236,7 +234,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // View profile
             try {
                 PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-                PortalObjectId portalId = page.getPortal().getId();
 
                 Map<String, String> properties = new HashMap<String, String>();
 				properties.put("osivia.hideTitle", "1");
@@ -360,7 +357,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String osiviaAdministrationURL = StringUtils.EMPTY;
         try {
             osiviaAdministrationURL = this.urlFactory.getStartPortletUrl(portalControllerContext, InternalConstants.PORTLET_ADMINISTRATION_INSTANCE_NAME, null,
-                    null, true);
+                    true);
         } catch (Exception e) {
             // Do nothing
         }
@@ -389,11 +386,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		Map<String, String> parameters = new HashMap<String, String>();
 
 		try {
-		    
+
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
             properties.put("osivia.ajaxLink", "1");
 			properties.put("osivia.hideTitle", "1");
-            
+
 			String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
 					bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "toutatice-identite-gestionpersonnes-portailPortletInstance",
 					properties, parameters);
@@ -411,7 +408,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 			String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
 					bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "toutatice-identite-gestiongroupes-portailPortletInstance",
 					properties, parameters);
-                    
+
 
 			String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
 			Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle, "group",
@@ -468,6 +465,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, "disabled");
         }
 
+        // Divider
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Caches initialization
         ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());

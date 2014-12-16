@@ -21,7 +21,7 @@
 </c:choose>
 
 
-<nav role="navigation">
+<nav id="tabs-menu" role="navigation">
     <h2 class="hidden"><is:getProperty key="TABS_TITLE" /></h2>
     
     <ul class="nav nav-osivia ${fixed}">
@@ -42,7 +42,7 @@
                 <div class="text-center clearfix">
                     <!-- Close -->
                     <c:if test="${not empty userPage.closePageUrl}">
-                        <a href="${userPage.closePageUrl}" class="page-close">
+                        <a href="${userPage.closePageUrl}" class="page-close hidden-xs">
                             <i class="glyphicons halflings remove"></i>
                         </a>
                     </c:if>

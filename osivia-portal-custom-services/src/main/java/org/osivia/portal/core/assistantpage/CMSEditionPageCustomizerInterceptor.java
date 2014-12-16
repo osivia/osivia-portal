@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
@@ -536,26 +537,28 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout layout = this.getServiceLayout().getLayout(layoutId, true);
 
-        for (Object region : layout.getLayoutInfo().getRegionNames()) {
+        if ((layout != null) && (layout.getLayoutInfo() != null) && CollectionUtils.isNotEmpty(layout.getLayoutInfo().getRegionNames())) {
+            for (Object region : layout.getLayoutInfo().getRegionNames()) {
+                String regionName = (String) region;
+                RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
+                if (renderCtx == null) {
+                    // Empty region : must create blank window
+                    Map<String, String> windowProps = new HashMap<String, String>();
+                    windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+                    windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+                    windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+                    windowProps.put(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR, String.valueOf(true));
 
-            String regionName = (String) region;
-            RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
-            if (renderCtx == null) {
-                // Empty region : must create blank window
-                Map<String, String> windowProps = new HashMap<String, String>();
-                windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-                windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-                windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
-                windowProps.put(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR, String.valueOf(true));
+                    WindowResult windowResult = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
+                    WindowContext windowContext = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", windowResult);
+                    rendition.getPageResult().addWindowContext(windowContext);
 
-                WindowResult windowResult = new WindowResult("PIA_EMPTY", "", Collections.EMPTY_MAP, windowProps, null, WindowState.NORMAL, Mode.VIEW);
-                WindowContext windowContext = new WindowContext(regionName + "_PIA_EMPTY", regionName, "0", windowResult);
-                rendition.getPageResult().addWindowContext(windowContext);
-
-                renderCtx = rendition.getPageResult().getRegion2(regionName);
+                    renderCtx = rendition.getPageResult().getRegion2(regionName);
+                }
             }
         }
     }
+
 
     /**
      * @return the serviceLayout
