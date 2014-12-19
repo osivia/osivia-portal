@@ -1,0 +1,205 @@
+//
+// OSIVIA Bootstrap extensions - Helper classes
+// --------------------------------------------------
+
+
+// Colors
+
+// Make color entry function
+.make-color(@name, @color, @isgray) when (iscolor(@color)) {
+    .make-color-base(@name: @name, @color: @color, @isgray: @isgray);
+    .make-color-hover(@name: @name, @color: @color);
+}
+
+// Make base color function
+.make-color-base(@name, @color, @isgray) when (@isgray) {
+    .text-@{name} {
+        .text-emphasis-variant(@color);
+    }
+}
+
+// Make hover color function
+.make-color-hover(@name, @color) {
+    .text-@{name}-hover {
+        &:hover, &:focus, &:active {
+            color: @color;
+        }
+    }
+}
+
+
+// Grey colors
+.make-color(@name: gray-darker, @color: @gray-darker, @isgray: true);
+.make-color(@name: gray-dark, @color: @gray-dark, @isgray: true);
+.make-color(@name: gray-light, @color: @gray-light, @isgray: true);
+.make-color(@name: gray-lighter, @color: @gray-lighter, @isgray: true);
+
+// Brand colors
+.make-color(@name: primary, @color: @brand-primary, @isgray: false);
+.make-color(@name: success, @color: @brand-success, @isgray: false);
+.make-color(@name: info, @color: @brand-info, @isgray: false);
+.make-color(@name: warning, @color: @brand-warning, @isgray: false);
+.make-color(@name: danger, @color: @brand-danger, @isgray: false);
+
+
+
+// Backgrounds
+
+// Make background entry function
+.make-bg(@name, @color, @isgray) when (iscolor(@color)) {
+    .make-bg-base(@name: @name, @color: @color, @isgray: @isgray);
+    .make-bg-alpha(@name: @name, @color: @color, @alpha: 80);
+}
+
+// Make background base color function
+.make-bg-base(@name, @color, @isgray) when (@isgray) {
+    .bg-@{name} {
+        .bg-variant-constrast(@color: @color);
+    }
+    .bg-@{name}-hover {
+        &:hover, &:focus, &:active {
+            .bg-variant(@color: @color);
+        }
+    }
+}
+
+// Make background alpha colors function
+.make-bg-alpha(@name, @color, @alpha) when (isnumber(@alpha)) and (@alpha > 0) {
+    .bg-@{name}-alpha-@{alpha} {
+        .bg-variant-constrast(@color: fade(@color, @alpha));
+    }
+    .bg-@{name}-alpha-@{alpha}-hover {
+        &:hover, &:focus, &:active {
+            .bg-variant(@color: fade(@color, @alpha));
+        }
+    }
+    
+    // Loop
+    .make-bg-alpha(@name: @name, @color: @color, @alpha: @alpha - 20);
+}
+
+// Background color with constast
+.bg-variant-constrast(@color: @color) {
+    color: contrast(@color, @text-color, #fff);
+    
+    .bg-variant(@color: @color);
+}
+
+
+// Grey colors
+.make-bg(@name: gray-darker, @color: @gray-darker, @isgray: true);
+.make-bg(@name: gray-dark, @color: @gray-dark, @isgray: true);
+.make-bg(@name: gray-light, @color: @gray-light, @isgray: true);
+.make-bg(@name: gray-lighter, @color: @gray-lighter, @isgray: true);
+
+// Brand colors
+.make-bg(@name: primary, @color: @brand-primary, @isgray: false);
+.make-bg(@name: success, @color: @state-success-bg, @isgray: false);
+.make-bg(@name: info, @color: @state-info-bg, @isgray: false);
+.make-bg(@name: warning, @color: @state-warning-bg, @isgray: false);
+.make-bg(@name: danger, @color: @state-danger-bg, @isgray: false);
+
+// Body color
+.make-bg(@name: body, @color: @body-bg, @isgray: true);
+
+
+
+// Borders
+
+// Make border color entry function
+.make-border(@name, @color) when (iscolor(@color)) {
+    .make-border-base(@name: @name, @color: @color);
+    .make-border-alpha(@name: @name, @color: @color, @alpha: 80);
+}
+
+// Make border base color function
+.make-border-base(@name, @color) {
+    .border-@{name} {
+        border-color: @color;
+    }
+    
+    .make-border-top(@name: @name, @color: @color);
+    .make-border-bottom(@name: @name, @color: @color);
+    .make-border-left(@name: @name, @color: @color);
+    .make-border-right(@name: @name, @color: @color);
+}
+
+// Make border alpha color function
+.make-border-alpha(@name, @color, @alpha) when (isnumber(@alpha)) and (@alpha > 0) {
+    .border-@{name}-alpha-@{alpha} {
+        border-color: fade(@color, @alpha);
+    }
+    
+    .make-border-top(@name: @name, @color: @color, @alpha: @alpha);
+    .make-border-bottom(@name: @name, @color: @color, @alpha: @alpha);
+    .make-border-left(@name: @name, @color: @color, @alpha: @alpha);
+    .make-border-right(@name: @name, @color: @color, @alpha: @alpha);
+    
+    // Loop
+    .make-border-alpha(@name: @name, @color: @color, @alpha: @alpha - 20);
+}
+
+// Make border top position color function
+.make-border-top(@name, @color) {
+    .border-@{name}-top {
+        border-top-color: @color;
+    }
+}
+.make-border-top(@name, @color, @alpha) {
+    .border-@{name}-top-alpha-@{alpha} {
+        border-top-color: fade(@color, @alpha);
+    }
+}
+
+// Make border bottom position color function
+.make-border-bottom(@name, @color) {
+    .border-@{name}-bottom {
+        border-bottom-color: @color;
+    }
+}
+.make-border-bottom(@name, @color, @alpha) {
+    .border-@{name}-bottom-alpha-@{alpha} {
+        border-bottom-color: fade(@color, @alpha);
+    }
+}
+
+// Make border left position color function
+.make-border-left(@name, @color) {
+    .border-@{name}-left {
+        border-left-color: @color;
+    }
+}
+.make-border-left(@name, @color, @alpha) {
+    .border-@{name}-left-alpha-@{alpha} {
+        border-left-color: fade(@color, @alpha);
+    }
+}
+
+// Make border right position color function
+.make-border-right(@name, @color) {
+    .border-@{name}-right {
+        border-right-color: @color;
+    }
+}
+.make-border-right(@name, @color, @alpha) {
+    .border-@{name}-right-alpha-@{alpha} {
+        border-right-color: fade(@color, @alpha);
+    }
+}
+
+
+// Grey colors
+.make-border(@name: gray-darker, @color: @gray-darker);
+.make-border(@name: gray-dark, @color: @gray-dark);
+.make-border(@name: gray-light, @color: @gray-light);
+.make-border(@name: gray-lighter, @color: @gray-lighter);
+
+// Brand colors
+.make-border(@name: primary, @color: darken(@brand-primary, 5%));
+.make-border(@name: success, @color: darken(@state-success-border, 5%));
+.make-border(@name: info, @color: darken(@state-info-border, 5%));
+.make-border(@name: warning, @color: darken(@state-warning-border, 5%));
+.make-border(@name: danger, @color: darken(@state-danger-border, 5%));
+
+// Body color
+.make-border(@name: body, @color: @body-bg);

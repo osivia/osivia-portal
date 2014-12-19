@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,64 +10,84 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.api.theming;
 
-import java.io.Serializable;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class UserPortal.
+ * User portal java-bean.
  */
-public class UserPortal implements Serializable {
-	
+public class UserPortal {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -4680072181726328231L;
-	
-	/** The name. */
-	private String name;
-	
-	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /** Portal name. */
+    private String name;
+    /** User pages. */
+    private List<UserPage> userPages;
+    /** Default page. */
+    private UserPage defaultPage;
 
-	/**
-	 * Sets the name.
-	 *
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
 
-	/** The pages. */
-	private List<UserPage> pages;
+    /**
+     * Constructor.
+     */
+    public UserPortal() {
+        super();
+    }
 
-	/**
-	 * Gets the user pages.
-	 *
-	 * @return the user pages
-	 */
-	public List<UserPage> getUserPages() {
-		return pages;
-	
-	}
 
-	/**
-	 * Sets the user pages.
-	 *
-	 * @param pages the new user pages
-	 */
-	public void setUserPages(List<UserPage> pages ) {
-		this.pages = pages;
-	}
+    /**
+     * Getter for name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Setter for name.
+     *
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Getter for userPages.
+     *
+     * @return the userPages
+     */
+    public List<UserPage> getUserPages() {
+        return this.userPages;
+    }
+
+    /**
+     * Setter for userPages.
+     *
+     * @param userPages the userPages to set
+     */
+    public void setUserPages(List<UserPage> userPages) {
+        this.userPages = userPages;
+    }
+
+    /**
+     * Getter for defaultPage.
+     * 
+     * @return the defaultPage
+     */
+    public UserPage getDefaultPage() {
+        return this.defaultPage;
+    }
+
+    /**
+     * Setter for defaultPage.
+     * 
+     * @param defaultPage the defaultPage to set
+     */
+    public void setDefaultPage(UserPage defaultPage) {
+        this.defaultPage = defaultPage;
+    }
 
 }

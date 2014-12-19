@@ -298,12 +298,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
             // Default page indicator
             boolean isDefaultPage = child.equals(defaultPage);
-            
+
             // Hide templates
             if ("templates".equalsIgnoreCase(name)) {
                 continue;
             }
-            
+
             // Get domain
             String curDomain = TabsCustomizerInterceptor.getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
             if (curDomain != null) {
@@ -342,6 +342,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 UserPage userPage = new UserPage();
                 mainPages.add(userPage);
 
+                if (isDefaultPage) {
+                    userPortal.setDefaultPage(userPage);
+                }
+
                 // View page command
                 ViewPageCommand showPage = new ViewPageCommand(child.getId());
 
@@ -358,7 +362,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     userPage.setUrl(url + "?init-state=true");
                 }
 
-                
+
                 userPage.setName(name);
 
                 userPage.setDefaultPage(isDefaultPage);

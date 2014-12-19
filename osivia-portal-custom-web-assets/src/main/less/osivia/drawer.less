@@ -1,0 +1,96 @@
+//
+// OSIVIA Portal - Drawer component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+.btn.drawer-toggle-btn {
+    display: none;
+}
+
+.screen-wrapper() {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+@media screen and (max-width: @screen-xs-max) {
+    body {
+        header, footer {
+            position: absolute;
+            visibility: hidden;
+            width: 100%;
+        }
+        
+        
+        &.with-drawer {
+            .screen-wrapper();
+
+            .drawer-toggle-btn {
+                display: block;
+            }
+        }
+    }
+    
+    .wrapper-outer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+        .screen-wrapper();
+
+        padding-top: 50px;
+        
+        .wrapper-inner {
+            position: relative;
+            
+            .screen-wrapper();
+            
+            & > * {
+                max-height: 100%;
+                overflow: auto;
+            }
+        }
+    }
+    
+    #drawer {
+        position: absolute;
+        top: 0;
+        left: -80%;
+        z-index: 120;
+        
+        height: 100%;
+        width: 80%;
+        overflow: auto;
+        
+        background-color: #fff;
+        padding-top: 20px;
+        
+        .translate3d(@x: 0, @y: 0, @z: 0);
+        .backface-visibility(@visibility: hidden);
+        .transition(@transition: all 300ms ease-out);
+        
+        &.active {
+            .translate3d(@x: 100%, @y: 0, @z: 0);
+        }
+    }
+    
+    #drawer-shadowbox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 110;
+        
+        background-color: #000;
+        opacity: 0;
+        
+        .screen-wrapper();
+    }
+}

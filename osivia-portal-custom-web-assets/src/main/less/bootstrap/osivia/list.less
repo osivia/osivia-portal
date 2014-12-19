@@ -1,0 +1,45 @@
+//
+// OSIVIA Bootstrap extensions - List
+// --------------------------------------------------
+
+
+// Linked list
+ul.list-group {
+    li.list-group-item.list-group-item-linked {
+        padding: 0;
+        
+        a.list-group-item {
+            border: none;
+            border-radius: 0;
+        }
+        
+        &:FIRST-CHILD a.list-group-item {
+            .border-top-radius(@radius: @list-group-border-radius);
+        }
+        
+        &:LAST-CHILD a.list-group-item {
+            .border-bottom-radius(@radius: @list-group-border-radius);
+        }
+    }
+}
+
+
+// Hierarchical list
+ul.list-group.list-group-hierarchical {
+    ul.list-group {
+        margin-bottom: 0;
+        margin-left: @padding-large-horizontal;
+        padding-left: @padding-small-horizontal;
+        
+        li.list-group-item {
+            border-bottom-style: none;
+            border-left-style: none;
+            border-right-style: none;
+            border-radius: 0;
+            
+            a.list-group-item {
+                border-radius: 0;
+            }
+        }
+    }
+}

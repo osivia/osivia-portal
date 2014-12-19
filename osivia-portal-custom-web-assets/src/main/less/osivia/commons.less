@@ -1,4 +1,89 @@
-// OSIVIA commons
+//
+// OSIVIA commons properties
 // --------------------------------------------------
 
 
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+
+// Text centered vertically
+.text-middle {
+    position: relative;
+    top: 50%;
+    
+    .translate(@x: 0, @y: -50%);
+}
+
+
+
+// Hide when JavaScript is enable (overrided by noscript.css properties)
+.hidden-script {
+    display: none;
+}
+
+
+
+// Accessible dropdown menu without JavaScript
+.accessible-dropdown-menu {
+    .btn {
+        &:active, &:focus {
+            & + .dropdown-menu {
+                display: block;
+            }
+        }
+    }
+    
+    .dropdown-menu {
+        &:focus, &:hover {
+            display: block;
+        }
+    }
+}
+
+
+
+// Wizard edging
+.wizard-edging {
+    padding: 5px;
+    
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+
+    &.region {
+        margin: 10px 0;
+        
+        border-color: #aaa;
+    }
+    
+    &.window {
+        margin-top: 5px;
+        
+        border-color: #ccc;
+    }
+}
+
+
+
+// Popup
+#popup-body {
+    background-color: transparent;
+    
+    .portlet-container {
+        margin-bottom: 0;
+    }
+}
+
+
+
+// JSTree
+.jstree {
+    width: 280px;
+    min-height: 100px;
+    overflow: auto;
+}
+.jstree-filter {
+    margin-bottom: 10px;
+}
