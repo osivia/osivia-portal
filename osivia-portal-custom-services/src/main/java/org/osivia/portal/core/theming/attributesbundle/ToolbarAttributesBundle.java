@@ -296,9 +296,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         // Check if layout contains CMS
+        boolean spaceSite = PortalObjectUtils.isSpaceSite(page);
         Boolean layoutCMS = (Boolean) context.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         try {
-            if (BooleanUtils.isTrue(layoutCMS) && CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)
+            if (spaceSite && BooleanUtils.isTrue(layoutCMS) && CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)
                     && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(context, page)) {
                 // Web page menu
                 this.generateAdministrationWebPageMenu(context, page, administration);
@@ -371,7 +372,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String jbossAdministrationURL = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
         Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, HTMLConstants.TARGET_NEW_WINDOW, null, null,
-                jbossAdministrationTitle, "halflings list-alt", AccessibilityRoles.MENU_ITEM);
+                jbossAdministrationTitle, "halflings dashboard", AccessibilityRoles.MENU_ITEM);
         Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.I, "glyphicons new_window_alt", StringUtils.EMPTY);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
@@ -828,9 +829,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // URL
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.cms.basePath", basePath);
-        Map<String, String> params = new HashMap<String, String>();
-        String siteMapURL = this.urlFactory.getStartPortletUrl(new PortalControllerContext(context),
-                "osivia-portal-custom-web-assets-sitemapPortletInstance", windowProperties, params, true);
+        String siteMapURL = this.urlFactory.getStartPortletUrl(new PortalControllerContext(context), "osivia-portal-custom-web-assets-sitemapPortletInstance",
+                windowProperties, true);
         // Link
         Element siteMapLink = DOM4JUtils.generateLinkElement(siteMapURL, null, null, HTML_CLASS_FANCYFRAME_REFRESH, siteMapTitle, "halflings map-marker",
                 AccessibilityRoles.MENU_ITEM);

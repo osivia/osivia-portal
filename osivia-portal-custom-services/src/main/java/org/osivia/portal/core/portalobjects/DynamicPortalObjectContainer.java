@@ -84,8 +84,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
     private INotificationsService notificationService;
 
     public INotificationsService getNotificationService()   {
-        if( this.notificationService == null)
+        if( this.notificationService == null) {
             this.notificationService = NotificationsUtils.getNotificationsService();
+        }
         return this.notificationService;
     }
 
@@ -405,6 +406,11 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     path = cmsBasePath;
                 }
 
+                // For portal sites, site path is set to publish space path
+                if (!PortalObjectUtils.isSpaceSite(portal)) {
+                    sitePath = publishSpacePath;
+                }
+
                 // Scope
                 String scope = defaultPage.getDeclaredProperty("osivia.cms.navigationScope");
 
@@ -415,15 +421,16 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     cmsReadItemContext.setDisplayLiveVersion("0");
 
                     EditionState state = ContributionService.getNavigationalState(controllerContext, ns);
-                    if (state != null && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
+                    if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
                         cmsReadItemContext.setForcedLivePath(state.getDocPath());
                     }
 
 
                     // SILENT MODE
                     int notificationSized = -1;
-                    if (controllerContext != null)
+                    if (controllerContext != null) {
                         notificationSized = this.getNotificationService().getNotificationsList(new PortalControllerContext(controllerContext)).size();
+                    }
 
                     // try {
 
@@ -504,8 +511,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     if (notificationSized != -1) {
                         List<Notifications> notificationsAfter = this.getNotificationService().getNotificationsList(
                                 new PortalControllerContext(controllerContext));
-                        if (notificationsAfter.size() > notificationSized)
+                        if (notificationsAfter.size() > notificationSized) {
                             notificationsAfter.remove(notificationsAfter.size() - 1);
+                        }
                     }
                 }
 			}
@@ -632,8 +640,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		PortalObject po = container.getNonDynamicObject(parentId);
 
-		if( po instanceof PageImpl)
-		    return new DynamicPersistentPage(container, (PageImpl) po, this);
+		if( po instanceof PageImpl) {
+            return new DynamicPersistentPage(container, (PageImpl) po, this);
+        }
 
 		// Page parent non dynamique
 		return container.getObject(parentId);

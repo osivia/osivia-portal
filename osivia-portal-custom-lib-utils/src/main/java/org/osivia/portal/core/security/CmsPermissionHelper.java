@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -18,7 +18,6 @@ import java.util.Locale;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.jboss.portal.common.invocation.InvocationContext;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -40,7 +39,6 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 
 
@@ -81,7 +79,7 @@ public class CmsPermissionHelper {
 
     /**
      * Define the current security level of a document.
-     * 
+     *
      * @param ctx the controllerContext
      * @param poid the current page
      * @throws ControllerException
@@ -182,13 +180,14 @@ public class CmsPermissionHelper {
 
                 CMSPublicationInfos pubInfos = null;
 
- 
+
 
                 pubInfos = icmsServiceLocactor.getCMSService().getPublicationInfos(cmsContext, cmsPath);
 
-                if( !pubInfos.isPublished())
+                if( !pubInfos.isPublished()) {
                     cmsContext.setDisplayLiveVersion("1");
-                
+                }
+
                 boolean isWebPage = icmsServiceLocactor.getCMSService().isCmsWebPage(cmsContext, cmsPath);
 
 
@@ -199,18 +198,18 @@ public class CmsPermissionHelper {
 
                 if (!isWebPage) {
                     cmsVersion = CMS_VERSION_ONLINE;
-                    
-                    if (pubInfos.getPublishSpacePath() != null && pubInfos.isLiveSpace()) {
+
+                    if ((pubInfos.getPublishSpacePath() != null) && pubInfos.isLiveSpace()) {
                         cmsVersion = CMS_VERSION_LIVE;
-                    }   
+                    }
                 }
 
 
                 if ((pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace() && (pubInfos.getDocumentPath().equals(liveEditionPath) || pubInfos.getLiveId().equals(liveEditionPath))) {
                     cmsVersion = CMS_VERSION_PREVIEW;
                 }
-                
-                
+
+
                 level = definePermissions(ctx, locale, editableByUser, published, cmsVersion, belongToPublishSpace);
 
                 ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, CURRENT_PAGE_SECURITY_LEVEL.concat(cmsPath), level);
@@ -319,16 +318,6 @@ public class CmsPermissionHelper {
 
 
         return cmsEditionMode;
-    }
-
-    public static Boolean showCmsTools(InvocationContext context) {
-        Boolean currentEditionMode = getCurrentCmsEditionMode(context).equals(CMS_EDITION_MODE_ON);
-        if (currentEditionMode && getCurrentCmsVersion(context).equals(CMS_VERSION_ONLINE)) {
-            // in online mode, cms tools are hidden
-            return false;
-        } else {
-            return currentEditionMode;
-        }
     }
 
     public static void changeCmsMode(InvocationContext context, String pagePath, String version, String editionMode) {

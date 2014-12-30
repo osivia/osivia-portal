@@ -48,6 +48,7 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.core.cms.CMSConfigurationItem;
@@ -58,6 +59,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -246,7 +248,21 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             this.synchronizeRegionContexts(rendition, page);
 
             // Online mode indicator
-            boolean online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId()));
+            boolean online;
+            if (PortalObjectUtils.isSpaceSite(page)) {
+                online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId()));
+            } else {
+                NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
+                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
+                if (ns != null) {
+                    EditionState editionState = ContributionService.getNavigationalState(controllerContext, ns);
+                    online = EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
+                } else {
+                    online = true;
+                }
+            }
+
 
             // CMS service
             ICMSService cmsService = getCMSService();
@@ -395,7 +411,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
 
         // Show CMS tools indicator
-        boolean showCMSTools = CmsPermissionHelper.showCmsTools(controllerContext)
+        boolean showCMSTools = this.showCmsTools(controllerContext, page)
                 && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(controllerContext, page);
 
 
@@ -557,6 +573,30 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
         }
+    }
+
+
+    private boolean showCmsTools(ControllerContext controllerContext, Page page) {
+        boolean show;
+        if (PortalObjectUtils.isSpaceSite(page)) {
+            Boolean currentEditionMode = CmsPermissionHelper.getCurrentCmsEditionMode(controllerContext).equals(CmsPermissionHelper.CMS_EDITION_MODE_ON);
+            if (currentEditionMode && CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)) {
+                // in online mode, cms tools are hidden
+                show = false;
+            } else {
+                show = currentEditionMode;
+            }
+        } else {
+            NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
+            if (ns != null) {
+                EditionState editionState = ContributionService.getNavigationalState(controllerContext, ns);
+                show = EditionState.CONTRIBUTION_MODE_EDITION.equals(editionState.getContributionMode());
+            } else {
+                show = false;
+            }
+        }
+        return show;
     }
 
 

@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -263,56 +265,57 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 /* v 1.0.14 : affichage d'une barre de menu */
 
-                if(!Boolean.TRUE.equals(attributes.get("osivia.menubar.hide"))){
+                if (!Boolean.TRUE.equals(attributes.get("osivia.menubar.hide"))) {
 
                     if (Boolean.TRUE.equals(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
-                    List<MenubarItem> menubarItems = (List<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
-                    if (menubarItems != null) {
-                        String title = window.getDeclaredProperty("osivia.title");
-                        if (title == null) {
-                            title = fr.getTitle();
-                        }
+                        List<MenubarItem> menubarItems = (List<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
+                        if (menubarItems != null) {
+                            String title = window.getDeclaredProperty("osivia.title");
+                            if (title == null) {
+                                title = fr.getTitle();
+                            }
 
                             PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                                     "osivia.popupModeWindowID");
 
-                        String printPortlet = null;
+                            String printPortlet = null;
 
 
-                        // impression
-                        printPortlet = window.getDeclaredProperty("osivia.printPortlet");
-                        if ((printPortlet == null) && (popupWindowId == null)) {
-                            if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-                                        printPortlet = "1";
+                            // impression
+                            printPortlet = window.getDeclaredProperty("osivia.printPortlet");
+                            if ((printPortlet == null) && (popupWindowId == null)) {
+                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+                                    printPortlet = "1";
+                                }
                             }
-                        }
 
 
-                        if ("1".equals(printPortlet)) {
-                            // Appel module custom PRINT
-                            Map<String, Object> customAttrMap = new HashMap<String, Object>();
-                            customAttrMap.put("title", title);
-                            customAttrMap.put("menuBar", menubarItems);
-                            customAttrMap.put("windowId", windowId);
+                            if ("1".equals(printPortlet)) {
+                                // Appel module custom PRINT
+                                Map<String, Object> customAttrMap = new HashMap<String, Object>();
+                                customAttrMap.put("title", title);
+                                customAttrMap.put("menuBar", menubarItems);
+                                customAttrMap.put("windowId", windowId);
                                 customAttrMap.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
-                            CustomizationContext customCtx = new CustomizationContext(customAttrMap);
-                            this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
+                                CustomizationContext customCtx = new CustomizationContext(customAttrMap);
+                                this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
 
-                            MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
-                            if (printItem == null) {
-                                String jsTitle = StringEscapeUtils.escapeJavaScript(title);
-                                printItem = new MenubarItem("PRINT", "Imprimer", 100, "#", "popup2print('" + jsTitle + "', '" + windowId + "_print');",
-                                        "portlet-menuitem-print hidden-xs", null);
-                                printItem.setGlyphicon("halflings print");
+                                MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
+                                if (printItem == null) {
+                                    String jsTitle = StringEscapeUtils.escapeJavaScript(title);
+                                    printItem = new MenubarItem("PRINT", "Imprimer", MenubarItem.ORDER_PORTLET_GENERIC + 10, "#", "popup2print('" + jsTitle
+                                            + "', '" + windowId + "_print');",
+                                            "portlet-menuitem-print hidden-xs", null);
+                                    printItem.setGlyphicon("halflings print");
+                                }
+                                menubarItems.add(printItem);
                             }
-                            menubarItems.add(printItem);
-                        }
 
-                        /* Add back item */
+                            /* Add back item */
 
 
-                        if( window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
+                            if (window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
 
                                 if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
 
@@ -328,9 +331,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     }
 
                                     if (!containsBackItem) {
-                                        MenubarItem backItem = new MenubarItem("BACK", "Revenir", MenubarItem.ORDER_PORTLET_SPECIFIC_CMS,
-                                                window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
-                                        backItem.setGlyphicon("halflings arrow-left");
+                                        MenubarItem backItem = new MenubarItem("BACK", "Revenir", 0, window.getDeclaredProperty("osivia.dynamic.close_url"),
+                                                null, null, null);
+                                        backItem.setGlyphicon("undo");
                                         backItem.setAjaxDisabled(true);
                                         backItem.setFirstItem(true);
                                         menubarItems.add(backItem);
@@ -339,29 +342,36 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             }
 
 
+                            if (CollectionUtils.isNotEmpty(menubarItems)) {
+                                // Sort menubar
+                                Collections.sort(menubarItems, new Comparator<MenubarItem>() {
+                                    public int compare(MenubarItem e1, MenubarItem e2) {
+                                        return e1.getOrder() > e2.getOrder() ? 1 : -1;
+                                    }
+                                });
 
+                                boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());
+                                boolean PageMaximized = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
+                                        "osivia.portal.maximized"));
+                                boolean portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
+                                        && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));
+                                if (windowMaximized || (!PageMaximized && portletMenubar)) {
+                                    // Page menubar
+                                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+                                } else {
+                                    // Portlet menubar
+                                    if ("1".equals(printPortlet)) {
+                                        String pre = "<div id='" + windowId + "_print' class='portlet-print-box'>";
+                                        String post = "</div>";
+                                        updatedFragment = pre + updatedFragment + post;
+                                    }
 
-
-                        if (menubarItems.size() > 0) {
-                            List<MenubarItem> sortedItems = new ArrayList<MenubarItem>(menubarItems);
-                            Collections.sort(sortedItems, new Comparator<MenubarItem>() {
-
-                                public int compare(MenubarItem e1, MenubarItem e2) {
-                                    return e1.getOrder() > e2.getOrder() ? 1 : -1;
+                                    updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
                                 }
-                            });
-
-                            if ("1".equals(printPortlet)) {
-                                String pre = "<div id='" + windowId + "_print' class='portlet-print-box'>";
-                                String post = "</div>";
-                                updatedFragment = pre + updatedFragment + post;
                             }
-
-                                updatedFragment = this.generatePortletMenubar(controllerContext, sortedItems) + updatedFragment;
                         }
                     }
                 }
-            }
 
                 if (attributes.get("osivia.asyncReloading.ajaxId") != null) {
                     Map<String, String[]> newNS = new HashMap<String, String[]>();
@@ -419,17 +429,16 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode", "true");
             }
 
-             
+
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
             }
-            
+
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_POPUP_CLOSE))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction", "true");
             }
 
 
-            
         }
 
         return response;
@@ -460,7 +469,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
 
 
-        // Menubar left group
+        // Menubar first group
         Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
 
         // Menubar left group
@@ -494,10 +503,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 dropdownMenu.add(dropdownItemContainer);
 
                 parent = dropdownItemContainer;
-            } else if( item.isFirstItem()){
-            	parent = firstGroup;
-            }
-             else if (item.isStateItem()) {
+            } else if (item.isFirstItem()) {
+                parent = firstGroup;
+            } else if (item.isStateItem()) {
                 parent = leftGroup;
             } else {
                 parent = rightGroup;

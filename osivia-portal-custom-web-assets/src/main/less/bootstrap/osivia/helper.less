@@ -3,6 +3,21 @@
 // --------------------------------------------------
 
 
+// Font sizes
+
+// Make font size function
+.make-font-size(@name, @font-size) {
+    .font-size-@{name} {
+        font-size: @font-size;
+    }
+}
+
+.make-font-size(@name: base, @font-size: @font-size-base);
+.make-font-size(@name: large, @font-size: @font-size-large);
+.make-font-size(@name: small, @font-size: @font-size-small);
+
+
+
 // Colors
 
 // Make color entry function

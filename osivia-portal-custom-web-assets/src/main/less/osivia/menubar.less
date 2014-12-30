@@ -1,0 +1,32 @@
+//
+// OSIVIA Portal - Menubar component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+.menubar-container {
+    @media screen and (max-width: @screen-xs-max) {
+        display: block;
+        text-align: right;
+    }
+}
+
+
+.menubar {
+    .btn-toolbar .btn-group {
+        &:not(.state-group) {
+            font-size: 0;    
+        }
+        
+        &, & > .btn {
+            float: none;
+        }
+    }
+    
+    
+}

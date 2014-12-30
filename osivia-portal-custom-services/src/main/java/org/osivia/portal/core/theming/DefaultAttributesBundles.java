@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,7 @@ package org.osivia.portal.core.theming;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.BreadcrumbAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.HeaderMetadataAttributesBundle;
+import org.osivia.portal.core.theming.attributesbundle.MenubarAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.PageSettingsAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.SearchAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.SiteMapAttributesBundle;
@@ -39,6 +40,8 @@ public enum DefaultAttributesBundles {
     SEARCH(SearchAttributesBundle.getInstance()),
     /** Header metadata. */
     HEADER_METADATA(HeaderMetadataAttributesBundle.getInstance()),
+    /** Menubar. */
+    MENUBAR(MenubarAttributesBundle.getInstance()),
     /** Site map attributes bundle. */
     SITE_MAP(SiteMapAttributesBundle.getInstance()),
     /** Tabs attributes bundle. */
