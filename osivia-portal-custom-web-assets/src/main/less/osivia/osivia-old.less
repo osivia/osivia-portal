@@ -66,43 +66,6 @@
 
 
 
-// Drag'n'drop
-
-.dnd-region {
-    &:EMPTY, &.dnd-droppable, & > *.dnd-droppable {
-        border-style: dashed;
-        border-width: 1px;
-        border-color: @brand-success;
-        background-color: transparent;
-    }
-    
-    &:EMPTY {
-        border-color: @gray-lighter;
-        
-        padding: @padding-base-vertical @padding-base-horizontal;
-        
-        &:BEFORE {
-            content: attr(data-empty-title);
-        }
-        
-        .row > & {
-            margin: 0 floor((@grid-gutter-width / 2));
-        }
-    }
-    
-    .row > & .well ~ .btn-toolbar {
-        float: right;
-    }
-}
-
-.dnd-handle {
-    cursor: move;
-    position: relative;
-    min-height: 1.2em;
-}
-
-
-
 
 
 

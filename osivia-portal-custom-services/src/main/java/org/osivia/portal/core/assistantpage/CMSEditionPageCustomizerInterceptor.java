@@ -252,16 +252,15 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             if (PortalObjectUtils.isSpaceSite(page)) {
                 online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId()));
             } else {
-                // Page edition in portal mode
-                online = true;
                 NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
                         .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                 PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
                 if (ns != null) {
                     EditionState editionState = ContributionService.getNavigationalState(controllerContext, ns);
-                    if( editionState != null)
-                        online = EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
-                } 
+                    online = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
+                } else {
+                    online = true;
+                }
             }
 
 
@@ -592,7 +591,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
             PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
             if (ns != null) {
                 EditionState editionState = ContributionService.getNavigationalState(controllerContext, ns);
-                show = EditionState.CONTRIBUTION_MODE_EDITION.equals(editionState.getContributionMode());
+                show = (editionState != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(editionState.getContributionMode());
             } else {
                 show = false;
             }

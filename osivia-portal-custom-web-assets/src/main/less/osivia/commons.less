@@ -67,6 +67,42 @@
 
 
 
+// Drag & drop
+.dnd-region {
+    &:empty, &.dnd-droppable, & > *.dnd-droppable {
+        border-style: dashed;
+        border-width: 1px;
+        border-color: #5cb85c;
+        background-color: transparent;
+    }
+    
+    &:empty {
+        border-color: #eee;
+        
+        padding: 6px 12px;
+        
+        &::before {
+            content: attr(data-empty-title);
+        }
+        
+        .row > & {
+            margin: 0 15px;
+        }
+    }
+    
+    .row > & .well ~ .btn-toolbar {
+        float: right;
+    }
+}
+
+.dnd-handle {
+    cursor: move;
+    position: relative;
+    min-height: 1.2em;
+}
+
+
+
 // Popup
 #popup-body {
     background-color: transparent;

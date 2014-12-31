@@ -94,7 +94,7 @@ public class MenubarAttributesBundle implements IAttributesBundle {
 
 
             // Menubar first group
-            Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
+            Element firstGroup = DOM4JUtils.generateDivElement("btn-group first-group");
 
             // Menubar specific group
             Element specificGroup = DOM4JUtils.generateDivElement("btn-group");

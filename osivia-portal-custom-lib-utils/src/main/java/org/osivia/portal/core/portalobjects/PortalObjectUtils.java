@@ -22,6 +22,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
@@ -47,7 +48,7 @@ public class PortalObjectUtils {
 
     /**
      * Get current portal from controller context.
-     * 
+     *
      * @param controllerContext controller context
      * @return current portal
      */
@@ -65,6 +66,30 @@ public class PortalObjectUtils {
             }
         }
 
+        return portal;
+    }
+
+
+    /**
+     * Get current portal from any portal object.
+     *
+     * @param po portal object
+     * @return current portal
+     */
+    public static final Portal getPortal(PortalObject po) {
+        Portal portal = null;
+        if (po instanceof Portal) {
+            portal = (Portal) po;
+        } else if (po instanceof Page) {
+            Page page = (Page) po;
+            portal = page.getPortal();
+        } else if (po instanceof Window) {
+            Window window = (Window) po;
+            Page page = window.getPage();
+            if (page != null) {
+                portal = page.getPortal();
+            }
+        }
         return portal;
     }
 
@@ -218,13 +243,8 @@ public class PortalObjectUtils {
         }
 
         // Get current portal
-        Portal portal;
-        if (po instanceof Portal) {
-            portal = (Portal) po;
-        } else if (po instanceof Page) {
-            Page page = (Page) po;
-            portal = page.getPortal();
-        } else {
+        Portal portal = getPortal(po);
+        if (portal == null) {
             return null;
         }
 
@@ -256,13 +276,8 @@ public class PortalObjectUtils {
         }
 
         // Get current portal
-        Portal portal;
-        if (po instanceof Portal) {
-            portal = (Portal) po;
-        } else if (po instanceof Page) {
-            Page page = (Page) po;
-            portal = page.getPortal();
-        } else {
+        Portal portal = getPortal(po);
+        if (portal == null) {
             return false;
         }
 
@@ -283,13 +298,8 @@ public class PortalObjectUtils {
         }
 
         // Get current portal
-        Portal portal;
-        if (po instanceof Portal) {
-            portal = (Portal) po;
-        } else if (po instanceof Page) {
-            Page page = (Page) po;
-            portal = page.getPortal();
-        } else {
+        Portal portal = getPortal(po);
+        if (portal == null) {
             return false;
         }
 

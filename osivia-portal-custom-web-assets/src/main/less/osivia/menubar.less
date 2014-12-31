@@ -11,8 +11,15 @@
 
 .menubar-container {
     @media screen and (max-width: @screen-xs-max) {
-        display: block;
-        text-align: right;
+        overflow-x: auto;
+        
+        .clearfix;
+        
+        &, &.media-right {
+            display: block;
+            padding: 0;
+            text-align: right;
+        }
     }
 }
 
@@ -26,7 +33,11 @@
         &, & > .btn {
             float: none;
         }
+        
+        @media screen and (max-width: @screen-xs-max) {
+            &.first-group {
+                float: left;
+            }
+        }
     }
-    
-    
 }
