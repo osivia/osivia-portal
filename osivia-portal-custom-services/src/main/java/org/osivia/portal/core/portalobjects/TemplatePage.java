@@ -25,6 +25,7 @@ import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.jboss.portal.core.impl.model.portal.PortalObjectImpl;
 import org.jboss.portal.core.impl.model.portal.WindowImpl;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -108,6 +109,8 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
         return this.parent;
     }
 
+    
+    
 
     /**
      * {@inheritDoc}

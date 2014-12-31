@@ -56,7 +56,9 @@ import org.osivia.portal.core.cms.CMSEditableWindow;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.contribution.PublishContributionCommand;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -846,7 +848,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			dynamicPage = true;
 		}
 
-		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand))
+		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand) || (cmd instanceof ChangeContributionModeCommand) || (cmd instanceof PublishContributionCommand))
 				&& (object instanceof PortalImpl)) {
 			dynamicPortal = true;
 		}
