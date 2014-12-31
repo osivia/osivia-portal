@@ -14,6 +14,7 @@
 package org.osivia.portal.core.security;
 
 import java.util.Locale;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -76,6 +77,23 @@ public class CmsPermissionHelper {
     private static IInternationalizationService itlzService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
 
     private static INotificationsService notifService = Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
+    
+    
+    /**
+     * clear the previous cache
+     * 
+     * @param controllerContext
+     */
+    
+    
+    public static void clearCache( ControllerContext controllerContext){
+        Set keys = controllerContext.getAttributeResolver(ControllerCommand.REQUEST_SCOPE).getKeys();
+        for (Object key: keys)  {
+            if( key.toString().startsWith("osivia.currentPageSecurityLevel"))  {
+                controllerContext.getAttributeResolver(ControllerCommand.REQUEST_SCOPE).setAttribute(key, null);
+            }
+        }
+    }
 
     /**
      * Define the current security level of a document.

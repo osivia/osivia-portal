@@ -65,6 +65,7 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 import org.osivia.portal.core.selection.SelectionScope;
 import org.osivia.portal.core.selection.SelectionService;
@@ -707,7 +708,10 @@ public class PageMarkerUtils {
         }
 
         DynamicPortalObjectContainer.clearCache();
-
+        CmsPermissionHelper.clearCache(controllerContext);
+        
+        
+        
         return newPath;
     }
 

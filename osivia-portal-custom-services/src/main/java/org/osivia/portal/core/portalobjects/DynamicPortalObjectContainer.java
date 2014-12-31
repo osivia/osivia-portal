@@ -425,6 +425,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     EditionState state = ContributionService.getNavigationalState(controllerContext, ns);
                     if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
                         cmsReadItemContext.setForcedLivePath(state.getDocPath());
+                        windowsEditableWindowsMode = "preview";
                     }
 
 
@@ -843,7 +844,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		boolean dynamicPortal = false;
 		boolean dynamicContext = false;
 
-		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand))
+		if (((cmd instanceof PageCommand) || (cmd instanceof PortalCommand) || (cmd instanceof DynamicCommand) || (cmd instanceof PermLinkCommand) || (cmd instanceof MonEspaceCommand) || (cmd instanceof ChangeContributionModeCommand) || (cmd instanceof PublishContributionCommand))
 				&& (object instanceof PageImpl)) {
 			dynamicPage = true;
 		}

@@ -19,6 +19,8 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.impl.api.node.PageURL;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
@@ -32,6 +34,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
 
 public class ChangeContributionModeCommand extends ControllerCommand {
@@ -134,9 +137,10 @@ public class ChangeContributionModeCommand extends ControllerCommand {
         getControllerContext().setAttribute(REQUEST_SCOPE, "osivia.changeContributionMode", "1");
         
         PageProperties.getProperties().setRefreshingPage(true);        
+        DynamicPortalObjectContainer.clearCache();
         
         return new UpdatePageResponse(window.getPage().getId());
-
+        
 
     } catch (Exception e) {
         if (!(e instanceof ControllerException))
