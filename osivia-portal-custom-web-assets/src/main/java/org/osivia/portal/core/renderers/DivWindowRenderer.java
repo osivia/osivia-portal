@@ -34,8 +34,6 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.dom4j.QName;
-import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -223,7 +221,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Print portlet commands
         if (wizard) {
-            this.printPortletCommands(out, wrc, properties);
+            this.printPortletCommands(out, wrc, properties, bundle);
         }
 
         // Portlet container
@@ -376,88 +374,100 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param writer renderer writer
      * @param windowRendererContext window renderer context
      * @param properties properties
+     * @param bundle localized resource bundle
      * @throws RenderException
      */
     @SuppressWarnings("unchecked")
-    private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties) throws RenderException {
+    private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties, Bundle bundle) throws RenderException {
         String windowId = windowRendererContext.getId();
         String onclickAction = "windowId = '" + windowId + "'";
 
-
+        // Window title
+        StringBuilder builder = new StringBuilder();
         String windowTitle = properties.getWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE);
-        if (windowTitle == null) {
-            windowTitle = StringUtils.EMPTY;
-        }
-
         String instanceName = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_INSTANCE_DISPLAY_NAME);
-        windowTitle += "   [" + instanceName + "]";
+        if (StringUtils.isNotBlank(windowTitle)) {
+            builder.append(windowTitle);
+            builder.append(" ");
+        }
+        builder.append("[");
+        builder.append(instanceName);
+        builder.append("]");
+        windowTitle = builder.toString();
+
 
         // Commands toolbar
-        Element toolbar = new DOMElement(QName.get(HTMLConstants.DIV));
-        toolbar.addAttribute(QName.get(HTMLConstants.CLASS), "btn-toolbar");
-        toolbar.addAttribute(QName.get(HTMLConstants.ROLE), HTMLConstants.ROLE_TOOLBAR);
-
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
 
         // Move commands group
-        Element moveGroup = new DOMElement(QName.get(HTMLConstants.DIV));
-        moveGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        Element moveGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(moveGroup);
 
         // Up move command
-        String upUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
-        Element upLink = this.generatePortletCommandLink(upUrl, null, "halflings arrow-up", null, null);
+        String upURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
+        String upTitle = bundle.getString("WINDOW_MOVE_UP");
+        Element upLink = this.generatePortletCommandLink(upURL, null, "halflings arrow-up", null, upTitle);
         moveGroup.add(upLink);
 
         // Down move command
-        String downUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
-        Element downLink = this.generatePortletCommandLink(downUrl, null, "glyphicons halflings arrow-down", null, null);
+        String downURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
+        String downTitle = bundle.getString("WINDOW_MOVE_DOWN");
+        Element downLink = this.generatePortletCommandLink(downURL, null, "glyphicons halflings arrow-down", null, downTitle);
         moveGroup.add(downLink);
 
         // Previous region move command
-        String previousRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
-        Element previousRegionLink = this.generatePortletCommandLink(previousRegionUrl, null, "halflings arrow-left", null, null);
+        String previousRegionURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
+        String previousRegionTitle = bundle.getString("WINDOW_PREVIOUS_REGION");
+        Element previousRegionLink = this.generatePortletCommandLink(previousRegionURL, null, "halflings arrow-left", null, previousRegionTitle);
         moveGroup.add(previousRegionLink);
 
         // Next region move command
-        String nextRegionUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
-        Element nextRegionLink = this.generatePortletCommandLink(nextRegionUrl, null, "halflings arrow-right", null, null);
+        String nextRegionURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
+        String nextRegionTitle = bundle.getString("WINDOW_NEXT_REGION");
+        Element nextRegionLink = this.generatePortletCommandLink(nextRegionURL, null, "halflings arrow-right", null, nextRegionTitle);
         moveGroup.add(nextRegionLink);
 
 
         // Settings commands group
-        Element settingsGroup = new DOMElement(QName.get(HTMLConstants.DIV));
-        settingsGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        Element settingsGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(settingsGroup);
 
         // Window settings display command
-        String displaySettingsUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
-        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsUrl, onclickAction, "halflings uni-wrench", CLASS_FANCYBOX_INLINE_TITLE, windowTitle);
+        String displaySettingsURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
+        String displaySettingsTitle = bundle.getString("WINDOW_GENERIC_PARAMETERS", windowTitle);
+        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsURL, onclickAction, "halflings uni-wrench", CLASS_FANCYBOX_INLINE_TITLE,
+                displaySettingsTitle);
         settingsGroup.add(displaySettingsLink);
 
         // Portlet administration display command
         Collection<ActionRendererContext> actions = windowRendererContext.getDecoration().getTriggerableActions(ActionRendererContext.MODES_KEY);
         for (ActionRendererContext action : actions) {
             if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
-                String link = action.getURL() + "&windowstate=maximized";
-                Element displayAdminLink = this.generatePortletCommandLink(link, onclickAction, "halflings cog", CLASS_FANCYBOX_FRAME, windowTitle);
+                String displayAdminURL = action.getURL() + "&windowstate=maximized";
+                String displayAdminTitle = bundle.getString("WINDOW_ADMIN_PARAMETERS", windowTitle);
+                Element displayAdminLink = this.generatePortletCommandLink(displayAdminURL, onclickAction, "halflings cog", CLASS_FANCYBOX_FRAME,
+                        displayAdminTitle);
                 settingsGroup.add(displayAdminLink);
+                break;
             }
         }
 
+
         // Delete command group
-        Element deleteGroup = new DOMElement(QName.get(HTMLConstants.DIV));
-        deleteGroup.addAttribute(QName.get(HTMLConstants.CLASS), "btn-group btn-group-sm");
+        Element deleteGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(deleteGroup);
 
         // Delete portlet command
-        String deleteUrl = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
-        Element deleteLink = this.generatePortletCommandLink(deleteUrl, onclickAction, "halflings remove", CLASS_FANCYBOX_INLINE, null);
+        String deleteURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
+        String deleteTitle = bundle.getString("DELETE");
+        Element deleteLink = this.generatePortletCommandLink(deleteURL, onclickAction, "halflings remove", CLASS_FANCYBOX_INLINE, deleteTitle);
         deleteGroup.add(deleteLink);
 
 
         // Write HTML data
         writer.write(toolbar.asXML());
     }
+
 
     /**
      * Utility method used to generate an image command link.
@@ -470,31 +480,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      */
     private Element generatePortletCommandLink(String href, String onclick, String glyphicon, String additionalHTMLClass, String title) {
         // HTML "a" node
-        DOMElement a = new DOMElement(QName.get(HTMLConstants.A));
-        a.addAttribute(QName.get(HTMLConstants.HREF), href);
-        if (onclick != null) {
-            a.addAttribute(QName.get(HTMLConstants.ONCLICK), onclick);
-        }
-        if (title != null) {
-            a.addAttribute(QName.get(HTMLConstants.TITLE), title);
-        }
+        String htmlClass = StringUtils.join(new String[]{"btn btn-default ", additionalHTMLClass});
+        Element a = DOM4JUtils.generateLinkElement(href, null, onclick, htmlClass, null, glyphicon);
 
-        // HTML class
-        StringBuilder htmlClass = new StringBuilder();
-        htmlClass.append("btn btn-default");
-        if (additionalHTMLClass != null) {
-            htmlClass.append(" ");
-            htmlClass.append(additionalHTMLClass);
-        }
-        a.addAttribute(QName.get(HTMLConstants.CLASS), htmlClass.toString());
-
-        // Glyphicon
-        if (glyphicon != null) {
-            Element glyph = new DOMElement(QName.get(HTMLConstants.I));
-            glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons " + glyphicon);
-            glyph.setText(StringUtils.EMPTY);
-            a.add(glyph);
-        }
+        // Tooltip
+        DOM4JUtils.addTooltip(a, title);
 
         return a;
     }
