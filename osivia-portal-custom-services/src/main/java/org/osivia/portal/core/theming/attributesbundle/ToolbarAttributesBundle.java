@@ -753,7 +753,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // CMS unpublish document
         String cmsUnpublishTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH);
-        if (modePreview && published && basePath.equals(pagePath)) {
+        if (modePreview && published && !basePath.equals(pagePath)) {
             // URL
             CMSPublishDocumentCommand cmsUnpublishCommand = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
                     CMSPublishDocumentCommand.UNPUBLISH);
