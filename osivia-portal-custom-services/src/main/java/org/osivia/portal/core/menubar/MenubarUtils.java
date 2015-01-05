@@ -1,93 +1,127 @@
-package org.osivia.portal.core.theming.attributesbundle;
+package org.osivia.portal.core.menubar;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.CDATA;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMCDATA;
+import org.jboss.portal.Mode;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.ControllerException;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.theme.ThemeConstants;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
+import org.jboss.portal.theme.page.Region;
+import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
- * Menubar attributes bundle.
+ * Utility class with null-safe methods for menubar.
  *
  * @author Cédric Krommenhoek
- * @see IAttributesBundle
  */
-public class MenubarAttributesBundle implements IAttributesBundle {
+public final class MenubarUtils {
 
-    /** Page menubar attribute name. */
-    private static final String PAGE_MENUBAR_ATTRIBUTE = "osivia.portal.page.menubar";
-
-
-    /** Singleton instance. */
-    private static MenubarAttributesBundle instance;
-
-
-    /** Menubar attributes names. */
-    private final Set<String> names;
+    /** Menubar window identifier. */
+    private static final String WINDOW_ID = "menubar-window";
+    /** Menubar region name. */
+    private static final String REGION_NAME = "menubar";
 
 
     /**
-     * Constructor.
+     * Private constructor : prevent instantiation.
      */
-    private MenubarAttributesBundle() {
-        super();
-
-        this.names = new TreeSet<String>();
-        this.names.add(PAGE_MENUBAR_ATTRIBUTE);
+    private MenubarUtils() {
+        throw new AssertionError();
     }
 
 
     /**
-     * Singleton instance access.
+     * Create menubar window context.
      *
-     * @return singleton instance
+     * @param portalControllerContext portal controller context
+     * @return menubar window context
      */
-    public static MenubarAttributesBundle getInstance() {
-        if (instance == null) {
-            instance = new MenubarAttributesBundle();
+    public static final WindowContext createMenubarWindowContext(PortalControllerContext portalControllerContext) {
+        if (portalControllerContext == null) {
+            return null;
         }
-        return instance;
+
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Generate HTML content
+        String htmlContent = generateMenubarHTMLContent(controllerContext);
+
+        // Window properties
+        Map<String, String> windowProperties = new HashMap<String, String>();
+        windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+        windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+        windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+
+        WindowResult windowResult = new WindowResult(null, htmlContent, Collections.EMPTY_MAP, windowProperties, null, WindowState.NORMAL, Mode.VIEW);
+        return new WindowContext(WINDOW_ID, REGION_NAME, null, windowResult);
     }
 
 
     /**
-     * {@inheritDoc}
+     * Inject menubar region.
+     *
+     * @param controllerContext controller context
+     * @param pageRendition page rendition
      */
-    public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
-        // Controller context
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
+    public static final void injectMenubarRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
+        WindowContext windowContext = createMenubarWindowContext(portalControllerContext);
+        pageRendition.getPageResult().addWindowContext(windowContext);
 
-        // Menubar
-        String menubar = this.generateMenubar(controllerContext);
-        attributes.put(PAGE_MENUBAR_ATTRIBUTE, menubar);
+        Region region = pageRendition.getPageResult().getRegion2(REGION_NAME);
+        DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
     }
 
 
-    private String generateMenubar(ControllerContext controllerContext) {
+    /**
+     * Generate menubar HTML content.
+     *
+     * @param controllerContext controller context
+     * @return HTML content
+     */
+    private static final String generateMenubarHTMLContent(ControllerContext controllerContext) {
         // Menubar items
         List<?> items = (List<?>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
 
-        // Button toolbar
-        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar");
-        DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
+
+        // Dyna-window container
+        Element dynaWindowContainer = DOM4JUtils.generateDivElement("dyna-window");
+
+        // Dyna-window identifier
+        Element dynaWindowId = DOM4JUtils.generateDivElement(null);
+        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, WINDOW_ID);
+        dynaWindowContainer.add(dynaWindowId);
+
+        // Dyna-window content
+        Element dynaWindowContent = DOM4JUtils.generateDivElement("dyna-window-content");
+        dynaWindowId.add(dynaWindowContent);
+
 
         if (CollectionUtils.isNotEmpty(items)) {
+            // Button toolbar
+            Element toolbar = DOM4JUtils.generateDivElement("menubar btn-toolbar text-nowrap");
+            DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
+            dynaWindowContent.add(toolbar);
+
             // Associated HTML container
             Element associatedHTMLContainer = DOM4JUtils.generateDivElement("hidden");
             toolbar.add(associatedHTMLContainer);
@@ -224,16 +258,9 @@ public class MenubarAttributesBundle implements IAttributesBundle {
             }
         }
 
+
         // Write HTML content
-        return DOM4JUtils.write(toolbar);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public Set<String> getAttributeNames() {
-        return this.names;
+        return DOM4JUtils.write(dynaWindowContainer);
     }
 
 }

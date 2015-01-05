@@ -58,8 +58,6 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.toolbar.path";
     /** Web toolbar path init parameter name. */
     private static final String WEB_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.toolbar.path";
-    /** Menubar path init parameter name. */
-    private static final String MENUBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.menubar.path";
     /** Page settings path init parameter name. */
     private static final String PAGE_SETTINGS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.page.settings.path";
 
@@ -136,8 +134,6 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         } else {
             // Toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(TOOLBAR_PATH_INIT_PARAM));
-            // Menubar default region
-            renderedRegions.defineDefaultRenderedRegion("menubar", this.getInitParameter(MENUBAR_PATH_INIT_PARAM));
             // Search default region
             renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
             // Tabs default region

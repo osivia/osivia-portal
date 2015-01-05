@@ -86,8 +86,8 @@ public class NotificationsUtils {
 
     /**
      * Create notifications window context.
-     *
-     * @param controllerContext controller context
+     * 
+     * @param portalControllerContext portal controller context
      * @return notifications window context
      */
     public static final WindowContext createNotificationsWindowContext(PortalControllerContext portalControllerContext) {
@@ -96,18 +96,13 @@ public class NotificationsUtils {
         }
 
         // Read notifications
-
         List<Notifications> notificationsList = null;
-
         if (!"1".equals(((ControllerContext) portalControllerContext.getControllerCtx()).getAttribute(ControllerCommand.REQUEST_SCOPE,
                 "osivia.popupIgnoreNotifications"))) {
             notificationsList = getNotificationsService().readNotificationsList(portalControllerContext);
         }
 
-
         // Generate HTML content
-
-
         String htmlContent = generateNotificationsHTMLContent(notificationsList);
 
         // Window properties

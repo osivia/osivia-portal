@@ -103,10 +103,6 @@
             <value>/WEB-INF/jsp/default-regions/web-toolbar.jsp</value>
         </init-param>
         <init-param>
-            <name>osivia.portal.customizer.regions.menubar.path</name>
-            <value>/WEB-INF/jsp/default-regions/menubar.jsp</value>
-        </init-param>
-        <init-param>
             <name>osivia.portal.customizer.regions.page.settings.path</name>
             <value>/WEB-INF/jsp/fixed-regions/page-settings.jsp</value>
         </init-param>

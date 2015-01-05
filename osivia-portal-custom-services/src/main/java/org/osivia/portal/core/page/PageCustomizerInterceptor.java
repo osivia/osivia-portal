@@ -109,6 +109,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
@@ -1471,9 +1472,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            // Notifications
+            // Portal controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(cmd.getControllerContext());
+
+
+            // Inject notifications region
             NotificationsUtils.injectNotificationsRegion(portalControllerContext, rendition);
+
+            // Inject menubar region
+            MenubarUtils.injectMenubarRegion(portalControllerContext, rendition);
 
 
             // A décommenter Juste pour inspecter les sessions dans le debugger

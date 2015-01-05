@@ -110,6 +110,12 @@ $JQry(document).ready(function() {
                 type: 'outside',
                 position: 'top'
             }
+        },
+		beforeShow : function() {
+        	var originalTitle = $JQry(this.element).data("original-title");
+        	if (originalTitle) {
+        		this.title = originalTitle;
+        	}
         }
 	});
 	

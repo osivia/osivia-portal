@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -62,6 +62,7 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.WindowContextFactory;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
@@ -71,10 +72,12 @@ import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateRespon
 import org.jboss.portal.theme.page.PageResult;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
@@ -110,7 +113,8 @@ public class AjaxResponseHandler implements ResponseHandler {
         this.pageService = pageService;
     }
 
-    public HandlerResponse processCommandResponseOrginal(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
+
+    public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
         if (controllerResponse instanceof PortletWindowActionResponse) {
             PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
@@ -232,8 +236,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                         // Collect the dirty window id
                         dirtyWindowIds.add(key.getId());
-                    }   else   if (type == PageNavigationalState.class) { 
-                        
+                    }   else   if (type == PageNavigationalState.class) {
+
                         PageNavigationalState oldNS = (PageNavigationalState) update.getOldValue();
                         Object updateOld = update.getOldValue();
 
@@ -241,9 +245,10 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Get new window state
                         PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();
                         Object updateNew = update.getNewValue();
-                        
-                        if( ! updateOld.equals(updateOld))
+
+                        if( ! updateOld.equals(updateOld)) {
                             fullRefresh = true;
+                        }
                         break;
                     }
                     /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
@@ -383,51 +388,9 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                             //
                             if (resp instanceof MarkupResponse) {
-                                WindowContext wc = wcf.createWindowContext(refreshedWindow, rendition);
-
-                                // WindowContext wc = new WindowContext(
-                                // _window.getId().toString(PortalObjectPath.LEGACY_BASE64_FORMAT),
-                                // _window.getProperty(ThemeConstants.PORTAL_PROP_REGION),
-                                // "0",
-                                // windowResult);
-
-                                //
-                                res.addWindowContext(wc);
-
-                                //
-                                MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
-
-                                // The buffer
-                                StringWriter buffer = new StringWriter();
-
-                                // Get a dispatcher
-                                ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(), invocation
-                                        .getServerContext().getClientResponse(), controllerContext.getServletContainer());
-
-                                // Not really used for now in that context, so we can pass null (need to change that of course)
-                                ThemeContext themeContext = new ThemeContext(null, null);
-
-                                // get render context
-                                RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
-
-                                // Push page
-                                rendererContext.pushObjectRenderContext(res);
-
-                                // Push region
-                                Region region = res.getRegion2(wc.getRegionName());
-                                rendererContext.pushObjectRenderContext(region);
-
-                                // Render
-                                rendererContext.render(wc);
-
-                                // Pop region
-                                rendererContext.popObjectRenderContext();
-
-                                // Pop page
-                                rendererContext.popObjectRenderContext();
-
-                                // Add render to the page
-                                updatePage.addFragment(wc.getId(), buffer.toString());
+                                WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
+                                res.addWindowContext(windowContext);
+                                this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
                             } else {
                                 fullRefresh = true;
                             }
@@ -445,53 +408,20 @@ public class AjaxResponseHandler implements ResponseHandler {
                 }
 
 
-                // Notification
+                // Notifications & menubar refresh
                 if (!fullRefresh) {
                     try {
-
-
                         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-                        WindowContext notifContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
 
+                        // Notifications window context
+                        WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
+                        res.addWindowContext(notificationsWindowContext);
+                        this.refreshWindowContext(controllerContext, layout, updatePage, res, notificationsWindowContext);
 
-                        res.addWindowContext(notifContext);
-
-                        //
-                        MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
-
-                        // The buffer
-                        StringWriter buffer = new StringWriter();
-
-                        // Get a dispatcher
-                        ServletContextDispatcher dispatcher = new ServletContextDispatcher(invocation.getServerContext().getClientRequest(), invocation
-                                .getServerContext().getClientResponse(), controllerContext.getServletContainer());
-
-                        // Not really used for now in that context, so we can pass null (need to change that of course)
-                        ThemeContext themeContext = new ThemeContext(null, null);
-
-                        // get render context
-                        RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
-
-                        // Push page
-                        rendererContext.pushObjectRenderContext(res);
-
-                        // Push region
-                        Region region = res.getRegion2(notifContext.getRegionName());
-                        rendererContext.pushObjectRenderContext(region);
-
-                        // Render
-                        rendererContext.render(notifContext);
-
-                        // Pop region
-                        rendererContext.popObjectRenderContext();
-
-                        // Pop page
-                        rendererContext.popObjectRenderContext();
-
-                        // Add render to the page
-                        updatePage.addFragment(notifContext.getId(), buffer.toString());
-
-
+                        // Menubar window context
+                        WindowContext menubarWindowContext = MenubarUtils.createMenubarWindowContext(portalControllerContext);
+                        res.addWindowContext(menubarWindowContext);
+                        this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
                     } catch (Exception e) {
                         log.error("An error occured during the computation of window markup", e);
 
@@ -526,25 +456,73 @@ public class AjaxResponseHandler implements ResponseHandler {
         }
     }
 
-    public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
+    /**
+     * Refresh window context.
+     *
+     * @param controllerContext controller context
+     * @param layout portal layout
+     * @param updatePage update page response
+     * @param res page result
+     * @param windowContext window context
+     * @throws RenderException
+     */
+    private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, PageResult res,
+            WindowContext windowContext) throws RenderException {
+        // Server invocation
+        ServerInvocation invocation = controllerContext.getServerInvocation();
+        // Server context
+        ServerInvocationContext serverContext = invocation.getServerContext();
+
+        // Markup info
+        MarkupInfo markupInfo = (MarkupInfo) invocation.getResponse().getContentInfo();
+
+        // Buffer
+        StringWriter buffer = new StringWriter();
+
+        // Dispatcher
+        ServletContextDispatcher dispatcher = new ServletContextDispatcher(serverContext.getClientRequest(), serverContext
+                .getClientResponse(), controllerContext.getServletContainer());
+
+        // Not really used for now in that context, so we can pass null (need to change that of course)
+        ThemeContext themeContext = new ThemeContext(null, null);
+
+        // Render context
+        RendererContext rendererContext = layout.getRenderContext(themeContext, markupInfo, dispatcher, buffer);
+
+        // Push page
+        rendererContext.pushObjectRenderContext(res);
+
+        // Push notifications region
+        Region notificationsRegion = res.getRegion2(windowContext.getRegionName());
+        rendererContext.pushObjectRenderContext(notificationsRegion);
+
+        // Render
+        rendererContext.render(windowContext);
+
+        // Pop region
+        rendererContext.popObjectRenderContext();
+
+        // Pop page
+        rendererContext.popObjectRenderContext();
+
+        // Add render to the page
+        updatePage.addFragment(windowContext.getId(), buffer.toString());
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public HandlerResponse processCommandResponse(ControllerContext controllerContext, ControllerCommand command, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
-
-
-        HandlerResponse resp = this.processCommandResponseOrginal(controllerContext, commeand, controllerResponse);
-
-
+        HandlerResponse resp = this.processCommandResponseOriginal(controllerContext, command, controllerResponse);
         if (resp == null) {
-
             if (controllerResponse instanceof RedirectionResponse) {
                 String url = ((RedirectionResponse) controllerResponse).getLocation();
                 UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
                 return new AjaxResponse(dresp);
-
             }
-
-
         }
-
         return resp;
     }
 
