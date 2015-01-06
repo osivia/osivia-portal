@@ -15,10 +15,12 @@
 package org.osivia.portal.core.portlets.interceptors;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -32,6 +34,8 @@ import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.response.ContentResponse;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.core.page.EncodedParams;
 
 import bsh.Interpreter;
@@ -89,6 +93,15 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
 	                    ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+windowId, cr.getAttributes().get("osivia.popupCallbackUrl"));
 	                }
 	          }
+	          
+          
+              /* Menubar */            
+             if(cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR) != null) {
+                 List<MenubarItem> menubarItems = (List<MenubarItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR);
+                 if( menubarItems.size() > 0)
+                     ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+              }
+
 
 	    }
 	    

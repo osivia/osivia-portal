@@ -422,12 +422,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
                     cmsReadItemContext.setDisplayLiveVersion("0");
 
-                    EditionState state = ContributionService.getNavigationalState(controllerContext, ns);
-                    if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
-                        cmsReadItemContext.setForcedLivePath(state.getDocPath());
-                        windowsEditableWindowsMode = "preview";
-                    }
-
+ 
 
                     // SILENT MODE
                     int notificationSized = -1;
@@ -436,10 +431,18 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     }
 
                     // try {
-
-                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
-                        cmsReadItemContext.setDisplayLiveVersion("1");
+                    
+                    EditionState state = ContributionService.getNavigationalState(controllerContext, ns);
+                    if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
+                        cmsReadItemContext.setForcedLivePath(state.getDocPath());
                         windowsEditableWindowsMode = "preview";
+                    } else  {
+                        // Web page mode
+
+                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
+                            cmsReadItemContext.setDisplayLiveVersion("1");
+                            windowsEditableWindowsMode = "preview";
+                        }
                     }
 
 

@@ -47,7 +47,7 @@ public class CmsPermissionHelper {
 
     public enum Level {
 
-        deny, allowOnlineVersion, allowPreviewVersion;
+        deny, allowOnlineVersion, allowPreviewVersion, notAWebPage;
     }
 
     /** Edition CMS mode. */
@@ -215,11 +215,15 @@ public class CmsPermissionHelper {
                 belongToPublishSpace = pubInfos.getPublishSpacePath() != null;
 
                 if (!isWebPage) {
-                    cmsVersion = CMS_VERSION_ONLINE;
-
-                    if ((pubInfos.getPublishSpacePath() != null) && pubInfos.isLiveSpace()) {
-                        cmsVersion = CMS_VERSION_LIVE;
-                    }
+                    level = Level.notAWebPage;
+                    return level;
+                    
+                    
+//                    cmsVersion = CMS_VERSION_ONLINE;
+//
+//                    if ((pubInfos.getPublishSpacePath() != null) && pubInfos.isLiveSpace()) {
+//                        cmsVersion = CMS_VERSION_LIVE;
+//                    }
                 }
 
 

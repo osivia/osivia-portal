@@ -44,6 +44,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
 /**
  * CMS command used when a document is published
@@ -243,6 +244,7 @@ public class PublishContributionCommand extends ControllerCommand {
         
         
         PageProperties.getProperties().setRefreshingPage(true);
+        DynamicPortalObjectContainer.clearCache();        
         
         return new UpdatePageResponse(window.getPage().getId());
         

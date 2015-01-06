@@ -769,10 +769,31 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     cmxCtx.setControllerContext(controllerCtx);
                     cmxCtx.setScope(navigationScope);
 
-                    // test si mode assistant activé
-                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
+                    
+                    // Online mode indicator
+                    boolean online;
+                    if (PortalObjectUtils.isSpaceSite(page)) {
+                        online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, page.getId()));
+                    } else {
+                        NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+                                .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                        PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
+                        if (ns != null) {
+                            EditionState editionState = ContributionService.getNavigationalState(controllerCtx, ns);
+                            online = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
+                        } else {
+                            online = true;
+                        }
+                    }
+                    
+                    if( online == false) {
                         cmxCtx.setDisplayLiveVersion("1");
                     }
+                    
+                    // test si mode assistant activé
+//                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
+//                        cmxCtx.setDisplayLiveVersion("1");
+//                    }
 
 
 
@@ -1064,6 +1085,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
+                    
+                    if( endPopupCMD instanceof InvokePortletWindowRenderCommand)    {
+                        // Si je propage la commande tel quelle, les paramètres publics sont perdus ...
+                        // Heureusement, Les paramètres de la commande ont déjà été appliqués...
+                        endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW,null);
+                    }
 
                     String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
 

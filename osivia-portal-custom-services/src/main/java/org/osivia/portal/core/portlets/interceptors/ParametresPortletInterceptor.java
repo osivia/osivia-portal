@@ -359,7 +359,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));
                                 if (windowMaximized || (!PageMaximized && portletMenubar)) {
                                     // Page menubar
-                                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+                                    //controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+                                    
                                 } else {
                                     // Portlet menubar
                                     if ("1".equals(printPortlet)) {
@@ -369,6 +370,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     }
 
                                     updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
+                                    
+                                    // Menu bar has been integrated to portlet fragment
+                                    attributes.remove(Constants.PORTLET_ATTR_MENU_BAR);
                                 }
                             }
                         }
