@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,8 +103,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         // Controller context
         ControllerContext controllerContext = (ControllerContext) invocation.getAttribute("controller_context");
-
         Window window = null;
+        Locale locale = Locale.getDefault();
 
         if (controllerContext != null) {
             Map<String, Object> attributes = invocation.getRequestAttributes();
@@ -216,6 +217,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             // HTTP Request
             HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
             attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
+            locale = httpRequest.getLocale();
 
             // Space config
             Object spaceConfig = controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
@@ -331,9 +333,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     }
 
                                     if (!containsBackItem) {
-                                        MenubarItem backItem = new MenubarItem("BACK", "Revenir", 0, window.getDeclaredProperty("osivia.dynamic.close_url"),
-                                                null, null, null);
-                                        backItem.setGlyphicon("undo");
+                                        MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
+                                                window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
+                                        backItem.setGlyphicon("halflings arrow-left");
                                         backItem.setAjaxDisabled(true);
                                         backItem.setFirstItem(true);
                                         menubarItems.add(backItem);

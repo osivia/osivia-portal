@@ -208,11 +208,15 @@ public final class MenubarUtils {
                 } else {
                     linkHTMLClass.append(" btn btn-default");
 
-                    element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                            linkHTMLClass.toString(), null, menubarItem.getGlyphicon());
-                    DOM4JUtils.addAttribute(element, HTMLConstants.TITLE, menubarItem.getTitle());
-                    DOM4JUtils.addAttribute(element, HTMLConstants.DATA_TOGGLE, "tooltip");
-                    DOM4JUtils.addAttribute(element, HTMLConstants.DATA_PLACEMENT, "bottom");
+                    if (menubarItem.getGlyphicon() == null) {
+                        element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
+                                linkHTMLClass.toString(), menubarItem.getTitle(), null);
+                    } else {
+                        element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
+                                linkHTMLClass.toString(), null, menubarItem.getGlyphicon());
+                        DOM4JUtils.addTooltip(element, menubarItem.getTitle());
+                    }
+
                     if (menubarItem.getUrl() == null) {
                         DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
                     }
