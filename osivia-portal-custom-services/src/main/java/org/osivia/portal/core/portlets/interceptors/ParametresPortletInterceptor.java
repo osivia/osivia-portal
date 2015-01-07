@@ -332,6 +332,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         }
                                     }
 
+                                    /*
                                     if (!containsBackItem) {
                                         MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
                                                 window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
@@ -340,7 +341,26 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         backItem.setFirstItem(true);
                                         menubarItems.add(backItem);
                                     }
+                                    */
                                 }
+                            }   else    {
+                                
+                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+                                    
+                                    ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT),
+                                            null, WindowState.NORMAL);
+                                    
+                                    PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
+                                    
+                                    MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
+                                            portalURL.toString(), null, null, null);
+                                    backItem.setGlyphicon("halflings arrow-left");
+                                    backItem.setAjaxDisabled(true);
+                                    backItem.setFirstItem(true);
+                                    menubarItems.add(backItem);
+                                }                               
+                                
+                                
                             }
 
 
@@ -357,18 +377,20 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         "osivia.portal.maximized"));
                                 boolean portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
                                         && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));
+                                
+                                
+                                // Portlet menubar
+                                if ("1".equals(printPortlet)) {
+                                    String pre = "<div id='" + windowId + "_print' class='portlet-print-box'>";
+                                    String post = "</div>";
+                                    updatedFragment = pre + updatedFragment + post;
+                                }                               
+                                
                                 if (windowMaximized || (!PageMaximized && portletMenubar)) {
                                     // Page menubar
                                     //controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
                                     
                                 } else {
-                                    // Portlet menubar
-                                    if ("1".equals(printPortlet)) {
-                                        String pre = "<div id='" + windowId + "_print' class='portlet-print-box'>";
-                                        String post = "</div>";
-                                        updatedFragment = pre + updatedFragment + post;
-                                    }
-
                                     updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
                                     
                                     // Menu bar has been integrated to portlet fragment

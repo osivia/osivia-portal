@@ -18,8 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -98,8 +100,24 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
               /* Menubar */            
              if(cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR) != null) {
                  List<MenubarItem> menubarItems = (List<MenubarItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR);
-                 if( menubarItems.size() > 0)
-                     ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+                 if( menubarItems.size() > 0)   {
+                     boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());                     
+                     boolean PageMaximized = BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE,
+                             "osivia.portal.maximized"));
+                     
+                     PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
+                     
+                     Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                     boolean portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
+                             && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));        
+                     
+                     // Test has been duplicated because of cache of portletmenuBar
+                     // that is already present in case of maximisation
+                     
+                     if (windowMaximized || (!PageMaximized && portletMenubar)) {
+                          ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+                     }
+                 }
               }
 
 
