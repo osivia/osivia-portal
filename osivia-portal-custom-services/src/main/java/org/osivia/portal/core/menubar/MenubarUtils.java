@@ -35,10 +35,10 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
  */
 public final class MenubarUtils {
 
-    /** Content navbar actions window identifier. */
-    private static final String CONTENT_NAVBAR_ACTIONS_WINDOW_ID = "content-navbar-actions-window";
-    /** Content navbar actions region name. */
-    private static final String CONTENT_NAVBAR_ACTIONS_REGION_NAME = "content-navbar-actions";
+    /** Menubar window identifier. */
+    private static final String MENUBAR_WINDOW_ID = "menubar-window";
+    /** Menubar region name. */
+    private static final String MENUBAR_REGION_NAME = "menubar";
 
 
     /**
@@ -73,7 +73,7 @@ public final class MenubarUtils {
         windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
         WindowResult windowResult = new WindowResult(null, htmlContent, Collections.EMPTY_MAP, windowProperties, null, WindowState.NORMAL, Mode.VIEW);
-        return new WindowContext(CONTENT_NAVBAR_ACTIONS_WINDOW_ID, CONTENT_NAVBAR_ACTIONS_REGION_NAME, null, windowResult);
+        return new WindowContext(MENUBAR_WINDOW_ID, MENUBAR_REGION_NAME, null, windowResult);
     }
 
 
@@ -87,7 +87,7 @@ public final class MenubarUtils {
         WindowContext windowContext = createContentNavbarActionsWindowContext(portalControllerContext);
         pageRendition.getPageResult().addWindowContext(windowContext);
 
-        Region region = pageRendition.getPageResult().getRegion2(CONTENT_NAVBAR_ACTIONS_REGION_NAME);
+        Region region = pageRendition.getPageResult().getRegion2(MENUBAR_REGION_NAME);
         DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
     }
 
@@ -108,7 +108,7 @@ public final class MenubarUtils {
 
         // Dyna-window identifier
         Element dynaWindowId = DOM4JUtils.generateDivElement(null);
-        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, CONTENT_NAVBAR_ACTIONS_WINDOW_ID);
+        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, MENUBAR_WINDOW_ID);
         dynaWindowContainer.add(dynaWindowId);
 
         // Dyna-window content
@@ -118,7 +118,7 @@ public final class MenubarUtils {
 
         if (CollectionUtils.isNotEmpty(items)) {
             // Button toolbar
-            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "content-navbar-actions-menubar", null);
+            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar", null);
             DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
             dynaWindowContent.add(toolbar);
 
