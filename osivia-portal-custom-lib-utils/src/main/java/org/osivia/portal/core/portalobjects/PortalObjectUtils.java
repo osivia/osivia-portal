@@ -57,7 +57,7 @@ public class PortalObjectUtils {
 
         // Portal name
         String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-        if (portalName != null) {
+        if ((controllerContext != null) && (portalName != null)) {
             PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
             PortalObject portalObject = portalObjectContainer.getObject(PortalObjectId.parse(StringUtils.EMPTY, "/" + portalName,
                     PortalObjectPath.CANONICAL_FORMAT));
