@@ -214,7 +214,7 @@ public final class InternalConstants {
     
     // MenuBar
     /** Portal generic region */
-    public static final String PORTAL_GENERIC_MENUBAR_REGION_NAME = "menuBar";     
+    public static final String PORTAL_GENERIC_MENUBAR_REGION_NAME = "menubar";     
     /** Portal generic region */   
     public static final String PORTAL_GENERIC_MENUBAR_WINDOW_NAME = "menuBarWindow";     
 
