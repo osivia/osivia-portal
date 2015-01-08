@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
@@ -38,6 +39,7 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.EncodedParams;
 
 import bsh.Interpreter;
@@ -114,8 +116,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
                          PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
                      
                          Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-                         portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
-                                 && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));      
+                         portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME); 
                      }
                      
                      // Test has been duplicated because of cache of portletmenuBar

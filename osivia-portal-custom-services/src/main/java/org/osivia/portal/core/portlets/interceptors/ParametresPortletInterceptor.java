@@ -379,8 +379,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());
                                 boolean PageMaximized = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
                                         "osivia.portal.maximized"));
-                                boolean portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
-                                        && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));
+                                
+                                
+                                boolean portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME);
                                 
                                 
                                 // Portlet menubar
@@ -505,7 +506,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
 
 
-        // Menubar first group
+        // Menubar first groupParametresPortletInterceptor
         Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
 
         // Menubar left group

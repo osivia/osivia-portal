@@ -46,6 +46,7 @@ import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -56,6 +57,7 @@ import org.osivia.portal.core.cms.CMSEditableWindow;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -531,6 +533,20 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		return windows;
 	}
 
+    private Map<String, String> spaceMenuBarGenericProps = null;
+    
+    private Map<String, String> getSpaceMenuBarGenericProps()   {
+        if( spaceMenuBarGenericProps == null){
+            
+            spaceMenuBarGenericProps = new HashMap<String, String>();
+            spaceMenuBarGenericProps.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
+            spaceMenuBarGenericProps.put(ThemeConstants.PORTAL_PROP_REGION, InternalConstants.PORTAL_GENERIC_MENUBAR_REGION_NAME);
+            spaceMenuBarGenericProps.put("osivia.fragmentTypeId", "space_menubar");                  
+        }
+        
+        return spaceMenuBarGenericProps;
+    }
+    
     public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
@@ -540,6 +556,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 				windows.add(windowBean);
 			}
 		}
+
+        windows.add(new DynamicWindowBean(pageId, InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME, "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance", getSpaceMenuBarGenericProps(), null));
+	
 
         if (includeCMSWindows) {
             for (DynamicWindowBean windowBean : this.getEditableWindows(container, pageId)) {

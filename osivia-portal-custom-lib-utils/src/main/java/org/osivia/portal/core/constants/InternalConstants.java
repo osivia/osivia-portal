@@ -211,6 +211,12 @@ public final class InternalConstants {
     public static final String CMS_REGION_LAYOUT_CLASS = "osivia.cms.regionLayout.class";
     /** CMS region layout save URL. */
     public static final String CMS_REGION_LAYOUT_SAVE_URL = "osivia.cms.regionLayout.saveURL";
+    
+    // MenuBar
+    /** Portal generic region */
+    public static final String PORTAL_GENERIC_MENUBAR_REGION_NAME = "menuBar";     
+    /** Portal generic region */   
+    public static final String PORTAL_GENERIC_MENUBAR_WINDOW_NAME = "menuBarWindow";     
 
 
     // Transversal constants
