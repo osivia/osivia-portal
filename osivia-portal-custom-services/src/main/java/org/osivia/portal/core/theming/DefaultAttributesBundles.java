@@ -15,6 +15,7 @@
 package org.osivia.portal.core.theming;
 
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.core.theming.attributesbundle.BackAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.BreadcrumbAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.HeaderMetadataAttributesBundle;
 import org.osivia.portal.core.theming.attributesbundle.PageSettingsAttributesBundle;
@@ -31,6 +32,8 @@ import org.osivia.portal.core.theming.attributesbundle.TransversalAttributesBund
  */
 public enum DefaultAttributesBundles {
 
+    /** "Back" function attributes bundle. */
+    BACK(BackAttributesBundle.getInstance()),
     /** Breadcrumb attributes bundle. */
     BREADCRUMB(BreadcrumbAttributesBundle.getInstance()),
     /** Page settings attributes bundle. */

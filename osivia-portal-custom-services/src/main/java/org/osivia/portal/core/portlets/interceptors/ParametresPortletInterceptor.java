@@ -346,7 +346,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 }
                             }
                             else    {
-                                
+
                                     //  static windows maximisation
 
                                     if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
@@ -362,9 +362,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         backItem.setAjaxDisabled(true);
                                         backItem.setFirstItem(true);
                                         menubarItems.add(backItem);
-                                    }                          
+                                    }
 
-                                
+
                             }
 
 
@@ -379,25 +379,25 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());
                                 boolean PageMaximized = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
                                         "osivia.portal.maximized"));
-                                
-                                
+
+
                                 boolean portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME);
-                                
-                                
+
+
                                 // Portlet menubar
                                 if ("1".equals(printPortlet)) {
                                     String pre = "<div id='" + windowId + "_print' class='portlet-print-box'>";
                                     String post = "</div>";
                                     updatedFragment = pre + updatedFragment + post;
-                                }                               
-                                
+                                }
+
                                 if (windowMaximized || (!PageMaximized && portletMenubar)) {
                                     // Page menubar
                                     //controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
-                                    
+
                                 } else {
                                     updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
-                                    
+
                                     // Menu bar has been integrated to portlet fragment
                                     attributes.remove(Constants.PORTLET_ATTR_MENU_BAR);
                                 }
@@ -506,7 +506,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
 
 
-        // Menubar first groupParametresPortletInterceptor
+        // Menubar first group
         Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
 
         // Menubar left group

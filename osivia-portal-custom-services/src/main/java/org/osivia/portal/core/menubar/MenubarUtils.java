@@ -35,10 +35,10 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
  */
 public final class MenubarUtils {
 
-    /** Menubar window identifier. */
-    private static final String WINDOW_ID = "menubar-window";
-    /** Menubar region name. */
-    private static final String REGION_NAME = "menubar";
+    /** Content navbar actions window identifier. */
+    private static final String CONTENT_NAVBAR_ACTIONS_WINDOW_ID = "content-navbar-actions-window";
+    /** Content navbar actions region name. */
+    private static final String CONTENT_NAVBAR_ACTIONS_REGION_NAME = "content-navbar-actions";
 
 
     /**
@@ -50,12 +50,12 @@ public final class MenubarUtils {
 
 
     /**
-     * Create menubar window context.
+     * Create content navbar actions window context.
      *
      * @param portalControllerContext portal controller context
-     * @return menubar window context
+     * @return content navbar actions window context
      */
-    public static final WindowContext createMenubarWindowContext(PortalControllerContext portalControllerContext) {
+    public static final WindowContext createContentNavbarActionsWindowContext(PortalControllerContext portalControllerContext) {
         if (portalControllerContext == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public final class MenubarUtils {
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Generate HTML content
-        String htmlContent = generateMenubarHTMLContent(controllerContext);
+        String htmlContent = generateContentNavbarActionsHTMLContent(controllerContext);
 
         // Window properties
         Map<String, String> windowProperties = new HashMap<String, String>();
@@ -73,32 +73,32 @@ public final class MenubarUtils {
         windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
         WindowResult windowResult = new WindowResult(null, htmlContent, Collections.EMPTY_MAP, windowProperties, null, WindowState.NORMAL, Mode.VIEW);
-        return new WindowContext(WINDOW_ID, REGION_NAME, null, windowResult);
+        return new WindowContext(CONTENT_NAVBAR_ACTIONS_WINDOW_ID, CONTENT_NAVBAR_ACTIONS_REGION_NAME, null, windowResult);
     }
 
 
     /**
-     * Inject menubar region.
+     * Inject content navbar actions region.
      *
      * @param controllerContext controller context
      * @param pageRendition page rendition
      */
-    public static final void injectMenubarRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
-        WindowContext windowContext = createMenubarWindowContext(portalControllerContext);
+    public static final void injectContentNavbarActionsRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
+        WindowContext windowContext = createContentNavbarActionsWindowContext(portalControllerContext);
         pageRendition.getPageResult().addWindowContext(windowContext);
 
-        Region region = pageRendition.getPageResult().getRegion2(REGION_NAME);
+        Region region = pageRendition.getPageResult().getRegion2(CONTENT_NAVBAR_ACTIONS_REGION_NAME);
         DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
     }
 
 
     /**
-     * Generate menubar HTML content.
+     * Generate content navbar actions HTML content.
      *
      * @param controllerContext controller context
      * @return HTML content
      */
-    private static final String generateMenubarHTMLContent(ControllerContext controllerContext) {
+    private static final String generateContentNavbarActionsHTMLContent(ControllerContext controllerContext) {
         // Menubar items
         List<?> items = (List<?>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
 
@@ -108,7 +108,7 @@ public final class MenubarUtils {
 
         // Dyna-window identifier
         Element dynaWindowId = DOM4JUtils.generateDivElement(null);
-        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, WINDOW_ID);
+        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, CONTENT_NAVBAR_ACTIONS_WINDOW_ID);
         dynaWindowContainer.add(dynaWindowId);
 
         // Dyna-window content
@@ -118,7 +118,7 @@ public final class MenubarUtils {
 
         if (CollectionUtils.isNotEmpty(items)) {
             // Button toolbar
-            Element toolbar = DOM4JUtils.generateDivElement("menubar btn-toolbar text-nowrap");
+            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "content-navbar-actions-menubar", null);
             DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
             dynaWindowContent.add(toolbar);
 
@@ -128,27 +128,20 @@ public final class MenubarUtils {
 
 
             // Menubar first group
-            Element firstGroup = DOM4JUtils.generateDivElement("btn-group first-group");
+            Element firstGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "first-group", null);
 
             // Menubar specific group
-            Element specificGroup = DOM4JUtils.generateDivElement("btn-group");
+            Element specificGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
 
             // Menubar state group
-            Element stateGroup = DOM4JUtils.generateDivElement("btn-group state-group");
+            Element stateGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "state-group", null);
 
             // Menubar CMS group
-            Element cmsGroup = DOM4JUtils.generateDivElement("btn-group");
+            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
 
             // Menubar generic group
-            Element genericGroup = DOM4JUtils.generateDivElement("btn-group");
+            Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
 
-
-            // Dropdown menu button
-            Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT, "pencil",
-                    null);
-            DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
-            Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-            dropdownButton.add(caret);
 
             // Dropdown menu
             Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu dropdown-menu-right", null, null, AccessibilityRoles.MENU);
@@ -204,10 +197,11 @@ public final class MenubarUtils {
                         }
                     }
                 } else if (menubarItem.isStateItem()) {
-                    element = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-info", menubarItem.getTitle());
-                } else {
-                    linkHTMLClass.append(" btn btn-default");
+                    element = DOM4JUtils.generateElement(HTMLConstants.P, null, null);
 
+                    Element label = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-info", menubarItem.getTitle());
+                    element.add(label);
+                } else {
                     if (menubarItem.getGlyphicon() == null) {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
                                 linkHTMLClass.toString(), menubarItem.getTitle(), null);
@@ -236,10 +230,20 @@ public final class MenubarUtils {
                 Element dropdownContainer;
                 if (CollectionUtils.isEmpty(cmsGroup.elements())) {
                     dropdownContainer = cmsGroup;
+                    DOM4JUtils.addAttribute(cmsGroup, HTMLConstants.CLASS, "dropdown");
                 } else {
-                    dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
-                    cmsGroup.add(dropdownContainer);
+                    Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+                    cmsGroup.add(ul);
+
+                    dropdownContainer = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+                    ul.add(dropdownContainer);
                 }
+
+                // Dropdown menu button
+                Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "pencil");
+                DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
+                Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
+                dropdownButton.add(caret);
 
                 dropdownContainer.add(dropdownButton);
                 dropdownContainer.add(dropdownMenu);

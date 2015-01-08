@@ -32,9 +32,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
@@ -43,9 +44,10 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.DecorationRenderer;
 import org.jboss.portal.theme.render.renderer.DecorationRendererContext;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
@@ -80,31 +82,31 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
         PageProperties properties = PageProperties.getProperties();
         // Current window identifier
-        String currentWindowId = properties.getCurrentWindowId();
+        // String currentWindowId = properties.getCurrentWindowId();
         // Current locale
-        Locale locale = LocaleUtils.toLocale(properties.getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
+        // Locale locale = LocaleUtils.toLocale(properties.getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
 
 
         // Render title
         this.renderTitle(properties, markup, drc);
 
-        markup.print("<div class='btn-toolbar pull-right hidden-xs portlet-mode-container'>");
-        markup.print("<div class='btn-group btn-group-xs'>");
+        // markup.print("<div class='btn-toolbar pull-right hidden-xs portlet-mode-container'>");
+        // markup.print("<div class='btn-group btn-group-xs'>");
+        //
+        // if ("1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"))) {
+        // this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
+        // this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
+        // }
 
-        if ("1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"))) {
-            this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
-            this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
-        }
-/*
-        String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
-        if (closeUrl != null) {
-            markup.print("<a href='");
-            markup.print(closeUrl);
-            markup.print("' class='btn btn-default' data-toggle='tooltip' data-placement='bottom' title='close'><span class='glyphicons halflings remove'></span></a>");
-        }
-*/
-        markup.print("</div>");
-        markup.print("</div>");
+        // String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
+        // if (closeUrl != null) {
+        // markup.print("<a href='");
+        // markup.print(closeUrl);
+        // markup.print("' class='btn btn-default' data-toggle='tooltip' data-placement='bottom' title='close'><span class='glyphicons halflings remove'></span></a>");
+        // }
+
+        // markup.print("</div>");
+        // markup.print("</div>");
     }
 
 
@@ -123,30 +125,96 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         if (title == null) {
             title = drc.getTitle();
         }
-        // Mobile collapse indicator
-        boolean mobileCollapse = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.mobileCollapse"));
+
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.bootstrapPanelStyle"));
+        // Mobile collapse indicator
+        boolean mobileCollapse = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.mobileCollapse"));
+        // Display decorators indicator
+        boolean displayDecorators = "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"));
 
-        markup.print("<div class=\"portlet-titlebar-decoration\"></div>");
 
+        // Title container
+        Element titleContainer;
         if (bootstrapPanelStyle) {
-            markup.print("<h2 class='panel-title pull-left portlet-titlebar-title'>");
+            titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, "portlet-titlebar-title panel-title", StringUtils.EMPTY);
         } else {
-            markup.print("<h2 class='pull-left portlet-titlebar-title'>");
+            titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, "portlet-titlebar-title", StringUtils.EMPTY);
         }
 
+        // Title link
+        Element titleLink = null;
         if (mobileCollapse) {
-            markup.print("<a href='#body_" + currentWindowId + "' class='no-ajax-link' data-toggle='collapse'>");
-            markup.print(title);
-            markup.print("</a>");
+            titleLink = DOM4JUtils.generateLinkElement("#body_" + currentWindowId, null, null, "no-ajax-link", title);
+            DOM4JUtils.addAttribute(titleLink, HTMLConstants.DATA_TOGGLE, "collapse");
+        } else if (displayDecorators) {
+            String maximizedURL = this.getMaximizedURL(drc);
+            if (maximizedURL != null) {
+                titleLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, "no-ajax-link", title);
+            }
+        }
+        if (titleLink == null) {
+            DOM4JUtils.addText(titleContainer, title);
         } else {
-            markup.print(title);
+            titleContainer.add(titleLink);
         }
 
-        markup.print("</h2>");
+
+        // Write HTML data
+        markup.print(titleContainer.asXML());
     }
 
+
+    /**
+     * Get maximized URL.
+     *
+     * @param decorationRendererContext decoration renderer context
+     * @return maximized URL, or null if current window can't be maximized
+     */
+    private String getMaximizedURL(DecorationRendererContext decorationRendererContext) {
+        // Maximized URL
+        String url = null;
+
+        Collection<?> windowStates = decorationRendererContext.getTriggerableActions(ActionRendererContext.WINDOWSTATES_KEY);
+        if (CollectionUtils.isNotEmpty(windowStates)) {
+            for (Object windowState : windowStates) {
+                ActionRendererContext action = (ActionRendererContext) windowState;
+                String actionName = action.getName();
+                if ("maximized".equals(actionName)) {
+                    if (action.isEnabled()) {
+                        url = action.getURL();
+                    }
+                    break;
+                }
+            }
+        }
+
+        return url;
+    }
+
+
+    private void createRestoreStateMenubarItem(RendererContext rendererContext, DecorationRendererContext decorationRendererContext) {
+        // Restore state URL
+        String url = null;
+
+        Collection<?> windowStates = decorationRendererContext.getTriggerableActions(ActionRendererContext.WINDOWSTATES_KEY);
+        if (CollectionUtils.isNotEmpty(windowStates)) {
+            for (Object windowState : windowStates) {
+                ActionRendererContext action = (ActionRendererContext) windowState;
+                String actionName = action.getName();
+                if ("normal".equals(actionName)) {
+                    if (action.isEnabled()) {
+                        url = action.getURL();
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (url != null) {
+
+        }
+    }
 
 
     /**

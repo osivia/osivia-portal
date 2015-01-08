@@ -1527,7 +1527,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             NotificationsUtils.injectNotificationsRegion(portalControllerContext, rendition);
 
             // Inject menubar region
-            MenubarUtils.injectMenubarRegion(portalControllerContext, rendition);
+            MenubarUtils.injectContentNavbarActionsRegion(portalControllerContext, rendition);
 
 
             // A décommenter Juste pour inspecter les sessions dans le debugger

@@ -88,7 +88,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
 
-    /** Toolbar attributes names. */
+    /** Attributes names. */
     private final Set<String> names;
 
 

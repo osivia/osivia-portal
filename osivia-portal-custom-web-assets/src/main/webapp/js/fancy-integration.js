@@ -168,10 +168,26 @@ $JQry(document).ready(function() {
     	type        : 'image',
     	openEffect	: 'elastic',
     	closeEffect	: 'elastic',
-
     	helpers : {
     		title : {
     			type : 'inside'
+    		}
+    	},
+    	afterLoad : function() {
+    		var $element = $JQry(this.element);
+    		var title = $element.data("title");
+    		var download = $element.data("download");
+    			
+    		if (title) {
+    			this.title = title;
+    		}
+    		
+    		if (download) {
+    			var $link = $JQry(document.createElement("a"));
+    			$link.attr("href", this.href);
+    			$link.append($JQry(document.createElement("i")).addClass("glyphicons download_alt"));
+    			$link.append($JQry(document.createElement("span")).text(download));
+    			this.title += " - " + $link[0].outerHTML;
     		}
     	}
     });

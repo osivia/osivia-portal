@@ -1,0 +1,181 @@
+//
+// OSIVIA Bootstrap extensions - Content navbar
+// --------------------------------------------------
+
+
+.content-navbar {
+    @media screen and (min-width: @screen-sm-min) {
+        .navbar;
+        .navbar-default;
+    }
+}
+
+.content-navbar-breadcrumb, .content-navbar-actions {
+    display: table-cell;
+    vertical-align: top;
+}
+    
+.content-navbar-breadcrumb {
+    width: 100%;
+    
+    .hidden-xs;
+    
+    .breadcrumb {
+        background-color: transparent;
+        border-style: none;
+        border-radius: 0;
+        margin: 0;
+        padding: 0 @navbar-padding-horizontal;
+        
+        > li {
+            > a {
+                display: inline-block;
+                color: @navbar-default-link-color;
+                padding: floor((@navbar-height - @line-height-computed) / 2) 5px;
+    
+                &:hover, &:focus {
+                    color: @navbar-default-link-hover-color;
+                    text-decoration: none;
+                }
+            }
+            
+            + li::before {
+                padding-left: 3px;
+                padding-right: 0;
+            }
+            
+            &:last-of-type > a {
+                font-weight: bold;
+                margin-bottom: -1px;
+            }
+        }
+    }
+}
+    
+.content-navbar-actions {
+    .text-nowrap;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        display: block;
+        text-align: right;
+        
+        .clearfix;
+    }
+}
+
+.content-navbar-actions-menubar {
+    white-space: nowrap;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        margin-bottom: 0;
+        padding-left: 0;
+        
+        > li {
+            position: relative;
+            vertical-align: middle;
+            
+            .navbar-vertical-align(@element-height: @input-height-base);
+            
+            &.first-group {
+                float: left;
+                margin-right: 5px;
+            }
+            
+            &, > a {
+                display: inline-block;
+            }
+            
+            > a {                
+                .btn;
+                .btn-default;
+                
+                position: relative;
+                float: left;
+                
+                + a {
+                    margin-left: -1px;
+                }
+                
+                &:not(:first-of-type):not(:last-of-type) {
+                    border-radius: 0;
+                }
+                
+                &:first-of-type:not(:last-of-type) {
+                    .border-right-radius(0);
+                }
+                
+                &:last-of-type:not(:first-of-type) {
+                    .border-left-radius(0);
+                }
+            }
+            
+            > p {
+                margin-bottom: 0;
+            }
+        }
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .nav;
+        .navbar-nav;
+        
+        > li {
+            &.first-group {
+                display: none;
+            }
+            
+            &:not(.first-group), > a {
+                .content-navbar & {
+                    display: inline-block;
+                    float: none;
+                }
+            }
+            
+            &:not(.first-group):not(.state-group) + li:not(.state-group) {
+                border-left-style: solid;
+                border-width: 1px;
+                border-color: @navbar-default-border;
+            }
+            
+            > a {
+                color: @navbar-default-link-color;
+                
+                &:hover, &:focus {
+                    color: @navbar-default-link-hover-color;
+                    background-color: @navbar-default-link-hover-bg;
+                }
+            }
+            
+            > p {
+                .navbar-text;
+                
+                .content-navbar & {
+                    float: none;
+                    margin-left: 0;
+                    margin-right: 0;
+                }
+            }
+            
+            .dropdown-menu {
+                .border-top-radius(@radius: 0);
+                margin-top: 0;
+            }
+        }
+    }
+}
+
+.content-auxiliary-navbar {
+    .hidden-xs;
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .clearfix;
+        
+        .back {
+            float: left;
+        }
+        
+        ~ * {
+            margin-left: @navbar-height;
+        }
+    }
+}

@@ -419,7 +419,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         this.refreshWindowContext(controllerContext, layout, updatePage, res, notificationsWindowContext);
 
                         // Menubar window context
-                        WindowContext menubarWindowContext = MenubarUtils.createMenubarWindowContext(portalControllerContext);
+                        WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
                         res.addWindowContext(menubarWindowContext);
                         this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
                     } catch (Exception e) {
