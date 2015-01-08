@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -706,7 +707,21 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         }
 
+        /*
+         * At this time, windows (aka maximized) are definitly set
+         * We can check the layout with the correct layout uri 
+        */
+        
+        if (cmd instanceof RenderPageCommand) {
+            RenderPageCommand rpc = (RenderPageCommand) cmd;
+            Portal portal = rpc.getPortal();
 
+            // Check layout
+            if (!PortalObjectUtils.isJBossPortalAdministration(portal)) {
+                this.checkLayout(rpc);
+            }
+        }
+        
         /*
          * Synchronisation des pages de rubrique CMS quand leur affichage est en mode portlet MAX (et non en mode page)
          * Si tous les portlets sont en mode normal, ll faut forcer un appel CMS pour recharger la page
@@ -1211,6 +1226,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
             }
 
+            // Redirection driven at portlet level
+            String url =  (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url");
+            if( url != null)
+                return new RedirectionResponse(url);
+
 
             // Display collapse window content
             controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId", window.getId());
@@ -1626,6 +1646,28 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         PortalLayout layout = layoutService.getLayoutById(layoutId);
         LayoutInfo layoutInfo = layout.getLayoutInfo();
         String uri = layoutInfo.getURI();
+        
+        
+        Iterator<PortalObject> i = renderPageCommand.getWindows().iterator();
+        
+        boolean maximized = false;
+
+        while (i.hasNext()) {
+            Window window = (Window) i.next();
+            NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+            WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+            // On regarde si la fenêtre est en vue MAXIMIZED
+
+            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
+                maximized = true;
+            }
+        }
+        
+        // At this time, windows displaying is only checked for index and maximized state
+        
+        if(maximized)
+            uri = layoutInfo.getURI("maximized");
+        
 
         // Context path
         String contextPath = getTargetContextPath(renderPageCommand);
@@ -1642,6 +1684,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         // Request
         BufferingRequestWrapper request = new BufferingRequestWrapper(serverContext.getClientRequest(), contextPath, locales);
         request.setAttribute(InternalConstants.ATTR_LAYOUT_PARSING, true);
+        request.setAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, new HashSet());
+        
         // Response
         BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
 
@@ -1655,6 +1699,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         Boolean layoutCMS = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, layoutCMS);
+        
+        
+        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS));
+        
+        if( maximized)
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE, "maximized");
+
     }
 
 

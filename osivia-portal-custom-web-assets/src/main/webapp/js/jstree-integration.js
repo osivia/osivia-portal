@@ -192,7 +192,63 @@ $JQry(document).ready(function() {
 			}
 		}
 	);
+	
+	// Display links JSTree
+	$JQry(".jstree-nav").jstree({
+		"core" : {
+			"animation" : 0,
+			"open_parents" : true
+		},
+		"themes" : {
+			"theme" : "default",
+			"dots" : false,
+			"icons" : false
+		},
+		"search" : {
+			"case_insensitive" : true,
+			"show_only_matches" : true
+		},
+		"types" : {
+			"types" : {
+				"page" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/page.png"
+					}
+				},
+				"template" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/template.png"
+					}
+				},
+				"space" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/space.png"
+					}
+				},
+				"pageOnline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/published_doc.png"
+					}
+				},
+				"pageOffline" : {
+					"icon" : {
+						"image" : "/osivia-portal-custom-web-assets/images/jstree/live_doc.png"
+					}
+				}
+			}
+		},
+		"plugins" : [ "themes", "html_data", "search", "types" ]
+	});
+	$JQry(".jstree-nav").bind(
+		"loaded.jstree", function(evt, data) {
 
+			
+			var firstNode = ($JQry(this).find("#selected").first()).parents("li").first();
+			$JQry(this).jstree("open_node", firstNode);
+
+		}
+	);
+	
 });
 
 function jstreeOpenAll() {

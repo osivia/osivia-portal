@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
@@ -30,6 +31,8 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
@@ -46,6 +49,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
+import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
@@ -164,8 +168,12 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
 
-                DynamicPageBean dynaPage = new DynamicPageBean(parent, pageName, displayNames, PortalObjectId.parse("/default/templates/publish",
+                String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName, PortalObjectId.parse("/default/templates/publish",PortalObjectPath.CANONICAL_FORMAT).toString( PortalObjectPath.CANONICAL_FORMAT), publishSpace.getPath(), null, null, null, null );
+
+
+                DynamicPageBean dynaPage = new DynamicPageBean(parent, restorablePageName, pageName, displayNames, PortalObjectId.parse("/default/templates/publish",
                         PortalObjectPath.CANONICAL_FORMAT), props);
+
                 dynaPage.setOrder(order);
 
                 dynaPage.setClosable(false);
@@ -276,6 +284,51 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+        
+        
+   /* Restauration of pages in case of loose of sessions */
+        
+        if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand) {
+
+            if (!StringUtils.isEmpty(newPath)) {
+
+                PortalObjectId targetIdObject = ((PortalObjectCommand) cmd).getTargetId();
+
+                PortalObjectPath poPath = PortalObjectPath.parse(newPath, PortalObjectPath.CANONICAL_FORMAT);
+                int pathLenth = poPath.getLength();
+
+                int targetLength = targetIdObject.getPath().getLength();
+
+                // one part of url has been missed, might bu due to a lose of session
+                // (_CMS_LAYOUT, dynamic templated page, ...)
+                // We try to restore from url
+
+                if (pathLenth > targetLength + 1) {
+
+                    String pagePath = poPath.getName(2);
+
+                    // Dynamic page creation : session may have been lost
+
+                    if (RestorablePageUtils.isRestorable(pagePath)) {
+
+                        PortalObjectId portalId = null;
+                        if (cmd instanceof ViewPortalCommand)
+                            portalId = targetIdObject;
+                        else {
+                            PortalObjectPath parentPath = targetIdObject.getPath().getParent();
+                            portalId = new PortalObjectId("", parentPath);
+                        }
+
+                        // Restore the page
+                        RestorablePageUtils.restore(controllerContext, portalId, pagePath);
+                        cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+                    }
+                }
+            }
+
+        }
+
+        
         
         if( cmd instanceof CmsCommand){
             // Le mode CMS déseactive les popup

@@ -105,11 +105,18 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
                      boolean PageMaximized = BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE,
                              "osivia.portal.maximized"));
                      
-                     PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
+                     boolean portletMenubar = false;
                      
-                     Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-                     boolean portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
-                             && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));        
+                     
+                     if( !windowMaximized){
+                         // It can also be a menu bar
+                         
+                         PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
+                     
+                         Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                         portletMenubar = "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance".equals(window.getContent().getURI())
+                                 && "space_menubar".equals(window.getProperty("osivia.fragmentTypeId"));      
+                     }
                      
                      // Test has been duplicated because of cache of portletmenuBar
                      // that is already present in case of maximisation

@@ -317,49 +317,53 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                             /* Add back item */
 
 
-                            if (window.getDeclaredProperty("osivia.dynamic.close_url") != null) {
+                            if ( StringUtils.isNotEmpty(window.getDeclaredProperty("osisia.dynamicStarted")) )   {
+                               if (StringUtils.isNotEmpty(window.getDeclaredProperty("osivia.dynamic.close_url"))) {
+                                    if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
 
-                                if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
+                                        boolean containsBackItem = false;
 
-                                    boolean containsBackItem = false;
+                                        // already managed at application level ?
 
-                                    // already managed at application level ?
-
-                                    for (MenubarItem item : menubarItems) {
-                                        if ("BACK".equals(item.getId())) {
-                                            containsBackItem = true;
-                                            break;
+                                        for (MenubarItem item : menubarItems) {
+                                            if ("BACK".equals(item.getId())) {
+                                                containsBackItem = true;
+                                                break;
+                                            }
                                         }
-                                    }
 
-                                    /*
-                                    if (!containsBackItem) {
+
+                                        if (!containsBackItem) {
+                                            MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
+                                                    window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
+                                            backItem.setGlyphicon("halflings arrow-left");
+                                            backItem.setAjaxDisabled(true);
+                                            backItem.setFirstItem(true);
+                                            menubarItems.add(backItem);
+                                        }
+
+                                    }
+                                }
+                            }
+                            else    {
+                                
+                                    //  static windows maximisation
+
+                                    if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+
+                                        ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
+                                                PortalObjectPath.CANONICAL_FORMAT), null, WindowState.NORMAL);
+
+                                        PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
+
                                         MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
-                                                window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
+                                                portalURL.toString(), null, null, null);
                                         backItem.setGlyphicon("halflings arrow-left");
                                         backItem.setAjaxDisabled(true);
                                         backItem.setFirstItem(true);
                                         menubarItems.add(backItem);
-                                    }
-                                    */
-                                }
-                            }   else    {
-                                
-                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-                                    
-                                    ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT),
-                                            null, WindowState.NORMAL);
-                                    
-                                    PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
-                                    
-                                    MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
-                                            portalURL.toString(), null, null, null);
-                                    backItem.setGlyphicon("halflings arrow-left");
-                                    backItem.setAjaxDisabled(true);
-                                    backItem.setFirstItem(true);
-                                    menubarItems.add(backItem);
-                                }                               
-                                
+                                    }                          
+
                                 
                             }
 
@@ -466,6 +470,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction", "true");
             }
 
+            String url = (String) attributes.get(Constants.PORTLET_ATTR_REDIRECTION_URL);
+            if( url != null)    {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);
+            }
 
         }
 

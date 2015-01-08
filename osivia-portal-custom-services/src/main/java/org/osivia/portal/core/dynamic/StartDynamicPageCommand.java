@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
+import java.security.MessageDigest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,26 +55,37 @@ public class StartDynamicPageCommand extends DynamicCommand {
 	}
 	String parentId ;
 	String templateId ;
+    String businessName;	
 	String pageName;
 	Map displayNames;
 	Map<String, String> props;
 	Map<String, String> params;
 
+    Map<String, String> cmsParams;
 
+    
+    public Map<String, String> getCmsParams() {
+        return cmsParams;
+    }
+
+    
+    public void setCmsParams(Map<String, String> cmsParams) {
+        this.cmsParams = cmsParams;
+    }
 
 	public StartDynamicPageCommand() {
 	}
 
-	public StartDynamicPageCommand(String parentId,  String pageName,  Map displayNames, String templateId,
-			Map<String, String> props, Map<String, String> params) {
-		this.parentId = parentId;
-		this.pageName = pageName;
-		this.templateId = templateId;
+    public StartDynamicPageCommand(String parentId,  String businessName,  Map displayNames, String templateId,
+            Map<String, String> props, Map<String, String> params) {
+        this.parentId = parentId;
+        this.businessName = businessName;
+        this.templateId = templateId;
 
-		this.displayNames = displayNames;
-		this.props = props;
-		this.params = params;
-	}
+        this.displayNames = displayNames;
+        this.props = props;
+        this.params = params;
+    }
 
 	public ControllerResponse execute() throws ControllerException {
 
@@ -83,13 +95,28 @@ public class StartDynamicPageCommand extends DynamicCommand {
 			PortalObjectId poid = PortalObjectId.parse(this.parentId, PortalObjectPath.SAFEST_FORMAT);
 			PortalObject parent = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
-			PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
-					.concat("/").concat(this.pageName), PortalObjectPath.CANONICAL_FORMAT));
-
 
 			PortalObjectId potemplateid = PortalObjectId.parse(this.templateId, PortalObjectPath.SAFEST_FORMAT);
 			String potemplatepath = potemplateid.toString( PortalObjectPath.CANONICAL_FORMAT);
 
+            
+            String cmsPath = props.get("osivia.cms.basePath");
+
+           
+
+            
+
+           String pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.businessName, templateId, cmsPath, displayNames, props, params, cmsParams);
+           String pageUniqueName = businessName;
+       
+           
+
+
+           PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString()
+                   .concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
+           
+
+			
 	         PortalObject currentPortal = parent;
              while (! (currentPortal instanceof Portal))    {
                  currentPortal = currentPortal.getParent();
@@ -136,7 +163,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 
 
-			DynamicPageBean pageBean = new DynamicPageBean(parent, this.pageName, this.displayNames, potemplateid, properties);
+            DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageUniqueName, this.displayNames, potemplateid, properties);
 
 
 

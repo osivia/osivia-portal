@@ -573,6 +573,9 @@ public class CmsCommand extends DynamicCommand {
                             "/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(
                                     PortalObjectPath.SAFEST_FORMAT), props, new HashMap<String, String>());
 
+            cmd.setCmsParams(this.pageParams);
+
+            
             PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(cmd)).getPageId();
 
             publishPage = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(pageId);
