@@ -99,4 +99,21 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 		String string = bundle.getString(label);
 		getNotificationsService().addSimpleNotification(pcc, string, notificationType);
 	}
+
+	/**
+	 * Display a notification with a key label and variables
+	 * 
+	 * @param pcc
+	 * @param label
+	 *            the key in resources bundle
+	 * @param notificationType
+	 *            the notification type
+	 * @param args
+	 *            variables
+	 */
+	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType, Object... args) {
+		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
+		String string = bundle.getString(label, args);
+		getNotificationsService().addSimpleNotification(pcc, string, notificationType);
+	}
 }
