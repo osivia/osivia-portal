@@ -44,7 +44,7 @@
 
       <attribute name="URLList">
         ../../../custom/params/environnement_portail.properties,
-        ../../../custom/params/identity.properties
+        ../../../custom/params/ldap-portlets.properties
       </attribute>
 
     </mbean>
