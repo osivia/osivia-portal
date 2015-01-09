@@ -1,3 +1,23 @@
+Version 3.6.0
+================
+
+Version 3.5.0
+================
+09/01/2014
+
+Content
+------------
+[merge] from portal 3.2.16
+[evol] portal sites & pages on desktop mode can mix fragments with other components in the layout 
+[evol] global improvment of ergonomics on the actions and navigation in the top of the portlets
+[evol] ergonomics / maximize action removed, replaced by a "read more..." link
+[evol] documents can be dragged and dropped in a file explorer or in a menu
+[evol] files can be dragged and dropped from the user desktop to a file explorer
+[evol] UI / new tabs design
+[evol] API / new generic portlet class (access to main services as internationalization, notification, directory...)
+[evol] directory / user & group management more integrated
+[bugfix] No LESS bootstrap references in the portlets
+
 Version 3.4.0
 ================
 21/11/2014
