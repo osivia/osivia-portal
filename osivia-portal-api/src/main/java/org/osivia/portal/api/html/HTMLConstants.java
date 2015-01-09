@@ -77,7 +77,9 @@ public final class HTMLConstants {
     public static final String PRE = "pre";
     /** HTML "select" nodes. */
     public static final String SELECT = "select";
-    /** HTML SPAN nodes. */
+    /** HTML "small" nodes. */
+    public static final String SMALL = "small";
+    /** HTML "span" nodes. */
     public static final String SPAN = "span";
     /** HTML "table" nodes. */
     public static final String TABLE = "table";

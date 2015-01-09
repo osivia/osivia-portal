@@ -25,19 +25,13 @@ package org.osivia.portal.core.renderers;
 
 import java.io.PrintWriter;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-import org.jboss.portal.Mode;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
@@ -48,6 +42,7 @@ import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
 
 /**
@@ -120,6 +115,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
     private void renderTitle(PageProperties properties, PrintWriter markup, DecorationRendererContext drc) {
         // Current window identifier
         String currentWindowId = properties.getCurrentWindowId();
+        // Current locale
+        Locale locale = LocaleUtils.toLocale(properties.getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
         // Title value
         String title = properties.getWindowProperty(currentWindowId, "osivia.title");
         if (title == null) {
@@ -142,21 +139,31 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, "portlet-titlebar-title", StringUtils.EMPTY);
         }
 
-        // Title link
-        Element titleLink = null;
+        // Title
         if (mobileCollapse) {
-            titleLink = DOM4JUtils.generateLinkElement("#body_" + currentWindowId, null, null, "no-ajax-link", title);
+            Element titleLink = DOM4JUtils.generateLinkElement("#body_" + currentWindowId, null, null, "no-ajax-link", title);
             DOM4JUtils.addAttribute(titleLink, HTMLConstants.DATA_TOGGLE, "collapse");
-        } else if (displayDecorators) {
+            titleContainer.add(titleLink);
+        } else {
+            Element titleText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, title);
+            titleContainer.add(titleText);
+        }
+
+        // Decorators
+        if (displayDecorators) {
+            Element decorators = DOM4JUtils.generateDivElement("portlet-mode-container hidden-xs pull-right");
+            titleContainer.add(decorators);
+
+            // Maximized
             String maximizedURL = this.getMaximizedURL(drc);
             if (maximizedURL != null) {
-                titleLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, "no-ajax-link", title);
+                Element small = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null);
+                decorators.add(small);
+
+                Element maximizedLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, null, null, "more");
+                DOM4JUtils.addTooltip(maximizedLink, this.internationalizationService.getString("MAXIMIZED", locale));
+                small.add(maximizedLink);
             }
-        }
-        if (titleLink == null) {
-            DOM4JUtils.addText(titleContainer, title);
-        } else {
-            titleContainer.add(titleLink);
         }
 
 
@@ -190,149 +197,6 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         }
 
         return url;
-    }
-
-
-    private void createRestoreStateMenubarItem(RendererContext rendererContext, DecorationRendererContext decorationRendererContext) {
-        // Restore state URL
-        String url = null;
-
-        Collection<?> windowStates = decorationRendererContext.getTriggerableActions(ActionRendererContext.WINDOWSTATES_KEY);
-        if (CollectionUtils.isNotEmpty(windowStates)) {
-            for (Object windowState : windowStates) {
-                ActionRendererContext action = (ActionRendererContext) windowState;
-                String actionName = action.getName();
-                if ("normal".equals(actionName)) {
-                    if (action.isEnabled()) {
-                        url = action.getURL();
-                    }
-                    break;
-                }
-            }
-        }
-
-        if (url != null) {
-
-        }
-    }
-
-
-    /**
-     * Render triggerable actions.
-     *
-     * @param ctx renderer context
-     * @param drc decoration renderer context
-     * @param selector selector
-     * @param locale current locale
-     */
-    private void renderTriggerableActions(RendererContext ctx, DecorationRendererContext drc, String selector, Locale locale) {
-        Collection<?> modesOrStates = drc.getTriggerableActions(selector);
-        if (modesOrStates == null) {
-            return;
-        }
-
-        //
-        if (modesOrStates instanceof List) {
-            List<?> list = (List<?>) modesOrStates;
-            Collections.sort(list, new ModeAndStateComparator());
-            modesOrStates = list;
-        }
-
-        //
-        for (Object name : modesOrStates) {
-            ActionRendererContext action = (ActionRendererContext) name;
-            String actionName = action.getName();
-            if (action.isEnabled() && !"admin".equals(actionName) && !"minimized".equals(actionName)) {
-                // Title
-                String title = this.internationalizationService.getString(StringUtils.upperCase(actionName), locale);
-
-                // Glyphicon
-                String glyphicon = "asterisk";
-                if ("maximized".equals(actionName)) {
-                    glyphicon = "halflings resize-full";
-                } else if ("normal".equals(actionName)) {
-                    glyphicon = "halflings resize-small";
-                }
-
-                PrintWriter markup = ctx.getWriter();
-                markup.print("<a href='");
-                markup.print(action.getURL());
-                markup.print("' class='btn btn-default' title='");
-                markup.print(title);
-                markup.print("' data-toggle='tooltip' data-placement='bottom'><span class='glyphicons ");
-                markup.print(glyphicon);
-                markup.print("'></span></a>");
-            }
-        }
-    }
-
-
-    /**
-     * Mode and state comparator.
-     *
-     * @see Comparator
-     */
-    private static class ModeAndStateComparator implements Comparator<Object> {
-
-        /** . */
-        private final Map<Object, Integer> modeOrState2Index = new HashMap<Object, Integer>();
-
-        /** . */
-        private int lastModeIndex = 1;
-
-        /** . */
-        private int lastStateIndex = 101;
-
-
-        /**
-         * Constructor.
-         */
-        public ModeAndStateComparator() {
-            this.modeOrState2Index.put(Mode.EDIT.toString(), new Integer(97));
-            this.modeOrState2Index.put(Mode.HELP.toString(), new Integer(98));
-            this.modeOrState2Index.put(Mode.VIEW.toString(), new Integer(99));
-            this.modeOrState2Index.put(Mode.ADMIN.toString(), new Integer(100));
-            this.modeOrState2Index.put(WindowState.MINIMIZED.toString(), new Integer(198));
-            this.modeOrState2Index.put(WindowState.NORMAL.toString(), new Integer(199));
-            this.modeOrState2Index.put(WindowState.MAXIMIZED.toString(), new Integer(200));
-        }
-
-
-        /**
-         * {@inheritDoc}
-         */
-        public int compare(Object o1, Object o2) {
-            ActionRendererContext action1 = (ActionRendererContext) o1;
-            ActionRendererContext action2 = (ActionRendererContext) o2;
-
-            //
-            Object origin1 = action1.getName();
-            Object origin2 = action2.getName();
-
-            //
-            int index1 = this.getIndexFor(origin1);
-            int index2 = this.getIndexFor(origin2);
-
-            //
-            return index1 - index2;
-        }
-
-
-        /**
-         * Get index for.
-         *
-         * @param origin origin
-         * @return index
-         */
-        private int getIndexFor(Object origin) {
-            Integer index = this.modeOrState2Index.get(origin);
-            if (index == null) {
-                index = (origin instanceof Mode) ? new Integer(this.lastModeIndex++) : new Integer(this.lastStateIndex++);
-                this.modeOrState2Index.put(origin, index);
-            }
-            return index.intValue();
-        }
-
     }
 
 }
