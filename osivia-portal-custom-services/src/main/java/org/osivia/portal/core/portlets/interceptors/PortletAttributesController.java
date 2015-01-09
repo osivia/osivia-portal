@@ -116,7 +116,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
                          PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
                      
                          Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-                         portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME); 
+                         portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_MENUBAR_WINDOW_NAME); 
                      }
                      
                      // Test has been duplicated because of cache of portletmenuBar

@@ -381,7 +381,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         "osivia.portal.maximized"));
 
 
-                                boolean portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME);
+                                boolean portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_MENUBAR_WINDOW_NAME);
 
 
                                 // Portlet menubar

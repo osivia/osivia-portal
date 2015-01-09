@@ -214,9 +214,9 @@ public final class InternalConstants {
     
     // MenuBar
     /** Portal generic region */
-    public static final String PORTAL_GENERIC_MENUBAR_REGION_NAME = "menubar";     
+    public static final String PORTAL_GENERIC_REGION_NAME = "osivia.generic";     
     /** Portal generic region */   
-    public static final String PORTAL_GENERIC_MENUBAR_WINDOW_NAME = "menuBarWindow";     
+    public static final String PORTAL_MENUBAR_WINDOW_NAME = "menuBarWindow";     
 
 
     // Transversal constants

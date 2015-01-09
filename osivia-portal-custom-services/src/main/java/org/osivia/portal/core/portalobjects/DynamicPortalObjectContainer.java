@@ -540,7 +540,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
             
             spaceMenuBarGenericProps = new HashMap<String, String>();
             spaceMenuBarGenericProps.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-            spaceMenuBarGenericProps.put(ThemeConstants.PORTAL_PROP_REGION, InternalConstants.PORTAL_GENERIC_MENUBAR_REGION_NAME);
+            spaceMenuBarGenericProps.put(ThemeConstants.PORTAL_PROP_REGION, InternalConstants.PORTAL_GENERIC_REGION_NAME);
             spaceMenuBarGenericProps.put("osivia.fragmentTypeId", "space_menubar");                  
         }
         
@@ -557,7 +557,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}
 		}
 
-        windows.add(new DynamicWindowBean(pageId, InternalConstants.PORTAL_GENERIC_MENUBAR_WINDOW_NAME, "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance", getSpaceMenuBarGenericProps(), null));
+        windows.add(new DynamicWindowBean(pageId, InternalConstants.PORTAL_MENUBAR_WINDOW_NAME, "toutatice-portail-cms-nuxeo-viewFragmentPortletInstance", getSpaceMenuBarGenericProps(), null));
 	
 
         if (includeCMSWindows) {

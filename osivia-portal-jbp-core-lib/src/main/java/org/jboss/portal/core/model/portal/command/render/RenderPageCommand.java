@@ -355,9 +355,11 @@ public final class RenderPageCommand extends PageCommand
                                     if (StringUtils.equals("maximized", visibleRegionsLayoutState)) {
                                         addWindow = false;
                                     } else {
-                                        // otherwise warn
-                                        log.warn("this window seems not to be present in any visible region, should check ... : "
-                                                + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                                        if( !StringUtils.equals(window.getName(), InternalConstants.PORTAL_MENUBAR_WINDOW_NAME))    {
+                                             // otherwise warn
+                                            log.warn("this window seems not to be present in any visible region, should check ... : "
+                                                    + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                                        }
                                     }
                                 }
                             }
