@@ -141,7 +141,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
         // Title
         if (mobileCollapse) {
-            Element titleLink = DOM4JUtils.generateLinkElement("#body_" + currentWindowId, null, null, "no-ajax-link", title);
+            Element titleLink = DOM4JUtils.generateLinkElement("#body_" + currentWindowId, null, null, "no-ajax-link collapsed", title);
             DOM4JUtils.addAttribute(titleLink, HTMLConstants.DATA_TOGGLE, "collapse");
             titleContainer.add(titleLink);
         } else {

@@ -1,0 +1,29 @@
+//
+// OSIVIA Fancybox properties
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Bootstrap default variables. HANDLE WITH CARE !
+@import "../bootstrap/variables.less";
+
+
+.fancybox-bottom-controls {
+    position: relative;
+    height: 100%;
+    padding-bottom: @navbar-height + 1px;
+    
+    > .container, > .container-fluid {
+        height: 100%;
+        overflow: auto;
+    }
+    
+    .navbar-default {
+        background-color: transparent;
+    }
+    
+    .navbar-fixed-bottom {
+        position: absolute;
+    }
+}

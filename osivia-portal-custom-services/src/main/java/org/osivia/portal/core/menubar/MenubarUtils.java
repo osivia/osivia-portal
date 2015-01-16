@@ -137,7 +137,7 @@ public final class MenubarUtils {
             Element stateGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "state-group", null);
 
             // Menubar CMS group
-            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
 
             // Menubar generic group
             Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
@@ -227,26 +227,14 @@ public final class MenubarUtils {
 
 
             if (!emptyDropdownMenu) {
-                Element dropdownContainer;
-                if (CollectionUtils.isEmpty(cmsGroup.elements())) {
-                    dropdownContainer = cmsGroup;
-                    DOM4JUtils.addAttribute(cmsGroup, HTMLConstants.CLASS, "dropdown");
-                } else {
-                    Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-                    cmsGroup.add(ul);
-
-                    dropdownContainer = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
-                    ul.add(dropdownContainer);
-                }
-
                 // Dropdown menu button
                 Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "pencil");
                 DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
                 Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
                 dropdownButton.add(caret);
 
-                dropdownContainer.add(dropdownButton);
-                dropdownContainer.add(dropdownMenu);
+                cmsGroup.add(dropdownButton);
+                cmsGroup.add(dropdownMenu);
             }
 
             if (CollectionUtils.isNotEmpty(firstGroup.elements())) {

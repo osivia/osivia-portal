@@ -37,6 +37,8 @@ public final class HTMLConstants {
     public static final String BUTTON = "button";
     /** HTML "div" nodes. */
     public static final String DIV = "div";
+    /** HTML "fieldset" nodes. */
+    public static final String FIELDSET = "fieldset";
     /** HTML "figcaption" nodes. */
     public static final String FIGCAPTION = "figcaption";
     /** HTML "figure" nodes. */
@@ -63,6 +65,8 @@ public final class HTMLConstants {
     public static final String INPUT = "input";
     /** HTML "label" nodes. */
     public static final String LABEL = "label";
+    /** HTML "legend" nodes. */
+    public static final String LEGEND = "legend";
     /** HTML "li" nodes. */
     public static final String LI = "li";
     /** HTML "meta" nodes. */

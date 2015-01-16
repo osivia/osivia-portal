@@ -76,13 +76,5 @@
         <tag-class>org.osivia.portal.core.tags.FormatterHTMLPortletsListTag</tag-class>
         <body-content>empty</body-content>
     </tag>
-    
-    <tag>
-        <description>Generate windows settings HTML data.</description>
-        <display-name>Generate windows settings</display-name>
-        <name>windowsSettings</name>
-        <tag-class>org.osivia.portal.core.tags.FormatterHTMLWindowsSettingsTag</tag-class>
-        <body-content>empty</body-content>
-    </tag>
 
 </taglib>

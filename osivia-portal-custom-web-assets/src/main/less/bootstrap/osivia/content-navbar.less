@@ -162,6 +162,9 @@
     .navbar-nav;
     
     > li {
+        border-width: 1px;
+        border-color: @navbar-default-border;
+        
         &.first-group {
             display: none;
         }
@@ -175,8 +178,6 @@
         
         &:not(.first-group):not(.state-group) + li:not(.state-group) {
             border-left-style: solid;
-            border-width: 1px;
-            border-color: @navbar-default-border;
         }
         
         > a {

@@ -15,13 +15,11 @@
 package org.osivia.portal.core.formatters;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 
 /**
@@ -110,16 +108,5 @@ public interface IFormatter {
      * @throws IOException
      */
     String formatHtmlPortletsList(ControllerContext context) throws IOException;
-
-    /**
-     * Format windows settings into HTML fancyboxes data.
-     *
-     * @param currentPage current page
-     * @param windows current page windows list
-     * @param context controller context, which contains locales and URL generation data
-     * @return HTML fancyboxes data
-     * @throws IOException
-     */
-    String formatHtmlWindowsSettings(Page currentPage, List<Window> windows, ControllerContext context) throws IOException;
 
 }

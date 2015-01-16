@@ -137,6 +137,8 @@ public final class InternalConstants {
     /** CMS base path. */
     public static final String ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH = "osivia.toolbarSettings.cmsBasePath";
 
+    /** Window settings. */
+    public static final String ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS = "osivia.toolbarSettings.windowSettings";
 
 
     // Windows constants
@@ -151,8 +153,6 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_COMMAND_URL = "osivia.portlets.commandURL";
     /** Current page. */
     public static final String ATTR_WINDOWS_PAGE = "osivia.portlets.page";
-    /** Current windows list. */
-    public static final String ATTR_WINDOWS_CURRENT_LIST = "osivia.setting.windows";
     /** Window setting mode. */
     public static final String ATTR_WINDOWS_SETTING_MODE = "osivia.windowSettingMode";
     /** Window setting wizard mode value. */
@@ -211,12 +211,12 @@ public final class InternalConstants {
     public static final String CMS_REGION_LAYOUT_CLASS = "osivia.cms.regionLayout.class";
     /** CMS region layout save URL. */
     public static final String CMS_REGION_LAYOUT_SAVE_URL = "osivia.cms.regionLayout.saveURL";
-    
+
     // MenuBar
     /** Portal generic region */
-    public static final String PORTAL_GENERIC_REGION_NAME = "osivia.generic";     
-    /** Portal generic region */   
-    public static final String PORTAL_MENUBAR_WINDOW_NAME = "menuBarWindow";     
+    public static final String PORTAL_GENERIC_REGION_NAME = "osivia.generic";
+    /** Portal generic region */
+    public static final String PORTAL_MENUBAR_WINDOW_NAME = "menuBarWindow";
 
 
     // Transversal constants
@@ -241,10 +241,10 @@ public final class InternalConstants {
 
     /** Layout parsing attribute name. */
     public static final String ATTR_LAYOUT_PARSING = "osivia.layout.parsing";
-    
+
     /** Layout visible regions attribute name. */
     public static final String ATTR_LAYOUT_VISIBLE_REGIONS = "osivia.layout.visibleRegions";
-    
+
     /** Layout uri for computing visible regions attribute name. */
     public static final String ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE = "osivia.layout.visibleRegions.parserState";
 

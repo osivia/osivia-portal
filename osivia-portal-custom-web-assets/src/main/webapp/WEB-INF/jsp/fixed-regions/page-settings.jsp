@@ -60,25 +60,43 @@ var currentPageId = '${currentPageId}';
         formulaire.windowId.value = windowId;
     }
     
+    
+    function toggleBeanShell(checkbox) {
+    	var $content = $JQry("#" + checkbox.id + "-content");
+    	if (checkbox.checked) {
+    		$content.collapse("show");
+    	} else {
+    		$content.collapse("hide");
+    	}
+    }
+    
     // Window properties : mobile collapse check event
     $JQry(document).ready(function() {
-        $JQry("input[name=mobileCollapse]").change(function() {
-        	var $form = $JQry(this).parents("form");
-        	var $displayTitle = $form.find("input[name=displayTitle]");
-        	var $bootstrapPanelStyle = $form.find("input[name=bootstrapPanelStyle]");
-        	
-        	var checked = $JQry(this).is(":checked");
-        	
-        	if (checked) {
-        		// Force checked value
-        		$displayTitle.prop("checked", true);
-        		$bootstrapPanelStyle.prop("checked", true);
-        	}
-        	
-        	// Toggle disabled state
-        	$displayTitle.prop("disabled", checked);
-        	$bootstrapPanelStyle.prop("disabled", checked);
-        });
+    	$JQry("input[name=displayTitle], input[name=bootstrapPanelStyle], input[name=mobileCollapse]").change(function() {
+            var $form = $JQry(this).parents("form");
+            var $displayTitle = $form.find("input[name=displayTitle]");
+            var displayTitle = $displayTitle.is(":checked");
+            var $displayTitleDecorators = $form.find("input[name=displayDecorators]");
+            var $displayPanel = $form.find("input[name=bootstrapPanelStyle]");
+            var displayPanel = $displayPanel.is(":checked");
+            var $panelCollapse = $form.find("input[name=mobileCollapse]");
+            var panelCollapse = $panelCollapse.is(":checked");
+            
+            // Title decorators
+            if (!displayTitle) {
+            	$displayTitleDecorators.prop("checked", false);
+            }
+            $displayTitleDecorators.prop("disabled", !displayTitle);
+            
+            // Panel collapse
+            if (panelCollapse) {
+            	$displayTitle.prop("checked", true);
+                $displayPanel.prop("checked", true);
+            }
+            $displayTitle.prop("disabled", panelCollapse);
+            $displayPanel.prop("disabled", panelCollapse);
+            $panelCollapse.prop("disabled", !(displayTitle && displayPanel));
+    	});
     });
     </script>
 
@@ -205,6 +223,7 @@ var currentPageId = '${currentPageId}';
             </form>
         </div>
         
+        
         <!-- Properties -->
         <div id="page-properties" class="container">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -314,11 +333,9 @@ var currentPageId = '${currentPageId}';
                         <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
                     </div>
                 </div>
-                
-                
-                
             </form>
         </div>
+        
         
         <!-- Move -->
         <div id="page-location" class="container-fluid">
@@ -348,6 +365,7 @@ var currentPageId = '${currentPageId}';
                 </div>
             </form>
         </div>
+        
         
         <!-- Rights -->
         <div id="page-rights" class="container-fluid">
@@ -392,6 +410,7 @@ var currentPageId = '${currentPageId}';
                 </div>
             </form>
         </div>
+        
         
         <!-- CMS -->
         <div id="page-cms" class="container">
@@ -442,6 +461,7 @@ var currentPageId = '${currentPageId}';
             </form>
         </div>
         
+        
         <!-- Delete page -->
         <div id="page-suppression" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -460,6 +480,7 @@ var currentPageId = '${currentPageId}';
             </form>
         </div>
         
+        
         <!-- Elements list -->
         <div id="pages-list" class="container-fluid">
             <div class="well">
@@ -472,6 +493,7 @@ var currentPageId = '${currentPageId}';
                 </div>
             </div>
         </div>
+        
         
         <!-- Add portlet -->
         <div id="add-portlet" class="container-fluid">
@@ -491,6 +513,7 @@ var currentPageId = '${currentPageId}';
             </form>
         </div>
         
+        
         <!-- Delete portlet  -->
         <div id="delete-portlet" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -508,8 +531,277 @@ var currentPageId = '${currentPageId}';
             </form>
         </div>
         
+        
         <!-- Windows settings -->
-        <formatter:windowsSettings />
+        <c:forEach var="window" items="${requestScope['osivia.toolbarSettings.windowSettings']}">
+            <div id="window-settings-${window.id}" class="fancybox-bottom-controls">
+                <div class="container">
+                    <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
+                        <input type="hidden" name="action" value="changeWindowSettings">
+                        <input type="hidden" name="windowId" value="${window.id}">
+                        
+                        <fieldset>
+                            <legend>
+                                <i class="glyphicons display"></i>
+                                <span><is:getProperty key="WINDOW_PROPERTIES_DISPLAY" /></span>
+                            </legend>
+                            
+                            <!-- Title -->                        
+                            <div class="form-group">
+                                <label for="${window.id}-title" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_TITLE" /></label>
+                                <div class="col-sm-9">
+                                    <input id="${window.id}-title" type="text" name="title" value="${window.title}" class="form-control">
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="displayTitle" value="1" ${displayTitleChecked}
+                                                <c:if test="${window.displayTitle or window.panelCollapse}">checked="checked"</c:if>
+                                                <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_TITLE_DISPLAY" /></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="displayDecorators" value="1" ${displayDecoratorsChecked}
+                                                <c:if test="${window.displayTitleDecorators}">checked="checked"</c:if>
+                                                <c:if test="${not window.displayTitle}">disabled="disabled"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_TITLE_MORE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Panel -->
+                            <div class="form-group">
+                                <label for="${window.id}-panel" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_PANEL" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-panel" type="checkbox" name="bootstrapPanelStyle"
+                                                <c:if test="${window.displayPanel or window.panelCollapse}">checked="checked"</c:if>
+                                                <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_PANEL_DISPLAY" /></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="mobileCollapse"
+                                                <c:if test="${window.panelCollapse}">checked="checked"</c:if>
+                                                <c:if test="${not (window.displayTitle and window.displayPanel)}">disabled="disabled"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_PANEL_COLLAPSE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Ajax -->
+                            <div class="form-group">
+                                <label for="${window.id}-ajax" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_AJAX" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-ajax" type="checkbox" name="ajaxLink" value="1"
+                                                <c:if test="${window.ajax}">checked="checked"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_AJAX_ACTIVATE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hide empty portlet -->
+                            <div class="form-group">
+                                <label for="${window.id}-hide-empty" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_HIDE_EMPTY" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-hide-empty" type="checkbox" name="hideEmptyPortlet" value="1"
+                                                <c:if test="${window.hideEmpty}">checked="checked"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_HIDE_EMPTY_ACTIVATE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Print -->
+                            <div class="form-group">
+                                <label for="${window.id}-print" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_PRINT" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-print" type="checkbox" name="printPortlet" value="1"
+                                                <c:if test="${window.print}">checked="checked"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_PRINT_ACTIVATE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Styles -->
+                            <div class="form-group">
+                                <label class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_STYLES" /></label>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        <c:forEach var="style" items="${window.styles}">
+                                            <div class="col-sm-4 col-md-3">
+                                                <label class="checkbox-inline text-overflow">
+                                                    <input type="checkbox" name="style" value="${style.key}"
+                                                        <c:if test="${style.value}">checked="checked"</c:if>
+                                                    >
+                                                    <span>${style.key}</span>
+                                                </label>
+                                            </div>
+                                        </c:forEach>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </fieldset>
+                        
+                        <fieldset>
+                            <legend>
+                                <i class="glyphicons dashboard"></i>
+                                <span><is:getProperty key="WINDOW_PROPERTIES_ADVANCED_OPTIONS" /></span>
+                            </legend>
+                            
+                            <!-- Scopes -->
+                            <div class="form-group">
+                                <label for="${window.id}-scopes" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
+                                <div class="col-sm-9">
+                                    <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
+                                        <option value=""
+                                            <c:if test="${empty window.selectedScope}">selected="selected"</c:if>
+                                        ><is:getProperty key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES" /></option>
+                                        
+                                        <c:forEach var="scope" items="${window.scopes}">
+                                            <option value="${scope.key}"
+                                                <c:if test="${window.selectedScope eq scope.key}">selected="selected"</c:if>
+                                            >${scope.value}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Customization identifier -->
+                            <div class="form-group">
+                                <label for="${window.id}-custom-id" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_CUSTOM_ID" /></label>
+                                <div class="col-sm-9">
+                                    <input id="${window.id}-custom-id" type="text" name="idPerso" value="${window.customizationId}" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <!-- Shared cache identifier -->
+                            <div class="form-group">
+                                <label for="${window.id}-shared-cache-id" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SHARED_CACHE_ID" /></label>
+                                <div class="col-sm-9">
+                                    <input id="${window.id}-shared-cache-id" type="text" name="cacheID" value="${window.sharedCacheId}" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <!-- BeanShell -->
+                            <c:remove var="beanShellContent" />
+                            <c:if test="${window.beanShell}">
+                                <c:set var="beanShellContent" value="in" />
+                            </c:if>
+                            
+                            <div class="form-group">
+                                <label for="${window.id}-beanShell" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-beanShell" type="checkbox" name="bshActivation" value="1" onclick="toggleBeanShell(this)"
+                                                <c:if test="${window.beanShell}">checked="checked"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL" /></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div id="${window.id}-beanShell-content" class="collapse
+                                        <c:if test="${window.beanShell}">in</c:if>
+                                    ">
+                                        <p>
+                                            <textarea rows="5" name="bshScript" class="form-control">${window.beanShellContent}</textarea>
+                                        </p>
+                                        
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <div class="panel-title">
+                                                    <a href="#${window.id}-beanShell-example" class="no-ajax-link" data-toggle="collapse">
+                                                        <i class="glyphicons halflings info-sign"></i>
+                                                        <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE" /></span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            
+                                            <div id="${window.id}-beanShell-example" class="panel-collapse collapse">
+                                                <div class="panel-body">
+                                                    <p>Implicits variables :</p>
+                                                    <dl>
+                                                        <dt>pageParamsEncoder</dt>
+                                                        <dd>Parameters encoder, decoded to <code>List&lt;String&gt;</code></dd>
+                                                        
+                                                        <dt>windowsProperties</dt>
+                                                        <dd>Window dynamic properties: <code>Map&lt;String, String&gt;</code></dd>
+                                                        
+                                                        <dt>osivia.dynamicCSSClasses</dt>
+                                                        <dd>CSS class names separated by a space: <code>css1 css2</code></dd>
+                                                    </dl>
+
+<pre>
+import java.util.List;
+
+List cssSelectorValues =  pageParamsEncoder.decode("selectors", "cssSelector");
+if (cssSelectorValues != null) {
+    windowProperties.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));
+}
+rightCellToggle.add(example);
+</pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Selection dependency indicator -->
+                            <div class="form-group">
+                                <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-selection-dependency" type="checkbox" name="selectionDep" value="1"
+                                                <c:if test="${window.selectionDependency}">checked="checked"</c:if>
+                                            >
+                                            <span><is:getProperty key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE" /></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </fieldset>
+                        
+                        <div class="navbar navbar-default navbar-fixed-bottom">
+                            <div class="col-sm-offset-3 col-sm-3">
+                                <button type="submit" class="btn btn-primary navbar-btn">
+                                    <i class="glyphicons halflings floppy_disk"></i>
+                                    <span><is:getProperty key="SAVE" /></span>
+                                </button>
+                                
+                                <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </c:forEach>
     
     </div>
 </c:if>

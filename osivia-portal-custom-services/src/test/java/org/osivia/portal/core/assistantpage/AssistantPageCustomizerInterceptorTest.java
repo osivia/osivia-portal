@@ -14,7 +14,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -38,7 +37,6 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPath.Format;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
-import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.portlet.info.PortletInfoInfo;
@@ -55,6 +53,8 @@ import org.jboss.portal.server.request.URLFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -109,14 +109,19 @@ public class AssistantPageCustomizerInterceptorTest {
         InstanceContainer instanceContainerMock = EasyMock.createNiceMock(InstanceContainer.class);
         IProfilManager profileManagerMock = EasyMock.createNiceMock(IProfilManager.class);
         IInternationalizationService internationalizationServiceMock = EasyMock.createNiceMock(IInternationalizationService.class);
+        IBundleFactory bundleFactoryMock = EasyMock.createNiceMock(IBundleFactory.class);
         PortalObjectContainer portalObjectContainerMock = EasyMock.createNiceMock(PortalObjectContainer.class);
+
+        Bundle bundle = new Bundle(internationalizationServiceMock, this.getClass().getClassLoader(), Locale.getDefault());
 
         EasyMock.expect(factoryMock.getManager()).andStubReturn(managerMock);
         EasyMock.expect(managerMock.checkPermission(EasyMock.anyObject(PortalObjectPermission.class))).andReturn(true).anyTimes();
         EasyMock.expect(instanceContainerMock.getDefinitions()).andReturn(this.generateInstanceDefinitions()).anyTimes();
         EasyMock.expect(profileManagerMock.getListeProfils()).andReturn(new ArrayList<ProfilBean>()).anyTimes();
         EasyMock.expect(internationalizationServiceMock.getString(EasyMock.anyObject(String.class), EasyMock.anyObject(Locale.class)))
-        .andReturn("LOCALIZED_STRING").anyTimes();
+                .andReturn("LOCALIZED_STRING").anyTimes();
+        EasyMock.expect(internationalizationServiceMock.getBundleFactory(EasyMock.anyObject(ClassLoader.class))).andStubReturn(bundleFactoryMock);
+        EasyMock.expect(bundleFactoryMock.getBundle(EasyMock.anyObject(Locale.class))).andReturn(bundle).anyTimes();
         EasyMock.expect(portalObjectContainerMock.getObject(EasyMock.anyObject(PortalObjectId.class))).andStubReturn(this.portalMock);
 
         AssistantPageCustomizerInterceptor assistant = new AssistantPageCustomizerInterceptor();
@@ -132,6 +137,7 @@ public class AssistantPageCustomizerInterceptorTest {
         EasyMock.replay(instanceContainerMock);
         EasyMock.replay(profileManagerMock);
         EasyMock.replay(internationalizationServiceMock);
+        EasyMock.replay(bundleFactoryMock);
         EasyMock.replay(portalObjectContainerMock);
 
 
@@ -376,6 +382,7 @@ public class AssistantPageCustomizerInterceptorTest {
         }
     }
 
+
     /**
      * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlPortletsList(ControllerContext)}.
      */
@@ -398,36 +405,6 @@ public class AssistantPageCustomizerInterceptorTest {
         }
     }
 
-    /**
-     * Test method for {@link AssistantPageCustomizerInterceptor#formatHtmlWindowsSettings(Page, java.util.List, ControllerContext)}
-     */
-    @Test
-    public final void testFormatHtmlWindowsSettings() {
-        Page currentPageMock = this.generatePortalArborescence();
-
-        List<Window> windows = new ArrayList<Window>();
-        windows.add(this.generateWindow("Window1"));
-        windows.add(this.generateWindow("Window2"));
-
-        String htmlData;
-        try {
-            // Test 1 : null context
-            htmlData = this.formatter.formatHtmlWindowsSettings(currentPageMock, windows, null);
-            assertNull(htmlData);
-
-            // Test 2 : empty windows list
-            htmlData = this.formatter.formatHtmlWindowsSettings(currentPageMock, new ArrayList<Window>(), this.context);
-            assertNotNull(htmlData);
-            assertEquals(1, StringUtils.countMatches(htmlData, "<div"));
-
-            // Test 3
-            htmlData = this.formatter.formatHtmlWindowsSettings(currentPageMock, windows, this.context);
-            assertNotNull(htmlData);
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        }
-    }
 
     /**
      * Utility method used to generate a portal arborescence.
@@ -520,6 +497,7 @@ public class AssistantPageCustomizerInterceptorTest {
         return currentPageMock;
     }
 
+
     /**
      * Utility method used to generage instance definitions
      *
@@ -556,21 +534,6 @@ public class AssistantPageCustomizerInterceptorTest {
         }
 
         return definitions;
-    }
-
-    private Window generateWindow(String id) {
-        Window windowMock = EasyMock.createNiceMock(Window.class);
-        PortalObjectId windowIdMock = EasyMock.createNiceMock(PortalObjectId.class);
-
-        EasyMock.expect(windowMock.getId()).andStubReturn(windowIdMock);
-        EasyMock.expect(windowMock.getDeclaredProperty("osivia.style")).andReturn(id + "Style1," + id + "Style2").anyTimes();
-
-        EasyMock.expect(windowIdMock.toString(EasyMock.anyObject(Format.class))).andReturn(id).anyTimes();
-
-        EasyMock.replay(windowMock);
-        EasyMock.replay(windowIdMock);
-
-        return windowMock;
     }
 
 }

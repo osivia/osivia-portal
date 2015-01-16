@@ -15,6 +15,7 @@
 package org.osivia.portal.core.theming.attributesbundle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -37,6 +39,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -62,6 +65,8 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -72,11 +77,11 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
-import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.profils.ProfilBean;
 
 /**
  * Page settings attributes bundle.
@@ -107,11 +112,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final PortalObjectContainer portalObjectContainer;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
-
-    /** Internationalization service. */
-    private IInternationalizationService internationalizationService;
-
-
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -137,16 +139,17 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
-
-         // Internationalization service
-         this.internationalizationService = Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+        // Bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
 
 
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
-        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);         
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CATEGORIES);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST);
@@ -159,11 +162,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_DISPLAY_LIVE_VERSION);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
-        this.names.add(InternalConstants.ATTR_WINDOWS_CURRENT_LIST);
-
-
-        // FIXME old regions attributes
-        this.names.add(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE);
+        this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
     }
 
 
@@ -215,8 +214,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
 
+        // Bundle
         Locale locale = serverContext.getClientRequest().getLocale();
-
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Current page
         Page page = renderPageCommand.getPage();
@@ -244,8 +244,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
             // Selectors propagation page indicator
             Boolean selectorsPropagation = "1".equals(page.getDeclaredProperty("osivia.cms.propagateSelectors"));
-            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION, selectorsPropagation);       
- 
+            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION, selectorsPropagation);
+
 
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
@@ -262,7 +262,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 Map<String, String> categories = new LinkedHashMap<String, String>();
 
 
-                categories.put("", this.internationalizationService.getString(InternationalizationConstants.KEY_PAGE_NO_CATEGORY, locale));
+                categories.put("", bundle.getString(InternationalizationConstants.KEY_PAGE_NO_CATEGORY));
 
                 TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<OrderedPageCategory>();
 
@@ -362,10 +362,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             }
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH, pageCmsBasePath);
         }
-
-
-        // FIXME old regions attributes
-        attributes.put(InternalConstants.ATTR_INTERNATIONALIZATION_SERVICE, InternationalizationUtils.getInternationalizationService());
     }
 
 
@@ -436,6 +432,12 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private void fillPageAttributes(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Server context
+        ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+        // Bundle
+        Locale locale = serverContext.getClientRequest().getLocale();
+        Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Current page
         Page page = renderPageCommand.getPage();
@@ -444,9 +446,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         Object windowSettingMode = controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
         if (!pageType.isTemplated() && InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
-            // Locale
-            Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
-
             List<Window> windows = new ArrayList<Window>();
 
             String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
@@ -528,7 +527,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 }
             }
 
-            attributes.put(InternalConstants.ATTR_WINDOWS_CURRENT_LIST, windows);
+            List<WindowSettings> windowSettings = this.getWindowSettings(bundle, page.getPortal(), windows);
+            attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS, windowSettings);
         }
     }
 
@@ -561,6 +561,99 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 renderCtx = rendition.getPageResult().getRegion2(regionName);
             }
         }
+    }
+
+
+    /**
+     * Get window settings.
+     *
+     * @param bundle internationalization bundle
+     * @param portal portal
+     * @param windows windows
+     * @return window settings
+     */
+    private List<WindowSettings> getWindowSettings(Bundle bundle, Portal portal, List<Window> windows) {
+        List<WindowSettings> windowSettings = new ArrayList<WindowSettings>(windows.size());
+
+        for (Window window : windows) {
+            // Identifier
+            String id = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+            WindowSettings settings = new WindowSettings(id);
+            windowSettings.add(settings);
+
+            // Title
+            String title = StringUtils.trimToEmpty(window.getDeclaredProperty("osivia.title"));
+            boolean displayTitle = !StringUtils.equals("1", window.getDeclaredProperty("osivia.hideTitle"));
+            boolean displayTitleDecorators = !"1".equals(window.getDeclaredProperty("osivia.hideDecorators"));
+            settings.setTitle(title);
+            settings.setDisplayTitle(displayTitle);
+            settings.setDisplayTitleDecorators(displayTitleDecorators);
+
+            // Panel
+            boolean displayPanel = BooleanUtils.toBoolean(window.getDeclaredProperty("osivia.bootstrapPanelStyle"));
+            boolean panelCollapse = BooleanUtils.toBoolean(window.getDeclaredProperty("osivia.mobileCollapse"));
+            settings.setDisplayPanel(displayPanel);
+            settings.setPanelCollapse(panelCollapse);
+
+            // Ajax
+            boolean ajax = "1".equals(window.getProperty("osivia.ajaxLink"));
+            settings.setAjax(ajax);
+
+            // Hide empty portlet
+            boolean hideEmpty = "1".equals(window.getProperty("osivia.hideEmptyPortlet"));
+            settings.setHideEmpty(hideEmpty);
+
+            // Print
+            boolean print = "1".equals(window.getProperty("osivia.printPortlet"));
+            settings.setPrint(print);
+
+            // Styles
+            String portalStylesProperty = StringUtils.trimToEmpty(portal.getDeclaredProperty("osivia.liste_styles"));
+            List<String> portalStyles = Arrays.asList(StringUtils.split(portalStylesProperty, ","));
+            String selectedStylesProperty = StringUtils.trimToEmpty(window.getDeclaredProperty("osivia.style"));
+            List<String> selectedStyles = Arrays.asList(StringUtils.split(selectedStylesProperty, ","));
+            Map<String, Boolean> styles = settings.getStyles();
+            for (String portalStyle : portalStyles) {
+                boolean selected = selectedStyles.contains(portalStyle);
+                styles.put(portalStyle, selected);
+            }
+
+            // Scopes
+            String selectedScope = window.getProperty("osivia.conditionalScope");
+            Map<String, String> scopes = settings.getScopes();
+            List<ProfilBean> profiles = this.profileManager.getListeProfils();
+            if (CollectionUtils.isNotEmpty(profiles)) {
+                for (ProfilBean profile : profiles) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(bundle.getString("WINDOW_PROPERTIES_SCOPE_PROFILE"));
+                    builder.append(" ");
+                    builder.append(profile.getName());
+
+                    scopes.put(profile.getName(), builder.toString());
+                }
+            }
+            settings.setSelectedScope(selectedScope);
+
+            // Customization identifier
+            String customizationId = window.getDeclaredProperty("osivia.idPerso");
+            settings.setCustomizationId(customizationId);
+
+            // Shared cache identifier
+            String sharedCacheId = window.getProperty("osivia.cacheID");
+            settings.setSharedCacheId(sharedCacheId);
+
+            // BeanShell
+            boolean beanShell = "1".equals(window.getDeclaredProperty("osivia.bshActivation"));
+            String beanShellContent = window.getProperty("osivia.bshScript");
+            settings.setBeanShell(beanShell);
+            settings.setBeanShellContent(beanShellContent);
+
+            // Selection dependency indicator
+            boolean selectionDependency = "selection".equals(window.getProperty("osivia.cacheEvents"));
+            settings.setSelectionDependency(selectionDependency);
+        }
+
+        return windowSettings;
     }
 
 
