@@ -789,7 +789,7 @@ rightCellToggle.add(example);
                         </fieldset>
                         
                         <div class="navbar navbar-default navbar-fixed-bottom">
-                            <div class="col-sm-offset-3 col-sm-3">
+                            <div class="col-sm-offset-3 col-sm-9">
                                 <button type="submit" class="btn btn-primary navbar-btn">
                                     <i class="glyphicons halflings floppy_disk"></i>
                                     <span><is:getProperty key="SAVE" /></span>
