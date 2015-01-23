@@ -716,12 +716,14 @@ var currentPageId = '${currentPageId}';
                                 <label for="${window.id}-beanShell" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
-                                        <label>
-                                            <input id="${window.id}-beanShell" type="checkbox" name="bshActivation" value="1" onclick="toggleBeanShell(this)"
-                                                <c:if test="${window.beanShell}">checked="checked"</c:if>
-                                            >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL" /></span>
-                                        </label>
+                                        <p>
+                                            <label>
+                                                <input id="${window.id}-beanShell" type="checkbox" name="bshActivation" value="1" onclick="toggleBeanShell(this)"
+                                                    <c:if test="${window.beanShell}">checked="checked"</c:if>
+                                                >
+                                                <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL" /></span>
+                                            </label>
+                                        </p>
                                     </div>
                                     
                                     <div id="${window.id}-beanShell-content" class="collapse
