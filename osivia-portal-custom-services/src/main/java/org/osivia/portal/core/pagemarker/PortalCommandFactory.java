@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,6 +57,7 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.osivia.portal.core.web.WebCommand;
 
 
@@ -207,6 +210,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         boolean popupOpened = false;
         boolean closePopup = false;
 
+        RequestContextUtil.setControllerContext(controllerContext);
 
         // 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {

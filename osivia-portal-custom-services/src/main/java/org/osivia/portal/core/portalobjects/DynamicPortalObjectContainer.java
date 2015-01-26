@@ -281,42 +281,9 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 	public ControllerContext getCommandContext()	{
+	    ControllerContext controllerContext = RequestContextUtil.getControllerContext();
 
-
-		HttpServletRequest request = this.getInvocation().getServerContext().getClientRequest();
-
-
-		// Le controller context est le meme pour tous les threads, on le stocke dans la requete
-		// TODO : mettre dans le scope invocation et déplacer dans requestContextUtil
-		ControllerContext controllerContext = (ControllerContext) request.getAttribute("osivia.controllerContext");
-
-		if (controllerContext == null) {
-
-			Stack stack = this.getTracker().getStack();
-
-			List commands = new ArrayList();
-
-			// Inverse order
-			for (Object cmd : stack) {
-                commands.add(0, cmd);
-            }
-
-			for (Object cmd : commands) {
-				if (cmd instanceof ControllerCommand) {
-
-					controllerContext = ((ControllerCommand) cmd).getControllerContext();
-					break;
-				}
-			}
-
-			if (controllerContext != null) {
-				request.setAttribute("osivia.controllerContext", controllerContext);
-			}
-		}
-
-		return controllerContext;
-
-
+        return controllerContext;
 	}
 
 
