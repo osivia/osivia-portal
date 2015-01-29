@@ -31,7 +31,8 @@ public class SessionListener implements HttpSessionListener {
 	
 	public static String activeSessionSync = new String("activeSessionSync");
 	
-	
+	private static ICMSServiceLocator icmsServiceLocactor = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+
 	
 	public void sessionCreated(HttpSessionEvent arg0) {
 		
@@ -56,6 +57,9 @@ public class SessionListener implements HttpSessionListener {
 		}
 
 		nuxeoService.sessionDestroyed(arg0);
+		
+		
+		
 
 	}
 

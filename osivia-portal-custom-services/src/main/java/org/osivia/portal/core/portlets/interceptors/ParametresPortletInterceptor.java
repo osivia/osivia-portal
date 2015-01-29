@@ -163,6 +163,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 if (webPagePath != null) {
                     attributes.put("osivia.cms.webPagePath", webPagePath);
                 }
+                
+                String webPageEditionPath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.webPageEditionPath");
+                if (webPageEditionPath != null) {
+                    attributes.put("osivia.cms.webPageEditionPath", webPageEditionPath);
+                }
 
             }
 

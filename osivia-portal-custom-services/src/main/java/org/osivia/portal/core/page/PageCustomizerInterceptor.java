@@ -810,7 +810,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 //                        cmxCtx.setDisplayLiveVersion("1");
 //                    }
 
-
+// ??? UTILE ???
 
                     /* Inject web page edition */
 
@@ -904,6 +904,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 if (BooleanUtils.isTrue(layoutCMS)) {
                    if (getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
                         cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
+                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(cmd.getControllerContext(), sPath[0]) == Level.allowPreviewVersion) {
+                            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);
+                        }                        
                     }
                 }
 

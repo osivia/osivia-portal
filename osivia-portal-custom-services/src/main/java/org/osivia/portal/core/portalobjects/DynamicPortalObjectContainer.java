@@ -407,10 +407,13 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                         windowsEditableWindowsMode = "preview";
                     } else  {
                         // Web page mode
-
-                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
-                            cmsReadItemContext.setDisplayLiveVersion("1");
-                            windowsEditableWindowsMode = "preview";
+                        
+                        boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
+                        if( modePreview)    {
+                            if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, path) == Level.allowPreviewVersion) {
+                                cmsReadItemContext.setDisplayLiveVersion("1");
+                                windowsEditableWindowsMode = "preview";
+                            }
                         }
                     }
 

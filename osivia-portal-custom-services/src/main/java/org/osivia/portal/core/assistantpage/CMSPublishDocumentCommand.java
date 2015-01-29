@@ -162,6 +162,9 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
             // force reload page(editables windows)
             getControllerContext().getServerInvocation().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows." + "." + pagePath, null);
 
+            
+   
+            
             // Force reload of the navigation tree
             String navigationScope = page.getProperty("osivia.cms.navigationScope");
             String basePath = page.getProperty("osivia.cms.basePath");
@@ -173,6 +176,9 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
 
             getCMSService().getPortalNavigationItem(cmxCtx, basePath, basePath);
 
+            
+            // force reload ressources       
+            getCMSService().refreshBinaryResource(cmsCtx, pagePath);         
 
             return new UpdatePageResponse(poid);
 

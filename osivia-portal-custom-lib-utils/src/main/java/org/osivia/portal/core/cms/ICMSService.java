@@ -324,6 +324,35 @@ public interface ICMSService {
      */
     String refreshUserAvatar(CMSServiceCtx cmsCtx, String username);
 
+    
+    /**
+     * Get binary url 
+     *
+     * @param cmsCtx CMS context
+     * @param username user identifier
+     * @return user avatar
+     */
+    public Link getBinaryResourceURL(CMSServiceCtx cmsCtx, BinaryDescription binary) throws CMSException;
+
+
+    /**
+     * Refresh the user avatar.
+     *
+     * @param cmsCtx cms context
+     * @param username username
+     * @return the timestamp associated with the refresh event
+     */
+    String refreshBinaryResource(CMSServiceCtx cmsCtx, String path);
+
+
+    /**
+     * Validate the delegation ticket
+     *
+     * @param cmsCtx cms context
+     * @param username username
+     * @return the timestamp associated with the refresh event
+     */
+     public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path) ;
 
     /**
      * Synchronize or disable synchronization between local folder and ECM folder
@@ -345,5 +374,6 @@ public interface ICMSService {
      * @throws CMSException
      */
     void getEcmFilesUrl(CMSServiceCtx cmsCtx, String pagePath, EcmFilesCommand filesCommand) throws CMSException;
+    
 
 }
