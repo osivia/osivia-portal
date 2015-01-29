@@ -26,6 +26,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodRetryHandler;
@@ -41,15 +51,6 @@ import org.jboss.system.ServiceMBeanSupport;
 import org.osivia.portal.api.net.ProxyUtils;
 import org.osivia.portal.api.status.UnavailableServer;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import com.sun.mail.smtp.SMTPTransport;
 
 
@@ -250,13 +251,15 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			if( url.endsWith("/nuxeo"))
 			    url += NUXEO_RUNNINGSTATUS_URL;
 			
+            statutLog.info("Testing Nuxeo service URL : " + url);
 			
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			Future<String> future = executor.submit(new URLTesteur(url, timeOut));
 			
 			String response = future.get(timeOut, TimeUnit.SECONDS);
-			
+
 			if( url.endsWith(NUXEO_RUNNINGSTATUS_URL))   {
+
 			    if( !StringUtils.containsIgnoreCase(response, NUXEO_RUNNINGSTATUS_OK))    {
 			        throw new UnavailableServer(response);
 			    }
