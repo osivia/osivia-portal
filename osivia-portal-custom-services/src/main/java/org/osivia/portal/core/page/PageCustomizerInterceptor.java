@@ -594,8 +594,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 ;
             }
 
+            boolean initState = "true".equals(request.getParameter("init-state"));
+            
+            if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
+                    initState = false;
 
-            if ("true".equals(request.getParameter("init-state")) || defaultPage) {
+            if (initState || defaultPage) {
 
                 CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
 
@@ -637,7 +641,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            if ("true".equals(request.getParameter("init-state"))) {
+            if (initState) {
 
                 // logger.debug("init page");
                 // Récupération des fenêtres de la page

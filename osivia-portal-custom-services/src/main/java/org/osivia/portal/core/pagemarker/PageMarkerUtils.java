@@ -27,9 +27,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -43,6 +45,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalStateContext;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
@@ -50,6 +53,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
+import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -63,6 +67,7 @@ import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.security.CmsPermissionHelper;
@@ -391,10 +396,12 @@ public class PageMarkerUtils {
      */
     public static String restorePageState(ControllerContext controllerContext, String requestPath) {
         String newPath = requestPath;
+        String newTabPath = null;
 
 
         String currentPageMarker = null;
-
+        
+ 
 
         if (requestPath.startsWith(PAGE_MARKER_PATH)) {
             int beginMarker = PAGE_MARKER_PATH.length();
@@ -411,6 +418,59 @@ public class PageMarkerUtils {
                 currentPageMarker = pagemarkers[ 0];
             }
         }
+        
+        
+        
+       /* Tab restoration */
+        
+        PageMarkerInfo tabMarkerInfo = null;
+        
+        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        
+        if("true".equals(request.getParameter("init-state")))   {
+
+                Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
+                
+                if( markers != null)    {
+                    
+                    // Searching the most recent version for this tabs
+                    
+                    List<PageMarkerInfo> list = new LinkedList(markers.values());
+    
+                    // Inverte orders to obtain the most recent first
+                    Collections.sort(list, new Comparator<PageMarkerInfo>() {
+    
+                        public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
+                            return o2.getLastTimeStamp().compareTo(o1.getLastTimeStamp());
+                        }
+                    });
+    
+
+                    ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+                    // Context path
+                    String contextPath = serverContext.getPortalContextPath();
+                    contextPath = StringUtils.removeEnd(contextPath, "/auth");
+                    
+                    String tabPagePath = StringUtils.removeStart(newPath, contextPath);
+                    
+                    for (PageMarkerInfo pagemarkerInfo : list) {
+                        // Is it a subpage of the tab ?
+   
+                        if (StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
+                            newTabPath = contextPath + pagemarkerInfo.getPageId().toString();
+                            tabMarkerInfo = pagemarkerInfo;
+                            break;
+                        }
+                    }
+                }
+        }
+              
+        
+        
+        
+        
+        
 
 
         /*
@@ -473,149 +533,27 @@ public class PageMarkerUtils {
 
 
 
-                    // String lastSavedPageMarker = (String)
-                    // controllerContext.getAttribute(Scope.SESSION_SCOPE,
-                    // "lastSavedPageMarker");
-
-                    // Pas de restauration si la restauration correspond
-                    // à la dernière sauvegarde
-                    // Les données sont déjà en session
-
-                    // REGRESSION FONCTIONNELLE EN AJAX !!!! (par
-                    // exemple, champ texte libre)
-                    // liée a
-                    // controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                    // child.getId()
-                    // .toString(PortalObjectPath.CANONICAL_FORMAT),
-                    // newNS);
-                    // Sans cela, il semble que la restauration n'est
-                    // pas prise en compte
-
                     if (true) {
-                        // if(
-                        // !currentPageMarker.equals(lastSavedPageMarker))
-                        // {
-
-
-                        // Restautation etat page
-                        NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-                        PageNavigationalState pns = markerInfo.getPageNavigationState();
-                        if (pns != null) {
-
-                            //
-                            ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
-
-                            // Restauration de preview nécessaire pour calcul editableWindows
-                            EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
-
-                            if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
-                                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
+                        
+                        PageMarkerInfo restorePageInfo = markerInfo;
+                        if( tabMarkerInfo != null)  {
+                            // In case of a tab, we restore the tab's page info
+                            restorePageInfo = tabMarkerInfo;
+                            restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
+                            
+                            // And if tab was already active, we reinit the page
+                            if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
+                                newTabPath = null;
                             }
                         }
-
-
-
+                        
                         // Restauration des pages dynamiques
                         IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
-                        poc.setDynamicPages(markerInfo.getDynamicPages());
-
-                        Page page = null;
-                        page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
-
-                        // Cas des pages dynamiques qui n'existent plus
-                        if (page != null) {
-                            // Restauration des fenêtres dynamiques
-                            poc.setDynamicWindows(markerInfo.getDynamicWindows());
-
-                            // Restauration des etats des windows
-                            for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
-                                /*
-                                 * Collection pageChilds; if( page
-                                 * instanceof DynamicPersistentPage)
-                                 * pageChilds = ((DynamicPersistentPage)
-                                 * page).getNotFetchedWindows(); else
-                                 * pageChilds =
-                                 * page.getChildren(PortalObject
-                                 * .WINDOW_MASK);
-                                 *
-                                 *
-                                 *
-                                 * for (Object po : pageChilds) {
-                                 */
-
-                                Window child = (Window) po;
-
-                                WindowStateMarkerInfo wInfo = markerInfo.getWindowInfos().get(child.getId());
-
-                                if (wInfo != null) {
-                                    /*
-                                     * // Pour supprimer les oldNS et
-                                     * forcer la // prise en compte du
-                                     * nouvel état
-                                     *
-                                     * controllerContext.removeAttribute(
-                                     * ControllerCommand
-                                     * .PRINCIPAL_SCOPE, child.getId()
-                                     * .toString
-                                     * (PortalObjectPath.CANONICAL_FORMAT
-                                     * ));
-                                     *
-                                     * WindowNavigationalState newNS =
-                                     * new
-                                     * WindowNavigationalState(wInfo.
-                                     * getWindowState(),
-                                     * wInfo.getMode(),
-                                     * wInfo.getContentState(),
-                                     * wInfo.getPublicContentState());
-                                     *
-                                     *
-                                     * controllerContext.setAttribute(
-                                     * ControllerCommand
-                                     * .NAVIGATIONAL_STATE_SCOPE, nsKey,
-                                     * newNS);
-                                     */
-
-                                    // On stocke directement dans le
-                                    // scope session
-                                    // pour se rebrancher sur le
-                                    // traitement standard de jboss
-                                    // portal
-
-                                    WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
-
-                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newNS);
-
-                                    StateString additionnalState = wInfo.getAdditionnalState();
-                                    if (additionnalState != null) {
-                                        additionnalState = ParametersStateString.create(additionnalState);
-                                    }
-                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), additionnalState);
-                                }
-                            }
-                        }
-
-                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , null);
-
-                        // Indispensable pour etre relu dans
-                        // DynamicPortalObjectContainer.getCMSTemplate
-                        // dans la méthode suivante
-                        // (qui accède directement à la session)
-                        // PortalObjectNavigationalStateContext pnsCtx =
-                        // new PortalObjectNavigationalStateContext(
-                        // ((ServerInvocation)
-                        // cmd).getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
-
-                        ((PortalObjectNavigationalStateContext) ctx).applyChanges();
-
-                        // restauration breadcrumb
-                        Breadcrumb savedBreadcrum = markerInfo.getBreadcrumb();
-                        if (savedBreadcrum != null) {
-                            Breadcrumb breadcrumb = new Breadcrumb();
-                            for (BreadcrumbItem bi : savedBreadcrum.getChilds()) {
-                                breadcrumb.getChilds().add(bi);
-                            }
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumb);
-                        }
+                        poc.setDynamicPages(markerInfo.getDynamicPages());                        
+                        
+                        Page page = restorePageState(controllerContext, restorePageInfo);                
+                        
+                        
 
                         // restauration menu
                         UserPortal userPortal = markerInfo.getTabbedNavHeaderUserPortal();
@@ -632,9 +570,6 @@ public class PageMarkerUtils {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", markerInfo.getFirstTab());
                         }
 
-                        if (markerInfo.getCurrentPageId() != null) {
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
-                        }
 
                         // Restauration mode popup
                         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", markerInfo.getPopupMode());
@@ -701,7 +636,12 @@ public class PageMarkerUtils {
 
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker", currentPageMarker);
 
-
+        if( newTabPath != null) {
+            
+            // Inhibit the standard tab
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab", "1");
+            newPath = newTabPath;
+        }
 
         if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb") == null) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", new Breadcrumb());
@@ -713,6 +653,103 @@ public class PageMarkerUtils {
         
         
         return newPath;
+    }
+
+    
+    
+    
+   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private static Page restorePageState(ControllerContext controllerContext, PageMarkerInfo markerInfo) {
+        // Restautation etat page
+        NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+        PageNavigationalState pns = markerInfo.getPageNavigationState();
+        if (pns != null) {
+
+            //
+            ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
+
+            // Restauration de preview nécessaire pour calcul editableWindows
+            EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
+
+            if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
+                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
+            }
+        }
+
+
+
+        // Restauration des pages dynamiques
+        IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+
+
+        Page page = null;
+        page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+
+        // Cas des pages dynamiques qui n'existent plus
+        if (page != null) {
+            // Restauration des fenêtres dynamiques
+            poc.setDynamicWindows(markerInfo.getDynamicWindows());
+
+            // Restauration des etats des windows
+            for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
+ 
+
+                Window child = (Window) po;
+
+                WindowStateMarkerInfo wInfo = markerInfo.getWindowInfos().get(child.getId());
+
+                if (wInfo != null) {
+     
+
+                    // On stocke directement dans le
+                    // scope session
+                    // pour se rebrancher sur le
+                    // traitement standard de jboss
+                    // portal
+
+                    WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
+
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newNS);
+
+                    StateString additionnalState = wInfo.getAdditionnalState();
+                    if (additionnalState != null) {
+                        additionnalState = ParametersStateString.create(additionnalState);
+                    }
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), additionnalState);
+                }
+            }
+        }
+
+        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , null);
+
+
+
+        ((PortalObjectNavigationalStateContext) ctx).applyChanges();
+
+        // restauration breadcrumb
+        Breadcrumb savedBreadcrum = markerInfo.getBreadcrumb();
+        if (savedBreadcrum != null) {
+            Breadcrumb breadcrumb = new Breadcrumb();
+            for (BreadcrumbItem bi : savedBreadcrum.getChilds()) {
+                breadcrumb.getChilds().add(bi);
+            }
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumb);
+        }
+        
+
+        if (markerInfo.getCurrentPageId() != null) {
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
+        }
+        return page;
     }
 
     public static PageMarkerInfo getLastPageState(ControllerContext controllerContext) {

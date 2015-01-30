@@ -212,6 +212,11 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         RequestContextUtil.setControllerContext(controllerContext);
 
+
+        
+        
+        
+        
         // 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
             // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
