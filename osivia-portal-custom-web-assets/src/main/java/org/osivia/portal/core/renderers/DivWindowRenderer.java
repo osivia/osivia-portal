@@ -216,7 +216,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Wizard edging
         if (wizard) {
-            out.print("<div class='window wizard-edging'>");
+            out.print("<div class='window wizard-edging clearfix'>");
         }
 
         // Print portlet commands
