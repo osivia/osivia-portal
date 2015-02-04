@@ -126,7 +126,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             }
 
             if (wizard) {
-                markup.print(" class='region wizard-edging'");
+                markup.print(" class='region wizard-edging clearfix'");
             }
             markup.print(">");
         }
