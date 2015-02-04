@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.portal.core</groupId>
     <artifactId>parent</artifactId>
-    <version>3.5.2</version>
+    <version>3.5.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>OSIVIA Portal - Parent</name>
 
@@ -793,7 +793,7 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/3.5.2</developerConnection>
+        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/branches/3.5-maintenance</developerConnection>
     </scm>
 
 
