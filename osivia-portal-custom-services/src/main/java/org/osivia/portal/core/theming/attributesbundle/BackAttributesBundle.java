@@ -25,7 +25,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 
 /**
  * "Back" function attributes bundle.
- *
+ * 
  * @author Cédric Krommenhoek
  * @see IAttributesBundle
  */
@@ -40,10 +40,9 @@ public class BackAttributesBundle implements IAttributesBundle {
 
     /** Attribute names. */
     private final Set<String> names;
-    
+
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
-    
 
 
     /**
@@ -54,7 +53,7 @@ public class BackAttributesBundle implements IAttributesBundle {
 
         // URL Factory
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
-        
+
         // Attribute names
         this.names = new TreeSet<String>();
         this.names.add(BACK_URL_ATTRIBUTE);
@@ -63,7 +62,7 @@ public class BackAttributesBundle implements IAttributesBundle {
 
     /**
      * Get singleton instance.
-     *
+     * 
      * @return singleton instance
      */
     public static BackAttributesBundle getInstance() {
@@ -82,17 +81,15 @@ public class BackAttributesBundle implements IAttributesBundle {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
 
 
-                        
-                    String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
-                    
-                    
-                    if( backPageMarker != null){
-                        // TODO : refresh
-                        String backUrl =  urlFactory.getBackUrl(new PortalControllerContext(controllerContext));
-                        attributes.put(BACK_URL_ATTRIBUTE, backUrl);                            
-                    }
-                    
- 
+        String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+
+
+        if (backPageMarker != null) {
+            String backUrl = urlFactory.getBackUrl(new PortalControllerContext(controllerContext));
+            attributes.put(BACK_URL_ATTRIBUTE, backUrl);
+        }
+
+
     }
 
 

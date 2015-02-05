@@ -1726,6 +1726,7 @@ public class CmsCommand extends DynamicCommand {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);            
         }   else
             // Do not refresh pagemarker back in case of modification
+            // The back action must be the same after the modifications than before
         if( ! IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
              String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
             this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);            
