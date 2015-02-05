@@ -1,19 +1,27 @@
 package org.osivia.portal.core.theming.attributesbundle;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 
 /**
  * "Back" function attributes bundle.
@@ -32,6 +40,10 @@ public class BackAttributesBundle implements IAttributesBundle {
 
     /** Attribute names. */
     private final Set<String> names;
+    
+    /** Portal URL factory. */
+    private final IPortalUrlFactory urlFactory;
+    
 
 
     /**
@@ -40,6 +52,9 @@ public class BackAttributesBundle implements IAttributesBundle {
     private BackAttributesBundle() {
         super();
 
+        // URL Factory
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        
         // Attribute names
         this.names = new TreeSet<String>();
         this.names.add(BACK_URL_ATTRIBUTE);
@@ -66,22 +81,18 @@ public class BackAttributesBundle implements IAttributesBundle {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
 
-        // Search "Back" function URL in menubar
-        Object menubarAttribute = controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
-        if (menubarAttribute instanceof List<?>) {
-            List<?> menubar = (List<?>) menubarAttribute;
 
-            if (CollectionUtils.isNotEmpty(menubar)) {
-                for (Object object : menubar) {
-                    MenubarItem menubarItem = (MenubarItem) object;
-                    if ("BACK".equals(menubarItem.getId())) {
-                        String backURL = menubarItem.getUrl();
-                        attributes.put(BACK_URL_ATTRIBUTE, backURL);
-                        break;
+                        
+                    String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+                    
+                    
+                    if( backPageMarker != null){
+                        // TODO : refresh
+                        String backUrl =  urlFactory.getBackUrl(new PortalControllerContext(controllerContext));
+                        attributes.put(BACK_URL_ATTRIBUTE, backUrl);                            
                     }
-                }
-            }
-        }
+                    
+ 
     }
 
 

@@ -53,11 +53,7 @@ public class ContributionService implements IContributionService {
         s.append( editionState.getContributionMode());
         s.append( STATE_SEPARATOR);
         s.append( editionState.getDocPath());
-        s.append( STATE_SEPARATOR);       
-        s.append(  editionState.getBackPageMarker() != null ? editionState.getBackPageMarker() : STATE_EMPTY);
-        s.append( STATE_SEPARATOR);       
-        s.append(Boolean.toString(editionState.isHasBeenModified()));
-        
+      
         return s.toString();
             
     }
@@ -68,9 +64,7 @@ public class ContributionService implements IContributionService {
         String contributionMode = tokens[ 0];
         String docPath = tokens[ 1];
         EditionState editionState =  new EditionState(contributionMode, docPath);
-        if( !STATE_EMPTY.equals( tokens[ 2]))
-            editionState.setBackPageMarker(tokens[ 2]);
-        editionState.setHasBeenModified(Boolean.parseBoolean(tokens[ 3]))    ;   
+  
         return editionState;
         
     }
@@ -282,8 +276,9 @@ public class ContributionService implements IContributionService {
 
         if (window != null) {
 
+            
             PublishContributionCommand publishCnd = new PublishContributionCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), docPath,
-                    IContributionService.PUBLISH);
+                    IContributionService.PUBLISH, null);
             URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
                     .getURLContext();
 
@@ -358,7 +353,7 @@ public class ContributionService implements IContributionService {
      */
     protected String getRefreshURLByContribution(PortalControllerContext portalControllerContext, String docPath, Window window, String contribution) {
         PublishContributionCommand publishCnd = new PublishContributionCommand(window.getId().toString(PortalObjectPath.SAFEST_FORMAT), docPath,
-                contribution);
+                contribution, null);
         URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
                 .getURLContext();
 
@@ -384,7 +379,9 @@ public class ContributionService implements IContributionService {
             // Window identifier
             String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
             // Unpublish command
-            PublishContributionCommand command = new PublishContributionCommand(windowId, docPath, IContributionService.UNPUBLISH);
+            String backPageMarker = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+            
+            PublishContributionCommand command = new PublishContributionCommand(windowId, docPath, IContributionService.UNPUBLISH, backPageMarker);
 
             // URL
             return controllerContext.renderURL(command, urlContext, URLFormat.newInstance(false, true));

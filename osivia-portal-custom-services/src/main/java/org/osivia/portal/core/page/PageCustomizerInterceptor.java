@@ -252,6 +252,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         /* Init window states */
 
         unsetMaxMode(page.getChildren(PortalObject.WINDOW_MASK), controllerCtx);
+        
+        
+        /* Init back actions */
+        
+        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
+        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);           
+
     }
 
 
@@ -259,6 +266,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         // Maj du breadcrumb
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", null);
+        
+
 
         // Reinitialtion du path CMS
 

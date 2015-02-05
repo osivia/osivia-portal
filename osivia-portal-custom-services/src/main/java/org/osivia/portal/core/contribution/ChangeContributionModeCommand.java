@@ -127,8 +127,9 @@ public class ChangeContributionModeCommand extends ControllerCommand {
         
         EditionState newState = new EditionState(newContributionMode, pubInfos.getDocumentPath());
         if( oldState != null && oldState.getDocPath().equals(pubInfos.getDocumentPath()))   {
-            newState.setBackPageMarker(oldState.getBackPageMarker());
-            newState.setHasBeenModified(oldState.isHasBeenModified());
+           // newState.setBackPageMarker(oldState.getBackPageMarker());
+           // newState.setHasBeenModified(oldState.isHasBeenModified());
+            getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
         }
         
    

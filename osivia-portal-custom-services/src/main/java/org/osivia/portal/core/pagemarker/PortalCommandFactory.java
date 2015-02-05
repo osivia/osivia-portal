@@ -359,21 +359,9 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                if( editionPath != null && editionPath.length > 0){
                    
                    EditionState editionState= new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, editionPath[0]);
-                   
-                   // Restore navigation values   
-                   EditionState oldState = ContributionService.getWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
-                   if (oldState != null) {
-                       if (oldState.getDocPath().equals(editionPath[0])) {
-                           editionState.setBackPageMarker(oldState.getBackPageMarker());
-                           editionState.setHasBeenModified(oldState.isHasBeenModified());
-                       }
-                   }   
-                   
-                   
                    ContributionService.setWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId(), editionState);
-                   
-                }
-            }
+                } 
+             }   
 
         }
 
@@ -403,6 +391,40 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             // On memorise la commande qui sera executée au retour
             // TODO : en plus , transformer la commande et render minimaliste du popup (juste un view)
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd", cmd);
+        }
+        
+        /* Back url when render parameters are modified */
+        
+        if( cmd instanceof InvokePortletWindowRenderCommand)    {
+            
+            boolean updateBack = true;
+
+            StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
+            if (navigationalState instanceof ParametersStateString) {
+                Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
+
+                // Exclude breadcrumb
+                String[] displayContext = params.get("_displayContext");
+
+                if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
+                    updateBack = false;
+                }
+            }
+
+            if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null || popupClosed) {
+                updateBack = false;
+
+            }
+
+
+            if (updateBack) {
+                String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+            }
+
+
         }
 
 

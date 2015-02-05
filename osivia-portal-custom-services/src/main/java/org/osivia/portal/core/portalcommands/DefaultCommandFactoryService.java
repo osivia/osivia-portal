@@ -697,13 +697,17 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String windowId = null;
                     String docPath = null;
                     String actionCms = null;
+                    String backCMSPageMarker  = null;
 
                     if ((parameterMap.get("windowId") != null) && (parameterMap.get("docPath") != null)) {
                         windowId = URLDecoder.decode(parameterMap.get("windowId")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
                         actionCms = URLDecoder.decode(parameterMap.get("actionCms")[0], "UTF-8");
+                        if( parameterMap.get("backCMSPageMarker") != null) {
+                            backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
+                        }                        
 
-                        return new PublishContributionCommand(windowId, docPath, actionCms);
+                        return new PublishContributionCommand(windowId, docPath, actionCms, backCMSPageMarker);
                     }
                 }
 

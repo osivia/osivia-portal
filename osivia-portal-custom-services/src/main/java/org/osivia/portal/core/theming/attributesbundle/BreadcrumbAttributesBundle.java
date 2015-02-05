@@ -432,6 +432,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                                     }
                                 }
                             }
+                            
+                            parameters.setValue("_displayContext", "breadcrumb");
 
                             PortalObjectId targetWindowId = PortalObjectId.parse(windowContext.getId(), PortalObjectPath.SAFEST_FORMAT);
 

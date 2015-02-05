@@ -41,29 +41,9 @@ public interface IContributionService {
 
         private final String contributionMode;
         private final String docPath;
-        private String backPageMarker;
-        private boolean hasBeenModified;
-        
-        
-        public boolean isHasBeenModified() {
-            return hasBeenModified;
-        }
-
 
         
-        public void setHasBeenModified(boolean hasBeenModified) {
-            this.hasBeenModified = hasBeenModified;
-        }
 
-
-        public String getBackPageMarker() {
-            return backPageMarker;
-        }
-
-        
-        public void setBackPageMarker(String backPageMarker) {
-            this.backPageMarker = backPageMarker;
-        }
 
         public String getContributionMode() {
             return contributionMode;
@@ -76,7 +56,6 @@ public interface IContributionService {
         public EditionState(String contributionMode, String docPath) {
             this.contributionMode = contributionMode;
             this.docPath = docPath;
-            this.hasBeenModified = false;
         }
 
 

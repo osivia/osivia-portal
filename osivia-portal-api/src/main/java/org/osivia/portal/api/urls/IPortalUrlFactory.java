@@ -301,7 +301,7 @@ public interface IPortalUrlFactory {
      * @param refresh to refresh previous page
      * @return back URL
      */
-    String getBackUrl(PortalControllerContext portalControllerContext, boolean refresh);
+    String getBackUrl(PortalControllerContext portalControllerContext);
 
     /**
      * Get parameterized URL.

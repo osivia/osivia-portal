@@ -1713,29 +1713,24 @@ public class CmsCommand extends DynamicCommand {
         }
 
 
-        // Restore navigation values
-        EditionState oldState = ContributionService.getWindowEditionState(this.getControllerContext(), poid);
-        if (oldState != null) {
-            if (oldState.getDocPath().equals(pubInfos.getDocumentPath())) {
-                editionState.setBackPageMarker(oldState.getBackPageMarker());
-                editionState.setHasBeenModified(oldState.isHasBeenModified());
-            }
-        }
-
-
-
         // Modified indicator
         boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext) || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
 
         if (fancyBox) {
-            editionState.setHasBeenModified(true);
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
         }
 
         // page marker initialization ( means an applicative back button)
-        if( ! IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization) && ! "menu".equals(this.displayContext) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
-            String backCMSPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-            editionState.setBackPageMarker(backCMSPageMarker);
-        }
+        if ("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext)){
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);            
+        }   else
+            // Do not refresh pagemarker back in case of modification
+        if( ! IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
+             String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+            this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);            
+
+        }   
 
         return editionState;
     }

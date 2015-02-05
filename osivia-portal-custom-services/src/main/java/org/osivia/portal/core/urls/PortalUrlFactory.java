@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -672,27 +673,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     public String getPutDocumentInTrashUrl(PortalControllerContext ctx, String docId, String docPath) {
 
-    	String backPageMarker = null;
 
-
-        Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
-        if (window != null) {
-        	// Deleted doc is equals to CMS doc
-        	// Navigation is managed by portal (not inside a portlet)
-        	// So go back to previous state
-
-            EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
-
-                // Deleted doc is equals to CMS doc
-                // Navigation is managed by portal (not inside a portlet)
-                // So go back to previous state
-                if( (curState != null) && curState.getDocPath().equals(window.getDeclaredProperty(Constants.WINDOW_PROP_URI)))    {
-                    backPageMarker = curState.getBackPageMarker();
-
-            }
-
-        }
-
+     
+    	String backPageMarker = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+        
 
         ControllerCommand cmd = new CMSPutDocumentInTrashCommand(docId, docPath, backPageMarker);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
@@ -716,26 +700,29 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getBackUrl(PortalControllerContext ctx, boolean refresh) {
+    public String getBackUrl(PortalControllerContext ctx) {
 
-        String backPageMarker = null;
+   
+        
+        
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(ctx);
+        
+        String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
 
-        EditionState curState = (EditionState) ctx.getRequest().getAttribute("osivia.editionState");
-
-
-        backPageMarker = curState.getBackPageMarker();
 
 
         String backURL = null;
 
         if (backPageMarker != null) {
-            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(ctx);
+
 
             PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
             if (infos != null) {
                 PortalObjectId pageId = infos.getPageId();
 
                 URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+                
+                Boolean refresh= BooleanUtils.isTrue((Boolean)controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack"));
 
                 if (refresh) {
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));

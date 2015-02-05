@@ -213,8 +213,7 @@ public class PageMarkerUtils {
             // Sauvegarde more par défaut
             if (ws == null) {
                 ws = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
-            }
-
+            }  
             ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
             windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams));
         }
@@ -265,6 +264,16 @@ public class PageMarkerUtils {
         if (currentPageId != null) {
             markerInfo.setCurrentPageId(currentPageId);
         }
+        
+        String backPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+        if( backPageMarker != null) {
+            markerInfo.setBackPageMarker(backPageMarker);
+        }   
+        
+        Boolean refreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack");
+        if( refreshBack != null) {
+            markerInfo.setRefreshBack(refreshBack);
+        }    
 
 
         // Restauration mode popup
@@ -749,6 +758,17 @@ public class PageMarkerUtils {
         if (markerInfo.getCurrentPageId() != null) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
         }
+        
+        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
+        
+        if (markerInfo.getBackPageMarker() != null) {
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", markerInfo.getBackPageMarker());
+        }  
+        
+
+        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", markerInfo.isRefreshBack());
+
+   
         return page;
     }
 

@@ -118,8 +118,32 @@ public class PageMarkerInfo implements Serializable {
 	public void setPageMarker(String pageMarker) {
 		this.pageMarker = pageMarker;
 	}
+	
+	
+	String backPageMarker;
+	
+    public String getBackPageMarker() {
+        return backPageMarker;
+    }
+    
+    public void setBackPageMarker(String backPageMarker) {
+        this.backPageMarker = backPageMarker;
+    }
+    
+    boolean refreshBack=false;
 
-	Long lastTimeStamp;
+    
+    public boolean isRefreshBack() {
+        return refreshBack;
+    }
+
+
+    
+    public void setRefreshBack(boolean refreshBack) {
+        this.refreshBack = refreshBack;
+    }
+
+    Long lastTimeStamp;
 	public Long getLastTimeStamp() {
 		return this.lastTimeStamp;
 	}

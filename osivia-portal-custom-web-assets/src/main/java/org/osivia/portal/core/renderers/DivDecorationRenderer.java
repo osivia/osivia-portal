@@ -151,7 +151,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
         // Decorators
         if (displayDecorators) {
-            Element decorators = DOM4JUtils.generateDivElement("portlet-mode-container hidden-xs pull-right");
+            Element decorators = DOM4JUtils.generateDivElement("portlet-mode-container no-ajax-link hidden-xs pull-right");
             titleContainer.add(decorators);
 
             // Maximized

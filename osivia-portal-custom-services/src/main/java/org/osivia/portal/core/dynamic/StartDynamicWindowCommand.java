@@ -219,7 +219,13 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                         String pageMarker = markerInfo.getPageMarker();
                         backUrl = backUrl.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/");
                     }
-                    properties.put("osivia.dynamic.close_url", backUrl);
+                    
+                    // Back button : exclude cms link and popup
+                    if(! "1".equals(properties.get("osivia.dynamic.disable.close"))) {
+                        String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                        this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                    }
+
                 }
 
 

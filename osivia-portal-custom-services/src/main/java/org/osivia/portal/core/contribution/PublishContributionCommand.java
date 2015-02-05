@@ -22,6 +22,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -29,6 +30,8 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.jboss.portal.server.request.URLContext;
+import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -41,9 +44,13 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.pagemarker.PageMarkerInfo;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
 /**
@@ -88,6 +95,14 @@ public class PublishContributionCommand extends ControllerCommand {
 
     /** action (publish / unpublish) */
     private String actionCms;
+    
+    private String backCMSPageMarker;
+
+    
+    public String getBackCMSPageMarker() {
+        return backCMSPageMarker;
+    }
+
 
     /**
      * @return the pagePath
@@ -127,10 +142,11 @@ public class PublishContributionCommand extends ControllerCommand {
     }
 
 
-    public PublishContributionCommand(String windowId, String docPath, String actionCms) {
+    public PublishContributionCommand(String windowId, String docPath, String actionCms, String backCMSPageMarker) {
         this.windowId = windowId;
         this.docPath = docPath;
         this.actionCms = actionCms;
+        this.backCMSPageMarker= backCMSPageMarker;        
 
     }
 
@@ -168,6 +184,27 @@ public class PublishContributionCommand extends ControllerCommand {
                 String success = itlzService.getString(SUCCESS_MESSAGE_UNPUBLISH, getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
                 
+                
+                
+                // Back url after cms action (ex: remove, goback)
+                if( backCMSPageMarker != null){
+                     PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(getControllerContext(), backCMSPageMarker);
+                    if( infos !=  null){
+                        PortalObjectId pageId = infos.getPageId();
+
+                        URLContext urlContext = ControllerContextAdapter.getControllerContext(pcc).getServerInvocation().getServerContext().getURLContext();
+                        RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
+                        String resfreshUrl = ControllerContextAdapter.getControllerContext(pcc).renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true));
+                        
+                        // Replace page marker to restore portlet state
+                        resfreshUrl =  resfreshUrl.replaceAll("/pagemarker/([0-9]*)/","/pagemarker/"+backCMSPageMarker+"/");
+
+                        return new RedirectionResponse(resfreshUrl);
+                    }
+                    
+                }
+                
+                
                 // relaod navigation tree
                 PageProperties.getProperties().setRefreshingPage(true);
 
@@ -176,7 +213,7 @@ public class PublishContributionCommand extends ControllerCommand {
                 CMSObjectPath parentPath = CMSObjectPath.parse(docPath).getParent();
                 String redirectPath = parentPath.toString();
 
-                CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, null, null, null, null, null, null, null);
+                CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, "destroyedChild", null, null, null, null, null, null);
                 ControllerResponse execute = context.execute(redirect);
 
                 return execute;
@@ -229,14 +266,15 @@ public class PublishContributionCommand extends ControllerCommand {
         EditionState editionState = new EditionState(state, docPath);
         
          // Restore navigation values   
-        EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), window.getId());
-        if (oldState != null) {
-            if (oldState.getDocPath().equals(docPath)) {
-                editionState.setBackPageMarker(oldState.getBackPageMarker());
-                }
-        }          
-        
-        editionState.setHasBeenModified(true);
+//        EditionState oldState = ContributionService.getWindowEditionState(getControllerContext(), window.getId());
+//        if (oldState != null) {
+//            if (oldState.getDocPath().equals(docPath)) {
+//                editionState.setBackPageMarker(oldState.getBackPageMarker());
+//                }
+//        }          
+//        
+//        editionState.setHasBeenModified(true);
+        getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
         
         ContributionService.setWindowEditionState(getControllerContext(), window.getId(), editionState);
   

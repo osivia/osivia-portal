@@ -199,6 +199,10 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
 				// Maj du breadcrumb
 				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
+				
+				// Mise à jour du pagemarker
+				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
+				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,  "osivia.refreshBack", null); 
 
 
 		        // rafaichir la bandeau

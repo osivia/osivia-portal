@@ -185,7 +185,7 @@ public class CMSPutDocumentInTrashCommand extends ControllerCommand {
             CMSObjectPath parentPath = CMSObjectPath.parse(docPath).getParent();
             String redirectPath = parentPath.toString();
 
-            CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, null, null, null, null, null, null, null);
+            CmsCommand redirect = new CmsCommand(null, redirectPath, null, null, "destroyedChild", null, null, null, null, null, null);
             ControllerResponse execute = context.execute(redirect);
 
             return execute;
