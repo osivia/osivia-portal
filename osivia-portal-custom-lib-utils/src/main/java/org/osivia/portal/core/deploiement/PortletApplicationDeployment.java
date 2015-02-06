@@ -95,6 +95,10 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
             // internationalization.tld
             source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
             this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
+
+            // displaytag-el.tld
+            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/displaytag-el.tld"));
+            this.pwa.importFile("/WEB-INF/theme", "displaytag-el.tld", source, false);
         } catch (IOException e) {
             throw new DeploymentException("Cannot import taglib", e);
         } finally {

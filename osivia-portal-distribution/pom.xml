@@ -20,7 +20,6 @@
 
     <dependencies>
 
-    <!-- socle -->
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-custom-services</artifactId>
