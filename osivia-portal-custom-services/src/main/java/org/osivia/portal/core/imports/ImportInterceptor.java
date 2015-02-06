@@ -62,7 +62,7 @@ public class ImportInterceptor extends ServerInterceptor {
             if (nbPendingRequest > 0)
                 nbPendingRequest--;
 
-        }
+        
 
         if (isImportRunningLocally && (isPageImportTerminated || isPortalImportTerminated)) {
 
@@ -84,6 +84,7 @@ public class ImportInterceptor extends ServerInterceptor {
             // Release cluster nodes
             getCacheService().setImportRunning(false);
 
+        }
         }
 
     }
