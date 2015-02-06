@@ -38,7 +38,8 @@
         <log4j.version>1.2.14</log4j.version>
         <portlet-api.version>2.0</portlet-api.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <springframework.version>3.0.5.RELEASE</springframework.version>
+        <org.springframework.version>3.2.13.RELEASE</org.springframework.version>
+        <displaytag.version>1.2</displaytag.version>
         
         <!-- Various libs -->
         <jsf-api.version>1.2</jsf-api.version>
@@ -171,7 +172,6 @@
                 <scope>provided</scope>
             </dependency>
             
-
             <dependency>
                 <groupId>org.jboss.portal</groupId>
                 <artifactId>portal-api-lib</artifactId>
@@ -447,7 +447,21 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc-portlet</artifactId>
-                <version>${springframework.version}</version>
+                <version>${org.springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>displaytag</groupId>
+                <artifactId>displaytag</artifactId>
+                <version>${displaytag.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>displaytag</groupId>
+                <artifactId>displaytag-portlet</artifactId>
+                <version>${displaytag.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -562,12 +576,10 @@
             <artifactId>jgroups</artifactId>
         </dependency>
         
-        
         <dependency>
             <groupId>jboss</groupId>
             <artifactId>jboss</artifactId>
         </dependency>
-        
 
         <dependency>
             <groupId>org.jboss.portal</groupId>
@@ -703,6 +715,16 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>displaytag</groupId>
+            <artifactId>displaytag</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>displaytag</groupId>
+            <artifactId>displaytag-portlet</artifactId>
         </dependency>
 
 
