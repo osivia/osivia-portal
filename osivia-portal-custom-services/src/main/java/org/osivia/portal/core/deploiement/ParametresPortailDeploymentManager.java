@@ -35,6 +35,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager;
 import org.osivia.portal.core.imports.ImportInterceptor;
+import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.xml.sax.EntityResolver;
 
 
@@ -80,7 +81,16 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
                    .getTransactionManager();
            
            
+           // la transaction fait planter systématiquement l'import
+           // A revoir en CLUSTER ... (peut-etre déporter dans servlet avec une gestion de transaction détachée )
            
+           
+           // must be included in a transaction
+          cacheService.setImportRunning(true);
+          ImportInterceptor.isImportRunningLocally = true;
+           
+           
+/*           
            
            Transactions.requiresNew(tm, new Transactions.Runnable()
            {
@@ -95,6 +105,8 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
                  return true;
               }
            });
+           
+*/           
            
            // waiting for cluster notification
            Thread.sleep(1000L);
@@ -113,12 +125,18 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 			}
 			
 			
+			IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
+			
+			dynamicObjectContainer.startPersistentIteration();
+			
 			
 			tm = TransactionManagerProvider.JBOSS_PROVIDER
 					.getTransactionManager();
 			ParametresPortailDeployment deploiement = new ParametresPortailDeployment(
 					file.toURL(), mbeanServer, tm, this);
 			portalImport = deploiement.doStart();
+			
+	         dynamicObjectContainer.stopPersistentIteration();
 			
 			//Impact sur les caches du bandeau
 			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");

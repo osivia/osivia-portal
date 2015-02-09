@@ -1659,7 +1659,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
         String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-        PortalLayout layout = layoutService.getLayoutById(layoutId);
+        PortalLayout layout = layoutService.getLayout(layoutId, false);
+        if( layout == null)
+            throw new ControllerException("Layout "+ layoutId+ "not found for page "+ renderPageCommand.getPage().toString());
         LayoutInfo layoutInfo = layout.getLayoutInfo();
         String uri = layoutInfo.getURI();
         
