@@ -328,5 +328,15 @@ public interface IPortalUrlFactory {
      */
     String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmFilesCommand parameter);
 
+	/**
+	 * Get url for subscriptions actions
+	 * 
+	 * @param ctx
+	 * @param cmsPath
+	 *            current doc path
+	 * @param unsubscribe
+	 * @return subscription url
+	 */
+	String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, boolean unsubscribe);
 
 }

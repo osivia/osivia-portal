@@ -50,6 +50,7 @@ import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
+import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -695,6 +696,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return portalURL.toString();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+	public String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, boolean unsubscribe) {
+
+		ControllerCommand cmd = new SubscriptionCommand(cmsPath, unsubscribe);
+
+		PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+		return portalURL.toString();
+	}
 
 
     /**

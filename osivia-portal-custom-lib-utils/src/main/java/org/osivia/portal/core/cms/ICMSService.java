@@ -374,6 +374,17 @@ public interface ICMSService {
      * @throws CMSException
      */
     void getEcmFilesUrl(CMSServiceCtx cmsCtx, String pagePath, EcmFilesCommand filesCommand) throws CMSException;
+
+	/**
+	 * Subscribe/unsubscribe to all notifications on the document
+	 * 
+	 * @param cmsCtx
+	 * @param cmsPath
+	 *            the current doc
+	 * @param unsubscribe
+	 * @throws CMSException
+	 */
+	void subscribe(CMSServiceCtx cmsCtx, String cmsPath, boolean unsubscribe) throws CMSException;
     
 
 }

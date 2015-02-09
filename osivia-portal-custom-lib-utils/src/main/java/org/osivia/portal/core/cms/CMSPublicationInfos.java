@@ -74,6 +74,22 @@ public class CMSPublicationInfos {
     private boolean canCheckOut = false;
     private boolean canCheckIn = false;
 
+	/**
+	 * A document has a state depending of the user who is browsing it
+	 */
+	public enum SubscriptionStatus {
+		/** Default state : can subscribe */
+		can_subscribe,
+		/** Can unsubscribe if a subscription is already set */
+		can_unsubscribe,
+		/** If a subscription is defined by other document upper in the hierarchy, or if a group has subscribed before to them */
+		has_inherited_subscriptions,
+		/** Special cases : Domains, WorkspacesRoot, ... are not allowing subscription */
+		no_subscriptions;
+	};
+
+	private SubscriptionStatus subscriptionStatus;
+
 	public CMSPublicationInfos() {
 		super();
 	}
@@ -328,6 +344,20 @@ public class CMSPublicationInfos {
 		this.canCheckIn = canCheckIn;
 	}
 
+	/**
+	 * @return the subscriptionStatus
+	 */
+	public SubscriptionStatus getSubscriptionStatus() {
+		return subscriptionStatus;
+	}
+
+	/**
+	 * @param subscriptionStatus
+	 *            the subscriptionStatus to set
+	 */
+	public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+		this.subscriptionStatus = subscriptionStatus;
+	}
     
 
 }

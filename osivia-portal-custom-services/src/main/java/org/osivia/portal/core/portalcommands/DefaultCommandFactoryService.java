@@ -41,14 +41,15 @@ import org.osivia.portal.core.assistantpage.ChangeWindowSettingsCommand;
 import org.osivia.portal.core.assistantpage.CreatePageCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
+import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
 import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
+import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
-import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -725,6 +726,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
                     }
                 }
+
+				if ("SubscriptionCommand".equals(action)) {
+
+					String cmsPath = null;
+					boolean unsubscribe = false;
+
+					if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("unsubscribe") != null)) {
+						cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
+						unsubscribe = Boolean.valueOf(URLDecoder.decode(parameterMap.get("unsubscribe")[0], "UTF-8"));
+
+						return new SubscriptionCommand(cmsPath, unsubscribe);
+					}
+				}
 
                 // Toggle advanced CMS tools command
                 if (ToggleAdvancedCMSToolsCommand.ACTION.equals(action)) {
