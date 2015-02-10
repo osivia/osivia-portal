@@ -775,6 +775,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
+        /* Contextualize external contents */
+        // ????????????????
+        
+        
         if (cmd instanceof RenderPageCommand) {
 
             RenderPageCommand rpc = (RenderPageCommand) cmd;
@@ -803,7 +807,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     if (PortalObjectUtils.isSpaceSite(page)) {
                         online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, page.getId()));
                     } else {
-                        NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+                          NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
                                 .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                         PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
                         if (ns != null) {
@@ -842,7 +846,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Affichage en mode page ?
 
-                    if (!basePath.equals(pathPublication) && !"1".equals(navItem.getProperties().get("pageDisplayMode"))) {
+                    if ( !basePath.equals(pathPublication) && (navItem == null || !"1".equals(navItem.getProperties().get("pageDisplayMode")))) {
 
                         CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
 
@@ -1114,6 +1118,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     PageRendition rendition = (PageRendition) resp;
 
 
+                    // Fermeture applicative
                     ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
                     
@@ -1482,6 +1487,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Window dynamique : retour
                     String url = window.getDeclaredProperty("osivia.dynamic.close_url");
+                    
+                    
 
                     if (url != null) {
                         // Pas d'ajax sur windows dynamique
