@@ -70,9 +70,6 @@ public class CMSPublicationInfos {
 
     private String synchronizationRootPath = null;
     private String driveEditURL = null;
-    
-    private boolean canCheckOut = false;
-    private boolean canCheckIn = false;
 
 	/**
 	 * A document has a state depending of the user who is browsing it
@@ -328,23 +325,8 @@ public class CMSPublicationInfos {
         this.driveEditURL = driveEditURL;
     }
 
-	public boolean isCanCheckOut() {
-		return canCheckOut;
-	}
 
-	public void setCanCheckOut(boolean canCheckOut) {
-		this.canCheckOut = canCheckOut;
-	}
-
-	public boolean isCanCheckIn() {
-		return canCheckIn;
-	}
-
-	public void setCanCheckIn(boolean canCheckIn) {
-		this.canCheckIn = canCheckIn;
-	}
-
-	/**
+    /**
 	 * @return the subscriptionStatus
 	 */
 	public SubscriptionStatus getSubscriptionStatus() {
