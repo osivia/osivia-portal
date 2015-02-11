@@ -633,11 +633,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                             path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
                         }
                         
-                      
+                        // init-state
+                        PageCustomizerInterceptor.initPageBackInfos(controllerCtx);                     
                         
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
-                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "init", null, null, null, null);
+                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
                             if (url.indexOf('?') == -1) {
