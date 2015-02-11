@@ -36,6 +36,7 @@ import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager;
 import org.osivia.portal.core.imports.ImportInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+
 import org.xml.sax.EntityResolver;
 
 
@@ -45,6 +46,9 @@ import javax.transaction.TransactionManager;
 
 import java.io.File;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,30 +87,20 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
            
            // la transaction fait planter systématiquement l'import
            // A revoir en CLUSTER ... (peut-etre déporter dans servlet avec une gestion de transaction détachée )
-           
+
+           /*
+           ExecutorService executor = Executors.newSingleThreadExecutor();
+           Future<String> future = executor.submit(new TransactionThread(cacheService));          
+            */
            
            // must be included in a transaction
           cacheService.setImportRunning(true);
           ImportInterceptor.isImportRunningLocally = true;
            
+
            
-/*           
            
-           Transactions.requiresNew(tm, new Transactions.Runnable()
-           {
-              public Object run() throws Exception
-              {
-           
-                 // notify cluster
-                  // must be included in a transaction
-                 cacheService.setImportRunning(true);
-                 ImportInterceptor.isImportRunningLocally = true;
-                  
-                 return true;
-              }
-           });
-           
-*/           
+         
            
            // waiting for cluster notification
            Thread.sleep(1000L);

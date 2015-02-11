@@ -1382,7 +1382,11 @@ public class CmsCommand extends DynamicCommand {
                             new String[] { computedPageScope });
                 }
 
-
+                // init-state
+                if( "init".equals(displayContext))
+                    PageCustomizerInterceptor.initPageBackInfos(controllerContext);
+                
+                
                 EditionState editionState = this.getEditionState(controllerContext, pageIdToDiplay, pubInfos);
                 ContributionService.updateNavigationalState(controllerContext, pageState, editionState);
 

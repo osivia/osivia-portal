@@ -253,12 +253,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         unsetMaxMode(page.getChildren(PortalObject.WINDOW_MASK), controllerCtx);
         
-        
+        initPageBackInfos(controllerCtx);     
+     }
+
+
+    public static void initPageBackInfos(ControllerContext controllerCtx) {
         /* Init back actions */
         
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
-        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);           
-
+        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
     }
 
 
@@ -266,6 +269,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         // Maj du breadcrumb
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", null);
+        
+
         
 
 
@@ -627,9 +632,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                             cmsContext.setControllerContext(controllerCtx);
                             path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
                         }
+                        
+                      
+                        
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
-                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "init", null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
                             if (url.indexOf('?') == -1) {
@@ -775,8 +783,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
-        /* Contextualize external contents */
-        // ????????????????
+        /* Contextualize internal contents */
+        // je ne vois plus dans quel cas ca serait utilisé ...
         
         
         if (cmd instanceof RenderPageCommand) {
