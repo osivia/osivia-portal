@@ -692,15 +692,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
             // Force la valorisation dans le contexte
-            boolean isAdmin = isAdministrator(controllerCtx);
+           isAdministrator(controllerCtx);
 
-            // Check wizard mode
-            String mode = (String) controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
-            if ((mode == null) && (isAdmin)) {
-                // Default : active
-                mode = InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE;
-                controllerCtx.setAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE, mode);
-            }
+
 
             /*
              * Synchronize LIVE EDITION MODE
