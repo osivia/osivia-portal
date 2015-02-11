@@ -309,7 +309,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     printItem = new MenubarItem("PRINT", "Imprimer", MenubarItem.ORDER_PORTLET_GENERIC + 10, "#", "popup2print('" + jsTitle
                                             + "', '" + windowId + "_print');",
                                             "portlet-menuitem-print hidden-xs", null);
-                                    printItem.setGlyphicon("halflings print");
+                                    printItem.setGlyphicon("halflings halflings-print");
                                 }
                                 menubarItems.add(printItem);
                             }
@@ -336,7 +336,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                         if (!containsBackItem) {
                                             MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
                                                     window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
-                                            backItem.setGlyphicon("halflings arrow-left");
+                                            backItem.setGlyphicon("halflings halflings-arrow-left");
                                             backItem.setAjaxDisabled(true);
                                             backItem.setFirstItem(true);
                                             menubarItems.add(backItem);
@@ -344,25 +344,24 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                     }
                                 }
-                            }
-                            else    {
+                            } else {
 
-                                    //  static windows maximisation
+                                // static windows maximisation
 
-                                    if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
 
-                                        ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
-                                                PortalObjectPath.CANONICAL_FORMAT), null, WindowState.NORMAL);
+                                    ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
+                                            PortalObjectPath.CANONICAL_FORMAT), null, WindowState.NORMAL);
 
-                                        PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
+                                    PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
 
-                                        MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
-                                                portalURL.toString(), null, null, null);
-                                        backItem.setGlyphicon("halflings arrow-left");
-                                        backItem.setAjaxDisabled(true);
-                                        backItem.setFirstItem(true);
-                                        menubarItems.add(backItem);
-                                    }
+                                    MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
+                                            portalURL.toString(), null, null, null);
+                                    backItem.setGlyphicon("halflings halflings-arrow-left");
+                                    backItem.setAjaxDisabled(true);
+                                    backItem.setFirstItem(true);
+                                    menubarItems.add(backItem);
+                                }
 
 
                             }
@@ -516,8 +515,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         Element rightGroup = DOM4JUtils.generateDivElement("btn-group pull-right");
 
         // Dropdown menu button
-        Element dropdownButton = DOM4JUtils
-                .generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT, "pencil", null);
+        Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
+                "halflings halflings-pencil", null);
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         dropdownButton.add(caret);

@@ -123,24 +123,33 @@ public final class MenubarUtils {
             dynaWindowContent.add(toolbar);
 
             // Associated HTML container
-            Element associatedHTMLContainer = DOM4JUtils.generateDivElement("hidden");
-            toolbar.add(associatedHTMLContainer);
+            Element associatedHTMLContainer = DOM4JUtils.generateDivElement(null);
 
 
             // Menubar first group
-            Element firstGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "first-group", null);
+            Element firstGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, "first-group", null);
+            Element firstGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            firstGroupMenuItem.add(firstGroup);
 
             // Menubar specific group
-            Element specificGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element specificGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element specificGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            specificGroupMenuItem.add(specificGroup);
 
             // Menubar state group
-            Element stateGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "state-group", null);
+            Element stateGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, "state-group", null);
+            Element stateGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            stateGroupMenuItem.add(stateGroup);
 
             // Menubar CMS group
-            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+            Element cmsGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            cmsGroupMenuItem.add(cmsGroup);
 
             // Menubar generic group
-            Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element genericGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            genericGroupMenuItem.add(genericGroup);
 
 
             // Dropdown menu
@@ -151,17 +160,23 @@ public final class MenubarUtils {
             for (Object item : items) {
                 MenubarItem menubarItem = (MenubarItem) item;
 
+
+                // LI
+                Element li;
+                if (menubarItem.isDropdownItem()) {
+                    li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+                    if (menubarItem.isStateItem()) {
+                        DOM4JUtils.addAttribute(li, HTMLConstants.CLASS, "dropdown-header");
+                    }
+                } else {
+                    li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+                }
+
+                // Parent
                 Element parent;
                 if (menubarItem.isDropdownItem()) {
                     emptyDropdownMenu = false;
-
-                    Element dropdownItemContainer = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
-                    if (menubarItem.isStateItem()) {
-                        DOM4JUtils.addAttribute(dropdownItemContainer, HTMLConstants.CLASS, "dropdown-header");
-                    }
-                    dropdownMenu.add(dropdownItemContainer);
-
-                    parent = dropdownItemContainer;
+                    parent = dropdownMenu;
                 } else if (menubarItem.isStateItem()) {
                     parent = stateGroup;
                 } else if (menubarItem.isFirstItem()) {
@@ -174,24 +189,29 @@ public final class MenubarUtils {
                     parent = genericGroup;
                 }
 
+                parent.add(li);
 
-                StringBuilder linkHTMLClass = new StringBuilder();
+
+                // HTML class
+                StringBuilder htmlClass = new StringBuilder();
                 if (menubarItem.getClassName() != null) {
-                    linkHTMLClass.append(menubarItem.getClassName());
+                    htmlClass.append(menubarItem.getClassName());
                 }
                 if (menubarItem.isAjaxDisabled()) {
-                    linkHTMLClass.append(" no-ajax-link");
+                    htmlClass.append(" no-ajax-link");
                 }
 
 
+                // Element
                 Element element;
                 if (menubarItem.isDropdownItem()) {
                     if (menubarItem.isStateItem()) {
-                        element = DOM4JUtils.generateElement(HTMLConstants.SPAN, linkHTMLClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
+                        element = DOM4JUtils
+                                .generateElement(HTMLConstants.SPAN, htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
                                 null);
                     } else {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                linkHTMLClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
+                                htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
                         if (menubarItem.getUrl() == null) {
                             DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
                         }
@@ -204,10 +224,10 @@ public final class MenubarUtils {
                 } else {
                     if (menubarItem.getGlyphicon() == null) {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                linkHTMLClass.toString(), menubarItem.getTitle(), null);
+                                htmlClass.toString(), menubarItem.getTitle(), null);
                     } else {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                linkHTMLClass.toString(), null, menubarItem.getGlyphicon());
+                                htmlClass.toString(), null, menubarItem.getGlyphicon());
                         DOM4JUtils.addTooltip(element, menubarItem.getTitle());
                     }
 
@@ -215,7 +235,8 @@ public final class MenubarUtils {
                         DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
                     }
                 }
-                parent.add(element);
+
+                li.add(element);
 
 
                 // Associated HTML
@@ -228,30 +249,35 @@ public final class MenubarUtils {
 
             if (!emptyDropdownMenu) {
                 // Dropdown menu button
-                Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "pencil");
+                Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "halflings halflings-pencil");
                 DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
                 Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
                 dropdownButton.add(caret);
 
-                cmsGroup.add(dropdownButton);
-                cmsGroup.add(dropdownMenu);
+                // LI
+                Element li = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+                li.add(dropdownButton);
+                li.add(dropdownMenu);
+                cmsGroup.add(li);
             }
 
             if (CollectionUtils.isNotEmpty(firstGroup.elements())) {
-                toolbar.add(firstGroup);
+                toolbar.add(firstGroupMenuItem);
             }
             if (CollectionUtils.isNotEmpty(specificGroup.elements())) {
-                toolbar.add(specificGroup);
+                toolbar.add(specificGroupMenuItem);
             }
             if (CollectionUtils.isNotEmpty(stateGroup.elements())) {
-                toolbar.add(stateGroup);
+                toolbar.add(stateGroupMenuItem);
             }
             if (CollectionUtils.isNotEmpty(cmsGroup.elements())) {
-                toolbar.add(cmsGroup);
+                toolbar.add(cmsGroupMenuItem);
             }
             if (CollectionUtils.isNotEmpty(genericGroup.elements())) {
-                toolbar.add(genericGroup);
+                toolbar.add(genericGroupMenuItem);
             }
+
+            toolbar.add(associatedHTMLContainer);
         }
 
 

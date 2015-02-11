@@ -130,7 +130,7 @@ var currentPageId = '${currentPageId}';
                         </div>
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                                 <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreePageModelSelect" class="jstree-select-unique">
@@ -144,7 +144,7 @@ var currentPageId = '${currentPageId}';
                     <div class="col-sm-8 col-lg-3">
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                                 <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreePageParentSelect" class="jstree-select-unique">
@@ -190,7 +190,7 @@ var currentPageId = '${currentPageId}';
                         </div>
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                                 <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
@@ -204,7 +204,7 @@ var currentPageId = '${currentPageId}';
                     <div class="col-sm-8 col-lg-3">
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                                 <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
@@ -348,7 +348,7 @@ var currentPageId = '${currentPageId}';
                     <p class="help-block"><is:getProperty key="PAGE_ORDER" /></p>
                     <div class="well">
                         <div class="jstree-filter input-group input-group-sm">
-                            <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                            <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                             <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageOrder', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                         </div>
                         <div id="jstreePageOrder" class="jstree-select-unique">
@@ -471,7 +471,7 @@ var currentPageId = '${currentPageId}';
                     <p><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                     <div class="text-center">
                         <button type="submit" class="btn btn-warning">
-                            <i class="glyphicons halflings warning-sign"></i>
+                            <i class="halflings halflings-alert"></i>
                             <span><is:getProperty key="YES" /></span>
                         </button>
                         <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
@@ -485,7 +485,7 @@ var currentPageId = '${currentPageId}';
         <div id="pages-list" class="container-fluid">
             <div class="well">
                 <div class="jstree-filter input-group input-group-sm">
-                    <span class="input-group-addon"><span class="glyphicons halflings filter"></span></span>
+                    <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
                     <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePagesList', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
                 </div>
                 <div id="jstreePagesList" class="jstree-links">
@@ -523,7 +523,7 @@ var currentPageId = '${currentPageId}';
                 <p><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                 <div class="text-center">
                     <button type="submit" class="btn btn-warning"  onclick="selectWindow(this.form)">
-                        <i class="glyphicons halflings warning-sign"></i>
+                        <i class="halflings halflings-alert"></i>
                         <span><is:getProperty key="YES" /></span>
                     </button>
                     <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
@@ -542,7 +542,7 @@ var currentPageId = '${currentPageId}';
                         
                         <fieldset>
                             <legend>
-                                <i class="glyphicons display"></i>
+                                <i class="glyphicons glyphicons-display"></i>
                                 <span><is:getProperty key="WINDOW_PROPERTIES_DISPLAY" /></span>
                             </legend>
                             
@@ -668,7 +668,7 @@ var currentPageId = '${currentPageId}';
                         
                         <fieldset>
                             <legend>
-                                <i class="glyphicons dashboard"></i>
+                                <i class="halflings halflings-dashboard"></i>
                                 <span><is:getProperty key="WINDOW_PROPERTIES_ADVANCED_OPTIONS" /></span>
                             </legend>
                             
@@ -737,7 +737,7 @@ var currentPageId = '${currentPageId}';
                                             <div class="panel-heading">
                                                 <div class="panel-title">
                                                     <a href="#${window.id}-beanShell-example" class="no-ajax-link" data-toggle="collapse">
-                                                        <i class="glyphicons halflings info-sign"></i>
+                                                        <i class="halflings halflings-info-sign"></i>
                                                         <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE" /></span>
                                                     </a>
                                                 </div>
@@ -793,7 +793,7 @@ rightCellToggle.add(example);
                         <div class="navbar navbar-default navbar-fixed-bottom">
                             <div class="col-sm-offset-3 col-sm-9">
                                 <button type="submit" class="btn btn-primary navbar-btn">
-                                    <i class="glyphicons halflings floppy_disk"></i>
+                                    <i class="halflings halflings-floppy-disk"></i>
                                     <span><is:getProperty key="SAVE" /></span>
                                 </button>
                                 

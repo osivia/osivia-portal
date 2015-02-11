@@ -49,9 +49,9 @@ public class SortableTableDecorator extends TableDecorator {
     protected void addSortedHeaderIcon(HeaderCell sortedHeaderCell, boolean ascending) {
         String glyphicons;
         if (ascending) {
-            glyphicons = "halflings sort-by-attributes";
+            glyphicons = "halflings halflings-sort-by-attributes";
         } else {
-            glyphicons = "halflings sort-by-attributes-alt";
+            glyphicons = "halflings halflings-sort-by-attributes-alt";
         }
 
         Element element = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, sortedHeaderCell.getTitle());

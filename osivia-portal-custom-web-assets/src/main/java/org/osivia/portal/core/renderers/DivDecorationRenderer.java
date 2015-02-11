@@ -160,7 +160,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
                 Element small = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null);
                 decorators.add(small);
 
-                Element maximizedLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, null, null, "more");
+                Element maximizedLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, null, null, "glyphicons glyphicons-bring-forward");
                 DOM4JUtils.addTooltip(maximizedLink, this.internationalizationService.getString("MAXIMIZED", locale));
                 small.add(maximizedLink);
             }

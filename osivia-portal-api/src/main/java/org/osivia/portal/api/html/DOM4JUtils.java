@@ -198,7 +198,7 @@ public final class DOM4JUtils {
         }
 
         if (StringUtils.isNotBlank(glyphicon)) {
-            Element glyph = generateElement(HTMLConstants.I, "glyphicons " + glyphicon, StringUtils.EMPTY);
+            Element glyph = generateElement(HTMLConstants.I, glyphicon, StringUtils.EMPTY);
             element.add(glyph);
 
             if (text != null) {

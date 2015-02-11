@@ -44,7 +44,7 @@
                 <div class="${active}">
                     <div class="${tabStyle}">
                         <a href="${userPortal.defaultPage.url}" class="${color}" title="${userPortal.defaultPage.name}" data-toggle="tooltip" data-placement="bottom">
-                            <i class="glyphicons halflings home"></i>
+                            <i class="halflings halflings-home"></i>
                         </a>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                                 <!-- Close -->
                                 <c:if test="${not empty userPage.closePageUrl}">
                                     <a href="${userPage.closePageUrl}" class="page-close ${color}">
-                                        <i class="glyphicons halflings remove"></i>
+                                        <i class="halflings halflings-remove"></i>
                                         <span class="sr-only"><is:getProperty key="CLOSE" /></span>
                                     </a>
                                 </c:if>

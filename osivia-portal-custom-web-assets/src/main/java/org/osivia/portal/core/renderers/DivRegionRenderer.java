@@ -322,7 +322,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Add fragment button
         Element addFragmentButton;
         if (inherited) {
-            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", null, "halflings plus", null);
+            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", null, "halflings halflings-plus", null);
         } else {
             // Add fragment button
             String addFragmentURL = irrc.getProperty("osivia.cmsCreateUrl");
@@ -334,7 +334,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             addFragmentOnClick.append("');");
 
             addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", null,
-                    "halflings plus");
+                    "halflings halflings-plus");
         }
         DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
         group.add(addFragmentButton);
@@ -383,7 +383,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Dropdown menu button
         Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
-                "halflings uni-wrench", null);
+                "halflings halflings-glyph-wrench", null);
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         dropdownButton.add(caret);
@@ -463,9 +463,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         Element dropdownButton;
         if (inherited) {
             dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle disabled", HTMLConstants.TEXT_DEFAULT,
-                    "sampler", null);
+                    "glyphicons glyphicons-sampler", null);
         } else {
-            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT, "sampler", null);
+            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
+                    "glyphicons glyphicons-sampler", null);
             DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         }
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
