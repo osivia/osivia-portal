@@ -634,7 +634,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         }
                         
                         // init-state
-                        PageCustomizerInterceptor.initPageBackInfos(controllerCtx);                     
+                        //PageCustomizerInterceptor.initPageBackInfos(controllerCtx);          
+                        initPageState(rpc.getPage(), controllerCtx);
+                        
                         
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
