@@ -1,85 +1,17 @@
 /*!
- *  Project:  GLYPHICONS
- *  Author:   Jan Kovarik - www.glyphicons.com
- *  Twitter:  @jankovarik
+ *  Glyphicons version 1.8.
+ *  Deprecated classes.
  */
-
-
-/* Fonts */
-
-@font-face {
-    font-family: 'Glyphicons Regular';
-    src: url('../components/glyphicons/fonts/glyphicons-regular.eot');
-    src: url('../components/glyphicons/fonts/glyphicons-regular.eot?#iefix')
-        format('embedded-opentype'),
-        url('../components/glyphicons/fonts/glyphicons-regular.woff')
-        format('woff'),
-        url('../components/glyphicons/fonts/glyphicons-regular.ttf')
-        format('truetype'),
-        url('../components/glyphicons/fonts/glyphicons-regular.svg#glyphiconsregular')
-        format('svg');
-}
-
-@font-face {
-    font-family: 'Glyphicons Halflings Regular';
-    src: url('../components/glyphicons/fonts/glyphicons-halflings-regular.eot');
-    src: url('../components/glyphicons/fonts/glyphicons-halflings-regular.eot?#iefix')
-        format('embedded-opentype'),
-        url('../components/glyphicons/fonts/glyphicons-halflings-regular.woff') format('woff'),
-        url('../components/glyphicons/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
-        url('../components/glyphicons/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular')
-        format('svg');
-}
-
-@font-face {
-    font-family: 'Glyphicons Social Regular';
-    src: url('../components/glyphicons/fonts/glyphicons-social-regular.eot');
-    src: url('../components/glyphicons/fonts/glyphicons-social-regular.eot?#iefix')
-        format('embedded-opentype'),
-        url('../components/glyphicons/fonts/glyphicons-social-regular.woff') format('woff'),
-        url('../components/glyphicons/fonts/glyphicons-social-regular.ttf') format('truetype'),
-        url('../components/glyphicons/fonts/glyphicons-social-regular.svg#glyphicons_socialregular')
-        format('svg');
-}
-
-@font-face {
-    font-family: 'Glyphicons Filetypes Regular';
-    src: url('../components/glyphicons/fonts/glyphicons-filetypes-regular.eot');
-    src: url('../components/glyphicons/fonts/glyphicons-filetypes-regular.eot?#iefix')
-        format('embedded-opentype'),
-        url('../components/glyphicons/fonts/glyphicons-filetypes-regular.woff') format('woff'),
-        url('../components/glyphicons/fonts/glyphicons-filetypes-regular.ttf') format('truetype'),
-        url('../components/glyphicons/fonts/glyphicons-filetypes-regular.svg#glyphicons_filetypesregular')
-        format('svg');
-}
-
-
-
-/* Bootstrap integration */
-
-.glyphicons {
-    position: relative;
-    top: 1px;
-    display: inline-block;
-    font-family: 'Glyphicons Regular';
-    font-style: normal;
-    font-weight: normal;
-    line-height: 1;
-    
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 .glyphicons.halflings {
-    font-family: 'Glyphicons Halflings Regular';
+    font-family: 'Glyphicons Halflings';
 }
 
 .glyphicons.social {
-    font-family: 'Glyphicons Social Regular';
+    font-family: 'Glyphicons Social';
 }
 
 .glyphicons.filetype {
-    font-family: 'Glyphicons Filetypes Regular';
+    font-family: 'Glyphicons Filetypes';
 }
 
 

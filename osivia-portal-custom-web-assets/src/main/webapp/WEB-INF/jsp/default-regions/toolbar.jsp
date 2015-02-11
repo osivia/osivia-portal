@@ -9,7 +9,7 @@
             <div class="navbar-header">
                 <!-- Toggle drawer menu button -->
                 <button type="button" class="drawer-toggle-btn btn navbar-btn pull-left" data-toggle="drawer">
-                    <i class="glyphicons show_lines"></i> <span class="text">${requestScope['osivia.currentPageName']}</span>
+                    <i class="halflings halflings-menu-hamburger"></i> <span class="text">${requestScope['osivia.currentPageName']}</span>
                 </button>
 
                 <!-- Toggle navigation menu button -->
@@ -33,7 +33,7 @@
                             <input id="search-toolbar-input" type="text" name="keywords" class="form-control"
                                 placeholder='<is:getProperty key="SEARCH_PLACEHOLDER" />'> <span class="input-group-btn">
                                 <button type="submit" class="btn btn-default">
-                                    <i class="glyphicons halflings search"></i>
+                                    <i class="halflings halflings-search"></i>
                                 </button>
                             </span>
                         </div>
@@ -46,9 +46,12 @@
                     <c:when test="${empty requestScope['osivia.toolbar.principal']}">
                         <ul class="nav navbar-nav navbar-right offline">
                             <!-- Login -->
-                            <li><a href="${requestScope['osivia.toolbar.loginURL']}" class="navbar-link"> <i class="glyphicons halflings log_in"></i> <is:getProperty
-                                        key="LOGIN" />
-                            </a></li>
+                            <li>
+                                <a href="${requestScope['osivia.toolbar.loginURL']}" class="navbar-link">
+                                    <i class="halflings halflings-log-in"></i>
+                                    <span><is:getProperty key="LOGIN" /></span>
+                                </a>
+                            </li>
                         </ul>
                     </c:when>
 
@@ -60,15 +63,22 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li class="hidden-xs">
                                 <p class="navbar-text">
-                                    <i class="glyphicons halflings user"></i> <span>${requestScope['osivia.toolbar.principal'].name}</span>
+                                    <i class="halflings halflings-user"></i>
+                                    <span>${requestScope['osivia.toolbar.principal'].name}</span>
                                 </p>
                             </li>
-                            <li><a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link"> <i class="glyphicons halflings log_out"></i>
-                                    <is:getProperty key="LOGOUT" />
-                            </a></li>
-                            <li><a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link"> <i class="glyphicons halflings refresh"></i>
-                                    <is:getProperty key="REFRESH_PAGE" />
-                            </a></li>
+                            <li>
+                                <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
+                                    <i class="halflings halflings-log-out"></i>
+                                    <span><is:getProperty key="LOGOUT" /></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
+                                    <i class="halflings halflings-repeat"></i>
+                                    <span><is:getProperty key="REFRESH_PAGE" /></span>
+                                </a>
+                            </li>
                         </ul>
                     </c:otherwise>
                 </c:choose>

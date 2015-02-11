@@ -39,13 +39,13 @@
              <scope>compile</scope>
         </dependency>
         
-
         <dependency>
             <groupId>org.jboss.portal</groupId>
             <artifactId>portal-api-lib</artifactId>
             <version>${jboss.portal.version}</version>
             <scope>compile</scope>
         </dependency>
+
 
         <!-- Commons -->
 
@@ -121,6 +121,18 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>displaytag</groupId>
+            <artifactId>displaytag</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>displaytag</groupId>
+            <artifactId>displaytag-portlet</artifactId>
             <scope>compile</scope>
         </dependency>
 

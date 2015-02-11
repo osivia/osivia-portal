@@ -62,7 +62,7 @@
         a {
             font-weight: bold;
         }
-    } 
+    }
 }
 
 // Make fixed tabs function
@@ -131,7 +131,7 @@
 }
 
 // Make tabs menu function
-.make-tabs-menu {
+.make-tabs-menu() {
     position: absolute;
     top: 0;
     left: @tab-padding-horizontal;
@@ -223,6 +223,10 @@
         
         li {
             .make-tab();
+            
+            &:last-child > div {
+                margin-right: 0;
+            }
         }
         
         @media screen and (min-width: @screen-sm-min) {

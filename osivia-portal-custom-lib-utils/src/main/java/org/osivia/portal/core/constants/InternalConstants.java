@@ -182,6 +182,9 @@ public final class InternalConstants {
     /** Hidden indicator window property. */
     public static final String ATTR_WINDOWS_HIDDEN_INDICATOR = "osivia.window.hidden";
 
+    /** Hide metadata indicator window property name. */
+    public static final String METADATA_WINDOW_PROPERTY = "osivia.cms.hideMetaDatas";
+
 
     /** Locale window or region property name. */
     public static final String LOCALE_PROPERTY = "osivia.locale";

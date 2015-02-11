@@ -45,6 +45,7 @@
             }
             
             &:last-of-type > a {
+                background-color: fade(lighten(@navbar-default-bg, 10%), 40%);
                 font-weight: bold;
                 margin-bottom: -1px;
             }
@@ -73,23 +74,6 @@
     }
 }
 
-.content-auxiliary-navbar {
-    .hidden-xs;
-    
-    height: @input-height-base;
-    
-    @media screen and (min-width: @screen-sm-min) {
-        .clearfix;
-        
-        .back {
-            float: left;
-        }
-        
-        ~ * {
-            margin-left: @navbar-height;
-        }
-    }
-}
 
 .simple-menubar {
     .text-nowrap;
@@ -111,12 +95,11 @@
 
 
 .toolbar-menubar() {
-    padding-left: 0;
+    &, > li > ul {
+        padding-left: 0;
+    }
     
     > li {
-        vertical-align: middle;
-        font-size: 0;  // Avoid spacing between button group items
-
         &.first-group {            
             float: left;
             margin-right: 5px;
@@ -126,82 +109,88 @@
             }
         }
         
-        &, > a {
+        &, > ul > li, > ul > li > a {
             display: inline-block;
         }
         
-        > a {                
-            .btn;
-            .btn-default;
+        > ul > li {
+            float: left;
             
-            + a {
+            > a {
+                .btn;
+                .btn-default;
+            }
+            
+            + li > a {
                 margin-left: -1px;
             }
             
-            &:not(:first-of-type):not(:last-of-type) {
+            &:not(:first-of-type):not(:last-of-type) > a {
                 border-radius: 0;
             }
             
-            &:first-of-type:not(:last-of-type) {
+            &:first-of-type:not(:last-of-type) > a {
                 .border-right-radius(0);
             }
             
-            &:last-of-type:not(:first-of-type) {
+            &:last-of-type:not(:first-of-type) > a {
                 .border-left-radius(0);
             }
-        }
-        
-        > p {
-            margin-bottom: 0;
-        }
+        } 
     }
 }
 
 .navbar-menubar() {
-    .nav;
-    .navbar-nav;
+    &, > li > ul {
+        margin-bottom: 0;
+        padding-left: 0;
+    }
     
     > li {
-        border-width: 1px;
-        border-color: @navbar-default-border;
-        
         &.first-group {
             display: none;
         }
         
-        &:not(.first-group), > a {
-            .content-navbar & {
-                display: inline-block;
-                float: none;
+        &:not(.first-group), > ul > li, > ul > li > a {
+            display: inline-block;
+            float: none;
+        }
+        
+        &:not(.state-group) {
+            background-color: fade(#fff, 40%);
+        }
+        
+        > ul > li {
+            > a {
+                padding: @navbar-padding-vertical @navbar-padding-horizontal;
+                
+                color: @navbar-default-link-color;
+                
+                &:hover, &:focus {
+                    background-color: @navbar-default-link-hover-bg;
+                    color: @navbar-default-link-hover-color;
+                    text-decoration: none;
+                }
             }
-        }
-        
-        &:not(.first-group):not(.state-group) + li:not(.state-group) {
-            border-left-style: solid;
-        }
-        
-        > a {
-            color: @navbar-default-link-color;
             
-            &:hover, &:focus {
-                color: @navbar-default-link-hover-color;
-                background-color: @navbar-default-link-hover-bg;
+            &.active, &.dropdown.open {
+                background-color: @navbar-default-link-active-bg;
+                color: @navbar-default-link-active-color;
             }
-        }
-        
-        > p {
-            .navbar-text;
             
-            .content-navbar & {
-                float: none;
-                margin-left: 0;
-                margin-right: 0;
+            &.disabled {
+                background-color: @navbar-default-link-disabled-bg;
+                color: @navbar-default-link-disabled-color;
             }
-        }
-        
-        .dropdown-menu {
-            .border-top-radius(@radius: 0);
-            margin-top: 0;
+            
+            &.dropdown > .dropdown-menu {
+                margin-top: 0;
+                .border-top-radius(0);
+            }
+            
+            > p {
+                .navbar-vertical-align(@element-height: @line-height-computed);
+            }
         }
     }
 }
