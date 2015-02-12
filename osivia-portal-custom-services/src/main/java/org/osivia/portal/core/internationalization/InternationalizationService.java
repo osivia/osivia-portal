@@ -43,13 +43,20 @@ public class InternationalizationService implements IInternationalizationService
 
     /** Customization service. */
     private ICustomizationService customizationService;
+    
+    /** Class loader. */
+    private ClassLoader cl;
+
 
 
     /**
      * Default constructor.
      */
     public InternationalizationService() {
+        
         super();
+        
+        this.cl = Thread.currentThread().getContextClassLoader();
     }
 
 
@@ -100,12 +107,18 @@ public class InternationalizationService implements IInternationalizationService
             }
 
             if (pattern == null) {
+                ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
+                
                 // Portal default result
+                Thread.currentThread().setContextClassLoader(this.cl);
+                
                 try {
                     resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
                     pattern = resourceBundle.getString(key);
                 } catch (MissingResourceException e) {
                     return "[Missing resource: " + key + "]";
+                } finally {
+                    Thread.currentThread().setContextClassLoader(originalCL);
                 }
             }
         }
