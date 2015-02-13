@@ -26,13 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.controller.ControllerException;
+import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.portlet.ParametersStateString;
@@ -42,6 +46,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.windows.PortalWindow;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
@@ -55,6 +60,7 @@ import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.tracker.RequestContextUtil;
@@ -297,46 +303,69 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
    /* Restauration of pages in case of loose of sessions */
         
-        if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand) {
+        
+
+        PortalObjectId targetRestoreIdObject = null;
+        PortalObjectPath targetRestorePath = null;        
+        
+        if (cmd instanceof ViewPortalCommand || cmd instanceof ViewPageCommand || cmd instanceof InvokePortletWindowRenderCommand) {
 
             if (!StringUtils.isEmpty(newPath)) {
 
-                PortalObjectId targetIdObject = ((PortalObjectCommand) cmd).getTargetId();
+                targetRestoreIdObject = ((PortalObjectCommand) cmd).getTargetId();
+                
+                int portalPathIndex = newPath.indexOf('/', 1);
 
-                PortalObjectPath poPath = PortalObjectPath.parse(newPath, PortalObjectPath.CANONICAL_FORMAT);
-                int pathLenth = poPath.getLength();
-
-                int targetLength = targetIdObject.getPath().getLength();
-
-                // one part of url has been missed, might bu due to a lose of session
-                // (_CMS_LAYOUT, dynamic templated page, ...)
-                // We try to restore from url
-
-                if (pathLenth > targetLength + 1) {
-
-                    String pagePath = poPath.getName(2);
-
-                    // Dynamic page creation : session may have been lost
-
-                    if (RestorablePageUtils.isRestorable(pagePath)) {
-
-                        PortalObjectId portalId = null;
-                        if (cmd instanceof ViewPortalCommand)
-                            portalId = targetIdObject;
-                        else {
-                            PortalObjectPath parentPath = targetIdObject.getPath().getParent();
-                            portalId = new PortalObjectId("", parentPath);
-                        }
-
-                        // Restore the page
-                        RestorablePageUtils.restore(controllerContext, portalId, pagePath);
-                        cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
-                    }
+                if (portalPathIndex != -1) {
+                     targetRestorePath = PortalObjectPath.parse(newPath.substring(portalPathIndex), PortalObjectPath.CANONICAL_FORMAT);
                 }
             }
-
         }
+        
+        if( cmd instanceof RefreshPageCommand){
+            
+            targetRestoreIdObject =  new PortalObjectId("",PortalObjectPath.parse(((RefreshPageCommand) cmd).getPageId(), PortalObjectPath.SAFEST_FORMAT));
+            targetRestorePath = targetRestoreIdObject.getPath();
+            
+        }
+        
+        if (targetRestorePath != null) {
 
+            PortalObjectId realPathId = new PortalObjectId("", targetRestorePath);
+
+            PortalObject po = this.getPortalObjectContainer().getObject(realPathId);
+
+            if (po == null) {
+                
+                String pagePath = targetRestorePath.getName(1);
+
+                // Dynamic page creation : session may have been lost
+
+                if (RestorablePageUtils.isRestorable(pagePath)) {
+
+                    PortalObjectId portalId = null;
+                    if (cmd instanceof ViewPortalCommand)
+                        portalId = targetRestoreIdObject;
+                    else {
+                        PortalObjectPath parentPath = targetRestoreIdObject.getPath().getParent();
+                        portalId = new PortalObjectId("", parentPath);
+                    }
+
+                    // Restore the page
+                    RestorablePageUtils.restore(controllerContext, portalId, pagePath);
+                    cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+                    
+                    if( cmd instanceof ViewPageCommand){
+                        // Remove parameters
+                        cmd = new ViewPageCommand(((ViewPageCommand) cmd).getTargetId());
+                    }
+
+                }
+            }
+        }
+            
+
+        
         
         
         if( cmd instanceof CmsCommand){

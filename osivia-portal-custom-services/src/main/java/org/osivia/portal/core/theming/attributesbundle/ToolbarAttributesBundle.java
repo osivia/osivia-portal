@@ -252,7 +252,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Refresh page
         RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, false, null);
+        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, true, null);
         attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
 
         // Logout
