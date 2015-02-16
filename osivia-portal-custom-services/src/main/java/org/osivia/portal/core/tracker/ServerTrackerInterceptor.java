@@ -33,7 +33,10 @@ import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.directory.IDirectoryService;
+import org.osivia.portal.api.directory.IDirectoryServiceLocator;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -50,7 +53,20 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
     private static ICMSServiceLocator cmsServiceLocator;
 
 	private ITracker tracker;
+	
+	private IDirectoryServiceLocator directoryServiceLocator;
+	
 	public PortalObjectContainer portalObjectContainer;
+	
+	
+    private ICacheService cacheService;
+    
+    
+    
+    
+    private long portalParametersCount = 0;
+    
+    
 
 	public ITracker getTracker() {
 		return this.tracker;
@@ -59,9 +75,29 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 	public void setTracker(ITracker tracker) {
 		this.tracker = tracker;
 	}
+	
 
+    public IDirectoryServiceLocator getDirectoryServiceLocator() {
+		return directoryServiceLocator;
+	}
 
-    /**
+	public void setDirectoryServiceLocator(
+			IDirectoryServiceLocator directoryServiceLocator) {
+		this.directoryServiceLocator = directoryServiceLocator;
+	}
+	
+	
+	
+
+	public ICacheService getCacheService() {
+		return cacheService;
+	}
+
+	public void setCacheService(ICacheService cacheService) {
+		this.cacheService = cacheService;
+	}
+
+	/**
      * Static access to CMS service.
      *
      * @return CMS service
@@ -188,9 +224,19 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
         }
 
 
+        // Check if LDAP cache should be evicted
+        long newCacheCount = cacheService.getGlobalParametersCount();
+        
+        if (portalParametersCount < newCacheCount)  {
 
-
-
+            IDirectoryService directoryService = directoryServiceLocator.getDirectoryService();
+            if(directoryService != null) {
+            	directoryService.clearCaches();
+            }
+        	
+            portalParametersCount = newCacheCount;
+        }
+        
 
 		try {
 				// Continue invocation

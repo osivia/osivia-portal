@@ -15,10 +15,31 @@ package org.osivia.portal.api.directory;
 
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 
-
+/**
+ * Integration with a directory service
+ * @author lbillon
+ *
+ */
 public interface IDirectoryService {
 
+	/**
+	 * get a person
+	 * @param username (uid)
+	 * @return a person
+	 */
     DirectoryPerson getPerson(String username);
 
+    /**
+     * Get a bean (for advanced portlets usage)
+     * @param name name of a bean
+     * @param requiredType type of the bean 
+     * @return bean
+     */
     <T extends DirectoryBean> T getDirectoryBean(String name, Class<T> requiredType);
+    
+    /**
+     * clear all entries in all caches registered in the service.
+     */
+    public void clearCaches();
+    
 }

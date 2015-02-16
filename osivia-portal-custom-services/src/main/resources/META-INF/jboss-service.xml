@@ -340,6 +340,14 @@
         <depends
             optional-attribute-name="Tracker"
             proxy-type="attribute">osivia:service=Tracker</depends>
+            
+        <depends
+            optional-attribute-name="DirectoryServiceLocator"
+            proxy-type="attribute">osivia:service=DirectoryServiceLocator</depends>   
+          
+        <depends
+            optional-attribute-name="CacheService"
+            proxy-type="attribute">osivia:service=Cache</depends>
       </mbean>
 
 
@@ -359,6 +367,7 @@
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
+        
     </mbean>
 
 
@@ -607,10 +616,11 @@
         code="org.osivia.portal.core.cache.services.CacheService"
         name="osivia:service=CacheServices">
         
-        
         <depends
             optional-attribute-name="CacheService"
-            proxy-type="attribute">osivia:service=Cache</depends>            
+            proxy-type="attribute">osivia:service=Cache</depends>
+            
+         
     </mbean>
 
     <mbean
@@ -685,6 +695,7 @@
         <xmbean />
     </mbean>
 
+	<!-- Directory service -->
     <mbean
         code="org.osivia.portal.core.directory.DirectoryServiceLocator"
         name="osivia:service=DirectoryServiceLocator"
