@@ -76,32 +76,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         PrintWriter markup = rendererContext.getWriter();
 
         PageProperties properties = PageProperties.getProperties();
-        // Current window identifier
-        // String currentWindowId = properties.getCurrentWindowId();
-        // Current locale
-        // Locale locale = LocaleUtils.toLocale(properties.getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
 
-
-        // Render title
         this.renderTitle(properties, markup, drc);
-
-        // markup.print("<div class='btn-toolbar pull-right hidden-xs portlet-mode-container'>");
-        // markup.print("<div class='btn-group btn-group-xs'>");
-        //
-        // if ("1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"))) {
-        // this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.MODES_KEY, locale);
-        // this.renderTriggerableActions(rendererContext, drc, ActionRendererContext.WINDOWSTATES_KEY, locale);
-        // }
-
-        // String closeUrl = properties.getWindowProperty(currentWindowId, "osivia.closeUrl");
-        // if (closeUrl != null) {
-        // markup.print("<a href='");
-        // markup.print(closeUrl);
-        // markup.print("' class='btn btn-default' data-toggle='tooltip' data-placement='bottom' title='close'><span class='glyphicons halflings remove'></span></a>");
-        // }
-
-        // markup.print("</div>");
-        // markup.print("</div>");
     }
 
 

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -122,9 +123,6 @@ public final class MenubarUtils {
             DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
             dynaWindowContent.add(toolbar);
 
-            // Associated HTML container
-            Element associatedHTMLContainer = DOM4JUtils.generateDivElement(null);
-
 
             // Menubar first group
             Element firstGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, "first-group", null);
@@ -236,13 +234,24 @@ public final class MenubarUtils {
                     }
                 }
 
+                // Data attributes
+                if (!menubarItem.getData().isEmpty()) {
+                    for (Entry<String, String> data : menubarItem.getData().entrySet()) {
+                        StringBuilder attributeName = new StringBuilder();
+                        attributeName.append("data-");
+                        attributeName.append(data.getKey());
+
+                        DOM4JUtils.addAttribute(element, attributeName.toString(), data.getValue());
+                    }
+                }
+                
                 li.add(element);
 
 
                 // Associated HTML
                 if (StringUtils.isNotBlank(menubarItem.getAssociatedHtml())) {
                     CDATA cdata = new DOMCDATA(menubarItem.getAssociatedHtml());
-                    associatedHTMLContainer.add(cdata);
+                    li.add(cdata);
                 }
             }
 
@@ -276,8 +285,6 @@ public final class MenubarUtils {
             if (CollectionUtils.isNotEmpty(genericGroup.elements())) {
                 toolbar.add(genericGroupMenuItem);
             }
-
-            toolbar.add(associatedHTMLContainer);
         }
 
 

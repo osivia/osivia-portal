@@ -78,6 +78,11 @@ $JQry(document).ready(function() {
 });
 
 
+// Popovers initialization
+$JQry(document).ready(function() {
+	$JQry("[data-toggle=popover]").popover({container: 'body'});
+});
+
 
 // Forms in dropdown menus
 $JQry(document).ready(function() {
