@@ -198,6 +198,12 @@ public final class MenubarUtils {
                 if (menubarItem.isAjaxDisabled()) {
                     htmlClass.append(" no-ajax-link");
                 }
+                if (menubarItem.isActive()) {
+                    htmlClass.append(" active");
+                }
+                if (menubarItem.isDisabled()) {
+                    htmlClass.append(" disabled");
+                }
 
 
                 // Element
@@ -244,7 +250,7 @@ public final class MenubarUtils {
                         DOM4JUtils.addAttribute(element, attributeName.toString(), data.getValue());
                     }
                 }
-                
+
                 li.add(element);
 
 

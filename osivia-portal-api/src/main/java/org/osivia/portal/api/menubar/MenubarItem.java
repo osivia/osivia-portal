@@ -62,6 +62,10 @@ public class MenubarItem {
     private boolean ajaxDisabled = false;
     /** First item indicator. */
     private boolean firstItem;
+    /** Active item indicator. */
+    private boolean active;
+    /** Disabled item indicator. */
+    private boolean disabled;
 
     /** Item identifier. */
     private final String id;
@@ -155,15 +159,6 @@ public class MenubarItem {
         return true;
     }
 
-
-    /**
-     * Getter for id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return this.id;
-    }
 
     /**
      * Getter for order.
@@ -382,12 +377,57 @@ public class MenubarItem {
 	}
 
     /**
+     * Getter for active.
+     *
+     * @return the active
+     */
+    public boolean isActive() {
+        return this.active;
+    }
+
+    /**
+     * Setter for active.
+     *
+     * @param active the active to set
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * Getter for disabled.
+     *
+     * @return the disabled
+     */
+    public boolean isDisabled() {
+        return this.disabled;
+    }
+
+    /**
+     * Setter for disabled.
+     *
+     * @param disabled the disabled to set
+     */
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    /**
+     * Getter for id.
+     *
+     * @return the id
+     */
+    public String getId() {
+        return this.id;
+    }
+
+    /**
      * Getter for data.
-     * 
+     *
      * @return the data
      */
     public Map<String, String> getData() {
-        return data;
+        return this.data;
     }
 
 }
