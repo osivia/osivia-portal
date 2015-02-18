@@ -13,6 +13,10 @@
  */
 package org.osivia.portal.api.menubar;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 /**
  * The Class MenubarItem.
@@ -34,45 +38,47 @@ public class MenubarItem {
     public static final int ORDER_PORTLET_GENERIC = 100;
 
 
-    /** The id. */
-    private String id;
-    /** The order. */
+    /** Item order. */
     private int order;
-    /** The url. */
+    /** Item URL. */
     private String url;
-    /** The title. */
+    /** Item title. */
     private String title;
-    /** The class name. */
+    /** Item HTML class name. */
     private String className;
-    /** Glyphicon name. */
+    /** Item glyphicon. */
     private String glyphicon;
-    /** The on click event. */
+    /** Item onclick event. */
     private String onClickEvent;
-    /** The target. */
+    /** Item target. */
     private String target;
-    /** The associated html. */
+    /** Item associated HTML. */
     private String associatedHtml;
-    /** The state item. */
+    /** State item indicator. */
     private boolean stateItem;
-    /** The dropdown item. */
+    /** Dropdown item indicator. */
     private boolean dropdownItem;
-    /** The ajax disabled. */
+    /** Item AJAX disabled indicator. */
     private boolean ajaxDisabled = false;
-    /**  This item is the first. */
+    /** First item indicator. */
     private boolean firstItem;
 
+    /** Item identifier. */
+    private final String id;
+    /** Item data attributes. */
+    private final Map<String, String> data;
 
 
-	/**
-     * Instantiates a new menubar item.
+    /**
+     * Constructor.
      *
-     * @param id the id
-     * @param title : titre d'affichage
-     * @param order : ordre relatif de l'item
-     * @param url : url de redirection
-     * @param onClickEvent : code javascript (optionnel)
-     * @param className : classe CSS
-     * @param target : target window (pour les liens externes)
+     * @param id item identifier
+     * @param title item title
+     * @param order item order
+     * @param url item URL
+     * @param onClickEvent item onclick event (optional)
+     * @param className item HTML class name (optional)
+     * @param target item target, for external link (optional)
      */
     public MenubarItem(String id, String title, int order, String url, String onClickEvent, String className, String target) {
         super();
@@ -85,6 +91,7 @@ public class MenubarItem {
         this.target = target;
         this.ajaxDisabled = false;
         this.firstItem = false;
+        this.data = new HashMap<String, String>();
     }
 
 
@@ -356,7 +363,6 @@ public class MenubarItem {
         this.ajaxDisabled = ajaxDisabled;
     }
 
-
     /**
      * Checks if is first item.
      *
@@ -366,7 +372,6 @@ public class MenubarItem {
 		return this.firstItem;
 	}
 
-
 	/**
 	 * Sets the first item.
 	 *
@@ -375,5 +380,14 @@ public class MenubarItem {
 	public void setFirstItem(boolean firstItem) {
 		this.firstItem = firstItem;
 	}
+
+    /**
+     * Getter for data.
+     * 
+     * @return the data
+     */
+    public Map<String, String> getData() {
+        return data;
+    }
 
 }
