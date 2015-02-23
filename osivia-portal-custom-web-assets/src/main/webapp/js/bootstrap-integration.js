@@ -71,6 +71,20 @@ $JQry(window).on("swipeleft", function(event) {
 });
 
 
+// Drawer toolbar
+function showDrawerSearch() {
+	var $toolbar = $JQry("#drawer-toolbar");
+	var $search = $toolbar.find(".drawer-toolbar-search");
+	
+	$search.addClass("active");
+}
+function hideDrawerSearch() {
+	var $toolbar = $JQry("#drawer-toolbar");
+	var $search = $toolbar.find(".drawer-toolbar-search");
+	
+	$search.removeClass("active");
+}
+
 
 // Tooltips initialization
 $JQry(document).ready(function() {

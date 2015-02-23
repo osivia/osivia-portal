@@ -58,6 +58,10 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.toolbar.path";
     /** Web toolbar path init parameter name. */
     private static final String WEB_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.toolbar.path";
+    /** Drawer toolbar path init parameter name. */
+    private static final String DRAWER_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.drawer.toolbar.path";
+    /** Back path init parameter name. */
+    private static final String BACK_PATH_INIT_PARAM = "osivia.portal.customizer.regions.back.path";
     /** Page settings path init parameter name. */
     private static final String PAGE_SETTINGS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.page.settings.path";
 
@@ -120,11 +124,15 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         Map<String, Object> attributes = context.getAttributes();
         IRenderedRegions renderedRegions = (IRenderedRegions) attributes.get(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS);
 
-        // Breadcrumb default region
-        renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
 
         // SEO default region
         renderedRegions.defineDefaultRenderedRegion("header-metadata", this.getInitParameter(HEADER_METADATA_PATH_INIT_PARAM));
+        // Breadcrumb default region
+        renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
+        // Drawer toolbar default region
+        renderedRegions.defineDefaultRenderedRegion("drawer-toolbar", this.getInitParameter(DRAWER_TOOLBAR_PATH_INIT_PARAM));
+        // Back default region
+        renderedRegions.defineDefaultRenderedRegion("back", this.getInitParameter(BACK_PATH_INIT_PARAM));
 
         if (renderedRegions.isSpaceSite()) {
             // Web toolbar default region

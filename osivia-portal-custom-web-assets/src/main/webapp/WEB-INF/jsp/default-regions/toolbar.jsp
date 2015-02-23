@@ -4,47 +4,29 @@
 
 
 <div class="toolbar">
-    <div class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <!-- Toggle drawer menu button -->
-                <button type="button" class="drawer-toggle-btn btn navbar-btn pull-left" data-toggle="drawer">
-                    <i class="halflings halflings-menu-hamburger"></i> <span class="text">${requestScope['osivia.currentPageName']}</span>
-                </button>
+                <div class="visible-xs">
+                    <!-- Menu -->
+                    <button type="button" data-toggle="drawer" class="btn btn-link navbar-btn pull-left">
+                        <span>
+                            <i class="halflings halflings-menu-hamburger"></i>
+                            <i class="halflings halflings-arrow-right"></i>
+                        </span>
+                    </button>
 
-                <!-- Toggle navigation menu button -->
-                <button type="button" class="btn navbar-btn visible-xs pull-left" data-toggle="tabs-menu">
-                    <i class="glyphicons halflings th"></i>
-                </button>
-
-                <!-- Brand -->
-                <a class="navbar-brand hidden-xs" href="${requestScope['osivia.home.url']}"><is:getProperty key="BRAND" /></a>
-
-                <!-- Toggle toolbar menu button -->
-                <button type="button" class="btn navbar-btn visible-xs pull-right" data-toggle="collapse" data-target="#toolbar-content">
-                    <i class="glyphicons halflings cog"></i>
-                </button>
-
-                <!-- Search -->
-                <form class="navbar-form visible-xs" onsubmit="return onsubmitGlobalSearch(this);" method="post" role="search">
-                    <div class="form-group">
-                        <label class="sr-only" for="search-toolbar-input">Search</label>
-                        <div class="input-group">
-                            <input id="search-toolbar-input" type="text" name="keywords" class="form-control"
-                                placeholder='<is:getProperty key="SEARCH_PLACEHOLDER" />'> <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default">
-                                    <i class="halflings halflings-search"></i>
-                                </button>
-                            </span>
-                        </div>
+                    <!-- Title -->
+                    <div>
+                        <p class="navbar-text text-overflow">${requestScope['osivia.header.title']}</p>
                     </div>
-                </form>
+                </div>
             </div>
-
-            <div id="toolbar-content" class="collapse navbar-collapse">
+                
+            <div class="collapse navbar-collapse">
                 <c:choose>
                     <c:when test="${empty requestScope['osivia.toolbar.principal']}">
-                        <ul class="nav navbar-nav navbar-right offline">
+                        <ul class="nav navbar-nav navbar-right">
                             <!-- Login -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.loginURL']}" class="navbar-link">
@@ -54,25 +36,30 @@
                             </li>
                         </ul>
                     </c:when>
-
+    
                     <c:otherwise>
                         <!-- Administration -->
                         <c:out value="${requestScope['osivia.toolbar.administrationContent']}" escapeXml="false" />
-
+    
                         <!-- User links -->
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="hidden-xs">
+                            <!-- User name -->
+                            <li>
                                 <p class="navbar-text">
                                     <i class="halflings halflings-user"></i>
                                     <span>${requestScope['osivia.toolbar.principal'].name}</span>
                                 </p>
                             </li>
+                            
+                            <!-- Logout -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
                                     <i class="halflings halflings-log-out"></i>
                                     <span><is:getProperty key="LOGOUT" /></span>
                                 </a>
                             </li>
+    
+                            <!-- Refresh -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
                                     <i class="halflings halflings-repeat"></i>
@@ -84,5 +71,5 @@
                 </c:choose>
             </div>
         </div>
-    </div>
+    </nav>
 </div>
