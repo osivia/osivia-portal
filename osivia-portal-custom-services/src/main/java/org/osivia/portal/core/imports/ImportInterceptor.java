@@ -14,10 +14,14 @@
  */
 package org.osivia.portal.core.imports;
 
+import java.util.concurrent.Future;
+
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.cache.ClusterNotifier;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.mt.ThreadsPool;
 
 /**
  * Susupension des requetes pendant les imports (à positionner avant la gestion
@@ -80,9 +84,12 @@ public class ImportInterceptor extends ServerInterceptor {
             // Import is terminated ant transaction is committed
             // release other threads
             isImportRunningLocally = false;
+            
+            
+            ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.STOPPING_IMPORT));
 
             // Release cluster nodes
-            getCacheService().setImportRunning(false);
+            //getCacheService().setImportRunning(false);
 
         }
         }

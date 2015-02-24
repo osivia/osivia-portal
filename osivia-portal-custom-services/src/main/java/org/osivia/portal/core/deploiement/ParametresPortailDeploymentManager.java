@@ -32,9 +32,11 @@ import org.jboss.portal.server.deployment.PortalWebApp;
 import org.jboss.portal.server.deployment.jboss.AbstractDeploymentFactory;
 import org.jboss.portal.server.deployment.jboss.Deployment;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cache.ClusterNotifier;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager;
 import org.osivia.portal.core.imports.ImportInterceptor;
+import org.osivia.portal.core.mt.ThreadsPool;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 import org.xml.sax.EntityResolver;
@@ -70,7 +72,7 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 	
 	   
     static ICacheService cacheService;
-
+    
 
 
 	public void chargerParametres(File file, MBeanServer mbeanServer) {
@@ -94,17 +96,18 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
             */
            
            // must be included in a transaction
-          cacheService.setImportRunning(true);
-          ImportInterceptor.isImportRunningLocally = true;
-           
+//          cacheService.setImportRunning(true);
+//          ImportInterceptor.isImportRunningLocally = true;
+           ImportInterceptor.isImportRunningLocally = true;
+
 
            
+           ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.RUNNING_IMPORT));
            
-         
-           
+
            // waiting for cluster notification
            Thread.sleep(1000L);
-           
+
 		    
 		    
 		    
@@ -118,24 +121,26 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 				nbTries++;
 			}
 			
-			
+		
 			IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
 			
 			dynamicObjectContainer.startPersistentIteration();
 			
-			
-			tm = TransactionManagerProvider.JBOSS_PROVIDER
-					.getTransactionManager();
+
 			ParametresPortailDeployment deploiement = new ParametresPortailDeployment(
 					file.toURL(), mbeanServer, tm, this);
 			portalImport = deploiement.doStart();
 			
 	         dynamicObjectContainer.stopPersistentIteration();
-			
+ 
+	         /*
+
 			//Impact sur les caches du bandeau
 			ICacheService cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
 			cacheService.incrementHeaderCount();
-			
+			*/
+	        ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService,  ClusterNotifier.ACTION.INCREMENT_COUNTER));
+
 		
 				
 		} catch (Exception e) {
