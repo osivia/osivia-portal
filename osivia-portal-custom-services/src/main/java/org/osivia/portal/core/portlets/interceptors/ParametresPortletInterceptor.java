@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -104,7 +103,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         // Controller context
         ControllerContext controllerContext = (ControllerContext) invocation.getAttribute("controller_context");
         Window window = null;
-        Locale locale = Locale.getDefault();
 
         if (controllerContext != null) {
             Map<String, Object> attributes = invocation.getRequestAttributes();
@@ -163,7 +161,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 if (webPagePath != null) {
                     attributes.put("osivia.cms.webPagePath", webPagePath);
                 }
-                
+
                 String webPageEditionPath = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.webPageEditionPath");
                 if (webPageEditionPath != null) {
                     attributes.put("osivia.cms.webPageEditionPath", webPageEditionPath);
@@ -222,7 +220,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             // HTTP Request
             HttpServletRequest httpRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
             attributes.put(Constants.PORTLET_ATTR_HTTP_REQUEST, httpRequest);
-            locale = httpRequest.getLocale();
 
             // Space config
             Object spaceConfig = controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.cms.spaceConfig");
@@ -317,58 +314,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     printItem.setGlyphicon("halflings halflings-print");
                                 }
                                 menubarItems.add(printItem);
-                            }
-
-                            /* Add back item */
-
-
-                            if ( StringUtils.isNotEmpty(window.getDeclaredProperty("osisia.dynamicStarted")) )   {
-                               if (StringUtils.isNotEmpty(window.getDeclaredProperty("osivia.dynamic.close_url"))) {
-                                    if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.disable.close"))) {
-
-                                        boolean containsBackItem = false;
-
-                                        // already managed at application level ?
-
-                                        for (MenubarItem item : menubarItems) {
-                                            if ("BACK".equals(item.getId())) {
-                                                containsBackItem = true;
-                                                break;
-                                            }
-                                        }
-
-
-                                        if (!containsBackItem) {
-                                            MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
-                                                    window.getDeclaredProperty("osivia.dynamic.close_url"), null, null, null);
-                                            backItem.setGlyphicon("halflings halflings-arrow-left");
-                                            backItem.setAjaxDisabled(true);
-                                            backItem.setFirstItem(true);
-                                            menubarItems.add(backItem);
-                                        }
-
-                                    }
-                                }
-                            } else {
-
-                                // static windows maximisation
-
-                                if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
-
-                                    ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(PortalObjectId.parse(windowId,
-                                            PortalObjectPath.CANONICAL_FORMAT), null, WindowState.NORMAL);
-
-                                    PortalURL portalURL = new PortalURLImpl(renderCmd, controllerContext, null, null);
-
-                                    MenubarItem backItem = new MenubarItem("BACK", this.internationalizationService.getString("BACK", locale), 0,
-                                            portalURL.toString(), null, null, null);
-                                    backItem.setGlyphicon("halflings halflings-arrow-left");
-                                    backItem.setAjaxDisabled(true);
-                                    backItem.setFirstItem(true);
-                                    menubarItems.add(backItem);
-                                }
-
-
                             }
 
 
@@ -544,8 +489,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 dropdownMenu.add(dropdownItemContainer);
 
                 parent = dropdownItemContainer;
-            } else if (item.isFirstItem()) {
-                parent = firstGroup;
             } else if (item.isStateItem()) {
                 parent = leftGroup;
             } else {

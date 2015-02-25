@@ -22,30 +22,26 @@
 }
 
 @media screen and (max-width: @screen-xs-max) {
-    body {
+    html, body, .wrapper-outer, .wrapper-inner {
         .screen-wrapper();
-        
-        header, footer {
-            position: absolute;
-            visibility: hidden;
-            width: 100%;
-        }
+    }
+    
+    header, footer {
+        position: absolute;
+        visibility: hidden;
+        width: 100%;
     }
     
     .wrapper-outer {
         position: absolute;
         top: 0;
         left: 0;
-        
-        .screen-wrapper();
 
         padding-top: 50px;
         
         .wrapper-inner {
             position: relative;
-            
-            .screen-wrapper();
-            
+
             & > * {
                 height: 100%;
                 overflow: auto;

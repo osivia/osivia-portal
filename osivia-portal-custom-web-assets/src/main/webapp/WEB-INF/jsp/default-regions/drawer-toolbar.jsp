@@ -80,7 +80,20 @@
             </a>
             
             <ul class="dropdown-menu" role="menu">
-                <!-- Home -->
+                <c:if test="${not empty requestScope['osivia.currentPageURL']}">
+                    <!-- Tab home -->
+                    <li role="presentation">
+                        <a href="${requestScope['osivia.currentPageURL']}" class="text-overflow" role="menuitem">
+                            <i class="halflings halflings-home"></i>
+                            <span>${requestScope['osivia.currentPageName']}</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Divider -->
+                    <li class="divider" role="presentation"></li>
+                </c:if>
+            
+                <!-- Portal home -->
                 <c:if test="${not empty userPortal.defaultPage}">
                     <li role="presentation"
                         <c:if test="${userPortal.defaultPage.id eq requestScope['osivia.currentPageId']}">class="active"</c:if>

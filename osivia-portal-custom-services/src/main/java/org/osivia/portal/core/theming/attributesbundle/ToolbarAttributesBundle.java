@@ -76,7 +76,6 @@ import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 
@@ -197,6 +196,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // Current page
@@ -233,8 +234,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (person != null) {
             // View profile
             try {
-                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
                 Map<String, String> properties = new HashMap<String, String>();
 				properties.put("osivia.hideTitle", "1");
 
@@ -251,9 +250,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
 
         // Refresh page
-        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT));
-        PortalURL refreshPagePortalUrl = new PortalURLImpl(refreshPageCommand, controllerContext, true, null);
-        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPagePortalUrl.toString());
+        String refreshPageURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
+        attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPageURL);
 
         // Logout
         SignOutCommand signOutCommand = new SignOutCommand();

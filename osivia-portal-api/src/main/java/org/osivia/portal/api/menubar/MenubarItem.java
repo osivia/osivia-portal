@@ -60,8 +60,6 @@ public class MenubarItem {
     private boolean dropdownItem;
     /** Item AJAX disabled indicator. */
     private boolean ajaxDisabled = false;
-    /** First item indicator. */
-    private boolean firstItem;
     /** Active item indicator. */
     private boolean active;
     /** Disabled item indicator. */
@@ -94,7 +92,6 @@ public class MenubarItem {
         this.className = className;
         this.target = target;
         this.ajaxDisabled = false;
-        this.firstItem = false;
         this.data = new HashMap<String, String>();
     }
 
@@ -357,24 +354,6 @@ public class MenubarItem {
     public void setAjaxDisabled(boolean ajaxDisabled) {
         this.ajaxDisabled = ajaxDisabled;
     }
-
-    /**
-     * Checks if is first item.
-     *
-     * @return true, if is first item
-     */
-    public boolean isFirstItem() {
-		return this.firstItem;
-	}
-
-	/**
-	 * Sets the first item.
-	 *
-	 * @param firstItem the new first item
-	 */
-	public void setFirstItem(boolean firstItem) {
-		this.firstItem = firstItem;
-	}
 
     /**
      * Getter for active.

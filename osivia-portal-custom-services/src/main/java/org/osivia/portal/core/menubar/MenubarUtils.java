@@ -26,7 +26,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 
 /**
@@ -149,6 +151,11 @@ public final class MenubarUtils {
             Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
             genericGroupMenuItem.add(genericGroup);
 
+            // Menubar hidden-xs group
+            Element hiddenXSGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            Element hiddenXSGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+            hiddenXSGroupMenuItem.add(hiddenXSGroup);
+
 
             // Dropdown menu
             Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu dropdown-menu-right", null, null, AccessibilityRoles.MENU);
@@ -177,14 +184,25 @@ public final class MenubarUtils {
                     parent = dropdownMenu;
                 } else if (menubarItem.isStateItem()) {
                     parent = stateGroup;
-                } else if (menubarItem.isFirstItem()) {
-                    parent = firstGroup;
                 } else if (menubarItem.getOrder() < MenubarItem.ORDER_PORTLET_SPECIFIC_CMS) {
                     parent = specificGroup;
                 } else if (menubarItem.getOrder() < MenubarItem.ORDER_PORTLET_GENERIC) {
                     parent = cmsGroup;
                 } else {
-                    parent = genericGroup;
+                    boolean hiddenXS = false;
+                    String[] htmlClasses = StringUtils.split(StringUtils.trimToEmpty(menubarItem.getClassName()));
+                    for (String htmlClass : htmlClasses) {
+                        if ("hidden-xs".equals(htmlClass)) {
+                            hiddenXS = true;
+                            break;
+                        }
+                    }
+
+                    if (hiddenXS) {
+                        parent = hiddenXSGroup;
+                    } else {
+                        parent = genericGroup;
+                    }
                 }
 
                 parent.add(li);
@@ -262,6 +280,17 @@ public final class MenubarUtils {
             }
 
 
+            // Back
+            String backURL = getMobileBackURL(controllerContext);
+            if (backURL != null) {
+                Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+                firstGroup.add(li);
+
+                Element element = DOM4JUtils.generateLinkElement(backURL, null, null, null, null, "halflings halflings-arrow-left");
+                li.add(element);
+            }
+
+
             if (!emptyDropdownMenu) {
                 // Dropdown menu button
                 Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "halflings halflings-pencil");
@@ -291,11 +320,24 @@ public final class MenubarUtils {
             if (CollectionUtils.isNotEmpty(genericGroup.elements())) {
                 toolbar.add(genericGroupMenuItem);
             }
+            if (CollectionUtils.isNotEmpty(hiddenXSGroup.elements())) {
+                toolbar.add(hiddenXSGroupMenuItem);
+            }
         }
 
 
         // Write HTML content
         return DOM4JUtils.write(dynaWindowContainer);
+    }
+
+
+    private static final String getMobileBackURL(ControllerContext controllerContext) {
+        // Portal URL factory
+        IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+        return urlFactory.getBackURL(portalControllerContext, true);
     }
 
 }

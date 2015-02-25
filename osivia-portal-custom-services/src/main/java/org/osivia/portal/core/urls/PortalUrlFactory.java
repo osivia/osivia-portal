@@ -44,7 +44,6 @@ import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.EcmFilesCommand;
@@ -533,7 +532,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	public String getStartPortletUrl(PortalControllerContext portalCtx, String portletInstance, Map<String, String> windowProperties, boolean popup)
 			throws PortalException {
 
-		return getStartPortletUrl(portalCtx, portletInstance, windowProperties, null, popup);
+		return this.getStartPortletUrl(portalCtx, portletInstance, windowProperties, null, popup);
 
 	}
 
@@ -598,8 +597,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             // portalName = "default";
 
             portalName = "/" + portalName;
-            
-            
+
+
             // Maps initialization
             if (windowProperties == null) {
                 windowProperties = new HashMap<String, String>();
@@ -619,22 +618,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
             }
 
-            
+
             String parentId = URLEncoder.encode(PortalObjectId.parse(portalName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
                     "UTF-8");
 
-           
+
             StringBuffer url = new StringBuffer(portalURL.toString());
             url.append("&parentId="+parentId);
-            
-            if( pageName != null)
+
+            if( pageName != null) {
                 url.append("&pageName="+URLEncoder.encode(pageName,"UTF-8"));
-            if( pageDisplayName != null)
+            }
+            if( pageDisplayName != null) {
                 url.append("&pageDisplayName="+URLEncoder.encode(pageDisplayName,"UTF-8"));
-            
+            }
+
             url.append("&instanceId=" + portletInstance +  "&props="
                     + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params));
-                    
+
             return url.toString();
 
         } catch (Exception e) {
@@ -642,8 +643,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
     }
 
-    
-    
+
+
     /**
      * {@inheritDoc}
      */
@@ -657,15 +658,23 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getRefreshPageUrl(PortalControllerContext ctx) {
-        PortalObjectId currentPageId = (PortalObjectId) ControllerContextAdapter.getControllerContext(ctx).getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                Constants.ATTR_PAGE_ID);
+    public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
-        RefreshPageCommand resfreshCmd = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
-        String resfreshUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true));
+        // Current page identifier
+        PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
 
-        return resfreshUrl;
+        // URL context
+        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        // URL format
+        URLFormat urlFormat = URLFormat.newInstance(false, true);
+
+        // Command
+        ControllerCommand refreshCommand = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
+
+        // URL
+        return controllerContext.renderURL(refreshCommand, urlContext, urlFormat);
     }
 
 
@@ -675,9 +684,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public String getPutDocumentInTrashUrl(PortalControllerContext ctx, String docId, String docPath) {
 
 
-     
+
     	String backPageMarker = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
-        
+
 
         ControllerCommand cmd = new CMSPutDocumentInTrashCommand(docId, docPath, backPageMarker);
         PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
@@ -712,29 +721,22 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getBackUrl(PortalControllerContext ctx) {
+    public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-   
-        
-        
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(ctx);
-        
+        // Back page marker
         String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
 
-
-
         String backURL = null;
-
         if (backPageMarker != null) {
-
-
             PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
             if (infos != null) {
                 PortalObjectId pageId = infos.getPageId();
 
                 URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
-                
-                Boolean refresh= BooleanUtils.isTrue((Boolean)controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack"));
+
+                Boolean refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack"));
 
                 if (refresh) {
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
@@ -742,19 +744,14 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 } else {
                     ViewPageCommand rpc = new ViewPageCommand(pageId);
                     backURL = controllerContext.renderURL(rpc, urlContext, URLFormat.newInstance(false, true));
-                 }
+                }
 
                 backURL = backURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + backPageMarker + "/");
-
             }
         }
 
         return backURL;
-
     }
-
-
-
 
 
     /**

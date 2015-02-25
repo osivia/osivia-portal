@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,7 +22,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
  * Portal URL factory API interface.
- * 
+ *
  * @author Jean-Sébastien Steux
  */
 public interface IPortalUrlFactory {
@@ -52,7 +52,7 @@ public interface IPortalUrlFactory {
 
     /** Display context refresh. */
     String DISPLAYCTX_REFRESH = "refreshPageAndNavigation";
-    
+
     /** Display context preview (live version for validation purpose). */
     String DISPLAYCTX_PREVIEW_LIVE_VERSION = "preview";
 
@@ -62,7 +62,7 @@ public interface IPortalUrlFactory {
     /**
      * Get portal CMS contextualized page.
      * TODO: move it in CMS.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param path path
      * @return contextualized page
@@ -73,7 +73,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get CMS URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pagePath page path
      * @param cmsPath CMS path
@@ -92,7 +92,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get permalink URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param permLinkRef permalink reference
      * @param params parameters
@@ -107,7 +107,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get start page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param parentName parent page name
      * @param pageName page name
@@ -123,7 +123,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get start page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pageName page name
      * @param templateName template name
@@ -138,7 +138,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get destroy page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param parentId parent identifier
      * @param pageId page identifier
@@ -149,7 +149,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Adapt portal URL to navigation.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param orginalUrl original URL
      * @return navigation URL
@@ -160,7 +160,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Adapt portal URL to popup.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param orginalUrl original URL
      * @param adapter adapter status code
@@ -170,7 +170,7 @@ public interface IPortalUrlFactory {
 
 	/**
 	 * Get start portlet URL.
-	 * 
+	 *
 	 * @param portalControllerContext
 	 *            portal controller context
 	 * @param portletInstance
@@ -191,7 +191,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get start portlet URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param portletInstance portlet instance
      * @param windowProperties window properties
@@ -216,10 +216,10 @@ public interface IPortalUrlFactory {
      */
     public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties,
             Map<String, String> windowParams) throws PortalException;
-    
+
     /**
      * Get start portlet in region URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pageId page identifier
      * @param portletInstance portlet instance
@@ -235,7 +235,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get stop portlet URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pageId page identifier
      * @param windowId window identifier
@@ -246,7 +246,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get base portal URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return base portal URL
      */
@@ -255,7 +255,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get refresh page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return refresh page URL
      */
@@ -264,7 +264,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get put document in trash URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param docId document identifier
      * @param docPath document path
@@ -275,7 +275,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get HTTP error page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param httpErrorCode HTTP error code (example : 404)
      * @return HTTP error page URL
@@ -285,7 +285,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get an ECM URL (for front office views)
-     * 
+     *
      * @param pcc portal controller context
      * @param command the name of the command (create document, view, ...) managed by the ecm
      * @param path path of the document
@@ -293,15 +293,17 @@ public interface IPortalUrlFactory {
      * @return the url
      */
     String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException;
-    
-    
+
+
     /**
-     * Get back url
-     * 
-     * @param refresh to refresh previous page
+     * Get back URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param mobile mobile indicator
      * @return back URL
      */
-    String getBackUrl(PortalControllerContext portalControllerContext);
+    String getBackURL(PortalControllerContext portalControllerContext, boolean mobile);
+
 
     /**
      * Get parameterized URL.
@@ -317,10 +319,10 @@ public interface IPortalUrlFactory {
     String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState,
             Boolean permalinks);
 
-    
+
     /**
      * Get Files management url
-     * 
+     *
      * @param ctx portal context
      * @param cmsPath current doc path
      * @param command sent to the ecm about the file
@@ -330,7 +332,7 @@ public interface IPortalUrlFactory {
 
 	/**
 	 * Get url for subscriptions actions
-	 * 
+	 *
 	 * @param ctx
 	 * @param cmsPath
 	 *            current doc path

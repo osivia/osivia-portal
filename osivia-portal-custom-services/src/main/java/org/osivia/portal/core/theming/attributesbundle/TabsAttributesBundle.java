@@ -70,6 +70,10 @@ import org.osivia.portal.core.profils.ProfilManager;
  */
 public final class TabsAttributesBundle implements IAttributesBundle {
 
+    /** Current page URL attribute name. */
+    public static final String CURRENT_PAGE_URL = "osivia.currentPageURL";
+
+
     /** Singleton instance. */
     private static TabsAttributesBundle instance;
 
@@ -108,6 +112,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_USER_PORTAL);
         this.names.add(Constants.ATTR_PAGE_ID);
+        this.names.add(CURRENT_PAGE_URL);
         this.names.add(Constants.ATTR_PAGE_NAME);
         this.names.add(Constants.ATTR_FIRST_TAB);
     }
@@ -160,6 +165,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         refreshUserPortal = false;
                     }
                 }
+
                 if (headerCount.longValue() > this.globalCacheService.getHeaderCount()) {
                     // Can occurs if JBoss cache manager has crashed : update global cache with baseline value
                     do {
@@ -167,13 +173,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     } while (headerCount.longValue() > this.globalCacheService.getHeaderCount());
                 }
 
-
                 if( refreshUserPortal == false){
                     if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh"))) {
                         refreshUserPortal = true;
                     }
                 }
-
             }
 
             if (refreshUserPortal) {
@@ -191,6 +195,24 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.cmsTimeStamp", System.currentTimeMillis());
             }
+
+            // Get first level page
+            Page mainPage = renderPageCommand.getPage();
+            PortalObject parent = mainPage.getParent();
+            while (parent instanceof Page) {
+                mainPage = (Page) parent;
+                parent = mainPage.getParent();
+            }
+
+            // Preselection domain
+            Object selectedPageID = mainPage.getId();
+            String domain = TabsCustomizerInterceptor.getInheritedPageDomain(renderPageCommand.getPage());
+            if (domain != null) {
+                selectedPageID = domain;
+            }
+
+            // Current page URL
+            String currentPageURL = null;
 
             // Update menu page markers
             Iterator<UserPage> mainPages = tabbedNavUserPortal.getUserPages().iterator();
@@ -210,31 +232,20 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         userSubPage.setClosePageUrl(userSubPage.getClosePageUrl().replaceAll("/pagemarker/([^/]*)/", "/pagemarker/" + pageMarker + "/"));
                     }
                 }
+
+                if (selectedPageID.equals(userPage.getId())) {
+                    currentPageURL = userPage.getUrl();
+                }
             }
 
-            // Get first level page
-            Page mainPage = renderPageCommand.getPage();
-            PortalObject parent = mainPage.getParent();
-            while (parent instanceof Page) {
-                mainPage = (Page) parent;
-                parent = mainPage.getParent();
-            }
 
             // User portal
             attributes.put(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
+
             // Page identifier
-
-            /* Préselection domain */
-
-            Object selectedPageID =  mainPage.getId();
-
-            String domain = TabsCustomizerInterceptor.getInheritedPageDomain( renderPageCommand.getPage());
-            if( domain != null){
-                selectedPageID = domain;
-            }
-
-
             attributes.put(Constants.ATTR_PAGE_ID, selectedPageID);
+            // Page URL
+            attributes.put(CURRENT_PAGE_URL, currentPageURL);
             // Page name
             attributes.put(Constants.ATTR_PAGE_NAME, PortalObjectUtils.getDisplayName(mainPage, request.getLocales()));
             // First tab

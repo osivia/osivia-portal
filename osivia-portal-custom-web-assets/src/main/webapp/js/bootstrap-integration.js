@@ -35,18 +35,22 @@ function toggleDrawer() {
 }
 function showDrawer() {
 	var $drawer = $JQry("#drawer");
-	$drawer.addClass("active");
-	
-	// Shadowbox
-	var shadowbox = document.createElement("div");
-	shadowbox.id = "drawer-shadowbox";
-	$JQry("body").append(shadowbox);
-	var $shadowbox = $JQry(shadowbox);
-	$shadowbox.fadeTo(300, 0.6);
-	$shadowbox.bind("tap", hideDrawer);
-	
-	// Toggle button
-	$JQry("[data-toggle=drawer]").addClass("active-drawer");
+	if ($drawer.length > 0) {
+		$drawer.addClass("active");
+		
+		// Shadowbox
+		if ($JQry("#drawer-shadowbox").length == 0) {
+			var shadowbox = document.createElement("div");
+			shadowbox.id = "drawer-shadowbox";
+			$JQry("body").append(shadowbox);
+			var $shadowbox = $JQry(shadowbox);
+			$shadowbox.fadeTo(300, 0.6);
+			$shadowbox.bind("tap", hideDrawer);
+		}
+		
+		// Toggle button
+		$JQry("[data-toggle=drawer]").addClass("active-drawer");
+	}
 }
 function hideDrawer() {
 	var $drawer = $JQry("#drawer");
