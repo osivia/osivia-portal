@@ -160,9 +160,15 @@ public class ProfilManager implements IProfilManager {
 		//  v2.MS Get current portal name
 		// TODO factoriser dans un portal manager
 		
-        String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-//		if (portalName == null)
-//			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
+		String portalName = null;
+		
+		try   {
+         portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+		if (portalName == null)
+			portalName = getPortalObjectContainer().getContext().getDefaultPortal().getName();
+		} catch( Exception e){
+		    portalName = "default";
+		}
 		
 		 List<ProfilBean> profils = listeProfilsCache.get(portalName);
 //		 if( profils == null || profils.size() == 0)
@@ -270,6 +276,9 @@ public class ProfilManager implements IProfilManager {
 	 * @return
 	 */
 	public boolean verifierProfilUtilisateur(String name) {
+	    
+	    if(true)
+	        return true;
 
 		/* Récupération des rôles */
 
