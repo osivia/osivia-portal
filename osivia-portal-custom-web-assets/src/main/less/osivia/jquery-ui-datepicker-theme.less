@@ -18,7 +18,7 @@
 // Outer container of the datepicker
 .ui-datepicker {
     padding: 0 @datepicker-padding;
-    min-width: 280px;
+    min-width: 290px;
     
     background-color: @datepicker-bg;
     
@@ -58,9 +58,15 @@
         }
         
         .ui-datepicker-title {
+            margin: 0;
+            overflow: hidden;
+            
             select {
                 margin: 0;
-                width: auto;
+                
+                + select {
+                    margin-left: @datepicker-padding;
+                }
             }
         }
     }
