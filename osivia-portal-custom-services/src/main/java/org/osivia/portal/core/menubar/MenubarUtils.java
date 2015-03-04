@@ -168,14 +168,21 @@ public final class MenubarUtils {
 
                 // LI
                 Element li;
+                String htmlClassLi = "";
+                
+                if (menubarItem.isDisabled()) {
+                	htmlClassLi = "disabled";
+                }
+                
                 if (menubarItem.isDropdownItem()) {
-                    li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+                    li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClassLi, null, null, AccessibilityRoles.PRESENTATION);
                     if (menubarItem.isStateItem()) {
                         DOM4JUtils.addAttribute(li, HTMLConstants.CLASS, "dropdown-header");
                     }
                 } else {
-                    li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+                    li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClassLi, null);
                 }
+                
 
                 // Parent
                 Element parent;
@@ -219,31 +226,34 @@ public final class MenubarUtils {
                 if (menubarItem.isActive()) {
                     htmlClass.append(" active");
                 }
-                if (menubarItem.isDisabled()) {
-                    htmlClass.append(" disabled");
-                }
-
 
                 // Element
                 Element element;
+                
+                // Dropdown items
                 if (menubarItem.isDropdownItem()) {
                     if (menubarItem.isStateItem()) {
                         element = DOM4JUtils
                                 .generateElement(HTMLConstants.SPAN, htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
                                 null);
+                        
+                        
                     } else {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
                                 htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
-                        if (menubarItem.getUrl() == null) {
-                            DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
-                        }
+
+                        DOM4JUtils.addTooltip(element, menubarItem.getTooltip());
                     }
-                } else if (menubarItem.isStateItem()) {
+                } 
+                // State items
+                else if (menubarItem.isStateItem()) {
                     element = DOM4JUtils.generateElement(HTMLConstants.P, null, null);
 
                     Element label = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-info", menubarItem.getTitle());
                     element.add(label);
-                } else {
+                } 
+                // other items
+                else {
                     if (menubarItem.getGlyphicon() == null) {
                         element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
                                 htmlClass.toString(), menubarItem.getTitle(), null);
@@ -253,9 +263,7 @@ public final class MenubarUtils {
                         DOM4JUtils.addTooltip(element, menubarItem.getTitle());
                     }
 
-                    if (menubarItem.getUrl() == null) {
-                        DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
-                    }
+
                 }
 
                 // Data attributes

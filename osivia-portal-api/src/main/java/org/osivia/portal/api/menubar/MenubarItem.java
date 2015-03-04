@@ -64,12 +64,15 @@ public class MenubarItem {
     private boolean active;
     /** Disabled item indicator. */
     private boolean disabled;
+    /** HTML hover title */
+    private String tooltip;
 
     /** Item identifier. */
     private final String id;
     /** Item data attributes. */
     private final Map<String, String> data;
 
+    
 
     /**
      * Constructor.
@@ -390,8 +393,27 @@ public class MenubarItem {
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
+    
+    /**
+     * Getter for tooltip.
+     *
+     * @return the tooltip
+     */
+	public String getTooltip() {
+		return tooltip;
+	}
 
     /**
+     * Setter for tooltip.
+     *
+     * @param tooltip the tooltip to set
+     */
+	public void setTooltip(String tooltip) {
+		this.tooltip = tooltip;
+	}
+
+
+	/**
      * Getter for id.
      *
      * @return the id

@@ -43,6 +43,8 @@ public class CMSItemType {
     private final String defaultTemplate;
     /** CMS item glyph, may be null for default glyph. */
     private final String glyph;
+    /** CMS item is root type */
+    private final boolean isRootType;
 
 
     /**
@@ -80,6 +82,25 @@ public class CMSItemType {
      */
     public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
+    	this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param name CMS item type name
+     * @param folderish CMS item type is folderish indicator
+     * @param navigable CMS item navigable indicator
+     * @param browsable CMS item browsable indicator
+     * @param ordered CMS item type is ordered indicator
+     * @param forcePortalContextualization CMS item force portal contextualization indicator
+     * @param supportsPortalForms CMS item type supports portal forms indicator
+     * @param portalFormSubTypes CMS item type portal from sub types
+     * @param defaultTemplate CMS item default template path, may be null for global default template path
+     * @param glyph CMS item customized glyph, may be null for default glyph
+     */
+    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
         super();
         this.name = name;
         this.folderish = folderish;
@@ -91,8 +112,8 @@ public class CMSItemType {
         this.portalFormSubTypes = portalFormSubTypes;
         this.defaultTemplate = defaultTemplate;
         this.glyph = glyph;
+        this.isRootType = isRootType;
     }
-
 
     /**
      * {@inheritDoc}
@@ -229,5 +250,15 @@ public class CMSItemType {
     public String getGlyph() {
         return this.glyph;
     }
+
+    /**
+     * is root type
+     * @return is root type ?
+     */
+	public boolean isRootType() {
+		return isRootType;
+	}
+    
+    
 
 }
