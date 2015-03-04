@@ -283,7 +283,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
-                        return new RefreshPageCommand(pageId);
+                        
+                        RefreshPageCommand refreshPageCommand = new RefreshPageCommand(pageId);
+                        
+                        if (parameterMap.get("ecmActionReturn") != null) {
+                        	String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
+                        	refreshPageCommand.setEcmActionReturn(ecmActionReturn);
+                        }
+                        if (parameterMap.get("newDocId") != null) {
+                        	String newDocId = URLDecoder.decode(parameterMap.get("newDocId")[0], "UTF-8");
+                        	refreshPageCommand.setNewDocId(newDocId);
+                        }
+                        
+                        return refreshPageCommand;
                     }
                 }
 

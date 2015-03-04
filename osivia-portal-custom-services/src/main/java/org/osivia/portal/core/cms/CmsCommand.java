@@ -1542,8 +1542,13 @@ public class CmsCommand extends DynamicCommand {
                 }
             }
 
-
-
+            /* Manage ECM notifications */
+            String ecmActionReturn = this.getEcmActionReturn();
+            if(StringUtils.isNotBlank(ecmActionReturn)){
+                PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
+                String notification = itlzService.getString(ecmActionReturn, this.getControllerContext().getServerInvocation().getRequest().getLocale());
+                notifService.addSimpleNotification(portalCtx, notification, NotificationsType.SUCCESS);
+            }
 
             /* Doit-on afficher le contenu en mode MAXIMIZED ? */
 
@@ -1576,7 +1581,7 @@ public class CmsCommand extends DynamicCommand {
                     displayContent = true;
                 }
             }
-
+            
             if (displayContent) {
 
 
@@ -1662,12 +1667,6 @@ public class CmsCommand extends DynamicCommand {
                     windowProperties.put("osivia.dynamic.disable.close", "1");
                 }
 
-                String ecmActionReturn = this.getEcmActionReturn();
-                if(StringUtils.isNotBlank(ecmActionReturn)){
-                    PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
-                    String notification = itlzService.getString(ecmActionReturn, this.getControllerContext().getServerInvocation().getRequest().getLocale());
-                    notifService.addSimpleNotification(portalCtx, notification, NotificationsType.SUCCESS);
-                }
 
                 StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "virtual",
                         contentProperties.getPortletInstance(), "CMSPlayerWindow", windowProperties, params, addPortletToBreadcrumb, editionState);
@@ -1675,6 +1674,7 @@ public class CmsCommand extends DynamicCommand {
 
                 return this.context.execute(cmd);
             }
+            
 
             return new UpdatePageResponse(page.getId());
 

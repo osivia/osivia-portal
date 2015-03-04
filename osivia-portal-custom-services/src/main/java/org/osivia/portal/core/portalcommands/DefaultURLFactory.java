@@ -180,6 +180,13 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 asu.setParameterValue("action", "refreshPage");
 
                 asu.setParameterValue("pageId", URLEncoder.encode(pageId, "UTF-8"));
+                
+                if(command.getEcmActionReturn() != null) {
+                	asu.setParameterValue("ecmActionReturn", URLEncoder.encode(command.getEcmActionReturn(), "UTF-8"));
+                }
+                if(command.getNewDocId() != null) {
+                	asu.setParameterValue("newDocId", URLEncoder.encode(command.getNewDocId(), "UTF-8"));
+                }                
 
             } catch (UnsupportedEncodingException e) {
                 // ignore

@@ -659,24 +659,35 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
+    	return getRefreshPageUrl(portalControllerContext, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getRefreshPageUrl(PortalControllerContext portalControllerContext, boolean newContentNotify) {
+    
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
-        // Current page identifier
-        PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+    
+        PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                Constants.ATTR_PAGE_ID);
 
         // URL context
         URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
         // URL format
         URLFormat urlFormat = URLFormat.newInstance(false, true);
-
-        // Command
-        ControllerCommand refreshCommand = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
-
+        
+        RefreshPageCommand resfreshCmd = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
+        
+        if(newContentNotify) {
+        	resfreshCmd.setEcmActionReturn("_NOTIFKEY_");
+        	resfreshCmd.setNewDocId("_NEWID_");
+        }
+        
         // URL
-        return controllerContext.renderURL(refreshCommand, urlContext, urlFormat);
+        return controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
     }
-
 
     /**
      * {@inheritDoc}

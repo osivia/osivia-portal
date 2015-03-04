@@ -47,5 +47,8 @@ public enum EcmCommand {
 
     /** Go to the current media library in back office */
     gotoMediaLibrary,
+    
+    /** Send a document to poeple inteerested in */
+    shareDocument;
 
 }

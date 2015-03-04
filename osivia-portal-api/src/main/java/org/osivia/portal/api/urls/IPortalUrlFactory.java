@@ -263,6 +263,16 @@ public interface IPortalUrlFactory {
 
 
     /**
+     * Get refresh page URL and notify creation of new content.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param newContentNotify set to true for enable notifications after this command
+     * @return refresh page URL
+     */
+	String getRefreshPageUrl(PortalControllerContext portalControllerContext,
+			boolean newContentNotify);
+    
+    /**
      * Get put document in trash URL.
      *
      * @param portalControllerContext portal controller context
@@ -340,5 +350,8 @@ public interface IPortalUrlFactory {
 	 * @return subscription url
 	 */
 	String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, boolean unsubscribe);
+
+
+
 
 }
