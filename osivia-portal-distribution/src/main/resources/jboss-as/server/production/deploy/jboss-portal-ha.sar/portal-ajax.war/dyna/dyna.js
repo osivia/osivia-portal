@@ -184,28 +184,35 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	// Complete the ajax request options
 	options.requestHeaders = headers;
 
-	// Animated gif
-	var pos = container.cumulativeOffset();
-
-	var posx = pos[0] + (container.getWidth() / 2).round()
-	var posy = pos[1] + (container.getHeight() / 2).round();
-
-	var ajaxWaitDiv = Element.down(container, "div.ajax-waiting");
-	ajaxWaitDiv.setStyle({
-		left : posx + 'px',
-		top : posy + 'px'
-	});
-
-	// Dont'display if delay is very short (<200 ms)
-	new Effect.Appear(ajaxWaitDiv, {
-		duration : 0.3,
-		from : 0,
-		to : 0.9,
-		delay : 0.2
-	});
+	// Waiter
+	var $ajaxWaiter = $JQry(".ajax-waiter");
+	$ajaxWaiter.delay(200).fadeIn();
+	
+	
+//	var pos = container.cumulativeOffset();
+//
+//	var posx = pos[0] + (container.getWidth() / 2).round()
+//	var posy = pos[1] + (container.getHeight() / 2).round();
+//
+//	var ajaxWaitDiv = Element.down(container, "div.ajax-waiting");
+//	ajaxWaitDiv.setStyle({
+//		left : posx + 'px',
+//		top : posy + 'px'
+//	});
+//
+//	// Dont'display if delay is very short (<200 ms)
+//	new Effect.Appear(ajaxWaitDiv, {
+//		duration : 0.3,
+//		from : 0,
+//		to : 0.9,
+//		delay : 0.2
+//	});
 
 	options.onSuccess = function(t) {
-		ajaxWaitDiv.hide();
+		$ajaxWaiter.clearQueue();
+		$ajaxWaiter.hide();
+		
+//		ajaxWaitDiv.hide();
 
 		onAjaxSuccess(t, callerId);
 	};

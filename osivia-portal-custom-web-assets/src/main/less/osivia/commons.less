@@ -49,6 +49,45 @@
 
 
 
+// AJAX waiter
+
+.ajax-waiter {
+    display: none;
+    
+    .label {
+        font-size: inherit;
+    }
+    
+    i {
+        .animation-name(@name: waiter);
+        .animation-duration(@duration: 1s);
+        .animation-timing-function(@timing-function: linear);
+        .animation-iteration-count(@iteration-count: infinite);
+    }
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes waiter {
+    from {
+        .rotate(@degrees: 0deg);
+    }
+    to {
+        .rotate(@degrees: 360deg);
+    }
+}
+
+/* Standard syntax */
+@keyframes waiter {
+    from {
+        .rotate(@degrees: 0deg);
+    }
+    to {
+        .rotate(@degrees: 360deg);
+    }
+}
+
+
+
 // Wizard edging
 .wizard-edging {
     padding: 5px;

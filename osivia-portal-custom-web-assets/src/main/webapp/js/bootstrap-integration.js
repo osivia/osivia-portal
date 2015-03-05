@@ -5,20 +5,6 @@ $JQry(document).ready(function() {
 });
 
 
-
-// Responsive tabs menu & navigation menu
-$JQry(document).ready(function() {
-	$JQry("[data-toggle=tabs-menu]").click(function() {
-		$JQry("#tabs-menu").toggleClass("active");
-    });
-	
-	$JQry("[data-toggle=navigation-menu]").click(function () {
-		$JQry("#navigation-menu").toggleClass("active");
-	});
-});
-
-
-
 // Drawer
 $JQry(document).ready(function() {
 	$JQry("[data-toggle=drawer]").click(toggleDrawer);

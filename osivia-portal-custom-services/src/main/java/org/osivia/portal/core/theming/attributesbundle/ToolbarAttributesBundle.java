@@ -371,7 +371,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
         Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, HTMLConstants.TARGET_NEW_WINDOW, null, null,
                 jbossAdministrationTitle, "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
-        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.I, "halflings halflings-new-window", StringUtils.EMPTY);
+        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "halflings halflings-new-window", null);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
