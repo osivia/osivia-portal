@@ -48,7 +48,7 @@ $JQry(document).ready(function() {
 		var tree = $input.closest(".fancytree").fancytree("getTree");
 		
 		if (value === "") {
-			tree.clearFilter();
+			clearFilter(tree);
 		} else {
 			tree.filterNodes(function(node) {
 				var match = (node.title.toLowerCase().indexOf(value.toLowerCase()) > -1);
@@ -67,11 +67,24 @@ $JQry(document).ready(function() {
 	$JQry(".fancytree button").click(function(event) {
 		var $tree = $JQry(this).closest(".fancytree");
 		var tree = $tree.fancytree("getTree");
-		tree.clearFilter();
-		
+
 		var $input = $tree.find("input[type=text]");
 		$input.val("");
+		
+		clearFilter(tree);
 	});
 	
 });
+
+
+function clearFilter(tree) {
+	tree.clearFilter();
+	
+	tree.visit(function(node) {
+		if (!node.data.retain) {
+			node.setExpanded(false);
+		}
+		return true;
+	});
+}
 
