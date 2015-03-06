@@ -43,8 +43,6 @@ public class CMSPublicationInfos {
 	private boolean deletableByUser = false;
 	private boolean userCanValidate = false;
 	private boolean anonymouslyReadable = false;
-	private boolean isOnLinePending = false;
-	private boolean isUserOnLineInitiator = false;
 	/** Published CMS item indicator. */
     private boolean published = false;
 	/** Indicates if working version is different from published version. */
@@ -163,23 +161,6 @@ public class CMSPublicationInfos {
 		this.anonymouslyReadable = anonymouslyReadable;
 	}
 	
-    public boolean isOnLinePending() {
-        return isOnLinePending;
-    }
-
-    public void setOnLinePending(boolean isOnLinePending) {
-        this.isOnLinePending = isOnLinePending;
-    }
-    
-    public boolean isUserOnLineInitiator() {
-        return isUserOnLineInitiator;
-    }
-
-    
-    public void setUserOnLineInitiator(boolean isUserOnLineInitiator) {
-        this.isUserOnLineInitiator = isUserOnLineInitiator;
-    }
-
     /**
      * Getter for published.
      * @return the published
