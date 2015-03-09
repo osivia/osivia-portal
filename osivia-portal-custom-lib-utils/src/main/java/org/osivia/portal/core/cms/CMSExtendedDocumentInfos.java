@@ -25,13 +25,13 @@ package org.osivia.portal.core.cms;
 public class CMSExtendedDocumentInfos {
     
     /** Indicates if a task of name taskName is pending on document */
-    private Boolean isOnlineTaskPending;
+    private Boolean isOnlineTaskPending = false;
     
     /** Indicates if current user can manage pending task on document. */
-    private Boolean canUserValidateOnlineTask;
+    private Boolean canUserValidateOnlineTask = false;
     
     /** Indicates if current user is the task's initiator. */
-    private Boolean isUserOnlineTaskInitiator;
+    private Boolean isUserOnlineTaskInitiator = false;
     
     /**
      * A document has a state depending of the user who is browsing it
