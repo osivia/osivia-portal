@@ -160,8 +160,11 @@ public class ProfilManager implements IProfilManager {
 		//  v2.MS Get current portal name
 		// TODO factoriser dans un portal manager
 		
-		String portalName = null;
 		
+	
+	/*	
+	   String portalName = null;
+	  
 		try   {
          portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
 		if (portalName == null)
@@ -169,6 +172,9 @@ public class ProfilManager implements IProfilManager {
 		} catch( Exception e){
 		    portalName = "default";
 		}
+		*/
+		String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+		
 		
 		 List<ProfilBean> profils = listeProfilsCache.get(portalName);
 //		 if( profils == null || profils.size() == 0)
@@ -235,25 +241,30 @@ public class ProfilManager implements IProfilManager {
 			throw new RuntimeException(e);
 		}
 
-		if (subject == null)
-			return null;
-
-		// utilisation mapping standard du portail
-		JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
-
-		/* On parcourt les espaces pour voir celui qui correspond au profil */
-
-		for (ProfilBean profil : getListeProfils()) {
-			Iterator iter = pp.getRoles().iterator();
-			while (iter.hasNext()) {
-				Principal principal = (Principal) iter.next();
-				if (principal.getName().equals(profil.getRoleName()) && profil.getDefaultPageName().length() > 0) {
-
-					session.setAttribute(ATTRIBUTE_PROFILE_NAME, profil);
-					return profil;
-				}
-			}
+		if (subject == null)  {
+		    // Resource binaries
+	          subject = PageProperties.getProperties().getBinarySubject();
 		}
+		
+		
+        if (subject != null) {
+            // utilisation mapping standard du portail
+            JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
+
+            /* On parcourt les espaces pour voir celui qui correspond au profil */
+
+            for (ProfilBean profil : getListeProfils()) {
+                Iterator iter = pp.getRoles().iterator();
+                while (iter.hasNext()) {
+                    Principal principal = (Principal) iter.next();
+                    if (principal.getName().equals(profil.getRoleName()) && profil.getDefaultPageName().length() > 0) {
+
+                        session.setAttribute(ATTRIBUTE_PROFILE_NAME, profil);
+                        return profil;
+                    }
+                }
+            }
+        }
 
 		/* Aucun profil trouve, création d'un profil par défaut */
 
@@ -276,9 +287,11 @@ public class ProfilManager implements IProfilManager {
 	 * @return
 	 */
 	public boolean verifierProfilUtilisateur(String name) {
-	    
+	   
+	    /*
 	    if(true)
 	        return true;
+	        */
 
 		/* Récupération des rôles */
 
@@ -290,8 +303,14 @@ public class ProfilManager implements IProfilManager {
 			throw new RuntimeException(e);
 		}
 
-		if (subject == null)
-			return false;
+		// Cas des ressources binaires
+        if (subject == null)  {
+            // Resource binaries
+              subject = PageProperties.getProperties().getBinarySubject();
+        }
+        
+        if( subject == null)
+            return false;        
 
 		// utilisation mapping standard du portail
 		JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);

@@ -420,7 +420,7 @@
   <!-- passer en mode INFO pour faire du profiling -->
   <category name="PORTAL_PROFILER"  additivity="false">
       	<appender-ref ref="PORTAL_PROFILER_APPENDER"/>
-	<priority value="INFO"/>
+	<priority value="WARN"/>
    </category>
 
 

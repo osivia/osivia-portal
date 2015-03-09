@@ -18,6 +18,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.Subject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.core.cms.CMSConfigurationItem;
@@ -37,9 +39,24 @@ public class PageProperties {
 
     /** Region layouts. */
     private Set<CMSConfigurationItem> regionLayouts;
+    
+    /** Binary subject */
+    private Subject binarySubject;
 
 
-	public PageProperties() {
+	
+    public Subject getBinarySubject() {
+        return binarySubject;
+    }
+
+
+    
+    public void setBinarySubject(Subject binarySubject) {
+        this.binarySubject = binarySubject;
+    }
+
+
+    public PageProperties() {
 		super();
 	}
 

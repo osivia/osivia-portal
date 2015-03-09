@@ -87,7 +87,7 @@ public class ErrorValve extends ValveBase {
 
             ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, null);
 
-            if (response.getStatus() == 500 || response.getStatus() == 404) {
+            if ((response.getStatus() == 500 || response.getStatus() == 404 )  && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
                 long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 
                 Map<String, String> parameters = new HashMap<String, String>(2);
@@ -96,7 +96,7 @@ public class ErrorValve extends ValveBase {
                 String url = URLUtils.createUrl(httpRequest, errorPageUri, parameters);
 
                 response.sendRedirect(url);
-            } else if (response.getStatus() == 403) {
+            } else if (response.getStatus() == 403 && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
                 // No error registered if forbidden
                 Map<String, String> parameters = new HashMap<String, String>(1);
                 parameters.put("httpCode", String.valueOf(httpErrorCode));
