@@ -13,8 +13,7 @@
  */
 package org.osivia.portal.core.cms;
 
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 /**
@@ -33,6 +32,22 @@ public class CMSExtendedDocumentInfos {
     
     /** Indicates if current user is the task's initiator. */
     private Boolean isUserOnlineTaskInitiator;
+    
+    /**
+     * A document has a state depending of the user who is browsing it
+     */
+    public enum SubscriptionStatus {
+        /** Default state : can subscribe */
+        can_subscribe,
+        /** Can unsubscribe if a subscription is already set */
+        can_unsubscribe,
+        /** If a subscription is defined by other document upper in the hierarchy, or if a group has subscribed before to them */
+        has_inherited_subscriptions,
+        /** Special cases : Domains, WorkspacesRoot, ... are not allowing subscription */
+        no_subscriptions;
+    };
+
+    private SubscriptionStatus subscriptionStatus;
     
     /**
      * @return the isOnlineTaskPending
@@ -74,6 +89,21 @@ public class CMSExtendedDocumentInfos {
      */
     public void setIsUserOnlineTaskInitiator(Boolean isUserOnlineTaskInitiator) {
         this.isUserOnlineTaskInitiator = isUserOnlineTaskInitiator;
+    }
+    
+    /**
+     * @return the subscriptionStatus
+     */
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    /**
+     * @param subscriptionStatus
+     *            the subscriptionStatus to set
+     */
+    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
     
 }
