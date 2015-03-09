@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.api.customization;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -26,12 +27,28 @@ import org.osivia.portal.api.context.PortalControllerContext;
  */
 public class CustomizationContext {
 
+    /** Portal controller context. */
+    private PortalControllerContext portalControllerContext;
+    /** Locale. */
+    private Locale locale;
+
     /** Customization attributes. */
     private final Map<String, Object> attributes;
 
-    /** Portal controller context. */
-    private PortalControllerContext portalControllerContext;
 
+    /**
+     * Constructor.
+     *
+     * @param attributes customization attributes
+     * @param portalControllerContext portal controller context
+     * @param locale locale
+     */
+    public CustomizationContext(Map<String, Object> attributes, PortalControllerContext portalControllerContext, Locale locale) {
+        super();
+        this.attributes = attributes;
+        this.portalControllerContext = portalControllerContext;
+        this.locale = locale;
+    }
 
     /**
      * Constructor.
@@ -39,8 +56,7 @@ public class CustomizationContext {
      * @param attributes customization attributes
      */
     public CustomizationContext(Map<String, Object> attributes) {
-        super();
-        this.attributes = attributes;
+        this(attributes, null, null);
     }
 
     /**
@@ -50,9 +66,17 @@ public class CustomizationContext {
      * @param portalControllerContext portal controller context
      */
     public CustomizationContext(Map<String, Object> attributes, PortalControllerContext portalControllerContext) {
-        super();
-        this.attributes = attributes;
-        this.portalControllerContext = portalControllerContext;
+        this(attributes, portalControllerContext, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param attributes customization attributes
+     * @param locale locale
+     */
+    public CustomizationContext(Map<String, Object> attributes, Locale locale) {
+        this(attributes, null, locale);
     }
 
 
@@ -72,6 +96,24 @@ public class CustomizationContext {
      */
     public void setPortalControllerContext(PortalControllerContext portalControllerContext) {
         this.portalControllerContext = portalControllerContext;
+    }
+
+    /**
+     * Getter for locale.
+     *
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return this.locale;
+    }
+
+    /**
+     * Setter for locale.
+     *
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     /**

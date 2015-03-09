@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,6 +103,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         // Controller context
         ControllerContext controllerContext = (ControllerContext) invocation.getAttribute("controller_context");
+
         Window window = null;
 
         if (controllerContext != null) {
@@ -296,21 +298,36 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                             if ("1".equals(printPortlet)) {
                                 // Appel module custom PRINT
-                                Map<String, Object> customAttrMap = new HashMap<String, Object>();
-                                customAttrMap.put("title", title);
-                                customAttrMap.put("menuBar", menubarItems);
-                                customAttrMap.put("windowId", windowId);
-                                customAttrMap.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
+                                Map<String, Object> customizationAttributes = new HashMap<String, Object>();
+                                customizationAttributes.put("title", title);
+                                customizationAttributes.put("menuBar", menubarItems);
+                                customizationAttributes.put("windowId", windowId);
+                                customizationAttributes.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
-                                CustomizationContext customCtx = new CustomizationContext(customAttrMap);
-                                this.customizationService.customize("MENUBAR_PRINT_ITEM", customCtx);
+                                // Locale
+                                Locale locale;
+                                if ((controllerContext.getServerInvocation() != null) && (controllerContext.getServerInvocation().getRequest() != null)) {
+                                    locale = controllerContext.getServerInvocation().getRequest().getLocale();
+                                } else {
+                                    locale = Locale.getDefault();
+                                }
 
-                                MenubarItem printItem = (MenubarItem) customAttrMap.get("result");
+                                CustomizationContext customizationContext = new CustomizationContext(customizationAttributes, locale);
+                                this.customizationService.customize("MENUBAR_PRINT_ITEM", customizationContext);
+
+                                MenubarItem printItem = (MenubarItem) customizationAttributes.get("result");
                                 if (printItem == null) {
                                     String jsTitle = StringEscapeUtils.escapeJavaScript(title);
-                                    printItem = new MenubarItem("PRINT", "Imprimer", MenubarItem.ORDER_PORTLET_GENERIC + 10, "#", "popup2print('" + jsTitle
-                                            + "', '" + windowId + "_print');",
-                                            "portlet-menuitem-print hidden-xs", null);
+
+                                    StringBuilder onclick = new StringBuilder();
+                                    onclick.append("popup2print('");
+                                    onclick.append(jsTitle);
+                                    onclick.append("', '");
+                                    onclick.append(windowId);
+                                    onclick.append("_print');");
+
+                                    printItem = new MenubarItem("PRINT", this.internationalizationService.getString("PRINT", locale),
+                                            MenubarItem.ORDER_PORTLET_GENERIC + 10, "#", onclick.toString(), "hidden-xs", null);
                                     printItem.setGlyphicon("halflings halflings-print");
                                 }
                                 menubarItems.add(printItem);
