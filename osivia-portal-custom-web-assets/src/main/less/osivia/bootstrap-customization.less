@@ -3,6 +3,10 @@
 // --------------------------------------------------
 
 
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
 // Portlet title link
 .portlet-titlebar-title > a {
     &, &:hover, &:focus {
@@ -70,5 +74,15 @@
     
     .pagination {
         margin: 0;
+    }
+}
+
+
+// Caption
+
+caption {
+    @media screen and (max-width: @screen-xs-max) {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 }
