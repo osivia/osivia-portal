@@ -453,7 +453,6 @@ public class PageMarkerUtils {
                 });
 
 
-                ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
 
                 String tabPagePath = StringUtils.removeStart(newPath, "/portal");
 
@@ -468,6 +467,18 @@ public class PageMarkerUtils {
                 }
             }
         }
+        
+        /* Tab restoration */
+
+        String backPageMarker = null;
+
+        
+        if (request.getParameter("backPageMarker") != null) {
+            backPageMarker = request.getParameter("backPageMarker");
+        }
+     
+        
+        
 
 
 
@@ -542,11 +553,20 @@ public class PageMarkerUtils {
                         if( tabMarkerInfo != null)  {
                             // In case of a tab, we restore the tab's page info
                             restorePageInfo = tabMarkerInfo;
-                            restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
+                            if( restorePageInfo != null)   {
+                                restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
 
-                            // And if tab was already active, we reinit the page
-                            if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
-                                newTabPath = null;
+                                // And if tab was already active, we reinit the page
+                                if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
+                                    newTabPath = null;
+                                }
+                            }
+                        }
+                        
+                        if( backPageMarker != null) {
+                            restorePageInfo = markers.get(backPageMarker);
+                            if( restorePageInfo != null)   {
+                                restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
                             }
                         }
 

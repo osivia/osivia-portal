@@ -751,13 +751,13 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
                 if (refresh) {
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
-                    backURL = controllerContext.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true));
+                    backURL = controllerContext.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true)) +"&backPageMarker="+ backPageMarker;
                 } else {
                     ViewPageCommand rpc = new ViewPageCommand(pageId);
-                    backURL = controllerContext.renderURL(rpc, urlContext, URLFormat.newInstance(false, true));
+                    backURL = controllerContext.renderURL(rpc, urlContext, URLFormat.newInstance(false, true)) + "?backPageMarker="+ backPageMarker;
                 }
 
-                backURL = backURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + backPageMarker + "/");
+               // backURL = backURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + backPageMarker + "/");
             }
         }
 
