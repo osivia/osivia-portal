@@ -109,6 +109,8 @@ public class MenubarItem {
         item.setDropdownItem(this.dropdownItem);
         item.setGlyphicon(this.glyphicon);
         item.setAjaxDisabled(this.ajaxDisabled);
+        item.getData().putAll(this.data);
+        item.setAssociatedHtml(this.associatedHtml);
         return item;
     }
 
