@@ -426,31 +426,36 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         
         if( cmd instanceof InvokePortletWindowRenderCommand)    {
             
-            boolean updateBack = true;
-
-            StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
-            if (navigationalState instanceof ParametersStateString) {
-                Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
-
-                // Exclude breadcrumb
-                String[] displayContext = params.get("_displayContext");
-
-                if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
-                    updateBack = false;
+            // Back is not managed in ajax Mode
+            
+            if( !(ControllerContext.AJAX_TYPE == controllerContext.getType())) {
+            
+                boolean updateBack = true;
+    
+                StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
+                if (navigationalState instanceof ParametersStateString) {
+                    Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
+    
+                    // Exclude breadcrumb
+                    String[] displayContext = params.get("_displayContext");
+    
+                    if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
+                        updateBack = false;
+                    }
                 }
-            }
-
-            if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null || popupClosed) {
-                updateBack = false;
-
-            }
-
-
-            if (updateBack) {
-                String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+    
+                if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null || popupClosed) {
+                    updateBack = false;
+    
+                }
+    
+    
+                if (updateBack) {
+                    String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                }
             }
 
 

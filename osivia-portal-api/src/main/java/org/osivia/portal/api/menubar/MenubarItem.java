@@ -106,7 +106,7 @@ public class MenubarItem {
     public MenubarItem clone()  {
         MenubarItem item = new MenubarItem(this.id, this.title, ORDER_PORTLET_GENERIC, this.url, this.onClickEvent, this.className, this.target);
         item.setStateItem(this.stateItem);
-        item.setDropdownItem(this.stateItem);
+        item.setDropdownItem(this.dropdownItem);
         item.setGlyphicon(this.glyphicon);
         item.setAjaxDisabled(this.ajaxDisabled);
         return item;

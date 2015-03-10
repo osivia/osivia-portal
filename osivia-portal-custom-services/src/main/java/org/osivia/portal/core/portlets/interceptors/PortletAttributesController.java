@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.EncodedParams;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 import bsh.Interpreter;
 
@@ -123,7 +125,25 @@ public class PortletAttributesController extends PortletInvokerInterceptor{
                      // that is already present in case of maximisation
                      
                      if (windowMaximized || (!PageMaximized && portletMenubar)) {
-                          ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
+
+                            // Update menubar urls
+
+                            String pageMarker = PageMarkerUtils.getCurrentPageMarker(ctx);
+                            List<MenubarItem> newMenuBar = new ArrayList<MenubarItem>();
+                            for (MenubarItem item : menubarItems) {
+                                MenubarItem newItem = item.clone();
+                                if (StringUtils.contains(item.getUrl(), "/pagemarker/")) {
+
+                                    newItem.setUrl(item.getUrl().replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/"));
+                                }
+                                if (StringUtils.contains(item.getOnClickEvent(), "/pagemarker/")) {
+                                    newItem.setOnClickEvent(item.getOnClickEvent().replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/"));
+                                }
+                                newMenuBar.add(newItem);
+                            }
+ 
+                         
+                          ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, newMenuBar);
                      }
                  }
               }
