@@ -107,10 +107,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery/jquery-1.8.3.min.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jquery-integration.js'></script>");
 
-        // jQuery Mobile
-        this.writeResource(out,
-                "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery/jquery.mobile-1.4.2.custom.min.js'></script>");
-
         // jQuery UI
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-ui/jquery-ui-1.11.3.min.js'></script>");
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
@@ -159,7 +155,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/fancybox-integration.js'></script>");
 
         // Fancytree
-        // this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancytree/jquery.fancytree-2.8.0.min.js'></script>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/fancytree-integration.js'></script>");
 
