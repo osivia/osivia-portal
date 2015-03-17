@@ -197,7 +197,7 @@ public final class DOM4JUtils {
             return;
         }
 
-        if (StringUtils.isNotBlank(glyphicon)) {
+        if (glyphicon != null) {
             Element glyph = generateElement(HTMLConstants.I, glyphicon, StringUtils.EMPTY);
             element.add(glyph);
 
@@ -239,7 +239,7 @@ public final class DOM4JUtils {
 
     /**
      * Write HTML content.
-     * 
+     *
      * @param element element
      * @return HTML content
      */

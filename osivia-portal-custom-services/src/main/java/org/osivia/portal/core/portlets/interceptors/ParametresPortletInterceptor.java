@@ -31,9 +31,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.CDATA;
-import org.dom4j.Element;
-import org.dom4j.dom.DOMCDATA;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
@@ -55,13 +52,13 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
-import org.osivia.portal.api.html.AccessibilityRoles;
-import org.osivia.portal.api.html.DOM4JUtils;
-import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.cms.CMSItem;
@@ -87,6 +84,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     private ICustomizationService customizationService;
     /** Internationalization service. */
     private IInternationalizationService internationalizationService;
+    /** Menubar service. */
+    private IMenubarService menubarService;
+
 
     /**
      * Default constructor.
@@ -94,6 +94,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     public ParametresPortletInterceptor() {
         super();
     }
+
 
     /**
      * {@inheritDoc}
@@ -327,8 +328,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     onclick.append("_print');");
 
                                     printItem = new MenubarItem("PRINT", this.internationalizationService.getString("PRINT", locale),
-                                            MenubarItem.ORDER_PORTLET_GENERIC + 10, "#", onclick.toString(), "hidden-xs", null);
-                                    printItem.setGlyphicon("halflings halflings-print");
+                                            "halflings halflings-print", MenubarGroup.GENERIC, 4, "#", null, onclick.toString(), "hidden-xs");
+                                    printItem.setAjaxDisabled(true);
                                 }
                                 menubarItems.add(printItem);
                             }
@@ -362,7 +363,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     //controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubarItems);
 
                                 } else {
-                                    updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
+                                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                                    String menubarContent = this.menubarService.generatePortletContent(portalControllerContext, menubarItems);
+                                    updatedFragment = menubarContent + updatedFragment;
+                                    // updatedFragment = this.generatePortletMenubar(controllerContext, menubarItems) + updatedFragment;
 
                                     // Menu bar has been integrated to portlet fragment
                                     attributes.remove(Constants.PORTLET_ATTR_MENU_BAR);
@@ -413,10 +417,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             }
         }
 
-        // On teste si le portlet fait un modification d'état de la page en mode
-        // AJAX
+        // On teste si le portlet fait un modification d'état de la page en mode AJAX
         if (response instanceof UpdateNavigationalStateResponse) {
-
             Map<String, Object> attributes = ((UpdateNavigationalStateResponse) response).getAttributes();
             String synchro = (String) attributes.get(Constants.PORTLET_ATTR_DISPLAY_PAGE);
 
@@ -441,130 +443,11 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if( url != null)    {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);
             }
-
         }
 
         return response;
     }
 
-    /**
-     * Portlet menubar generation.
-     *
-     * @param controllerContext
-     *            controller context
-     * @param items
-     *            menubar items
-     * @return portlet menubar HTML content
-     */
-    private String generatePortletMenubar(ControllerContext controllerContext, List<MenubarItem> items) {
-        // Portlet menubar container
-        Element menubarContainer = DOM4JUtils.generateDivElement(null);
-
-        // Portlet menubar
-        Element menubar = DOM4JUtils.generateDivElement("btn-toolbar portlet-menubar", AccessibilityRoles.TOOLBAR);
-        menubarContainer.add(menubar);
-
-        // Associated HTML container
-        Element associatedHTMLContainer = DOM4JUtils.generateDivElement("portlet-menubar-associated-html hidden");
-        menubarContainer.add(associatedHTMLContainer);
-
-        // Dropdown menu container
-        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group accessible-dropdown-menu");
-
-
-        // Menubar first group
-        Element firstGroup = DOM4JUtils.generateDivElement("btn-group");
-
-        // Menubar left group
-        Element leftGroup = DOM4JUtils.generateDivElement("btn-group");
-
-        // Menubar right group
-        Element rightGroup = DOM4JUtils.generateDivElement("btn-group pull-right");
-
-        // Dropdown menu button
-        Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
-                "halflings halflings-pencil", null);
-        DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-        dropdownButton.add(caret);
-        dropdownContainer.add(dropdownButton);
-
-        // Dropdown menu
-        Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null, null, AccessibilityRoles.MENU);
-        dropdownContainer.add(dropdownMenu);
-
-        boolean emptyDropdownMenu = true;
-        for (MenubarItem item : items) {
-            Element parent;
-            if (item.isDropdownItem()) {
-                emptyDropdownMenu = false;
-
-                Element dropdownItemContainer = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
-                if (item.isStateItem()) {
-                    DOM4JUtils.addAttribute(dropdownItemContainer, HTMLConstants.CLASS, "dropdown-header");
-                }
-                dropdownMenu.add(dropdownItemContainer);
-
-                parent = dropdownItemContainer;
-            } else if (item.isStateItem()) {
-                parent = leftGroup;
-            } else {
-                parent = rightGroup;
-            }
-
-            StringBuilder linkHTMLClass = new StringBuilder();
-            if (item.getClassName() != null) {
-                linkHTMLClass.append(item.getClassName());
-            }
-            if (item.isAjaxDisabled()) {
-                linkHTMLClass.append(" no-ajax-link");
-            }
-            if (!item.isDropdownItem()) {
-                linkHTMLClass.append(" btn btn-default");
-            }
-
-            Element element;
-            if (item.isDropdownItem() && item.isStateItem()) {
-                element = DOM4JUtils.generateElement(HTMLConstants.SPAN, linkHTMLClass.toString(), item.getTitle(), item.getGlyphicon(), null);
-            } else {
-                AccessibilityRoles role = null;
-                if (item.isDropdownItem()) {
-                    role = AccessibilityRoles.MENU_ITEM;
-                }
-                element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnClickEvent(), linkHTMLClass.toString(), item.getTitle(),
-                        item.getGlyphicon(), role);
-                if (item.getUrl() == null) {
-                    DOM4JUtils.addAttribute(element, HTMLConstants.DISABLED, HTMLConstants.DISABLED);
-                }
-            }
-            parent.add(element);
-
-            // Associated HTML
-            if (item.getAssociatedHtml() != null) {
-                CDATA cdata = new DOMCDATA(item.getAssociatedHtml());
-                associatedHTMLContainer.add(cdata);
-            }
-        }
-
-        menubar.add(firstGroup);
-        if (!emptyDropdownMenu) {
-            menubar.add(dropdownContainer);
-        }
-        menubar.add(leftGroup);
-        menubar.add(rightGroup);
-
-        // Write HTML content
-        return DOM4JUtils.write(menubarContainer);
-    }
-
-    /**
-     * Getter for customizationService.
-     *
-     * @return the customizationService
-     */
-    public ICustomizationService getCustomizationService() {
-        return this.customizationService;
-    }
 
     /**
      * Setter for customizationService.
@@ -577,15 +460,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     }
 
     /**
-     * Getter for internationalizationService.
-     *
-     * @return the internationalizationService
-     */
-    public IInternationalizationService getInternationalizationService() {
-        return this.internationalizationService;
-    }
-
-    /**
      * Setter for internationalizationService.
      *
      * @param internationalizationService
@@ -593,6 +467,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {
         this.internationalizationService = internationalizationService;
+    }
+
+    /**
+     * Setter for menubarService.
+     *
+     * @param menubarService the menubarService to set
+     */
+    public void setMenubarService(IMenubarService menubarService) {
+        this.menubarService = menubarService;
     }
 
 }

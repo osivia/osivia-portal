@@ -16,86 +16,167 @@ package org.osivia.portal.api.menubar;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 /**
- * The Class MenubarItem.
+ * Menubar item.
  *
- * Each portlet has a menu bar that can be customized inside the code of the portlet
- *
+ * @author Cédric Krommenhoek
+ * @see MenubarObject
  */
-public class MenubarItem {
+public class MenubarItem extends MenubarObject implements Cloneable {
 
-    /** The order portlet specific. */
+    /**
+     * Portlet specific order range : 0 to 39.
+     *
+     * @deprecated use {@link MenubarItem#setGroup(MenubarGroup)}
+     */
+    @Deprecated
     public static final int ORDER_PORTLET_SPECIFIC = 0;
 
-    // CMS Items : 40 TO 60
-    /** The order portlet specific cms. */
+    /**
+     * Portlet CMS order range : 40 to 60.
+     *
+     * @deprecated use {@link MenubarItem#setGroup(MenubarGroup)}
+     */
+    @Deprecated
     public static final int ORDER_PORTLET_SPECIFIC_CMS = 40;
 
-    // Portal Items >= 100
-    /** The order portlet generic. */
+    /**
+     * Portlet generic order range : from 100.
+     *
+     * @deprecated use {@link MenubarItem#setGroup(MenubarGroup)}
+     */
+    @Deprecated
     public static final int ORDER_PORTLET_GENERIC = 100;
 
 
-    /** Item order. */
-    private int order;
-    /** Item URL. */
+    /** Menubar item URL. */
     private String url;
-    /** Item title. */
-    private String title;
-    /** Item HTML class name. */
-    private String className;
-    /** Item glyphicon. */
-    private String glyphicon;
-    /** Item onclick event. */
-    private String onClickEvent;
-    /** Item target. */
+    /** Menubar item target. */
     private String target;
-    /** Item associated HTML. */
-    private String associatedHtml;
-    /** State item indicator. */
-    private boolean stateItem;
-    /** Dropdown item indicator. */
-    private boolean dropdownItem;
-    /** Item AJAX disabled indicator. */
-    private boolean ajaxDisabled = false;
-    /** Active item indicator. */
+    /** Menubar item onclick event. */
+    private String onclick;
+    /** Menubar item HTML classes. */
+    private String htmlClasses;
+    /** Menubar item associated HTML. */
+    private String associatedHTML;
+    /** Disabled menubar item AJAX indicator. */
+    private boolean ajaxDisabled;
+    /** State menubar item indicator. */
+    private boolean state;
+    /** Active menubar item indicator. */
     private boolean active;
-    /** Disabled item indicator. */
-    private boolean disabled;
-    /** HTML hover title */
+    /** Menubar item tooltip content. */
     private String tooltip;
+    /** Menubar item add dropdown divider indicator. */
+    private boolean divider;
 
-    /** Item identifier. */
-    private final String id;
-    /** Item data attributes. */
+    /** Menubar item parent. */
+    private final MenubarContainer parent;
+    /** Menubar item data attributes. */
     private final Map<String, String> data;
 
-    
 
     /**
      * Constructor.
      *
-     * @param id item identifier
-     * @param title item title
-     * @param order item order
-     * @param url item URL
-     * @param onClickEvent item onclick event (optional)
-     * @param className item HTML class name (optional)
-     * @param target item target, for external link (optional)
+     * @param id menubar item identifier
+     * @param title menubar item title
+     * @param glyphicon menubar item glyphicon
+     * @param parent menubar item parent container
+     * @param order menubar item order
+     * @param url menubar item URL
+     * @param target menubar item target
+     * @param onclick menubar item onclick event
+     * @param htmlClasses menubar item HTML classes
      */
-    public MenubarItem(String id, String title, int order, String url, String onClickEvent, String className, String target) {
-        super();
-        this.id = id;
-        this.order = order;
+    public MenubarItem(String id, String title, String glyphicon, MenubarContainer parent, int order, String url, String target, String onclick,
+            String htmlClasses) {
+        super(id, title, glyphicon, order, false);
         this.url = url;
-        this.onClickEvent = onClickEvent;
-        this.title = title;
-        this.className = className;
         this.target = target;
-        this.ajaxDisabled = false;
+        this.onclick = onclick;
+        this.htmlClasses = htmlClasses;
+        this.parent = parent;
         this.data = new HashMap<String, String>();
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param id menubar item identifier
+     * @param title menubar item title
+     * @param parent menubar item parent container
+     * @param order menubar item order
+     * @param htmlClasses menubar item HTML classes
+     */
+    public MenubarItem(String id, String title, MenubarContainer parent, int order, String htmlClasses) {
+        this(id, title, null, parent, order, null, null, null, htmlClasses);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param id menubar dropdown identifier
+     * @param title menubar dropdown title
+     * @param order menubar dropdown order
+     * @param url menubar item URL
+     * @param onclick menubar item onclick event
+     * @param htmlClasses menubar item HTML classes
+     * @param target menubar item target
+     *
+     * @deprecated
+     */
+    @Deprecated
+    public MenubarItem(String id, String title, int order, String url, String onclick, String htmlClasses, String target) {
+        this(id, title, null, getNewGroup(order), getNewOrder(order), url, target, onclick, htmlClasses);
+    }
+
+
+    /**
+     * Get menubar group from old order value.
+     *
+     * @param order old order
+     * @return menubar group
+     * @deprecated
+     */
+    @Deprecated
+    private static MenubarGroup getNewGroup(int order) {
+        MenubarGroup group;
+
+        if (order < ORDER_PORTLET_SPECIFIC_CMS) {
+            group = MenubarGroup.SPECIFIC;
+        } else if (order < ORDER_PORTLET_GENERIC) {
+            group = MenubarGroup.CMS;
+        } else {
+            group = MenubarGroup.GENERIC;
+        }
+
+        return group;
+    }
+
+
+    /**
+     * Get menubar order value from old order value.
+     *
+     * @param oldOrder old order value
+     * @return new order value
+     * @deprecated
+     */
+    @Deprecated
+    private static int getNewOrder(int oldOrder) {
+        int newOrder;
+
+        if (oldOrder < ORDER_PORTLET_SPECIFIC_CMS) {
+            newOrder = oldOrder;
+        } else if (oldOrder < ORDER_PORTLET_GENERIC) {
+            newOrder = oldOrder - ORDER_PORTLET_SPECIFIC_CMS;
+        } else {
+            newOrder = oldOrder - ORDER_PORTLET_GENERIC;
+        }
+
+        return newOrder;
     }
 
 
@@ -103,15 +184,18 @@ public class MenubarItem {
      * {@inheritDoc}
      */
     @Override
-    public MenubarItem clone()  {
-        MenubarItem item = new MenubarItem(this.id, this.title, ORDER_PORTLET_GENERIC, this.url, this.onClickEvent, this.className, this.target);
-        item.setStateItem(this.stateItem);
-        item.setDropdownItem(this.dropdownItem);
-        item.setGlyphicon(this.glyphicon);
-        item.setAjaxDisabled(this.ajaxDisabled);
-        item.getData().putAll(this.data);
-        item.setAssociatedHtml(this.associatedHtml);
-        return item;
+    public MenubarItem clone() {
+        MenubarItem clone = new MenubarItem(this.getId(), this.getTitle(), this.getGlyphicon(), this.parent, this.getOrder(), this.url, this.target,
+                this.onclick, this.htmlClasses);
+        clone.setDisabled(this.isDisabled());
+        clone.associatedHTML = this.associatedHTML;
+        clone.ajaxDisabled = this.ajaxDisabled;
+        clone.state = this.state;
+        clone.active = this.active;
+        clone.tooltip = this.tooltip;
+        clone.divider = this.divider;
+        clone.data.putAll(this.data);
+        return clone;
     }
 
 
@@ -120,65 +204,13 @@ public class MenubarItem {
      */
     @Override
     public String toString() {
-        return "MenubarItem [title=" + this.title + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("MenubarItem [id=");
+        builder.append(this.getId());
+        builder.append("]");
+        return builder.toString();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
-        return result;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        MenubarItem other = (MenubarItem) obj;
-        if (this.id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!this.id.equals(other.id)) {
-            return false;
-        }
-        return true;
-    }
-
-
-    /**
-     * Getter for order.
-     *
-     * @return the order
-     */
-    public int getOrder() {
-        return this.order;
-    }
-
-    /**
-     * Setter for order.
-     *
-     * @param order the order to set
-     */
-    public void setOrder(int order) {
-        this.order = order;
-    }
 
     /**
      * Getter for url.
@@ -196,78 +228,6 @@ public class MenubarItem {
      */
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    /**
-     * Getter for title.
-     *
-     * @return the title
-     */
-    public String getTitle() {
-        return this.title;
-    }
-
-    /**
-     * Setter for title.
-     *
-     * @param title the title to set
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * Getter for className.
-     *
-     * @return the className
-     */
-    public String getClassName() {
-        return this.className;
-    }
-
-    /**
-     * Setter for className.
-     *
-     * @param className the className to set
-     */
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    /**
-     * Getter for glyphicon.
-     *
-     * @return the glyphicon
-     */
-    public String getGlyphicon() {
-        return this.glyphicon;
-    }
-
-    /**
-     * Setter for glyphicon.
-     *
-     * @param glyphicon the glyphicon to set
-     */
-    public void setGlyphicon(String glyphicon) {
-        this.glyphicon = glyphicon;
-    }
-
-    /**
-     * Getter for onClickEvent.
-     *
-     * @return the onClickEvent
-     */
-    public String getOnClickEvent() {
-        return this.onClickEvent;
-    }
-
-    /**
-     * Setter for onClickEvent.
-     *
-     * @param onClickEvent the onClickEvent to set
-     */
-    public void setOnClickEvent(String onClickEvent) {
-        this.onClickEvent = onClickEvent;
     }
 
     /**
@@ -289,57 +249,57 @@ public class MenubarItem {
     }
 
     /**
-     * Getter for associatedHtml.
+     * Getter for onclick.
      *
-     * @return the associatedHtml
+     * @return the onclick
      */
-    public String getAssociatedHtml() {
-        return this.associatedHtml;
+    public String getOnclick() {
+        return this.onclick;
     }
 
     /**
-     * Setter for associatedHtml.
+     * Setter for onclick.
      *
-     * @param associatedHtml the associatedHtml to set
+     * @param onclick the onclick to set
      */
-    public void setAssociatedHtml(String associatedHtml) {
-        this.associatedHtml = associatedHtml;
+    public void setOnclick(String onclick) {
+        this.onclick = onclick;
     }
 
     /**
-     * Getter for stateItem.
+     * Getter for htmlClasses.
      *
-     * @return the stateItem
+     * @return the htmlClasses
      */
-    public boolean isStateItem() {
-        return this.stateItem;
+    public String getHtmlClasses() {
+        return this.htmlClasses;
     }
 
     /**
-     * Setter for stateItem.
+     * Setter for htmlClasses.
      *
-     * @param stateItem the stateItem to set
+     * @param htmlClasses the htmlClasses to set
      */
-    public void setStateItem(boolean stateItem) {
-        this.stateItem = stateItem;
+    public void setHtmlClasses(String htmlClasses) {
+        this.htmlClasses = htmlClasses;
     }
 
     /**
-     * Getter for dropdownItem.
+     * Getter for associatedHTML.
      *
-     * @return the dropdownItem
+     * @return the associatedHTML
      */
-    public boolean isDropdownItem() {
-        return this.dropdownItem;
+    public String getAssociatedHTML() {
+        return this.associatedHTML;
     }
 
     /**
-     * Setter for dropdownItem.
+     * Setter for associatedHTML.
      *
-     * @param dropdownItem the dropdownItem to set
+     * @param associatedHTML the associatedHTML to set
      */
-    public void setDropdownItem(boolean dropdownItem) {
-        this.dropdownItem = dropdownItem;
+    public void setAssociatedHTML(String associatedHTML) {
+        this.associatedHTML = associatedHTML;
     }
 
     /**
@@ -361,6 +321,24 @@ public class MenubarItem {
     }
 
     /**
+     * Getter for state.
+     *
+     * @return the state
+     */
+    public boolean isState() {
+        return this.state;
+    }
+
+    /**
+     * Setter for state.
+     *
+     * @param state the state to set
+     */
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    /**
      * Getter for active.
      *
      * @return the active
@@ -379,49 +357,49 @@ public class MenubarItem {
     }
 
     /**
-     * Getter for disabled.
-     *
-     * @return the disabled
-     */
-    public boolean isDisabled() {
-        return this.disabled;
-    }
-
-    /**
-     * Setter for disabled.
-     *
-     * @param disabled the disabled to set
-     */
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
-    
-    /**
      * Getter for tooltip.
      *
      * @return the tooltip
      */
-	public String getTooltip() {
-		return tooltip;
-	}
+    public String getTooltip() {
+        return this.tooltip;
+    }
 
     /**
      * Setter for tooltip.
      *
      * @param tooltip the tooltip to set
      */
-	public void setTooltip(String tooltip) {
-		this.tooltip = tooltip;
-	}
+    public void setTooltip(String tooltip) {
+        this.tooltip = tooltip;
+    }
 
-
-	/**
-     * Getter for id.
+    /**
+     * Getter for divider.
      *
-     * @return the id
+     * @return the divider
      */
-    public String getId() {
-        return this.id;
+    public boolean isDivider() {
+        return this.divider;
+    }
+
+    /**
+     * Setter for divider.
+     *
+     * @param divider the divider to set
+     */
+    public void setDivider(boolean divider) {
+        this.divider = divider;
+    }
+
+
+    /**
+     * Getter for parent.
+     *
+     * @return the parent
+     */
+    public MenubarContainer getParent() {
+        return this.parent;
     }
 
     /**

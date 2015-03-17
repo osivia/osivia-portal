@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,7 +10,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.portlets.interceptors;
 
@@ -21,8 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -47,190 +44,141 @@ import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import bsh.Interpreter;
 
 
-
-
 /**
- * Permet de traiter les attributs renvoyés par les portlets
+ * Permet de traiter les attributs renvoyés par les portlets.
+ *
+ * @see PortletInvokerInterceptor
  */
+public class PortletAttributesController extends PortletInvokerInterceptor {
+
+    /**
+     * Constructor.
+     */
+    public PortletAttributesController() {
+        super();
+    }
 
 
-public class PortletAttributesController extends PortletInvokerInterceptor{
-	
-	private static Log logger = LogFactory.getLog(PortletAttributesController.class);
-	
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
+        PortletInvocationResponse response = super.invoke(invocation);
 
-	public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException	{
-		
-		
-		PortletInvocationResponse response =  super.invoke(invocation);
-		
-		/* Empty response */
-		
-    	// Avoid JSF class cast
-	    if( invocation.getWindowContext() instanceof WindowContextImpl)	{
-		
-	    if (response instanceof ContentResponse){
-	    	
-	    	ContentResponse cr = (ContentResponse) response;
-	    	
-	    	ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+        // Avoid JSF class cast
+        if (invocation.getWindowContext() instanceof WindowContextImpl) {
+            if (response instanceof ContentResponse) {
+                ContentResponse cr = (ContentResponse) response;
+                ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
 
-			/* Empty portlet */
-	    	
-	    	if( "1".equals(cr.getAttributes().get("osivia.emptyResponse")))	{
+                // Empty portlet
+                if ("1".equals(cr.getAttributes().get("osivia.emptyResponse"))) {
+                    // Avoid JSF class cast
+                    if (invocation.getWindowContext() instanceof WindowContextImpl) {
+                        String windowId = invocation.getWindowContext().getId();
+                        windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+                        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse." + windowId, "1");
+                    }
+                }
 
-	    		
-	    		// Avoid JSF class cast
-	    	       if( invocation.getWindowContext() instanceof WindowContextImpl)	{
+                // Empty portlet
+                if (cr.getAttributes().get("osivia.popupCallbackUrl") != null) {
+                    if (invocation.getWindowContext() instanceof WindowContextImpl) {
+                        String windowId = invocation.getWindowContext().getId();
+                        windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+                        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl" + windowId,
+                                cr.getAttributes().get("osivia.popupCallbackUrl"));
+                    }
+                }
 
-	    	    	   String windowId = invocation.getWindowContext().getId();
-	    	    	   windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
-	    	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse."+windowId, "1");
-	    	       }
+                // Menubar
+                if (cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR) != null) {
+                    List<MenubarItem> menubarItems = (List<MenubarItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR);
+                    if (menubarItems.size() > 0) {
+                        boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());
+                        boolean pageMaximized = BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.portal.maximized"));
+                        boolean portletMenubar = false;
 
-	    	}
-	    	
-            /* Empty portlet */	    	
-	          if(cr.getAttributes().get("osivia.popupCallbackUrl") != null) {
-	              
-	                if( invocation.getWindowContext() instanceof WindowContextImpl)  {
-	                    String windowId = invocation.getWindowContext().getId();
-	                    windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
-	                    ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl"+windowId, cr.getAttributes().get("osivia.popupCallbackUrl"));
-	                }
-	          }
-	          
-          
-              /* Menubar */            
-             if(cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR) != null) {
-                 List<MenubarItem> menubarItems = (List<MenubarItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR);
-                 if( menubarItems.size() > 0)   {
-                     boolean windowMaximized = WindowState.MAXIMIZED.equals(invocation.getWindowState());                     
-                     boolean PageMaximized = BooleanUtils.isTrue((Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE,
-                             "osivia.portal.maximized"));
-                     
-                     boolean portletMenubar = false;
-                     
-                     
-                     if( !windowMaximized){
-                         // It can also be a menu bar
-                         
-                         PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
-                     
-                         Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-                         portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_MENUBAR_WINDOW_NAME); 
-                     }
-                     
-                     // Test has been duplicated because of cache of portletmenuBar
-                     // that is already present in case of maximisation
-                     
-                     if (windowMaximized || (!PageMaximized && portletMenubar)) {
+                        if (!windowMaximized) {
+                            // It can also be a menu bar
+                            PortalObjectId poid = PortalObjectId.parse(invocation.getWindowContext().getId(), PortalObjectPath.CANONICAL_FORMAT);
 
-                            // Update menubar urls
+                            Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                            portletMenubar = StringUtils.equals(window.getName(), InternalConstants.PORTAL_MENUBAR_WINDOW_NAME);
+                        }
 
+                        // Test has been duplicated because of cache of portletmenuBar that is already present in case of maximisation
+                        if (windowMaximized || (!pageMaximized && portletMenubar)) {
+                            // Update menubar URLs
                             String pageMarker = PageMarkerUtils.getCurrentPageMarker(ctx);
                             List<MenubarItem> newMenuBar = new ArrayList<MenubarItem>();
                             for (MenubarItem item : menubarItems) {
                                 MenubarItem newItem = item.clone();
                                 if (StringUtils.contains(item.getUrl(), "/pagemarker/")) {
-
                                     newItem.setUrl(item.getUrl().replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/"));
                                 }
-                                if (StringUtils.contains(item.getOnClickEvent(), "/pagemarker/")) {
-                                    newItem.setOnClickEvent(item.getOnClickEvent().replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/"));
+                                if (StringUtils.contains(item.getOnclick(), "/pagemarker/")) {
+                                    newItem.setOnclick(item.getOnclick().replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/"));
                                 }
                                 newMenuBar.add(newItem);
                             }
- 
-                         
-                          ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, newMenuBar);
-                     }
-                 }
-              }
+
+                            ctx.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, newMenuBar);
+                        }
+                    }
+                }
+            }
 
 
-	    }
-	    
-	    
-	    /* Dynamic properties */
-	    
-	    
-		if ((response instanceof FragmentResponse) && (invocation instanceof RenderInvocation)) {
-			
-			   ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
-	    	
-	    	   
- 	    	   
- 	    	   String windowId = invocation.getWindowContext().getId();
-	    	   PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+            // Dynamic properties
+            if ((response instanceof FragmentResponse) && (invocation instanceof RenderInvocation)) {
+                ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
 
-			   Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
-	    	   
-	    	   
-			   String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
-			   
-			   
- 	    	   Map<String,String> windowProperties = new HashMap<String, String>();
- 	    	   ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowProperties."+safestWindowId, windowProperties);	
- 	    	   
- 				/* Styles dynamiques */
+                String windowId = invocation.getWindowContext().getId();
+                PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
 
-					RenderInvocation renderInvocation = (RenderInvocation) invocation;
+                Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
 
-					// Dynamic styles
-					
-					if ("1".equals(window.getDeclaredProperty("osivia.bshActivation"))) {
-						
-						FragmentResponse fr = (FragmentResponse) response;
-						
-						String updatedFragment = fr.getChars();
+                String safestWindowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 
-						try {
-							String script = window.getDeclaredProperty("osivia.bshScript");
+                Map<String, String> windowProperties = new HashMap<String, String>();
+                ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.windowProperties." + safestWindowId, windowProperties);
 
-							// Evaluation beanshell
-							Interpreter i = new Interpreter();
+                // Styles dynamiques
+                RenderInvocation renderInvocation = (RenderInvocation) invocation;
 
-							Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
+                // Dynamic styles
+                if ("1".equals(window.getDeclaredProperty("osivia.bshActivation"))) {
+                    FragmentResponse fr = (FragmentResponse) response;
 
-							i.set("pageParamsEncoder", new EncodedParams(publicNavigationalState));
-							i.set("windowProperties", windowProperties);
+                    String updatedFragment = fr.getChars();
 
-							i.eval(script);
+                    try {
+                        String script = window.getDeclaredProperty("osivia.bshScript");
 
-						} catch (bsh.EvalError e) {
+                        // Evaluation beanshell
+                        Interpreter i = new Interpreter();
 
-							updatedFragment = e.getMessage();
+                        Map<String, String[]> publicNavigationalState = renderInvocation.getPublicNavigationalState();
 
+                        i.set("pageParamsEncoder", new EncodedParams(publicNavigationalState));
+                        i.set("windowProperties", windowProperties);
 
-						}
-						
-						
-						return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment,
-								fr.getTitle(), fr.getCacheControl(), fr.getNextModes());
+                        i.eval(script);
+                    } catch (bsh.EvalError e) {
+                        updatedFragment = e.getMessage();
+                    }
 
+                    return new FragmentResponse(fr.getProperties(), fr.getAttributes(), fr.getContentType(), fr.getBytes(), updatedFragment, fr.getTitle(),
+                            fr.getCacheControl(), fr.getNextModes());
+                }
+            }
+            // End of dynamic properties
+        }
 
-					}
-			    } // End of dynamic properties
-		
-	    }
-		
-		
-				
-				
-				 	    	   
- 	    	   
- 	    	  
- 	       
-
-			
-			
-			
-	    	
-	    
-	    
-	    return response;
-	}
-	
+        return response;
+    }
 
 }

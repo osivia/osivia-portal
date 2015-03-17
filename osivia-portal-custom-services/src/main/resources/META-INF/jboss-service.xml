@@ -297,6 +297,9 @@
         <depends
             optional-attribute-name="InternationalizationService"
             proxy-type="attribute">osivia:service=InternationalizationService</depends>
+        <depends
+            optional-attribute-name="MenubarService"
+            proxy-type="attribute">osivia:service=MenubarService</depends>
     </mbean>
 
     <mbean
@@ -569,7 +572,6 @@
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
-
     </mbean>
 
     <mbean
@@ -742,6 +744,21 @@
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
+    </mbean>
+    
+    <!-- Menubar service -->
+    <mbean
+        code="org.osivia.portal.core.menubar.MenubarService"
+        name="osivia:service=MenubarService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="UrlFactory"
+            proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
     </mbean>
 
     <!-- Manage AJAX actions -->

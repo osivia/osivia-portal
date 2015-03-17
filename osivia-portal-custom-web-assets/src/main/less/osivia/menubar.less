@@ -1,0 +1,187 @@
+//
+// OSIVIA Portal - Menubar component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+.menubar {
+    text-align: right;
+    
+    .dropdown-menu {
+        i {
+            display: inline-block;
+        }
+    }
+    
+    :not(.dropdown-menu) > .disabled > a {
+        cursor: not-allowed;
+        pointer-events: none;
+        
+        .opacity(@opacity: .65);
+        .box-shadow(@shadow: none);
+    }
+}
+
+
+.content-navbar-breadcrumb, .content-navbar-actions {
+    display: table-cell;
+    vertical-align: top;
+}
+
+
+.content-navbar-breadcrumb {
+    width: 100%;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        display: none;
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        border-style: none;
+        border-radius: 0;
+        margin: 0;
+        
+        > li {
+            > a {
+                display: inline-block;
+            }
+            
+            + li::before {
+                padding-left: 3px;
+                padding-right: 0;
+            }
+            
+            &:last-of-type > a {
+                font-weight: bold;
+                margin-bottom: -1px;
+            }
+        }
+    }
+}
+
+
+.content-navbar-actions {
+    white-space: nowrap;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        display: block;
+        
+        .clearfix;
+    }
+    
+    .menubar {
+        @media screen and (max-width: @screen-xs-max) {
+            .toolbar-menubar();
+            
+            .fixDropdownMenus();
+        }
+        
+        @media screen and (min-width: @screen-sm-min) {
+            .navbar-menubar();
+        }
+    }
+}
+
+
+.simple-menubar {
+    white-space: nowrap;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        &, &.media-right {
+            display: block;
+            padding-left: 0;
+            
+            .clearfix;
+        }
+    }
+    
+    .menubar {
+        .toolbar-menubar();
+    }
+}
+
+
+.portlet-container {
+    .menubar {
+        .toolbar-menubar();
+    }
+}
+
+
+
+.toolbar-menubar() {
+    &, > li > ul {
+        padding-left: 0;
+    }
+    
+    > li {       
+        &, > ul > li, > ul > li > a {
+            display: inline-block;
+        }
+        
+        > ul > li {
+            float: left;
+
+            + li > a {
+                margin-left: -1px;
+            }
+            
+            &:not(:first-of-type):not(:last-of-type) > a {
+                border-radius: 0;
+            }
+            
+            &:first-of-type:not(:last-of-type) > a {
+                .border-right-radius(0);
+            }
+            
+            &:last-of-type:not(:first-of-type) > a {
+                .border-left-radius(0);
+            }
+        } 
+    }
+}
+
+.navbar-menubar() {
+    &, > li > ul {
+        margin-bottom: 0;
+        padding-left: 0;
+    }
+    
+    > li {
+        &, > ul, > ul > li, > ul > li > a {
+            display: inline-block;
+            float: none;
+        }
+        
+        > ul > li {
+            &.dropdown > .dropdown-menu {
+                margin-top: 0;
+                .border-top-radius(0);
+            }
+        }
+    }
+}
+
+
+.fixDropdownMenus() {
+    position: relative;
+    
+    .dropdown {
+        position: static;
+        
+        .dropdown-menu {
+            &, &.dropdown-menu-right {
+                left: -1px;
+                right: -1px;
+                
+                margin-top: -3px;
+            }
+        }
+    }
+}

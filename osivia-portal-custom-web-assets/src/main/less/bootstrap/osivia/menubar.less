@@ -1,0 +1,104 @@
+//
+// OSIVIA Bootstrap extensions - Menubar
+// --------------------------------------------------
+
+
+.menubar {
+    .dropdown-menu {
+        i {
+            width: @font-size-base + 1px;
+        }
+    }
+    
+    :not(.dropdown-menu) > .active > a {
+        color: @state-info-text;
+        text-shadow: 0 0 4px fade(@state-info-border, 50%);
+        
+        &:hover, &:focus {
+            color: darken(@state-info-text, 15%);
+        }
+    }
+}
+
+
+.content-navbar {
+    @media screen and (min-width: @screen-sm-min) {
+        .navbar;
+        .navbar-default;
+    }
+}
+
+
+.content-navbar-breadcrumb {
+    .breadcrumb {
+        padding: 0 @navbar-padding-horizontal;
+        
+        > li {
+            > a {
+                color: @navbar-default-link-color;
+                padding: floor((@navbar-height - @line-height-computed) / 2) 5px;
+                
+                &:hover, &:focus {
+                    color: @navbar-default-link-hover-color;
+                    text-decoration: none;
+                }
+            }
+        }
+    }
+}
+
+
+.content-navbar-actions {
+    .menubar {
+        @media screen and (max-width: @screen-xs-max) {
+            .toolbar-menubar();
+        }
+        
+        @media screen and (min-width: @screen-sm-min) {
+            .navbar-menubar();
+        }
+    }
+}
+
+
+.simple-menubar, .portlet-container {
+    .menubar {
+        .toolbar-menubar();
+    }
+}
+
+
+
+.toolbar-menubar() {
+    > li {
+        > ul > li {
+            > a {
+                .btn;
+                .btn-default;
+            }
+        }
+    }
+}
+
+.navbar-menubar() {
+    > li {
+        > ul > li {
+            > a {
+                padding: @navbar-padding-vertical @navbar-padding-horizontal;
+                
+                color: @navbar-default-link-color;
+                
+                &:hover, &:focus {
+                    background-color: @navbar-default-link-hover-bg;
+                    color: @navbar-default-link-hover-color;
+                    text-decoration: none;
+                }
+            }
+            
+            &.dropdown.open {
+                background-color: @navbar-default-link-active-bg;
+                color: @navbar-default-link-active-color;
+            }
+        }
+    }
+}

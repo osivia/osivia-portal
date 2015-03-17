@@ -54,6 +54,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
         this.delegate = regionRenderer;
     }
 
+    @Override
     public void startContext(RendererContext rendererContext, ObjectRendererContext objectRenderContext) {
         RegionRendererContext rrc = (RegionRendererContext) objectRenderContext;
 
@@ -81,6 +82,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
     }
 
 
+    @Override
     public void endContext(RendererContext rendererContext, ObjectRendererContext objectRenderContext) {
         if (DynaRenderStatus.isActive(rendererContext)) {
             rendererContext.setAttribute(DynaConstants.RENDER_OPTIONS, null);
@@ -89,28 +91,11 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
 
     public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         PrintWriter markup = rendererContext.getWriter();
-        String jsBase = rendererContext.getProperty(DynaConstants.RESOURCE_BASE_URL);
         String serverBaseURL = rendererContext.getProperty(DynaConstants.SERVER_BASE_URL);
         String viewState = rendererContext.getProperty(DynaConstants.VIEW_STATE);
 
         // Handle special ajax region here
         if ("AJAXScripts".equals(rrc.getId())) {
-            markup.print("<script type='text/javascript' src='");
-            markup.print(jsBase);
-            markup.print("/prototype.js'></script>\n");
-            markup.print("<script type='text/javascript' src='");
-            markup.print(jsBase);
-            markup.print("/prototype-bootstrap-workaround.js'></script>\n");
-            markup.print("<script type='text/javascript' src='");
-            markup.print(jsBase);
-            markup.print("/effects.js'></script>\n");
-            markup.print("<script type='text/javascript' src='");
-            markup.print(jsBase);
-            markup.print("/dragdrop.js'></script>\n");
-            markup.print("<script type='text/javascript' src='");
-            markup.print(jsBase);
-            markup.print("/dyna.js'></script>\n");
-            markup.print("<link rel=\"stylesheet\" id=\"dyna_css\" href=\"" + jsBase + "/style.css\" type=\"text/css\"/>\n");
             markup.print("<script type='text/javascript'>\n");
 
             // Async server URL needed for callbacks

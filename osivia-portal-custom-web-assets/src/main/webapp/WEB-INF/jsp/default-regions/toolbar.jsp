@@ -15,6 +15,28 @@
                             <i class="halflings halflings-arrow-right"></i>
                         </span>
                     </button>
+                    
+                    <!-- State items -->
+                    <c:forEach var="stateItem" items="${requestScope['osivia.toolbar.menubar.stateItems']}">
+                        <div class="pull-right">
+                            <p class="navbar-text"
+                                <c:if test="${not empty stateItem.title}">title="${stateItem.title}" data-toggle="tooltip" data-placement="bottom"</c:if>
+                            >
+                                <span class="${stateItem.htmlClasses}">
+                                    <i class="${stateItem.glyphicon}"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </c:forEach>
+
+                    <!-- AJAX waiter-->
+                    <div class="pull-right">
+                        <p class="navbar-text ajax-waiter">
+                            <span class="label label-info">
+                                <i class="halflings halflings-refresh"></i>
+                            </span>
+                        </p>
+                    </div>
 
                     <!-- Title -->
                     <div>

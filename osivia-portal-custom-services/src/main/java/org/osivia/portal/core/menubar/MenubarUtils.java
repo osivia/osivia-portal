@@ -2,34 +2,19 @@ package org.osivia.portal.core.menubar;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.CDATA;
-import org.dom4j.Element;
-import org.dom4j.dom.DOMCDATA;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
-import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.Region;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.html.AccessibilityRoles;
-import org.osivia.portal.api.html.DOM4JUtils;
-import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.api.menubar.IMenubarService;
 
 /**
  * Utility class with null-safe methods for menubar.
@@ -38,17 +23,21 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
  */
 public final class MenubarUtils {
 
-    /** Menubar window identifier. */
-    private static final String MENUBAR_WINDOW_ID = "menubar-window";
-    /** Menubar region name. */
-    private static final String MENUBAR_REGION_NAME = "menubar";
-
-
     /**
      * Private constructor : prevent instantiation.
      */
     private MenubarUtils() {
         throw new AssertionError();
+    }
+
+
+    /**
+     * Get menubar service.
+     *
+     * @return menubar service
+     */
+    public static final IMenubarService getMenubarService() {
+        return Locator.findMBean(IMenubarService.class, IMenubarService.MBEAN_NAME);
     }
 
 
@@ -63,11 +52,8 @@ public final class MenubarUtils {
             return null;
         }
 
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
         // Generate HTML content
-        String htmlContent = generateContentNavbarActionsHTMLContent(controllerContext);
+        String htmlContent = getMenubarService().generateNavbarContent(portalControllerContext);
 
         // Window properties
         Map<String, String> windowProperties = new HashMap<String, String>();
@@ -76,7 +62,7 @@ public final class MenubarUtils {
         windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
         WindowResult windowResult = new WindowResult(null, htmlContent, Collections.EMPTY_MAP, windowProperties, null, WindowState.NORMAL, Mode.VIEW);
-        return new WindowContext(MENUBAR_WINDOW_ID, MENUBAR_REGION_NAME, null, windowResult);
+        return new WindowContext(IMenubarService.MENUBAR_WINDOW_ID, IMenubarService.MENUBAR_REGION_NAME, null, windowResult);
     }
 
 
@@ -90,262 +76,8 @@ public final class MenubarUtils {
         WindowContext windowContext = createContentNavbarActionsWindowContext(portalControllerContext);
         pageRendition.getPageResult().addWindowContext(windowContext);
 
-        Region region = pageRendition.getPageResult().getRegion2(MENUBAR_REGION_NAME);
+        Region region = pageRendition.getPageResult().getRegion2(IMenubarService.MENUBAR_REGION_NAME);
         DynaRenderOptions.NO_AJAX.setOptions(region.getProperties());
-    }
-
-
-    /**
-     * Generate content navbar actions HTML content.
-     *
-     * @param controllerContext controller context
-     * @return HTML content
-     */
-    private static final String generateContentNavbarActionsHTMLContent(ControllerContext controllerContext) {
-        // Menubar items
-        List<?> items = (List<?>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
-
-
-        // Dyna-window container
-        Element dynaWindowContainer = DOM4JUtils.generateDivElement("dyna-window");
-
-        // Dyna-window identifier
-        Element dynaWindowId = DOM4JUtils.generateDivElement(null);
-        DOM4JUtils.addAttribute(dynaWindowId, HTMLConstants.ID, MENUBAR_WINDOW_ID);
-        dynaWindowContainer.add(dynaWindowId);
-
-        // Dyna-window content
-        Element dynaWindowContent = DOM4JUtils.generateDivElement("dyna-window-content");
-        dynaWindowId.add(dynaWindowContent);
-
-
-        if (CollectionUtils.isNotEmpty(items)) {
-            // Button toolbar
-            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar", null);
-            DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
-            dynaWindowContent.add(toolbar);
-
-
-            // Menubar first group
-            Element firstGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, "first-group", null);
-            Element firstGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            firstGroupMenuItem.add(firstGroup);
-
-            // Menubar specific group
-            Element specificGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
-            Element specificGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            specificGroupMenuItem.add(specificGroup);
-
-            // Menubar state group
-            Element stateGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, "state-group", null);
-            Element stateGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            stateGroupMenuItem.add(stateGroup);
-
-            // Menubar CMS group
-            Element cmsGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
-            Element cmsGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            cmsGroupMenuItem.add(cmsGroup);
-
-            // Menubar generic group
-            Element genericGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
-            Element genericGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            genericGroupMenuItem.add(genericGroup);
-
-            // Menubar hidden-xs group
-            Element hiddenXSGroupMenuItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
-            Element hiddenXSGroup = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-            hiddenXSGroupMenuItem.add(hiddenXSGroup);
-
-
-            // Dropdown menu
-            Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu dropdown-menu-right", null, null, AccessibilityRoles.MENU);
-
-
-            boolean emptyDropdownMenu = true;
-            for (Object item : items) {
-                MenubarItem menubarItem = (MenubarItem) item;
-
-
-                // LI
-                Element li;
-                String htmlClassLi = "";
-                
-                if (menubarItem.isDisabled()) {
-                	htmlClassLi = "disabled";
-                }
-                
-                if (menubarItem.isDropdownItem()) {
-                    li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClassLi, null, null, AccessibilityRoles.PRESENTATION);
-                    if (menubarItem.isStateItem()) {
-                        DOM4JUtils.addAttribute(li, HTMLConstants.CLASS, "dropdown-header");
-                    }
-                } else {
-                    li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClassLi, null);
-                }
-                
-
-                // Parent
-                Element parent;
-                if (menubarItem.isDropdownItem()) {
-                    emptyDropdownMenu = false;
-                    parent = dropdownMenu;
-                } else if (menubarItem.isStateItem()) {
-                    parent = stateGroup;
-                } else if (menubarItem.getOrder() < MenubarItem.ORDER_PORTLET_SPECIFIC_CMS) {
-                    parent = specificGroup;
-                } else if (menubarItem.getOrder() < MenubarItem.ORDER_PORTLET_GENERIC) {
-                    parent = cmsGroup;
-                } else {
-                    boolean hiddenXS = false;
-                    String[] htmlClasses = StringUtils.split(StringUtils.trimToEmpty(menubarItem.getClassName()));
-                    for (String htmlClass : htmlClasses) {
-                        if ("hidden-xs".equals(htmlClass)) {
-                            hiddenXS = true;
-                            break;
-                        }
-                    }
-
-                    if (hiddenXS) {
-                        parent = hiddenXSGroup;
-                    } else {
-                        parent = genericGroup;
-                    }
-                }
-
-                parent.add(li);
-
-
-                // HTML class
-                StringBuilder htmlClass = new StringBuilder();
-                if (menubarItem.getClassName() != null) {
-                    htmlClass.append(menubarItem.getClassName());
-                }
-                if (menubarItem.isAjaxDisabled()) {
-                    htmlClass.append(" no-ajax-link");
-                }
-                if (menubarItem.isActive()) {
-                    htmlClass.append(" active");
-                }
-
-                // Element
-                Element element;
-                
-                // Dropdown items
-                if (menubarItem.isDropdownItem()) {
-                    if (menubarItem.isStateItem()) {
-                        element = DOM4JUtils
-                                .generateElement(HTMLConstants.SPAN, htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
-                                null);
-                        
-                        
-                    } else {
-                        element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                htmlClass.toString(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
-
-                        DOM4JUtils.addTooltip(element, menubarItem.getTooltip());
-                    }
-                } 
-                // State items
-                else if (menubarItem.isStateItem()) {
-                    element = DOM4JUtils.generateElement(HTMLConstants.P, null, null);
-
-                    Element label = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-info", menubarItem.getTitle());
-                    element.add(label);
-                } 
-                // other items
-                else {
-                    if (menubarItem.getGlyphicon() == null) {
-                        element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                htmlClass.toString(), menubarItem.getTitle(), null);
-                    } else {
-                        element = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnClickEvent(),
-                                htmlClass.toString(), null, menubarItem.getGlyphicon());
-                        DOM4JUtils.addTooltip(element, menubarItem.getTitle());
-                    }
-
-
-                }
-
-                // Data attributes
-                if (!menubarItem.getData().isEmpty()) {
-                    for (Entry<String, String> data : menubarItem.getData().entrySet()) {
-                        StringBuilder attributeName = new StringBuilder();
-                        attributeName.append("data-");
-                        attributeName.append(data.getKey());
-
-                        DOM4JUtils.addAttribute(element, attributeName.toString(), data.getValue());
-                    }
-                }
-
-                li.add(element);
-
-
-                // Associated HTML
-                if (StringUtils.isNotBlank(menubarItem.getAssociatedHtml())) {
-                    CDATA cdata = new DOMCDATA(menubarItem.getAssociatedHtml());
-                    li.add(cdata);
-                }
-            }
-
-
-            // Back
-            String backURL = getMobileBackURL(controllerContext);
-            if (backURL != null) {
-                Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
-                firstGroup.add(li);
-
-                Element element = DOM4JUtils.generateLinkElement(backURL, null, null, null, null, "halflings halflings-arrow-left");
-                li.add(element);
-            }
-
-
-            if (!emptyDropdownMenu) {
-                // Dropdown menu button
-                Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, "halflings halflings-pencil");
-                DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
-                Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-                dropdownButton.add(caret);
-
-                // LI
-                Element li = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
-                li.add(dropdownButton);
-                li.add(dropdownMenu);
-                cmsGroup.add(li);
-            }
-
-            if (CollectionUtils.isNotEmpty(firstGroup.elements())) {
-                toolbar.add(firstGroupMenuItem);
-            }
-            if (CollectionUtils.isNotEmpty(specificGroup.elements())) {
-                toolbar.add(specificGroupMenuItem);
-            }
-            if (CollectionUtils.isNotEmpty(stateGroup.elements())) {
-                toolbar.add(stateGroupMenuItem);
-            }
-            if (CollectionUtils.isNotEmpty(cmsGroup.elements())) {
-                toolbar.add(cmsGroupMenuItem);
-            }
-            if (CollectionUtils.isNotEmpty(genericGroup.elements())) {
-                toolbar.add(genericGroupMenuItem);
-            }
-            if (CollectionUtils.isNotEmpty(hiddenXSGroup.elements())) {
-                toolbar.add(hiddenXSGroupMenuItem);
-            }
-        }
-
-
-        // Write HTML content
-        return DOM4JUtils.write(dynaWindowContainer);
-    }
-
-
-    private static final String getMobileBackURL(ControllerContext controllerContext) {
-        // Portal URL factory
-        IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
-        return urlFactory.getBackURL(portalControllerContext, true);
     }
 
 }

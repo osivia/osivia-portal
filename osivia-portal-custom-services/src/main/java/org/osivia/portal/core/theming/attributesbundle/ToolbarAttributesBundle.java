@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -53,6 +54,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -72,6 +75,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
@@ -86,6 +90,9 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
  * @see IAttributesBundle
  */
 public final class ToolbarAttributesBundle implements IAttributesBundle {
+
+    /** Toolbar menubar state items request attribute name. */
+    private static final String TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE = "osivia.toolbar.menubar.stateItems";
 
     /** HTML class "toolbar-administration". */
     private static final String HTML_CLASS_TOOLBAR_ADMINISTRATION = "nav navbar-nav navbar-left";
@@ -134,9 +141,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-
     /** Directory service locator. */
     private final IDirectoryServiceLocator directoryServiceLocator;
+    /** Menubar service. */
+    private final IMenubarService menubarService;
 
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
@@ -161,7 +169,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         // Directory service locator
         this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
-
+        // Menubar service
+        this.menubarService = MenubarUtils.getMenubarService();
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
@@ -174,6 +183,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
         this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
         this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
+        this.names.add(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE);
     }
 
 
@@ -266,6 +276,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), myProfileUrl,
                 signOutPortalUrl.toString());
         attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
+
+        // Mobile state items
+        List<MenubarItem> stateItems = this.menubarService.getStateItems(portalControllerContext);
+        attributes.put(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE, stateItems);
     }
 
 
@@ -371,7 +385,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
         Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, HTMLConstants.TARGET_NEW_WINDOW, null, null,
                 jbossAdministrationTitle, "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
-        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "halflings halflings-new-window", null);
+        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 

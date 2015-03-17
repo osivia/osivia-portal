@@ -97,12 +97,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             return;
         }
 
-        // AJAX header
-        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/prototype.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/effects.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dragdrop.js'></script>");
-        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dyna.js'></script>");
-
         // jQuery 1.8.3 for fancybox 2.1.3 compatibility
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery/jquery-1.8.3.min.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/js/jquery-integration.js'></script>");
@@ -173,6 +167,13 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         out.write("<noscript>");
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.css'>");
         out.write("</noscript>");
+
+        // AJAX header
+        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/prototype.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/prototype-bootstrap-workaround.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/effects.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dragdrop.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dyna.js'></script>");
     }
 
 

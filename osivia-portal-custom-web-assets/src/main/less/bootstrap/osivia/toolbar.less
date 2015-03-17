@@ -18,7 +18,7 @@
                 
                 + i {
                     position: absolute;
-                    top: 0;
+                    top: 1px;
                     left: 0;
                     
                     opacity: 0;
@@ -41,6 +41,10 @@
         + * {
             overflow: hidden;
             padding-right: @navbar-padding-horizontal;
+        }
+        
+        ~ * {
+            margin-left: 3px;
         }
     }
 }
