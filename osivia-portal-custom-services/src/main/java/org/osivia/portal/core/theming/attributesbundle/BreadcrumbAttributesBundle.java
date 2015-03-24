@@ -308,7 +308,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
                                     "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, null, null, null, null, null);
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL,  "breadcrumb",null, null, null, null);
 
 
                             BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);

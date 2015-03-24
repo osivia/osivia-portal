@@ -1722,7 +1722,7 @@ public class CmsCommand extends DynamicCommand {
         }
 
         // page marker initialization ( means an applicative back button)
-        if ("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext)){
+        if ("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext) || "domain".equals(this.displayContext)){
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);            
         }   else
