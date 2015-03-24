@@ -10,6 +10,7 @@
 
 
 .menubar {
+    white-space: nowrap;
     text-align: right;
     
     .dropdown-menu {
@@ -67,8 +68,6 @@
 
 
 .content-navbar-actions {
-    white-space: nowrap;
-    
     @media screen and (max-width: @screen-xs-max) {
         display: block;
         
@@ -90,19 +89,12 @@
 
 
 .simple-menubar {
-    white-space: nowrap;
-    
-    @media screen and (max-width: @screen-xs-max) {
-        &, &.media-right {
-            display: block;
-            padding-left: 0;
-            
-            .clearfix;
-        }
-    }
-    
     .menubar {
         .toolbar-menubar();
+        
+        @media screen and (max-width: @screen-xs-max) {
+            .fixDropdownMenus();
+        }
     }
 }
 
@@ -121,7 +113,7 @@
     }
     
     > li {       
-        &, > ul > li, > ul > li > a {
+        &, > ul, > ul > li, > ul > li > a {
             display: inline-block;
         }
         
