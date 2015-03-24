@@ -1735,6 +1735,8 @@ public class CmsCommand extends DynamicCommand {
                 
                 // reset back in case of change of tab
                 if(!contextualizedInCurrentPage)    {
+                    
+                    // Except in mobile mode
                     PageCustomizerInterceptor.initPageBackInfos(controllerContext, false);
                     String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");                    
                     this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
