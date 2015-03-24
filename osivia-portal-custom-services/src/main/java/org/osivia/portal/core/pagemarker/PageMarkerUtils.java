@@ -272,7 +272,16 @@ public class PageMarkerUtils {
         if( refreshBack != null) {
             markerInfo.setRefreshBack(refreshBack);
         }
+        
+        String mobileBackPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker");
+        if( mobileBackPageMarker != null) {
+            markerInfo.setMobileBackPageMarker(mobileBackPageMarker);
+        }
 
+        Boolean mobileRefreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack");
+        if( mobileRefreshBack != null) {
+            markerInfo.setMobileRefreshBack(mobileRefreshBack);
+        }
 
         // Restauration mode popup
         String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
@@ -779,9 +788,14 @@ public class PageMarkerUtils {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", markerInfo.getBackPageMarker());
         }
 
+        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", null);
+        
+        if (markerInfo.getMobileBackPageMarker() != null) {
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", markerInfo.getMobileBackPageMarker());
+        }
 
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", markerInfo.isRefreshBack());
-
+        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", markerInfo.isMobileRefreshBack());
 
         return page;
     }

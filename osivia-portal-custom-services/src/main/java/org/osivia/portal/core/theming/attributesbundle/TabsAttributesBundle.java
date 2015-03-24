@@ -363,7 +363,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                 if (curDomain != null) {
                     userPage.setId(curDomain);
-                    String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, "domain", null,
+                    String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, "tabs", null,
                             null, null, null);
                     userPage.setUrl(url);
 

@@ -59,6 +59,7 @@ import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
@@ -440,8 +441,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                     String[] displayContext = params.get("_displayContext");
     
                     if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
-                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
-                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
+                        PageCustomizerInterceptor.initPageBackInfos(controllerContext);
                         updateBack = false;
                     }
                 }
@@ -455,6 +455,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 if (updateBack) {
                     String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
                     controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);                    
                 }
             }
 

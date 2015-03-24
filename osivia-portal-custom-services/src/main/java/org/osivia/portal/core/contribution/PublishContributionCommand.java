@@ -275,6 +275,8 @@ public class PublishContributionCommand extends ControllerCommand {
 //        
 //        editionState.setHasBeenModified(true);
         getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
+        getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", true);
+                
         
         ContributionService.setWindowEditionState(getControllerContext(), window.getId(), editionState);
   

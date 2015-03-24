@@ -798,6 +798,7 @@ public class CmsCommand extends DynamicCommand {
              */
 
             boolean contextualizeinPage = false;
+            boolean contextualizedInCurrentPage = false;
 
             if ((itemPublicationPath != null) && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
 
@@ -839,6 +840,7 @@ public class CmsCommand extends DynamicCommand {
 
                         if (publicationPage != null) {
                             contextualizationPage = (Page) publicationPage;
+                            contextualizedInCurrentPage = true;
                         }
                     }
 
@@ -1384,7 +1386,7 @@ public class CmsCommand extends DynamicCommand {
 
                
                 
-                EditionState editionState = this.getEditionState(controllerContext, pageIdToDiplay, pubInfos);
+                EditionState editionState = this.getEditionState(controllerContext, pageIdToDiplay, pubInfos, contextualizedInCurrentPage);
                 ContributionService.updateNavigationalState(controllerContext, pageState, editionState);
 
 
@@ -1660,7 +1662,7 @@ public class CmsCommand extends DynamicCommand {
                         .concat("CMSPlayerWindow"), PortalObjectPath.CANONICAL_FORMAT));
 
 
-                EditionState editionState = this.getEditionState(controllerContext, windowID, pubInfos);
+                EditionState editionState = this.getEditionState(controllerContext, windowID, pubInfos, contextualizedInCurrentPage);
 
                 // No automatic back, it's computed at CMS Level
                 if( contextualizationPage != null) {
@@ -1697,7 +1699,7 @@ public class CmsCommand extends DynamicCommand {
      * @param pubInfos
      * @return
      */
-    private EditionState getEditionState(ControllerContext controllerContext, PortalObjectId poid, CMSPublicationInfos pubInfos)   {
+    private EditionState getEditionState(ControllerContext controllerContext, PortalObjectId poid, CMSPublicationInfos pubInfos, boolean contextualizedInCurrentPage)   {
 
         EditionState editionState =  null;
 
@@ -1719,20 +1721,32 @@ public class CmsCommand extends DynamicCommand {
 
         if (fancyBox) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
-        }
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", true);
+         }
 
         // page marker initialization ( means an applicative back button)
-        if ("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext) || "domain".equals(this.displayContext)){
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);            
-        }   else
-            // Do not refresh pagemarker back in case of modification
-            // The back action must be the same after the modifications than before
-        if( ! IPortalUrlFactory.CONTEXTUALIZATION_PAGE.equals(this.contextualization) && !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
-             String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-            this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);            
+        if (("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext) || "tabs".equals(this.displayContext))) {
+            
+            PageCustomizerInterceptor.initPageBackInfos(controllerContext);
+       
+        }   else    {
+             // Preserve back in case of fancybox
+            if(  !fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext))  {
+                
+                // reset back in case of change of tab
+                if(!contextualizedInCurrentPage)    {
+                    PageCustomizerInterceptor.initPageBackInfos(controllerContext, false);
+                    String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");                    
+                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
+                 }   else    {
+                     String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                     this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                     this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
 
-        }   
+                }
+
+            }   
+        }
 
         return editionState;
     }

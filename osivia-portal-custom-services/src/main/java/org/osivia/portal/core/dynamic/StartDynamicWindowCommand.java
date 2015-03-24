@@ -227,6 +227,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                     if(! "1".equals(properties.get("osivia.dynamic.disable.close"))) {
                         String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
                         this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                        this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);                           
                     }
 
                 }

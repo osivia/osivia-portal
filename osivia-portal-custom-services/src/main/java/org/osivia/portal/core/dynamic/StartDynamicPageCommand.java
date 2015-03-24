@@ -40,6 +40,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
 import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -201,8 +202,8 @@ public class StartDynamicPageCommand extends DynamicCommand {
 				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
 				
 				// Mise à jour du pagemarker
-				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
-				this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE,  "osivia.refreshBack", null); 
+		          PageCustomizerInterceptor.initPageBackInfos(this.getControllerContext());
+
 
 
 		        // rafaichir la bandeau

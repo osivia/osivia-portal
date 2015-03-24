@@ -129,6 +129,17 @@ public class PageMarkerInfo implements Serializable {
     public void setBackPageMarker(String backPageMarker) {
         this.backPageMarker = backPageMarker;
     }
+
+    
+    String mobileBackPageMarker;
+    
+    public String getMobileBackPageMarker() {
+        return mobileBackPageMarker;
+    }
+    
+    public void setMobileBackPageMarker(String mobileBackPageMarker) {
+        this.mobileBackPageMarker = mobileBackPageMarker;
+    }
     
     boolean refreshBack=false;
 
@@ -142,6 +153,20 @@ public class PageMarkerInfo implements Serializable {
     public void setRefreshBack(boolean refreshBack) {
         this.refreshBack = refreshBack;
     }
+    
+    boolean mobileRefreshBack=false;
+
+    
+    public boolean isMobileRefreshBack() {
+        return mobileRefreshBack;
+    }
+
+
+    
+    public void setMobileRefreshBack(boolean mobileRefreshBack) {
+        this.mobileRefreshBack = mobileRefreshBack;
+    }
+    
 
     Long lastTimeStamp;
 	public Long getLastTimeStamp() {

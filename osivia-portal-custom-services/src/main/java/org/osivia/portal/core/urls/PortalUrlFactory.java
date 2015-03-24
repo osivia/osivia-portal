@@ -737,7 +737,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Back page marker
-        String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+        
+        String backPageMarkerName = "osivia.backPageMarker";
+        if( mobile)
+            backPageMarkerName = "osivia.backMobilePageMarker";
+        
+        String refreshName = "osivia.refreshBack";
+        if( mobile)
+            refreshName = "osivia.mobileRefreshBack";       
+        
+        String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,backPageMarkerName );
+        Boolean refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, refreshName));
 
         String backURL = null;
         if (backPageMarker != null) {
@@ -746,8 +756,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 PortalObjectId pageId = infos.getPageId();
 
                 URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
-
-                Boolean refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack"));
 
                 if (refresh) {
                     RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));

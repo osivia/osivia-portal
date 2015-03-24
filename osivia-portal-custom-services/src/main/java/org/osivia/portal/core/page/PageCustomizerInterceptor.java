@@ -258,10 +258,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
     public static void initPageBackInfos(ControllerContext controllerCtx) {
+        initPageBackInfos( controllerCtx, true);
+    }
+    
+    public static void initPageBackInfos(ControllerContext controllerCtx, boolean mobile) {
         /* Init back actions */
         
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
+
+        
+        if( mobile) {
+            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", null);   
+            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", null);            
+        }
     }
 
 
@@ -640,7 +650,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
-                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
+                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "tabs", null, null, null, null);
 
                         if (request.getParameter("firstTab") != null) {
                             if (url.indexOf('?') == -1) {
