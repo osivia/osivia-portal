@@ -203,10 +203,11 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			// Réinitialisation par l'utilisateur : tous sauf parametres
 			
 			if(  PageProperties.getProperties().isRefreshingPage())  {
+			    String reloadedKey = infos.getScope() + "/" + infos.getItemKey();
 			    // On controle que la page n'a pas déja été rechargée dans la requete courante
-			    if( !PageProperties.getProperties().getPagePropertiesMap().containsKey( "reloaded_"+ infos.getItemKey()))
+			    if( !PageProperties.getProperties().getPagePropertiesMap().containsKey( "reloaded_"+ reloadedKey))
 			        expired = true;
-			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ infos.getItemKey(), "1");
+			    PageProperties.getProperties().getPagePropertiesMap().put( "reloaded_"+ reloadedKey, "1");
 			}
 			
 			
