@@ -544,14 +544,21 @@ public class PageMarkerUtils {
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
             if (markers != null) {
                 PageMarkerInfo markerInfo = null;
+                PageMarkerInfo originalMarkerInfo = null;
 
                 try {
-                    markerInfo = markers.get(currentPageMarker);
+                    originalMarkerInfo = markers.get(currentPageMarker);
+                    if( originalMarkerInfo != null)
+                        markerInfo = originalMarkerInfo;
+                    else
+                        markerInfo = tabMarkerInfo;
                 } catch (ClassCastException e) {
                     // Cas d'un redéploiement à chaud
                 }
 
                 if (markerInfo != null) {
+                    
+                    
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
 
 
@@ -566,7 +573,7 @@ public class PageMarkerUtils {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
 
                                 // And if tab was already active, we reinit the page
-                                if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
+                                if( originalMarkerInfo != null && tabMarkerInfo.getPageId().equals(originalMarkerInfo.getPageId()))   {
                                     newTabPath = null;
                                 }
                             }
