@@ -77,6 +77,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -301,6 +302,9 @@ public class AjaxResponseHandler implements ResponseHandler {
 
 
                 for (PortalObject window : windows) {
+                    
+                    if( window.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME))
+                        dirtyWindowIds.add(window.getId());
 
                     if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
                         if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
