@@ -192,6 +192,8 @@ public class PageMarkerUtils {
 
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
+        
+        if( page != null)   {
         markerInfo.setPageId(page.getId());
 
         Map<PortalObjectId, WindowStateMarkerInfo> windowInfos = new HashMap<PortalObjectId, WindowStateMarkerInfo>();
@@ -318,6 +320,7 @@ public class PageMarkerUtils {
         Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
         if (selectionTs != null) {
             markerInfo.setSelectionTs(selectionTs);
+        }
         }
 
         // Mémorisation marker dans la session
@@ -468,7 +471,7 @@ public class PageMarkerUtils {
                 for (PageMarkerInfo pagemarkerInfo : list) {
                     // Is it a subpage of the tab ?
 
-                    if (StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
+                    if (pagemarkerInfo.getPageId() != null && StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
                         newTabPath = "/portal" + pagemarkerInfo.getPageId().toString();
                         tabMarkerInfo = pagemarkerInfo;
                         break;
@@ -544,18 +547,10 @@ public class PageMarkerUtils {
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
             if (markers != null) {
                 PageMarkerInfo markerInfo = null;
-                PageMarkerInfo originalMarkerInfo = null;
 
                 try {
-                    originalMarkerInfo = markers.get(currentPageMarker);
-                    
-                    // Peut etre null sur un StopDynamicPage (fermeture onglet dynamique)
-                    // car il n'y a pas de saveState sur les redirectionResponse
-                    
-                    if( originalMarkerInfo != null)
-                        markerInfo = originalMarkerInfo;
-                    else
-                        markerInfo = tabMarkerInfo;
+                    markerInfo = markers.get(currentPageMarker);
+
                 } catch (ClassCastException e) {
                     // Cas d'un redéploiement à chaud
                 }
@@ -577,7 +572,7 @@ public class PageMarkerUtils {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
 
                                 // And if tab was already active, we reinit the page
-                                if( originalMarkerInfo != null && tabMarkerInfo.getPageId().equals(originalMarkerInfo.getPageId()))   {
+                                if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
                                     newTabPath = null;
                                 }
                             }
@@ -591,8 +586,10 @@ public class PageMarkerUtils {
                         }
 
                         // Restauration des pages dynamiques
-                        IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
-                        poc.setDynamicPages(markerInfo.getDynamicPages());
+                        if( markerInfo.getDynamicPages() != null)   {
+                            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+                            poc.setDynamicPages(markerInfo.getDynamicPages());
+                        }
 
                         Page page = restorePageState(controllerContext, restorePageInfo);
 

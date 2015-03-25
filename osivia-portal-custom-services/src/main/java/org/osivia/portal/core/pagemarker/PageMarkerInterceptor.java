@@ -32,6 +32,7 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowComm
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.page.PageProperties;
 
 
@@ -141,6 +142,15 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
             PageMarkerUtils.savePageState(controllerCtx, page);
         }
 
+        
+        if (!alreadySaved &&  cmd instanceof StopDynamicPageCommand) {
+
+            ControllerContext controllerCtx = cmd.getControllerContext();
+
+            // sauvegarde des infos associées au markeur de page
+
+            PageMarkerUtils.savePageState(controllerCtx, null);
+        }
 
         //
         return resp;
