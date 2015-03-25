@@ -37,6 +37,7 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
@@ -125,7 +126,7 @@ public class RefreshPageCommand extends ControllerCommand {
         	
         	String newDocLiveUrl = null;
         	if(this.getNewDocId() != null) {
-        		newDocLiveUrl = getUrlFactory().getCMSUrl(pcc, null, getNewDocId(), null, null, "proxy_preview", null, null, null, null);
+        		newDocLiveUrl = getUrlFactory().getCMSUrl(pcc, null, getNewDocId(), null, null, InternalConstants.FANCYBOX_LIVE_CALLBACK, null, null, null, null);
         	}
         	
             PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
