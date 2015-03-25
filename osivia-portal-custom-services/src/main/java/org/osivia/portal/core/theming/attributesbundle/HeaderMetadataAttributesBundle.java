@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.Page;
@@ -137,7 +138,8 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         CMSItem document = null;
         if (contentPath != null) {
             try {
-                if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, contentPath) == Level.allowPreviewVersion) {
+                Boolean pageInEditionMode =  (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                if( pageInEditionMode)  {
                     cmsCtx.setDisplayLiveVersion("1");
                 }
 

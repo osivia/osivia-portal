@@ -203,12 +203,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
      */
     public static boolean checkWebPagePermission(ControllerContext ctx, Page page) throws Exception {
 
-        String contentPath = PagePathUtils.getContentPath(ctx, page.getId());
+     String contentPath = PagePathUtils.getContentPath(ctx, page.getId());
         String pagePath = PagePathUtils.getNavigationPath(ctx, page.getId());
 
-        if( ! StringUtils.equals(contentPath, pagePath)) {
-            return false;
-        }
+      if( ! StringUtils.equals(contentPath, pagePath)) {
+           return false;
+      }
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setServerInvocation(ctx.getServerInvocation());
@@ -216,8 +216,9 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
         if (pagePath != null) {
 
-            // test display live version
-            if (CmsPermissionHelper.getCurrentPageSecurityLevel(ctx, pagePath) == Level.allowPreviewVersion) {
+            Boolean pageInEditionMode =  (Boolean) ctx.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+
+            if( BooleanUtils.isTrue(pageInEditionMode)) {
                 cmsContext.setDisplayLiveVersion("1");
             }
             // check if type is known as a web page type

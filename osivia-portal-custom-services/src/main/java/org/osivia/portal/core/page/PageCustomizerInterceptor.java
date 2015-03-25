@@ -790,9 +790,57 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
-        /* Contextualize internal contents */
-        // je ne vois plus dans quel cas ca serait utilisé ...
+        /* Analyse du mode d'edition 
+         * 
+         * injection pathPublication & isPageInEditionMode
+         * */
         
+        
+
+        String pathPublication = null;
+        
+        if ((cmd instanceof RenderPageCommand)
+                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
+            
+            boolean onlinePage = true;
+            
+
+            ControllerContext controllerCtx = cmd.getControllerContext();
+
+            Page page = null;
+            
+            if( cmd instanceof RenderPageCommand) 
+                page = ((RenderPageCommand) cmd).getPage();
+            if( cmd instanceof RenderWindowCommand) 
+                page = ((RenderWindowCommand) cmd).getPage();
+                
+            // Online mode indicator
+
+            pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
+
+            if ((pathPublication != null) && !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
+
+                if (PortalObjectUtils.isSpaceSite(page)) {
+                    onlinePage = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, page.getId()));
+                } else {
+                    NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+                            .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                    PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
+                    if (ns != null) {
+                        EditionState editionState = ContributionService.getNavigationalState(controllerCtx, ns);
+                        onlinePage = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
+                    } else {
+                        onlinePage = true;
+                    }
+                }
+            }
+ 
+            
+            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode", onlinePage ? Boolean.FALSE : Boolean.TRUE);
+       }
+        
+        
+        /* Redirection si page display mode */
         
         if (cmd instanceof RenderPageCommand) {
 
@@ -800,8 +848,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             ControllerContext controllerCtx = cmd.getControllerContext();
 
             Page page = rpc.getPage();
-
-            String pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
 
             if ((pathPublication != null) && !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
@@ -815,51 +861,19 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx cmxCtx = new CMSServiceCtx();
                     cmxCtx.setControllerContext(controllerCtx);
                     cmxCtx.setScope(navigationScope);
+                    
+                    Boolean pageInEditionMode =  (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
 
-                    
-                    // Online mode indicator
-                    boolean online;
-                    if (PortalObjectUtils.isSpaceSite(page)) {
-                        online = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, page.getId()));
-                    } else {
-                          NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
-                                .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-                        PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
-                        if (ns != null) {
-                            EditionState editionState = ContributionService.getNavigationalState(controllerCtx, ns);
-                            online = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
-                        } else {
-                            online = true;
-                        }
-                    }
-                    
-                    if( online == false) {
+                    if( BooleanUtils.isTrue(pageInEditionMode)) {
                         cmxCtx.setDisplayLiveVersion("1");
                     }
-                    
-                    // test si mode assistant activé
-//                    if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, pathPublication) == Level.allowPreviewVersion) {
-//                        cmxCtx.setDisplayLiveVersion("1");
-//                    }
-
-// ??? UTILE ???
-
-                    /* Inject web page edition */
-
-                        Boolean layoutCMS = (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
-                        if (BooleanUtils.isTrue(layoutCMS)) {
-
-
-                            if (getCMSService().isCmsWebPage(cmxCtx, pathPublication)) {
-                                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", pathPublication);
-                            }
-                        }
 
 
 
                     CMSItem navItem = getCMSService().getPortalNavigationItem(cmxCtx, basePath, pathPublication);
 
                     // Affichage en mode page ?
+                    // Si oui, redirection CMS
 
                     if ( !basePath.equals(pathPublication) && (navItem == null || !"1".equals(navItem.getProperties().get("pageDisplayMode")))) {
 
@@ -889,6 +903,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
         }
 
+        /* Injection du webPagePath et webPageEditionPath */
 
         if ((cmd instanceof RenderPageCommand)
                 || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
@@ -927,22 +942,22 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 cmxCtx.setControllerContext(controllerCtx);
 
 
-                // test si mode assistant activé
-                if (CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, sPath[0]) == Level.allowPreviewVersion) {
+                Boolean pageInEditionMode =  (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+
+                if( BooleanUtils.isTrue(pageInEditionMode)) {
                     cmxCtx.setDisplayLiveVersion("1");
                 }
+
 
                 Boolean layoutCMS = (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
                 if (BooleanUtils.isTrue(layoutCMS)) {
                    if (getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
                         cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
-                        if (CmsPermissionHelper.getCurrentPageSecurityLevel(cmd.getControllerContext(), sPath[0]) == Level.allowPreviewVersion) {
+                        if (pageInEditionMode) {
                             cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);
                         }                        
                     }
                 }
-
-
             }
 
 
@@ -950,12 +965,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             CMSItem pageConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
 
             cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.spaceConfig", pageConfig);
-
-
-
-
-
-
         }
 
 
