@@ -548,6 +548,10 @@ public class PageMarkerUtils {
 
                 try {
                     originalMarkerInfo = markers.get(currentPageMarker);
+                    
+                    // Peut etre null sur un StopDynamicPage (fermeture onglet dynamique)
+                    // car il n'y a pas de saveState sur les redirectionResponse
+                    
                     if( originalMarkerInfo != null)
                         markerInfo = originalMarkerInfo;
                     else

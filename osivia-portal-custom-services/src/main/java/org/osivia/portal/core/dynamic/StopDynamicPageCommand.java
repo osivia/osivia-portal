@@ -253,9 +253,6 @@ public class StopDynamicPageCommand extends DynamicCommand {
 			}
 			
 
-			// Maj du breadcrumb
-			getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, 	"breadcrumb", null);
-
 	         // rafaichir la bandeau
             getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1"); 
             
