@@ -732,7 +732,8 @@ public class PageMarkerUtils {
 
 
         Page page = null;
-        page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+        if( markerInfo.getPageId() != null)
+            page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
 
         // Cas des pages dynamiques qui n'existent plus
         if (page != null) {
