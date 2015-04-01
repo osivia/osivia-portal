@@ -57,6 +57,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
+import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
@@ -215,7 +216,11 @@ public class PageMarkerUtils {
                 ws = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
             }
             ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-            windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams));
+            List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+            
+            
+            
+            windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams, portletPath));
         }
 
         // Sauvegarde etat page
@@ -241,6 +246,7 @@ public class PageMarkerUtils {
             markerInfo.setBreadcrumb(savedBreadcrum);
         }
 
+        
         // sauvegarde menu
         UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
         if (userPortal != null) {
@@ -758,14 +764,21 @@ public class PageMarkerUtils {
                     // portal
 
                     WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
+                    
+                    String windowCanonicalName = child.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                    
 
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), newNS);
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, windowCanonicalName, newNS);
 
                     StateString additionnalState = wInfo.getAdditionnalState();
                     if (additionnalState != null) {
                         additionnalState = ParametersStateString.create(additionnalState);
                     }
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + child.getId().toString(PortalObjectPath.CANONICAL_FORMAT), additionnalState);
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + windowCanonicalName, additionnalState);
+                    
+                    if( wInfo.getPortletPath() != null)
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + windowCanonicalName, wInfo.getPortletPath());
+                    
                 }
             }
         }

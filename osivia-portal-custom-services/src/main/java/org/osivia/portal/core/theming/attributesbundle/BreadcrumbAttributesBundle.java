@@ -204,6 +204,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
             if (publication && ((basePath != null) || "1".equals(page.getProperty("osivia.cms.directContentPublisher")))) {
                 displayPage = false;
             }
+            
+            if( "1".equals(page.getProperty("osivia.genericPage"))) {
+                displayPage = false;
+            }
+                
 
             if (displayPage) {
                 ViewPageCommand viewPageCommand = new ViewPageCommand(page.getId());
@@ -394,7 +399,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                     // Update path
                     List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
-                            "osivia.portletPath");
+                            Constants.PORTLET_ATTR_PORTLET_PATH);
                     if (portletPath == null) {
                         // Update titles in order : window title, path title, portlet title
                         String title = windowContext.getProperty(InternalConstants.PROP_WINDOW_TITLE);

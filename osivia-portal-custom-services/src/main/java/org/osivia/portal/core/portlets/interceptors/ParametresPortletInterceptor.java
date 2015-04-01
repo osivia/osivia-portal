@@ -261,14 +261,6 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                 Map<String, Object> attributes = ((FragmentResponse) response).getAttributes();
 
-                /* breadcrumb path set by portlet */
-
-                List<PortletPathItem> portletPath = (List<PortletPathItem>) attributes.get("osivia.portletPath");
-                if (portletPath != null) {
-                    if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
-                        controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.portletPath", portletPath);
-                    }
-                }
 
                 /* v 1.0.14 : affichage d'une barre de menu */
 

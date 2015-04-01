@@ -97,6 +97,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
+import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSHandlerProperties;
@@ -622,6 +623,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             
             if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
                     initState = false;
+            
+            if( "1".equals(rpc.getPage().getProperty("osivia.genericPage")))
+                initState = false;
 
             if (initState || defaultPage) {
 
@@ -828,7 +832,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
                     if (ns != null) {
                         EditionState editionState = ContributionService.getNavigationalState(controllerCtx, ns);
-                        onlinePage = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode());
+                        onlinePage = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode()) || (!pathPublication.equals(editionState.getDocPath()));
                     } else {
                         onlinePage = true;
                     }

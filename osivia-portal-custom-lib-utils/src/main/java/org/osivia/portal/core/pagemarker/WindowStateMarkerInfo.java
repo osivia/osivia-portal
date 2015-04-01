@@ -14,9 +14,12 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import java.util.List;
+
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.portlet.StateString;
+import org.osivia.portal.api.path.PortletPathItem;
 
 public class WindowStateMarkerInfo {
 
@@ -32,18 +35,25 @@ public class WindowStateMarkerInfo {
     private final StateString publicContentState;
 
     private final StateString additionnalState;
+    
+    private final List<PortletPathItem> portletPath;
 
+    
+    public List<PortletPathItem> getPortletPath() {
+        return portletPath;
+    }
 
     public StateString getAdditionnalState() {
         return additionnalState;
     }
 
-    public WindowStateMarkerInfo(WindowState windowState, Mode mode, StateString contentState, StateString publicContentState, StateString additionnalState) {
+    public WindowStateMarkerInfo(WindowState windowState, Mode mode, StateString contentState, StateString publicContentState, StateString additionnalState, List<PortletPathItem> portletPath) {
         this.windowState = windowState;
         this.mode = mode;
         this.contentState = contentState;
         this.publicContentState = publicContentState;
         this.additionnalState = additionnalState;
+        this.portletPath = portletPath;
     }
 
     public WindowState getWindowState() {

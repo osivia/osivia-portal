@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -39,6 +40,8 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRend
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
@@ -423,44 +426,60 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeCloseCmd", cmd);
         }
         
-        /* Back url when render parameters are modified */
+        
+        
+        /* Back */
+        
+
+        
         
         if( cmd instanceof InvokePortletWindowRenderCommand)    {
+            boolean updateBack = false;
             
-            // Back is not managed in ajax Mode
-            
-            if( !(ControllerContext.AJAX_TYPE == controllerContext.getType())) {
-            
-                boolean updateBack = true;
-    
-                StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
-                if (navigationalState instanceof ParametersStateString) {
-                    Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
-    
-                    // Exclude breadcrumb
-                    String[] displayContext = params.get("_displayContext");
-    
-                    if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
-                        PageCustomizerInterceptor.initPageBackInfos(controllerContext);
-                        updateBack = false;
-                    }
-                }
-    
-                if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null || popupClosed) {
-                    updateBack = false;
-    
-                }
-    
-    
-                if (updateBack) {
-                    String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);                    
+            WindowState windowState = ((InvokePortletWindowRenderCommand) cmd).getWindowState();
+              
+            // Back url when maximization is explicitly invoked             
+            if (WindowState.MAXIMIZED.equals(windowState)) {
+                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
+
+                WindowNavigationalState oldState = (WindowNavigationalState)controllerContext.getAttribute(
+                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+
+
+                if ((oldState == null) || !WindowState.MAXIMIZED.equals(oldState.getWindowState())) {
+                   updateBack = true;
                 }
             }
+            
+            // No back url in popup
+            if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID") != null || popupClosed) {
+                updateBack = false;
+
+            }
+            
+            // remove Back url for breadcrum link
+            StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
+            if (navigationalState instanceof ParametersStateString) {
+                Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
+
+                // Exclude breadcrumb
+                String[] displayContext = params.get("_displayContext");
+
+                if (displayContext != null && "breadcrumb".equals(displayContext[0])) {
+                    PageCustomizerInterceptor.initPageBackInfos(controllerContext);
+                }
+            }
+            
+            if( updateBack){
+                String backPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
+            }
+        }        
+        
 
 
-        }
+
 
 
         return cmd;

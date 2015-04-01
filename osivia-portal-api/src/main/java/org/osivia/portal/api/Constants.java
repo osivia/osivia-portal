@@ -176,6 +176,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
     /** To close popup. */   
     public static final String PORTLET_ATTR_POPUP_CLOSE = "osivia.closePopup";
+    /** To set breadcrumb portlet path. */   
+    public static final String PORTLET_ATTR_PORTLET_PATH = "osivia.portletPath";
   
     public static final String PORTLET_VALUE_ACTIVATE = "true";
 

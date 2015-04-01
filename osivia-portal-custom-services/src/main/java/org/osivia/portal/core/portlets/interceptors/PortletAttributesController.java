@@ -37,6 +37,7 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.EncodedParams;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -129,6 +130,39 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
                         }
                     }
                 }
+                
+                /* breadcrumb path set by portlet */
+
+                 if (invocation.getWindowContext() instanceof WindowContextImpl) {
+                    List<PortletPathItem> portletPath = (List<PortletPathItem>) cr.getAttributes().get(Constants.PORTLET_ATTR_PORTLET_PATH);
+                    if (portletPath != null) {
+                        String windowId = invocation.getWindowContext().getId();
+                        if (invocation.getWindowState().equals(WindowState.MAXIMIZED)) {
+
+                            ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH, portletPath);
+
+                            List<PortletPathItem> oldPortletPath = (List<PortletPathItem>) ctx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                                    Constants.PORTLET_ATTR_PORTLET_PATH + windowId);
+
+                            int oldSize = 0;
+                            if (oldPortletPath != null)
+                                oldSize = oldPortletPath.size();
+
+                            // Deeper link : generate BACK
+
+                            if (portletPath.size() > oldSize) {
+                                String backPageMarker = (String) ctx.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                                ctx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                                ctx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
+                            }
+
+
+                        }
+                        ctx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + windowId, portletPath);
+
+                    }
+                 }
+
             }
 
 
@@ -177,6 +211,8 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
             }
             // End of dynamic properties
         }
+        
+        
 
         return response;
     }

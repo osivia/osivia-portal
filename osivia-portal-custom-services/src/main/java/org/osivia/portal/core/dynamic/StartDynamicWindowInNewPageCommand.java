@@ -110,6 +110,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             if( genericTemplateRegion == null)
                 throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
 
+            props.put("osivia.genericPage", "1");
 
             StartDynamicPageCommand pageCmd = new StartDynamicPageCommand(parentId, pageName, displayNames, PortalObjectId.parse(
                             genericTemplateName, PortalObjectPath.CANONICAL_FORMAT).toString(
@@ -121,7 +122,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             
             Map<String, String> windowProps = new HashMap<String, String>();
             windowProps.putAll(dynaProps);
-            windowProps.put("osivia.windowState", "normal");
+            //windowProps.put("osivia.windowState", "normal");
             windowProps.put("osivia.dynamic.disable.close","1");
             
          
