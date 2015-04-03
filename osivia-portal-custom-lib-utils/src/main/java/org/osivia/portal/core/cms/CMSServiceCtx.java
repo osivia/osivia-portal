@@ -48,6 +48,23 @@ public class CMSServiceCtx {
     private String creationPath;
 
     private String forcedLivePath;
+    
+    /** The referrer base path. */
+    private String cmsReferrerNavigationPath;
+
+ 
+    
+    public String getCmsReferrerNavigationPath() {
+        return cmsReferrerNavigationPath;
+    }
+
+
+
+    
+    public void setCmsReferrerNavigationPath(String cmsReferrerNavigationPath) {
+        this.cmsReferrerNavigationPath = cmsReferrerNavigationPath;
+    }
+
 
 
     public String getForcedLivePath() {

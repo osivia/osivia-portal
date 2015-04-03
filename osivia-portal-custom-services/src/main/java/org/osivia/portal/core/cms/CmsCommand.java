@@ -73,6 +73,7 @@ import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -667,6 +668,11 @@ public class CmsCommand extends DynamicCommand {
                     controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, this.cmsPath);
                 }
 
+            }
+
+            
+            if(  currentPage != null) {
+                cmsReadItemContext.setCmsReferrerNavigationPath(PagePathUtils.getNavigationPath(controllerContext,  currentPage.getId()));
             }
 
 
