@@ -640,7 +640,9 @@ public class CmsCommand extends DynamicCommand {
             }
 
             // decode webid paths if given
+            boolean hasWebId = false;
             if (this.cmsPath.startsWith(IWebIdService.PREFIX_WEBPATH)) {
+                hasWebId = true;
                 this.cmsPath = this.getWebIdService().pageUrlToFetchInfoService(this.cmsPath);
             }
 
@@ -671,14 +673,22 @@ public class CmsCommand extends DynamicCommand {
             }
 
             
-            if(  currentPage != null) {
-                cmsReadItemContext.setCmsReferrerNavigationPath(PagePathUtils.getNavigationPath(controllerContext,  currentPage.getId()));
-            }
-
-
             /* Lecture des informations de publication */
             if (this.cmsPath != null) {
                 try {
+                    
+                    // TESTE UNIQUEMENT SUR LES WEBID !!!
+                    if(currentPage != null && hasWebId) {
+                        cmsReadItemContext.setCmsReferrerNavigationPath(PagePathUtils.getNavigationPath(controllerContext,  currentPage.getId()));
+                        cmsReadItemContext.setDisplayLiveVersion(this.displayLiveVersion);
+                    }
+
+                    // Attention, cet appel peut modifier si nécessaire le
+                    // scope de cmsReadItemContext
+                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());     
+                    
+                    // Le path eventuellement en ID a été retranscrit en chemin
+                    this.cmsPath = pubInfos.getDocumentPath();
 
                     level = CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, this.cmsPath);
 
@@ -687,14 +697,6 @@ public class CmsCommand extends DynamicCommand {
                     if (level == Level.deny) {
                         throw new UserNotificationsException();
                     }
-
-
-                    // Attention, cet appel peut modifier si nécessaire le
-                    // scope de cmsReadItemContext
-                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
-
-                    // Le path eventuellement en ID a été retranscrit en chemin
-                    this.cmsPath = pubInfos.getDocumentPath();
 
 
 
@@ -712,6 +714,8 @@ public class CmsCommand extends DynamicCommand {
                     // TODO : gerer les cas d'erreurs
                     // return new
                     // UpdatePageResponse(currentPage.getId());
+                } finally {
+                    cmsReadItemContext.setCmsReferrerNavigationPath(null);
                 }
 
             }
