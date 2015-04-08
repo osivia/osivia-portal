@@ -43,7 +43,7 @@ public class InternationalizationService implements IInternationalizationService
 
     /** Customization service. */
     private ICustomizationService customizationService;
-    
+
     /** Class loader. */
     private ClassLoader cl;
 
@@ -53,9 +53,9 @@ public class InternationalizationService implements IInternationalizationService
      * Default constructor.
      */
     public InternationalizationService() {
-        
+
         super();
-        
+
         this.cl = Thread.currentThread().getContextClassLoader();
     }
 
@@ -64,7 +64,8 @@ public class InternationalizationService implements IInternationalizationService
      * {@inheritDoc}
      */
     public IBundleFactory getBundleFactory(ClassLoader classLoader) {
-        return new BundleFactory(this, classLoader);
+        IInternationalizationService mbean = InternationalizationUtils.getInternationalizationService();
+        return new BundleFactory(mbean, classLoader);
     }
 
 
@@ -108,10 +109,10 @@ public class InternationalizationService implements IInternationalizationService
 
             if (pattern == null) {
                 ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
-                
+
                 // Portal default result
                 Thread.currentThread().setContextClassLoader(this.cl);
-                
+
                 try {
                     resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
                     pattern = resourceBundle.getString(key);

@@ -14,9 +14,9 @@
  */
 package org.osivia.portal.core.cms;
 
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.core.controller.ControllerContext;
@@ -48,19 +48,19 @@ public class CMSServiceCtx {
     private String creationPath;
 
     private String forcedLivePath;
-    
+
     /** The referrer base path. */
     private String cmsReferrerNavigationPath;
 
- 
-    
+
+
     public String getCmsReferrerNavigationPath() {
-        return cmsReferrerNavigationPath;
+        return this.cmsReferrerNavigationPath;
     }
 
 
 
-    
+
     public void setCmsReferrerNavigationPath(String cmsReferrerNavigationPath) {
         this.cmsReferrerNavigationPath = cmsReferrerNavigationPath;
     }
@@ -100,20 +100,20 @@ public class CMSServiceCtx {
 
     private PortletRequest request;
     private HttpServletRequest servletRequest;
-	
+
     public HttpServletRequest getServletRequest() {
-        return servletRequest;
+        return this.servletRequest;
     }
 
 
 
-    
+
     public void setServletRequest(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
 
     private PortletContext portletCtx;
-	private RenderResponse response;
+    private MimeResponse response;
 	private String pageId;
 	private Object doc;
 
@@ -157,7 +157,7 @@ public class CMSServiceCtx {
 
     /**
      * Set portal controller context to initialized controller context and server invocation.
-     * 
+     *
      * @param portalControllerContext portal controller context
      */
     public void setPortalControllerContext(PortalControllerContext portalControllerContext) {
@@ -227,11 +227,11 @@ public class CMSServiceCtx {
 		this.request = request;
 	}
 
-	public RenderResponse getResponse() {
+    public MimeResponse getResponse() {
 		return this.response;
 	}
 
-	public void setResponse(RenderResponse response) {
+    public void setResponse(MimeResponse response) {
 		this.response = response;
 	}
 

@@ -1,3 +1,7 @@
 <%@ page contentType="text/html" isELIgnored="false"%>
 
-<div class="error">Erreur : ${exception.message}</div>
+
+<p class="text-danger">
+    <i class="halflings halflings-exclamation-sign"></i>
+    <span>${exception.message}</span>
+</p>

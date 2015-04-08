@@ -52,7 +52,6 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
-import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -92,7 +91,7 @@ public class PageMarkerUtils {
     }
 
     public static void dumpPageState(ControllerContext controllerCtx, Page page, String label) {
-        if (!windowlogger.isDebugEnabled()) {
+        if (!windowlogger.isDebugEnabled() && (page != null)) {
             return;
         }
 
@@ -193,7 +192,7 @@ public class PageMarkerUtils {
 
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
-        
+
         if( page != null)   {
         markerInfo.setPageId(page.getId());
 
@@ -217,9 +216,9 @@ public class PageMarkerUtils {
             }
             ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
             List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-            
-            
-            
+
+
+
             windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams, portletPath));
         }
 
@@ -246,7 +245,7 @@ public class PageMarkerUtils {
             markerInfo.setBreadcrumb(savedBreadcrum);
         }
 
-        
+
         // sauvegarde menu
         UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
         if (userPortal != null) {
@@ -280,7 +279,7 @@ public class PageMarkerUtils {
         if( refreshBack != null) {
             markerInfo.setRefreshBack(refreshBack);
         }
-        
+
         String mobileBackPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker");
         if( mobileBackPageMarker != null) {
             markerInfo.setMobileBackPageMarker(mobileBackPageMarker);
@@ -477,7 +476,7 @@ public class PageMarkerUtils {
                 for (PageMarkerInfo pagemarkerInfo : list) {
                     // Is it a subpage of the tab ?
 
-                    if (pagemarkerInfo.getPageId() != null && StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
+                    if ((pagemarkerInfo.getPageId() != null) && StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
                         newTabPath = "/portal" + pagemarkerInfo.getPageId().toString();
                         tabMarkerInfo = pagemarkerInfo;
                         break;
@@ -485,18 +484,18 @@ public class PageMarkerUtils {
                 }
             }
         }
-        
+
         /* Tab restoration */
 
         String backPageMarker = null;
 
-        
+
         if (request.getParameter("backPageMarker") != null) {
             backPageMarker = request.getParameter("backPageMarker");
         }
-     
-        
-        
+
+
+
 
 
 
@@ -562,8 +561,8 @@ public class PageMarkerUtils {
                 }
 
                 if (markerInfo != null) {
-                    
-                    
+
+
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
 
 
@@ -583,7 +582,7 @@ public class PageMarkerUtils {
                                 }
                             }
                         }
-                        
+
                         if( backPageMarker != null) {
                             restorePageInfo = markers.get(backPageMarker);
                             if( restorePageInfo != null)   {
@@ -738,8 +737,9 @@ public class PageMarkerUtils {
 
 
         Page page = null;
-        if( markerInfo.getPageId() != null)
+        if( markerInfo.getPageId() != null) {
             page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
+        }
 
         // Cas des pages dynamiques qui n'existent plus
         if (page != null) {
@@ -764,9 +764,9 @@ public class PageMarkerUtils {
                     // portal
 
                     WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
-                    
+
                     String windowCanonicalName = child.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-                    
+
 
                     controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, windowCanonicalName, newNS);
 
@@ -775,10 +775,11 @@ public class PageMarkerUtils {
                         additionnalState = ParametersStateString.create(additionnalState);
                     }
                     controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + windowCanonicalName, additionnalState);
-                    
-                    if( wInfo.getPortletPath() != null)
+
+                    if( wInfo.getPortletPath() != null) {
                         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + windowCanonicalName, wInfo.getPortletPath());
-                    
+                    }
+
                 }
             }
         }
@@ -811,7 +812,7 @@ public class PageMarkerUtils {
         }
 
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", null);
-        
+
         if (markerInfo.getMobileBackPageMarker() != null) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", markerInfo.getMobileBackPageMarker());
         }

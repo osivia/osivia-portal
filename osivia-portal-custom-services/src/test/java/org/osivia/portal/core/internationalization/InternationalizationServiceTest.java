@@ -15,7 +15,6 @@
 package org.osivia.portal.core.internationalization;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -61,14 +60,6 @@ public class InternationalizationServiceTest {
         EasyMock.replay(this.customizationServiceMock);
 
         this.internationalizationService.setCustomizationService(this.customizationServiceMock);
-    }
-
-
-    @Test
-    public final void testGetBundleFactory() {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(classLoader);
-        assertNotNull(bundleFactory);
     }
 
 

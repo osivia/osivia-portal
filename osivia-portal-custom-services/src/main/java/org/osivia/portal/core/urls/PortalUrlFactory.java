@@ -659,17 +659,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext) {
-    	return getRefreshPageUrl(portalControllerContext, false);
+    	return this.getRefreshPageUrl(portalControllerContext, false);
     }
 
     /**
      * {@inheritDoc}
      */
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext, boolean newContentNotify) {
-    
+
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-    
+
         PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                 Constants.ATTR_PAGE_ID);
 
@@ -677,14 +677,14 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
         // URL format
         URLFormat urlFormat = URLFormat.newInstance(false, true);
-        
+
         RefreshPageCommand resfreshCmd = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
-        
+
         if(newContentNotify) {
         	resfreshCmd.setEcmActionReturn("_NOTIFKEY_");
         	resfreshCmd.setNewDocId("_NEWID_");
         }
-        
+
         // URL
         return controllerContext.renderURL(resfreshCmd, urlContext, urlFormat);
     }
@@ -737,22 +737,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Back page marker
-        
+
         String backPageMarkerName = "osivia.backPageMarker";
-        if( mobile)
+        if( mobile) {
             backPageMarkerName = "osivia.backMobilePageMarker";
-        
+        }
+
         String refreshName = "osivia.refreshBack";
-        if( mobile)
-            refreshName = "osivia.mobileRefreshBack";       
-        
+        if( mobile) {
+            refreshName = "osivia.mobileRefreshBack";
+        }
+
         String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,backPageMarkerName );
         Boolean refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, refreshName));
 
         String backURL = null;
         if (backPageMarker != null) {
             PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
-            if (infos != null) {
+            if ((infos != null) && (infos.getPageId() != null)) {
                 PortalObjectId pageId = infos.getPageId();
 
                 URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
