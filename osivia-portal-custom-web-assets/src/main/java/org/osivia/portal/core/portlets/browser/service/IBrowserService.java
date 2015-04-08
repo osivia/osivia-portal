@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,24 +16,24 @@ package org.osivia.portal.core.portlets.browser.service;
 
 import javax.portlet.PortletException;
 
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONArray;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
  * Live content browser service interface.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public interface IBrowserService {
 
     /**
      * Browse live content for current node children only, in lazy loading JSON data.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param parentPath parent path, may be null for root node
+     * @param path parent path, may be null for root node
      * @return JSON data
      * @throws PortletException
      */
-    String browse(PortalControllerContext portalControllerContext, String parentPath) throws PortletException;
-
+    JSONArray browse(PortalControllerContext portalControllerContext, String path) throws PortletException;
 
 }

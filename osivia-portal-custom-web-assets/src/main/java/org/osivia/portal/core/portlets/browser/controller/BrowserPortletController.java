@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,36 +15,38 @@
 package org.osivia.portal.core.portlets.browser.controller;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.theme.impl.render.dynamic.json.JSONArray;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.portlet.PortalGenericPortlet;
 import org.osivia.portal.core.portlets.browser.service.IBrowserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.annotation.RenderMapping;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 import org.springframework.web.portlet.context.PortletContextAware;
 
 /**
- * Live content browser portlet Spring controller.
- * 
+ * Live content browser portlet controller.
+ *
  * @author Cédric Krommenhoek
+ * @see PortalGenericPortlet
  */
-@Controller(value = "browserPortletController")
+@Controller
 @RequestMapping(value = "VIEW")
-public class BrowserPortletController implements PortletContextAware {
+public class BrowserPortletController extends PortalGenericPortlet implements PortletContextAware {
 
     /** View path. */
     private static final String VIEW_PATH = "browser/view";
@@ -60,7 +62,7 @@ public class BrowserPortletController implements PortletContextAware {
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public BrowserPortletController() {
         super();
@@ -68,51 +70,57 @@ public class BrowserPortletController implements PortletContextAware {
 
 
     /**
-     * View page render action.
-     * 
+     * Render mapping.
+     *
      * @param request render request
      * @param response render response
-     * @return view page path
+     * @return view path
+     * @throws PortletException
      */
     @RenderMapping
-    public String view(RenderRequest request, RenderResponse response) {
+    public String view(RenderRequest request, RenderResponse response) throws PortletException {
         return VIEW_PATH;
     }
 
 
     /**
-     * Serve lazy content.
-     * 
-     * @param request resource request
-     * @param response resource response
-     * @param nodeId current node identifier
-     * @throws PortletException
-     * @throws IOException
+     * Exception handler.
+     *
+     * @param exception handled exception
+     * @return error path
      */
-    @ResourceMapping(value = "lazyContent")
-    public void serveLazyContent(ResourceRequest request, ResourceResponse response, @RequestParam(value = "nodeId", required = false) String nodeId)
-            throws PortletException, IOException {
-        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
-        String parentId = StringUtils.removeStart(nodeId, response.getNamespace());
-        String lazyContent = this.browserService.browse(portalControllerContext, parentId);
-
-        OutputStream output = response.getPortletOutputStream();
-        output.write(lazyContent.getBytes());
+    @ExceptionHandler(value = PortletException.class)
+    public String handleException(PortletException exception, PortletRequest request) {
+        request.setAttribute("exception", exception);
+        return ERROR_PATH;
     }
 
 
     /**
-     * Handle exception.
-     * 
-     * @param exception handled exception
-     * @return error page path
+     * Lazy loading resource mapping.
+     *
+     * @param request resource request
+     * @param response resource response
+     * @param path parent path, may be null for root node
+     * @throws PortletException
+     * @throws IOException
      */
-    @ExceptionHandler(value = PortletException.class)
-    public ModelAndView handleException(PortletException exception) {
-        ModelAndView mav = new ModelAndView();
-        mav.addObject("exception", exception);
-        mav.setViewName(ERROR_PATH);
-        return mav;
+    @ResourceMapping(value = "lazyLoading")
+    public void lazyLoading(ResourceRequest request, ResourceResponse response, @RequestParam(value = "path", required = false) String path)
+            throws PortletException, IOException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
+
+        // JSON data
+        JSONArray data = this.browserService.browse(portalControllerContext, path);
+
+        // Content type
+        response.setContentType("application/json");
+
+        // Content
+        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+        printWriter.write(data.toString());
+        printWriter.close();
     }
 
 
@@ -121,25 +129,6 @@ public class BrowserPortletController implements PortletContextAware {
      */
     public void setPortletContext(PortletContext portletContext) {
         this.portletContext = portletContext;
-    }
-
-
-    /**
-     * Getter for browserService.
-     * 
-     * @return the browserService
-     */
-    public IBrowserService getBrowserService() {
-        return this.browserService;
-    }
-
-    /**
-     * Setter for browserService.
-     * 
-     * @param browserService the browserService to set
-     */
-    public void setBrowserService(IBrowserService browserService) {
-        this.browserService = browserService;
     }
 
 }

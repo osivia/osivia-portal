@@ -814,21 +814,6 @@
             optional-attribute-name="CustomizationService"
             proxy-type="attribute">osivia:service=CustomizationService</depends>
     </mbean>
-    
-    <!-- CMS path service -->
-    <mbean
-        code="org.osivia.portal.core.path.CMSPathService"
-        name="osivia:service=CMSPathService"
-        xmbean-dd=""
-        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-        <xmbean />
-        <depends
-            optional-attribute-name="CmsServiceLocator"
-            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
-        <depends
-            optional-attribute-name="PortalURLFactory"
-            proxy-type="attribute">osivia:service=UrlFactory</depends>
-    </mbean>
 
     <!-- WebId service -->
     <mbean

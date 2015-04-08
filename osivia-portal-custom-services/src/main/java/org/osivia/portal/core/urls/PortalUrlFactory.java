@@ -192,7 +192,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             if (!defaultPortal.getName().equals(portalName)) {
                 if (!StringUtils.equals(portalName, "osivia-util")) {
                     portalPersistentName = portalName;
-                }   else    {
+                } else {
                     popup = true;
                     portalPersistentName = defaultPortal.getName();
                     pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);

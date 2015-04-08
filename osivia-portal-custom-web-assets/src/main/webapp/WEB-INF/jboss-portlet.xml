@@ -4,6 +4,7 @@
 
 <portlet-app>
 
+    <!-- Selection -->
 	<portlet>
         <portlet-name>osivia-portal-custom-web-assets-selectionPortlet</portlet-name>
   
@@ -19,6 +20,8 @@
         </portlet-info>
     </portlet>
     
+    
+    <!-- Site map -->
     <portlet>
         <portlet-name>osivia-portal-custom-web-assets-sitemapPortlet</portlet-name>
   
@@ -28,6 +31,18 @@
         
     </portlet>
     
+    
+    <!-- Browser -->
+    <portlet>
+        <portlet-name>osivia-portal-browser</portlet-name>
+        
+        <header-content>
+            <script type="text/javascript" src="/js/browser.js"></script>
+        </header-content>
+    </portlet>
+    
+    
+    <!-- Customizer -->
     <portlet>
         <portlet-name>osivia-portal-regions-customizerPortlet</portlet-name>
     </portlet>
