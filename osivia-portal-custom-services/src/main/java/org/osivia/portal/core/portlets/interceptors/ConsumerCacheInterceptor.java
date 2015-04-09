@@ -234,8 +234,10 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                             && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
                         sharedCacheID = computedCacheID(sharedCacheID, window, publicNavigationalState);
                         cachedEntry = (CacheEntry) userContext.getAttribute("sharedcache." + sharedCacheID);
-                        skipNavigationCheck = true;
-                        sharedCache = true;
+                        if( cachedEntry != null) {
+                            skipNavigationCheck = true;
+                            sharedCache = true;
+                        }
                     }
                 }
 
