@@ -8,8 +8,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">
-        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_IMPORT_CONFIG')}" />
+    <p class="lead">
+        <i class="glyphicons glyphicons-disk-import"></i>
+        <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_IMPORT_CONFIG')}" /></span>
     </p>
 
     <h:form>
@@ -31,6 +32,7 @@
     </h:form>
 
     <h:panelGroup id="import-error-messages">
-        <h:outputText value="#{importBean.messages}" class="messages-display error" />
+        <h:outputText value="#{importBean.messages}" />
     </h:panelGroup>
+    
 </div>

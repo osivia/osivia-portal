@@ -8,17 +8,17 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">
-        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_THEME_CONFIG')}" />
+    <p class="lead">
+        <i class="glyphicons glyphicons-coat-hanger"></i>
+        <span> Thème</span>
     </p>
 
+    <label>
+        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_THEME_CONFIG')}" />
+    </label>
+
     <a4j:form>
-        <h:selectOneListbox
-            onChange="submit();"
-            immediate="true"
-            required="true"
-            size="6"
-            value="#{themeBean.theme}">
+        <h:selectOneListbox onChange="submit();" immediate="true" required="true" size="6" value="#{themeBean.theme}">
             <f:selectItems value="#{themeBean.themes}" />
         </h:selectOneListbox>
         <br />

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
@@ -21,6 +21,27 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.lesscss</groupId>
+                <artifactId>lesscss-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
+                    <outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
+                    <compress>true</compress>
+                    <includes>
+                        <include>*.less</include>
+                    </includes>
+                    <outputFileFormat>{fileName}.min.css</outputFileFormat>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <inherited>true</inherited>
                 <configuration>
@@ -29,8 +50,9 @@
                 </configuration>
             </plugin>
         </plugins>
-
     </build>
+    
+    
     <profiles>
         <profile>
             <id>jbossportal</id>
@@ -60,9 +82,9 @@
                 </plugins>
             </build>
         </profile>
-
-
     </profiles>
+    
+    
     <dependencies>
         <dependency>
             <groupId>org.jboss.portletbridge</groupId>
@@ -98,7 +120,6 @@
             <groupId>javax.faces</groupId>
             <artifactId>jsf-impl</artifactId>
         </dependency>
-
     </dependencies>
+    
 </project>
-

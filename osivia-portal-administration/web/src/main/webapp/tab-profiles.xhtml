@@ -8,98 +8,58 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:c="http://java.sun.com/jstl/core">
 
-    <p class="tab-sub-title">
-        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_CONFIG')}" />
+    <p class="lead">
+        <i class="glyphicons glyphicons-group"></i>
+        <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_CONFIG')}" /></span>
     </p>
 
     <div class="admininistration-adaptive-container">
         <a4j:form id="profiles-form">
-            <div class="administration-commands">
-                <!-- Add -->
-                <a4j:commandLink
-                    id="add-profile-action"
-                    action="#{profilesBean.addProfile}"
-                    oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
-                    <h:graphicImage
-                        value="/images/icons/create_doc.gif"
-                        alt="#{internationalizationBean.getString('ADD')}"
-                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_ADD')}" />
-                </a4j:commandLink>
-            
-                <!-- Edit -->
-                <div class="administration-command-on">
-                    <a4j:commandLink
-                        id="edit-profile-action"
-                        action="#{profilesBean.editProfile}"
-                        oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
-                        <h:graphicImage
-                            value="/images/icons/edit.png"
-                            alt="#{internationalizationBean.getString('EDIT')}"
-                            title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
+            <div class="form-group">
+                <p>
+                    <!-- Add -->
+                    <a4j:commandLink id="add-profile-action" action="#{profilesBean.addProfile}" oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
+                        <h:graphicImage value="/images/icons/create_doc.gif" alt="#{internationalizationBean.getString('ADD')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_ADD')}" />
                     </a4j:commandLink>
-                </div>
-                <div class="administration-command-off">
-                    <h:graphicImage
-                        value="/images/icons/edit.png"
-                        alt="#{internationalizationBean.getString('EDIT')}"
-                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
-                </div>
+                
+                    <!-- Edit -->
+                    <span class="administration-command-on">
+                        <a4j:commandLink id="edit-profile-action" action="#{profilesBean.editProfile}" oncomplete="javascript:Richfaces.showModalPanel('popup-profile',{left:'auto',top:'auto'})">
+                            <h:graphicImage value="/images/icons/edit.png" alt="#{internationalizationBean.getString('EDIT')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
+                        </a4j:commandLink>
+                    </span>
+                    <span class="administration-command-off">
+                        <h:graphicImage value="/images/icons/edit.png" alt="#{internationalizationBean.getString('EDIT')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_EDIT')}" />
+                    </span>
+                
+                    <!-- Delete -->
+                    <span class="administration-command-on">
+                        <a4j:commandLink id="delete-profile-action" action="#{profilesBean.deleteProfile}" reRender="profiles-list">
+                            <h:graphicImage value="/images/icons/delete.gif" alt="#{internationalizationBean.getString('DELETE')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
+                        </a4j:commandLink>
+                    </span>
+                    <span class="administration-command-off">
+                        <h:graphicImage value="/images/icons/delete.gif" alt="#{internationalizationBean.getString('DELETE')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
+                    </span>
+                </p>
             
-                <!-- Delete -->
-                <div class="administration-command-on">
-                    <a4j:commandLink
-                        id="delete-profile-action"
-                        action="#{profilesBean.deleteProfile}"
-                        reRender="profiles-list">
-                        <h:graphicImage
-                            value="/images/icons/delete.gif"
-                            alt="#{internationalizationBean.getString('DELETE')}"
-                            title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
-                    </a4j:commandLink>
-                </div>
-                <div class="administration-command-off">
-                    <h:graphicImage
-                        value="/images/icons/delete.gif"
-                        alt="#{internationalizationBean.getString('DELETE')}"
-                        title="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_DELETE')}" />
+                <!-- List -->
+                <rich:orderingList id="profiles-list" value="#{profilesBean.profiles}" var="profile" controlsType="button" onclick="toggleCommands(this.id);" selection="#{profilesBean.selectedProfiles}" converter="profileConverter">
+                    <rich:column>
+                        <f:facet name="header">
+                            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_LIST_HEADER')}" />
+                        </f:facet>
+                        <h:outputText value="#{profile.name}" />
+                    </rich:column>
+                    <a4j:support event="onchange" immediate="true" reRender="administration-commands" />
+                </rich:orderingList>
+        
+                <!-- Buttons -->
+                <div class="administration-commands">
+                    <a4j:commandButton id="refresh-profiles-action" value="#{internationalizationBean.getString('REFRESH')}" action="#{profilesBean.refreshProfiles}" reRender="profiles-list" />
+                    <a4j:commandButton id="save-profiles-action" value="#{internationalizationBean.getString('SAVE')}" action="#{profilesBean.save}" reRender="profiles-messages" />
                 </div>
             </div>
-            
-            <!-- List -->
-            <rich:orderingList
-                id="profiles-list"
-                value="#{profilesBean.profiles}"
-                var="profile"
-                controlsType="button"
-                onclick="toggleCommands(this.id);"
-                selection="#{profilesBean.selectedProfiles}"
-                converter="profileConverter">
-                <rich:column>
-                    <f:facet name="header">
-                        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_PROFILES_LIST_HEADER')}" />
-                    </f:facet>
-                    <h:outputText value="#{profile.name}" />
-                </rich:column>
-                <a4j:support
-                    event="onchange"
-                    immediate="true"
-                    reRender="administration-commands" />
-            </rich:orderingList>
-    
-            <!-- Buttons -->
-            <div class="administration-commands">
-                <a4j:commandButton
-                    id="refresh-profiles-action"
-                    value="#{internationalizationBean.getString('REFRESH')}"
-                    action="#{profilesBean.refreshProfiles}"
-                    reRender="profiles-list" />
-                <a4j:commandButton
-                    id="save-profiles-action"
-                    value="#{internationalizationBean.getString('SAVE')}"
-                    action="#{profilesBean.save}"
-                    reRender="profiles-messages" />
-            </div>
-            
         </a4j:form>
     </div>
 
@@ -108,7 +68,7 @@
     </f:subview>
     
     <h:panelGroup id="profiles-messages">
-        <h:outputText value="#{profilesBean.messages}" class="messages-display" />
+        <h:outputText value="#{profilesBean.messages}" />
     </h:panelGroup>
 
 </div>
