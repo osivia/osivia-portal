@@ -3,11 +3,7 @@ $JQry(document).ready(function() {
 	
 	// Accessible dropdown menu without Javascript
 	$JQry("*").removeClass("accessible-dropdown-menu");
-	
-	
-	// Drawer
-	$JQry("[data-toggle=drawer]").click(toggleDrawer);
-	
+
 	
 	// Tooltips initialization
 	$JQry("[data-toggle=tooltip]").tooltip({container: 'body'});
@@ -24,7 +20,7 @@ $JQry(document).ready(function() {
 
 
 // Drawer
-function toggleDrawer() {
+function toggleDrawer() {	
 	var $drawer = $JQry("#drawer");
 	if ($drawer.hasClass("active")) {
 		// Hide

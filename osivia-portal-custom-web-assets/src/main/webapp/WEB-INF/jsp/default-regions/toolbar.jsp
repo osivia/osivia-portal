@@ -9,7 +9,7 @@
             <div class="navbar-header">
                 <div class="visible-xs">
                     <!-- Menu -->
-                    <button type="button" data-toggle="drawer" class="btn btn-link navbar-btn pull-left">
+                    <button type="button" onclick="toggleDrawer()" data-toggle="drawer" class="btn btn-link navbar-btn pull-left">
                         <span>
                             <i class="halflings halflings-menu-hamburger"></i>
                             <i class="halflings halflings-arrow-right"></i>
