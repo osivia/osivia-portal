@@ -113,29 +113,33 @@ public class WebIdService implements IWebIdService {
 		// compute a path with webIDs of the parents
 		ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
-        String[] splittedPath = StringUtils.split(cmsItem.getPath(), SLASH);
-        StringBuilder pathToCheck = new StringBuilder();
-        pathToCheck.append(SLASH);
-        pathToCheck.append(splittedPath[0]);
         StringBuilder parentWebIdPath = new StringBuilder();
-        for (int i = 1; i < (splittedPath.length - 1); i++) {
+		
+		if( cmsItem.getPath() != null)    {
+
+            String[] splittedPath = StringUtils.split(cmsItem.getPath(), SLASH);
+            StringBuilder pathToCheck = new StringBuilder();
             pathToCheck.append(SLASH);
-            pathToCheck.append(splittedPath[i]);
-
-            try {
-                CMSItem parentItem = cmsService.getContent(cmsContext, pathToCheck.toString());
-                String parentWebId = parentItem.getWebId();
-
-                if (parentWebId != null) {
-                    if (StringUtils.isNotBlank(parentWebIdPath.toString())) {
-                        parentWebIdPath.append(SLASH);
+            pathToCheck.append(splittedPath[0]);
+            for (int i = 1; i < (splittedPath.length - 1); i++) {
+                pathToCheck.append(SLASH);
+                pathToCheck.append(splittedPath[i]);
+    
+                try {
+                    CMSItem parentItem = cmsService.getContent(cmsContext, pathToCheck.toString());
+                    String parentWebId = parentItem.getWebId();
+    
+                    if (parentWebId != null) {
+                        if (StringUtils.isNotBlank(parentWebIdPath.toString())) {
+                            parentWebIdPath.append(SLASH);
+                        }
+                        parentWebIdPath.append(parentWebId);
                     }
-                    parentWebIdPath.append(parentWebId);
+                } catch (CMSException e) {
+                    // Do nothing
                 }
-            } catch (CMSException e) {
-                // Do nothing
             }
-        }
+		}
 
 
         StringBuilder webPath = new StringBuilder();
