@@ -1,16 +1,15 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
- *
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.cms;
 
@@ -21,160 +20,178 @@ import java.util.Map;
 
 import org.osivia.portal.api.cache.services.ICacheDataListener;
 
-
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class CMSBinaryContent.
+ * CMS binary content.
+ *
+ * @see ICacheDataListener
  */
 public class CMSBinaryContent implements ICacheDataListener {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -3209402949942533453L;
-
-	
+    /** Default generated id. */
+    private static final long serialVersionUID = 1L;
 
     // 2.0.22 : to stream big files
     /** The Constant largeFile. */
     public static final Map<String, CMSBinaryContent> largeFile = new Hashtable<String, CMSBinaryContent>();
-    
 
-	/** The name. */
-	private String name;
-	
-	   
-    /** The long live session. */
-    public Object longLiveSession;
 
-    
-    
+    /** Name. */
+    private String name;
+    /** Long live session. */
+    private Object longLiveSession;
+    /** Stream. */
+    private InputStream stream;
+    /** Mime type. */
+    private String mimeType;
+    /** File. */
+    private File file;
+    /** File size. */
+    private Long fileSize;
+
+
     /**
-     * Gets the long live session.
-     *
-     * @return the long live session
+     * Constructor.
      */
-    public Object getLongLiveSession() {
-        return longLiveSession;
+    public CMSBinaryContent() {
+        super();
+    }
+
+
+    /* Explicitly removed from cache : new cache has replaced old value */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.osivia.portal.api.cache.services.ICacheDataListener#remove()
+     */
+    public void remove() {
+        if (this.file != null) {
+            this.file.delete();
+            this.file = null;
+        }
+
+    }
+
+    /* Derefrenced files : ie session closed */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#finalize()
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        if (this.file != null) {
+            this.file.delete();
+            this.file = null;
+        }
+    }
+
+
+    /**
+     * Getter for name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
-     * Sets the long live session.
+     * Setter for name.
      *
-     * @param longLiveSession the new long live session
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Getter for longLiveSession.
+     *
+     * @return the longLiveSession
+     */
+    public Object getLongLiveSession() {
+        return this.longLiveSession;
+    }
+
+    /**
+     * Setter for longLiveSession.
+     *
+     * @param longLiveSession the longLiveSession to set
      */
     public void setLongLiveSession(Object longLiveSession) {
         this.longLiveSession = longLiveSession;
     }
 
-    
-    /** The stream. */
-    private InputStream stream;
-
-    
     /**
-     * Gets the stream.
+     * Getter for stream.
      *
      * @return the stream
      */
     public InputStream getStream() {
-        return stream;
+        return this.stream;
     }
 
-    
     /**
-     * Sets the stream.
+     * Setter for stream.
      *
-     * @param stream the new stream
+     * @param stream the stream to set
      */
     public void setStream(InputStream stream) {
         this.stream = stream;
     }
-    
 
-	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Getter for mimeType.
+     *
+     * @return the mimeType
+     */
+    public String getMimeType() {
+        return this.mimeType;
+    }
 
-	/**
-	 * Sets the name.
-	 *
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Setter for mimeType.
+     *
+     * @param mimeType the mimeType to set
+     */
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 
-	/**
-	 * Gets the mime type.
-	 *
-	 * @return the mime type
-	 */
-	public String getMimeType() {
-		return mimeType;
-	}
+    /**
+     * Getter for file.
+     *
+     * @return the file
+     */
+    public File getFile() {
+        return this.file;
+    }
 
-	/**
-	 * Sets the mime type.
-	 *
-	 * @param mimeType the new mime type
-	 */
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
+    /**
+     * Setter for file.
+     *
+     * @param file the file to set
+     */
+    public void setFile(File file) {
+        this.file = file;
+    }
 
+    /**
+     * Getter for fileSize.
+     *
+     * @return the fileSize
+     */
+    public Long getFileSize() {
+        return this.fileSize;
+    }
 
-	/** The mime type. */
-	private String mimeType;
-	
-	/** The file. */
-	private File file;
-
-	/**
-	 * Gets the file.
-	 *
-	 * @return the file
-	 */
-	public File getFile() {
-		return file;
-	}
-
-	/**
-	 * Sets the file.
-	 *
-	 * @param file the new file
-	 */
-	public void setFile(File file) {
-		this.file = file;
-	}
-
-	/* Explicitly removed from cache : new cache has replaced old value */
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.cache.services.ICacheDataListener#remove()
-	 */
-	public void remove() {
-		if( file != null)	{
-			file.delete();
-			file = null;
-		}
-		
-	}
-	
-	/* Derefrenced files : ie session closed */
-	/* (non-Javadoc)
-	 * @see java.lang.Object#finalize()
-	 */
-	protected void finalize() throws Throwable	{
-		if( file != null)	{
-			file.delete();
-			file = null;
-		}
-		
-	}
-	
+    /**
+     * Setter for fileSize.
+     *
+     * @param fileSize the fileSize to set
+     */
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
 
 }
