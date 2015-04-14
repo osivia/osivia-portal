@@ -679,13 +679,10 @@ public class CmsCommand extends DynamicCommand {
                     
                     // TESTE UNIQUEMENT SUR LES WEBID !!!
                     if(hasWebId ) {
-                            if (currentPage != null) {
-                                cmsReadItemContext.setCmsReferrerNavigationPath(currentPage.getProperty("osivia.cms.basePath"));
-                            } 
-                            else    {
-                                // CAS DES PERMALIENS
+                            if (currentPage == null) {
+                                 // CAS DES PERMALIENS
                                 // prendre le workspace par défaut (les permaliens des proxys distants ne sont pas gérés en webid)
-                                // Sinon, l'opération renverra un proxy distant par défaut
+                                // Sinon, l'opération renverrait un proxy distant par défaut
                                 cmsReadItemContext.setDisplayLiveVersion("1");
                             }
                         }
