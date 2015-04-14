@@ -71,6 +71,10 @@ $JQry(document).ready(function() {
 					},
 					cache : false
 				};
+			},
+			
+			loadChildren : function(event, data) {
+				parent.$JQry.fancybox.update();
 			}
 		});
 	});
