@@ -248,15 +248,11 @@ function updatePortletContent(item, url) {
 		ajaxCall = false;
 	}
 
-	if (Element.up(item, ".no-ajax-link") != null) {
+	if (!item.hasClassName("ajax-link") && (item.hasClassName("no-ajax-link") || (Element.up(item, ".no-ajax-link") != null))) {
 		ajaxCall = false;
 	}
 
-	if (item.hasClassName("no-ajax-link")) {
-		ajaxCall = false;
-	}
-
-	if (ajaxCall == true) {
+	if (ajaxCall) {
 		// Set URL
 		var options = new Object();
 
