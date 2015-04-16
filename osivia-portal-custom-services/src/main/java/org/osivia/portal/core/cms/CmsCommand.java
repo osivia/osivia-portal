@@ -1010,7 +1010,16 @@ public class CmsCommand extends DynamicCommand {
                         CMSItem publishSpace = null;
                         try {
                             //publishSpace = getCMSService().getPortalPublishSpace(userCtx, cmsPath.toString());
+                            
+                            
+                            
+                            
                             if (pubInfos.getPublishSpacePath() != null) {
+                                
+                                // juste pour tester les droits à l'espace
+                                getCMSService().getPublicationInfos(cmsReadItemContext, pubInfos.getPublishSpacePath());
+                                
+                                
                                 publishSpace =  getCMSService().getSpaceConfig(cmsReadItemContext, pubInfos.getPublishSpacePath());
                             }
 
