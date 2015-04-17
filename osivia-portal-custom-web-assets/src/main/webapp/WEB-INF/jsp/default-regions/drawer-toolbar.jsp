@@ -42,7 +42,6 @@
                     <div class="media-body">
                         <div>
                             <p class="text-middle text-overflow">
-                                <img src="${pageContext.request.contextPath}/img/header/brand.png" alt="">
                                 <span><is:getProperty key="BRAND" /></span>
                             </p>
                         </div>
@@ -61,9 +60,30 @@
                             </c:when>
                             
                             <c:otherwise>
-                                <a href="${requestScope['osivia.toolbar.signOutURL']}" class="btn btn-link">
-                                    <i class="halflings halflings-log-out"></i>
-                                </a>
+                                <div class="btn-group dropdown">
+                                    <a href="#" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+                                        <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" />
+                                        <small><i class="halflings halflings-triangle-bottom"></i></small>
+                                    </a>
+
+                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                        <li class="dropdown-header" role="presentation">${requestScope['osivia.toolbar.person'].displayName}</li>
+                                    
+                                        <li role="presentation">
+                                            <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
+                                                <i class="glyphicons glyphicons-nameplate"></i>
+                                                <span><is:getProperty key="MY_PROFILE" /></span>
+                                            </a>
+                                        </li>
+                                        
+                                        <li role="presentation">
+                                            <a href="${requestScope['osivia.toolbar.signOutURL']}" data-toggle="collapse" role="menuitem">
+                                                <i class="halflings halflings-log-out"></i>
+                                                <span><is:getProperty key="LOGOUT" /></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </c:otherwise>
                         </c:choose>
                     </div>

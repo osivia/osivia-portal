@@ -3,6 +3,47 @@
 <%@ taglib uri="internationalization" prefix="is"%>
 
 
+<c:set var="appsLogout" value="${requestScope['osivia.demo.customizer.applications']}" />
+<c:set var="searchPlaceholder"><is:getProperty key="SEARCH_PLACEHOLDER" /></c:set>
+<c:set var="logoutMessage"><is:getProperty key="LOGOUT_MESSAGE" /></c:set>
+
+
+<script type="text/javascript">
+
+// Popover
+$JQry("#logout-popover").popover({
+    container : "body"
+});
+
+
+function callLogout() {
+    var $popover = $JQry("#logout-popover");
+    
+    // Disabled dropdown menu
+    var $menu = $popover.parent();
+    $menu.addClass("disabled");
+    $menu.find("[data-toggle=dropdown]").addClass("disabled");
+    
+    // Popover
+    $popover.popover("show");
+    
+    var delog = "";
+
+    <c:forEach var="app" items="${appsLogout}" varStatus="status" >
+        delog += "<img src='${app}' />";
+    </c:forEach>
+
+    $("disconnection").update(delog);
+    window.setTimeout("portalLogout()", 3000)
+}
+
+function portalLogout() {
+    document.location = "${requestScope['osivia.toolbar.signOutURL']}";
+}
+
+</script>
+
+
 <div class="toolbar">
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
@@ -39,10 +80,14 @@
                     </div>
 
                     <!-- Title -->
-                    <div>
+                    <div class="clearfix">
                         <p class="navbar-text text-overflow">${requestScope['osivia.header.title']}</p>
                     </div>
                 </div>
+                
+                
+                <!-- Brand -->
+                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs"><is:getProperty key="BRAND" /></a>
             </div>
                 
             <div class="collapse navbar-collapse">
@@ -64,33 +109,54 @@
                         <c:out value="${requestScope['osivia.toolbar.administrationContent']}" escapeXml="false" />
     
                         <!-- User links -->
-                        <ul class="nav navbar-nav navbar-right">
-                            <!-- User name -->
+                        <ul class="nav navbar-nav navbar-right">                        
+                            <!-- User bar -->
                             <li>
-                                <p class="navbar-text">
-                                    <i class="halflings halflings-user"></i>
-                                    <span>${requestScope['osivia.toolbar.principal'].name}</span>
-                                </p>
-                            </li>
-                            
-                            <!-- Logout -->
-                            <li>
-                                <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
-                                    <i class="halflings halflings-log-out"></i>
-                                    <span><is:getProperty key="LOGOUT" /></span>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" />
+                                    <span>${requestScope['osivia.toolbar.person'].displayName}</span>
+                                    <span class="caret"></span>
                                 </a>
+                                
+                                <div id="logout-popover" data-content="${logoutMessage}" data-placement="bottom"></div>
+                                
+                                <ul class="dropdown-menu" role="menu">
+                                    <li role="presentation">
+                                        <a role="menuitem" href="${requestScope['osivia.toolbar.myprofile']}">
+                                            <i class="glyphicons glyphicons-nameplate"></i>
+                                            <span><is:getProperty key="MY_PROFILE" /></span>
+                                        </a>
+                                    </li>
+                                    <li role="presentation">
+                                        <a role="menuitem" href="#" onclick="callLogout()">
+                                            <i class="halflings halflings-log-out"></i>
+                                            <span><is:getProperty key="LOGOUT" /></span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
     
                             <!-- Refresh -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
                                     <i class="halflings halflings-repeat"></i>
-                                    <span><is:getProperty key="REFRESH_PAGE" /></span>
+                                    <span class="hidden-sm"><is:getProperty key="REFRESH_PAGE" /></span>
                                 </a>
                             </li>
                         </ul>
                     </c:otherwise>
                 </c:choose>
+                
+                
+                <!-- AJAX waiter-->
+                <div class="nav navbar-nav navbar-right">
+                    <p class="navbar-text ajax-waiter">
+                        <span class="label label-info">
+                            <i class="halflings halflings-refresh"></i>
+                            <span><is:getProperty key="AJAX_REFRESH" /></span>
+                        </span>
+                    </p>
+                </div>
             </div>
         </div>
     </nav>
