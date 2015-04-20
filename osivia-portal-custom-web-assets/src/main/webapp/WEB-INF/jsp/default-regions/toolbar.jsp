@@ -1,9 +1,9 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="internationalization" prefix="is"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="internationalization" prefix="is" %>
 
 
-<c:set var="appsLogout" value="${requestScope['osivia.demo.customizer.applications']}" />
+<c:set var="appsLogout" value="${requestScope['osivia.sso.applications']}" />
 <c:set var="searchPlaceholder"><is:getProperty key="SEARCH_PLACEHOLDER" /></c:set>
 <c:set var="logoutMessage"><is:getProperty key="LOGOUT_MESSAGE" /></c:set>
 
@@ -161,3 +161,6 @@ function portalLogout() {
         </div>
     </nav>
 </div>
+
+<!-- Technical div for applications disconnection -->
+<div id="disconnection" class="hidden"></div>
