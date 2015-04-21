@@ -199,4 +199,8 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         synchronizeSortedModules();
 
     }
+
+	public UserDatasModuleMetadatas getModule(String name) {
+		return userModules.get(name);
+	}
 }

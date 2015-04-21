@@ -42,6 +42,14 @@ public interface IUserDatasModule {
     /**
      * Compute user datas into a DirectoryPerson object
      * 
+     * @param username the name of the user
+     * @return the connected user
+     */
+    public DirectoryPerson computeUser(String username);
+    
+    /**
+     * Compute user datas into a DirectoryPerson object
+     * 
      * @param request the request
      * @return the connected user
      */

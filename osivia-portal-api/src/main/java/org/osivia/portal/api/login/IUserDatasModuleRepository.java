@@ -43,8 +43,15 @@ public interface IUserDatasModuleRepository {
      * Force reloading of current user datas.
      *
      * @param moduleMetadatas the module metadatas
-     */
-	
+     */	
 	public void reload(PortletRequest request);
+	
+	
+	/**
+	 * Get a module
+	 * @param name
+	 * @return the module
+	 */
+	public UserDatasModuleMetadatas getModule(String name);
 	
 }
