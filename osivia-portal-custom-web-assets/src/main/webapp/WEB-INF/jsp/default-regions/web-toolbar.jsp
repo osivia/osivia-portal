@@ -11,45 +11,57 @@
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <!-- Toggle drawer menu button -->
-                <button type="button" class="drawer-toggle-btn btn navbar-btn pull-left" data-toggle="drawer">
-                    <i class="halflings halflings-menu-hamburger"></i>
-                    <span class="text"><is:getProperty key="MENU" /></span>
-                </button>
-                
-                <!-- Toggle navigation menu button -->
-                <button type="button" class="btn navbar-btn visible-xs pull-left" data-toggle="navigation-menu">
-                    <i class="glyphicons halflings th"></i>
-                </button>
-    
-                <!-- Toggle toolbar menu button -->
-                <button type="button" class="btn navbar-btn visible-xs pull-right" data-toggle="collapse" data-target="#toolbar-content">
-                    <i class="glyphicons halflings cog"></i>
-                </button>
-    
-                <!-- Search -->
-                <form class="navbar-form visible-xs" onsubmit="return onsubmitGlobalSearch(this);" method="post" role="search">
-                    <div class="form-group">
-                        <label class="sr-only" for="search-toolbar-input">Search</label>
-                        <div class="input-group">
-                            <input id="search-toolbar-input" type="text" name="keywords" class="form-control" placeholder='<is:getProperty key="SEARCH_PLACEHOLDER" />'>
-                            <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default"><i class="halflings halflings-search"></i></button>
-                            </span>
+                <div class="visible-xs">
+                    <!-- Menu -->
+                    <button type="button" onclick="toggleDrawer()" data-toggle="drawer" class="btn btn-link navbar-btn pull-left">
+                        <span>
+                            <i class="halflings halflings-menu-hamburger"></i>
+                            <i class="halflings halflings-arrow-right"></i>
+                        </span>
+                    </button>
+                    
+                    <!-- State items -->
+                    <c:forEach var="stateItem" items="${requestScope['osivia.toolbar.menubar.stateItems']}">
+                        <div class="pull-right">
+                            <p class="navbar-text"
+                                <c:if test="${not empty stateItem.title}">title="${stateItem.title}" data-toggle="tooltip" data-placement="bottom"</c:if>
+                            >
+                                <span class="${stateItem.htmlClasses}">
+                                    <i class="${stateItem.glyphicon}"></i>
+                                </span>
+                            </p>
                         </div>
+                    </c:forEach>
+
+                    <!-- AJAX waiter-->
+                    <div class="pull-right">
+                        <p class="navbar-text ajax-waiter">
+                            <span class="label label-info">
+                                <i class="halflings halflings-refresh"></i>
+                            </span>
+                        </p>
                     </div>
-                </form>
+
+                    <!-- Title -->
+                    <div class="clearfix">
+                        <p class="navbar-text text-overflow">${requestScope['osivia.header.title']}</p>
+                    </div>
+                </div>
+                
+                
+                <!-- Brand -->
+                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs"><is:getProperty key="BRAND" /></a>
             </div>
     
-            <div id="toolbar-content" class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse">
                 <c:choose>
                     <c:when test="${empty requestScope['osivia.toolbar.principal']}">
-                        <ul class="nav navbar-nav navbar-right offline">
+                        <ul class="nav navbar-nav navbar-right">
                             <!-- Login -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.loginURL']}" class="navbar-link">
                                     <i class="halflings halflings-log-in"></i>
-                                    <is:getProperty key="LOGIN" />
+                                    <span><is:getProperty key="LOGIN" /></span>
                                 </a>
                             </li>
                         </ul>
@@ -60,19 +72,26 @@
                         <c:out value="${requestScope['osivia.toolbar.administrationContent']}" escapeXml="false" />
       
                         <!-- User links -->
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="hidden-xs">
-                                <p class="navbar-text">
-                                    <i class="halflings halflings-user"></i>
-                                    <span>${requestScope['osivia.toolbar.principal'].name}</span>
-                                </p>
-                            </li>
+                        <ul class="nav navbar-nav navbar-right">                        
+                            <!-- User bar -->
                             <li>
-                                <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
-                                    <i class="halflings halflings-log-out"></i>
-                                    <span class="hidden-sm"><is:getProperty key="LOGOUT" /></span>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="halflings halflings-user"></i>
+                                    <span>${requestScope['osivia.toolbar.person'].displayName}</span>
+                                    <span class="caret"></span>
                                 </a>
+
+                                <ul class="dropdown-menu" role="menu">
+                                    <li role="presentation">
+                                        <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
+                                            <i class="halflings halflings-log-out"></i>
+                                            <span><is:getProperty key="LOGOUT" /></span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
+    
+                            <!-- Refresh -->
                             <li>
                                 <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
                                     <i class="halflings halflings-repeat"></i>
@@ -82,6 +101,17 @@
                         </ul>
                     </c:otherwise>
                 </c:choose>
+                
+                
+                <!-- AJAX waiter-->
+                <div class="nav navbar-nav navbar-right">
+                    <p class="navbar-text ajax-waiter">
+                        <span class="label label-info">
+                            <i class="halflings halflings-refresh"></i>
+                            <span><is:getProperty key="AJAX_REFRESH" /></span>
+                        </span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>

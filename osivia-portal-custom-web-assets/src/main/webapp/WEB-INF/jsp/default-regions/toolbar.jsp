@@ -45,7 +45,7 @@ function portalLogout() {
 
 
 <div class="toolbar">
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
                 <div class="visible-xs">
@@ -159,7 +159,7 @@ function portalLogout() {
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 </div>
 
 <!-- Technical div for applications disconnection -->
