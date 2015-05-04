@@ -105,6 +105,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-ui/jquery-ui-1.11.3.min.js'></script>");
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
 
+        // jQuery Mobile
+        this.writeResource(out,
+                "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-mobile/jquery.mobile.custom.min.js'></script>");
+
 
         //
         Map<?, ?> results = page.getWindowContextMap();
@@ -155,6 +159,11 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // JSTree
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/jstree/jquery.jstree.js'></script>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/jstree-integration.js'></script>");
+
+        // bxSlider
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.css'>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/bxslider-integration.js'></script>");
 
         // Glyphicons
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons.css'>");
