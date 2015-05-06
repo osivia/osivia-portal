@@ -13,6 +13,8 @@
  */
 package org.osivia.portal.core.cms;
 
+import java.util.Calendar;
+
 
 
 
@@ -48,6 +50,37 @@ public class CMSExtendedDocumentInfos {
     };
 
     private SubscriptionStatus subscriptionStatus;
+    
+    public enum LockStatus {
+        /** Default state : can lock */
+        can_lock,
+        /** Can uunlock */
+        can_unlock,
+        /** a lock is set and is not removable by this user*/
+        locked,
+        /** No lock avaliable (proxies, versions, ...) */
+        no_lock;    	
+    }
+    
+    /** Lock status */
+    private LockStatus lockStatus;
+    
+    /** Owner of the lock */
+    private String lockOwner;
+    
+    /** The time when document has been locked */
+    private Calendar lockDate;
+    
+    /** Drive, folder can be synchronized */
+    private boolean canSynchronize = false;
+    /** Drive, folder can be unsynchronized */
+    private boolean canUnsynchronize = false;
+
+    /** Drive, Root of the synchro */
+    private String synchronizationRootPath = null;
+    
+    /** Drive, DriveEdit direct url */
+    private String driveEditURL = null;
     
     /**
      * @return the isOnlineTaskPending
@@ -105,5 +138,114 @@ public class CMSExtendedDocumentInfos {
     public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
     }
+
+	/**
+	 * @return the lockStatus
+	 */
+	public LockStatus getLockStatus() {
+		return lockStatus;
+	}
+
+	/**
+	 * @param lockStatus the lockStatus to set
+	 */
+	public void setLockStatus(LockStatus lockStatus) {
+		this.lockStatus = lockStatus;
+	}
+
+	/**
+	 * @return the lockOwner
+	 */
+	public String getLockOwner() {
+		return lockOwner;
+	}
+
+	/**
+	 * @param lockOwner the lockOwner to set
+	 */
+	public void setLockOwner(String lockOwner) {
+		this.lockOwner = lockOwner;
+	}
+
+	/**
+	 * @return the lockDate
+	 */
+	public Calendar getLockDate() {
+		return lockDate;
+	}
+
+	/**
+	 * @param lockDate the lockDate to set
+	 */
+	public void setLockDate(Calendar lockDate) {
+		this.lockDate = lockDate;
+	}
+    
+
+
+    /**
+     * @return the canSynchronize
+     */
+    public boolean isCanSynchronize() {
+        return canSynchronize;
+    }
+
+
+    /**
+     * @param canSynchronize the canSynchronize to set
+     */
+    public void setCanSynchronize(boolean canSynchronize) {
+        this.canSynchronize = canSynchronize;
+    }
+
+
+    /**
+     * @return the canUnsynchronize
+     */
+    public boolean isCanUnsynchronize() {
+        return canUnsynchronize;
+    }
+
+
+    /**
+     * @param canUnsynchronize the canUnsynchronize to set
+     */
+    public void setCanUnsynchronize(boolean canUnsynchronize) {
+        this.canUnsynchronize = canUnsynchronize;
+    }
+
+
+    
+    /**
+     * @return the synchronizationRootPath
+     */
+    public String getSynchronizationRootPath() {
+        return synchronizationRootPath;
+    }
+
+
+    /**
+     * @param synchronizationRootPath the synchronizationRootPath to set
+     */
+    public void setSynchronizationRootPath(String synchronizationRootPath) {
+        this.synchronizationRootPath = synchronizationRootPath;
+    }
+
+
+    /**
+     * @return the driveEditURL
+     */
+    public String getDriveEditURL() {
+        return driveEditURL;
+    }
+
+
+    /**
+     * @param driveEditURL the driveEditURL to set
+     */
+    public void setDriveEditURL(String driveEditURL) {
+        this.driveEditURL = driveEditURL;
+    }
+
     
 }
