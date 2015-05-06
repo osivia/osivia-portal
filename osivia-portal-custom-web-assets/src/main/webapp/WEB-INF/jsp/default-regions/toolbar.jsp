@@ -135,6 +135,16 @@ function portalLogout() {
                                     </li>
                                 </ul>
                             </li>
+
+                            <!-- Help -->
+                            <c:if test="${requestScope['osivia.toolbar.helpURL'] != null}">
+	                            <li>
+	                                <a href="${requestScope['osivia.toolbar.helpURL']}" class="navbar-link">
+	                                    <i class="halflings halflings-question-sign"></i>
+	                                    <span class="hidden-sm"><is:getProperty key="HELP" /></span>
+	                                </a>
+	                            </li>
+                            </c:if>                           
     
                             <!-- Refresh -->
                             <li>
