@@ -28,7 +28,8 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.api.urls.EcmFilesCommand;
+import org.osivia.portal.api.ecm.IEcmCommandervice;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
@@ -41,14 +42,12 @@ import org.osivia.portal.core.assistantpage.ChangeWindowSettingsCommand;
 import org.osivia.portal.core.assistantpage.CreatePageCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
-import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
 import org.osivia.portal.core.assistantpage.MovePageCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
 import org.osivia.portal.core.assistantpage.SecurePageCommand;
-import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
@@ -58,6 +57,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.ecm.EcmCommandDelegate;
 import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -724,8 +724,35 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
-                if ("EcmFilesManagementCommand".equals(action)) {
-
+//                if ("EcmFilesManagementCommand".equals(action)) {
+//
+//                    String cmsPath = null;
+//                    String command = null;
+//
+//                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
+//                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
+//                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
+//                        
+//                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
+//                        return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
+//                    }
+//                }
+//
+//				if ("SubscriptionCommand".equals(action)) {
+//
+//                    String cmsPath = null;
+//                    String command = null;
+//
+//                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
+//                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
+//                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
+//                        
+//                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
+//                        return new SubscriptionCommand(cmsPath, ecmCOmmand);
+//                    }
+//				}
+				
+				if (EcmCommandDelegate.class.getSimpleName().equals(action)) {
 
                     String cmsPath = null;
                     String command = null;
@@ -734,23 +761,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
                         command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
                         
-                        EcmFilesCommand ecmCOmmand = EcmFilesCommand.valueOf(command);
-                        return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
+                		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
+                		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
+                		
+                		return new EcmCommandDelegate(initialCommand, cmsPath);
+                        
                     }
-                }
-
-				if ("SubscriptionCommand".equals(action)) {
-
-					String cmsPath = null;
-					boolean unsubscribe = false;
-
-					if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("unsubscribe") != null)) {
-						cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
-						unsubscribe = Boolean.valueOf(URLDecoder.decode(parameterMap.get("unsubscribe")[0], "UTF-8"));
-
-						return new SubscriptionCommand(cmsPath, unsubscribe);
-					}
 				}
+				
 
                 // Toggle advanced CMS tools command
                 if (ToggleAdvancedCMSToolsCommand.ACTION.equals(action)) {

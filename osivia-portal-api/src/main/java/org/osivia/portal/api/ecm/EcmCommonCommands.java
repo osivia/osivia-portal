@@ -12,17 +12,25 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.urls;
+package org.osivia.portal.api.ecm;
 
 /**
  * Main commands on the ecm
  * @author lbi
  *
  */
-public enum EcmFilesCommand {
+public enum EcmCommonCommands {
 
 	synchronizeFolder,
 	
 	unsynchronizeFolder,
+	
+	lock,
+	
+	unlock,
+	
+	subscribe, 
+	
+	unsubscribe
 
 }

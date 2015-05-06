@@ -49,8 +49,8 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
+import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.core.cms.CMSConfigurationItem;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPublicationInfos;
@@ -452,7 +452,7 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                 // build and set url for create fgt in region in CMS mode
                 Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("region", regionId);
-                String ecmCreateInRegionUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.createFgtInRegion, cmsItem.getPath(), requestParameters);
+                String ecmCreateInRegionUrl = cmsService.getEcmUrl(cmsContext, EcmViews.createFgtInRegion, cmsItem.getPath(), requestParameters);
                 regionProperties.put("osivia.cmsCreateUrl", ecmCreateInRegionUrl);
 
                 // Refresh page command URL
@@ -494,12 +494,12 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
                             windowProperties.put("osivia.ecmBaseUrl", ecmBaseUrl);
 
-                            String cmsCreateUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.createFgtBelowWindow, cmsItem.getPath(), requestParameters);
+                            String cmsCreateUrl = cmsService.getEcmUrl(cmsContext, EcmViews.createFgtBelowWindow, cmsItem.getPath(), requestParameters);
                             windowProperties.put("osivia.cmsCreateUrl", cmsCreateUrl);
                             windowProperties.put("osivia.cmsCreateCallBackURL", resfreshUrl);
 
                             requestParameters.put("refURI", refURI);
-                            String cmsEditUrl = cmsService.getEcmUrl(cmsContext, EcmCommand.editFgt, cmsItem.getPath(), requestParameters);
+                            String cmsEditUrl = cmsService.getEcmUrl(cmsContext, EcmViews.editFgt, cmsItem.getPath(), requestParameters);
                             windowProperties.put("osivia.cmsEditUrl", cmsEditUrl);
 
 

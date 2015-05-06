@@ -12,14 +12,14 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.api.urls;
+package org.osivia.portal.api.ecm;
 
 /**
  * Main command views on the ecm
  * @author lbi
  *
  */
-public enum EcmCommand {
+public enum EcmViews {
 
     /** summary view of a doc */
     viewSummary,

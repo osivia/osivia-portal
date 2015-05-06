@@ -32,11 +32,9 @@ import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
 import org.osivia.portal.core.assistantpage.DeletePageCommand;
 import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
-import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
 import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
-import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
@@ -46,6 +44,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.ecm.EcmCommandDelegate;
 import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -565,44 +564,64 @@ public class DefaultURLFactory extends URLFactoryDelegate {
         }
 
 
-        if (cmd instanceof EcmFilesManagementCommand) {
-            EcmFilesManagementCommand command = (EcmFilesManagementCommand) cmd;
+//        if (cmd instanceof EcmFilesManagementCommand) {
+//            EcmFilesManagementCommand command = (EcmFilesManagementCommand) cmd;
+//
+//            //
+//            AbstractServerURL asu = new AbstractServerURL();
+//            asu.setPortalRequestPath(this.path);
+//
+//
+//            try {
+//                asu.setParameterValue("action", "EcmFilesManagementCommand");
+//
+//                asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
+//                asu.setParameterValue("command", URLEncoder.encode(command.getCommand().name(), "UTF-8"));
+//
+//            } catch (UnsupportedEncodingException e) {
+//                // ignore
+//            }
+//            return asu;
+//        }
+
+//		if (cmd instanceof SubscriptionCommand) {
+//			SubscriptionCommand command = (SubscriptionCommand) cmd;
+//
+//            //
+//            AbstractServerURL asu = new AbstractServerURL();
+//            asu.setPortalRequestPath(this.path);
+//
+//            try {
+//                asu.setParameterValue("action", "SubscriptionCommand");
+//
+//                asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
+//                asu.setParameterValue("command", URLEncoder.encode(command.getCommand().name(), "UTF-8"));
+//
+//            } catch (UnsupportedEncodingException e) {
+//                // ignore
+//            }
+//            return asu;
+//		}
+		
+		if (cmd instanceof EcmCommandDelegate) {
+			EcmCommandDelegate command = (EcmCommandDelegate) cmd;
 
             //
             AbstractServerURL asu = new AbstractServerURL();
             asu.setPortalRequestPath(this.path);
 
-
             try {
-                asu.setParameterValue("action", "EcmFilesManagementCommand");
+                asu.setParameterValue("action", "EcmCommandDelegate");
 
                 asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
-                asu.setParameterValue("command", URLEncoder.encode(command.getCommand().name(), "UTF-8"));
+                asu.setParameterValue("command", URLEncoder.encode(command.getCommand().getCommandName(), "UTF-8"));
 
             } catch (UnsupportedEncodingException e) {
                 // ignore
             }
             return asu;
-        }
-
-		if (cmd instanceof SubscriptionCommand) {
-			SubscriptionCommand command = (SubscriptionCommand) cmd;
-
-			//
-			AbstractServerURL asu = new AbstractServerURL();
-			asu.setPortalRequestPath(this.path);
-
-			try {
-				asu.setParameterValue("action", "SubscriptionCommand");
-
-				asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
-				asu.setParameterValue("unsubscribe", URLEncoder.encode(Boolean.toString(command.isUnsubscribe()), "UTF-8"));
-
-			} catch (UnsupportedEncodingException e) {
-				// ignore
-			}
-			return asu;
 		}
+
 
         return null;
     }

@@ -47,6 +47,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.IDirectoryService;
 import org.osivia.portal.api.directory.IDirectoryServiceLocator;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
@@ -57,7 +58,6 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
-import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
@@ -706,7 +706,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String cmsCreatePageTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE);
         if (modePreview) {
             // URL
-            String cmsCreatePageURL = cmsService.getEcmUrl(cmsCtx, EcmCommand.createPage, path, requestParameters);
+            String cmsCreatePageURL = cmsService.getEcmUrl(cmsCtx, EcmViews.createPage, path, requestParameters);
 
             // Link
             Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(cmsCreatePageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
@@ -726,7 +726,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String cmsEditPageTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_OPTIONS);
         if (modePreview) {
             // URL
-            String cmsEditPageURL = cmsService.getEcmUrl(cmsCtx, EcmCommand.editPage, path, requestParameters);
+            String cmsEditPageURL = cmsService.getEcmUrl(cmsCtx, EcmViews.editPage, path, requestParameters);
 
             Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH, cmsEditPageTitle,
                     "halflings halflings-pencil", AccessibilityRoles.MENU_ITEM);
@@ -849,7 +849,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Media library
         String mediaLibraryTitle = bundle.getString(InternationalizationConstants.KEY_CMS_MEDIA_LIB);
-        String mediaLibraryURL = cmsService.getEcmUrl(cmsCtx, EcmCommand.gotoMediaLibrary, basePath, requestParameters);
+        String mediaLibraryURL = cmsService.getEcmUrl(cmsCtx, EcmViews.gotoMediaLibrary, basePath, requestParameters);
         if (StringUtils.isNotBlank(mediaLibraryURL)) {
             // Link
             Element mediaLibraryLink = DOM4JUtils.generateLinkElement(mediaLibraryURL, HTMLConstants.TARGET_NEW_WINDOW, null, null, mediaLibraryTitle,

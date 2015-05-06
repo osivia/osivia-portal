@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osivia.portal.api.urls.EcmCommand;
-import org.osivia.portal.api.urls.EcmFilesCommand;
+import org.osivia.portal.api.ecm.EcmCommand;
+import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.urls.Link;
 
 /**
@@ -195,7 +195,7 @@ public interface ICMSService {
      * @return url
      * @throws CMSException
      */
-    String getEcmUrl(CMSServiceCtx cmsCtx, EcmCommand command, String path, Map<String, String> requestParameters) throws CMSException;
+    String getEcmUrl(CMSServiceCtx cmsCtx, EcmViews command, String path, Map<String, String> requestParameters) throws CMSException;
 
 
     /**
@@ -364,37 +364,18 @@ public interface ICMSService {
      */
      public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path) ;
 
-    /**
-     * Synchronize or disable synchronization between local folder and ECM folder
-     *
-     * @param cmsCtx cms context
-     * @param pagePath the current folder
-     * @param enable enable or disable
-     * @throws CMSException
-     */
-    void setSynchronization(CMSServiceCtx cmsCtx, String pagePath, Boolean enable) throws CMSException;
-
     
-    /**
-     * Maange synchronization and checkouts from ECM folder
-     *
-     * @param cmsCtx cms context
-     * @param pagePath the current folder
-     * @param enable enable or disable
-     * @throws CMSException
-     */
-    void getEcmFilesUrl(CMSServiceCtx cmsCtx, String pagePath, EcmFilesCommand filesCommand) throws CMSException;
-
 	/**
-	 * Subscribe/unsubscribe to all notifications on the document
-	 * 
+	 * Execute and ECM command
 	 * @param cmsCtx
-	 * @param cmsPath
-	 *            the current doc
-	 * @param unsubscribe
+	 * @param command
+	 * @param cmsPath 
 	 * @throws CMSException
 	 */
-	void subscribe(CMSServiceCtx cmsCtx, String cmsPath, boolean unsubscribe) throws CMSException;
-    
+	void executeEcmCommand(CMSServiceCtx cmsCtx,
+			EcmCommand command, String cmsPath) throws CMSException;
+
+
+
 
 }

@@ -19,6 +19,8 @@ import java.util.Map;
 import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ecm.EcmCommonCommands;
+import org.osivia.portal.api.ecm.EcmViews;
 
 /**
  * Portal URL factory API interface.
@@ -302,7 +304,7 @@ public interface IPortalUrlFactory {
      * @param requestParameters params added in the http url
      * @return the url
      */
-    String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException;
+    String getEcmUrl(PortalControllerContext pcc, EcmViews command, String path, Map<String, String> requestParameters) throws PortalException;
 
 
     /**
@@ -330,26 +332,25 @@ public interface IPortalUrlFactory {
             Boolean permalinks);
 
 
-    /**
-     * Get Files management url
-     *
-     * @param ctx portal context
-     * @param cmsPath current doc path
-     * @param command sent to the ecm about the file
-     * @return synchro command url
-     */
-    String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmFilesCommand parameter);
-
 	/**
-	 * Get url for subscriptions actions
-	 *
-	 * @param ctx
-	 * @param cmsPath
-	 *            current doc path
-	 * @param unsubscribe
-	 * @return subscription url
+	 * Return an url who fire the ECM
+	 * @param portalControllerContext
+	 * @param path
+	 * @param commandName
+	 * @return the url
 	 */
-	String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, boolean unsubscribe);
+	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
+			String path, EcmCommonCommands commandName) throws PortalException ;
+	 
+	/**
+	 * Return an url who fire the ECM
+	 * @param portalControllerContext
+	 * @param path
+	 * @param commandName
+	 * @return the url
+	 */
+	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
+			String path, String commandName) throws PortalException ;
 
 
 

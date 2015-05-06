@@ -44,12 +44,11 @@ import org.jboss.portal.server.request.URLFormat;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ecm.EcmCommonCommands;
+import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.EcmCommand;
-import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
-import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -63,6 +62,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.ecm.EcmCommandDelegate;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
@@ -218,7 +218,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getEcmUrl(PortalControllerContext pcc, EcmCommand command, String path, Map<String, String> requestParameters) throws PortalException {
+    public String getEcmUrl(PortalControllerContext pcc, EcmViews command, String path, Map<String, String> requestParameters) throws PortalException {
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setControllerContext((ControllerContext) pcc.getControllerCtx());
@@ -709,24 +709,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmFilesCommand parameter) {
-
-        ControllerCommand cmd = new EcmFilesManagementCommand(cmsPath, parameter);
-        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
-
-        return portalURL.toString();
-    }
+//    public String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmOperations parameter) {
+//
+//        ControllerCommand cmd = new EcmFilesManagementCommand(cmsPath, parameter);
+//        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+//
+//        return portalURL.toString();
+//    }
 
     /**
      * {@inheritDoc}
      */
-	public String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, boolean unsubscribe) {
-
-		ControllerCommand cmd = new SubscriptionCommand(cmsPath, unsubscribe);
-
-		PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
-		return portalURL.toString();
-	}
+//	public String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, EcmOperations parameter) {
+//
+//		ControllerCommand cmd = new SubscriptionCommand(cmsPath, parameter);
+//
+//		PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+//		return portalURL.toString();
+//	}
 
 
     /**
@@ -842,5 +842,38 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public void setProfilManager(IProfilManager profilManager) {
         this.profilManager = profilManager;
     }
+
+
+	/* (non-Javadoc)
+	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#getEcmCommandUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String, org.osivia.portal.api.urls.EcmDocumentCommand)
+	 */
+	public String getEcmCommandUrl(
+			PortalControllerContext ctx, String path,
+			EcmCommonCommands command) throws PortalException  {
+
+		return getEcmCommandUrl(ctx, path, command.name());
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#getEcmCommandUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String, java.lang.String)
+	 */
+	public String getEcmCommandUrl(
+			PortalControllerContext portalControllerContext, String path,
+			String commandName) throws PortalException  {
+		
+		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
+		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(commandName);
+		
+		if(initialCommand == null) {
+			throw new PortalException("command "+commandName+" not found");
+		}
+		
+		
+		ControllerCommand cmd = new EcmCommandDelegate(initialCommand, path);
+
+		PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+		return portalURL.toString();
+	}
 
 }
