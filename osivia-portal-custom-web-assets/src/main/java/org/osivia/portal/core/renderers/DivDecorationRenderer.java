@@ -23,6 +23,7 @@
 
 package org.osivia.portal.core.renderers;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
@@ -32,6 +33,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
+import org.dom4j.io.HTMLWriter;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
@@ -106,14 +108,24 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         // Display decorators indicator
         boolean displayDecorators = "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"));
 
+        // Maximized URL
+        String maximizedURL = null;
+        if (displayDecorators) {
+            maximizedURL = this.getMaximizedURL(drc);
+        }
+
 
         // Title container
-        Element titleContainer;
+        Element titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, null, StringUtils.EMPTY);
+        StringBuilder builder = new StringBuilder();
+        builder.append("portlet-titlebar-title");
         if (bootstrapPanelStyle) {
-            titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, "portlet-titlebar-title panel-title", StringUtils.EMPTY);
-        } else {
-            titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, "portlet-titlebar-title", StringUtils.EMPTY);
+            builder.append(" panel-title");
         }
+        if (maximizedURL != null) {
+            builder.append(" maximizable");
+        }
+        DOM4JUtils.addAttribute(titleContainer, HTMLConstants.CLASS, builder.toString());
 
         // Title
         if (mobileCollapse) {
@@ -127,11 +139,10 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
 
         // Decorators
         if (displayDecorators) {
-            Element decorators = DOM4JUtils.generateDivElement("portlet-mode-container no-ajax-link pull-right");
+            Element decorators = DOM4JUtils.generateElement(HTMLConstants.SPAN, "portlet-mode-container no-ajax-link", StringUtils.EMPTY);
             titleContainer.add(decorators);
 
             // Maximized
-            String maximizedURL = this.getMaximizedURL(drc);
             if (maximizedURL != null) {
                 Element maximizedLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, null, null, "halflings halflings-menu-right");
                 DOM4JUtils.addTooltip(maximizedLink, this.internationalizationService.getString("MAXIMIZED", locale));
@@ -140,8 +151,14 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         }
 
 
-        // Write HTML data
-        markup.print(titleContainer.asXML());
+        // Write HTML
+        HTMLWriter htmlWriter = new HTMLWriter(markup);
+        htmlWriter.setEscapeText(false);
+        try {
+            htmlWriter.write(titleContainer);
+        } catch (IOException e) {
+            // Do nothing
+        }
     }
 
 
