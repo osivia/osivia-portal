@@ -688,7 +688,7 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
     </mbean>
-
+    
     <mbean
         code="org.osivia.portal.core.cms.CMSServiceLocator"
         name="osivia:service=CmsServiceLocator"
@@ -846,6 +846,16 @@
         <depends
             optional-attribute-name="CustomizationService"
             proxy-type="attribute">osivia:service=CustomizationService</depends>
+    </mbean>
+    
+    <!-- ECM commands service -->
+    <mbean
+        code="org.osivia.portal.core.ecm.EcmCommandService"
+        name="osivia:service=EcmCommandService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+         
     </mbean>
     
 </server>
