@@ -549,7 +549,7 @@
    	</attribute>
    	<attribute name="EvictionPolicyConfig">
    		<config>
-   			<attribute name="wakeUpIntervalSeconds">5</attribute>
+   			<attribute name="wakeUpIntervalSeconds">1</attribute>
 
    			<region name="/_default_">
    				<attribute name="maxNodes">50000</attribute>
