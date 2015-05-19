@@ -3,6 +3,8 @@
 // --------------------------------------------------
 
 
+// Mixins
+@import "../bootstrap/mixins.less";
 // Media queries breakpoints
 @import "media-queries-breakpoints.less";
 
@@ -35,7 +37,7 @@
 
 // Panel
 .panel {
-    .form-group & {
+    .form-group &:last-child {
         margin-bottom: 0;
     }
     
@@ -78,8 +80,28 @@
 }
 
 
-// Caption
+// Thumbnail
+.thumbnail {
+    position: relative;
+    
+    .thumbnail-legend {
+        display: block;
+        position: absolute;
+        bottom: 0; 
+        left: 0;
+        right: 0;
+        
+        padding: 4px;
+        
+        color: #fff;
+        background-color: fade(#000, 40%);
+        
+        .border-bottom-radius(@radius: 4px);
+    }   
+}
 
+
+// Caption
 caption {
     @media screen and (max-width: @screen-xs-max) {
         padding-left: 10px;
