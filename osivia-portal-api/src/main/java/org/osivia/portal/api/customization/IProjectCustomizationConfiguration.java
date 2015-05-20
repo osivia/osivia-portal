@@ -66,6 +66,14 @@ public interface IProjectCustomizationConfiguration {
 
 
     /**
+     * Get administrator indicator.
+     * 
+     * @return administrator indicator
+     */
+    boolean isAdministrator();
+
+
+    /**
      * Set portal redirection URL.
      *
      * @param redirectionURL redirection URL

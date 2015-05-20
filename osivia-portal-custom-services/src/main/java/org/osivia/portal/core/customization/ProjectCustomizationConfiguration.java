@@ -23,6 +23,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 
 /**
  * Project customization configuration implementation.
@@ -42,6 +43,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     private final Page page;
     /** HTTP servlet request. */
     private final HttpServletRequest httpServletRequest;
+    /** Administrator indicator. */
+    private final boolean administrator;
 
     /** Before invocation indicator. */
     private boolean beforeInvocation;
@@ -68,6 +71,9 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+
+        // Administrator indicator
+        this.administrator = PageCustomizerInterceptor.isAdministrator(controllerContext);
     }
 
 
@@ -170,6 +176,14 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         String themeId = this.page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
         PortalTheme theme = themeService.getThemeById(themeId);
         return theme.getThemeInfo().getName();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isAdministrator() {
+        return administrator;
     }
 
 
