@@ -93,23 +93,26 @@ function asyncUpdatePortlet(windowId, url)	{
 $JQry(document).ready(function() {
 	
 	$JQry(".fancyframe").fancybox({
- 		'type':'iframe',
- 		'width': 800, 
- 		'height': 600
+ 		"type" : "iframe",
+ 		"width" : 800, 
+ 		"height" : 600
 	});
 
 	$JQry(".fancyframe_refresh").fancybox({
- 		'type':'iframe',
- 		'width': 800, 
- 		'height': 600,
- 		'beforeClose' : function() {
+ 		"type" : "iframe",
+ 		"width" : 800, 
+ 		"height" : 600,
+ 		"beforeClose" : function() {
             callback();
 		},
 		helpers : {
-            title: {
-                type: 'outside',
-                position: 'top'
-            }
+            title : {
+                type : "outside",
+                position : "top"
+            },
+            overlay: {
+                locked : false
+        	}
         },
 		beforeShow : function() {
         	var originalTitle = $JQry(this.element).data("original-title");

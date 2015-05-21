@@ -86,6 +86,17 @@ public interface ICMSService {
      */
     List<CMSItem> getPortalSubitems(CMSServiceCtx cmsContext, String path) throws CMSException;
 
+    /**
+     * Get workspaces.
+     * 
+     * @param cmsContext CMS context
+     * @param userWorkspaces user workspaces indicator
+     * @param administrator administrator indicator
+     * @return workspaces
+     * @throws CMSException
+     */
+    List<CMSItem> getWorkspaces(CMSServiceCtx cmsContext, boolean userWorkspaces, boolean administrator) throws CMSException;
+
     CMSHandlerProperties getItemHandler(CMSServiceCtx ctx) throws CMSException;
 
     CMSBinaryContent getBinaryContent(CMSServiceCtx cmsCtx, String type, String path, String parameter) throws CMSException;

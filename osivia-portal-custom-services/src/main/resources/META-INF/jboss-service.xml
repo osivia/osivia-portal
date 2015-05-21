@@ -858,5 +858,16 @@
          
     </mbean>
     
+    <!-- Documents browser service -->
+    <mbean
+        code="org.osivia.portal.core.path.BrowserService"
+        name="osivia:service=BrowserService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends optional-attribute-name="PortalURLFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends optional-attribute-name="CmsServiceLocator" proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
 </server>
    

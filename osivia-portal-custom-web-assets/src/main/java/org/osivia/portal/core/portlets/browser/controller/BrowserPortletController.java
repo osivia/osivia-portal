@@ -25,11 +25,17 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
-import org.jboss.portal.theme.impl.render.dynamic.json.JSONArray;
+import org.apache.commons.lang.StringUtils;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.path.IBrowserService;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
-import org.osivia.portal.core.portlets.browser.service.IBrowserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,12 +59,15 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
     /** Error path. */
     private static final String ERROR_PATH = "error";
 
-    /** Browser service. */
-    @Autowired
-    private IBrowserService browserService;
 
     /** Portlet context. */
     private PortletContext portletContext;
+
+
+    /** Browser service. */
+    private final IBrowserService browserService;
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
 
 
     /**
@@ -66,6 +75,14 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
      */
     public BrowserPortletController() {
         super();
+
+        // Browser service
+        this.browserService = Locator.findMBean(IBrowserService.class, IBrowserService.MBEAN_NAME);
+
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
     }
 
 
@@ -79,6 +96,20 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
      */
     @RenderMapping
     public String view(RenderRequest request, RenderResponse response) throws PortletException {
+        // Current window
+        PortalWindow window = WindowFactory.getWindow(request);
+
+        // CMS base path
+        String cmsBasePath = window.getProperty("osivia.browser.path");
+        if (StringUtils.isBlank(cmsBasePath)) {
+            cmsBasePath = window.getPageProperty("osivia.cms.basePath");
+            if (StringUtils.isBlank(cmsBasePath)) {
+                Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+                throw new PortletException(bundle.getString("ERROR_MESSAGE_BROWSER_WITHOUT_CMS"));
+            }
+        }
+        request.setAttribute("cmsBasePath", cmsBasePath);
+
         return VIEW_PATH;
     }
 
@@ -111,16 +142,19 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(this.portletContext, request, response);
 
-        // JSON data
-        JSONArray data = this.browserService.browse(portalControllerContext, path);
+        try {
+            String data = this.browserService.browse(portalControllerContext);
 
-        // Content type
-        response.setContentType("application/json");
+            // Content type
+            response.setContentType("application/json");
 
-        // Content
-        PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
-        printWriter.write(data.toString());
-        printWriter.close();
+            // Content
+            PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+            printWriter.write(data);
+            printWriter.close();
+        } catch (PortalException e) {
+            throw new PortletException(e);
+        }
     }
 
 

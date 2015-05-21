@@ -97,7 +97,6 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
-import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSHandlerProperties;
@@ -1170,6 +1169,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", null);
 
                     }
+
+
+                    if (endPopupCMD instanceof CmsCommand) {
+                        // Prevent Ajax refresh on CMS command
+                        callbackId = null;
+                    }
+
 
                     if (endPopupCMD == null) {
                          endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, null);

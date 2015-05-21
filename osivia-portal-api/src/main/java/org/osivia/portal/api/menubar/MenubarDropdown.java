@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -30,12 +30,22 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
     private final MenubarGroup group;
 
 
+    /**
+     * Constructor.
+     * 
+     * @param id menubar dropdown identifier
+     * @param title menubar dropdown title
+     * @param glyphicon menubar dropdown glyphicon
+     * @param group menubar dropdown group
+     * @param order menubar dropdown order
+     * @param disabled menubar dropdown disabled indicator
+     * @param reducible menubar dropdown reducible indicator
+     */
     public MenubarDropdown(String id, String title, String glyphicon, MenubarGroup group, int order, boolean disabled, boolean reducible) {
         super(id, title, glyphicon, order, disabled);
         this.reducible = reducible;
         this.group = group;
     }
-
 
     /**
      * Constructor.
@@ -47,9 +57,7 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
      * @param order menubar dropdown order
      */
     public MenubarDropdown(String id, String title, String glyphicon, MenubarGroup group, int order) {
-        super(id, title, glyphicon, order, false);
-        this.reducible = true;
-        this.group = group;
+        this(id, title, glyphicon, group, order, false, true);
     }
 
 

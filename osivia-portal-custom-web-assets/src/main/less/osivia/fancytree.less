@@ -5,6 +5,8 @@
 
 // Mixins
 @import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
 
 
 @fancytree-icon-width: 20px;
@@ -15,12 +17,27 @@
 // Fancytree
 
 .fancytree {
+    .user-select(@select: none);
+    
     ul {
         padding-left: 0;
         list-style: none;
         
         ul {
             padding-left: @fancytree-icon-width + @fancytree-padding;
+        }
+    }
+    
+    &.fixed-height {
+        height: 300px;
+        overflow: auto;
+        
+        @media screen and (max-width: @screen-xs-max) {
+            height: 200px;
+        }
+        
+        ul {
+            margin-bottom: 0;
         }
     }    
 }
@@ -97,9 +114,11 @@
 .fancytree-expander {
     color: #ccc;
     
-    .transition-property(@transition-property: color);
-    .transition-duration(@transition-duration: 200ms);
-    .transition-timing-function(@timing-function: ease);
+    &:hover {
+        .transition-property(@transition-property: color);
+        .transition-duration(@transition-duration: 200ms);
+        .transition-timing-function(@timing-function: ease);
+    }
     
     .fancytree-expanded & {
         color: inherit;
