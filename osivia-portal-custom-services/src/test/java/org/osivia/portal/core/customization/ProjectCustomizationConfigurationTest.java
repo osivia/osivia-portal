@@ -29,6 +29,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -40,7 +41,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @see ProjectCustomizationConfiguration
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Locator.class, RenderPageCommand.class})
+@PrepareForTest({Locator.class, RenderPageCommand.class, PageCustomizerInterceptor.class})
 public class ProjectCustomizationConfigurationTest {
 
     /** Project customization configuration. */
@@ -113,6 +114,9 @@ public class ProjectCustomizationConfigurationTest {
         // Render page command
         RenderPageCommand renderPageCommandMock = PowerMock.createNiceMock(RenderPageCommand.class);
         EasyMock.expect(renderPageCommandMock.getPage()).andStubReturn(pageMock);
+
+        // Page customizer interceptor
+        PowerMock.mockStaticNice(PageCustomizerInterceptor.class);
 
 
         PowerMock.replayAll();

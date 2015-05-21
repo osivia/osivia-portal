@@ -159,7 +159,6 @@ public class WebURLFactory extends URLFactoryDelegate {
             if( modePreview)
                 cmsContext.setDisplayLiveVersion("1");
             
-            cmsContext.setCmsReferrerNavigationPath(getWebPortalBasePath(controllerContext));
 
             cmsPath = getCMSService().adaptWebPathToCms(cmsContext, cmsPath);
         }

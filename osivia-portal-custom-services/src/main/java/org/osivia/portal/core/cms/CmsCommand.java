@@ -419,6 +419,7 @@ public class CmsCommand extends DynamicCommand {
         }
 
         // Children
+        if( po instanceof Portal)
         for (PortalObject page : po.getChildren(PortalObject.PAGE_MASK)) {
             PortalObject child = searchPublicationPageForPub(cmsCtx, pubInfos, page, searchPath, profilManager);
             if (child != null) {
@@ -431,13 +432,17 @@ public class CmsCommand extends DynamicCommand {
     }
 
     public static PortalObject searchPublicationPage(ControllerContext ctx, PortalObject po, String searchPath, IProfilManager profilManager) throws Exception	{
-
+    	
         CMSServiceCtx cmsReadItemContext = null;
 
         cmsReadItemContext = new CMSServiceCtx();
         cmsReadItemContext.setControllerContext(ctx);
 
         CMSPublicationInfos	pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, searchPath.toString());
+        
+        if( pubInfos.getPublishSpacePath() == null)
+        	return null;
+        
         PortalObject page =  searchPublicationPageForPub(cmsReadItemContext, pubInfos,  po,  searchPath,  profilManager) ;
 
 
@@ -458,6 +463,7 @@ public class CmsCommand extends DynamicCommand {
                 }
             }
         }
+        
 
         return page;
 

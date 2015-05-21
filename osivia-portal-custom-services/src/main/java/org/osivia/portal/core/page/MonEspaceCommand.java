@@ -93,7 +93,7 @@ public class MonEspaceCommand extends ControllerCommand {
                 // Pas de profil
                 PageURL url = new PageURL(portal.getId(), this.getControllerContext());
                 url.setRelative(false);
-                return new RedirectionResponse(url.toString()+ "?init-state=true");
+                return new RedirectionResponse(url.toString() + "?init-state=true&redirect=true");
             }
 
             PortalObject child = portal.getChild(profil.getDefaultPageName());
@@ -105,14 +105,14 @@ public class MonEspaceCommand extends ControllerCommand {
 
                 logger.debug("Redirection page : " + url.toString());
                 // Redirection
-                return new RedirectionResponse(url.toString() + "?init-state=true");
+                return new RedirectionResponse(url.toString() + "?init-state=true&redirect=true");
             } else {
                 // Page inexistante, on redirige vers la page par defaut du
                 // portail
 
                 logger.error(" Page : " + profil.getDefaultPageName() + "inexistante");
                 PageURL url = new PageURL(portal.getId(), this.getControllerContext());
-                return new RedirectionResponse(url.toString()+ "?init-state=true");
+                return new RedirectionResponse(url.toString() + "?init-state=true&redirect=true");
             }
 
         } catch (Exception e) {
