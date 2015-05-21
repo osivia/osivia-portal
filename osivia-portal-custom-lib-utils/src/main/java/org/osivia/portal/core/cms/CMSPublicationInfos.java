@@ -40,6 +40,7 @@ public class CMSPublicationInfos {
 	private String documentPath = null;
 	private String liveId = null;
 	private boolean editableByUser = false;
+	private boolean manageableByUser = false;
 	private boolean deletableByUser = false;
 	private boolean userCanValidate = false;
 	private boolean anonymouslyReadable = false;
@@ -114,6 +115,22 @@ public class CMSPublicationInfos {
 
 	public void setEditableByUser(boolean editableByUser) {
 		this.editableByUser = editableByUser;
+	}
+	
+	
+
+	/**
+	 * @return the manageableByUser
+	 */
+	public boolean isManageableByUser() {
+		return manageableByUser;
+	}
+
+	/**
+	 * @param manageableByUser the manageableByUser to set
+	 */
+	public void setManageableByUser(boolean manageableByUser) {
+		this.manageableByUser = manageableByUser;
 	}
 
 	public boolean isDeletableByUser() {

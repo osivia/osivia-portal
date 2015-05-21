@@ -429,6 +429,18 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 			// no item if portlet is not present
 		}
 
+		try {
+			String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
+					bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "toutatice-workspace-gestionworkspace-portailPortletInstance",
+					properties, parameters);
+
+            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
+            Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
+                    "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
+			this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
+		} catch (PortalException e) {
+			// no item if portlet is not present
+		}
 
 		// Divider
 		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);

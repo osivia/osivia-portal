@@ -70,10 +70,12 @@ public final class InternationalizationConstants {
     public static final String KEY_OSIVIA_ADMINISTRATION = "SUBMENU_OSIVIA_ADMINISTRATION";
     /** Bundle resource key for JBoss administration access. */
     public static final String KEY_JBOSS_ADMINISTRATION = "SUBMENU_JBOSS_ADMINISTRATION";
-	/** Bundle resource key for JBoss administration access. */
+    /** Bundle resource key for users admin. */
 	public static final String KEY_USERS_ADMINISTRATION = "SUBMENU_USERS_ADMINISTRATION";
-	/** Bundle resource key for JBoss administration access. */
+	/** Bundle resource key for groups admin. */
 	public static final String KEY_GROUPS_ADMINISTRATION = "SUBMENU_GROUPS_ADMINISTRATION";
+	/** Bundle resource key for workspaces admin. */
+	public static final String 	KEY_WORKSPACES_ADMINISTRATION = "SUBMENU_WORKSPACES_ADMINISTRATION";
     /** Bundle resource key for pages list. */
     public static final String KEY_PAGES_LIST = "SUBMENU_PAGES_LIST";
     /** Bundle resource key for creation header. */
@@ -272,6 +274,7 @@ public final class InternationalizationConstants {
     public static final String KEY_LOGIN = "LOGIN";
     /** LOGOUT */
     public static final String KEY_LOGOUT = "LOGOUT";
+
 
 
     /**
