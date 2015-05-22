@@ -27,7 +27,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,7 +59,6 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -310,17 +308,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                 MenubarItem printItem = (MenubarItem) customizationAttributes.get("result");
                                 if (printItem == null) {
-                                    String jsTitle = StringEscapeUtils.escapeJavaScript(title);
-
-                                    StringBuilder onclick = new StringBuilder();
-                                    onclick.append("popup2print('");
-                                    onclick.append(jsTitle);
-                                    onclick.append("', '");
-                                    onclick.append(windowId);
-                                    onclick.append("_print');");
-
+                                    // URL
+                                    StringBuilder url = new StringBuilder();
+                                    url.append("/osivia-portal-custom-web-assets/print/print.jsp");
+                                    url.append("?id=").append(windowId).append("_print");
+                                    url.append("&title=").append(title);
+                                    
+                                    // Menubar item
                                     printItem = new MenubarItem("PRINT", this.internationalizationService.getString("PRINT", locale),
-                                            "halflings halflings-print", MenubarGroup.GENERIC, 4, "#", null, onclick.toString(), "hidden-xs");
+                                            "halflings halflings-print", MenubarGroup.GENERIC, 4, url.toString(), null, null, "fancyframe hidden-xs");
                                     printItem.setAjaxDisabled(true);
                                 }
                                 menubarItems.add(printItem);

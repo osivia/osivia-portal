@@ -134,15 +134,12 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             }
         }
 
-        // post messages API (must be loaded before fancy integration)
+        // Post messages API (must be loaded before fancy integration)
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/postmessage.js'></script>");
 
-        // Print
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/print/print.js'></script>");
-
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/generated/bootstrap/bootstrap.min.css' title='Bootstrap'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/generated/osivia/osivia.min.css'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css' title='Bootstrap'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/osivia.min.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/bootstrap-integration.js'></script>");
 
@@ -174,7 +171,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // No JavaScript CSS styles
         out.write("<noscript>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.css'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.min.css'>");
         out.write("</noscript>");
 
         // AJAX header
