@@ -55,6 +55,6 @@ public enum EcmViews {
     startValidationWf,
     
     /** See current validation workflow task. */
-    followWfValidation,
+    followWfValidation;
     
 }
