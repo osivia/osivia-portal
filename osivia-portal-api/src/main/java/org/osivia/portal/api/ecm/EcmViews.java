@@ -49,6 +49,12 @@ public enum EcmViews {
     gotoMediaLibrary,
     
     /** Send a document to poeple inteerested in */
-    shareDocument;
-
+    shareDocument,
+    
+    /** Start a validation workflow. */
+    startValidationWf,
+    
+    /** See current validation workflow task. */
+    followWfValidation,
+    
 }

@@ -35,6 +35,9 @@ public class CMSExtendedDocumentInfos {
     /** Indicates if current user is the task's initiator. */
     private Boolean isUserOnlineTaskInitiator = false;
     
+    /** Indicates if a validation workflow is running on a given document. */
+    private Boolean isValidationWorkflowRunning = false;
+    
     /**
      * A document has a state depending of the user who is browsing it
      */
@@ -124,6 +127,21 @@ public class CMSExtendedDocumentInfos {
         this.isUserOnlineTaskInitiator = isUserOnlineTaskInitiator;
     }
     
+    /**
+     * @return isValidationWorkflowRunning value
+     */
+    public Boolean getIsValidationWorkflowRunning() {
+        return isValidationWorkflowRunning;
+    }
+
+    /**
+     * 
+     * @param isValidationWorkflowRunning isValidationWorkflowRunning to set
+     */
+    public void setIsValidationWorkflowRunning(Boolean isValidationWorkflowRunning) {
+        this.isValidationWorkflowRunning = isValidationWorkflowRunning;
+    }
+
     /**
      * @return the subscriptionStatus
      */
