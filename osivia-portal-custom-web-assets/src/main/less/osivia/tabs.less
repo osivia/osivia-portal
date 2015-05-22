@@ -9,84 +9,172 @@
 @import "media-queries-breakpoints.less";
 
 
-// Variables
-@tab-radius: 6px;
-@tab-padding-vertical: 8px;
-@tab-padding-horizontal: 12px;
-@active-tab-indicator-width: 2px;
-@active-tab-fixed-min-width: 10%;
+@border-width: 1px;
+@border-color: #ddd;
+@border-radius: 4px;
+@gutter-width: 16px;
+@padding-vertical: 8px;
+@padding-horizontal: 12px;
+@active-tab-fixed-min-width: 8%;
 @max-tabs: 20;
 
 
-// Make tab function
-.make-tab() {
-    position: relative;
-    display: block;
-    float: left;
-
-    text-align: center;
-    
+.tabs {
     .clearfix;
     
-    .make-closable-tab();
-    
-    > div {
-        margin-top: @active-tab-indicator-width - 1px;
-        margin-right: -1px;
+    ul {
+        margin: 0 floor(@gutter-width / -2);
+        padding-left: 0;
         
-        border-style: solid;
-        border-width: 1px;
-        .border-top-radius(@radius: @tab-radius);
-    }
-    
-    a {
-        display: block;
-        padding: @tab-padding-vertical @tab-padding-horizontal;
-
-        text-decoration: none;
-        .text-overflow();
-    }
-    
-    &.active {
-        > div {
-            margin-top: 0;
-            margin-right: 0;
+        list-style: none;
+        
+        li {
+            display: block;
+            float: left;
             
-            border-top-width: @active-tab-indicator-width;
+            padding: 0 floor(@gutter-width / 2);
+            
+            a {
+                display: inline-block;
+                position: relative;
+            }
+            
+            &.active {
+                a {
+                    font-weight: bold;
+                }
+            }
         }
         
-        + * > div {
-            border-left-style: none;
+        &.home {
+            margin-right: @gutter-width;
+        }
+    }
+    
+    .fixed-tabs-container {
+        overflow: hidden;
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .make-fixed-tabs(@class: lg);    
+    }
+    
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+        .make-fixed-tabs(@class: md);
+    }
+    
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        .make-fixed-tabs(@class: sm);
+    }   
+}
+
+
+.tabs-default {
+    border-bottom-style: solid;
+    border-width: @border-width;
+    border-color: @border-color;
+    
+    > * {
+        margin-bottom: -@border-width;
+    }
+    
+    ul {
+        &, &.home {
+            margin: 0;    
         }
         
-        a {
-            font-weight: bold;
+        li {
+            position: relative;
+            
+            padding: 0;
+
+            a {
+                padding: @padding-vertical @padding-horizontal;
+                
+                border-style: solid;
+                border-width: @border-width;
+                border-color: transparent;
+                
+                .border-top-radius(@radius: @border-radius);
+
+                &:hover, &:focus {
+                    text-decoration: none;
+                }
+                
+                &:first-child {
+                    padding-right: @padding-horizontal + 14px;
+                }
+                
+                &:last-child {
+                    padding-right: @padding-horizontal;
+                }
+                
+                &.page-close {
+                    position: absolute;
+                    top: @border-width;
+                    bottom: 0;
+                    right: @border-width;
+                    z-index: 1;
+                    
+                    padding-top: @padding-vertical - @border-width;
+                    padding-left: floor(@padding-horizontal / 2);
+                    padding-right: floor(@padding-horizontal / 2) - @border-width;
+                }
+            }
+        
+            &.active {
+                a {
+                    border-color: @border-color @border-color transparent;
+                    
+                    background-color: #fff;
+                    
+                    &.page-close {
+                        border-color: transparent;
+                    }
+                }   
+            }
         }
     }
 }
 
+
 // Make fixed tabs function
 .make-fixed-tabs(@class) {
-    &.fixed-@{class} {
+    ul.fixed-@{class} {
         display: table;
         table-layout: fixed;
         width: 100%;
         
-        > li {
+        li {
             display: table-cell;
+            
+            text-align: center;
             
             .make-fixed-tab-width(@count: @max-tabs);
             
             a {
-                padding-right: @tab-padding-horizontal;
+                display: block;
                 
-                &.page-close {
+                .text-overflow;
+            }
+            
+            &:not(.active) {
+                a.page-close {
                     display: none;
                 }
             }
-            
-            &.active {
-                .make-closable-tab();
+        }
+    }
+    
+    &.tabs-default {
+        ul.fixed-@{class} {
+            li {
+                &:not(.active) {
+                    a {
+                        padding-left: floor(@padding-horizontal / 2);
+                        padding-right: floor(@padding-horizontal / 2);
+                    }
+                }
             }
         }
     }
@@ -106,143 +194,4 @@
     
     // Loop
     .make-fixed-tab-width(@count: @count - 1);
-}
-
-// Make closable tab function
-.make-closable-tab() {
-    a {
-        &:first-of-type {
-            padding-right: @tab-padding-horizontal + 14px;
-        }
-        
-        &:last-of-type {
-            padding-right: @tab-padding-horizontal;
-        }
-        
-        &.page-close {
-            position: absolute;
-            top: @active-tab-indicator-width + 1px;
-            right: 1px;
-            display: block;
-            
-            padding: @tab-padding-vertical floor(@tab-padding-horizontal / 2);
-        }
-    }
-}
-
-// Make tabs menu function
-.make-tabs-menu() {
-    position: absolute;
-    top: 0;
-    left: @tab-padding-horizontal;
-    right: @tab-padding-horizontal;
-    z-index: 1000;
-    
-    visibility: visible;
-    display: none;
-    
-    min-width: 160px;
-    width: auto;
-    padding: @tab-padding-vertical 1% 0;
-    margin: 2px 0 0;
-    
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid fade(#000, 15%);
-    border-radius: @tab-radius;
-
-    .box-shadow(@shadow: 0 6px 12px rgba(0, 0, 0, .175));
- 
-    .active & {
-        display: block;
-    }
-    
-    > .home {
-        .make-tab-menu();
-        
-        > * {
-            width: 100%;
-        }
-        
-        & ~ * {
-            overflow: visible;
-        }
-    }
-    
-    ul li {
-        .make-tab-menu();
-        
-        .active & {
-            a {
-                padding-right: @tab-padding-horizontal;
-            
-                &.page-close {
-                    display: none;
-                }
-            }
-            
-            &.active {
-                .make-closable-tab();
-            }
-        } 
-    }
-}
-
-// Make tab menu function
-.make-tab-menu() {
-    width: 100% / 3;
-    margin-bottom: @tab-padding-horizontal;
-}
-
-
-.tabs {
-    border-bottom-style: solid;
-    border-width: 1px;
-    
-    .clearfix;
-    
-    > * {
-        margin-bottom: -1px;
-    }
-    
-    > .home {
-        > * {
-            .make-tab();
-        }
-        
-        ~ * {
-            overflow: hidden;
-        }
-    }
-    
-    ul {
-        margin-bottom: 0;
-        padding-left: 0;
-        
-        .clearfix;
-        
-        li {
-            .make-tab();
-            
-            &:last-child > div {
-                margin-right: 0;
-            }
-        }
-        
-        @media screen and (min-width: @screen-sm-min) {
-            .make-fixed-tabs(@class: lg);    
-        }
-        
-        @media screen and (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
-            .make-fixed-tabs(@class: md);
-        }
-        
-        @media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-            .make-fixed-tabs(@class: sm);
-        }
-    }
-    
-    @media screen and (max-width: @screen-xs-max) {
-        .make-tabs-menu();
-    }
 }

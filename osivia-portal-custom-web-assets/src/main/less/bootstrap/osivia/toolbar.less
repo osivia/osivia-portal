@@ -2,6 +2,7 @@
 // OSIVIA Bootstrap extensions - Toolbar
 // --------------------------------------------------
 
+
 .toolbar {
     padding-bottom: @navbar-height;
     
@@ -46,5 +47,12 @@
         ~ * {
             margin-left: 3px;
         }
+    }
+}
+
+
+@media screen and (max-width: @screen-xs-max) {
+    .wrapper-outer {
+        padding-top: @navbar-height;
     }
 }
