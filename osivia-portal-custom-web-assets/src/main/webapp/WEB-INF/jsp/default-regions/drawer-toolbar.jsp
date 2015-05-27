@@ -15,7 +15,7 @@
             <div class="drawer-toolbar-search">
                 <div class="media">
                     <div class="media-left">
-                        <a href="#" onclick="hideDrawerSearch();" class="btn">
+                        <a href="#" type="button" onclick="hideDrawerSearch();" class="btn">
                             <i class="halflings halflings-arrow-left"></i>
                         </a>
                     </div>
@@ -38,19 +38,22 @@
         
             <!-- Title -->
             <div class="drawer-toolbar-title">
-                <div class="media">
-                    <div class="media-body">
-                        <div>
-                            <p class="text-middle text-overflow">
-                                <span><is:getProperty key="BRAND" /></span>
-                            </p>
-                        </div>
+                <div class="clearfix">
+                    <div class="pull-left">
+                        <p class="text-overflow">
+                            <c:choose>
+                                <c:when test="${not empty userPortal.defaultPage}">
+                                    <a href="${userPortal.defaultPage.url}"><is:getProperty key="BRAND" /></a>
+                                </c:when>
+                                <c:otherwise><is:getProperty key="BRAND" /></c:otherwise>
+                            </c:choose>
+                        </p>
                     </div>
-                
-                    <div class="media-right text-nowrap">
-                        <a href="#" onclick="showDrawerSearch();" class="btn btn-link">
+                    
+                    <div class="pull-right text-nowrap">
+                        <button type="button" onclick="showDrawerSearch();" class="btn btn-link">
                             <i class="halflings halflings-search"></i>
-                        </a>
+                        </button>
                         
                         <c:choose>
                             <c:when test="${empty requestScope['osivia.toolbar.principal']}">
@@ -61,11 +64,11 @@
                             
                             <c:otherwise>
                                 <div class="btn-group dropdown">
-                                    <a href="#" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
+                                    <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
                                         <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" />
                                         <small><i class="halflings halflings-triangle-bottom"></i></small>
-                                    </a>
-
+                                    </button>
+    
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                         <li class="dropdown-header" role="presentation">${requestScope['osivia.toolbar.person'].displayName}</li>
                                     
@@ -95,10 +98,10 @@
     <c:if test="${not requestScope['osivia.spaceSite']}">
         <div class="col-xs-12 drawer-toolbar-tabs">
             <div class="dropdown">
-                <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <span class="pull-right"><small><i class="halflings halflings-triangle-bottom"></i></small></span>
                     <span class="text-overflow">${requestScope['osivia.currentPageName']}</span>
-                </a>
+                </button>
                 
                 <ul class="dropdown-menu" role="menu">
                     <c:if test="${not empty requestScope['osivia.currentPageURL']}">
@@ -120,7 +123,6 @@
                             <c:if test="${userPortal.defaultPage.id eq requestScope['osivia.currentPageId']}">class="active"</c:if>
                         >
                             <a href="${userPortal.defaultPage.url}" class="text-overflow" role="menuitem">
-                                <i class="halflings halflings-home"></i>
                                 <span>${userPortal.defaultPage.name}</span>
                             </a>
                         </li>
