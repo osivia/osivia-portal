@@ -111,7 +111,7 @@
                 
                 &.page-close {
                     position: absolute;
-                    top: @border-width;
+                    top: @border-width + 1;
                     bottom: 0;
                     right: @border-width;
                     z-index: 1;
@@ -132,6 +132,16 @@
                         border-color: transparent;
                     }
                 }   
+            }
+            
+            &:not(.active) {
+                a {
+                    color: #555;
+                    
+                    &:hover, &:focus {
+                        color: #222;
+                    }
+                }
             }
         }
     }

@@ -51,14 +51,16 @@
                     <li role="presentation"
                         <c:if test="${userPage.id eq requestScope['osivia.currentPageId']}">class="active"</c:if>
                     >
-                        <a href="${userPage.url}">
+                        <a href="${userPage.url}"
+                            <c:if test="${not empty fixed}">title="${userPage.name}" data-toggle="tooltip" data-placement="bottom"</c:if>
+                        >
                             <span>${userPage.name}</span>
                         </a>
                         
                         <!-- Close -->
                         <c:if test="${not empty userPage.closePageUrl}">
                             <a href="${userPage.closePageUrl}" class="page-close">
-                                <i class="halflings halflings-remove"></i>
+                                <i class="glyphicons glyphicons-remove-2"></i>
                                 <span class="sr-only"><is:getProperty key="CLOSE" /></span>
                             </a>
                         </c:if>
