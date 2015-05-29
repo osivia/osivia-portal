@@ -15,6 +15,8 @@ package org.osivia.portal.core.cms;
 
 import java.util.Calendar;
 
+import org.apache.commons.lang.StringUtils;
+
 
 
 
@@ -25,6 +27,10 @@ import java.util.Calendar;
  *
  */
 public class CMSExtendedDocumentInfos {
+    
+    
+    /** Task name from wich we get informations. */
+    private String taskName = StringUtils.EMPTY;
     
     /** Indicates if a task of name taskName is pending on document */
     private Boolean isOnlineTaskPending = false;
@@ -85,6 +91,20 @@ public class CMSExtendedDocumentInfos {
     /** Drive, DriveEdit direct url */
     private String driveEditURL = null;
     
+    /**
+     * @return the taskName
+     */
+    public String getTaskName() {
+        return taskName;
+    }
+
+    /**
+     * @param taskName the taskName to set
+     */
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
     /**
      * @return the isOnlineTaskPending
      */

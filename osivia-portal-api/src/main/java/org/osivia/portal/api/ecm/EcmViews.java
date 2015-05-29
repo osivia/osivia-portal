@@ -55,6 +55,12 @@ public enum EcmViews {
     startValidationWf,
     
     /** See current validation workflow task. */
-    followWfValidation;
+    followWfValidation,
+    
+    /** Remote publishing. */
+    remotePublishing,
+    
+    /** Remote Publishing validation. */
+    validateRemotePublishing;
     
 }
