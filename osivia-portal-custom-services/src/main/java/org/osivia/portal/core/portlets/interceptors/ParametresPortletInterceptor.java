@@ -57,6 +57,7 @@ import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.core.cms.CMSItem;
@@ -308,15 +309,27 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                 MenubarItem printItem = (MenubarItem) customizationAttributes.get("result");
                                 if (printItem == null) {
+                                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+                                    // Parent
+                                    MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext, "OTHER_OPTIONS");
+
+                                    if (parent == null) {
+                                        parent = new MenubarDropdown("OTHER_OPTIONS", this.internationalizationService.getString("OTHER_OPTIONS", locale),
+                                                "glyphicons glyphicons-option-vertical", MenubarGroup.GENERIC, 40);
+                                        parent.setReducible(false);
+                                        this.menubarService.addDropdown(portalControllerContext, parent);
+                                    }
+
                                     // URL
                                     StringBuilder url = new StringBuilder();
                                     url.append("/osivia-portal-custom-web-assets/print/print.jsp");
                                     url.append("?id=").append(windowId).append("_print");
                                     url.append("&title=").append(title);
-                                    
+
                                     // Menubar item
                                     printItem = new MenubarItem("PRINT", this.internationalizationService.getString("PRINT", locale),
-                                            "halflings halflings-print", MenubarGroup.GENERIC, 4, url.toString(), null, null, "fancyframe hidden-xs");
+                                            "glyphicons glyphicons-print", parent, 0, url.toString(), null, null, "fancyframe hidden-xs");
                                     printItem.setAjaxDisabled(true);
                                 }
                                 menubarItems.add(printItem);

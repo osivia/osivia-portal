@@ -429,10 +429,6 @@ public class MenubarService implements IMenubarService {
 
         boolean first = true;
         for (MenubarItem dropdownMenuItem : dropdownMenuItems) {
-            if (first) {
-                first = false;
-            }
-
             // Dropdown menu divider
             if (dropdownMenuItem.isDivider() && !first) {
                 Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
@@ -441,6 +437,10 @@ public class MenubarService implements IMenubarService {
 
             Element dropdownItemLI = this.generateItemElement(dropdownMenuItem, true);
             dropdownUL.add(dropdownItemLI);
+
+            if (first) {
+                first = false;
+            }
         }
 
         return dropdownLI;
@@ -494,15 +494,13 @@ public class MenubarService implements IMenubarService {
 
         // Element
         Element element;
+        String text = item.getTitle();
         String tooltip = item.getTooltip();
         if (item.getUrl() == null) {
-            element = DOM4JUtils.generateElement(HTMLConstants.SPAN, item.getHtmlClasses(), item.getTitle(), item.getGlyphicon(), roleElement);
+            element = DOM4JUtils.generateElement(HTMLConstants.SPAN, item.getHtmlClasses(), text, item.getGlyphicon(), roleElement);
         } else {
             // Text and tooltip content
-            String text;
-            if (dropdownItem || (item.getGlyphicon() == null) || StringUtils.isNotBlank(item.getTooltip())) {
-                text = item.getTitle();
-            } else {
+            if (!dropdownItem && (item.getGlyphicon() != null) && StringUtils.isBlank(item.getTooltip())) {
                 text = null;
                 if (StringUtils.isBlank(item.getTooltip())) {
                     tooltip = item.getTitle();
@@ -517,17 +515,17 @@ public class MenubarService implements IMenubarService {
 
             element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), text, glyphicon, roleElement);
 
-            // Screen-reader only
-            if (StringUtils.isBlank(text) && StringUtils.isNotBlank(tooltip)) {
-                Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
-                element.add(srOnly);
-            }
-
             // External link indicator
             if (dropdownItem && StringUtils.isNotBlank(item.getTarget())) {
                 Element externalIndicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
                 element.add(externalIndicator);
             }
+        }
+
+        // Screen-reader only
+        if (StringUtils.isBlank(text) && StringUtils.isNotBlank(tooltip)) {
+            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
+            element.add(srOnly);
         }
 
         // Tooltip
