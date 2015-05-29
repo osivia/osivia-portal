@@ -17,6 +17,7 @@
                     <div class="media-left">
                         <a href="#" type="button" onclick="hideDrawerSearch();" class="btn">
                             <i class="halflings halflings-arrow-left"></i>
+                            <span class="sr-only"></span>
                         </a>
                     </div>
                 

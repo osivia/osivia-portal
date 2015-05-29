@@ -36,6 +36,7 @@
                 >
                     <a href="${userPortal.defaultPage.url}" title="${userPortal.defaultPage.name}" data-toggle="tooltip" data-placement="bottom">
                         <i class="halflings halflings-home"></i>
+                        <span class="sr-only">${userPortal.defaultPage.name}</span>
                     </a>
                 </li>
             </ul>

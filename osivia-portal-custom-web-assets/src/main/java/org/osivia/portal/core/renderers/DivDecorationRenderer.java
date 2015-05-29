@@ -145,7 +145,14 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
             // Maximized
             if (maximizedURL != null) {
                 Element maximizedLink = DOM4JUtils.generateLinkElement(maximizedURL, null, null, null, null, "halflings halflings-menu-right");
-                DOM4JUtils.addTooltip(maximizedLink, this.internationalizationService.getString("MAXIMIZED", locale));
+
+                String tooltip = this.internationalizationService.getString("MAXIMIZED", locale);
+
+                // Screen-reader only
+                Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
+                maximizedLink.add(srOnly);
+
+                DOM4JUtils.addTooltip(maximizedLink, tooltip);
                 decorators.add(maximizedLink);
             }
         }

@@ -517,6 +517,12 @@ public class MenubarService implements IMenubarService {
 
             element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), text, glyphicon, roleElement);
 
+            // Screen-reader only
+            if (StringUtils.isBlank(text) && StringUtils.isNotBlank(tooltip)) {
+                Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
+                element.add(srOnly);
+            }
+
             // External link indicator
             if (dropdownItem && StringUtils.isNotBlank(item.getTarget())) {
                 Element externalIndicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
