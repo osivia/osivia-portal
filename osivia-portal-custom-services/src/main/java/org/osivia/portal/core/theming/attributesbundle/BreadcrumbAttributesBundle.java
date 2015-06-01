@@ -25,7 +25,6 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
@@ -149,17 +148,6 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         Page page = renderPageCommand.getPage();
         // Current portal
         Portal portal = renderPageCommand.getPortal();
-
-        // Hide default page indicator
-        boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
-        // Default page
-        Page defaultPage = portal.getDefaultPage();
-
-        // Check if breadcrumb for this page must be hidden
-        if (hideDefaultPage && page.equals(defaultPage)) {
-            return null;
-        }
-
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
@@ -478,14 +466,6 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     breadcrumb.getChilds().add(itemMemo);
                 }
             }
-        }
-
-        if (hideDefaultPage) {
-            // Add default page to breadcrumb
-            String name = PortalObjectUtils.getDisplayName(defaultPage, locale);
-            String url = controllerContext.getServerInvocation().getServerContext().getPortalContextPath();
-            BreadcrumbItem item = new BreadcrumbItem(name, url.toString(), defaultPage.getId(), false);
-            breadcrumb.getChilds().add(0, item);
         }
 
         return breadcrumb;
