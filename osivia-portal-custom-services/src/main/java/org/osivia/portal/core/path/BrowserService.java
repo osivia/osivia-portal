@@ -30,7 +30,7 @@ import org.osivia.portal.core.page.PageCustomizerInterceptor;
 
 /**
  * Documents browser service implementation.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IBrowserService
  */
@@ -62,9 +62,9 @@ public class BrowserService implements IBrowserService {
             JSONArray jsonArray;
 
             if (options.isWorkspaces()) {
-                jsonArray = generateWorkspacesJSONArray(portalControllerContext, options);
+                jsonArray = this.generateWorkspacesJSONArray(portalControllerContext, options);
             } else {
-                jsonArray = generateLazyJSONArray(portalControllerContext, options);
+                jsonArray = this.generateLazyJSONArray(portalControllerContext, options);
             }
 
             return jsonArray.toString();
@@ -78,7 +78,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Generate workspaces JSON array.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param options browser options
      * @return JSON array
@@ -118,14 +118,14 @@ public class BrowserService implements IBrowserService {
             JSONObject jsonObject = this.generateJSONObject(portalControllerContext, domain);
             jsonArray.put(jsonObject);
         }
-        
+
         return jsonArray;
     }
 
 
     /**
      * Get sorted workspaces domains.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param workspaces workspaces
      * @return domains
@@ -218,7 +218,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Generate lazy JSON array.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param options browser options
      * @return JSON array
@@ -276,7 +276,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Get base CMS item.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param options browser options
      * @return CMS item
@@ -299,7 +299,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Get children CMS items.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param options browser options
      * @param parentPath parent path
@@ -323,7 +323,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Generate JSON object.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param cmsItem CMS item
      * @param root root indicator
@@ -344,14 +344,17 @@ public class BrowserService implements IBrowserService {
             glyph = type.getGlyph();
             acceptable = (options.getAcceptedType() == null) || type.getPortalFormSubTypes().contains(options.getAcceptedType());
         }
-        if (acceptable && (options.getDocumentPath() != null)) {
+        if (acceptable && (options.getIgnoredPaths() != null)) {
             String currentPath = cmsItem.getPath();
-            String documentPath = options.getDocumentPath();
-            String parentPath = CMSObjectPath.parse(documentPath).getParent().toString();
+            String[] ignoredPaths = options.getIgnoredPaths();
+            for (String ignoredPath : ignoredPaths) {
+                String ignoredParentPath = CMSObjectPath.parse(ignoredPath).getParent().toString();
 
-            boolean currentOrChild = StringUtils.startsWith(currentPath, documentPath);
-            boolean parent = StringUtils.equals(currentPath, parentPath);
-            acceptable = !(currentOrChild || parent);
+                if (StringUtils.startsWith(currentPath, ignoredPath) || StringUtils.equals(currentPath, ignoredParentPath)) {
+                    acceptable = false;
+                    break;
+                }
+            }
         }
 
         // URL
@@ -415,7 +418,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Generate JSON object.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param workspaceObject workspace object
      * @return JSON object
@@ -470,7 +473,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Setter for portalURLFactory.
-     * 
+     *
      * @param portalURLFactory the portalURLFactory to set
      */
     public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
@@ -479,7 +482,7 @@ public class BrowserService implements IBrowserService {
 
     /**
      * Setter for cmsServiceLocator.
-     * 
+     *
      * @param cmsServiceLocator the cmsServiceLocator to set
      */
     public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {

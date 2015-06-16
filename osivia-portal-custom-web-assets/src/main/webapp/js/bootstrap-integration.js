@@ -2,18 +2,22 @@
 $JQry(document).ready(function() {
 	
 	// Accessible dropdown menu without Javascript
-	$JQry("*").removeClass("accessible-dropdown-menu");
+	$JQry(".accessible-dropdown-menu").removeClass("accessible-dropdown-menu");
 
 	
 	// Tooltips initialization
 	$JQry("[data-toggle=tooltip]").tooltip({container: 'body'});
+	$JQry(document).click(function(event) {
+		$JQry("[data-toggle=tooltip]").tooltip("hide");
+	});
+	
 	// Popovers initialization
 	$JQry("[data-toggle=popover]").popover({container: 'body'});
 	
 	
 	// Forms in dropdown menus
-	$JQry(".dropdown-menu .form").click(function (e) {
-		e.stopPropagation();
+	$JQry(".dropdown-menu .form").click(function (event) {
+		event.stopPropagation();
 	});
 
 });
@@ -74,14 +78,14 @@ $JQry(window).on("swipeleft", function(event) {
 
 // Drawer toolbar
 function showDrawerSearch() {
-	var $toolbar = $JQry("#drawer-toolbar");
-	var $search = $toolbar.find(".drawer-toolbar-search");
+	var $toolbar = $JQry("#drawer-toolbar"),
+		$search = $toolbar.find(".drawer-toolbar-search");
 	
 	$search.addClass("active");
 }
 function hideDrawerSearch() {
-	var $toolbar = $JQry("#drawer-toolbar");
-	var $search = $toolbar.find(".drawer-toolbar-search");
+	var $toolbar = $JQry("#drawer-toolbar"),
+		$search = $toolbar.find(".drawer-toolbar-search");
 	
 	$search.removeClass("active");
 }

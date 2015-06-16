@@ -9,6 +9,25 @@
 @import "media-queries-breakpoints.less";
 
 
+body {
+    @media screen and (min-width: @screen-sm-min) {
+        position: relative;
+    }
+}
+
+
+// Button group
+.btn-group {
+    > .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: inherit);
+    }
+    
+    > .btn:not(.hidden) ~ .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: 0);
+    }
+}
+
+
 // Button toolbar
 .btn-toolbar {
     margin-bottom: 5px;
