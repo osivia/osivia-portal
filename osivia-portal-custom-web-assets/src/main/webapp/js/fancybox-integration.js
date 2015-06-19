@@ -168,42 +168,41 @@ $JQry(document).ready(function() {
     });
 
     $JQry(".fancybox.thumbnail").fancybox({
-    	type        : 'image',
-    	openEffect	: 'elastic',
-    	closeEffect	: 'elastic',
-    	helpers : {
-    		title : {
-    			type : 'inside'
+    	type: "image",
+    	openEffect: "elastic",
+    	closeEffect: "elastic",
+    	helpers: {
+    		title: {
+    			type: "inside"
     		}
     	},
-    	afterLoad : function() {
-    		var $element = $JQry(this.element);
-    		var title = $element.data("title");
-    		var download = $element.data("download");
+    	afterLoad: function() {
+    		var $element = $JQry(this.element),
+    			title = $element.data("title");
     			
     		if (title) {
-    			this.title = title;
-    		}
-    		
-    		if (download) {
-    			var $link = $JQry(document.createElement("a"));
-    			$link.attr("href", this.href);
-    			$link.append($JQry(document.createElement("i")).addClass("glyphicons download_alt"));
-    			$link.append($JQry(document.createElement("span")).text(download));
-    			this.title += " - " + $link[0].outerHTML;
+    			$outer = $JQry(document.createElement("div"));
+    			
+    			$inner = $JQry(document.createElement("div"));
+    			$inner.addClass("text-center");
+    			$inner.text(title);
+    			$inner.appendTo($outer);
+    			
+    			this.title = $outer.html();
     		}
     	}
     });
     
     $JQry(".fancybox_video.thumbnail").fancybox({
-    	openEffect	: 'elastic',
-    	closeEffect	: 'elastic',
+    	openEffect: "elastic",
+    	closeEffect: "elastic",
     	
-    	aspectRatio : true,
-        scrolling   : 'no',
+    	aspectRatio: true,
+        scrolling: "no",
 
-    	afterShow	: function() {
+    	afterShow: function() {
     		var $video = $JQry(this.href).find("video");
+    		
     		$video[0].play();
     	}
     });
