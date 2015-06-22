@@ -46,9 +46,6 @@ public class CMSItemType {
     /** CMS item is root type */
     private final boolean isRootType;
 
-    /** CMS item reorganizable indicator. */
-    private boolean reorganizable;
-
 
     /**
      * Constructor.
@@ -261,23 +258,5 @@ public class CMSItemType {
 	public boolean isRootType() {
 		return this.isRootType;
 	}
-
-    /**
-     * Getter for reorganizable.
-     * 
-     * @return the reorganizable
-     */
-    public boolean isReorganizable() {
-        return this.reorganizable;
-    }
-
-    /**
-     * Setter for reorganizable.
-     * 
-     * @param reorganizable the reorganizable to set
-     */
-    public void setReorganizable(boolean reorganizable) {
-        this.reorganizable = reorganizable;
-    }
 
 }
