@@ -30,6 +30,10 @@ import org.osivia.portal.api.directory.entity.DirectoryPerson;
  */
 public interface IUserDatasModule {
 
+	
+    /** Post login processor customizer identifier. */
+    String CUSTOMIZER_ID = "osivia.customizer.postlogin.id";
+	
     /**
      * Compute user datas.
      * 
@@ -37,7 +41,8 @@ public interface IUserDatasModule {
      * @param datas the datas
      * @deprecated see computeLoggedUser
      */
-    public void computeUserDatas(HttpServletRequest request, Map<String, Object> datas);
+    @Deprecated
+	public void computeUserDatas(HttpServletRequest request, Map<String, Object> datas);
 
     /**
      * Compute user datas into a DirectoryPerson object

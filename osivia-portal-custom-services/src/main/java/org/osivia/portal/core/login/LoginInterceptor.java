@@ -39,14 +39,17 @@ import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.login.IUserDatasModule;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.customization.ICustomizationService;
 
 
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
@@ -56,7 +59,9 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
     SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
 
-
+    /** Customization service. */
+    private ICustomizationService customizationService;
+    
     private static ICMSServiceLocator cmsServiceLocator;
 
     public static ICMSService getCMSService() throws Exception {
@@ -68,6 +73,16 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         return cmsServiceLocator.getCMSService();
 
     }
+    
+    /**
+     * Setter for customizationService.
+     *
+     * @param customizationService the customizationService to set
+     */
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
+    }
+
 
 
     public static final Comparator<UserDatasModuleMetadatas> moduleComparator = new Comparator<UserDatasModuleMetadatas>() {
@@ -174,15 +189,24 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     }
 
     private void loadUserDatas(ServerInvocation invocation) {
-        Map<String, Object> userDatas = new Hashtable<String, Object>();
+        Map<String, Object> contextDatas = new Hashtable<String, Object>();
         DirectoryPerson person = null;
 
         for (UserDatasModuleMetadatas module : sortedModules) {
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
-            module.getModule().computeUserDatas(invocation.getServerContext().getClientRequest(), userDatas);
             person = module.getModule().computeLoggedUser(invocation.getServerContext().getClientRequest());
         }
-
+        
+        // add person in session
+        contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
+        
+        Map<String, Object> userDatas = new Hashtable<String, Object>();   
+        contextDatas.put("osivia.userDatas", userDatas);
+        
+        // call customizer to populate userDatas
+        CustomizationContext context = new CustomizationContext(contextDatas);
+        this.customizationService.customize(IUserDatasModule.CUSTOMIZER_ID, context);
+        
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
