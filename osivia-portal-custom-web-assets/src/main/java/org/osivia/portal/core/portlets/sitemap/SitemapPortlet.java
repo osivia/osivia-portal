@@ -86,7 +86,7 @@ public class SitemapPortlet extends GenericPortlet {
             String title = cmsItem.getProperties().get("title");
 
             String navPath = cmsItem.getPath();
-            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, navPath, null, null, null, null, null, null, null);
+            String pageUrl = portalUrlFactory.getCMSUrl(portalCtx, null, navPath, null, null, "map", null, null, null, null);
             pageUrl = portalUrlFactory.adaptPortalUrlToPopup(portalCtx, pageUrl, portalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
 
             Sitemap displayItem = new Sitemap(title, pageUrl);

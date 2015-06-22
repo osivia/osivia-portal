@@ -451,7 +451,7 @@ public class PageMarkerUtils {
 
         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
-        if ("true".equals(request.getParameter("init-state"))) {
+        if ("true".equals(request.getParameter("init-state")) && !"true".equals(request.getParameter("edit-template-mode"))) {
 
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
 

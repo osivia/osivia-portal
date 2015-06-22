@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -440,14 +441,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
               
             // Back url when maximization is explicitly invoked             
             if (WindowState.MAXIMIZED.equals(windowState)) {
-                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
-
-                WindowNavigationalState oldState = (WindowNavigationalState)controllerContext.getAttribute(
-                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
-
-
-                if ((oldState == null) || !WindowState.MAXIMIZED.equals(oldState.getWindowState())) {
-                   updateBack = true;
+            	
+                Mode mode = ((InvokePortletWindowRenderCommand) cmd).getMode();
+                if(! Mode.ADMIN.equals(mode))	{
+	                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
+	
+	                WindowNavigationalState oldState = (WindowNavigationalState)controllerContext.getAttribute(
+	                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+	
+	
+	                if ((oldState == null) || !WindowState.MAXIMIZED.equals(oldState.getWindowState())) {
+	                   updateBack = true;
+	                }
                 }
             }
             

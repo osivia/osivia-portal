@@ -1755,7 +1755,7 @@ public class CmsCommand extends DynamicCommand {
          }
 
         // page marker initialization ( means an applicative back button)
-        if (("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext) || "tabs".equals(this.displayContext))) {
+        if ("map".equals(this.displayContext) || ("menu".equals(this.displayContext) || "breadcrumb".equals(this.displayContext) || "destroyedChild".equals(this.displayContext) || "tabs".equals(this.displayContext))) {
             
             PageCustomizerInterceptor.initPageBackInfos(controllerContext);
        
