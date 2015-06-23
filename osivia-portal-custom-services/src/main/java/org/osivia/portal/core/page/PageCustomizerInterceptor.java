@@ -97,7 +97,6 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
-import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSHandlerProperties;
@@ -556,12 +555,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
+            ControllerContext controllerCtx = cmd.getControllerContext();
+            HttpServletRequest request = rpc.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+
+            // Set page properties into request
+            request.setAttribute("osivia.pageProperties", rpc.getPage().getProperties());
+
 
             // Check layout
             if (!PortalObjectUtils.isJBossPortalAdministration(portal)) {
                 this.checkLayout(rpc);
             }
-
 
 
             /* Controle du host */
@@ -576,9 +580,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 return new RedirectionResponse(url.toString());
             }
 
-
-            ControllerContext controllerCtx = cmd.getControllerContext();
-            HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
 
             controlDefaultPageCache(this.portalObjectContainer, cmd, controllerCtx);
 

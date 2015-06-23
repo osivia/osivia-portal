@@ -93,25 +93,33 @@ function asyncUpdatePortlet(windowId, url)	{
 $JQry(document).ready(function() {
 	
 	$JQry(".fancyframe").fancybox({
- 		'type':'iframe',
- 		'width': 800, 
- 		'height': 600
+ 		"type": "iframe",
+ 		"width": 800, 
+ 		"height": 600,
+ 		helpers: {
+ 			overlay: {
+ 				closeClick: false
+ 			}
+ 		}
 	});
 
 	$JQry(".fancyframe_refresh").fancybox({
- 		'type':'iframe',
- 		'width': 800, 
- 		'height': 600,
- 		'beforeClose' : function() {
+ 		"type": "iframe",
+ 		"width": 800, 
+ 		"height": 600,
+ 		"beforeClose": function() {
             callback();
 		},
-		helpers : {
+		helpers: {
             title: {
-                type: 'outside',
-                position: 'top'
+                type: "outside",
+                position: "top"
+            },
+            overlay: {
+            	closeClick: false
             }
         },
-		beforeShow : function() {
+		beforeShow: function() {
         	var originalTitle = $JQry(this.element).data("original-title");
         	if (originalTitle) {
         		this.title = originalTitle;
@@ -121,23 +129,23 @@ $JQry(document).ready(function() {
 	
 
 	$JQry(".fancybox_inline").fancybox({
-		openEffect : 'none',
-    	closeEffect	: 'none',
-    	helpers : {
-    		title : null
+		openEffect: "none",
+    	closeEffect: "none",
+    	helpers: {
+    		title: null
     	}
     });
 	
 	$JQry(".fancybox_inline_title").fancybox({
-		openEffect : 'none',
-    	closeEffect	: 'none',
-    	helpers : {
+		openEffect: "none",
+    	closeEffect: "none",
+    	helpers: {
             title: {
-                type: 'outside',
-                position: 'top'
+                type: "outside",
+                position: "top"
             }
         },
-        beforeShow : function() {
+        beforeShow: function() {
         	var originalTitle = $JQry(this.element).data("original-title");
         	if (originalTitle) {
         		this.title = originalTitle;
@@ -145,32 +153,13 @@ $JQry(document).ready(function() {
         }
     });
 	
-	$JQry(".fancybox_inline_jstree").fancybox({
-		'titlePosition'     : 'inside',
-        'transitionIn'      : 'none',
-        'transitionOut'     : 'none',
-        'beforeLoad'		: function() {
-        	jstreeOpenAll();
-        	jstreeClearSearch();
-        }
-	});
-
-    $JQry(".fancybox_inline_tabs").fancybox({
-        'titlePosition' :   'outside',
-        'transitionIn'	:	'elastic',
-	    'transitionOut'	:	'elastic',
-	    'speedIn'		:	600, 
-	    'speedOut'		:	200, 
-	    'overlayShow'	:	true
-    });
-
     $JQry(".fancybox.thumbnail").fancybox({
-    	type        : 'image',
-    	openEffect	: 'elastic',
-    	closeEffect	: 'elastic',
-    	helpers : {
-    		title : {
-    			type : 'inside'
+    	type: "image",
+    	openEffect: "elastic",
+    	closeEffect: "elastic",
+    	helpers: {
+    		title: {
+    			type: "inside"
     		}
     	},
     	afterLoad : function() {
@@ -193,11 +182,11 @@ $JQry(document).ready(function() {
     });
     
     $JQry(".fancybox_video.thumbnail").fancybox({
-    	openEffect	: 'elastic',
-    	closeEffect	: 'elastic',
+    	openEffect	: "elastic",
+    	closeEffect	: "elastic",
     	
     	aspectRatio : true,
-        scrolling   : 'no',
+        scrolling   : "no",
 
     	afterShow	: function() {
     		var $video = $JQry(this.href).find("video");
