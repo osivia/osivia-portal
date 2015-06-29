@@ -198,7 +198,8 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         }
         
         // add person in session
-        contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
+        if( person != null)
+        	contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
         
         Map<String, Object> userDatas = new Hashtable<String, Object>();   
         contextDatas.put("osivia.userDatas", userDatas);
