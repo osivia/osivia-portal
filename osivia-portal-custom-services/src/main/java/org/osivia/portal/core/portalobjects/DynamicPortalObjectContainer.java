@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
@@ -352,6 +351,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 Page page = (Page) this.getObject(container, pageId);
                 Portal portal = page.getPortal();
                 Page defaultPage = portal.getDefaultPage();
+                Boolean isSpaceSite = Boolean.FALSE;
 
                 // CMS path
                 String[] cmsPath = ns.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
@@ -379,7 +379,11 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
                 // For portal sites, site path is set to publish space path
                 if (!PortalObjectUtils.isSpaceSite(portal)) {
+                	isSpaceSite = Boolean.FALSE;
                     sitePath = publishSpacePath;
+                }
+                else {
+                	isSpaceSite = Boolean.TRUE;
                 }
 
                 // Scope
@@ -440,7 +444,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
                         // Editable windows
                         List<CMSEditableWindow> editableWindows = this.getCMSService().getEditableWindows(cmsReadItemContext, path, publishSpacePath, sitePath,
-                                scope);
+                                scope, isSpaceSite);
 
 
                         for (CMSEditableWindow editableWindow : editableWindows) {
