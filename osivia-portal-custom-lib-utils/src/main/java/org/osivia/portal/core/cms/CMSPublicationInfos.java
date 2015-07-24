@@ -48,6 +48,8 @@ public class CMSPublicationInfos {
 	private boolean isRemotePublishable = false;
 	/** Published CMS item indicator. */
     private boolean published = false;
+    /** Indicates if a documents has many (remote) publications. */
+    private boolean hasManyPublications = false;
 	/** Indicates if working version is different from published version. */
     private boolean beingModified;
     
@@ -187,6 +189,20 @@ public class CMSPublicationInfos {
      */
     public void setPublished(boolean published) {
         this.published = published;
+    }
+    
+    /**
+     * @return the hasManyPublications
+     */
+    public boolean hasManyPublications() {
+        return hasManyPublications;
+    }
+    
+    /**
+     * @param hasManyPublications the hasManyPublications to set
+     */
+    public void setHasManyPublications(boolean hasManyPublications) {
+        this.hasManyPublications = hasManyPublications;
     }
 
     /**

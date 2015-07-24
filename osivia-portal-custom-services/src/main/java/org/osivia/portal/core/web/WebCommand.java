@@ -32,17 +32,25 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.DynamicCommand;
+import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PagePathUtils;
 
 /**
@@ -56,6 +64,8 @@ public class WebCommand extends DynamicCommand {
 
     private static final CommandInfo info = new ActionCommandInfo(false);
     protected static final Log logger = LogFactory.getLog(WebCommand.class);
+    
+    public static IInternationalizationService itlzService = InternationalizationUtils.getInternationalizationService();
 
 
     @Override
@@ -67,6 +77,7 @@ public class WebCommand extends DynamicCommand {
     private String webPath;
     private String windowName;
     private boolean supportingPageMarker = true;
+    private ExtendedParameters extendedParameters;
 
 
 
@@ -105,6 +116,14 @@ public class WebCommand extends DynamicCommand {
 
         this.webPath = webPath;
     }
+    
+    public ExtendedParameters getExtendedParameters() {
+        return extendedParameters;
+    }
+    
+    public void setExtendedParameters(ExtendedParameters extendedParameters) {
+        this.extendedParameters = extendedParameters;
+    }
 
 
     private static ICMSServiceLocator cmsServiceLocator;
@@ -141,9 +160,26 @@ public class WebCommand extends DynamicCommand {
 
             // Transformation du requestpath
             CmsCommand cmsCmd = new CmsCommand();
+            cmsCmd.setExtendedParameters(this.extendedParameters);
+            
+            // Case of possible Many Remote proxies
+            if (this.extendedParameters == null) {
+                CMSServiceCtx cmsContext = new CMSServiceCtx();
+                cmsContext.setControllerContext(controllerCtx);
+                CMSPublicationInfos publicationInfos = getCMSService().getPublicationInfos(cmsContext,
+                        WebIdService.PREFIX_WEBID_FETCH_PUB_INFO.concat(this.webPath));
 
+                if (publicationInfos.hasManyPublications()) {
+                    PortalObjectId pageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+                    Page currentPage = (Page) controllerCtx.getController().getPortalObjectContainer().getObject(pageId);
+                    if (currentPage != null) {
+                        return displayManyPublications(currentPage, publicationInfos.getDocumentPath());
+                    }
+                }
+            }
+            
             // CMS path
-            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath);
+            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters);
             cmsCmd.setCmsPath(cmsPath);
 
             // Page parameters
@@ -173,9 +209,9 @@ public class WebCommand extends DynamicCommand {
 
        // Transformation du requestpath
        CmsCommand cmsCmd = new CmsCommand();
-
-
-       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath);
+       cmsCmd.setExtendedParameters(this.extendedParameters);
+       
+       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters);
        cmsCmd.setCmsPath(cmsPath);
 
 
@@ -204,8 +240,7 @@ public class WebCommand extends DynamicCommand {
         return pageId;
 
     }
-
-
+    
 
     public PortalObjectId getWindowId( ControllerContext controllerCtx)  {
 
@@ -257,7 +292,7 @@ public class WebCommand extends DynamicCommand {
                 return this.context.execute(originalCmd);
 
             }
-
+            
             // Affichage de la commande CMS
             return this.getPageResponse(this.context);
 
@@ -279,5 +314,32 @@ public class WebCommand extends DynamicCommand {
         }
 
     }
+    
+    /**
+     * Display the publications list for current document.
+     * 
+     * @param currentPage
+     * @return ControllerResponse
+     * @throws ControllerException
+     */
+    private ControllerResponse displayManyPublications(Page currentPage, String currentPath) throws ControllerException {
+        
+        String pageId = currentPage.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+        String portletInstance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+        Map<String, String> windowProperties = new HashMap<String, String>(1);
+        windowProperties.put(Constants.WINDOW_PROP_URI, currentPath.toString());
+        windowProperties.put("osivia.document.onlyRemoteSections", "true");
+        windowProperties.put("osivia.document.remoteSectionsPage", "true");
+        windowProperties.put("osivia.cms.contextualization", "1");
+        
+        windowProperties.put("osivia.hideTitle", "1");
+        String title = itlzService.getString("SECTIONS_PORTLET_LINK", this.getControllerContext().getServerInvocation().getRequest().getLocale());
+        windowProperties.put("osivia.title", title);
+        
+        StartDynamicWindowCommand windowCmd = new StartDynamicWindowCommand(pageId, "virtual", portletInstance, "PlayerPublicationsWindow", windowProperties, new HashMap<String, String>(), "1", null);
+        
+        return this.context.execute(windowCmd);
+    }
+
 
 }

@@ -88,8 +88,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     /**
      * {@inheritDoc}
      */
-    public String[] getDomainAndWebId() {
-        String[] result = null;
+    public String getWebId() {
+        String result = null;
 
         // Current CMS base path
         String basePath = this.page.getProperty("osivia.cms.basePath");
@@ -105,10 +105,9 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
             if (cmsItem != null) {
-                String domainId = cmsItem.getDomainId();
                 String webId = cmsItem.getWebId();
 
-                result = new String[]{domainId, webId};
+                result = webId;
             }
         } catch (CMSException e) {
             // Do nothing

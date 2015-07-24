@@ -27,8 +27,19 @@ import org.osivia.portal.api.urls.Link;
  */
 public interface ICMSService {
 
-    CMSItem getContent(CMSServiceCtx ctx, String path) throws CMSException;
+    /**
+     * @param documentPath
+     * @return parent path of given document by its path.
+     */
+    String getParentPath(String documentPath);
 
+    CMSItem getContent(CMSServiceCtx ctx, String path) throws CMSException;
+    
+    /**
+     * @param cmsPath: path?key=value&..., webid?key=value&...
+     * @return Map of parameters in cmsPath.
+     */
+    Map<String, String> getNxPathParameters(String cmsPath);
 
     boolean checkContentAnonymousAccess(CMSServiceCtx cmsCtx, String path) throws CMSException;
 

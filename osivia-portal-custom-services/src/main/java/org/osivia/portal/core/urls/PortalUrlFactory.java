@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
@@ -48,6 +49,7 @@ import org.osivia.portal.api.ecm.EcmCommonCommands;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
@@ -55,6 +57,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -71,9 +74,13 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.share.ShareCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
+import org.osivia.portal.core.web.WebCommand;
+import org.osivia.portal.core.web.WebIdService;
 
 /**
  * Portal URL factory implementation.
@@ -110,7 +117,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
         return cmsServiceLocator.getCMSService();
     }
-
 
     /**
      * Utility method used to compute add to breadcrumb indicator.
@@ -214,6 +220,51 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return url;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
+            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference,
+            ExtendedParameters extendedParameters) {
+
+        String portalPersistentName = null;
+
+        boolean popup = false;
+        if (portalControllerContext.getControllerCtx() != null) {
+            String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE,
+                    "osivia.currentPortalName");
+
+            Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer()
+                    .getContext().getDefaultPortal();
+
+            if (!defaultPortal.getName().equals(portalName)) {
+                if (!StringUtils.equals(portalName, "osivia-util")) {
+                    portalPersistentName = portalName;
+                } else {
+                    popup = true;
+                    portalPersistentName = defaultPortal.getName();
+                    pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                }
+            }
+        }
+
+        CmsCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext, hideMetaDatas, scope, displayLiveVersion,
+                windowPermReference, this.addToBreadcrumb(portalControllerContext.getRequest()), portalPersistentName);
+        cmd.setExtendedParameters(extendedParameters);
+
+
+        PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+
+        String url = portalURL.toString();
+        if (popup) {
+            url = this.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+
+        }
+
+        return url;
+
+    }
 
     /**
      * {@inheritDoc}
@@ -272,36 +323,34 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         try {
             String templateInstanciationParentId = null;
-            String portalPersistentName = null;
-
-            // Extract current portal
-            if (ctx.getControllerCtx() != null) {
-                String portalName = (String) ControllerContextAdapter.getControllerContext(ctx).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
-
-                Portal defaultPortal = ControllerContextAdapter.getControllerContext(ctx).getController().getPortalObjectContainer().getContext()
-                        .getDefaultPortal();
-
-                if (!defaultPortal.getName().equals(portalName)) {
-                    if (!StringUtils.equals(portalName, "osivia-util")) {
-                        portalPersistentName = portalName;
-                    }
-                }
-            }
+            String portalPersistentName = getPortalPersistentName(ctx);
 
             // Direct CMS Link : use CMSCommand
             if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
-
+                
                 CmsCommand cmsCommand = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
 
                 // Remove default initialisation
                 cmsCommand.setItemScope(null);
 
                 cmsCommand.setInsertPageMarker(false);
+                
                 URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
                 urlContext = urlContext.withAuthenticated(false);
                 String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext, URLFormat.newInstance(false, true));
 
                 return permLinkUrl;
+                
+            } else if(IPortalUrlFactory.PERM_LINK_TYPE_SHARE.equals(permLinkType)){
+                
+                ShareCommand shareCmd = new ShareCommand(StringUtils.substringAfter(cmsPath, WebIdService.PREFIX_WEBPATH));
+                
+                URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
+                urlContext = urlContext.withAuthenticated(false);
+                String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(shareCmd, urlContext, URLFormat.newInstance(false, true));
+
+                return permLinkUrl;
+                
             }
 
             // Others permalink (Lists, RSS, ...) : use PermLinkCommand
@@ -326,6 +375,81 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         } catch (Exception e) {
             throw new PortalException(e);
         }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath,
+            String permLinkType, ExtendedParameters extendedParameters) throws PortalException {
+
+        try {
+            if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
+
+                String portalPersistentName = getPortalPersistentName(portalControllerContext);
+
+                Portal portal = PortalObjectUtils.getPortal(ControllerContextAdapter.getControllerContext(portalControllerContext));
+                boolean isWebMode = PortalObjectUtils.isSpaceSite(portal);
+
+                ControllerCommand cmd = null;
+                if (isWebMode) {
+
+                    cmd = new WebCommand(cmsPath);
+                    WebCommand webCmd = (WebCommand) cmd;
+                    webCmd.setExtendedParameters(extendedParameters);
+
+                } else {
+
+                    cmd = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
+                    CmsCommand cmsCommand = (CmsCommand) cmd;
+
+                    // Remove default initialisation
+                    cmsCommand.setItemScope(null);
+                    cmsCommand.setInsertPageMarker(false);
+
+                    cmsCommand.setExtendedParameters(extendedParameters);
+
+                }
+
+                URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
+                        .getURLContext();
+                urlContext = urlContext.withAuthenticated(false);
+                String permLinkUrl = ControllerContextAdapter.getControllerContext(portalControllerContext).renderURL(cmd, urlContext,
+                        URLFormat.newInstance(false, true));
+
+                return permLinkUrl;
+
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            throw new PortalException(e);
+        }
+    }
+
+
+    /**
+     * @param portalControllerContext
+     * @return the portal persistent name.
+     */
+    private String getPortalPersistentName(PortalControllerContext portalControllerContext) {
+        String portalPersistentName = null;
+
+        // Extract current portal
+        if (portalControllerContext.getControllerCtx() != null) {
+            String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
+
+            Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer().getContext()
+                    .getDefaultPortal();
+
+            if (!defaultPortal.getName().equals(portalName)) {
+                if (!StringUtils.equals(portalName, "osivia-util")) {
+                    portalPersistentName = portalName;
+                }
+            }
+        }
+        return portalPersistentName;
     }
 
 

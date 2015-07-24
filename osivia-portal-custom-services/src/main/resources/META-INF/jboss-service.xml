@@ -154,8 +154,34 @@
       <attribute name="Path">/web</attribute>
       <depends optional-attribute-name="Factory" proxy-type="attribute">portal:urlFactory=Delegating</depends>
    </mbean>
-
-
+   
+   
+   
+    <mbean code="org.osivia.portal.core.share.ShareCommandFactoryService"
+		name="osivia:commandFactory=Share" xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+	   <xmbean />
+    </mbean>
+	<mbean
+		code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+		name="osivia:commandFactory=Delegate,path=share" xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+		<attribute name="Path">/share</attribute>
+		<depends optional-attribute-name="DelegatingFactory"
+			proxy-type="attribute">portal:commandFactory=Delegating
+		</depends>
+		<depends optional-attribute-name="DelegateFactory" proxy-type="attribute">
+			osivia:commandFactory=Share
+		</depends>
+	</mbean>
+	<mbean code="org.osivia.portal.core.share.ShareURLFactory" name="osivia:urlFactory=Share"
+		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+		<attribute name="Path">/share</attribute>
+		<depends optional-attribute-name="Factory" proxy-type="attribute">portal:urlFactory=Delegating
+		</depends>
+	</mbean>
 
 
 

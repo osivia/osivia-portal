@@ -51,6 +51,7 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.share.ShareCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.tracker.TrackerBean;
 import org.osivia.portal.core.web.WebCommand;
@@ -97,7 +98,11 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 	  // No page marker for web urls
       if( cmd instanceof WebCommand)
           return url;	
-
+      
+      // Neither for share url
+      if(cmd instanceof ShareCommand){
+          return url;
+      }
       
       
 		

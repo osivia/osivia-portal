@@ -14,6 +14,7 @@
 package org.osivia.portal.core.web;
 
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 
@@ -28,6 +29,10 @@ public interface IWebIdService {
     String EXTENSION_URL = "extensionUrl";
     /** Explicit segment of the URL (not involved on the resolution of the document). */
     String EXPLICIT_URL = "explicitUrl";
+    /** Key parameter of parent webid of a document. */
+    String PARENT_ID = "parentId";
+    /** Key parameter of parent path of a document. */
+    String PARENT_PATH = "parentPath";
 
     /** Prefix used to query document in the ECM. */
     String PREFIX_WEBID_FETCH_PUB_INFO = "webId:";
@@ -45,7 +50,7 @@ public interface IWebIdService {
      * Get Url for FetchPublicationInfos service.
      *
      * @param webpath full webpath
-     * @return webId:domain-id/webid for fetchPublicationInfos
+     * @return webId:webid for fetchPublicationInfos
      */
     String webPathToFetchInfoService(String webpath);
 
@@ -53,11 +58,10 @@ public interface IWebIdService {
     /**
      * Get Url for FetchPublicationInfos service.
      *
-     * @param domainId domainid
      * @param webpath webid
-     * @return webId:domain-id/webid for fetchPublicationInfos
+     * @return webId:webid for fetchPublicationInfos
      */
-    String domainAndIdToFetchInfoService(String domainId, String webpath);
+    String webIdToFetchInfoService(String webpath);
 
 
     /**
@@ -86,7 +90,16 @@ public interface IWebIdService {
      * @return webid : "path"
      */
     String webPathToWebId(String webpath);
-
+    
+    /**
+     * Get first parent webid if any.
+     * 
+     * @param cmsContext
+     * @param documentPath
+     * @return first parent webid.
+     * @throws CMSException
+     */
+    String getParentId(CMSServiceCtx cmsContext, String documentPath) throws CMSException;
 
     /**
      * Generate canonical web URL.

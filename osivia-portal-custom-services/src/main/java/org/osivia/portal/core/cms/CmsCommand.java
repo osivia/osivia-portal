@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -63,6 +64,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -73,7 +75,6 @@ import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
-import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -131,7 +132,8 @@ public class CmsCommand extends DynamicCommand {
     private Map<String, String> pageParams;
     /** Picture parameters ; hack for RSS. */
     private Map<String, String> pictureParams;
-
+    /** Additional parameters. */
+    private ExtendedParameters extendedParameters;
 
     public void setSkipPortletInitialisation(boolean skipPortletInitialisation) {
         this.skipPortletInitialisation = skipPortletInitialisation;
@@ -200,6 +202,20 @@ public class CmsCommand extends DynamicCommand {
 
     public void setEcmActionReturn(String ecmActionReturn) {
         this.ecmActionReturn = ecmActionReturn;
+    }
+    
+    /**
+     * @return the extendedParameters
+     */
+    public ExtendedParameters getExtendedParameters() {
+        return extendedParameters;
+    }
+
+    /**
+     * @param extendedParameters the extendedParameters to set
+     */
+    public void setExtendedParameters(ExtendedParameters extendedParameters) {
+        this.extendedParameters = extendedParameters;
     }
 
     public CmsCommand() {
@@ -683,23 +699,41 @@ public class CmsCommand extends DynamicCommand {
             if (this.cmsPath != null) {
                 try {
                     
-                    // TESTE UNIQUEMENT SUR LES WEBID !!!
-                    if(hasWebId ) {
-                            if (currentPage == null) {
-                                 // CAS DES PERMALIENS
-                                // prendre le workspace par défaut (les permaliens des proxys distants ne sont pas gérés en webid)
-                                // Sinon, l'opération renverrait un proxy distant par défaut
-                                cmsReadItemContext.setDisplayLiveVersion("1");
+                    // Get parentId if any for resolution: case of webid
+                    if (this.extendedParameters != null) {
+                        String parentId = this.extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
+                        if (StringUtils.isNotBlank(parentId)) {
+                            cmsReadItemContext.setParentId(parentId);
+                        } else {
+                            String parentPath = this.extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
+                            if (StringUtils.isNotBlank(parentPath)) {
+                                cmsReadItemContext.setParentPath(parentPath);
                             }
                         }
+                        
+                    }
                     
-
+                    boolean isPermaLink = currentPage == null;
+                    if(isPermaLink && hasWebId){
+                        cmsReadItemContext.setDisplayLiveVersion("1");
+                    }
+                    
+                    
                     // Attention, cet appel peut modifier si nécessaire le
                     // scope de cmsReadItemContext
-                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());     
+                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString()); 
+                    
                     
                     // Le path eventuellement en ID a été retranscrit en chemin
                     this.cmsPath = pubInfos.getDocumentPath();
+                    
+                    // ManyProxies case 
+                    if (!isPermaLink && hasWebId) {
+                        if (pubInfos.hasManyPublications() && (StringUtils.isBlank(cmsReadItemContext.getParentId())
+                                || StringUtils.isBlank(cmsReadItemContext.getParentPath()))) {
+                            return displayManyPublications(currentPage);
+                        }
+                    }
 
                     level = CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, this.cmsPath);
 
@@ -1716,6 +1750,32 @@ public class CmsCommand extends DynamicCommand {
             throw new ControllerException(e);
         }
 
+    }
+
+    /**
+     * Display the publications list for current document.
+     * 
+     * @param currentPage
+     * @return ControllerResponse
+     * @throws ControllerException
+     */
+    private ControllerResponse displayManyPublications(Page currentPage) throws ControllerException {
+        
+        String pageId = currentPage.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+        String portletInstance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
+        Map<String, String> windowProperties = new HashMap<String, String>(1);
+        windowProperties.put(Constants.WINDOW_PROP_URI, this.cmsPath.toString());
+        windowProperties.put("osivia.document.onlyRemoteSections", "true");
+        windowProperties.put("osivia.document.remoteSectionsPage", "true");
+        windowProperties.put("osivia.cms.contextualization", "1");
+        
+        windowProperties.put("osivia.hideTitle", "1");
+        String title = itlzService.getString("SECTIONS_PORTLET_LINK", this.getControllerContext().getServerInvocation().getRequest().getLocale());
+        windowProperties.put("osivia.title", title);
+        
+        StartDynamicWindowCommand windowCmd = new StartDynamicWindowCommand(pageId, "virtual", portletInstance, "PlayerPublicationsWindow", windowProperties, new HashMap<String, String>(), "1", null);
+        
+        return this.context.execute(windowCmd);
     }
 
 

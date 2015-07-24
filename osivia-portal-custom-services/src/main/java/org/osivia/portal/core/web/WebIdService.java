@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -15,6 +15,7 @@ package org.osivia.portal.core.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
@@ -25,6 +26,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Implementation of IWebIdService.
@@ -38,13 +40,15 @@ public class WebIdService implements IWebIdService {
     private static final String SLASH = "/";
     /** Dot separator. */
     private static final String DOT = ".";
+    /** Query separator. */
+    private static final String QUERY_SEPARATOR = "?";
 
 
     /** Portal URL factory. */
     private IPortalUrlFactory portalURLFactory;
 
-	/** CMS service locator. */
-	private final ICMSServiceLocator cmsServiceLocator;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
 
     /**
      * Default constructor.
@@ -52,9 +56,8 @@ public class WebIdService implements IWebIdService {
     public WebIdService() {
 
         super();
-		// CMS service locator
-		this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class,
-				"osivia:service=CmsServiceLocator");
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
     }
 
@@ -64,21 +67,16 @@ public class WebIdService implements IWebIdService {
      */
     public String webPathToFetchInfoService(String webpath) {
         String[] segments = webpath.split(SLASH);
-        String domainId = segments[0];
         String webid = segments[segments.length - 1];
-        webid = PREFIX_WEBID_FETCH_PUB_INFO.concat(domainId).concat(SLASH).concat(webid);
-
-        return webid;
+        return PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public String domainAndIdToFetchInfoService(String domainId, String webid) {
-        String cmsPath = PREFIX_WEBID_FETCH_PUB_INFO.concat(domainId).concat(SLASH).concat(webid);
-
-        return cmsPath;
+    public String webIdToFetchInfoService(String webid) {
+        return PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
     }
 
 
@@ -87,7 +85,6 @@ public class WebIdService implements IWebIdService {
      */
     public String pageUrlToFetchInfoService(String pageUrl) {
         String[] split = pageUrl.split("/");
-        String domainId = split[2];
         String webid = split[split.length - 1];
 
         int indexOfDot = webid.indexOf(".");
@@ -95,7 +92,7 @@ public class WebIdService implements IWebIdService {
             webid = webid.substring(0, indexOfDot);
         }
 
-        webid = PREFIX_WEBID_FETCH_PUB_INFO.concat(domainId).concat(SLASH).concat(webid);
+        webid = PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
 
         return webid;
     }
@@ -105,71 +102,93 @@ public class WebIdService implements IWebIdService {
      * {@inheritDoc}
      */
     public String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem) {
-        String domainId = cmsItem.getDomainId();
         String webid = cmsItem.getWebId();
         String explicitUrl = cmsItem.getProperties().get(EXPLICIT_URL);
         String extension = cmsItem.getProperties().get(EXTENSION_URL);
 
-		// compute a path with webIDs of the parents
-		ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // compute a path with webIDs of the parents
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
         StringBuilder parentWebIdPath = new StringBuilder();
-		
-		if( cmsItem.getPath() != null)    {
 
-            String[] splittedPath = StringUtils.split(cmsItem.getPath(), SLASH);
-            StringBuilder pathToCheck = new StringBuilder();
-            pathToCheck.append(SLASH);
-            pathToCheck.append(splittedPath[0]);
-            for (int i = 1; i < (splittedPath.length - 1); i++) {
+        String path = cmsItem.getPath();
+
+        Portal portal = PortalObjectUtils.getPortal(cmsContext.getControllerContext());
+        boolean isWebMode = PortalObjectUtils.isSpaceSite(portal);
+
+        if (StringUtils.isNotBlank(path)) {
+
+            if (isWebMode) {
+
+                String[] splittedPath = StringUtils.split(path, SLASH);
+                StringBuilder pathToCheck = new StringBuilder();
                 pathToCheck.append(SLASH);
-                pathToCheck.append(splittedPath[i]);
-    
-                try {
-                    CMSItem parentItem = cmsService.getContent(cmsContext, pathToCheck.toString());
-                    String parentWebId = parentItem.getWebId();
-    
-                    if (parentWebId != null) {
-                        if (StringUtils.isNotBlank(parentWebIdPath.toString())) {
-                            parentWebIdPath.append(SLASH);
+                pathToCheck.append(splittedPath[0]);
+                for (int i = 1; i < (splittedPath.length - 1); i++) {
+                    pathToCheck.append(SLASH);
+                    pathToCheck.append(splittedPath[i]);
+
+                    try {
+                        CMSItem parentItem = cmsService.getContent(cmsContext, pathToCheck.toString());
+                        String parentWebId = parentItem.getWebId();
+
+                        if (parentWebId != null) {
+                            if (StringUtils.isNotBlank(parentWebIdPath.toString())) {
+                                parentWebIdPath.append(SLASH);
+                            }
+                            parentWebIdPath.append(parentWebId);
                         }
-                        parentWebIdPath.append(parentWebId);
+                    } catch (CMSException e) {
+                        // Do nothing
                     }
-                } catch (CMSException e) {
-                    // Do nothing
                 }
             }
-		}
-
+        }
 
         StringBuilder webPath = new StringBuilder();
-        if (StringUtils.isNotEmpty(webid) && StringUtils.isNotEmpty(domainId)) {
+        if (StringUtils.isNotEmpty(webid)) {
             webPath.append(PREFIX_WEBPATH);
-            webPath.append(SLASH);
-            webPath.append(domainId);
             webPath.append(SLASH);
 
             if (StringUtils.isNotEmpty(parentWebIdPath.toString())) {
                 webPath.append(parentWebIdPath);
                 webPath.append(SLASH);
             }
-			if (StringUtils.isNotEmpty(explicitUrl)) {
+            if (StringUtils.isNotEmpty(explicitUrl)) {
                 webPath.append(explicitUrl);
                 webPath.append(SLASH);
-			}
+            }
+
+            // webid can have parameters so path can be null
+            // (it can not be resolved directly)
+            String parameters = StringUtils.EMPTY;
+            if (StringUtils.contains(webid, QUERY_SEPARATOR)) {
+                parameters = QUERY_SEPARATOR + StringUtils.substringAfter(webid, QUERY_SEPARATOR);
+                webid = StringUtils.substringBefore(webid, QUERY_SEPARATOR);
+            }
 
             webPath.append(webid);
 
-            if ((cmsItem.getType() != null) && cmsItem.getType().equals("File")) {
-                if (extension != null) {
-                    webPath.append(DOT);
-                    webPath.append(extension);
+            if ((cmsItem.getType() != null)) {
+                String type = cmsItem.getType().getName();
+                if ("File".equals(type) || "Picture".equals(type)) {
+                    if (extension != null) {
+                        webPath.append(DOT);
+                        webPath.append(extension);
+                    }
                 }
+            } else {
+                webPath.append(SUFFIX_WEBPATH);
             }
 
-            webPath.append(SUFFIX_WEBPATH);
+            if (StringUtils.isNotEmpty(parameters)) {
+                webPath.append(parameters);
+            }
+
         }
+
         return StringUtils.trimToNull(webPath.toString());
+
     }
 
 
@@ -245,6 +264,26 @@ public class WebIdService implements IWebIdService {
      */
     public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
         this.portalURLFactory = portalURLFactory;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getParentId(CMSServiceCtx cmsContext, String documentPath) throws CMSException {
+        String parentId = StringUtils.EMPTY;
+
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+
+        String parentPath = cmsService.getParentPath(documentPath);
+        
+        if (StringUtils.isNotBlank(parentPath)) {
+
+            CMSItem parentItem = cmsService.getContent(cmsContext, parentPath);
+            parentId = parentItem.getWebId();
+
+        }
+
+        return parentId;
     }
 
 }

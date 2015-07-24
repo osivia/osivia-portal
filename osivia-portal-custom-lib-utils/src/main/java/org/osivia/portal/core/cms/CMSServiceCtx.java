@@ -51,27 +51,51 @@ public class CMSServiceCtx {
 
     /** The referrer base path. */
     private String cmsReferrerNavigationPath;
-
-
-
+    /** The parent identifier (webid). */
+    private String parentId;
+    /** The parent path. */
+    private String parentPath;
+    
+    
     public String getCmsReferrerNavigationPath() {
         return this.cmsReferrerNavigationPath;
     }
-
-
-
 
     public void setCmsReferrerNavigationPath(String cmsReferrerNavigationPath) {
         this.cmsReferrerNavigationPath = cmsReferrerNavigationPath;
     }
 
+    /**
+     * @return the parentId
+     */
+    public String getParentId() {
+        return parentId;
+    }
 
+    /**
+     * @param parentId the parentId to set
+     */
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+    
+    /**
+     * @return the parentPath
+     */
+    public String getParentPath() {
+        return parentPath;
+    }
+
+    /**
+     * @param parentPath the parentPath to set
+     */
+    public void setParentPath(String parentPath) {
+        this.parentPath = parentPath;
+    }
 
     public String getForcedLivePath() {
         return this.forcedLivePath;
     }
-
-
 
     public void setForcedLivePath(String forcedLivePath) {
         this.forcedLivePath = forcedLivePath;

@@ -26,11 +26,11 @@ public interface IProjectCustomizationConfiguration {
 
 
     /**
-     * Get current domain and web identifiers.
+     * Get current web identifier.
      *
-     * @return domain and web identifiers, eg. [domainId, webId]
+     * @return web identifiers
      */
-    String[] getDomainAndWebId();
+    String getWebId();
 
 
     /**

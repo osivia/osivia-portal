@@ -44,6 +44,8 @@ public interface IPortalUrlFactory {
     String PERM_LINK_TYPE_RSS_PICTURE = "rsspicture";
     /** Permalink type "CMS". */
     String PERM_LINK_TYPE_CMS = "cms";
+    /** Permalink type share. */
+    String PERM_LINK_TYPE_SHARE = "share";
 
     /** Popup URL adapter open status. */
     int POPUP_URL_ADAPTER_OPEN = 0;
@@ -59,7 +61,6 @@ public interface IPortalUrlFactory {
     String DISPLAYCTX_PREVIEW_LIVE_VERSION = "preview";
 
 	String MBEAN_NAME = "osivia:service=UrlFactory";
-
 
     /**
      * Get portal CMS contextualized page.
@@ -90,6 +91,25 @@ public interface IPortalUrlFactory {
      */
     String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
             String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference);
+    
+    /**
+     * Get CMS URL with additional parameters.
+     *
+     * @param portalControllerContext portal controller context
+     * @param pagePath page path
+     * @param cmsPath CMS path
+     * @param pageParams page parameters
+     * @param contextualization contextualization
+     * @param displayContext display context
+     * @param hideMetaDatas hide meta datas
+     * @param scope scope
+     * @param displayLiveVersion display live version
+     * @param windowPermReference window perm reference
+     * @param extendedParameters additional parameters
+     * @return CMS url
+     */
+    String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
+            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference, ExtendedParameters extendedParameters);
 
 
     /**
@@ -104,6 +124,21 @@ public interface IPortalUrlFactory {
      * @throws PortalException
      */
     String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
+            throws PortalException;
+    
+    /**
+     * Get permalink URL with addintional parameters.
+     *
+     * @param portalControllerContext portal controller context
+     * @param permLinkRef permalink reference
+     * @param params parameters
+     * @param cmsPath CMS path
+     * @param permLinkType permalink type
+     * @param parameters additional parameters
+     * @return permalink URL
+     * @throws PortalException
+     */
+    String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType, ExtendedParameters parameters)
             throws PortalException;
 
 

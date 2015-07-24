@@ -45,8 +45,10 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.CmsExtendedParameters;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -139,21 +141,30 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @return
      * @throws ControllerException
      */
-    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath) throws Exception {
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, ExtendedParameters extendedParameters) throws Exception {
 
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
         
- 
-        String domainIdPage = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId");
+        if(extendedParameters != null){
+            String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
+            if (StringUtils.isNotBlank(parentId)) {
+                cmsContext.setParentId(parentId);
+            } else {
+                String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
+                if (StringUtils.isNotBlank(parentPath)) {
+                    cmsContext.setParentPath(parentPath);
+                }
+            }
+        }
 
         String cmsPath = null;
         // if webpath is empty or equals '/', get default page associated with the portal
         if (webPath.length() <= 1) {
             cmsPath = getWebPortalBasePath(controllerContext);
         } else {
-            cmsPath = getWebIdService().domainAndIdToFetchInfoService(domainIdPage, webPath);
+            cmsPath = getWebIdService().webIdToFetchInfoService(webPath);
             
             boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
             if( modePreview)
@@ -191,17 +202,6 @@ public class WebURLFactory extends URLFactoryDelegate {
             CmsCommand cmsCmd = (CmsCommand) cmd;
             if (cmsCmd.getCmsPath().startsWith(IWebIdService.PREFIX_WEBPATH)) {
 
-
-                // Exclude non standards urls
-                String domainIdPage = PageProperties.getProperties().getPagePropertiesMap().get("osivia.cms.domainId");
-
-                String[] split = cmsCmd.getCmsPath().split("/"); // retirer le segment domain-id
-                String domainId = split[2];
-
-
-                if (domainId == null || !domainId.equals(domainIdPage)) {
-                    return null;
-                }
                 if (cmsCmd.getPortalPersistentName() != null)
                     return null;
                 if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext()))
@@ -212,9 +212,6 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
                 String newPath = cmsCmd.getCmsPath().substring(IWebIdService.PREFIX_WEBPATH.length());
-
-                newPath = newPath.substring(domainId.length() + 1);
-
 
                 // TODO : portlet list : impossible d'afficher des ressources hors portal site en webid
                 // avec cette clause
@@ -229,7 +226,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                     WebCommand webCommand = new WebCommand();
                     webCommand.setWebPath(webPath);
                     webCommand.setSupportingPageMarker(false);
-
+                    webCommand.setExtendedParameters(cmsCmd.getExtendedParameters());
 
                     ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
 
@@ -331,6 +328,30 @@ public class WebURLFactory extends URLFactoryDelegate {
             }
 
             asu.setPortalRequestPath(portalRequestPath);
+            
+            ExtendedParameters extendedParameters = webCmmand.getExtendedParameters();
+            if (extendedParameters != null) {
+
+                String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
+
+                if (StringUtils.isNotBlank(parentId)) {
+                    try {
+                        asu.setParameterValue("parentId", URLEncoder.encode(parentId, "UTF-8"));
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                } else {
+                    String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
+
+                    if (StringUtils.isNotBlank(parentPath)) {
+                        try {
+                            asu.setParameterValue("parentPath", URLEncoder.encode(parentPath, "UTF-8"));
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                }
+            }
 
 
             String windowName = webCmmand.getWindowName();
