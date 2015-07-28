@@ -14,10 +14,24 @@
  */
 package org.osivia.portal.core.customization;
 
+import java.util.Locale;
+
 import org.osivia.portal.api.customization.CustomizationContext;
 
 public interface ICustomizationService {
 	
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=CustomizationService";
+    
 	public void customize ( String customizationID, CustomizationContext ctx);
+	
+	 /**
+     * Gets the last customization timestamp.
+     *
+     * @param customizationID the customization id
+     * @return the last deployment timestamp
+     */
+    public long getFirstCustomizationTimestamp(String customizationID, Locale locale) ;
+	
 
 }

@@ -32,6 +32,10 @@ public class CustomizationModuleMetadatas {
 	/** The order. */
 	private int order=0;
 	
+
+	
+
+	
 	/** The module. */
 	public ICustomizationModule module;
 

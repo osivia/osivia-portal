@@ -181,6 +181,9 @@ public final class InternalConstants {
     public static final String ATTR_WINDOWS_EMPTY_INDICATOR = "osivia.window.empty";
     /** Hidden indicator window property. */
     public static final String ATTR_WINDOWS_HIDDEN_INDICATOR = "osivia.window.hidden";
+    
+    /** Default view window property name. */
+    public static final String DEFAULT_VIEW_WINDOW_PROPERTY = "osivia.defaultView";    
 
     /** Hide metadata indicator window property name. */
     public static final String METADATA_WINDOW_PROPERTY = "osivia.cms.hideMetaDatas";

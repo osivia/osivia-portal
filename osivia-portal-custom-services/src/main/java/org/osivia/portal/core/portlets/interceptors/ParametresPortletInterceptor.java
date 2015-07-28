@@ -241,7 +241,9 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 attributes.put(InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE, permalinks);
             }
 
-
+            attributes.put("customizationService", this.customizationService);
+            
+            
             // Set attributes
             invocation.setRequestAttributes(attributes);
         }
