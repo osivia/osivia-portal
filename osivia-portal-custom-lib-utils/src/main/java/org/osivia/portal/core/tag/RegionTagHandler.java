@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,8 +16,6 @@ package org.osivia.portal.core.tag;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,10 +54,10 @@ public class RegionTagHandler extends SimpleTagSupport {
     private String regionName;
     /** Region CSS identifier. */
     private String regionID;
-    /** Region CMS indicator. */
-    private Boolean cms;
     /** Region orientation. */
     private Orientation orientation;
+    /** CSS region indicator. */
+    private Boolean cms;
 
 
     /**
@@ -92,11 +90,11 @@ public class RegionTagHandler extends SimpleTagSupport {
      *
      * @param request current HTTP servlet request
      */
+    @SuppressWarnings("unchecked")
     private void parseRegionAttributes(HttpServletRequest request) {
-        
         Set<String> visibleRegions = (Set<String>) request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS);
-        visibleRegions.add(regionName);
-        
+        visibleRegions.add(this.regionName);
+
         // Check if layout contains CMS
         Boolean cms = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         if (BooleanUtils.isNotTrue(cms)) {
@@ -178,21 +176,21 @@ public class RegionTagHandler extends SimpleTagSupport {
     }
 
     /**
-     * Setter for cms.
-     *
-     * @param cms the cms to set
-     */
-    public void setCms(Boolean cms) {
-        this.cms = cms;
-    }
-
-    /**
      * Setter for orientation.
      *
      * @param orientation the orientation to set
      */
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
+    }
+
+    /**
+     * Setter for cms.
+     *
+     * @param cms the cms to set
+     */
+    public void setCms(Boolean cms) {
+        this.cms = cms;
     }
 
 }

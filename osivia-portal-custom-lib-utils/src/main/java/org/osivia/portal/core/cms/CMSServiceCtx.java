@@ -55,8 +55,8 @@ public class CMSServiceCtx {
     private String parentId;
     /** The parent path. */
     private String parentPath;
-    
-    
+
+
     public String getCmsReferrerNavigationPath() {
         return this.cmsReferrerNavigationPath;
     }
@@ -69,7 +69,7 @@ public class CMSServiceCtx {
      * @return the parentId
      */
     public String getParentId() {
-        return parentId;
+        return this.parentId;
     }
 
     /**
@@ -78,12 +78,12 @@ public class CMSServiceCtx {
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }
-    
+
     /**
      * @return the parentPath
      */
     public String getParentPath() {
-        return parentPath;
+        return this.parentPath;
     }
 
     /**
@@ -180,13 +180,23 @@ public class CMSServiceCtx {
 
 
     /**
-     * Set portal controller context to initialized controller context and server invocation.
+     * Set portal controller context to initialized controller context, server invocation, request, response and portlet context.
      *
      * @param portalControllerContext portal controller context
      */
     public void setPortalControllerContext(PortalControllerContext portalControllerContext) {
+        // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         this.setControllerContext(controllerContext);
+        // Request
+        this.setRequest(portalControllerContext.getRequest());
+        // Response
+        if (portalControllerContext.getResponse() instanceof MimeResponse) {
+            MimeResponse response = (MimeResponse) portalControllerContext.getResponse();
+            this.setResponse(response);
+        }
+        // Portlet context
+        this.setPortletCtx(portalControllerContext.getPortletCtx());
     }
 
 

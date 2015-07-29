@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.Link;
 
 /**
@@ -52,10 +53,10 @@ public interface ICMSService {
      * @throws CMSException
      */
     CMSPublicationInfos getPublicationInfos(CMSServiceCtx ctx, String path) throws CMSException;
-    
+
     /**
      * Get extended infos on document given by its path.
-     * 
+     *
      * @param ctx CMSService context
      * @param path path of studied ddocument
      * @return extended infos on document given by its path
@@ -99,7 +100,7 @@ public interface ICMSService {
 
     /**
      * Get workspaces.
-     * 
+     *
      * @param cmsContext CMS context
      * @param userWorkspaces user workspaces indicator
      * @param administrator administrator indicator
@@ -356,9 +357,9 @@ public interface ICMSService {
      */
     String refreshUserAvatar(CMSServiceCtx cmsCtx, String username);
 
-    
+
     /**
-     * Get binary url 
+     * Get binary url
      *
      * @param cmsCtx CMS context
      * @param username user identifier
@@ -386,18 +387,36 @@ public interface ICMSService {
      */
      public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path) ;
 
-    
+
 	/**
 	 * Execute and ECM command
 	 * @param cmsCtx
 	 * @param command
-	 * @param cmsPath 
+	 * @param cmsPath
 	 * @throws CMSException
 	 */
 	void executeEcmCommand(CMSServiceCtx cmsCtx,
 			EcmCommand command, String cmsPath) throws CMSException;
 
 
+    /**
+     * Get taskbar navigation tasks.
+     *
+     * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param currentPath CMS current path
+     * @return tasks
+     * @throws CMSException
+     */
+    List<TaskbarTask> getTaskbarNavigationTasks(CMSServiceCtx cmsContext, String basePath, String currentPath) throws CMSException;
 
+
+    /**
+     * Get taskbar custom tasks.
+     *
+     * @param cmsContext CMS context
+     * @return tasks
+     */
+    List<TaskbarTask> getTaskbarCustomTasks(CMSServiceCtx cmsContext);
 
 }

@@ -665,6 +665,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     public String getStartPortletUrl(PortalControllerContext portalCtx, String portletInstance, Map<String, String> windowProperties,
             Map<String, String> params, boolean popup) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
 
         try {
             // Maps initialization
@@ -682,9 +684,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             String region = "virtual";
             String windowName = "dynamicPortlet";
 
-            Window window = (Window) portalCtx.getRequest().getAttribute("osivia.window");
-            Page page = window.getPage();
-            String pageId = URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+            String pageId = URLEncoder.encode(PortalObjectUtils.getPageId(controllerContext).toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
 
             ControllerCommand cmd = new StartDynamicWindowCommand();
             PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalCtx), null, null);
@@ -975,7 +975,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 			PortalControllerContext ctx, String path,
 			EcmCommonCommands command) throws PortalException  {
 
-		return getEcmCommandUrl(ctx, path, command.name());
+		return this.getEcmCommandUrl(ctx, path, command.name());
 	}
 
 
@@ -985,15 +985,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	public String getEcmCommandUrl(
 			PortalControllerContext portalControllerContext, String path,
 			String commandName) throws PortalException  {
-		
+
 		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
 		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(commandName);
-		
+
 		if(initialCommand == null) {
 			throw new PortalException("command "+commandName+" not found");
 		}
-		
-		
+
+
 		ControllerCommand cmd = new EcmCommandDelegate(initialCommand, path);
 
 		PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);

@@ -2,7 +2,6 @@ package org.osivia.portal.core.customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
@@ -98,7 +97,7 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.replay(controllerContextMock);
 
         // Portal controller context
-        this.portalControllerContextMock = EasyMock.createMock("PortalControllerContext", PortalControllerContext.class);
+        this.portalControllerContextMock = EasyMock.createNiceMock("PortalControllerContext", PortalControllerContext.class);
         EasyMock.expect(this.portalControllerContextMock.getControllerCtx()).andStubReturn(controllerContextMock);
         EasyMock.replay(this.portalControllerContextMock);
 
@@ -166,7 +165,6 @@ public class ProjectCustomizationConfigurationTest {
 
     @Test
     public final void testEqualsWebId() throws CMSException {
-        String domainId = "domain";
         String webId = "page-to-redirect";
 
         // CMS item

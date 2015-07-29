@@ -119,6 +119,7 @@ import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
+import org.osivia.portal.core.taskbar.TaskbarUtils;
 import org.osivia.portal.core.web.IWebIdService;
 
 
@@ -252,25 +253,25 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         /* Init window states */
 
         unsetMaxMode(page.getChildren(PortalObject.WINDOW_MASK), controllerCtx);
-        
-        initPageBackInfos(controllerCtx);     
+
+        initPageBackInfos(controllerCtx);
      }
 
 
     public static void initPageBackInfos(ControllerContext controllerCtx) {
         initPageBackInfos( controllerCtx, true);
     }
-    
+
     public static void initPageBackInfos(ControllerContext controllerCtx, boolean mobile) {
         /* Init back actions */
-        
-        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);   
+
+        controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", null);
 
-        
+
         if( mobile) {
-            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", null);   
-            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", null);            
+            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", null);
+            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", null);
         }
     }
 
@@ -279,9 +280,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         // Maj du breadcrumb
         controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", null);
-        
 
-        
+
+
 
 
         // Reinitialtion du path CMS
@@ -619,12 +620,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
             boolean initState = "true".equals(request.getParameter("init-state"));
-            
-            if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
-                    initState = false;
-            
-            if( "1".equals(rpc.getPage().getProperty("osivia.genericPage")))
+
+            if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab"))) {
                 initState = false;
+            }
+
+            if( "1".equals(rpc.getPage().getProperty("osivia.genericPage"))) {
+                initState = false;
+            }
 
             if (initState || defaultPage) {
 
@@ -645,12 +648,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                             cmsContext.setControllerContext(controllerCtx);
                             path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
                         }
-                        
+
                         // init-state
-                        //PageCustomizerInterceptor.initPageBackInfos(controllerCtx);          
+                        //PageCustomizerInterceptor.initPageBackInfos(controllerCtx);
                         initPageState(rpc.getPage(), controllerCtx);
-                        
-                        
+
+
                         String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
                                 rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
                                 null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "tabs", null, null, null, null);
@@ -740,9 +743,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         /*
          * At this time, windows (aka maximized) are definitly set
-         * We can check the layout with the correct layout uri 
+         * We can check the layout with the correct layout uri
         */
-        
+
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
@@ -752,7 +755,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 this.checkLayout(rpc);
             }
         }
-        
+
         /*
          * Synchronisation des pages de rubrique CMS quand leur affichage est en mode portlet MAX (et non en mode page)
          * Si tous les portlets sont en mode normal, ll faut forcer un appel CMS pour recharger la page
@@ -793,30 +796,32 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
-        /* Analyse du mode d'edition 
-         * 
+        /* Analyse du mode d'edition
+         *
          * injection pathPublication & isPageInEditionMode
          * */
-        
-        
+
+
 
         String pathPublication = null;
-        
+
         if ((cmd instanceof RenderPageCommand)
                 || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
-            
+
             boolean onlinePage = true;
-            
+
 
             ControllerContext controllerCtx = cmd.getControllerContext();
 
             Page page = null;
-            
-            if( cmd instanceof RenderPageCommand) 
+
+            if( cmd instanceof RenderPageCommand) {
                 page = ((RenderPageCommand) cmd).getPage();
-            if( cmd instanceof RenderWindowCommand) 
+            }
+            if( cmd instanceof RenderWindowCommand) {
                 page = ((RenderWindowCommand) cmd).getPage();
-                
+            }
+
             // Online mode indicator
 
             pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
@@ -837,14 +842,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     }
                 }
             }
- 
-            
+
+
             cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode", onlinePage ? Boolean.FALSE : Boolean.TRUE);
        }
-        
-        
+
+
         /* Redirection si page display mode */
-        
+
         if (cmd instanceof RenderPageCommand) {
 
             RenderPageCommand rpc = (RenderPageCommand) cmd;
@@ -864,7 +869,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx cmxCtx = new CMSServiceCtx();
                     cmxCtx.setControllerContext(controllerCtx);
                     cmxCtx.setScope(navigationScope);
-                    
+
                     Boolean pageInEditionMode =  (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
 
                     if( BooleanUtils.isTrue(pageInEditionMode)) {
@@ -878,7 +883,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     // Affichage en mode page ?
                     // Si oui, redirection CMS
 
-                    if ( !basePath.equals(pathPublication) && (navItem == null || !"1".equals(navItem.getProperties().get("pageDisplayMode")))) {
+                    if ( !basePath.equals(pathPublication) && ((navItem == null) || !"1".equals(navItem.getProperties().get("pageDisplayMode")))) {
 
                         CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
 
@@ -958,7 +963,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
                         if (pageInEditionMode) {
                             cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);
-                        }                        
+                        }
                     }
                 }
             }
@@ -1148,7 +1153,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     // Fermeture applicative
                     ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
-                    
+
                     if( endPopupCMD instanceof InvokePortletWindowRenderCommand)    {
                         // Si je propage la commande tel quelle, les paramètres publics sont perdus ...
                         // Heureusement, Les paramètres de la commande ont déjà été appliqués...
@@ -1283,8 +1288,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Redirection driven at portlet level
             String url =  (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url");
-            if( url != null)
+            if( url != null) {
                 return new RedirectionResponse(url);
+            }
 
 
             // Display collapse window content
@@ -1521,8 +1527,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     // Window dynamique : retour
                     String url = window.getDeclaredProperty("osivia.dynamic.close_url");
-                    
-                    
+
+
 
                     if (url != null) {
                         // Pas d'ajax sur windows dynamique
@@ -1585,6 +1591,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Inject menubar region
             MenubarUtils.injectContentNavbarActionsRegion(portalControllerContext, rendition);
+
+            // Initialize taskbar window
+            TaskbarUtils.initializeWindow(portalControllerContext, rpc.getPage(), rendition);
+
+
 
 
             // A décommenter Juste pour inspecter les sessions dans le debugger
@@ -1701,14 +1712,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
         String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout layout = layoutService.getLayout(layoutId, false);
-        if( layout == null)
+        if( layout == null) {
             throw new ControllerException("Layout "+ layoutId+ "not found for page "+ renderPageCommand.getPage().toString());
+        }
         LayoutInfo layoutInfo = layout.getLayoutInfo();
         String uri = layoutInfo.getURI();
-        
-        
+
+
         Iterator<PortalObject> i = renderPageCommand.getWindows().iterator();
-        
+
         boolean maximized = false;
 
         while (i.hasNext()) {
@@ -1721,12 +1733,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 maximized = true;
             }
         }
-        
+
         // At this time, windows displaying is only checked for index and maximized state
-        
-        if(maximized)
+
+        if(maximized) {
             uri = layoutInfo.getURI("maximized");
-        
+        }
+
 
         // Context path
         String contextPath = getTargetContextPath(renderPageCommand);
@@ -1744,7 +1757,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         BufferingRequestWrapper request = new BufferingRequestWrapper(serverContext.getClientRequest(), contextPath, locales);
         request.setAttribute(InternalConstants.ATTR_LAYOUT_PARSING, true);
         request.setAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, new HashSet());
-        
+
         // Response
         BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
 
@@ -1756,15 +1769,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             throw new ControllerException(e);
         }
 
+        // CMS
         Boolean layoutCMS = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, layoutCMS);
-        
-        
-        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS));
-        
-        if( maximized)
-            controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE, "maximized");
 
+        // Visible regions
+        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS,
+                request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS));
+        if (maximized) {
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE, "maximized");
+        }
     }
 
 

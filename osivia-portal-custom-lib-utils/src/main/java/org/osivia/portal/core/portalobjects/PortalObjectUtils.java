@@ -15,6 +15,7 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
@@ -43,6 +44,49 @@ public class PortalObjectUtils {
      */
     public PortalObjectUtils() {
         super();
+    }
+
+
+    /**
+     * Get current page portal object identifier.
+     *
+     * @param controllerContext controller context
+     * @return current page portal object identifier
+     */
+    public static final PortalObjectId getPageId(ControllerContext controllerContext) {
+        PortalObjectId pageId = null;
+
+        if (controllerContext != null) {
+            // Page identifier
+            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+        }
+
+        return pageId;
+    }
+
+
+    /**
+     * Get current page.
+     *
+     * @param controllerContext controller context
+     * @return current page
+     */
+    public static final Page getPage(ControllerContext controllerContext) {
+        Page page = null;
+
+        if (controllerContext != null) {
+            // Page identifier
+            PortalObjectId pageId = getPageId(controllerContext);
+
+            if (pageId != null) {
+                // Portal object container
+                PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+
+                page = portalObjectContainer.getObject(pageId, Page.class);
+            }
+        }
+
+        return page;
     }
 
 

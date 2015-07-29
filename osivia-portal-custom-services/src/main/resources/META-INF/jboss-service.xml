@@ -187,6 +187,17 @@
 
 
     <mbean
+        code="org.osivia.portal.core.taskbar.TaskbarInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=Taskbar"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="TaskbarService"
+            proxy-type="attribute">osivia:service=TaskbarService</depends>
+    </mbean>
+
+    <mbean
         code="org.osivia.portal.core.assistantpage.AssistantPageCustomizerInterceptor"
         name="osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer"
         xmbean-dd=""
@@ -893,6 +904,21 @@
         <xmbean />
         <depends optional-attribute-name="PortalURLFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
         <depends optional-attribute-name="CmsServiceLocator" proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
+    <!-- Taskbar service -->
+    <mbean
+        code="org.osivia.portal.core.taskbar.TaskbarService"
+        name="osivia:service=TaskbarService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="DynamicObjectContainer"
+            proxy-type="attribute">osivia:service=DynamicPortalObjectContainer</depends>
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
     
 </server>
