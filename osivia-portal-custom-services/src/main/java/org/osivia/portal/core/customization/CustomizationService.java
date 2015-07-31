@@ -32,16 +32,30 @@ import org.osivia.portal.api.customization.ICustomizationModulesRepository;
 import org.osivia.portal.core.login.LoginInterceptor;
 
 
+
+/**
+ * The Class CustomizationService.
+ */
 public class CustomizationService implements ICustomizationService, ICustomizationModulesRepository {
 
 
+    /** The Constant logger. */
     protected static final Log logger = LogFactory.getLog(LoginInterceptor.class);
 
+    /** The custom modules. */
     Map<String, CustomizationModuleMetadatas> customModules = new Hashtable<String, CustomizationModuleMetadatas>();
+    
+    /** The sorted modules. */
     SortedSet<CustomizationModuleMetadatas> sortedModules = new TreeSet<CustomizationModuleMetadatas>(moduleComparator);
+    
+    /** The first ts. */
     Hashtable<MultiKey, Long> firstTS = new Hashtable<MultiKey, Long>();
+    
+    /** The cms observer. */
+    private ICMSCustomizationObserver cmsObserver;
 
 
+    /** The Constant moduleComparator. */
     public static final Comparator<CustomizationModuleMetadatas> moduleComparator = new Comparator<CustomizationModuleMetadatas>() {
 
         public int compare(CustomizationModuleMetadatas m1, CustomizationModuleMetadatas m2) {
@@ -59,6 +73,9 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     };
 
 
+    /**
+     * Synchronize sorted modules.
+     */
     private void synchronizeSortedModules() {
 
         this.sortedModules = new TreeSet<CustomizationModuleMetadatas>(moduleComparator);
@@ -69,6 +86,9 @@ public class CustomizationService implements ICustomizationService, ICustomizati
 
     }
 
+    /* (non-Javadoc)
+     * @see org.osivia.portal.core.customization.ICustomizationService#customize(java.lang.String, org.osivia.portal.api.customization.CustomizationContext)
+     */
     public void customize(String customizationID, CustomizationContext ctx) {
 
         for (CustomizationModuleMetadatas module : this.sortedModules) {
@@ -84,6 +104,11 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     }
 
 
+    /**
+     * Removes the ts.
+     *
+     * @param moduleMetadatas the module metadatas
+     */
     private void removeTS(CustomizationModuleMetadatas moduleMetadatas) {
         List<MultiKey> itemsToRemove = new ArrayList<MultiKey>();
 
@@ -97,29 +122,42 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.osivia.portal.api.customization.ICustomizationModulesRepository#register(org.osivia.portal.api.customization.CustomizationModuleMetadatas)
+     */
     public void register(CustomizationModuleMetadatas moduleMetadatas) {
        
         this.customModules.put(moduleMetadatas.getName(), moduleMetadatas);
         removeTS(moduleMetadatas);
         this.synchronizeSortedModules();
+        
+        if( cmsObserver != null)
+            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id"));
+                cmsObserver.notifyDeployment();
     }
 
+    /* (non-Javadoc)
+     * @see org.osivia.portal.api.customization.ICustomizationModulesRepository#unregister(org.osivia.portal.api.customization.CustomizationModuleMetadatas)
+     */
     public void unregister(CustomizationModuleMetadatas moduleMetadatas) {
         this.customModules.remove(moduleMetadatas.getName());
         removeTS(moduleMetadatas);
         this.synchronizeSortedModules();
+        
+        if( cmsObserver != null)
+            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id"));
+                cmsObserver.notifyDeployment();
+        
     }
 
-    public long getFirstCustomizationTimestamp(String customizationID, Locale locale) {
 
-        MultiKey updateKey = new MultiKey(customizationID, locale);
+    /* (non-Javadoc)
+     * @see org.osivia.portal.core.customization.ICustomizationService#setCMSObserver(org.osivia.portal.core.customization.ICMSCustomizationObserver)
+     */
+    public void setCMSObserver(ICMSCustomizationObserver observer) {
+        cmsObserver = observer;
+     }
 
-        Long ts = firstTS.get(updateKey);
-        if (ts == null)
-            ts = NOT_DEPLOYED;
-
-        return ts;
-    }
 
 
 }
