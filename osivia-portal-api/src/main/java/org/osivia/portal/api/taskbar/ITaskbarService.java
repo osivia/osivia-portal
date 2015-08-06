@@ -24,6 +24,11 @@ public interface ITaskbarService {
     /** Taskbar empty window instance. */
     String EMPTY_WINDOW_INSTANCE = "osivia-services-taskbar-empty-instance";
 
+    /** Open taskbar action name. */
+    String OPEN_TASKBAR_ACTION = "openTaskbar";
+    /** Close taskbar action name. */
+    String CLOSE_TASKBAR_ACTION = "closeTaskbar";
+
     /** Taskbar home task identifier. */
     String HOME_TASK_ID = "HOME";
 

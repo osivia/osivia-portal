@@ -3,6 +3,8 @@ package org.osivia.portal.core.taskbar;
 import java.util.Collection;
 import java.util.List;
 
+import javax.portlet.ActionRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
@@ -129,14 +131,23 @@ public class TaskbarInterceptor extends ControllerInterceptor {
                     if (actionCommand.getInteractionState() instanceof ParametersStateString) {
                         ParametersStateString interactionState = (ParametersStateString) actionCommand.getInteractionState();
 
-                        id = interactionState.getValue("id");
+                        // Action name
+                        String action = interactionState.getValue(ActionRequest.ACTION_NAME);
 
-                        List<TaskbarTask> tasks = this.taskbarService.getCustomTasks(portalControllerContext);
-                        for (TaskbarTask task : tasks) {
-                            if (StringUtils.equals(id, task.getId())) {
-                                player = task.getTaskbarPlayer();
-                                break;
+                        if (ITaskbarService.OPEN_TASKBAR_ACTION.equals(action)) {
+                            // Open taskbar window
+                            id = interactionState.getValue("id");
+
+                            List<TaskbarTask> tasks = this.taskbarService.getCustomTasks(portalControllerContext);
+                            for (TaskbarTask task : tasks) {
+                                if (StringUtils.equals(id, task.getId())) {
+                                    player = task.getTaskbarPlayer();
+                                    break;
+                                }
                             }
+                        } else if (ITaskbarService.CLOSE_TASKBAR_ACTION.equals(action)) {
+                            // Close taskbar window
+                            this.taskbarService.addEmptyWindow(portalControllerContext, null);
                         }
                     }
                 }

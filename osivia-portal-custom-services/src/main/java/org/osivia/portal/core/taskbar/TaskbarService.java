@@ -215,31 +215,33 @@ public class TaskbarService implements ITaskbarService {
         // Page identifier
         PortalObjectId pageId = PortalObjectUtils.getPageId(controllerContext);
 
-        // Region name
-        String region = this.getRegion(portalControllerContext);
+        if (pageId != null) {
+            // Region name
+            String region = this.getRegion(portalControllerContext);
 
-        // Window properties
-        Map<String, String> windowProperties = new HashMap<String, String>(properties);
-        windowProperties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-        windowProperties.put(ThemeConstants.PORTAL_PROP_REGION, region);
-        windowProperties.put("osivia.hideTitle", "1");
-        windowProperties.put(TASK_ID_WINDOW_PROPERTY, id);
+            // Window properties
+            Map<String, String> windowProperties = new HashMap<String, String>(properties);
+            windowProperties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
+            windowProperties.put(ThemeConstants.PORTAL_PROP_REGION, region);
+            windowProperties.put("osivia.hideTitle", "1");
+            windowProperties.put(TASK_ID_WINDOW_PROPERTY, id);
 
-        // Page marker
-        String pageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+            // Page marker
+            String pageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
 
-        // Dynamic window bean
-        DynamicWindowBean window = new DynamicWindowBean(pageId, WINDOW_NAME, instance, windowProperties, pageMarker);
+            // Dynamic window bean
+            DynamicWindowBean window = new DynamicWindowBean(pageId, WINDOW_NAME, instance, windowProperties, pageMarker);
 
-        this.dynamicObjectContainer.addDynamicWindow(window);
+            this.dynamicObjectContainer.addDynamicWindow(window);
 
-        // Suppression du cache
-        StringBuilder builder = new StringBuilder();
-        builder.append("cached_markup.");
-        builder.append(pageId.toString());
-        builder.append("/");
-        builder.append(WINDOW_NAME);
-        controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, builder.toString());
+            // Suppression du cache
+            StringBuilder builder = new StringBuilder();
+            builder.append("cached_markup.");
+            builder.append(pageId.toString());
+            builder.append("/");
+            builder.append(WINDOW_NAME);
+            controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, builder.toString());
+        }
     }
 
 

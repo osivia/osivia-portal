@@ -29,6 +29,39 @@
 }
 
 
+
+
+
+// Affix container
+.content-navbar-affix-container {
+    min-height: 1px;
+}
+
+
+// Affix
+.content-navbar-affix {
+    @media screen and (max-width: @screen-xs-max) {
+        .container, .container-fluid {
+            padding: 0;
+        }
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        left: 0;
+        right: 0;
+        z-index: 20;
+        
+        &.affix-top {
+            position: absolute;
+        }
+        
+        &.affix {
+            top: 0;
+        }
+    }
+}
+
+
 .content-navbar-breadcrumb, .content-navbar-actions {
     display: table-cell;
     vertical-align: top;

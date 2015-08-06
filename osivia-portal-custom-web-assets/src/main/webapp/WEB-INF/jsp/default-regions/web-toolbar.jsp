@@ -90,14 +90,6 @@
                                     </li>
                                 </ul>
                             </li>
-    
-                            <!-- Refresh -->
-                            <li>
-                                <a href="${requestScope['osivia.toolbar.refreshPageURL']}" class="navbar-link">
-                                    <i class="halflings halflings-repeat"></i>
-                                    <span class="hidden-sm"><is:getProperty key="REFRESH_PAGE" /></span>
-                                </a>
-                            </li>
                         </ul>
                     </c:otherwise>
                 </c:choose>

@@ -119,8 +119,12 @@ public class TaskbarUtils {
         Element div1 = DOM4JUtils.generateDivElement(null);
 
         // HTML "div" #2
-        Element div2 = DOM4JUtils.generateDivElement("dyna-window-content");
+        Element div2 = DOM4JUtils.generateDivElement("dyna-window-content hidden");
         div1.add(div2);
+
+        // Portlet container
+        Element portletContainer = DOM4JUtils.generateElement("section", "portlet-container hidden", StringUtils.EMPTY);
+        div2.add(portletContainer);
 
         // Write HTML content
         return DOM4JUtils.write(div1);

@@ -22,6 +22,10 @@
     padding: 0;
 }
 
+.wrapper-inner {
+    position: relative;
+}
+
 @media screen and (max-width: @screen-xs-max) {
     .wrapper-outer, .wrapper-inner {
         .screen-wrapper();
@@ -35,8 +39,6 @@
         padding-top: 50px;
         
         .wrapper-inner {
-            position: relative;
-            
             & > * {
                 height: 100%;
                 overflow: auto;
@@ -85,6 +87,7 @@
         .screen-wrapper();
     }
 }
+
 
 
 #drawer-toolbar {

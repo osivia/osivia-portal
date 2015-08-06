@@ -20,6 +20,46 @@ $JQry(document).ready(function() {
 		event.stopPropagation();
 	});
 
+	
+	// Content navbar affix
+	$JQry(".content-navbar-affix").each(function(index, element) {
+		var $element = $JQry(element),
+			$container = $element.closest(".content-navbar-affix-container");
+
+		
+		// Navbar height
+		$container.css({
+			height: $element.outerHeight(true)
+		});
+		
+		
+		// Affix
+		$element.affix({
+			offset: {
+				top: function() {
+					if (document.body.clientWidth >= 768) {
+						return Math.round($container.offset().top);
+					} else {
+						return 0;
+					}
+				}
+			}
+		});
+	});
+	
+});
+
+
+//Reset navbar height on window resizing
+$JQry(window).resize(function() {
+	$JQry(".content-navbar-affix").each(function(index, element) {
+		var $element = $JQry(element),
+			$container = $element.closest(".content-navbar-affix-container");
+
+		$container.css({
+			height: $element.outerHeight(true)
+		});
+	});
 });
 
 
