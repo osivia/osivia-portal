@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -17,9 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -44,13 +42,13 @@ public class CustomizationService implements ICustomizationService, ICustomizati
 
     /** The custom modules. */
     Map<String, CustomizationModuleMetadatas> customModules = new Hashtable<String, CustomizationModuleMetadatas>();
-    
+
     /** The sorted modules. */
     SortedSet<CustomizationModuleMetadatas> sortedModules = new TreeSet<CustomizationModuleMetadatas>(moduleComparator);
-    
+
     /** The first ts. */
     Hashtable<MultiKey, Long> firstTS = new Hashtable<MultiKey, Long>();
-    
+
     /** The cms observer. */
     private ICMSCustomizationObserver cmsObserver;
 
@@ -99,8 +97,9 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         }
 
         MultiKey updateKey = new MultiKey(customizationID, ctx.getLocale());
-        if (firstTS.get(updateKey) == null)
-            firstTS.put(updateKey, System.currentTimeMillis());
+        if (this.firstTS.get(updateKey) == null) {
+            this.firstTS.put(updateKey, System.currentTimeMillis());
+        }
     }
 
 
@@ -112,13 +111,14 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     private void removeTS(CustomizationModuleMetadatas moduleMetadatas) {
         List<MultiKey> itemsToRemove = new ArrayList<MultiKey>();
 
-        for (MultiKey key : firstTS.keySet()) {
-            if (moduleMetadatas.getCustomizationIDs().contains(key.getKey(0)))
+        for (MultiKey key : this.firstTS.keySet()) {
+            if (moduleMetadatas.getCustomizationIDs().contains(key.getKey(0))) {
                 itemsToRemove.add(key);
+            }
         }
 
         for (MultiKey key : itemsToRemove) {
-            firstTS.remove(key);
+            this.firstTS.remove(key);
         }
     }
 
@@ -126,14 +126,15 @@ public class CustomizationService implements ICustomizationService, ICustomizati
      * @see org.osivia.portal.api.customization.ICustomizationModulesRepository#register(org.osivia.portal.api.customization.CustomizationModuleMetadatas)
      */
     public void register(CustomizationModuleMetadatas moduleMetadatas) {
-       
         this.customModules.put(moduleMetadatas.getName(), moduleMetadatas);
-        removeTS(moduleMetadatas);
+        this.removeTS(moduleMetadatas);
         this.synchronizeSortedModules();
-        
-        if( cmsObserver != null)
-            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id"));
-                cmsObserver.notifyDeployment();
+
+        if (this.cmsObserver != null) {
+            if (moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id")) {
+                this.cmsObserver.notifyDeployment();
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -141,13 +142,16 @@ public class CustomizationService implements ICustomizationService, ICustomizati
      */
     public void unregister(CustomizationModuleMetadatas moduleMetadatas) {
         this.customModules.remove(moduleMetadatas.getName());
-        removeTS(moduleMetadatas);
+        this.removeTS(moduleMetadatas);
         this.synchronizeSortedModules();
-        
-        if( cmsObserver != null)
-            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id"));
-                cmsObserver.notifyDeployment();
-        
+
+        if( this.cmsObserver != null) {
+            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id")) {
+                ;
+            }
+        }
+                this.cmsObserver.notifyDeployment();
+
     }
 
 
@@ -155,7 +159,7 @@ public class CustomizationService implements ICustomizationService, ICustomizati
      * @see org.osivia.portal.core.customization.ICustomizationService#setCMSObserver(org.osivia.portal.core.customization.ICMSCustomizationObserver)
      */
     public void setCMSObserver(ICMSCustomizationObserver observer) {
-        cmsObserver = observer;
+        this.cmsObserver = observer;
      }
 
 
