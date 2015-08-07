@@ -74,6 +74,11 @@ public class TaskbarInterceptor extends ControllerInterceptor {
                 // Task identifier
                 String id = null;
 
+                // Base path
+                String basePath = page.getProperty("osivia.cms.basePath");
+                // Current path
+                String currentPath = TaskbarUtils.getCurrentPath(controllerContext, page);
+
 
                 if (command instanceof RenderPageCommand) {
                     // Maximized window
@@ -86,44 +91,37 @@ public class TaskbarInterceptor extends ControllerInterceptor {
                             // Refresh cache
                             this.refreshCache(controllerContext, page, region);
 
-                            List<TaskbarTask> tasks = this.taskbarService.getCustomTasks(portalControllerContext);
-                            for (TaskbarTask task : tasks) {
+                            List<TaskbarTask> customTasks = this.taskbarService.getCustomTasks(portalControllerContext);
+                            for (TaskbarTask task : customTasks) {
                                 if (id.equals(task.getId())) {
                                     player = task.getTaskbarPlayer();
                                     break;
                                 }
                             }
                         }
-                    } else {
-                        // Base path
-                        String basePath = page.getProperty("osivia.cms.basePath");
-                        // Current path
-                        String currentPath = TaskbarUtils.getCurrentPath(controllerContext, page);
+                    } else if (!StringUtils.equals(currentPath, basePath)) {
+                        // Protected current path
+                        String protectedCurrentPath = currentPath + "/";
 
-                        if (!StringUtils.equals(currentPath, basePath)) {
-                            // Protected current path
-                            String protectedCurrentPath = currentPath + "/";
+                        // Navigation tasks
+                        List<TaskbarTask> navigationTasks = this.taskbarService.getNavigationTasks(portalControllerContext, basePath, currentPath);
 
-                            // Navigation tasks
-                            List<TaskbarTask> navigationTasks = this.taskbarService.getNavigationTasks(portalControllerContext, basePath, currentPath);
-
-                            // Active task
-                            TaskbarTask activeTask = null;
-                            for (TaskbarTask navigationTask : navigationTasks) {
-                                String protectedPath = navigationTask.getPath() + "/";
-                                if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
-                                    activeTask = navigationTask;
-                                    break;
-                                }
+                        // Active task
+                        TaskbarTask activeTask = null;
+                        for (TaskbarTask navigationTask : navigationTasks) {
+                            String protectedPath = navigationTask.getPath() + "/";
+                            if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
+                                activeTask = navigationTask;
+                                break;
                             }
-
-                            if (activeTask != null) {
-                                player = activeTask.getTaskbarPlayer();
-                                id = activeTask.getId();
-                            }
-                        } else {
-                            id = ITaskbarService.HOME_TASK_ID;
                         }
+
+                        if (activeTask != null) {
+                            player = activeTask.getTaskbarPlayer();
+                            id = activeTask.getId();
+                        }
+                    } else {
+                        id = ITaskbarService.HOME_TASK_ID;
                     }
                 } else if (command instanceof InvokePortletWindowActionCommand) {
                     InvokePortletWindowActionCommand actionCommand = (InvokePortletWindowActionCommand) command;
@@ -138,11 +136,22 @@ public class TaskbarInterceptor extends ControllerInterceptor {
                             // Open taskbar window
                             id = interactionState.getValue("id");
 
-                            List<TaskbarTask> tasks = this.taskbarService.getCustomTasks(portalControllerContext);
-                            for (TaskbarTask task : tasks) {
+                            List<TaskbarTask> customTasks = this.taskbarService.getCustomTasks(portalControllerContext);
+                            boolean navigationSearch = true;
+                            for (TaskbarTask task : customTasks) {
                                 if (StringUtils.equals(id, task.getId())) {
                                     player = task.getTaskbarPlayer();
+                                    navigationSearch = false;
                                     break;
+                                }
+                            }
+                            if (navigationSearch) {
+                                List<TaskbarTask> navigationTasks = this.taskbarService.getNavigationTasks(portalControllerContext, basePath, currentPath);
+                                for (TaskbarTask task : navigationTasks) {
+                                    if (id.equals(task.getId())) {
+                                        player = task.getTaskbarPlayer();
+                                        break;
+                                    }
                                 }
                             }
                         } else if (ITaskbarService.CLOSE_TASKBAR_ACTION.equals(action)) {

@@ -64,13 +64,15 @@ public interface ITaskbarService {
 
 
     /**
-     * Get active task identifier.
+     * Get task identifiers.
+     * First item correspond to active task identifier.
+     * Second item correspond to selected task identifier.
      *
      * @param portalControllerContext portal controller context
      * @param tasks tasks
      * @return task identifier
      */
-    String getActiveTaskId(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks);
+    String[] getTaskIdentifiers(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks);
 
 
     /**

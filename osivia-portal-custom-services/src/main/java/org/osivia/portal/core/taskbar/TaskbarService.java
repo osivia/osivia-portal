@@ -110,58 +110,88 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
-    public String getActiveTaskId(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks) {
+    public String[] getTaskIdentifiers(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Page
         Page page = PortalObjectUtils.getPage(controllerContext);
 
-        // Identifier
-        String id = null;
+
+        // Task identifiers
+        String[] identifiers = new String[2];
+
+
+        // Selected task identifier
+        String selectedId = this.getSelectedId(controllerContext, tasks, page);
+        identifiers[1] = selectedId;
+
+
+        // Active task identifier
+        String activeId = null;
 
         Collection<PortalObject> portalObjects = page.getChildren(PortalObject.WINDOW_MASK);
         for (PortalObject portalObject : portalObjects) {
             Window window = (Window) portalObject;
             if (WINDOW_NAME.equals(window.getName())) {
-                id = window.getDeclaredProperty(TASK_ID_WINDOW_PROPERTY);
+                activeId = window.getDeclaredProperty(TASK_ID_WINDOW_PROPERTY);
                 break;
             }
         }
 
+        if (activeId == null) {
+            activeId = selectedId;
+        }
 
-        if (id == null) {
-            // Maximized window
-            Window maximizedWindow = TaskbarUtils.getMaximizedWindow(controllerContext, page);
+        identifiers[0] = activeId;
 
-            if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
-                id = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+
+        return identifiers;
+    }
+
+
+    /**
+     * Get selected task identifier.
+     *
+     * @param controllerContext controller context
+     * @param tasks tasks
+     * @param page page
+     * @return selected task identifier
+     */
+    private String getSelectedId(ControllerContext controllerContext, List<? extends TaskbarTask> tasks, Page page) {
+        // Selected task identifier
+        String selectedId = null;
+
+        // Maximized window
+        Window maximizedWindow = TaskbarUtils.getMaximizedWindow(controllerContext, page);
+
+        if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
+            selectedId = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+        } else {
+            // Base path
+            String basePath = page.getProperty("osivia.cms.basePath");
+            // Current path
+            String currentPath = TaskbarUtils.getCurrentPath(controllerContext, page);
+
+            if (StringUtils.equals(currentPath, basePath)) {
+                selectedId = ITaskbarService.HOME_TASK_ID;
             } else {
-                // Base path
-                String basePath = page.getProperty("osivia.cms.basePath");
-                // Current path
-                String currentPath = TaskbarUtils.getCurrentPath(controllerContext, page);
+                // Protected current path
+                String protectedCurrentPath = currentPath + "/";
 
-                if (StringUtils.equals(currentPath, basePath)) {
-                    id = ITaskbarService.HOME_TASK_ID;
-                } else {
-                    // Protected current path
-                    String protectedCurrentPath = currentPath + "/";
-
-                    for (TaskbarTask task : tasks) {
-                        if (task.getPath() != null) {
-                            String protectedPath = task.getPath() + "/";
-                            if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
-                                id = task.getId();
-                                break;
-                            }
+                for (TaskbarTask task : tasks) {
+                    if (task.getPath() != null) {
+                        String protectedPath = task.getPath() + "/";
+                        if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
+                            selectedId = task.getId();
+                            break;
                         }
                     }
                 }
             }
         }
 
-        return id;
+        return selectedId;
     }
 
 
