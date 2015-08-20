@@ -23,6 +23,11 @@ package org.osivia.portal.api.customization;
 public interface ICustomizationModule {
 	
 	/**
+	 * Set this ID to use the plugin customization management.
+	 */
+	public final static String PLUGIN_ID = "osivia.customizer.cms.id";
+	
+	/**
 	 * Customize.
 	 *
 	 * @param customizationID the customization id

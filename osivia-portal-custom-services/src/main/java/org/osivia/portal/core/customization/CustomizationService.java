@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
+import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.customization.ICustomizationModulesRepository;
 import org.osivia.portal.core.login.LoginInterceptor;
 
@@ -131,7 +132,7 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         this.synchronizeSortedModules();
 
         if (this.cmsObserver != null) {
-            if (moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id")) {
+            if (moduleMetadatas.getCustomizationIDs().contains(ICustomizationModule.PLUGIN_ID)) {
                 this.cmsObserver.notifyDeployment();
             }
         }
@@ -146,7 +147,7 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         this.synchronizeSortedModules();
 
         if( this.cmsObserver != null) {
-            if( moduleMetadatas.getCustomizationIDs().contains("osivia.customizer.cms.id")) {
+            if( moduleMetadatas.getCustomizationIDs().contains(ICustomizationModule.PLUGIN_ID)) {
                 ;
             }
         }

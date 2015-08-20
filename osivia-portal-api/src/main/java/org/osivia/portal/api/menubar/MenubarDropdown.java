@@ -23,6 +23,15 @@ package org.osivia.portal.api.menubar;
  */
 public class MenubarDropdown extends MenubarObject implements MenubarContainer {
 
+
+    /** Menubar CMS edition dropdown menu identifier. */
+    public static final String CMS_EDITION_DROPDOWN_MENU_ID = "CMS_EDITION";
+    /** Menubar share dropdown menu identifier. */
+    public static final String SHARE_DROPDOWN_MENU_ID = "SHARE";
+    /** Menubar other options dropdown menu identifier. */
+    public static final String OTHER_OPTIONS_DROPDOWN_MENU_ID = "OTHER_OPTIONS";
+
+	
     /** Menubar dropdown menu reducible indicator. Default value: true. */
     private boolean reducible;
 
