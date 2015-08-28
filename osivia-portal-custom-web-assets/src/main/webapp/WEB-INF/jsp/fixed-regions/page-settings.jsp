@@ -307,7 +307,7 @@ var currentPageId = '${currentPageId}';
                                 <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">
                                     <c:set var="categorySelected" value="selected" />
                                 </c:if>                                                    
-                                <option ${categorySelected}>${category.value}</option>
+                                <option value="${category.key}" ${categorySelected}>${category.value}</option>
                                 <c:remove var="categorySelected" />
                             </c:forEach>
                         </select>
