@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <p class="lead">
+        <i class="glyphicons glyphicons-sampler"></i>
+        <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_CONFIG')}" /></span>
+    </p>
+
+    <a4j:form id="styles-form">
+        <div class="form-group">
+            <p>
+                <!-- Add -->
+                <a4j:commandLink id="add-style-action" action="#{stylesBean.addStyle}" oncomplete="javascript:Richfaces.showModalPanel('popup-style',{left:'auto',top:'auto'})">
+                    <h:graphicImage value="/images/icons/create_doc.gif" alt="#{internationalizationBean.getString('ADD')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_ADD')}" />
+                </a4j:commandLink>
+            
+                <!-- Edit -->
+                <span class="administration-command-on">
+                    <a4j:commandLink id="edit-style-action" action="#{stylesBean.editStyle}" oncomplete="javascript:Richfaces.showModalPanel('popup-style',{left:'auto',top:'auto'})">
+                        <h:graphicImage value="/images/icons/edit.png" alt="#{internationalizationBean.getString('EDIT')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_EDIT')}" />
+                    </a4j:commandLink>
+                </span>
+                <span class="administration-command-off">
+                    <h:graphicImage value="/images/icons/edit.png" alt="#{internationalizationBean.getString('EDIT')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_EDIT')}" />
+                </span>
+            
+                <!-- Delete -->
+                <span class="administration-command-on">
+                    <a4j:commandLink id="delete-style-action" action="#{stylesBean.deleteStyle}" reRender="styles-list">
+                        <h:graphicImage value="/images/icons/delete.gif" alt="#{internationalizationBean.getString('DELETE')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_DELETE')}" />
+                    </a4j:commandLink>
+                </span>
+                <span class="administration-command-off">
+                    <h:graphicImage value="/images/icons/delete.gif" alt="#{internationalizationBean.getString('DELETE')}" title="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_DELETE')}" />
+                </span>
+            </p>
+    
+            <!-- List -->
+            <rich:orderingList id="styles-list" value="#{stylesBean.styles}" var="style" controlsType="button" onclick="toggleCommands(this.id);" selection="#{stylesBean.selectedStyles}">
+                <rich:column>
+                    <f:facet name="header">
+                        <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_STYLES_LIST_HEADER')}" />
+                    </f:facet>
+                    <h:outputText value="#{style}" />
+                </rich:column>
+                <a4j:support event="onchange" immediate="true" reRender="administration-commands" />
+            </rich:orderingList>
+            
+            <!-- Buttons -->
+            <div class="administration-commands">
+                <a4j:commandButton id="refresh-styles-action" value="#{internationalizationBean.getString('REFRESH')}" action="#{stylesBean.refreshStyles}" reRender="styles-list" />
+                <a4j:commandButton id="save-styles-action" value="#{internationalizationBean.getString('SAVE')}" action="#{stylesBean.save}" reRender="styles-messages" />
+            </div>
+        </div>
+    </a4j:form>
+    
+    <f:subview>
+        <ui:include src="popup-style.xhtml" />
+    </f:subview>
+    
+    <h:panelGroup id="styles-messages">
+        <h:outputText value="#{stylesBean.messages}" />
+    </h:panelGroup>
+    
+</div>

@@ -1,0 +1,169 @@
+//
+// OSIVIA Portal - Fancytree component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+@fancytree-icon-width: 20px;
+@fancytree-padding: 3px;
+
+
+
+// Fancytree
+
+.fancytree {
+    ul {
+        padding-left: 0;
+        list-style: none;
+        
+        ul {
+            padding-left: @fancytree-icon-width + @fancytree-padding;
+        }
+    }    
+}
+
+
+
+// Container
+
+.fancytree-container {
+    outline: none;
+}
+
+
+
+// Node
+
+.fancytree-node {
+    display: block;
+    padding: @fancytree-padding;
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    cursor: pointer;
+    
+    &:hover {
+        background-color: fade(#eee, 20%);
+    }
+}
+
+
+.fancytree-hide {
+    display: none;
+}
+
+
+.fancytree-match {
+    font-weight: bold;
+}
+
+.fancytree-submatch:not(.fancytree-match) {
+    opacity: 0.65;
+}
+
+
+.fancytree-drop-accept {
+    cursor: move;
+}
+
+.fancytree-drop-reject {
+    cursor: not-allowed;
+    
+    &:hover {
+        background-color: transparent;
+    }
+}
+
+
+.fancytree-statusnode-error {
+    color: #d9534f;
+}
+
+
+
+// Icons
+
+.fancytree-expander, .fancytree-icon, .fancytree-custom-icon {
+    display: inline-block;
+    width: @fancytree-icon-width;
+}
+
+
+.fancytree-expander {
+    color: #ccc;
+    
+    .transition-property(@transition-property: color);
+    .transition-duration(@transition-duration: 200ms);
+    .transition-timing-function(@timing-function: ease);
+    
+    .fancytree-expanded & {
+        color: inherit;
+    }
+    
+    .fancytree-node:not(.fancytree-has-children) & {
+        visibility: hidden;
+    }
+}
+
+
+.fancytree-icon, .fancytree-custom-icon {
+    
+}
+
+
+
+// Title
+
+.fancytree-title {
+    
+}
+
+
+
+// Init styles
+
+.fancytree {
+    li {
+        > a::before {
+            .fancytree-icon;
+
+            position: relative;
+            top: 1px;
+
+            font-family: "Glyphicons Regular";
+            font-style: normal;
+            font-weight: normal;
+            line-height: 1;
+            
+            content: "\E037";  // glyphicons-file
+        }
+        
+        &[data-folder=true] {
+            > a::before {
+                content: "\E441";  // glyphicons-folder-closed
+            }
+            
+            &[data-expanded=true] {
+                > a::before {
+                    content: "\E145";  // glyphicons-folder-open
+                }    
+            }
+        }
+    }
+    
+    a {
+        .fancytree-node;
+        
+        padding-left: @fancytree-icon-width + @fancytree-padding;
+        
+        &, &:hover, &:focus {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+}

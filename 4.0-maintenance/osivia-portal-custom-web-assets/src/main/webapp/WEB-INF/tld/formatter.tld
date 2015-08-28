@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+          version="2.0">
+
+    <description>Formatter taglib.</description>
+    <display-name>Formatter</display-name>
+    <tlib-version>2.0</tlib-version>
+    <short-name>f</short-name>
+    
+    <tag>
+        <description>Get HTML safe identifier.</description>
+        <display-name>Get HTML safe identifier</display-name>
+        <name>safeId</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLSafeIdTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <description>Portal object identifier.</description>
+            <name>portalObjectId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.jboss.portal.core.model.portal.PortalObjectId</type>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>Generate portal objects JSTree HTML data.</description>
+        <display-name>Generate JSTree HTML data</display-name>
+        <name>tree</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLTreeTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Tree identifier.</description>
+            <name>id</name>
+            <required>true</required>
+        </attribute>
+        
+        <attribute>
+            <description>Tree type.</description>
+            <name>type</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>Get portal object display name.</description>
+        <display-name>Get display name</display-name>
+        <name>displayName</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterDisplayNameTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Portal object.</description>
+            <name>object</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.jboss.portal.core.model.portal.PortalObject</type>
+        </attribute>
+    </tag>
+    
+    <tag>
+        <description>Get template indicator for current page.</description>
+        <display-name>Get template indicator</display-name>
+        <name>isTemplate</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterTemplateIndicatorTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+    
+    <tag>
+        <description>Generate portlets list HTML data.</description>
+        <display-name>Generate portlets list</display-name>
+        <name>portletsList</name>
+        <tag-class>org.osivia.portal.core.tags.FormatterHTMLPortletsListTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
+
+</taglib>

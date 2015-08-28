@@ -1,0 +1,80 @@
+//
+// OSIVIA Bootstrap customization
+// --------------------------------------------------
+
+
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+// Button toolbar
+.btn-toolbar {
+    margin-bottom: 5px;
+
+    .panel-heading & {
+        margin-bottom: 0;
+    }
+}
+
+
+// Form group
+.form-group {
+    .form-inline & .input-group {
+        width: 220px;
+    }
+}
+
+
+// Panel
+.panel {
+    .form-group & {
+        margin-bottom: 0;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+    }
+}
+
+
+// Dropdown menu
+.dropdown-menu > li > .form {
+    padding: 3px 20px;
+}
+
+
+// Nav
+.nav.nav-tabs {
+    margin-bottom: 10px;
+}
+
+
+
+// Media
+.media-body {
+    width: 100%;
+}
+
+
+// Table
+.table-responsive {
+    margin-bottom: 10px;
+    
+    > .table {
+        margin-bottom: 10px;
+    }
+    
+    .pagination {
+        margin: 0;
+    }
+}
+
+
+// Caption
+
+caption {
+    @media screen and (max-width: @screen-xs-max) {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}

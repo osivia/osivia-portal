@@ -1,0 +1,185 @@
+//
+// OSIVIA commons properties
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+
+// Text centered vertically
+.text-middle {
+    position: relative;
+    top: 50%;
+    
+    .translate(@x: 0, @y: -50%);
+}
+
+
+// Text overflow with ellipsis 
+.text-overflow {
+    .text-overflow();
+}
+
+
+// Block right-aligned
+.right-block {
+    display: block;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+
+
+// Hide when JavaScript is enable (overrided by noscript.css properties)
+.hidden-script {
+    display: none;
+}
+
+
+
+// Accessible dropdown menu without JavaScript
+.accessible-dropdown-menu {
+    .btn {
+        &:active, &:focus {
+            & + .dropdown-menu {
+                display: block;
+            }
+        }
+    }
+    
+    .dropdown-menu {
+        &:focus, &:hover {
+            display: block;
+        }
+    }
+}
+
+
+
+// AJAX waiter
+
+.ajax-waiter {
+    display: none;
+    
+    .label {
+        font-size: inherit;
+    }
+    
+    i {
+        .animation-name(@name: waiter);
+        .animation-duration(@duration: 1s);
+        .animation-timing-function(@timing-function: linear);
+        .animation-iteration-count(@iteration-count: infinite);
+    }
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes waiter {
+    from {
+        .rotate(@degrees: 0deg);
+    }
+    to {
+        .rotate(@degrees: 360deg);
+    }
+}
+
+/* Standard syntax */
+@keyframes waiter {
+    from {
+        .rotate(@degrees: 0deg);
+    }
+    to {
+        .rotate(@degrees: 360deg);
+    }
+}
+
+
+
+// Wizard edging
+.wizard-edging {
+    padding: 5px;
+    
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 4px;
+
+    &.region {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        
+        border-color: #aaa;
+    }
+    
+    &.window {
+        margin-top: 5px;
+        
+        border-color: #ccc;
+    }
+}
+
+
+
+// Drag & drop
+.dnd-region {
+    &:empty, &.dnd-droppable, & > *.dnd-droppable {
+        border-style: dashed;
+        border-width: 1px;
+        border-color: #5cb85c;
+        background-color: transparent;
+    }
+    
+    &:empty {
+        border-color: #eee;
+        
+        padding: 6px 12px;
+        
+        &::before {
+            content: attr(data-empty-title);
+        }
+        
+        .row > & {
+            margin: 0 15px;
+        }
+    }
+    
+    .row > & .well ~ .btn-toolbar {
+        float: right;
+    }
+}
+
+.dnd-handle {
+    cursor: move;
+    position: relative;
+    min-height: 1.2em;
+}
+
+
+
+// Popup
+#popup-body {
+    background-color: transparent;
+    
+    .portlet-container {
+        margin-bottom: 0;
+    }
+}
+
+
+
+// JSTree
+.jstree {
+    width: 280px;
+    min-height: 100px;
+    overflow: auto;
+}
+
+.jstree-nav a.current {
+    font-weight: bold;
+}
+
+
+.jstree-filter {
+    margin-bottom: 10px;
+}
