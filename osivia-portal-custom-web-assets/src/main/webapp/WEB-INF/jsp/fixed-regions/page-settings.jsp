@@ -303,12 +303,10 @@ var currentPageId = '${currentPageId}';
                     <label for="properties-page-category" class="control-label col-sm-4"><is:getProperty key="PAGE_CATEGORY" /></label>
                     <div class="col-sm-8">
                         <select id="properties-page-category" name="pageCategory" class="form-control" ${propertiesDisabled}>
-                            <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">
-                                <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">
-                                    <c:set var="categorySelected" value="selected" />
-                                </c:if>                                                    
-                                <option ${categorySelected}>${category.value}</option>
-                                <c:remove var="categorySelected" />
+                            <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">                                                
+                                <option value="${category.key}"
+                                    <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">selected="selected"</c:if>
+                                >${category.value}</option>
                             </c:forEach>
                         </select>
                     </div>
