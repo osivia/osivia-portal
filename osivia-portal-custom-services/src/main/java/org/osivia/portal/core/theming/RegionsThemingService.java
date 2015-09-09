@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -138,7 +138,12 @@ public class RegionsThemingService implements IRegionsThemingService {
     @SuppressWarnings("unchecked")
     public void decorateRegion(RenderPageCommand renderPageCommand, PortletsRegionBean portletsRegion) {
         // Context path
-        String contextPath = this.getLayoutContextPath(renderPageCommand);
+        String contextPath;
+        if (portletsRegion.getContextPath() != null) {
+            contextPath = portletsRegion.getContextPath();
+        } else {
+            contextPath = this.getLayoutContextPath(renderPageCommand);
+        }
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();

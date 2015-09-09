@@ -52,7 +52,11 @@
 
     <profiles>
         <profile>
-            <id>deploy-osivia-modules</id>
+            <activation>
+                <property>
+                    <name>deploy.socle.dir</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>

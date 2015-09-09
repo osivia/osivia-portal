@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -24,6 +24,9 @@ public abstract class AbstractRegionBean {
     /** Region name. */
     private final String name;
 
+    /** Region context path, may be null. */
+    private String contextPath;
+
 
     /**
      * Constructor.
@@ -35,13 +38,13 @@ public abstract class AbstractRegionBean {
         this.name = name;
     }
 
-    
+
     /**
      * Check if current region is customizable.
      * @return true if current region is customizable
      */
     public abstract boolean isCustomizable();
-    
+
 
     /**
      * Getter for name.
@@ -50,6 +53,24 @@ public abstract class AbstractRegionBean {
      */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * Getter for contextPath.
+     * 
+     * @return the contextPath
+     */
+    public String getContextPath() {
+        return this.contextPath;
+    }
+
+    /**
+     * Setter for contextPath.
+     * 
+     * @param contextPath the contextPath to set
+     */
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 
 }

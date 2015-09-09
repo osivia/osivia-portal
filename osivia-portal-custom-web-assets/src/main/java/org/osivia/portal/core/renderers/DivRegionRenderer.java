@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -42,12 +44,14 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
@@ -55,6 +59,9 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarState;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSConfigurationItem;
 import org.osivia.portal.core.cms.RegionInheritance;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -75,6 +82,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
+    /** Portal URL factory. */
+    private final IPortalUrlFactory portalURLFactory;
+    /** Taskbar service. */
+    private final ITaskbarService taskbarService;
 
     /** list of regions in head. */
     private final List<String> headerRegions;
@@ -86,9 +97,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public DivRegionRenderer() {
         super();
 
+        // Bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        // Portal URL factory
+        this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+        // Taskbar service
+        this.taskbarService = Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
 
         this.headerRegions = new ArrayList<String>();
         this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
@@ -155,6 +171,12 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Add portlet link
         this.addPortletLink(irrc, bundle, markup);
+
+
+        if ("maximized".equals(irrc.getId())) {
+            this.renderMaximizedHeader(rendererContext, bundle);
+        }
+
 
         // Add header decorator
         RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
@@ -563,6 +585,58 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             // Help message
             Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.SPAN, "help-block", helpMessage);
             radioLabel.add(radioHelp);
+        }
+    }
+
+
+    private void renderMaximizedHeader(RendererContext rendererContext, Bundle bundle) throws RenderException {
+        // HTTP servlet request
+        HttpServletRequest request = rendererContext.getDispatcher().getRequest();
+        // Controller context
+        ControllerContext controllerContext = (ControllerContext) request.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+        // Back URL
+        String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);
+
+        // Switchable taskbar indicator
+        // boolean switchableTaskbar = BooleanUtils.isTrue((Boolean) request.getAttribute(ITaskbarService.SWITCHABLE_REQUEST_ATTRIBUTE));
+
+        // Taskbar state
+        TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
+        // Taskbar player indicator
+        boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getTaskbarPlayer() != null);
+
+
+        if ((backURL != null) || taskbarPlayer) {
+            // Toolbar
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar clearfix hidden-xs");
+            DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
+
+            // Back button
+            if (backURL != null) {
+                Element button = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-primary", null, "halflings halflings-arrow-left");
+                DOM4JUtils.addTooltip(button, bundle.getString("BACK"));
+                toolbar.add(button);
+            }
+
+            // Close taskbar button
+            if (taskbarPlayer) {
+                boolean closed = state.isClosed();
+                Element button = DOM4JUtils.generateElement(HTMLConstants.A, "btn btn-default pull-right", null);
+                DOM4JUtils.addDataAttribute(button, "taskbar", "toggle");
+                if (closed) {
+                    DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-small", null);
+                    DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_SMALL"));
+                } else {
+                    DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-full", null);
+                    DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_FULL"));
+                }
+                toolbar.add(button);
+            }
+
+            rendererContext.getWriter().write(toolbar.asXML());
         }
     }
 

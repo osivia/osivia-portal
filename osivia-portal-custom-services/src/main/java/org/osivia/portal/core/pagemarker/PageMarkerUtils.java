@@ -58,6 +58,8 @@ import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.selection.SelectionItem;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarStatus;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
@@ -193,139 +195,147 @@ public class PageMarkerUtils {
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
 
-        if( page != null)   {
-        markerInfo.setPageId(page.getId());
+        if (page != null) {
+            markerInfo.setPageId(page.getId());
 
-        Map<PortalObjectId, WindowStateMarkerInfo> windowInfos = new HashMap<PortalObjectId, WindowStateMarkerInfo>();
-        markerInfo.setWindowInfos(windowInfos);
+            Map<PortalObjectId, WindowStateMarkerInfo> windowInfos = new HashMap<PortalObjectId, WindowStateMarkerInfo>();
+            markerInfo.setWindowInfos(windowInfos);
 
-        // Sauvegarde des etats
-        Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
+            // Sauvegarde des etats
+            Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
 
-        Iterator i = windows.iterator();
-        while (i.hasNext()) {
-            Window window = (Window) i.next();
+            Iterator i = windows.iterator();
+            while (i.hasNext()) {
+                Window window = (Window) i.next();
 
-            NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
 
-            WindowNavigationalState ws = (WindowNavigationalState) controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                WindowNavigationalState ws = (WindowNavigationalState) controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
 
-            // Sauvegarde more par défaut
-            if (ws == null) {
-                ws = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
+                // Sauvegarde more par défaut
+                if (ws == null) {
+                    ws = new WindowNavigationalState(WindowState.NORMAL, Mode.VIEW, null, null);
+                }
+                ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                        ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+                List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                        Constants.PORTLET_ATTR_PORTLET_PATH + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
+
+
+                windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(),
+                        addParams, portletPath));
             }
-            ParametersStateString addParams = (ParametersStateString) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-            List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + window.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
 
+            // Sauvegarde etat page
+            NavigationalStateContext ctx = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            PageNavigationalState pns = ctx.getPageNavigationalState(page.getId().toString());
+            markerInfo.setPageNavigationState(pns);
 
+            // Sauvegarde des fenêtres dynamiques
+            IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+            markerInfo.setDynamicWindows(po.getDynamicWindows());
 
-            windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(), addParams, portletPath));
-        }
+            // Sauvegarde des pages dynamiques
+            markerInfo.setDynamicPages(po.getDynamicPages());
 
-        // Sauvegarde etat page
-        NavigationalStateContext ctx = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        PageNavigationalState pns = ctx.getPageNavigationalState(page.getId().toString());
-        markerInfo.setPageNavigationState(pns);
+            // sauvegarde breadcrumb
+            Breadcrumb breadcrumb = (Breadcrumb) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
+            if (breadcrumb != null) {
+                Breadcrumb savedBreadcrum = new Breadcrumb();
+                for (BreadcrumbItem bi : breadcrumb.getChilds()) {
+                    savedBreadcrum.getChilds().add(bi);
 
-        // Sauvegarde des fenêtres dynamiques
-        IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
-        markerInfo.setDynamicWindows(po.getDynamicWindows());
-
-        // Sauvegarde des pages dynamiques
-        markerInfo.setDynamicPages(po.getDynamicPages());
-
-        // sauvegarde breadcrumb
-        Breadcrumb breadcrumb = (Breadcrumb) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
-        if (breadcrumb != null) {
-            Breadcrumb savedBreadcrum = new Breadcrumb();
-            for (BreadcrumbItem bi : breadcrumb.getChilds()) {
-                savedBreadcrum.getChilds().add(bi);
-
+                }
+                markerInfo.setBreadcrumb(savedBreadcrum);
             }
-            markerInfo.setBreadcrumb(savedBreadcrum);
-        }
 
 
-        // sauvegarde menu
-        UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
-        if (userPortal != null) {
-            markerInfo.setTabbedNavHeaderUserPortal(userPortal);
-        }
-        Long headerCount = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount");
-        if (headerCount != null) {
-            markerInfo.setTabbedNavheaderCount(headerCount);
-        }
-        String userName = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername");
-        if (userName != null) {
-            markerInfo.setTabbedNavheaderUsername(userName);
-        }
+            // sauvegarde menu
+            UserPortal userPortal = (UserPortal) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
+            if (userPortal != null) {
+                markerInfo.setTabbedNavHeaderUserPortal(userPortal);
+            }
+            Long headerCount = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount");
+            if (headerCount != null) {
+                markerInfo.setTabbedNavheaderCount(headerCount);
+            }
+            String userName = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername");
+            if (userName != null) {
+                markerInfo.setTabbedNavheaderUsername(userName);
+            }
 
-        Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB);
-        if (firstTab != null) {
-            markerInfo.setFirstTab(firstTab);
-        }
+            Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB);
+            if (firstTab != null) {
+                markerInfo.setFirstTab(firstTab);
+            }
 
-        PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
-        if (currentPageId != null) {
-            markerInfo.setCurrentPageId(currentPageId);
-        }
+            PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+            if (currentPageId != null) {
+                markerInfo.setCurrentPageId(currentPageId);
+            }
 
-        String backPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
-        if( backPageMarker != null) {
-            markerInfo.setBackPageMarker(backPageMarker);
-        }
+            String backPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+            if (backPageMarker != null) {
+                markerInfo.setBackPageMarker(backPageMarker);
+            }
 
-        Boolean refreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack");
-        if( refreshBack != null) {
-            markerInfo.setRefreshBack(refreshBack);
-        }
+            Boolean refreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack");
+            if (refreshBack != null) {
+                markerInfo.setRefreshBack(refreshBack);
+            }
 
-        String mobileBackPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker");
-        if( mobileBackPageMarker != null) {
-            markerInfo.setMobileBackPageMarker(mobileBackPageMarker);
-        }
+            String mobileBackPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker");
+            if (mobileBackPageMarker != null) {
+                markerInfo.setMobileBackPageMarker(mobileBackPageMarker);
+            }
 
-        Boolean mobileRefreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack");
-        if( mobileRefreshBack != null) {
-            markerInfo.setMobileRefreshBack(mobileRefreshBack);
-        }
+            Boolean mobileRefreshBack = (Boolean) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack");
+            if (mobileRefreshBack != null) {
+                markerInfo.setMobileRefreshBack(mobileRefreshBack);
+            }
 
-        // Restauration mode popup
-        String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
-        markerInfo.setPopupMode(popupMode);
-        PortalObjectId popupModeWindowID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
-        markerInfo.setPopupModeWindowID(popupModeWindowID);
-        PortalObjectId popupModeOrginalPageID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID");
-        markerInfo.setPopupModeOrginalPageID(popupModeOrginalPageID);
-
-        // Sauvegarde de l'ensemble des sélections
-        Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                SelectionService.ATTR_SELECTIONS_MAP);
-        if (selectionsMap != null) {
-
-            markerInfo.setSelectionsMap(selectionsMap);
-        }
+            // Restauration mode popup
+            String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
+            markerInfo.setPopupMode(popupMode);
+            PortalObjectId popupModeWindowID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
+            markerInfo.setPopupModeWindowID(popupModeWindowID);
+            PortalObjectId popupModeOrginalPageID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                    "osivia.popupModeOrginalPageID");
+            markerInfo.setPopupModeOrginalPageID(popupModeOrginalPageID);
 
 
-        // Notifications list
-        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
-        List<Notifications> notificationsList = NotificationsUtils.getNotificationsService().getNotificationsList(portalControllerContext);
-        if (CollectionUtils.isNotEmpty(notificationsList)) {
-            markerInfo.setNotificationsList(notificationsList);
-        }
+            // Sauvegarde de l'ensemble des sélections
+            Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(
+                    ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP);
+            if (selectionsMap != null) {
+                markerInfo.setSelectionsMap(selectionsMap);
+            }
 
 
-        // Save closing popup action
-        if ("1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.saveClosingAction"))
-                && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing"))) {
-            markerInfo.setClosingPopupAction(true);
-        }
+            // Taskbar status
+            TaskbarStatus taskbarStatus = (TaskbarStatus) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE);
+            markerInfo.setTaskbarStatus(taskbarStatus);
 
 
-        Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
-        if (selectionTs != null) {
-            markerInfo.setSelectionTs(selectionTs);
-        }
+            // Notifications list
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
+            List<Notifications> notificationsList = NotificationsUtils.getNotificationsService().getNotificationsList(portalControllerContext);
+            if (CollectionUtils.isNotEmpty(notificationsList)) {
+                markerInfo.setNotificationsList(notificationsList);
+            }
+
+
+            // Save closing popup action
+            if ("1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.saveClosingAction"))
+                    && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing"))) {
+                markerInfo.setClosingPopupAction(true);
+            }
+
+
+            Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
+            if (selectionTs != null) {
+                markerInfo.setSelectionTs(selectionTs);
+            }
         }
 
         // Mémorisation marker dans la session
@@ -343,6 +353,7 @@ public class PageMarkerUtils {
                 List<PageMarkerInfo> list = new LinkedList(markers.values());
 
                 Collections.sort(list, new Comparator<PageMarkerInfo>() {
+
                     public int compare(PageMarkerInfo o1, PageMarkerInfo o2) {
                         return o1.getLastTimeStamp().compareTo(o2.getLastTimeStamp());
                     }
@@ -658,6 +669,15 @@ public class PageMarkerUtils {
 
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP, newSelectionsMap);
                         }
+
+
+                        // Taskbar status
+                        TaskbarStatus taskbarStatus = markerInfo.getTaskbarStatus();
+                        if (taskbarStatus != null) {
+                            TaskbarStatus clone = taskbarStatus.clone();
+                            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE, clone);
+                        }
+
 
                         if (markerInfo.getSelectionTs() != null) {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());

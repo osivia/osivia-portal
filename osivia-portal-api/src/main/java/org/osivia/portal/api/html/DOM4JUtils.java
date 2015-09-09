@@ -168,6 +168,18 @@ public final class DOM4JUtils {
 
 
     /**
+     * Add data attribute to an existing DOM4J element.
+     * 
+     * @param element DOM4J element
+     * @param name data attribute name
+     * @param value data attribute value
+     */
+    public static void addDataAttribute(Element element, String name, String value) {
+        addAttribute(element, "data-" + name, value);
+    }
+
+
+    /**
      * Add text to an existing DOM4J element.
      *
      * @param element DOM4J element

@@ -20,14 +20,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -40,11 +37,8 @@ import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.common.servlet.BufferingRequestWrapper;
-import org.jboss.portal.common.servlet.BufferingResponseWrapper;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -77,10 +71,7 @@ import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
-import org.jboss.portal.server.ServerInvocation;
-import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.config.ServerConfig;
-import org.jboss.portal.theme.LayoutInfo;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
@@ -367,6 +358,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
 
@@ -557,13 +549,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
 
-            // Check layout
-            if (!PortalObjectUtils.isJBossPortalAdministration(portal)) {
-                this.checkLayout(rpc);
-            }
-
-
-
             /* Controle du host */
             String host = portal.getDeclaredProperty("osivia.site.hostName");
             String reqHost = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getServerName();
@@ -616,7 +601,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             // TODO : test a améliorer ...
             if (rpc.getPage().equals(rpc.getPortal().getDefaultPage()) && ("1".equals(pageMarker))) {
                 defaultPage = true;
-                ;
             }
 
             boolean initState = "true".equals(request.getParameter("init-state"));
@@ -738,23 +722,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     }
                 }
             }
-
         }
 
-        /*
-         * At this time, windows (aka maximized) are definitly set
-         * We can check the layout with the correct layout uri
-        */
-
-        if (cmd instanceof RenderPageCommand) {
-            RenderPageCommand rpc = (RenderPageCommand) cmd;
-            Portal portal = rpc.getPortal();
-
-            // Check layout
-            if (!PortalObjectUtils.isJBossPortalAdministration(portal)) {
-                this.checkLayout(rpc);
-            }
-        }
 
         /*
          * Synchronisation des pages de rubrique CMS quand leur affichage est en mode portlet MAX (et non en mode page)
@@ -1701,85 +1670,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
 
-    /**
-     * Utility method used to check layout attributes.
-     *
-     * @param renderPageCommand render page command
-     * @throws ControllerException
-     */
-    private void checkLayout(RenderPageCommand renderPageCommand) throws ControllerException {
-        ControllerContext controllerContext = renderPageCommand.getControllerContext();
-        LayoutService layoutService = controllerContext.getController().getPageService().getLayoutService();
-        String layoutId = renderPageCommand.getPage().getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
-        PortalLayout layout = layoutService.getLayout(layoutId, false);
-        if( layout == null) {
-            throw new ControllerException("Layout "+ layoutId+ "not found for page "+ renderPageCommand.getPage().toString());
-        }
-        LayoutInfo layoutInfo = layout.getLayoutInfo();
-        String uri = layoutInfo.getURI();
 
-
-        Iterator<PortalObject> i = renderPageCommand.getWindows().iterator();
-
-        boolean maximized = false;
-
-        while (i.hasNext()) {
-            Window window = (Window) i.next();
-            NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
-            WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
-            // On regarde si la fenêtre est en vue MAXIMIZED
-
-            if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
-                maximized = true;
-            }
-        }
-
-        // At this time, windows displaying is only checked for index and maximized state
-
-        if(maximized) {
-            uri = layoutInfo.getURI("maximized");
-        }
-
-
-        // Context path
-        String contextPath = getTargetContextPath(renderPageCommand);
-
-        // Server invocation
-        ServerInvocation serverInvocation = renderPageCommand.getControllerContext().getServerInvocation();
-        // Server context
-        ServerInvocationContext serverContext = serverInvocation.getServerContext();
-        // Servlet context
-        ServletContext servletContext = serverContext.getClientRequest().getSession().getServletContext().getContext(contextPath);
-        // Locales
-        Locale[] locales = serverInvocation.getRequest().getLocales();
-
-        // Request
-        BufferingRequestWrapper request = new BufferingRequestWrapper(serverContext.getClientRequest(), contextPath, locales);
-        request.setAttribute(InternalConstants.ATTR_LAYOUT_PARSING, true);
-        request.setAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS, new HashSet());
-
-        // Response
-        BufferingResponseWrapper response = new BufferingResponseWrapper(serverContext.getClientResponse());
-
-        // Request dispatcher
-        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(uri);
-        try {
-            requestDispatcher.include(request, response);
-        } catch (Exception e) {
-            throw new ControllerException(e);
-        }
-
-        // CMS
-        Boolean layoutCMS = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
-        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, layoutCMS);
-
-        // Visible regions
-        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS,
-                request.getAttribute(InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS));
-        if (maximized) {
-            controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_VISIBLE_REGIONS_PARSER_STATE, "maximized");
-        }
-    }
 
 
     public static String getTargetContextPath(PortalCommand pc) {

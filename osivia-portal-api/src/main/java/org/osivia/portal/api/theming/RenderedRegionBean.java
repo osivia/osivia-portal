@@ -27,8 +27,6 @@ public class RenderedRegionBean extends AbstractRegionBean {
     private boolean defaultRegion;
     /** Customizable region indicator (default value is true). */
     private boolean customizable;
-    /** Region context path, may be null. */
-    private String contextPath;
 
 
     /**
@@ -88,24 +86,6 @@ public class RenderedRegionBean extends AbstractRegionBean {
      */
     public void setCustomizable(boolean customizable) {
         this.customizable = customizable;
-    }
-
-    /**
-     * Getter for contextPath.
-     * 
-     * @return the contextPath
-     */
-    public String getContextPath() {
-        return contextPath;
-    }
-
-    /**
-     * Setter for contextPath.
-     * 
-     * @param contextPath the contextPath to set
-     */
-    public void setContextPath(String contextPath) {
-        this.contextPath = contextPath;
     }
 
 }

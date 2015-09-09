@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -107,6 +107,14 @@ public class RenderedRegions implements IRenderedRegions {
      * {@inheritDoc}
      */
     public boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath) {
+        return this.decoratePortletsRegion(regionName, headerPath, footerPath, null);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath, String contextPath) {
         boolean decoratable = true;
         if (this.renderedRegions.containsKey(regionName)) {
             AbstractRegionBean region = this.renderedRegions.get(regionName);
@@ -116,7 +124,9 @@ public class RenderedRegions implements IRenderedRegions {
         }
 
         if (decoratable) {
-            this.renderedRegions.put(regionName, new PortletsRegionBean(regionName, headerPath, footerPath));
+            PortletsRegionBean region = new PortletsRegionBean(regionName, headerPath, footerPath);
+            region.setContextPath(contextPath);
+            this.renderedRegions.put(regionName, region);
         }
         return decoratable;
     }

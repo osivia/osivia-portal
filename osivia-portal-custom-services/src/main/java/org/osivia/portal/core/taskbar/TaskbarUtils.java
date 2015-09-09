@@ -9,10 +9,12 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
@@ -69,13 +71,13 @@ public class TaskbarUtils {
      * @param pageRendition page rendition
      */
     public static final void initializeWindow(PortalControllerContext portalControllerContext, Page page, PageRendition pageRendition) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // Taskbar service
         ITaskbarService taskbarService = getTaskbarService();
 
-        // Taskbar region
-        String region = taskbarService.getRegion(portalControllerContext);
-
-        if ((region != null) && (page.getWindow(ITaskbarService.WINDOW_NAME) == null)) {
-            WindowContext windowContext = createWindowContext(portalControllerContext, region);
+        if (containsTaskbar(controllerContext) && (page.getWindow(ITaskbarService.PLAYER_WINDOW_NAME) == null)) {
+            WindowContext windowContext = createWindowContext(portalControllerContext, ITaskbarService.PLAYER_REGION_NAME);
             pageRendition.getPageResult().addWindowContext(windowContext);
 
             taskbarService.addEmptyWindow(portalControllerContext, null);
@@ -148,7 +150,7 @@ public class TaskbarUtils {
         StringBuilder builder = new StringBuilder();
         builder.append(pageId.getPath().toString());
         builder.append("/");
-        builder.append(ITaskbarService.WINDOW_NAME);
+        builder.append(ITaskbarService.PLAYER_WINDOW_NAME);
         PortalObjectPath path = new PortalObjectPath(builder.toString(), PortalObjectPath.CANONICAL_FORMAT);
 
         return new PortalObjectId(StringUtils.EMPTY, path);
@@ -203,6 +205,18 @@ public class TaskbarUtils {
         }
 
         return currentPath;
+    }
+
+
+    /**
+     * Check if current page contains taskbar.
+     *
+     * @param controllerContext controller context
+     * @return true if current page contains taskbar
+     */
+    public static boolean containsTaskbar(ControllerContext controllerContext) {
+        Boolean taskbar = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, ITaskbarService.REQUEST_ATTRIBUTE);
+        return BooleanUtils.isTrue(taskbar);
     }
 
 }

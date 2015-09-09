@@ -34,6 +34,7 @@ import org.jboss.portal.theme.impl.JSPRendererContext;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.renderer.PageRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 import org.osivia.portal.core.theming.RegionDecorator;
@@ -96,9 +97,13 @@ public class RegionTagHandler extends SimpleTagSupport {
         visibleRegions.add(this.regionName);
 
         // Check if layout contains CMS
-        Boolean cms = (Boolean) request.getAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
-        if (BooleanUtils.isNotTrue(cms)) {
-            request.setAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, BooleanUtils.isTrue(this.cms));
+        if (BooleanUtils.isTrue(this.cms)) {
+            request.setAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, true);
+        }
+
+        // Check if layout contains taskbar
+        if (ITaskbarService.PLAYER_REGION_NAME.equals(this.regionName)) {
+            request.setAttribute(ITaskbarService.REQUEST_ATTRIBUTE, true);
         }
     }
 

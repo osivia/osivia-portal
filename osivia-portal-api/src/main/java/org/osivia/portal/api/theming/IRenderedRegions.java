@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -44,7 +44,7 @@ public interface IRenderedRegions {
 
     /**
      * Customize rendered region.
-     * 
+     *
      * @param regionName region name
      * @param regionPath region path
      * @return true if the region was successfully customized
@@ -54,7 +54,7 @@ public interface IRenderedRegions {
 
     /**
      * Customize rendered region.
-     * 
+     *
      * @param regionName region name
      * @param regionPath region path
      * @param contextPath region context path
@@ -81,6 +81,18 @@ public interface IRenderedRegions {
      * @return true if the region was successfully decorated
      */
     boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath);
+
+
+    /**
+     * Decorate portlets region with header and/or footer.
+     *
+     * @param regionName portlets region name
+     * @param headerPath header path, may be null
+     * @param footerPath footer path, may be null
+     * @param contextPath decorator context path
+     * @return true if the region was successfully decorated
+     */
+    boolean decoratePortletsRegion(String regionName, String headerPath, String footerPath, String contextPath);
 
 
     /**

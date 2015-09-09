@@ -1,5 +1,7 @@
 package org.osivia.portal.api.taskbar;
 
+
+
 /**
  * Taskbar task java-bean.
  *
@@ -20,10 +22,11 @@ public class TaskbarTask {
 
     /** Path. */
     private String path;
+    /** Type. */
+    private String type;
 
     /** Maximized player. */
     private TaskbarPlayer maximizedPlayer;
-
 
 
     /**
@@ -109,7 +112,7 @@ public class TaskbarTask {
 
     /**
      * Getter for key.
-     * 
+     *
      * @return the key
      */
     public String getKey() {
@@ -118,7 +121,7 @@ public class TaskbarTask {
 
     /**
      * Setter for key.
-     * 
+     *
      * @param key the key to set
      */
     public void setKey(String key) {
@@ -177,6 +180,24 @@ public class TaskbarTask {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+
+    /**
+     * Getter for type.
+     *
+     * @return the type
+     */
+    public String getType() {
+        return this.type;
+    }
+
+    /**
+     * Setter for type.
+     *
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**

@@ -110,29 +110,29 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
                 "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-mobile/jquery.mobile.custom.min.js'></script>");
 
 
-        //
+        // Portlets resources
         Map<?, ?> results = page.getWindowContextMap();
-        Set<String> insertedRefs = new HashSet<String>();
+        Set<String> resources = new HashSet<String>();
         for (Object name : results.values()) {
             WindowContext wc = (WindowContext) name;
             WindowResult result = wc.getResult();
+
             List<Element> headElements = result.getHeaderContent();
             if (headElements != null) {
                 for (Element element : headElements) {
                     if (!"title".equals(element.getNodeName().toLowerCase())) {
-                        String ref = this.pageHeaderResourceService.adaptResourceElement(element.toString());
-
-                        // PIA : Test d'insertion
-                        if (!insertedRefs.contains(ref)) {
-                            out.write(ref);
-                        }
-                        if (ref != null) {
-                            insertedRefs.add(ref);
+                        String resource = this.pageHeaderResourceService.adaptResourceElement(element.toString());
+                        if (resource != null) {
+                            resources.add(resource);
                         }
                     }
                 }
             }
         }
+        for (String resource : resources) {
+            out.write(resource);
+        }
+
 
         // Post messages API (must be loaded before fancy integration)
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/postmessage.min.js'></script>");

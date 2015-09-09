@@ -23,6 +23,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.selection.SelectionItem;
+import org.osivia.portal.api.taskbar.TaskbarStatus;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
@@ -44,6 +45,10 @@ public class PageMarkerInfo implements Serializable {
 
     /** Selections map. */
     private Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap;
+    /** Taskbar status. */
+    private TaskbarStatus taskbarStatus;
+
+
 	public PageMarkerInfo(String pageMarker) {
 		super();
 		this.pageMarker = pageMarker;
@@ -59,12 +64,12 @@ public class PageMarkerInfo implements Serializable {
     PortalObjectId popupModeWindowID;
     PortalObjectId popupModeOriginalPageID;
 
-    
+
     public PortalObjectId getPopupModeOriginalPageID() {
-        return popupModeOriginalPageID;
+        return this.popupModeOriginalPageID;
     }
 
-    
+
     public void setPopupModeOrginalPageID(PortalObjectId popupModeOriginalPageID) {
         this.popupModeOriginalPageID = popupModeOriginalPageID;
     }
@@ -118,55 +123,55 @@ public class PageMarkerInfo implements Serializable {
 	public void setPageMarker(String pageMarker) {
 		this.pageMarker = pageMarker;
 	}
-	
-	
+
+
 	String backPageMarker;
-	
+
     public String getBackPageMarker() {
-        return backPageMarker;
+        return this.backPageMarker;
     }
-    
+
     public void setBackPageMarker(String backPageMarker) {
         this.backPageMarker = backPageMarker;
     }
 
-    
+
     String mobileBackPageMarker;
-    
+
     public String getMobileBackPageMarker() {
-        return mobileBackPageMarker;
+        return this.mobileBackPageMarker;
     }
-    
+
     public void setMobileBackPageMarker(String mobileBackPageMarker) {
         this.mobileBackPageMarker = mobileBackPageMarker;
     }
-    
+
     boolean refreshBack=false;
 
-    
+
     public boolean isRefreshBack() {
-        return refreshBack;
+        return this.refreshBack;
     }
 
 
-    
+
     public void setRefreshBack(boolean refreshBack) {
         this.refreshBack = refreshBack;
     }
-    
+
     boolean mobileRefreshBack=false;
 
-    
+
     public boolean isMobileRefreshBack() {
-        return mobileRefreshBack;
+        return this.mobileRefreshBack;
     }
 
 
-    
+
     public void setMobileRefreshBack(boolean mobileRefreshBack) {
         this.mobileRefreshBack = mobileRefreshBack;
     }
-    
+
 
     Long lastTimeStamp;
 	public Long getLastTimeStamp() {
@@ -312,7 +317,7 @@ public class PageMarkerInfo implements Serializable {
 
     /**
      * Getter for closingPopupAction.
-     * 
+     *
      * @return the closingPopupAction
      */
     public boolean isClosingPopupAction() {
@@ -321,11 +326,29 @@ public class PageMarkerInfo implements Serializable {
 
     /**
      * Setter for closingPopupAction.
-     * 
+     *
      * @param closingPopupAction the closingPopupAction to set
      */
     public void setClosingPopupAction(boolean closingPopupAction) {
         this.closingPopupAction = closingPopupAction;
+    }
+
+    /**
+     * Getter for taskbarStatus.
+     * 
+     * @return the taskbarStatus
+     */
+    public TaskbarStatus getTaskbarStatus() {
+        return this.taskbarStatus;
+    }
+
+    /**
+     * Setter for taskbarStatus.
+     * 
+     * @param taskbarStatus the taskbarStatus to set
+     */
+    public void setTaskbarStatus(TaskbarStatus taskbarStatus) {
+        this.taskbarStatus = taskbarStatus;
     }
 
 }

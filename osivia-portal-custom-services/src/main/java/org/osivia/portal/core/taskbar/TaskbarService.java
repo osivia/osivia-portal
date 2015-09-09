@@ -12,12 +12,15 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarPlayer;
+import org.osivia.portal.api.taskbar.TaskbarState;
+import org.osivia.portal.api.taskbar.TaskbarStatus;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -64,12 +67,16 @@ public class TaskbarService implements ITaskbarService {
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setPortalControllerContext(portalControllerContext);
 
+
         // Navigation tasks
+        List<TaskbarTask> navigationTasks;
         try {
-            return cmsService.getTaskbarNavigationTasks(cmsContext, basePath, currentPath);
+            navigationTasks = cmsService.getTaskbarNavigationTasks(cmsContext, basePath, currentPath);
         } catch (CMSException e) {
             throw new PortalException(e);
         }
+
+        return navigationTasks;
     }
 
 
@@ -91,41 +98,12 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
-    public String getRegion(PortalControllerContext portalControllerContext) {
+    public String getActiveId(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Page
         Page page = PortalObjectUtils.getPage(controllerContext);
-
-        // Region
-        String region = null;
-        if (page != null) {
-            region = page.getDeclaredProperty(REGION_NAME_PAGE_PROPERTY);
-        }
-        return region;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public String[] getTaskIdentifiers(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks) {
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
-        // Page
-        Page page = PortalObjectUtils.getPage(controllerContext);
-
-
-        // Task identifiers
-        String[] identifiers = new String[2];
-
-
-        // Selected task identifier
-        String selectedId = this.getSelectedId(controllerContext, tasks, page);
-        identifiers[1] = selectedId;
-
 
         // Active task identifier
         String activeId = null;
@@ -133,20 +111,17 @@ public class TaskbarService implements ITaskbarService {
         Collection<PortalObject> portalObjects = page.getChildren(PortalObject.WINDOW_MASK);
         for (PortalObject portalObject : portalObjects) {
             Window window = (Window) portalObject;
-            if (WINDOW_NAME.equals(window.getName())) {
+            if (PLAYER_WINDOW_NAME.equals(window.getName())) {
                 activeId = window.getDeclaredProperty(TASK_ID_WINDOW_PROPERTY);
                 break;
             }
         }
 
         if (activeId == null) {
-            activeId = selectedId;
+            activeId = this.getSelectedId(controllerContext, tasks, page);
         }
 
-        identifiers[0] = activeId;
-
-
-        return identifiers;
+        return activeId;
     }
 
 
@@ -180,7 +155,7 @@ public class TaskbarService implements ITaskbarService {
                 String protectedCurrentPath = currentPath + "/";
 
                 for (TaskbarTask task : tasks) {
-                    if (task.getPath() != null) {
+                    if (!ITaskbarService.HOME_TASK_ID.equals(task.getId()) && (task.getPath() != null)) {
                         String protectedPath = task.getPath() + "/";
                         if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
                             selectedId = task.getId();
@@ -246,13 +221,10 @@ public class TaskbarService implements ITaskbarService {
         PortalObjectId pageId = PortalObjectUtils.getPageId(controllerContext);
 
         if (pageId != null) {
-            // Region name
-            String region = this.getRegion(portalControllerContext);
-
             // Window properties
             Map<String, String> windowProperties = new HashMap<String, String>(properties);
             windowProperties.put(ThemeConstants.PORTAL_PROP_ORDER, "100");
-            windowProperties.put(ThemeConstants.PORTAL_PROP_REGION, region);
+            windowProperties.put(ThemeConstants.PORTAL_PROP_REGION, ITaskbarService.PLAYER_REGION_NAME);
             windowProperties.put("osivia.hideTitle", "1");
             windowProperties.put(TASK_ID_WINDOW_PROPERTY, id);
 
@@ -260,7 +232,7 @@ public class TaskbarService implements ITaskbarService {
             String pageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
 
             // Dynamic window bean
-            DynamicWindowBean window = new DynamicWindowBean(pageId, WINDOW_NAME, instance, windowProperties, pageMarker);
+            DynamicWindowBean window = new DynamicWindowBean(pageId, PLAYER_WINDOW_NAME, instance, windowProperties, pageMarker);
 
             this.dynamicObjectContainer.addDynamicWindow(window);
 
@@ -269,9 +241,63 @@ public class TaskbarService implements ITaskbarService {
             builder.append("cached_markup.");
             builder.append(pageId.toString());
             builder.append("/");
-            builder.append(WINDOW_NAME);
+            builder.append(PLAYER_WINDOW_NAME);
             controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, builder.toString());
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public TaskbarState getTaskbarState(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Taskbar state
+        TaskbarState state = null;
+
+        // Taskbar status
+        TaskbarStatus taskbarStatus = (TaskbarStatus) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE);
+        if (taskbarStatus != null) {
+            String id = this.getStateId(controllerContext);
+            state = taskbarStatus.getStates().get(id);
+        }
+
+        return state;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setTaskbarState(PortalControllerContext portalControllerContext, TaskbarState state) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Taskbar status
+        TaskbarStatus taskbarStatus = (TaskbarStatus) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE);
+        if (taskbarStatus == null) {
+            taskbarStatus = new TaskbarStatus();
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE, taskbarStatus);
+        }
+
+        String id = this.getStateId(controllerContext);
+        taskbarStatus.getStates().put(id, state);
+    }
+
+
+    /**
+     * Get state identifier.
+     *
+     * @param controllerContext controller context
+     * @return state identifier
+     */
+    private String getStateId(ControllerContext controllerContext) {
+        // Page
+        Page page = PortalObjectUtils.getPage(controllerContext);
+
+        return page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
     }
 
 

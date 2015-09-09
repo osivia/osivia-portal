@@ -13,6 +13,8 @@ public class TaskbarPlayer {
     private String instance;
     /** Window properties. */
     private Map<String, String> properties;
+    /** Taskbar player closed indicator. */
+    private boolean closed;
 
 
     /**
@@ -57,6 +59,26 @@ public class TaskbarPlayer {
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+
+    /**
+     * Getter for closed.
+     * 
+     * @return the closed
+     */
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+
+    /**
+     * Setter for closed.
+     * 
+     * @param closed the closed to set
+     */
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 
 }

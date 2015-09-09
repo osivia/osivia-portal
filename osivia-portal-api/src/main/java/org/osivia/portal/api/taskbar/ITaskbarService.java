@@ -15,19 +15,25 @@ public interface ITaskbarService {
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=TaskbarService";
 
-    /** Taskbar window name. */
-    String WINDOW_NAME = "taskbar-window";
-    /** Taskbar region name page property name. */
-    String REGION_NAME_PAGE_PROPERTY = "osivia.taskbar.region";
+    /** Active taskbar request attribute name. */
+    String REQUEST_ATTRIBUTE = "osivia.taskbar";
+    /** Closed taskbar indicator request attribute name. */
+    String CLOSED_REQUEST_ATTRIBUTE = "osivia.taskbar.closed";
+    /** Switchable taskbar indicator request attribute name. */
+    String SWITCHABLE_REQUEST_ATTRIBUTE = "osivia.taskbar.switchable";
+    /** Taskbar status principal attribute name. */
+    String STATUS_PRINCIPAL_ATTRIBUTE = "osivia.taskbar.status";
+
+    /** Taskbar player window name. */
+    String PLAYER_WINDOW_NAME = "taskbar-player-window";
+    /** Taskbar player window region name. */
+    String PLAYER_REGION_NAME = "taskbar-player";
     /** Task identifier window property name. */
     String TASK_ID_WINDOW_PROPERTY = "osivia.taskbar.id";
+    /** Taskbar window instance. */
+    String WINDOW_INSTANCE = "osivia-services-taskbar-instance";
     /** Taskbar empty window instance. */
     String EMPTY_WINDOW_INSTANCE = "osivia-services-taskbar-empty-instance";
-
-    /** Open taskbar action name. */
-    String OPEN_TASKBAR_ACTION = "openTaskbar";
-    /** Close taskbar action name. */
-    String CLOSE_TASKBAR_ACTION = "closeTaskbar";
 
     /** Taskbar home task identifier. */
     String HOME_TASK_ID = "HOME";
@@ -55,24 +61,13 @@ public interface ITaskbarService {
 
 
     /**
-     * Get taskbar region name.
-     *
-     * @param portalControllerContext portal controller context
-     * @return taskbar region name
-     */
-    String getRegion(PortalControllerContext portalControllerContext);
-
-
-    /**
-     * Get task identifiers.
-     * First item correspond to active task identifier.
-     * Second item correspond to selected task identifier.
+     * Get active task identifier.
      *
      * @param portalControllerContext portal controller context
      * @param tasks tasks
      * @return task identifier
      */
-    String[] getTaskIdentifiers(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks);
+    String getActiveId(PortalControllerContext portalControllerContext, List<? extends TaskbarTask> tasks);
 
 
     /**
@@ -92,5 +87,23 @@ public interface ITaskbarService {
      * @param id task identifier
      */
     void addEmptyWindow(PortalControllerContext portalControllerContext, String id);
+
+
+    /**
+     * Get taskbar state.
+     *
+     * @param portalControllerContext portal controller context
+     * @return taskbar state
+     */
+    TaskbarState getTaskbarState(PortalControllerContext portalControllerContext);
+
+
+    /**
+     * Set taskbar state.
+     *
+     * @param portalControllerContext portal controller context
+     * @param state taskbar state
+     */
+    void setTaskbarState(PortalControllerContext portalControllerContext, TaskbarState state);
 
 }
