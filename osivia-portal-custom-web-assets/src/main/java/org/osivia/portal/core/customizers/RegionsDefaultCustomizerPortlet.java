@@ -131,8 +131,6 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
         renderedRegions.defineDefaultRenderedRegion("breadcrumb", this.getInitParameter(BREADCRUMB_PATH_INIT_PARAM));
         // Drawer toolbar default region
         renderedRegions.defineDefaultRenderedRegion("drawer-toolbar", this.getInitParameter(DRAWER_TOOLBAR_PATH_INIT_PARAM));
-        // Back default region
-        renderedRegions.defineDefaultRenderedRegion("back", this.getInitParameter(BACK_PATH_INIT_PARAM));
 
         if (renderedRegions.isSpaceSite()) {
             // Web toolbar default region

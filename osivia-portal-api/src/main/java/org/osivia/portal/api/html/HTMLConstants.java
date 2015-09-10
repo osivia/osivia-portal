@@ -71,6 +71,8 @@ public final class HTMLConstants {
     public static final String LI = "li";
     /** HTML "meta" nodes. */
     public static final String META = "meta";
+    /** HTML "nav" nodes. */
+    public static final String NAV = "nav";
     /** HTML "ol" nodes. */
     public static final String OL = "ol";
     /** HTML "option" nodes. */
@@ -192,6 +194,8 @@ public final class HTMLConstants {
     public static final String ROLE_MENU = "menu";
     /** HTML role "menuitem" value. */
     public static final String ROLE_MENU_ITEM = "menuitem";
+    /** HTML role "navigation" value. */
+    public static final String ROLE_NAVIGATION = "navigation";
     /** HTML role "presentation" value. */
     public static final String ROLE_PRESENTATION = "presentation";
     /** HTML role "toolbar" value. */

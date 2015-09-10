@@ -242,8 +242,8 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             }
 
             attributes.put("customizationService", this.customizationService);
-            
-            
+
+
             // Set attributes
             invocation.setRequestAttributes(attributes);
         }
@@ -314,12 +314,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
                                     // Parent
-                                    MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext, "OTHER_OPTIONS");
+                                    MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext,
+                                            MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID);
 
                                     if (parent == null) {
-                                        parent = new MenubarDropdown("OTHER_OPTIONS", this.internationalizationService.getString("OTHER_OPTIONS", locale),
-                                                "glyphicons glyphicons-option-vertical", MenubarGroup.GENERIC, 40);
-                                        parent.setReducible(false);
+                                        parent = new MenubarDropdown(MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID,
+                                                this.internationalizationService.getString("OTHER_OPTIONS", locale), "glyphicons glyphicons-option-vertical",
+                                                MenubarGroup.GENERIC, 40);
+                                        parent.setReducible(true);
                                         this.menubarService.addDropdown(portalControllerContext, parent);
                                     }
 
@@ -331,7 +333,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
                                     // Menubar item
                                     printItem = new MenubarItem("PRINT", this.internationalizationService.getString("PRINT", locale),
-                                            "glyphicons glyphicons-print", parent, 0, url.toString(), null, null, "fancyframe hidden-xs");
+                                            "glyphicons glyphicons-print", parent, 2, url.toString(), null, null, "fancyframe hidden-xs");
                                     printItem.setAjaxDisabled(true);
                                 }
                                 menubarItems.add(printItem);

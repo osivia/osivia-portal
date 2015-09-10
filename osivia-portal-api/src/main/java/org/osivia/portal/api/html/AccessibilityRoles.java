@@ -7,16 +7,18 @@ package org.osivia.portal.api.html;
  */
 public enum AccessibilityRoles {
 
-    /** Presentation role. */
-    PRESENTATION(HTMLConstants.ROLE_PRESENTATION),
-    /** Toolbar role. */
-    TOOLBAR(HTMLConstants.ROLE_TOOLBAR),
+    /** Form role. */
+    FORM(HTMLConstants.ROLE_FORM),
     /** Menu role. */
     MENU(HTMLConstants.ROLE_MENU),
     /** Menu item role. */
     MENU_ITEM(HTMLConstants.ROLE_MENU_ITEM),
-    /** Form role. */
-    FORM(HTMLConstants.ROLE_FORM);
+    /** Navigation role. */
+    NAVIGATION(HTMLConstants.ROLE_NAVIGATION),
+    /** Presentation role. */
+    PRESENTATION(HTMLConstants.ROLE_PRESENTATION),
+    /** Toolbar role. */
+    TOOLBAR(HTMLConstants.ROLE_TOOLBAR);
 
 
     /** Role value. */

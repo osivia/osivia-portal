@@ -35,6 +35,7 @@ import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
@@ -246,7 +247,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 headerClass = "portlet-header";
                 bodyClass = "portlet-content-center";
             }
-            if (!"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
+            if (WindowState.MAXIMIZED.equals(wrc.getWindowState()) || !"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
                 headerClass += " hidden";
             }
 

@@ -335,13 +335,11 @@ public class TaskbarInterceptor extends ControllerInterceptor {
             TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
             if ((state != null) && (state.getTask() != null) && (id.equals(state.getTask().getId()))) {
                 closed = state.isClosed();
+            } else {
+                closed = player.isClosed();
             }
         }
         request.setAttribute(ITaskbarService.CLOSED_REQUEST_ATTRIBUTE, closed);
-
-        // Switchable taskbar indicator
-        boolean switchable = (player != null);
-        request.setAttribute(ITaskbarService.SWITCHABLE_REQUEST_ATTRIBUTE, switchable);
     }
 
 

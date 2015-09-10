@@ -48,6 +48,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.theme.render.AbstractObjectRenderer;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
+import org.jboss.portal.theme.render.renderer.DecorationRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
@@ -173,8 +174,16 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         this.addPortletLink(irrc, bundle, markup);
 
 
-        if ("maximized".equals(irrc.getId())) {
-            this.renderMaximizedHeader(rendererContext, bundle);
+        // Theme name
+        String themeName = null;
+        if (rendererContext.getThemeContext().getTheme() != null) {
+            themeName = rendererContext.getThemeContext().getTheme().getThemeInfo().getName();
+        }
+
+
+        // Maximized header
+        if ("maximized".equals(irrc.getId()) && !"osivia-popup".equals(themeName)) {
+            this.renderMaximizedHeader(rendererContext, rrc, bundle);
         }
 
 
@@ -589,7 +598,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     }
 
 
-    private void renderMaximizedHeader(RendererContext rendererContext, Bundle bundle) throws RenderException {
+    private void renderMaximizedHeader(RendererContext rendererContext, RegionRendererContext regionRendererContext, Bundle bundle) throws RenderException {
         // HTTP servlet request
         HttpServletRequest request = rendererContext.getDispatcher().getRequest();
         // Controller context
@@ -597,35 +606,50 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
-        // Back URL
-        String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);
 
-        // Switchable taskbar indicator
-        // boolean switchableTaskbar = BooleanUtils.isTrue((Boolean) request.getAttribute(ITaskbarService.SWITCHABLE_REQUEST_ATTRIBUTE));
+        // Window title
+        String windowTitle = null;
+        Collection<?> windows = regionRendererContext.getWindows();
+        if (windows.size() == 1) {
+            WindowRendererContext windowRendererContext = (WindowRendererContext) windows.iterator().next();
 
-        // Taskbar state
-        TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
-        // Taskbar player indicator
-        boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getTaskbarPlayer() != null);
-
-
-        if ((backURL != null) || taskbarPlayer) {
-            // Toolbar
-            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar clearfix hidden-xs");
-            DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
-
-            // Back button
-            if (backURL != null) {
-                Element button = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-primary", null, "halflings halflings-arrow-left");
-                DOM4JUtils.addTooltip(button, bundle.getString("BACK"));
-                toolbar.add(button);
+            PageProperties properties = PageProperties.getProperties();
+            if ("1".equals(properties.getWindowProperty(windowRendererContext.getId(), "osivia.displayTitle"))) {
+                windowTitle = properties.getWindowProperty(windowRendererContext.getId(), InternalConstants.PROP_WINDOW_TITLE);
+                if (windowTitle == null) {
+                    DecorationRendererContext decoration = windowRendererContext.getDecoration();
+                    windowTitle = decoration.getTitle();
+                }
             }
+        }
 
-            // Close taskbar button
-            if (taskbarPlayer) {
+
+        // Toolbar
+        Element toolbar = DOM4JUtils.generateElement(HTMLConstants.DIV, "btn-toolbar clearfix hidden-xs", null, null, AccessibilityRoles.TOOLBAR);
+
+        // Back
+        String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);
+        if (backURL != null) {
+            Element backButton = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-primary", null, "halflings halflings-arrow-left");
+            DOM4JUtils.addTooltip(backButton, bundle.getString("BACK"));
+            toolbar.add(backButton);
+        }
+
+        // Title
+        if (windowTitle != null) {
+            Element title = DOM4JUtils.generateElement(HTMLConstants.DIV, "h2", windowTitle);
+            toolbar.add(title);
+        }
+
+        // Taskbar state toggle
+        TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
+        boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getTaskbarPlayer() != null);
+        if (taskbarPlayer) {
+            boolean hideToggle = state.isHideToggle();
+            if (!hideToggle) {
                 boolean closed = state.isClosed();
                 Element button = DOM4JUtils.generateElement(HTMLConstants.A, "btn btn-default pull-right", null);
-                DOM4JUtils.addDataAttribute(button, "taskbar", "toggle");
+                DOM4JUtils.addDataAttribute(button, "service", "toggle-taskbar");
                 if (closed) {
                     DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-small", null);
                     DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_SMALL"));
@@ -635,8 +659,18 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 }
                 toolbar.add(button);
             }
+        }
 
-            rendererContext.getWriter().write(toolbar.asXML());
+
+        // HTML writer
+        if (toolbar.hasContent()) {
+            HTMLWriter htmlWriter = new HTMLWriter(rendererContext.getWriter());
+            htmlWriter.setEscapeText(false);
+            try {
+                htmlWriter.write(toolbar);
+            } catch (IOException e) {
+                throw new RenderException(e);
+            }
         }
     }
 

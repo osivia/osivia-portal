@@ -105,8 +105,10 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.bootstrapPanelStyle"));
         // Mobile collapse indicator
         boolean mobileCollapse = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.mobileCollapse"));
+        // Display title indicator
+        boolean displayTitle = "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayTitle"));
         // Display decorators indicator
-        boolean displayDecorators = "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"));
+        boolean displayDecorators = displayTitle && "1".equals(properties.getWindowProperty(currentWindowId, "osivia.displayDecorators"));
 
         // Maximized URL
         String maximizedURL = null;

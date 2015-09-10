@@ -11,6 +11,8 @@ public class TaskbarState {
     private TaskbarTask task;
     /** Closed taskbar indicator. */
     private boolean closed;
+    /** Hide taskbar toggle command indicator. */
+    private boolean hideToggle;
 
 
     /**
@@ -23,7 +25,7 @@ public class TaskbarState {
 
     /**
      * Getter for task.
-     * 
+     *
      * @return the task
      */
     public TaskbarTask getTask() {
@@ -32,7 +34,7 @@ public class TaskbarState {
 
     /**
      * Setter for task.
-     * 
+     *
      * @param task the task to set
      */
     public void setTask(TaskbarTask task) {
@@ -41,7 +43,7 @@ public class TaskbarState {
 
     /**
      * Getter for closed.
-     * 
+     *
      * @return the closed
      */
     public boolean isClosed() {
@@ -50,11 +52,29 @@ public class TaskbarState {
 
     /**
      * Setter for closed.
-     * 
+     *
      * @param closed the closed to set
      */
     public void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    /**
+     * Getter for hideToggle.
+     * 
+     * @return the hideToggle
+     */
+    public boolean isHideToggle() {
+        return this.hideToggle;
+    }
+
+    /**
+     * Setter for hideToggle.
+     * 
+     * @param hideToggle the hideToggle to set
+     */
+    public void setHideToggle(boolean hideToggle) {
+        this.hideToggle = hideToggle;
     }
 
 }

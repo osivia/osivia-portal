@@ -19,8 +19,6 @@ public interface ITaskbarService {
     String REQUEST_ATTRIBUTE = "osivia.taskbar";
     /** Closed taskbar indicator request attribute name. */
     String CLOSED_REQUEST_ATTRIBUTE = "osivia.taskbar.closed";
-    /** Switchable taskbar indicator request attribute name. */
-    String SWITCHABLE_REQUEST_ATTRIBUTE = "osivia.taskbar.switchable";
     /** Taskbar status principal attribute name. */
     String STATUS_PRINCIPAL_ATTRIBUTE = "osivia.taskbar.status";
 
