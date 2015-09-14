@@ -110,7 +110,6 @@ import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
-import org.osivia.portal.core.taskbar.TaskbarUtils;
 import org.osivia.portal.core.web.IWebIdService;
 
 
@@ -1560,10 +1559,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Inject menubar region
             MenubarUtils.injectContentNavbarActionsRegion(portalControllerContext, rendition);
-
-            // Initialize taskbar window
-            TaskbarUtils.initializeWindow(portalControllerContext, rpc.getPage(), rendition);
-
 
 
 
