@@ -34,7 +34,8 @@ import org.jboss.portal.theme.impl.JSPRendererContext;
 import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.renderer.PageRendererContext;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
-import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.panels.IPanelsService;
+import org.osivia.portal.api.panels.Panel;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 import org.osivia.portal.core.theming.RegionDecorator;
@@ -101,9 +102,14 @@ public class RegionTagHandler extends SimpleTagSupport {
             request.setAttribute(InternalConstants.ATTR_LAYOUT_CMS_INDICATOR, true);
         }
 
-        // Check if layout contains taskbar
-        if (ITaskbarService.PLAYER_REGION_NAME.equals(this.regionName)) {
-            request.setAttribute(ITaskbarService.REQUEST_ATTRIBUTE, true);
+        // Check if layout contains panels
+        if (BooleanUtils.isNotTrue((Boolean) request.getAttribute(IPanelsService.REQUEST_ATTRIBUTE))) {
+            for (Panel panel : Panel.values()) {
+                if (panel.getRegionName().equals(this.regionName)) {
+                    request.setAttribute(IPanelsService.REQUEST_ATTRIBUTE, true);
+                    break;
+                }
+            }
         }
     }
 

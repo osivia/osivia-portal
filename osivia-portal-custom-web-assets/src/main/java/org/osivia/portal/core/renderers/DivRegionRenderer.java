@@ -60,8 +60,6 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarState;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSConfigurationItem;
 import org.osivia.portal.core.cms.RegionInheritance;
@@ -85,8 +83,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     private final IBundleFactory bundleFactory;
     /** Portal URL factory. */
     private final IPortalUrlFactory portalURLFactory;
-    /** Taskbar service. */
-    private final ITaskbarService taskbarService;
 
     /** list of regions in head. */
     private final List<String> headerRegions;
@@ -104,8 +100,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         // Portal URL factory
         this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
-        // Taskbar service
-        this.taskbarService = Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
 
         this.headerRegions = new ArrayList<String>();
         this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
@@ -642,24 +636,25 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Taskbar state toggle
-        TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
-        boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getTaskbarPlayer() != null);
-        if (taskbarPlayer) {
-            boolean hideToggle = state.isHideToggle();
-            if (!hideToggle) {
-                boolean closed = state.isClosed();
-                Element button = DOM4JUtils.generateElement(HTMLConstants.A, "btn btn-default pull-right", null);
-                DOM4JUtils.addDataAttribute(button, "service", "toggle-taskbar");
-                if (closed) {
-                    DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-small", null);
-                    DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_SMALL"));
-                } else {
-                    DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-full", null);
-                    DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_FULL"));
-                }
-                toolbar.add(button);
-            }
-        }
+        // FIXME
+        // TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
+        // boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getAdditionalPlayer() != null);
+        // if (taskbarPlayer) {
+        // boolean hideToggle = state.isHideToggle();
+        // if (!hideToggle) {
+        // boolean closed = state.isClosed();
+        // Element button = DOM4JUtils.generateElement(HTMLConstants.A, "btn btn-default pull-right", null);
+        // DOM4JUtils.addDataAttribute(button, "service", "toggle-taskbar");
+        // if (closed) {
+        // DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-small", null);
+        // DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_SMALL"));
+        // } else {
+        // DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-full", null);
+        // DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_FULL"));
+        // }
+        // toolbar.add(button);
+        // }
+        // }
 
 
         // HTML writer

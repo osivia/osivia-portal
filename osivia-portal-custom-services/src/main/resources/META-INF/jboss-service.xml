@@ -185,16 +185,16 @@
 
 
 
-
+    <!-- Panels interceptor -->
     <mbean
-        code="org.osivia.portal.core.taskbar.TaskbarInterceptor"
-        name="osivia:service=Interceptor,type=Command,name=Taskbar"
+        code="org.osivia.portal.core.panels.PanelsInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=Panels"
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
         <depends
-            optional-attribute-name="TaskbarService"
-            proxy-type="attribute">osivia:service=TaskbarService</depends>
+            optional-attribute-name="PanelsService"
+            proxy-type="attribute">osivia:service=PanelsService</depends>
     </mbean>
 
     <mbean
@@ -914,11 +914,32 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
         <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
+    <!-- Panels service -->
+    <mbean
+        code="org.osivia.portal.core.panels.PanelsService"
+        name="osivia:service=PanelsService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
             optional-attribute-name="DynamicObjectContainer"
             proxy-type="attribute">osivia:service=DynamicPortalObjectContainer</depends>
         <depends
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
+    <!-- Portlet status service -->
+    <mbean
+        code="org.osivia.portal.core.portlet.PortletStatusService"
+        name="osivia:service=PortletStatusService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
     </mbean>
     
 </server>

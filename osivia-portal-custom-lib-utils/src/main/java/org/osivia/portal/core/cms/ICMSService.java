@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.Link;
 
@@ -35,7 +36,7 @@ public interface ICMSService {
     String getParentPath(String documentPath);
 
     CMSItem getContent(CMSServiceCtx ctx, String path) throws CMSException;
-    
+
     /**
      * @param cmsPath: path?key=value&..., webid?key=value&...
      * @return Map of parameters in cmsPath.
@@ -418,5 +419,14 @@ public interface ICMSService {
      * @return tasks
      */
     List<TaskbarTask> getTaskbarCustomTasks(CMSServiceCtx cmsContext);
+
+
+    /**
+     * Get navigation panel player.
+     *
+     * @param maximizedWindow maximized window instance
+     * @return panel player
+     */
+    PanelPlayer getNavigationPanelPlayer(String instance);
 
 }

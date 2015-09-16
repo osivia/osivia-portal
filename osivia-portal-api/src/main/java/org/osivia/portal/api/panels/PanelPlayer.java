@@ -1,35 +1,33 @@
-package org.osivia.portal.api.taskbar;
+package org.osivia.portal.api.panels;
 
 import java.util.Map;
 
 /**
- * Taskbar player java-bean.
+ * Panel player.
  *
  * @author Cédric Krommenhoek
  */
-public class TaskbarPlayer {
+public class PanelPlayer {
 
     /** Instance name. */
     private String instance;
     /** Window properties. */
     private Map<String, String> properties;
-    /** Taskbar player closed indicator. */
+    /** Panel closed indicator. */
     private boolean closed;
-    /** Hide taskbar toggle command indicator. */
-    private boolean hideToggle;
 
 
     /**
      * Constructor.
      */
-    public TaskbarPlayer() {
+    public PanelPlayer() {
         super();
     }
 
 
     /**
      * Getter for instance.
-     *
+     * 
      * @return the instance
      */
     public String getInstance() {
@@ -38,7 +36,7 @@ public class TaskbarPlayer {
 
     /**
      * Setter for instance.
-     *
+     * 
      * @param instance the instance to set
      */
     public void setInstance(String instance) {
@@ -47,7 +45,7 @@ public class TaskbarPlayer {
 
     /**
      * Getter for properties.
-     *
+     * 
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -56,7 +54,7 @@ public class TaskbarPlayer {
 
     /**
      * Setter for properties.
-     *
+     * 
      * @param properties the properties to set
      */
     public void setProperties(Map<String, String> properties) {
@@ -65,7 +63,7 @@ public class TaskbarPlayer {
 
     /**
      * Getter for closed.
-     *
+     * 
      * @return the closed
      */
     public boolean isClosed() {
@@ -74,29 +72,11 @@ public class TaskbarPlayer {
 
     /**
      * Setter for closed.
-     *
+     * 
      * @param closed the closed to set
      */
     public void setClosed(boolean closed) {
         this.closed = closed;
-    }
-
-    /**
-     * Getter for hideToggle.
-     *
-     * @return the hideToggle
-     */
-    public boolean isHideToggle() {
-        return this.hideToggle;
-    }
-
-    /**
-     * Setter for hideToggle.
-     *
-     * @param hideToggle the hideToggle to set
-     */
-    public void setHideToggle(boolean hideToggle) {
-        this.hideToggle = hideToggle;
     }
 
 }

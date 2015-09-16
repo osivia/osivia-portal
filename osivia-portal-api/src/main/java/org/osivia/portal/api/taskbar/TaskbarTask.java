@@ -1,6 +1,6 @@
 package org.osivia.portal.api.taskbar;
 
-
+import org.osivia.portal.api.panels.PanelPlayer;
 
 /**
  * Taskbar task java-bean.
@@ -17,8 +17,6 @@ public class TaskbarTask {
     private String key;
     /** Icon. */
     private String icon;
-    /** Taskbar player. */
-    private TaskbarPlayer taskbarPlayer;
 
     /** Path. */
     private String path;
@@ -26,7 +24,7 @@ public class TaskbarTask {
     private String type;
 
     /** Maximized player. */
-    private TaskbarPlayer maximizedPlayer;
+    private PanelPlayer maximizedPlayer;
 
 
     /**
@@ -147,26 +145,8 @@ public class TaskbarTask {
     }
 
     /**
-     * Getter for taskbarPlayer.
-     *
-     * @return the taskbarPlayer
-     */
-    public TaskbarPlayer getTaskbarPlayer() {
-        return this.taskbarPlayer;
-    }
-
-    /**
-     * Setter for taskbarPlayer.
-     *
-     * @param taskbarPlayer the taskbarPlayer to set
-     */
-    public void setTaskbarPlayer(TaskbarPlayer taskbarPlayer) {
-        this.taskbarPlayer = taskbarPlayer;
-    }
-
-    /**
      * Getter for path.
-     *
+     * 
      * @return the path
      */
     public String getPath() {
@@ -175,7 +155,7 @@ public class TaskbarTask {
 
     /**
      * Setter for path.
-     *
+     * 
      * @param path the path to set
      */
     public void setPath(String path) {
@@ -184,7 +164,7 @@ public class TaskbarTask {
 
     /**
      * Getter for type.
-     *
+     * 
      * @return the type
      */
     public String getType() {
@@ -193,7 +173,7 @@ public class TaskbarTask {
 
     /**
      * Setter for type.
-     *
+     * 
      * @param type the type to set
      */
     public void setType(String type) {
@@ -202,19 +182,19 @@ public class TaskbarTask {
 
     /**
      * Getter for maximizedPlayer.
-     *
+     * 
      * @return the maximizedPlayer
      */
-    public TaskbarPlayer getMaximizedPlayer() {
+    public PanelPlayer getMaximizedPlayer() {
         return this.maximizedPlayer;
     }
 
     /**
      * Setter for maximizedPlayer.
-     *
+     * 
      * @param maximizedPlayer the maximizedPlayer to set
      */
-    public void setMaximizedPlayer(TaskbarPlayer maximizedPlayer) {
+    public void setMaximizedPlayer(PanelPlayer maximizedPlayer) {
         this.maximizedPlayer = maximizedPlayer;
     }
 

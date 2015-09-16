@@ -10,7 +10,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.pagemarker;
 
@@ -57,9 +56,8 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.path.PortletPathItem;
+import org.osivia.portal.api.portlet.IPortletStatusService;
 import org.osivia.portal.api.selection.SelectionItem;
-import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarStatus;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
@@ -70,6 +68,7 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.portlet.PortletStatusContainer;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 import org.osivia.portal.core.selection.SelectionScope;
@@ -100,9 +99,9 @@ public class PageMarkerUtils {
         windowlogger.debug("-------------- DEBUT DUMP " + label);
         windowlogger.debug("   page" + page.getId());
 
-        Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
+        Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
-        Iterator i = windows.iterator();
+        Iterator<PortalObject> i = windows.iterator();
         while (i.hasNext()) {
 
             Window window = (Window) i.next();
@@ -202,9 +201,9 @@ public class PageMarkerUtils {
             markerInfo.setWindowInfos(windowInfos);
 
             // Sauvegarde des etats
-            Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
+            Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
-            Iterator i = windows.iterator();
+            Iterator<PortalObject> i = windows.iterator();
             while (i.hasNext()) {
                 Window window = (Window) i.next();
 
@@ -229,7 +228,7 @@ public class PageMarkerUtils {
             // Sauvegarde etat page
             NavigationalStateContext ctx = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
             PageNavigationalState pns = ctx.getPageNavigationalState(page.getId().toString());
-            markerInfo.setPageNavigationState(pns);
+            markerInfo.setPageNavigationalState(pns);
 
             // Sauvegarde des fenêtres dynamiques
             IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
@@ -257,11 +256,11 @@ public class PageMarkerUtils {
             }
             Long headerCount = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount");
             if (headerCount != null) {
-                markerInfo.setTabbedNavheaderCount(headerCount);
+                markerInfo.setTabbedNavHeaderCount(headerCount);
             }
             String userName = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername");
             if (userName != null) {
-                markerInfo.setTabbedNavheaderUsername(userName);
+                markerInfo.setTabbedNavHeaderUsername(userName);
             }
 
             Integer firstTab = (Integer) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB);
@@ -301,7 +300,7 @@ public class PageMarkerUtils {
             markerInfo.setPopupModeWindowID(popupModeWindowID);
             PortalObjectId popupModeOrginalPageID = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                     "osivia.popupModeOrginalPageID");
-            markerInfo.setPopupModeOrginalPageID(popupModeOrginalPageID);
+            markerInfo.setPopupModeOriginalPageID(popupModeOrginalPageID);
 
 
             // Sauvegarde de l'ensemble des sélections
@@ -312,9 +311,10 @@ public class PageMarkerUtils {
             }
 
 
-            // Taskbar status
-            TaskbarStatus taskbarStatus = (TaskbarStatus) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE);
-            markerInfo.setTaskbarStatus(taskbarStatus);
+            // Portlet status container
+            PortletStatusContainer portletStatusContainer = (PortletStatusContainer) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE,
+                    IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE);
+            markerInfo.setPortletStatusContainer(portletStatusContainer);
 
 
             // Notifications list
@@ -350,7 +350,7 @@ public class PageMarkerUtils {
             try {
                 // Tri pour avoir les markers qui n'ont pas été accédés depuis
                 // le + longtemps
-                List<PageMarkerInfo> list = new LinkedList(markers.values());
+                List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
 
                 Collections.sort(list, new Comparator<PageMarkerInfo>() {
 
@@ -374,6 +374,7 @@ public class PageMarkerUtils {
         // controllerCtx.setAttribute(Scope.SESSION_SCOPE, "markers", markers);
     }
 
+    @SuppressWarnings("unchecked")
     public static String generateNewPageMarker(ControllerContext controllerCtx) {
         String lastPageMarker = (String) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "lastPageMarker");
 
@@ -429,13 +430,13 @@ public class PageMarkerUtils {
      *            request path
      * @return new path
      */
+    @SuppressWarnings("unchecked")
     public static String restorePageState(ControllerContext controllerContext, String requestPath) {
         String newPath = requestPath;
         String newTabPath = null;
 
 
         String currentPageMarker = null;
-
 
 
         if (requestPath.startsWith(PAGE_MARKER_PATH)) {
@@ -446,17 +447,16 @@ public class PageMarkerUtils {
                 currentPageMarker = requestPath.substring(beginMarker, endMarker);
                 newPath = requestPath.substring(endMarker);
             }
-        } else    {
+        } else {
             ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
             String[] pagemarkers = parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER);
-            if( (pagemarkers != null) && (pagemarkers.length == 1)) {
-                currentPageMarker = pagemarkers[ 0];
+            if ((pagemarkers != null) && (pagemarkers.length == 1)) {
+                currentPageMarker = pagemarkers[0];
             }
         }
 
 
-
-       /* Tab restoration */
+        /* Tab restoration */
 
         PageMarkerInfo tabMarkerInfo = null;
 
@@ -470,7 +470,7 @@ public class PageMarkerUtils {
 
                 // Searching the most recent version for this tabs
 
-                List<PageMarkerInfo> list = new LinkedList(markers.values());
+                List<PageMarkerInfo> list = new LinkedList<PageMarkerInfo>(markers.values());
 
                 // Inverte orders to obtain the most recent first
                 Collections.sort(list, new Comparator<PageMarkerInfo>() {
@@ -479,7 +479,6 @@ public class PageMarkerUtils {
                         return o2.getLastTimeStamp().compareTo(o1.getLastTimeStamp());
                     }
                 });
-
 
 
                 String tabPagePath = StringUtils.removeStart(newPath, "/portal");
@@ -504,15 +503,6 @@ public class PageMarkerUtils {
         if (request.getParameter("backPageMarker") != null) {
             backPageMarker = request.getParameter("backPageMarker");
         }
-
-
-
-
-
-
-
-
-
 
 
         /*
@@ -556,8 +546,8 @@ public class PageMarkerUtils {
 
         // TEST PERF
         // if( false)
-        //v2.1 WORKSPACE : en AJAX, les pagemarker arrivent à 0 -> pas de restauration
-        if (! "0".equals(currentPageMarker) && (controlledPageMarker == null) && (currentPageMarker != null)) {
+        // v2.1 WORKSPACE : en AJAX, les pagemarker arrivent à 0 -> pas de restauration
+        if (!"0".equals(currentPageMarker) && (controlledPageMarker == null) && (currentPageMarker != null)) {
             // Traitement lié au back du navigateur
 
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
@@ -577,38 +567,37 @@ public class PageMarkerUtils {
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
 
 
-
                     if (true) {
 
                         PageMarkerInfo restorePageInfo = markerInfo;
-                        if( tabMarkerInfo != null)  {
+                        if (tabMarkerInfo != null) {
                             // In case of a tab, we restore the tab's page info
                             restorePageInfo = tabMarkerInfo;
-                            if( restorePageInfo != null)   {
+                            if (restorePageInfo != null) {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
 
                                 // And if tab was already active, we reinit the page
-                                if( tabMarkerInfo.getPageId().equals(markerInfo.getPageId()))   {
+                                if (tabMarkerInfo.getPageId().equals(markerInfo.getPageId())) {
                                     newTabPath = null;
                                 }
                             }
                         }
 
-                        if( backPageMarker != null) {
+                        if (backPageMarker != null) {
                             restorePageInfo = markers.get(backPageMarker);
-                            if( restorePageInfo != null)   {
+                            if (restorePageInfo != null) {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
                             }
                         }
 
                         // Restauration des pages dynamiques
-                        if( markerInfo.getDynamicPages() != null)   {
-                            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+                        if (markerInfo.getDynamicPages() != null) {
+                            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
+                                    .getDynamicObjectContainer();
                             poc.setDynamicPages(markerInfo.getDynamicPages());
                         }
 
                         Page page = restorePageState(controllerContext, restorePageInfo);
-
 
 
                         // restauration menu
@@ -616,11 +605,13 @@ public class PageMarkerUtils {
                         if (userPortal != null) {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal", userPortal);
                         }
-                        if (markerInfo.getTabbedNavheaderCount() != null) {
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount", markerInfo.getTabbedNavheaderCount());
+                        if (markerInfo.getTabbedNavHeaderCount() != null) {
+                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavHeaderCount",
+                                    markerInfo.getTabbedNavHeaderCount());
                         }
-                        if (markerInfo.getTabbedNavheaderUsername() != null) {
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername", markerInfo.getTabbedNavheaderUsername());
+                        if (markerInfo.getTabbedNavHeaderUsername() != null) {
+                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername",
+                                    markerInfo.getTabbedNavHeaderUsername());
                         }
                         if (markerInfo.getFirstTab() != null) {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", markerInfo.getFirstTab());
@@ -633,8 +624,8 @@ public class PageMarkerUtils {
                         if (markerInfo.isClosingPopupAction()) {
                             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing", "1");
                         }
-                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID", markerInfo.getPopupModeOriginalPageID());
-
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOrginalPageID",
+                                markerInfo.getPopupModeOriginalPageID());
 
 
                         // Restauration de l'ensemble des sélection
@@ -642,7 +633,8 @@ public class PageMarkerUtils {
                         if (selectionsMap != null) {
                             PortalObjectId pageId = page.getId();
 
-                            Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(selectionsMap.size());
+                            Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(
+                                    selectionsMap.size());
 
                             try {
 
@@ -653,7 +645,8 @@ public class PageMarkerUtils {
                                     Set<SelectionItem> selectionSet = entry.getValue();
 
                                     SelectionScope scope = selectionMapIdentifiers.getScope();
-                                    if ((SelectionScope.SCOPE_NAVIGATION.equals(scope)) || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
+                                    if ((SelectionScope.SCOPE_NAVIGATION.equals(scope))
+                                            || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
                                         // Scope navigation ou scope page concernant la page courante
                                         Set<SelectionItem> newSelectionSet = new LinkedHashSet<SelectionItem>(selectionSet);
                                         newSelectionsMap.put(selectionMapIdentifiers, newSelectionSet);
@@ -671,22 +664,22 @@ public class PageMarkerUtils {
                         }
 
 
-                        // Taskbar status
-                        TaskbarStatus taskbarStatus = markerInfo.getTaskbarStatus();
-                        if (taskbarStatus != null) {
-                            TaskbarStatus clone = taskbarStatus.clone();
-                            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, ITaskbarService.STATUS_PRINCIPAL_ATTRIBUTE, clone);
+                        // Portlet status container
+                        PortletStatusContainer portletStatusContainer = markerInfo.getPortletStatusContainer();
+                        if (portletStatusContainer != null) {
+                            PortletStatusContainer clone = portletStatusContainer.clone();
+                            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE, clone);
                         }
 
 
                         if (markerInfo.getSelectionTs() != null) {
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP, markerInfo.getSelectionTs());
+                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP,
+                                    markerInfo.getSelectionTs());
                         }
 
                         if (CollectionUtils.isNotEmpty(markerInfo.getNotificationsList())) {
                             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-                            NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext,
-                                    markerInfo.getNotificationsList());
+                            NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext, markerInfo.getNotificationsList());
                         }
 
                         if (page != null) {
@@ -701,7 +694,7 @@ public class PageMarkerUtils {
 
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker", currentPageMarker);
 
-        if( newTabPath != null) {
+        if (newTabPath != null) {
 
             // Inhibit the standard tab
             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab", "1");
@@ -716,40 +709,26 @@ public class PageMarkerUtils {
         CmsPermissionHelper.clearCache(controllerContext);
 
 
-
         return newPath;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private static Page restorePageState(ControllerContext controllerContext, PageMarkerInfo markerInfo) {
         // Restautation etat page
         NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        PageNavigationalState pns = markerInfo.getPageNavigationState();
+        PageNavigationalState pns = markerInfo.getPageNavigationalState();
         if (pns != null) {
 
             //
             ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
 
             // Restauration de preview nécessaire pour calcul editableWindows
-            EditionState state= ContributionService.getNavigationalState(controllerContext, pns);
+            EditionState state = ContributionService.getNavigationalState(controllerContext, pns);
 
-            if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals( state.getContributionMode())) {
-                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , state.getDocPath());
+            if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
+                controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, state.getDocPath());
             }
         }
-
 
 
         // Restauration des pages dynamiques
@@ -757,7 +736,7 @@ public class PageMarkerUtils {
 
 
         Page page = null;
-        if( markerInfo.getPageId() != null) {
+        if (markerInfo.getPageId() != null) {
             page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(markerInfo.getPageId());
         }
 
@@ -783,7 +762,8 @@ public class PageMarkerUtils {
                     // traitement standard de jboss
                     // portal
 
-                    WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(), wInfo.getPublicContentState());
+                    WindowNavigationalState newNS = new WindowNavigationalState(wInfo.getWindowState(), wInfo.getMode(), wInfo.getContentState(),
+                            wInfo.getPublicContentState());
 
                     String windowCanonicalName = child.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
 
@@ -794,18 +774,19 @@ public class PageMarkerUtils {
                     if (additionnalState != null) {
                         additionnalState = ParametersStateString.create(additionnalState);
                     }
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES + windowCanonicalName, additionnalState);
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, ContributionService.ATTR_ADDITITIONNAL_WINDOW_STATES
+                            + windowCanonicalName, additionnalState);
 
-                    if( wInfo.getPortletPath() != null) {
-                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + windowCanonicalName, wInfo.getPortletPath());
+                    if (wInfo.getPortletPath() != null) {
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.PORTLET_ATTR_PORTLET_PATH + windowCanonicalName,
+                                wInfo.getPortletPath());
                     }
 
                 }
             }
         }
 
-        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT , null);
-
+        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, null);
 
 
         ((PortalObjectNavigationalStateContext) ctx).applyChanges();
@@ -843,6 +824,8 @@ public class PageMarkerUtils {
         return page;
     }
 
+
+    @SuppressWarnings("unchecked")
     public static PageMarkerInfo getLastPageState(ControllerContext controllerContext) {
         // Permet de controler qu'on effectue une seule fois le traitement
         String controlledPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
@@ -865,8 +848,8 @@ public class PageMarkerUtils {
     }
 
 
-    public static PageMarkerInfo  getPageMarkerInfo(ControllerContext controllerContext, String pageMarker)  {
-
+    @SuppressWarnings("unchecked")
+    public static PageMarkerInfo getPageMarkerInfo(ControllerContext controllerContext, String pageMarker) {
         PageMarkerInfo markerInfo = null;
 
         Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
