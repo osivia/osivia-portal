@@ -46,6 +46,8 @@ public class CMSPublicationInfos {
 	private boolean anonymouslyReadable = false;
 	/** Indicates if document is remote publishable. */
 	private boolean isRemotePublishable = false;
+	/** Indicates if document is already published. */
+	private boolean isRemotePublished = false;	
 	/** Published CMS item indicator. */
     private boolean published = false;
 	/** Indicates if working version is different from published version. */
@@ -172,8 +174,24 @@ public class CMSPublicationInfos {
     public void setRemotePublishable(boolean isRemotePublishable) {
         this.isRemotePublishable = isRemotePublishable;
     }
+    
+    /**
+     * 
+     * @return isRemotePublished
+     */
+    public boolean isRemotePublished() {
+		return isRemotePublished;
+	}
 
     /**
+     * 
+     * @param isRemotePublished
+     */
+	public void setRemotePublished(boolean isRemotePublished) {
+		this.isRemotePublished = isRemotePublished;
+	}
+
+	/**
      * Getter for published.
      * @return the published
      */
