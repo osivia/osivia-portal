@@ -405,11 +405,10 @@ public interface ICMSService {
      *
      * @param cmsContext CMS context
      * @param basePath CMS base path
-     * @param currentPath CMS current path
      * @return tasks
      * @throws CMSException
      */
-    List<TaskbarTask> getTaskbarNavigationTasks(CMSServiceCtx cmsContext, String basePath, String currentPath) throws CMSException;
+    List<TaskbarTask> getTaskbarNavigationTasks(CMSServiceCtx cmsContext, String basePath) throws CMSException;
 
 
     /**

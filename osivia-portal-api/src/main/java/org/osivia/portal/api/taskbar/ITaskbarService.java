@@ -30,11 +30,10 @@ public interface ITaskbarService {
      *
      * @param portalControllerContext portal controller context
      * @param basePath CMS base path
-     * @param currentPath CMS current path
      * @return tasks
      * @throws PortalException
      */
-    List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath, String currentPath) throws PortalException;
+    List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath) throws PortalException;
 
 
     /**

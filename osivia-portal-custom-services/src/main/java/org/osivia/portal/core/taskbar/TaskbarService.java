@@ -2,28 +2,26 @@ package org.osivia.portal.core.taskbar;
 
 import java.util.List;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
+import javax.portlet.PortletRequest;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.portal.api.theming.Breadcrumb;
+import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
@@ -50,7 +48,7 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
-    public List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath, String currentPath) throws PortalException {
+    public List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath) throws PortalException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
@@ -61,7 +59,7 @@ public class TaskbarService implements ITaskbarService {
         // Navigation tasks
         List<TaskbarTask> navigationTasks;
         try {
-            navigationTasks = cmsService.getTaskbarNavigationTasks(cmsContext, basePath, currentPath);
+            navigationTasks = cmsService.getTaskbarNavigationTasks(cmsContext, basePath);
         } catch (CMSException e) {
             throw new PortalException(e);
         }
@@ -91,6 +89,8 @@ public class TaskbarService implements ITaskbarService {
     public String getActiveId(PortalControllerContext portalControllerContext) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // Request
+        PortletRequest request = portalControllerContext.getRequest();
 
         // Active task identifier
         String activeId = null;
@@ -107,24 +107,39 @@ public class TaskbarService implements ITaskbarService {
 
             if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
                 activeId = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+                if (activeId == null) {
+                    // Breadcrumb
+                    Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
+                    List<BreadcrumbItem> breadcrumbItems = breadcrumb.getChilds();
+                    if (CollectionUtils.isNotEmpty(breadcrumbItems)) {
+                        for (int i = breadcrumbItems.size() - 1; i >= 0; i--) {
+                            BreadcrumbItem breadcrumbItem = breadcrumbItems.get(i);
+                            activeId = breadcrumbItem.getTaskId();
+
+                            if (activeId != null) {
+                                break;
+                            }
+                        }
+                    }
+                }
             } else {
                 // Base path
                 String basePath = page.getProperty("osivia.cms.basePath");
-                // Current path
-                String currentPath = this.getCurrentPath(controllerContext, page);
+                // Content path
+                String contentPath = request.getParameter("osivia.cms.contentPath");
 
-                if (StringUtils.equals(currentPath, basePath)) {
+                if (StringUtils.equals(contentPath, basePath)) {
                     activeId = ITaskbarService.HOME_TASK_ID;
                 } else {
-                    // Protected current path
-                    String protectedCurrentPath = currentPath + "/";
+                    // Protected content path
+                    String protectedContentPath = contentPath + "/";
 
                     // Navigation tasks
-                    List<TaskbarTask> navigationTasks = this.getNavigationTasks(portalControllerContext, basePath, currentPath);
+                    List<TaskbarTask> navigationTasks = this.getNavigationTasks(portalControllerContext, basePath);
 
                     for (TaskbarTask navigationTask : navigationTasks) {
                         String protectedPath = navigationTask.getPath() + "/";
-                        if (StringUtils.startsWith(protectedCurrentPath, protectedPath)) {
+                        if (StringUtils.startsWith(protectedContentPath, protectedPath)) {
                             activeId = navigationTask.getId();
                             break;
                         }
@@ -134,32 +149,6 @@ public class TaskbarService implements ITaskbarService {
         }
 
         return activeId;
-    }
-
-
-    /**
-     * Get current path.
-     *
-     * @param controllerContext controller context
-     * @param page page
-     * @return current path
-     */
-    private String getCurrentPath(ControllerContext controllerContext, Page page) {
-        // State context
-        NavigationalStateContext stateContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        // Current page state
-        PageNavigationalState pageState = stateContext.getPageNavigationalState(page.getId().toString());
-
-        // Current path
-        String currentPath = null;
-        if (pageState != null) {
-            String[] sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, InternalConstants.ATTR_CMS_PATH));
-            if (ArrayUtils.isNotEmpty(sPath)) {
-                currentPath = sPath[0];
-            }
-        }
-
-        return currentPath;
     }
 
 

@@ -50,6 +50,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.path.PortletPathItem;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -192,11 +193,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
             if (publication && ((basePath != null) || "1".equals(page.getProperty("osivia.cms.directContentPublisher")))) {
                 displayPage = false;
             }
-            
+
             if( "1".equals(page.getProperty("osivia.genericPage"))) {
                 displayPage = false;
             }
-                
+
 
             if (displayPage) {
                 ViewPageCommand viewPageCommand = new ViewPageCommand(page.getId());
@@ -350,10 +351,16 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             title = windowContext.getResult().getTitle();
                         }
 
+                        // URL
                         page = renderPageCommand.getPage();
                         ViewPageCommand viewPageCommand = new ViewPageCommand(page.getId());
                         String url = new PortalURLImpl(viewPageCommand, controllerContext, null, null).toString();
+
+                        // Task identifier
+                        String taskId = window.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+
                         BreadcrumbItem newItem = new BreadcrumbItem(title, url, windowContext.getId(), true);
+                        newItem.setTaskId(taskId);
                         breadcrumbMemo.getChilds().add(newItem);
                     }
                 }
@@ -367,6 +374,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 WindowContext windowContext = (WindowContext) value;
                 if (WindowState.MAXIMIZED.equals(windowContext.getWindowState())) {
                     isWindowMaximized = true;
+                    break;
                 }
             }
 
@@ -425,7 +433,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                                     }
                                 }
                             }
-                            
+
                             parameters.setValue("_displayContext", "breadcrumb");
 
                             PortalObjectId targetWindowId = PortalObjectId.parse(windowContext.getId(), PortalObjectPath.SAFEST_FORMAT);

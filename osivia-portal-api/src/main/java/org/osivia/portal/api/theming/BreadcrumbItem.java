@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,109 +20,34 @@ import org.osivia.portal.api.path.PortletPathItem;
 
 
 /**
- * The Class BreadcrumbItem.
+ * Breadcrumb item.
  */
 public class BreadcrumbItem {
-	
-	/** The name. */
-	private String name;
-	
-	/** The url. */
-	private String url;
-	
-	/** The id. */
-	private Object id;
-	
-	/** The user maximized. */
-	private boolean userMaximized = false;
-	
-	/** The navigation player. */
-	private boolean navigationPlayer = false;
-	
-	/**
-	 * Checks if is navigation player.
-	 *
-	 * @return true, if is navigation player
-	 */
-	public boolean isNavigationPlayer() {
-		return navigationPlayer;
-	}
-	
-	/**
-	 * Sets the navigation player.
-	 *
-	 * @param navigationPlayer the new navigation player
-	 */
-	public void setNavigationPlayer(boolean navigationPlayer) {
-		this.navigationPlayer = navigationPlayer;
-	}
-	
-	/** The portlet path. */
-	private List<PortletPathItem> portletPath; 
-	
-	/**
-	 * Gets the portlet path.
-	 *
-	 * @return the portlet path
-	 */
-	public List<PortletPathItem> getPortletPath() {
-		return portletPath;
-	}
-	
-	/**
-	 * Sets the portlet path.
-	 *
-	 * @param portletPath the new portlet path
-	 */
-	public void setPortletPath(List<PortletPathItem> portletPath) {
-		this.portletPath = portletPath;
-	}
-	
-	/**
-	 * Checks if is user maximized.
-	 *
-	 * @return true, if is user maximized
-	 */
-	public boolean isUserMaximized() {
-		return userMaximized;
-	}
-	
-	/**
-	 * Sets the user maximized.
-	 *
-	 * @param userMaximized the new user maximized
-	 */
-	public void setUserMaximized(boolean userMaximized) {
-		this.userMaximized = userMaximized;
-	}
-	
-	/**
-	 * Gets the id.
-	 *
-	 * @return the id
-	 */
-	public Object getId() {
-		return id;
-	}
-	
-	/**
-	 * Sets the id.
-	 *
-	 * @param id the new id
-	 */
-	public void setId(Object id) {
-		this.id = id;
-	}
-	
-	
-	/**
-	 * Instantiates a new breadcrumb item.
-	 *
-	 * @param name the name
-	 * @param url the url
-	 * @param id the id
-	 * @param userMaximized the user maximized
-	 */
+
+    /** Name. */
+    private String name;
+    /** URL. */
+    private String url;
+    /** Portal object identifier. */
+    private Object id;
+    /** User maximized indicator. */
+    private boolean userMaximized;
+    /** Navigation player indicator. */
+    private boolean navigationPlayer;
+    /** Portlet path. */
+	private List<PortletPathItem> portletPath;
+    /** Task identifier. */
+    private String taskId;
+
+
+    /**
+     * Constructor.
+     *
+     * @param name name
+     * @param url URL
+     * @param id portal object identifier
+     * @param userMaximized user maximized indicator
+     */
 	public BreadcrumbItem(String name, String url, Object id, boolean userMaximized) {
 		super();
 		this.name = name;
@@ -130,43 +55,132 @@ public class BreadcrumbItem {
 		this.id = id;
 		this.userMaximized = userMaximized;
 	}
-	
-	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * Sets the name.
-	 *
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
 
 
-	/**
-	 * Gets the url.
-	 *
-	 * @return the url
-	 */
-	public String getUrl() {
-		return url;
-	}
-	
-	/**
-	 * Sets the url.
-	 *
-	 * @param url the new url
-	 */
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    /**
+     * Getter for name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	
+    /**
+     * Setter for name.
+     * 
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Getter for url.
+     * 
+     * @return the url
+     */
+    public String getUrl() {
+        return this.url;
+    }
+
+    /**
+     * Setter for url.
+     * 
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
+     * Getter for id.
+     * 
+     * @return the id
+     */
+    public Object getId() {
+        return this.id;
+    }
+
+    /**
+     * Setter for id.
+     * 
+     * @param id the id to set
+     */
+    public void setId(Object id) {
+        this.id = id;
+    }
+
+    /**
+     * Getter for userMaximized.
+     * 
+     * @return the userMaximized
+     */
+    public boolean isUserMaximized() {
+        return this.userMaximized;
+    }
+
+    /**
+     * Setter for userMaximized.
+     * 
+     * @param userMaximized the userMaximized to set
+     */
+    public void setUserMaximized(boolean userMaximized) {
+        this.userMaximized = userMaximized;
+    }
+
+    /**
+     * Getter for navigationPlayer.
+     * 
+     * @return the navigationPlayer
+     */
+    public boolean isNavigationPlayer() {
+        return this.navigationPlayer;
+    }
+
+    /**
+     * Setter for navigationPlayer.
+     * 
+     * @param navigationPlayer the navigationPlayer to set
+     */
+    public void setNavigationPlayer(boolean navigationPlayer) {
+        this.navigationPlayer = navigationPlayer;
+    }
+
+    /**
+     * Getter for portletPath.
+     * 
+     * @return the portletPath
+     */
+    public List<PortletPathItem> getPortletPath() {
+        return this.portletPath;
+    }
+
+    /**
+     * Setter for portletPath.
+     * 
+     * @param portletPath the portletPath to set
+     */
+    public void setPortletPath(List<PortletPathItem> portletPath) {
+        this.portletPath = portletPath;
+    }
+
+    /**
+     * Getter for taskId.
+     * 
+     * @return the taskId
+     */
+    public String getTaskId() {
+        return this.taskId;
+    }
+
+    /**
+     * Setter for taskId.
+     * 
+     * @param taskId the taskId to set
+     */
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
 }
