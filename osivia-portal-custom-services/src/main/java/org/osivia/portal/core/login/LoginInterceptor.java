@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,6 +51,8 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.profils.ProfilBean;
+import org.osivia.portal.core.profils.ProfilManager;
 
 
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
@@ -61,7 +64,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     /** Customization service. */
     private ICustomizationService customizationService;
-    
+
     private static ICMSServiceLocator cmsServiceLocator;
 
     public static ICMSService getCMSService() throws Exception {
@@ -73,16 +76,15 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         return cmsServiceLocator.getCMSService();
 
     }
-    
+
     /**
      * Setter for customizationService.
-     *
+     * 
      * @param customizationService the customizationService to set
      */
     public void setCustomizationService(ICustomizationService customizationService) {
         this.customizationService = customizationService;
     }
-
 
 
     public static final Comparator<UserDatasModuleMetadatas> moduleComparator = new Comparator<UserDatasModuleMetadatas>() {
@@ -108,6 +110,22 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
         User user = (User) invocation.getAttribute(Scope.PRINCIPAL_SCOPE, UserInterceptor.USER_KEY);
+
+        String remoteUser = invocation.getServerContext().getClientRequest().getRemoteUser();
+
+        /* Traitement spécifique pour utilisateurs non connectés
+         * A déléguer dans un customizer
+         */
+
+        if (remoteUser != null && user == null) {
+            if (remoteUser.endsWith("@ATEN")) {
+                HttpSession session = invocation.getServerContext().getClientRequest().getSession();
+
+                ProfilBean profilDefaut = new ProfilBean("@ATEN", "default", "info-parents", "");
+                session.setAttribute(ProfilManager.ATTRIBUTE_PROFILE_NAME, profilDefaut);
+            }
+        }
+
 
         if (user != null) {
 
@@ -196,18 +214,18 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
             person = module.getModule().computeLoggedUser(invocation.getServerContext().getClientRequest());
         }
-        
+
         // add person in session
-        if( person != null)
-        	contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
-        
-        Map<String, Object> userDatas = new Hashtable<String, Object>();   
+        if (person != null)
+            contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
+
+        Map<String, Object> userDatas = new Hashtable<String, Object>();
         contextDatas.put("osivia.userDatas", userDatas);
-        
+
         // call customizer to populate userDatas
         CustomizationContext context = new CustomizationContext(contextDatas);
         this.customizationService.customize(IUserDatasModule.CUSTOMIZER_ID, context);
-        
+
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
