@@ -322,6 +322,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         Map<String, String> versions = new LinkedHashMap<String, String>();
 
         versions.put("1", "Live");
+        versions.put("2", "Live et Publiée");
 
         String inheritedLabel = null;
 

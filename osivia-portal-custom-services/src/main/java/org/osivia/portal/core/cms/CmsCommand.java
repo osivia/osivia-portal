@@ -665,6 +665,9 @@ public class CmsCommand extends DynamicCommand {
 
                 cmsReadItemContext = new CMSServiceCtx();
                 cmsReadItemContext.setControllerContext(controllerContext);
+                if( "1".equals(this.displayLiveVersion))
+                    cmsReadItemContext.setDisplayLiveVersion(this.displayLiveVersion);
+                
 
                 // test si mode assistant activé
                 if (level == Level.allowPreviewVersion) {
