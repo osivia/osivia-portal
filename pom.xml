@@ -62,6 +62,7 @@
 
     <modules>
         <module>osivia-portal-api</module>
+        <module>osivia-portal-taglib</module>     
         <module>osivia-portal-custom-lib-utils</module>
         <module>osivia-portal-custom-services</module>
         <module>osivia-portal-custom-web-assets</module>
