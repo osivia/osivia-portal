@@ -60,7 +60,6 @@
             <outputFileNameMapping>portal-portlet-lib.jar</outputFileNameMapping>
         </dependencySet>
 
-
         <dependencySet>
             <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
             <unpack>false</unpack>
@@ -80,8 +79,17 @@
             </includes>
             <outputFileNameMapping>jbossweb.jar</outputFileNameMapping>
         </dependencySet>
-
-
+        
+        <dependencySet>
+            <outputDirectory>/jboss-as/server/production/deploy/jboss-web.deployer</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <includes>
+                <include>${project.groupId}:osivia-portal-taglib:jar:${project.version}</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+        </dependencySet>
+        
         <dependencySet>
             <outputDirectory>/jboss-as/server/production/lib</outputDirectory>
             <unpack>false</unpack>
@@ -108,6 +116,7 @@
                 <exclude>jboss-as/server/production/conf/jboss-service.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/jbossweb.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/server.xml</exclude>
+                <exclude>jboss-as/server/production/deploy/jboss-web.deployer/conf/web.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/META-INF/jboss-service.xml</exclude>
 
                 <exclude>jboss-as/server/production/deploy/properties-service.xml</exclude>

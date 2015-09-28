@@ -26,6 +26,13 @@
         </dependency>
         
         <dependency>
+            <groupId>org.osivia.portal</groupId>
+            <artifactId>osivia-portal-taglib</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-custom-lib-utils</artifactId>
             <version>${project.version}</version>
@@ -115,6 +122,12 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
             <scope>compile</scope>
         </dependency>
         

@@ -79,6 +79,7 @@ public class LayoutDeployment extends Deployment {
      *
      * @throws DeploymentException if anything goes wrong
      */
+    @Override
     @SuppressWarnings("unchecked")
     public void create() throws DeploymentException {
         log.debug("Create new layout(s), found in :  " + this.pwa.getId());
@@ -116,16 +117,6 @@ public class LayoutDeployment extends Deployment {
                 IOTools.safeClose(source);
             }
 
-            // osivia-portal.tld
-            try {
-                source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/osivia-portal.tld"));
-                this.pwa.importFile("/WEB-INF/theme", "osivia-portal.tld", source, false);
-            } catch (IOException e) {
-                throw new DeploymentException("Cannot import osivia-portal.tld", e);
-            } finally {
-                IOTools.safeClose(source);
-            }
-
             // internationalization.tld
             try {
                 source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
@@ -146,6 +137,7 @@ public class LayoutDeployment extends Deployment {
      *
      * @throws DeploymentException if anything goes wrong
      */
+    @Override
     public void destroy() throws DeploymentException {
         if (log.isDebugEnabled()) {
             log.debug("destroying layout(s), found in :  " + this.pwa.getId());

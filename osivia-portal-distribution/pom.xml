@@ -19,6 +19,27 @@
 
 
     <dependencies>
+    
+        <dependency>
+            <groupId>org.osivia.portal</groupId>
+            <artifactId>osivia-portal-api</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.osivia.portal</groupId>
+            <artifactId>osivia-portal-taglib</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osivia.portal.core</groupId>
+            <artifactId>osivia-portal-custom-lib-utils</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
@@ -34,26 +55,11 @@
             <type>war</type>
         </dependency>
 
-
         <dependency>
             <groupId>org.osivia.portal.core.admin</groupId>
             <artifactId>osivia-portal-administration</artifactId>
             <version>${project.version}</version>
             <type>ear</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osivia.portal</groupId>
-            <artifactId>osivia-portal-api</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osivia.portal.core</groupId>
-            <artifactId>osivia-portal-custom-lib-utils</artifactId>
-            <version>${project.version}</version>
-            <type>jar</type>
         </dependency>
 
         <dependency>

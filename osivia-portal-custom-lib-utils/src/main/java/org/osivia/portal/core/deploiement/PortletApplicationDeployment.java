@@ -88,10 +88,6 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
 
         InputStream source = null;
         try {
-            // osivia-portal.tld
-            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/osivia-portal.tld"));
-            this.pwa.importFile("/WEB-INF/theme", "osivia-portal.tld", source, false);
-
             // internationalization.tld
             source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
             this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
