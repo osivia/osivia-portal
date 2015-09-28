@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<taglib
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-jsptaglibrary_2_1.xsd"
+    version="2.1">
+
+    <description>OSIVIA Portal taglib.</description>
+    <display-name>OSIVIA Portal</display-name>
+    <tlib-version>3.2</tlib-version>
+    <short-name>op</short-name>
+    <uri>http://www.osivia.org/jsp/taglib/osivia-portal</uri> 
+
+
+    <!-- Escape JavaScript function -->
+    <function>
+        <description>Escapes the characters in a String using JavaScript String rules.</description>
+        <display-name>Escape JavaScript</display-name>
+        <name>escapeJavaScript</name>
+        <function-class>org.osivia.portal.taglib.functions.TagFunctions</function-class>
+        <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
+    </function>
+    
+</taglib>
