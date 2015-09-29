@@ -13,10 +13,13 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.theme.ThemeConstants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.panels.Panel;
 import org.osivia.portal.api.panels.PanelPlayer;
+import org.osivia.portal.api.portlet.IPortletStatusService;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
@@ -35,6 +38,10 @@ public class PanelsService implements IPanelsService {
     private IDynamicObjectContainer dynamicObjectContainer;
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
+    /** Portlet status service. */
+    private IPortletStatusService portletStatusService;
+    /** Taskbar service. */
+    private ITaskbarService taskbarService;
 
 
     /**
@@ -48,7 +55,7 @@ public class PanelsService implements IPanelsService {
     /**
      * {@inheritDoc}
      */
-    public void openPanel(PortalControllerContext portalControllerContext, Panel panel, PanelPlayer player) {
+    public void openPanel(PortalControllerContext portalControllerContext, Panel panel, PanelPlayer player) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -98,9 +105,9 @@ public class PanelsService implements IPanelsService {
             builder.append(panel.getWindowName());
             controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, builder.toString());
 
-            // HTTP servlet request
-            HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
-            request.setAttribute(panel.getClosedAttribute(), false);
+
+            // Update panel status
+            this.updatePanelStatus(portalControllerContext, panel, null);
         }
     }
 
@@ -108,7 +115,7 @@ public class PanelsService implements IPanelsService {
     /**
      * {@inheritDoc}
      */
-    public void closePanel(PortalControllerContext portalControllerContext, Panel panel) {
+    public void closePanel(PortalControllerContext portalControllerContext, Panel panel) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -129,11 +136,88 @@ public class PanelsService implements IPanelsService {
             PortalObjectId windowId = new PortalObjectId(StringUtils.EMPTY, windowPath);
 
             this.dynamicObjectContainer.removeDynamicWindow(windowId.toString(PortalObjectPath.SAFEST_FORMAT));
+
+
+            // Update panel status
+            this.updatePanelStatus(portalControllerContext, panel, true);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void showPanel(PortalControllerContext portalControllerContext, Panel panel) throws PortalException {
+        this.updatePanelStatus(portalControllerContext, panel, false);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void hidePanel(PortalControllerContext portalControllerContext, Panel panel) throws PortalException {
+        this.updatePanelStatus(portalControllerContext, panel, true);
+    }
+
+
+    /**
+     * Update panel status.
+     *
+     * @param portalControllerContext portal controller context
+     * @param panel panel
+     * @param hidden hidden panel indicator
+     * @throws PortalException
+     */
+    private void updatePanelStatus(PortalControllerContext portalControllerContext, Panel panel, Boolean hidden) throws PortalException {
+        // Active task identifier
+        String taskId = this.taskbarService.getActiveId(portalControllerContext);
+
+        // Panel status
+        PanelStatus panelStatus = this.portletStatusService.getStatus(portalControllerContext, panel.getWindowName(), PanelStatus.class);
+        if (panelStatus == null) {
+            panelStatus = new PanelStatus(taskId);
+            this.portletStatusService.setStatus(portalControllerContext, panel.getWindowName(), panelStatus);
+        }
+
+        // Hidden panel indicator
+        if (hidden != null) {
+            panelStatus.setHidden(hidden);
         }
 
         // HTTP servlet request
-        HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
-        request.setAttribute(panel.getClosedAttribute(), true);
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        HttpServletRequest httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        httpServletRequest.setAttribute(Panel.NAVIGATION_PANEL.getClosedAttribute(), panelStatus.isHidden());
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public Boolean isHidden(PortalControllerContext portalControllerContext, Panel panel) throws PortalException {
+        Boolean hidden;
+
+        // Panel status
+        PanelStatus panelStatus = this.portletStatusService.getStatus(portalControllerContext, panel.getWindowName(), PanelStatus.class);
+        if (panelStatus == null) {
+            hidden = null;
+        } else {
+            // Active task identifier
+            String taskId = this.taskbarService.getActiveId(portalControllerContext);
+
+            if (StringUtils.equals(taskId, panelStatus.getTaskId())) {
+                hidden = panelStatus.isHidden();
+            } else {
+                hidden = null;
+            }
+        }
+
+        return hidden;
+    }
+
+
+    public void resetTaskDependentPanels(PortalControllerContext portalControllerContext) throws PortalException {
+        this.portletStatusService.resetTaskDependentStatus(portalControllerContext);
     }
 
 
@@ -162,6 +246,24 @@ public class PanelsService implements IPanelsService {
      */
     public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {
         this.cmsServiceLocator = cmsServiceLocator;
+    }
+
+    /**
+     * Setter for portletStatusService.
+     *
+     * @param portletStatusService the portletStatusService to set
+     */
+    public void setPortletStatusService(IPortletStatusService portletStatusService) {
+        this.portletStatusService = portletStatusService;
+    }
+
+    /**
+     * Setter for taskbarService.
+     *
+     * @param taskbarService the taskbarService to set
+     */
+    public void setTaskbarService(ITaskbarService taskbarService) {
+        this.taskbarService = taskbarService;
     }
 
 }

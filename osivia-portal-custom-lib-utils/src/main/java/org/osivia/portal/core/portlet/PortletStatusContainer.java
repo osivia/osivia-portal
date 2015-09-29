@@ -1,8 +1,10 @@
 package org.osivia.portal.core.portlet;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.api.portlet.PortletStatus;
@@ -67,6 +69,21 @@ public class PortletStatusContainer implements Cloneable {
     public void setPortletStatus(PortalObjectId pageId, String portletName, PortletStatus status) {
         PortletKey key = new PortletKey(pageId, portletName);
         this.map.put(key, status);
+    }
+
+
+    /**
+     * Reset task dependent portlet status.
+     * 
+     * @param pageId page identifier
+     */
+    public void resetTaskDependentPortletStatus(PortalObjectId pageId) {
+        Set<Entry<PortletKey, PortletStatus>> clone = new HashSet<Map.Entry<PortletKey, PortletStatus>>(this.map.entrySet());
+        for (Entry<PortletKey, PortletStatus> entry : clone) {
+            if (pageId.equals(entry.getKey().pageId) && (entry.getValue().getTaskId() != null)) {
+                this.map.remove(entry.getKey());
+            }
+        }
     }
 
 

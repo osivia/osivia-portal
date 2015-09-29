@@ -14,4 +14,12 @@ public interface PortletStatus {
      */
     PortletStatus clone();
 
+
+    /**
+     * Get task identifier, may be null.
+     * 
+     * @return task identifier
+     */
+    String getTaskId();
+
 }

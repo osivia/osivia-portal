@@ -41,6 +41,40 @@ public interface IPanelsService {
 
 
     /**
+     * Show previously created panel.
+     *
+     * @param portalControllerContext portal controller context
+     * @param panel panel
+     * @throws PortalException
+     */
+    void showPanel(PortalControllerContext portalControllerContext, Panel panel) throws PortalException;
+
+
+    /**
+     * Hide previously created panel.
+     *
+     * @param portalControllerContext portal controller context
+     * @param panel panel
+     * @throws PortalException
+     */
+    void hidePanel(PortalControllerContext portalControllerContext, Panel panel) throws PortalException;
+
+
+    /**
+     * Check if panel is hidden.
+     *
+     * @param portalControllerContext portal controller context
+     * @param panel panel
+     * @return hidden panel indicator
+     * @throws PortalException
+     */
+    Boolean isHidden(PortalControllerContext portalControllerContext, Panel panel) throws PortalException;
+
+
+    void resetTaskDependentPanels(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
      * Get navigation panel player.
      *
      * @param portalControllerContext portal controller context

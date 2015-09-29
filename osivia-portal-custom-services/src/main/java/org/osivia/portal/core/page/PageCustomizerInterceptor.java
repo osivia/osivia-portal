@@ -84,9 +84,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
-import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -98,7 +96,6 @@ import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.menubar.MenubarUtils;
@@ -145,8 +142,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     private transient IProfilerService profiler;
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
-    /** Internationalization service. */
-    private IInternationalizationService internationalizationService;
     /** WebId service. */
     private IWebIdService webIdService;
 
@@ -569,117 +564,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if (rpc.getPage().getName().startsWith("exception")) {
                 throw new RuntimeException("erreur de test");
-            }
-
-
-            /*
-             * Affichage en mode CMS des templates
-             */
-
-            // Accès depuis le menu ou initialisation
-            // On redirige en mode CMS
-
-            // La page d'accueil (url /portal doit également réinitialiser la page (init-state)
-            // pour initialiser le CMS
-
-            boolean defaultPage = false;
-
-            String portalPath = controllerCtx.getServerInvocation().getServerContext().getPortalRequestPath();
-            String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
-
-            /* On teste les 2 cas spécifiques ou le init-state n'est pas initialisé dans l'url */
-
-            // Appel de la page par défaut (/portal)
-            if (portalPath.equals("") || portalPath.equals("/")) {
-                defaultPage = true;
-                ;
-
-            }
-
-            // Déconnexion : page par défaut + pageMarker = 1
-            // TODO : test a améliorer ...
-            if (rpc.getPage().equals(rpc.getPortal().getDefaultPage()) && ("1".equals(pageMarker))) {
-                defaultPage = true;
-            }
-
-            boolean initState = "true".equals(request.getParameter("init-state"));
-
-            if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab"))) {
-                initState = false;
-            }
-
-            if( "1".equals(rpc.getPage().getProperty("osivia.genericPage"))) {
-                initState = false;
-            }
-
-            if (initState || defaultPage) {
-
-                CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
-
-
-                if (((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents")))
-                        || ("1".equals(rpc.getPage().getDeclaredProperty("osivia.cms.directContentPublisher")))) {
-
-                    if (!"true".equals(request.getParameter("edit-template-mode"))) {
-                        // Redirection en mode CMS
-
-
-                        String path = rpc.getPage().getDeclaredProperty("osivia.cms.basePath");
-
-                        if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
-                            CMSServiceCtx cmsContext = new CMSServiceCtx();
-                            cmsContext.setControllerContext(controllerCtx);
-                            path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
-                        }
-
-                        // init-state
-                        //PageCustomizerInterceptor.initPageBackInfos(controllerCtx);
-                        initPageState(rpc.getPage(), controllerCtx);
-
-
-                        String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
-                                rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), path,
-                                null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "tabs", null, null, null, null);
-
-                        if (request.getParameter("firstTab") != null) {
-                            if (url.indexOf('?') == -1) {
-                                url += "?";
-                            } else {
-                                url += "&";
-                            }
-                            url += "firstTab=" + request.getParameter("firstTab");
-                        }
-                        return new RedirectionResponse(url.toString());
-                    }
-                }
-            }
-
-
-            if ("true".equals(request.getParameter("unsetMaxMode"))) {
-                unsetMaxMode(rpc.getPage().getChildren(PortalObject.WINDOW_MASK), controllerCtx);
-            }
-
-
-            if (initState) {
-
-                // logger.debug("init page");
-                // Récupération des fenêtres de la page
-                initPageState(rpc.getPage(), controllerCtx);
-            }
-
-            if (BooleanUtils.toBoolean(request.getParameter("init-state")) && BooleanUtils.toBoolean(request.getParameter("edit-template-mode"))) {
-                String originalPortalName = request.getParameter("original-portal");
-                if (!rpc.getPage().getPortal().getName().equals(originalPortalName)) {
-                    // For template page, warn if the current portal does not match the main domain
-                    String portalDefaultAdviceLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ADV_PORTAL_DEFAULT,
-                            request.getLocale());
-                    NotificationsUtils.getNotificationsService().addSimpleNotification(new PortalControllerContext(rpc.getControllerContext()),
-                            portalDefaultAdviceLabel, NotificationsType.WARNING, null);
-                }
-            }
-
-            if (request.getParameter("firstTab") != null) {
-                controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB, new Integer(request.getParameter("firstTab")));
             }
 
             if ("true".equals(request.getParameter("init-cache"))) {
@@ -1783,15 +1667,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
      */
     public void setProfiler(IProfilerService profiler) {
         this.profiler = profiler;
-    }
-
-    /**
-     * Setter for internationalizationService.
-     *
-     * @param internationalizationService the internationalizationService to set
-     */
-    public void setInternationalizationService(IInternationalizationService internationalizationService) {
-        this.internationalizationService = internationalizationService;
     }
 
     /**

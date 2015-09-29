@@ -184,6 +184,23 @@
 	</mbean>
 
 
+    <!-- Page initialization interceptor -->
+    <mbean
+        code="org.osivia.portal.core.page.InitPageInterceptor"
+        name="osivia:service=Interceptor,type=Command,name=InitPage"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="UrlFactory"
+            proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends
+            optional-attribute-name="WebIdService"
+            proxy-type="attribute">osivia:service=webIdService</depends>
+        <depends
+            optional-attribute-name="InternationalizationService"
+            proxy-type="attribute">osivia:service=InternationalizationService</depends>
+    </mbean>
 
     <!-- Panels interceptor -->
     <mbean
@@ -276,9 +293,6 @@
         <depends
             optional-attribute-name="ServicesCacheService"
             proxy-type="attribute">osivia:service=CacheServices</depends>
-        <depends
-            optional-attribute-name="InternationalizationService"
-            proxy-type="attribute">osivia:service=InternationalizationService</depends>
         <depends
             optional-attribute-name="WebIdService"
             proxy-type="attribute">osivia:service=webIdService</depends>
@@ -906,6 +920,15 @@
         <depends optional-attribute-name="CmsServiceLocator" proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
     
+    <!-- Portlet status service -->
+    <mbean
+        code="org.osivia.portal.core.portlet.PortletStatusService"
+        name="osivia:service=PortletStatusService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+    
     <!-- Taskbar service -->
     <mbean
         code="org.osivia.portal.core.taskbar.TaskbarService"
@@ -931,16 +954,13 @@
         <depends
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+        <depends
+            optional-attribute-name="PortletStatusService"
+            proxy-type="attribute">osivia:service=PortletStatusService</depends>
+        <depends
+            optional-attribute-name="TaskbarService"
+            proxy-type="attribute">osivia:service=TaskbarService</depends>
     </mbean>
-    
-    <!-- Portlet status service -->
-    <mbean
-        code="org.osivia.portal.core.portlet.PortletStatusService"
-        name="osivia:service=PortletStatusService"
-        xmbean-dd=""
-        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-        <xmbean />
-    </mbean>
-    
+
 </server>
    

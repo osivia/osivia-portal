@@ -13,8 +13,8 @@ public class PanelPlayer {
     private String instance;
     /** Window properties. */
     private Map<String, String> properties;
-    /** Panel closed indicator. */
-    private boolean closed;
+    /** Panel hidden indicator. */
+    private boolean hidden;
 
 
     /**
@@ -27,7 +27,7 @@ public class PanelPlayer {
 
     /**
      * Getter for instance.
-     * 
+     *
      * @return the instance
      */
     public String getInstance() {
@@ -36,7 +36,7 @@ public class PanelPlayer {
 
     /**
      * Setter for instance.
-     * 
+     *
      * @param instance the instance to set
      */
     public void setInstance(String instance) {
@@ -45,7 +45,7 @@ public class PanelPlayer {
 
     /**
      * Getter for properties.
-     * 
+     *
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -54,7 +54,7 @@ public class PanelPlayer {
 
     /**
      * Setter for properties.
-     * 
+     *
      * @param properties the properties to set
      */
     public void setProperties(Map<String, String> properties) {
@@ -62,21 +62,21 @@ public class PanelPlayer {
     }
 
     /**
-     * Getter for closed.
+     * Getter for hidden.
      * 
-     * @return the closed
+     * @return the hidden
      */
-    public boolean isClosed() {
-        return this.closed;
+    public boolean isHidden() {
+        return this.hidden;
     }
 
     /**
-     * Setter for closed.
+     * Setter for hidden.
      * 
-     * @param closed the closed to set
+     * @param hidden the hidden to set
      */
-    public void setClosed(boolean closed) {
-        this.closed = closed;
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
 }

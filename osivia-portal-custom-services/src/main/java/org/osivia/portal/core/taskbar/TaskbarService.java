@@ -23,6 +23,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
@@ -104,7 +105,6 @@ public class TaskbarService implements ITaskbarService {
             // Maximized window
             Window maximizedWindow = PortalObjectUtils.getMaximizedWindow(controllerContext, page);
 
-
             if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
                 activeId = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
                 if (activeId == null) {
@@ -126,7 +126,12 @@ public class TaskbarService implements ITaskbarService {
                 // Base path
                 String basePath = page.getProperty("osivia.cms.basePath");
                 // Content path
-                String contentPath = request.getParameter("osivia.cms.contentPath");
+                String contentPath;
+                if (request != null) {
+                    contentPath = request.getParameter("osivia.cms.contentPath");
+                } else {
+                    contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+                }
 
                 if (StringUtils.equals(contentPath, basePath)) {
                     activeId = ITaskbarService.HOME_TASK_ID;

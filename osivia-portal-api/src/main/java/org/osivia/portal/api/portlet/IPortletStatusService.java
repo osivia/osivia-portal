@@ -36,4 +36,12 @@ public interface IPortletStatusService {
      */
     void setStatus(PortalControllerContext portalControllerContext, String portletName, PortletStatus status);
 
+
+    /**
+     * Reset task dependent portlet status.
+     * 
+     * @param portalControllerContext portal controller context
+     */
+    void resetTaskDependentStatus(PortalControllerContext portalControllerContext);
+
 }

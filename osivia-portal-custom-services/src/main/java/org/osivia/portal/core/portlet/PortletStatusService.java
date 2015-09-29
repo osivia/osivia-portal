@@ -71,4 +71,21 @@ public class PortletStatusService implements IPortletStatusService {
         statusContainer.setPortletStatus(pageId, portletName, status);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public void resetTaskDependentStatus(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // Page identifier
+        PortalObjectId pageId = PortalObjectUtils.getPageId(controllerContext);
+
+        // Portlet status container
+        PortletStatusContainer statusContainer = (PortletStatusContainer) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, STATUS_CONTAINER_ATTRIBUTE);
+        if (statusContainer != null) {
+            statusContainer.resetTaskDependentPortletStatus(pageId);
+        }
+    }
+
 }
