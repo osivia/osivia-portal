@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
-package org.osivia.portal.core.cms;
+package org.osivia.portal.api.cms;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author Cédric Krommenhoek
  */
-public class CMSItemType {
+public class DocumentType {
 
     /** CMS item type name. */
     private final String name;
@@ -60,7 +60,7 @@ public class CMSItemType {
      * @param portalFormSubTypes CMS item type portal from sub types
      * @param defaultTemplate CMS item default template path, may be null for global default template path
      */
-    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+    public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate) {
         this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, null);
     }
@@ -80,7 +80,7 @@ public class CMSItemType {
      * @param defaultTemplate CMS item default template path, may be null for global default template path
      * @param glyph CMS item customized glyph, may be null for default glyph
      */
-    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+    public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
     	this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, false);
     }
@@ -99,7 +99,7 @@ public class CMSItemType {
      * @param defaultTemplate CMS item default template path, may be null for global default template path
      * @param glyph CMS item customized glyph, may be null for default glyph
      */
-    public CMSItemType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+    public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
         super();
         this.name = name;
@@ -140,7 +140,7 @@ public class CMSItemType {
         if (this.getClass() != obj.getClass()) {
             return false;
         }
-        CMSItemType other = (CMSItemType) obj;
+        DocumentType other = (DocumentType) obj;
         if (this.name == null) {
             if (other.name != null) {
                 return false;

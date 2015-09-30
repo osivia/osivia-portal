@@ -16,6 +16,8 @@ package org.osivia.portal.core.cms;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.osivia.portal.api.cms.DocumentType;
+
 /**
  * CMS item.
  */
@@ -39,7 +41,7 @@ public class CMSItem {
     /** Indicates if working version is different from published version. */
     private Boolean beingModified;
     /** CMS item type. */
-    private CMSItemType type;
+    private DocumentType type;
 
 
     /**
@@ -117,7 +119,7 @@ public class CMSItem {
      *
      * @return the type
      */
-    public CMSItemType getType() {
+    public DocumentType getType() {
         return this.type;
     }
 
@@ -126,7 +128,7 @@ public class CMSItem {
      *
      * @param type the type to set
      */
-    public void setType(CMSItemType type) {
+    public void setType(DocumentType type) {
         this.type = type;
     }
 

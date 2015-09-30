@@ -86,9 +86,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
+import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.cms.CMSHandlerProperties;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -499,7 +499,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSPlayHandlerUtils.restoreHandlerProperties(window, handlerCtx);
 
                     // Invoke handler to get player
-                    CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
+                    Player contentProperties = getCMSService().getItemHandler(handlerCtx);
 
                     Map<String,String> windowProps = ((DynamicWindow) window).getDynamicWindowBean().getProperties();
 

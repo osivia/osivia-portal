@@ -14,12 +14,12 @@ import org.jboss.portal.theme.impl.render.dynamic.json.JSONArray;
 import org.jboss.portal.theme.impl.render.dynamic.json.JSONException;
 import org.jboss.portal.theme.impl.render.dynamic.json.JSONObject;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.path.IBrowserService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSItemType;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
@@ -144,7 +144,7 @@ public class BrowserService implements IBrowserService {
         String glyph = null;
         if (!workspaces.isEmpty()) {
             CMSItem workspace = workspaces.get(0);
-            CMSItemType type = workspace.getType();
+            DocumentType type = workspace.getType();
             if (type != null) {
                 glyph = type.getGlyph();
             }
@@ -260,7 +260,7 @@ public class BrowserService implements IBrowserService {
                 } else if (cmsSubItem.getType() == null) {
                     acceptedChild = false;
                 } else {
-                    CMSItemType type = cmsSubItem.getType();
+                    DocumentType type = cmsSubItem.getType();
                     acceptedChild = (type.isFolderish() || cmsSubItem.getType().getPortalFormSubTypes().contains(options.getAcceptedType()));
                 }
 
@@ -334,7 +334,7 @@ public class BrowserService implements IBrowserService {
     private JSONObject generateJSONObject(PortalControllerContext portalControllerContext, CMSItem cmsItem, boolean root, BrowserOptions options)
             throws JSONException {
         // CMS item type
-        CMSItemType type = cmsItem.getType();
+        DocumentType type = cmsItem.getType();
 
         boolean browsable = false;
         String glyph = null;

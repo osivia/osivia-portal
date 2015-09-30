@@ -21,6 +21,7 @@ import java.util.Set;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.panels.PanelPlayer;
+import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.Link;
 
@@ -110,7 +111,7 @@ public interface ICMSService {
      */
     List<CMSItem> getWorkspaces(CMSServiceCtx cmsContext, boolean userWorkspaces, boolean administrator) throws CMSException;
 
-    CMSHandlerProperties getItemHandler(CMSServiceCtx ctx) throws CMSException;
+    Player getItemHandler(CMSServiceCtx ctx) throws CMSException;
 
     CMSBinaryContent getBinaryContent(CMSServiceCtx cmsCtx, String type, String path, String parameter) throws CMSException;
 

@@ -62,6 +62,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -665,8 +666,14 @@ public class CmsCommand extends DynamicCommand {
 
                 cmsReadItemContext = new CMSServiceCtx();
                 cmsReadItemContext.setControllerContext(controllerContext);
-                if( "1".equals(this.displayLiveVersion))
+                
+                
+                if( "1".equals(this.displayLiveVersion)) {
                     cmsReadItemContext.setDisplayLiveVersion(this.displayLiveVersion);
+                    
+                    // Affichage en mode preview pour les éléments d'une liste positionnée sur version live
+                    this.displayContext = InternalConstants.PROXY_PREVIEW;
+                }
                 
 
                 // test si mode assistant activé
@@ -1609,7 +1616,8 @@ public class CmsCommand extends DynamicCommand {
                 handlerCtx.setControllerContext(controllerContext);
                 handlerCtx.setScope(cmsReadItemContext.getScope());
                 handlerCtx.setPageId(pageIdToDiplay.toString(PortalObjectPath.SAFEST_FORMAT));
-                handlerCtx.setDisplayLiveVersion(this.displayLiveVersion);
+                handlerCtx.setDisplayLiveVersion(cmsReadItemContext.getDisplayLiveVersion());
+                handlerCtx.setForcedLivePath(cmsReadItemContext.getForcedLivePath());
                 handlerCtx.setDoc(cmsItemToDisplay.getNativeItem());
                 handlerCtx.setHideMetaDatas(this.getHideMetaDatas());
                 handlerCtx.setDisplayContext(this.getDisplayContext());
@@ -1626,7 +1634,7 @@ public class CmsCommand extends DynamicCommand {
 
                 }
 
-                CMSHandlerProperties contentProperties = getCMSService().getItemHandler(handlerCtx);
+                Player contentProperties = getCMSService().getItemHandler(handlerCtx);
 
                 if (contentProperties.getExternalUrl() != null) {
                     return new RedirectionResponse(contentProperties.getExternalUrl());

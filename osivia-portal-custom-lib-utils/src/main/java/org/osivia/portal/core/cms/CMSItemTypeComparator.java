@@ -3,6 +3,7 @@ package org.osivia.portal.core.cms;
 import java.util.Comparator;
 
 import org.apache.commons.lang.StringUtils;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.internationalization.Bundle;
 
 /**
@@ -10,9 +11,9 @@ import org.osivia.portal.api.internationalization.Bundle;
  *
  * @author Cédric Krommenhoek
  * @see Comparator
- * @see CMSItemType
+ * @see DocumentType
  */
-public class CMSItemTypeComparator implements Comparator<CMSItemType> {
+public class CMSItemTypeComparator implements Comparator<DocumentType> {
 
     /** Internationalization bundle. */
     private final Bundle bundle;
@@ -32,7 +33,7 @@ public class CMSItemTypeComparator implements Comparator<CMSItemType> {
     /**
      * {@inheritDoc}
      */
-    public int compare(CMSItemType o1, CMSItemType o2) {
+    public int compare(DocumentType o1, DocumentType o2) {
         // Display name #1
         String n1 = null;
         if ((o1 != null) && (o1.getName() != null)) {
