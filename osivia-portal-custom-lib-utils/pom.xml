@@ -39,7 +39,11 @@
 
     <profiles>
         <profile>
-            <id>deploy-osivia-modules</id>
+            <activation>
+                <property>
+                    <name>deploy.socle-libs.dir</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
+
 
 <html>
 
 <head>
-    <title>${param.title} - <is:getProperty key="BRAND" /></title>
+    <title>${param.title} - <op:translate key="BRAND" /></title>
     
     <meta charset="UTF-8">
 

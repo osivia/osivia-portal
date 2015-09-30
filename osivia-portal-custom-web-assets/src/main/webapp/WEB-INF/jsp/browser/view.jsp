@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 <%@ page contentType="text/html" isELIgnored="false"%>
 
@@ -23,15 +23,15 @@
 <div>
     <p class="lead">
         <i class="glyphicons glyphicons-search"></i>
-        <span><is:getProperty key="BROWSE_PORTLET_LEGEND" /></span>
+        <span><op:translate key="BROWSE_PORTLET_LEGEND" /></span>
     </p>
     
     <dl class="dl-horizontal">
-        <dt><is:getProperty key="BROWSE_PORTLET_HELP_TITLE" /></dt>
+        <dt><op:translate key="BROWSE_PORTLET_HELP_TITLE" /></dt>
         <dd>
-            <span><is:getProperty key="BROWSE_PORTLET_HELP_DESCRIPTION_PUBLISHED" /></span>
+            <span><op:translate key="BROWSE_PORTLET_HELP_DESCRIPTION_PUBLISHED" /></span>
             <br>
-            <span class="text-info"><is:getProperty key="BROWSE_PORTLET_HELP_DESCRIPTION_EDITED" /></span>
+            <span class="text-info"><op:translate key="BROWSE_PORTLET_HELP_DESCRIPTION_EDITED" /></span>
         </dd>
     </dl>
     

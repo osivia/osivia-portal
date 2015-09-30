@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="internationalization" prefix="is"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 <%@ taglib uri="/WEB-INF/tld/formatter.tld" prefix="formatter" %>
 
 
@@ -112,26 +112,26 @@ var currentPageId = '${currentPageId}';
             
                 <!-- Name -->
                 <div class="form-group">
-                    <label for="new-page-name" class="control-label required col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_NAME" /></label>
+                    <label for="new-page-name" class="control-label required col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_NAME" /></label>
                     <div class="col-sm-8 col-lg-3">
-                        <input id="new-page-name" type="text" name="name" class="form-control" placeholder='<is:getProperty key="NEW_PAGE_NAME" />' required="required" />
+                        <input id="new-page-name" type="text" name="name" class="form-control" placeholder='<op:translate key="NEW_PAGE_NAME" />' required="required" />
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <!-- Model -->
-                    <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_MODEL" /></label>
+                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_MODEL" /></label>
                     <div class="col-sm-8 col-lg-3">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" />
-                                <is:getProperty key="NEW_PAGE_NO_MODEL" />
+                                <op:translate key="NEW_PAGE_NO_MODEL" />
                             </label>
                         </div>
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
                                 <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreePageModelSelect" class="jstree-select-unique">
                                 <formatter:tree id="jstreePageModelSelect" type="model" />
@@ -140,12 +140,12 @@ var currentPageId = '${currentPageId}';
                     </div>
                     
                     <!-- Parent -->
-                    <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_PAGE_PARENT" /></label>
+                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_PARENT" /></label>
                     <div class="col-sm-8 col-lg-3">
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
                                 <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreePageParentSelect" class="jstree-select-unique">
                                 <formatter:tree id="jstreePageParentSelect" type="parentPage" />
@@ -156,8 +156,8 @@ var currentPageId = '${currentPageId}';
             
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="NEW_PAGE_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="NEW_PAGE_SUBMIT" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -172,26 +172,26 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Name -->
                 <div class="form-group">
-                    <label for="new-template-name" class="control-label required col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_NAME" /></label>
+                    <label for="new-template-name" class="control-label required col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_NAME" /></label>
                     <div class="col-sm-8 col-lg-3">
-                        <input id="new-template-name" type="text" name="name" class="form-control" placeholder='<is:getProperty key="NEW_TEMPLATE_NAME" />' required="required" />
+                        <input id="new-template-name" type="text" name="name" class="form-control" placeholder='<op:translate key="NEW_TEMPLATE_NAME" />' required="required" />
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <!-- Model -->
-                    <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_MODEL" /></label>
+                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_MODEL" /></label>
                     <div class="col-sm-8 col-lg-3">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" />
-                                <is:getProperty key="NEW_TEMPLATE_NO_MODEL" />
+                                <op:translate key="NEW_TEMPLATE_NO_MODEL" />
                             </label>
                         </div>
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
                                 <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
                                 <formatter:tree id="jstreeTemplateModelSelect" type="model" />
@@ -200,12 +200,12 @@ var currentPageId = '${currentPageId}';
                     </div>
                     
                     <!-- Parent -->
-                    <label class="control-label col-sm-4 col-lg-3"><is:getProperty key="NEW_TEMPLATE_PARENT" /></label>
+                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_PARENT" /></label>
                     <div class="col-sm-8 col-lg-3">
                         <div class="well">
                             <div class="jstree-filter input-group input-group-sm">
                                 <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                             </div>
                             <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
                                 <formatter:tree id="jstreeTemplateParentSelect" type="parentTemplate" />
@@ -216,8 +216,8 @@ var currentPageId = '${currentPageId}';
             
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="NEW_TEMPLATE_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="NEW_TEMPLATE_SUBMIT" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -232,15 +232,15 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Name -->
                 <div class="form-group">                
-                    <label for="properties-page-name" class="control-label required col-sm-4"><is:getProperty key="PAGE_NAME" /></label>
+                    <label for="properties-page-name" class="control-label required col-sm-4"><op:translate key="PAGE_NAME" /></label>
                     <div class="col-sm-8">
-                        <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" placeholder='<is:getProperty key="PAGE_NAME" />' required="required" />
+                        <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" placeholder='<op:translate key="PAGE_NAME" />' required="required" />
                     </div>
                 </div>
                 
                 <!-- Draft mode -->
                 <div class="form-group">
-                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><is:getProperty key="PAGE_DRAFT_MODE" /></label>
+                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><op:translate key="PAGE_DRAFT_MODE" /></label>
                     <div class="col-sm-8">
                         <div class="checkbox">
                             <input id="properties-page-draft-mode" type="checkbox" name="draftPage" value="1" ${draftModeChecked} ${propertiesDisabled} />
@@ -250,14 +250,14 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Layout -->
                 <div class="form-group">
-                    <label for="properties-page-layout" class="control-label col-sm-4"><is:getProperty key="PAGE_LAYOUT" /></label>
+                    <label for="properties-page-layout" class="control-label col-sm-4"><op:translate key="PAGE_LAYOUT" /></label>
                     <div class="col-sm-8">
                         <select id="properties-page-layout" name="newLayout" class="form-control" ${propertiesDisabled}>
                             <!-- Default layout -->
                             <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">
                                 <c:set var="defaultLayoutSelected" value="selected" />
                             </c:if> 
-                            <option value="" ${defaultLayoutSelected}><is:getProperty key="PAGE_DEFAULT_LAYOUT" /></option>
+                            <option value="" ${defaultLayoutSelected}><op:translate key="PAGE_DEFAULT_LAYOUT" /></option>
                         
                             <!-- Layouts list -->
                             <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
@@ -275,14 +275,14 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Theme -->
                 <div class="form-group">
-                    <label for="properties-page-theme" class="control-label col-sm-4"><is:getProperty key="PAGE_THEME" /></label>
+                    <label for="properties-page-theme" class="control-label col-sm-4"><op:translate key="PAGE_THEME" /></label>
                     <div class="col-sm-8">
                         <select id="properties-page-theme" name="newTheme" class="form-control" ${propertiesDisabled}>
                             <!-- Default theme -->
                             <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">
                                 <c:set var="defaultThemeSelected" value="selected" />
                             </c:if> 
-                            <option value="" ${defaultThemeSelected}><is:getProperty key="PAGE_DEFAULT_THEME" /></option>
+                            <option value="" ${defaultThemeSelected}><op:translate key="PAGE_DEFAULT_THEME" /></option>
                         
                             <!-- Themes list -->
                             <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
@@ -300,7 +300,7 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Category -->
                 <div class="form-group">
-                    <label for="properties-page-category" class="control-label col-sm-4"><is:getProperty key="PAGE_CATEGORY" /></label>
+                    <label for="properties-page-category" class="control-label col-sm-4"><op:translate key="PAGE_CATEGORY" /></label>
                     <div class="col-sm-8">
                         <select id="properties-page-category" name="pageCategory" class="form-control" ${propertiesDisabled}>
                             <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">                                                
@@ -314,7 +314,7 @@ var currentPageId = '${currentPageId}';
                 
                  <!-- Selectors propagation mode -->
                 <div class="form-group">
-                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><is:getProperty key="PAGE_SELECTOR_PROPAGATION" /></label>
+                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><op:translate key="PAGE_SELECTOR_PROPAGATION" /></label>
                     <div class="col-sm-8">
                         <div class="checkbox">
                             <input id="properties-page-draft-mode" type="checkbox" name="selectorsPropagation" value="1" ${selectorsPropationChecked} ${propertiesDisabled} />
@@ -325,10 +325,10 @@ var currentPageId = '${currentPageId}';
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-8">
                         <c:if test="${currentPageTemplateIndicator}">
-                            <p class="help-block"><is:getProperty key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED" /></p>
+                            <p class="help-block"><op:translate key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED" /></p>
                         </c:if>
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="CHANGE" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="CHANGE" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -343,11 +343,11 @@ var currentPageId = '${currentPageId}';
                 <input type="hidden" name="jstreePageOrder" />
                 
                 <div class="form-group">
-                    <p class="help-block"><is:getProperty key="PAGE_ORDER" /></p>
+                    <p class="help-block"><op:translate key="PAGE_ORDER" /></p>
                     <div class="well">
                         <div class="jstree-filter input-group input-group-sm">
                             <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageOrder', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageOrder', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                         </div>
                         <div id="jstreePageOrder" class="jstree-select-unique">
                             <formatter:tree id="jstreePageOrder" type="move" />
@@ -357,8 +357,8 @@ var currentPageId = '${currentPageId}';
                 
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_ORDER_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_ORDER_SUBMIT" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -375,8 +375,8 @@ var currentPageId = '${currentPageId}';
                     <table class="table table-condensed">
                         <thead>
                             <tr>
-                                <th><is:getProperty key="PAGE_ROLES" /></th>
-                                <th><is:getProperty key="PAGE_ACCESS" /></th>
+                                <th><op:translate key="PAGE_ROLES" /></th>
+                                <th><op:translate key="PAGE_ACCESS" /></th>
                             </tr>
                         </thead>
                         
@@ -402,8 +402,8 @@ var currentPageId = '${currentPageId}';
                 
                 <div class="form-group">
                     <div class="text-center">
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_RIGHTS_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_RIGHTS_SUBMIT" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -418,16 +418,16 @@ var currentPageId = '${currentPageId}';
                 
                 <!-- Path -->
                 <div class="form-group">                
-                    <label for="cms-path" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_PATH" /></label>
+                    <label for="cms-path" class="control-label col-sm-4"><op:translate key="PAGE_CMS_PATH" /></label>
                     <div class="col-sm-8">
-                        <input id="cms-path" type="text" name="cmsBasePath" value="${requestScope['osivia.toolbarSettings.cmsBasePath']}" onkeyup="toggleCMS()" class="form-control" placeholder="<is:getProperty key='PAGE_CMS_PATH' />" />
+                        <input id="cms-path" type="text" name="cmsBasePath" value="${requestScope['osivia.toolbarSettings.cmsBasePath']}" onkeyup="toggleCMS()" class="form-control" placeholder="<op:translate key='PAGE_CMS_PATH' />" />
                     </div>
                 </div>
                 
                 <fieldset id="fieldsetCMSProperties">
                     <!-- Scope -->
                     <div class="form-group">                
-                        <label for="cms-scope" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_SCOPE" /></label>
+                        <label for="cms-scope" class="control-label col-sm-4"><op:translate key="PAGE_CMS_SCOPE" /></label>
                         <div class="col-sm-8">
                             <span>${requestScope['osivia.toolbarSettings.cmsScopeSelect']}</span>
                         </div>
@@ -435,7 +435,7 @@ var currentPageId = '${currentPageId}';
                 
                     <!-- Version -->
                     <div class="form-group">                
-                        <label for="cms-version" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_VERSION" /></label>
+                        <label for="cms-version" class="control-label col-sm-4"><op:translate key="PAGE_CMS_VERSION" /></label>
                         <div class="col-sm-8">
                             <span>${requestScope['osivia.toolbarSettings.cmsDisplayLiveVersion']}</span>
                         </div>
@@ -443,7 +443,7 @@ var currentPageId = '${currentPageId}';
                     
                     <!-- Contextualization -->
                     <div class="form-group">                
-                        <label for="cms-contextualization" class="control-label col-sm-4"><is:getProperty key="PAGE_CMS_CONTEXTUALIZATION" /></label>
+                        <label for="cms-contextualization" class="control-label col-sm-4"><op:translate key="PAGE_CMS_CONTEXTUALIZATION" /></label>
                         <div class="col-sm-8">
                             <span>${requestScope['osivia.toolbarSettings.cmsRecontextualizationSupport']}</span>
                         </div>
@@ -452,8 +452,8 @@ var currentPageId = '${currentPageId}';
                 
                 <div class="form-group">
                     <div class="col-sm-offset-4 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><is:getProperty key="PAGE_CMS_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_CMS_SUBMIT" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -466,13 +466,13 @@ var currentPageId = '${currentPageId}';
                 <input type="hidden" name="action" value="deletePage" />
                 <input type="hidden" name="pageId" value="${currentPageId}" />            
                 <div class="form-group">
-                    <p><is:getProperty key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+                    <p><op:translate key="PAGE_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                     <div class="text-center">
                         <button type="submit" class="btn btn-warning">
                             <i class="halflings halflings-alert"></i>
-                            <span><is:getProperty key="YES" /></span>
+                            <span><op:translate key="YES" /></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="NO" /></button>
                     </div>
                 </div>
             </form>
@@ -484,7 +484,7 @@ var currentPageId = '${currentPageId}';
             <div class="well">
                 <div class="jstree-filter input-group input-group-sm">
                     <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                    <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePagesList', this.value)" placeholder='<is:getProperty key="JSTREE_FILTER" />' />
+                    <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePagesList', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
                 </div>
                 <div id="jstreePagesList" class="jstree-links">
                     <formatter:tree id="jstreePagesList" type="alphaOrder" />
@@ -505,7 +505,7 @@ var currentPageId = '${currentPageId}';
                 
                 <div class="form-group">
                     <div class="text-center">
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </div>
             </form>
@@ -518,13 +518,13 @@ var currentPageId = '${currentPageId}';
                 <input type="hidden" name="action" value="deleteWindow" />
                 <input type="hidden" name="windowId" />
     
-                <p><is:getProperty key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
+                <p><op:translate key="PORTLET_SUPPRESSION_CONFIRM_MESSAGE" /></p>
                 <div class="text-center">
                     <button type="submit" class="btn btn-warning"  onclick="selectWindow(this.form)">
                         <i class="halflings halflings-alert"></i>
-                        <span><is:getProperty key="YES" /></span>
+                        <span><op:translate key="YES" /></span>
                     </button>
-                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><is:getProperty key="NO" /></button>
+                    <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="NO" /></button>
                 </div>
             </form>
         </div>
@@ -541,12 +541,12 @@ var currentPageId = '${currentPageId}';
                         <fieldset>
                             <legend>
                                 <i class="glyphicons glyphicons-display"></i>
-                                <span><is:getProperty key="WINDOW_PROPERTIES_DISPLAY" /></span>
+                                <span><op:translate key="WINDOW_PROPERTIES_DISPLAY" /></span>
                             </legend>
                             
                             <!-- Title -->                        
                             <div class="form-group">
-                                <label for="${window.id}-title" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_TITLE" /></label>
+                                <label for="${window.id}-title" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_TITLE" /></label>
                                 <div class="col-sm-9">
                                     <input id="${window.id}-title" type="text" name="title" value="${window.title}" class="form-control">
                                     
@@ -556,7 +556,7 @@ var currentPageId = '${currentPageId}';
                                                 <c:if test="${window.displayTitle or window.panelCollapse}">checked="checked"</c:if>
                                                 <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_TITLE_DISPLAY" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_TITLE_DISPLAY" /></span>
                                         </label>
                                     </div>
                                     
@@ -566,7 +566,7 @@ var currentPageId = '${currentPageId}';
                                                 <c:if test="${window.displayTitleDecorators}">checked="checked"</c:if>
                                                 <c:if test="${not window.displayTitle}">disabled="disabled"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_TITLE_MORE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_TITLE_MORE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -574,7 +574,7 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Panel -->
                             <div class="form-group">
-                                <label for="${window.id}-panel" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_PANEL" /></label>
+                                <label for="${window.id}-panel" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PANEL" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <label>
@@ -582,7 +582,7 @@ var currentPageId = '${currentPageId}';
                                                 <c:if test="${window.displayPanel or window.panelCollapse}">checked="checked"</c:if>
                                                 <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_PANEL_DISPLAY" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_PANEL_DISPLAY" /></span>
                                         </label>
                                     </div>
                                     
@@ -592,7 +592,7 @@ var currentPageId = '${currentPageId}';
                                                 <c:if test="${window.panelCollapse}">checked="checked"</c:if>
                                                 <c:if test="${not (window.displayTitle and window.displayPanel)}">disabled="disabled"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_PANEL_COLLAPSE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_PANEL_COLLAPSE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -600,14 +600,14 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Ajax -->
                             <div class="form-group">
-                                <label for="${window.id}-ajax" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_AJAX" /></label>
+                                <label for="${window.id}-ajax" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_AJAX" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <label>
                                             <input id="${window.id}-ajax" type="checkbox" name="ajaxLink" value="1"
                                                 <c:if test="${window.ajax}">checked="checked"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_AJAX_ACTIVATE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_AJAX_ACTIVATE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -615,14 +615,14 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Hide empty portlet -->
                             <div class="form-group">
-                                <label for="${window.id}-hide-empty" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_HIDE_EMPTY" /></label>
+                                <label for="${window.id}-hide-empty" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <label>
                                             <input id="${window.id}-hide-empty" type="checkbox" name="hideEmptyPortlet" value="1"
                                                 <c:if test="${window.hideEmpty}">checked="checked"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_HIDE_EMPTY_ACTIVATE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY_ACTIVATE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -630,14 +630,14 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Print -->
                             <div class="form-group">
-                                <label for="${window.id}-print" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_PRINT" /></label>
+                                <label for="${window.id}-print" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PRINT" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <label>
                                             <input id="${window.id}-print" type="checkbox" name="printPortlet" value="1"
                                                 <c:if test="${window.print}">checked="checked"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_PRINT_ACTIVATE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_PRINT_ACTIVATE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -645,7 +645,7 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Styles -->
                             <div class="form-group">
-                                <label class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_STYLES" /></label>
+                                <label class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_STYLES" /></label>
                                 <div class="col-sm-9">
                                     <div class="row">
                                         <c:forEach var="style" items="${window.styles}">
@@ -667,17 +667,17 @@ var currentPageId = '${currentPageId}';
                         <fieldset>
                             <legend>
                                 <i class="halflings halflings-dashboard"></i>
-                                <span><is:getProperty key="WINDOW_PROPERTIES_ADVANCED_OPTIONS" /></span>
+                                <span><op:translate key="WINDOW_PROPERTIES_ADVANCED_OPTIONS" /></span>
                             </legend>
                             
                             <!-- Scopes -->
                             <div class="form-group">
-                                <label for="${window.id}-scopes" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
+                                <label for="${window.id}-scopes" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
                                 <div class="col-sm-9">
                                     <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
                                         <option value=""
                                             <c:if test="${empty window.selectedScope}">selected="selected"</c:if>
-                                        ><is:getProperty key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES" /></option>
+                                        ><op:translate key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES" /></option>
                                         
                                         <c:forEach var="scope" items="${window.scopes}">
                                             <option value="${scope.key}"
@@ -690,7 +690,7 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Customization identifier -->
                             <div class="form-group">
-                                <label for="${window.id}-custom-id" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_CUSTOM_ID" /></label>
+                                <label for="${window.id}-custom-id" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_CUSTOM_ID" /></label>
                                 <div class="col-sm-9">
                                     <input id="${window.id}-custom-id" type="text" name="idPerso" value="${window.customizationId}" class="form-control">
                                 </div>
@@ -698,7 +698,7 @@ var currentPageId = '${currentPageId}';
                             
                             <!-- Shared cache identifier -->
                             <div class="form-group">
-                                <label for="${window.id}-shared-cache-id" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SHARED_CACHE_ID" /></label>
+                                <label for="${window.id}-shared-cache-id" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SHARED_CACHE_ID" /></label>
                                 <div class="col-sm-9">
                                     <input id="${window.id}-shared-cache-id" type="text" name="cacheID" value="${window.sharedCacheId}" class="form-control">
                                 </div>
@@ -711,7 +711,7 @@ var currentPageId = '${currentPageId}';
                             </c:if>
                             
                             <div class="form-group">
-                                <label for="${window.id}-beanShell" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES" /></label>
+                                <label for="${window.id}-beanShell" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <p>
@@ -719,7 +719,7 @@ var currentPageId = '${currentPageId}';
                                                 <input id="${window.id}-beanShell" type="checkbox" name="bshActivation" value="1" onclick="toggleBeanShell(this)"
                                                     <c:if test="${window.beanShell}">checked="checked"</c:if>
                                                 >
-                                                <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL" /></span>
+                                                <span><op:translate key="WINDOW_PROPERTIES_BEAN_SHELL" /></span>
                                             </label>
                                         </p>
                                     </div>
@@ -736,7 +736,7 @@ var currentPageId = '${currentPageId}';
                                                 <div class="panel-title">
                                                     <a href="#${window.id}-beanShell-example" class="no-ajax-link" data-toggle="collapse">
                                                         <i class="halflings halflings-info-sign"></i>
-                                                        <span><is:getProperty key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE" /></span>
+                                                        <span><op:translate key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE" /></span>
                                                     </a>
                                                 </div>
                                             </div>
@@ -773,14 +773,14 @@ rightCellToggle.add(example);
                             
                             <!-- Selection dependency indicator -->
                             <div class="form-group">
-                                <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><is:getProperty key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
+                                <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
                                 <div class="col-sm-9">
                                     <div class="checkbox">
                                         <label>
                                             <input id="${window.id}-selection-dependency" type="checkbox" name="selectionDep" value="1"
                                                 <c:if test="${window.selectionDependency}">checked="checked"</c:if>
                                             >
-                                            <span><is:getProperty key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE" /></span>
+                                            <span><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE" /></span>
                                         </label>
                                     </div>
                                 </div>
@@ -792,10 +792,10 @@ rightCellToggle.add(example);
                             <div class="col-sm-offset-3 col-sm-9">
                                 <button type="submit" class="btn btn-primary navbar-btn">
                                     <i class="halflings halflings-floppy-disk"></i>
-                                    <span><is:getProperty key="SAVE" /></span>
+                                    <span><op:translate key="SAVE" /></span>
                                 </button>
                                 
-                                <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><is:getProperty key="CANCEL" /></button>
+                                <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                             </div>
                         </div>
                     </form>

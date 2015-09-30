@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <portlet:defineObjects />
@@ -24,7 +24,7 @@
         <a href="<portlet:actionURL>
                     <portlet:param name="action" value="deleteAll" />
                 </portlet:actionURL>">
-            <is:getProperty key="SELECTION_PORTLET_DELETE_ALL" />
+            <op:translate key="SELECTION_PORTLET_DELETE_ALL" />
         </a>
     </div>
 

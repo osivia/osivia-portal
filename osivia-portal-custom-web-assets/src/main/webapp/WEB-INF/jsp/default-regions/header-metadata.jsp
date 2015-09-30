@@ -1,10 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <meta charset="UTF-8">
-<title>${requestScope['osivia.header.title']} - <is:getProperty key="BRAND" /></title>
+<title>${requestScope['osivia.header.title']} - <op:translate key="BRAND" /></title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <c:forEach var="meta" items="${requestScope['osivia.header.metadata']}">

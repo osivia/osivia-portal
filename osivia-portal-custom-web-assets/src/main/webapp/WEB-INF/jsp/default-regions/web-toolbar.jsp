@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <c:if test="${empty requestScope['osivia.toolbar.principal']}">
@@ -50,7 +50,7 @@
                 
                 
                 <!-- Brand -->
-                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs"><is:getProperty key="BRAND" /></a>
+                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs"><op:translate key="BRAND" /></a>
             </div>
     
             <div class="collapse navbar-collapse">
@@ -61,7 +61,7 @@
                             <li>
                                 <a href="${requestScope['osivia.toolbar.loginURL']}" class="navbar-link">
                                     <i class="halflings halflings-log-in"></i>
-                                    <span><is:getProperty key="LOGIN" /></span>
+                                    <span><op:translate key="LOGIN" /></span>
                                 </a>
                             </li>
                         </ul>
@@ -85,7 +85,7 @@
                                     <li role="presentation">
                                         <a href="${requestScope['osivia.toolbar.signOutURL']}" class="navbar-link">
                                             <i class="halflings halflings-log-out"></i>
-                                            <span><is:getProperty key="LOGOUT" /></span>
+                                            <span><op:translate key="LOGOUT" /></span>
                                         </a>
                                     </li>
                                 </ul>
@@ -100,7 +100,7 @@
                     <p class="navbar-text ajax-waiter">
                         <span class="label label-info">
                             <i class="halflings halflings-refresh"></i>
-                            <span><is:getProperty key="AJAX_REFRESH" /></span>
+                            <span><op:translate key="AJAX_REFRESH" /></span>
                         </span>
                     </p>
                 </div>

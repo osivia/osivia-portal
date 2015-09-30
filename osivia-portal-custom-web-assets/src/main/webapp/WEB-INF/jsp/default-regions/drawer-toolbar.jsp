@@ -1,11 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="internationalization" prefix="is"%>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <c:set var="userPortal" value="${requestScope['osivia.userPortal']}" />
 <c:set var="userPages" value="${userPortal.userPages}" />
 
-<c:set var="searchPlaceholder"><is:getProperty key="SEARCH_PLACEHOLDER" /></c:set>
+<c:set var="searchPlaceholder"><op:translate key="SEARCH_PLACEHOLDER" /></c:set>
 
 
 <div class="visible-xs clearfix">
@@ -44,9 +44,9 @@
                         <p class="text-overflow">
                             <c:choose>
                                 <c:when test="${not empty userPortal.defaultPage}">
-                                    <a href="${userPortal.defaultPage.url}"><is:getProperty key="BRAND" /></a>
+                                    <a href="${userPortal.defaultPage.url}"><op:translate key="BRAND" /></a>
                                 </c:when>
-                                <c:otherwise><is:getProperty key="BRAND" /></c:otherwise>
+                                <c:otherwise><op:translate key="BRAND" /></c:otherwise>
                             </c:choose>
                         </p>
                     </div>
@@ -76,14 +76,14 @@
                                         <li role="presentation">
                                             <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
                                                 <i class="glyphicons glyphicons-nameplate"></i>
-                                                <span><is:getProperty key="MY_PROFILE" /></span>
+                                                <span><op:translate key="MY_PROFILE" /></span>
                                             </a>
                                         </li>
                                         
                                         <li role="presentation">
                                             <a href="${requestScope['osivia.toolbar.signOutURL']}" data-toggle="collapse" role="menuitem">
                                                 <i class="halflings halflings-log-out"></i>
-                                                <span><is:getProperty key="LOGOUT" /></span>
+                                                <span><op:translate key="LOGOUT" /></span>
                                             </a>
                                         </li>
                                     </ul>

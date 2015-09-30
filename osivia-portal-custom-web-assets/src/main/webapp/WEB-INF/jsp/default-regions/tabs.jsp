@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="internationalization" prefix="is" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
 <c:set var="userPortal" value="${requestScope['osivia.userPortal']}" />
@@ -24,7 +24,7 @@
 
 <nav class="tabs tabs-default" role="navigation">
     <!-- Title -->
-    <h2 class="hidden"><is:getProperty key="TABS_TITLE" /></h2>
+    <h2 class="hidden"><op:translate key="TABS_TITLE" /></h2>
     
     
     <!-- Home -->
@@ -62,7 +62,7 @@
                         <c:if test="${not empty userPage.closePageUrl}">
                             <a href="${userPage.closePageUrl}" class="page-close">
                                 <i class="glyphicons glyphicons-remove-2"></i>
-                                <span class="sr-only"><is:getProperty key="CLOSE" /></span>
+                                <span class="sr-only"><op:translate key="CLOSE" /></span>
                             </a>
                         </c:if>
                     </li>
