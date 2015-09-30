@@ -57,6 +57,21 @@
         <deploy.socle.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/socle</deploy.socle.dir>
         <deploy.socle-libs.dir>${osivia-portal-deploy-dir}/jbossas/server/production/lib</deploy.socle-libs.dir>
         <deploy.jbp.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/jboss-portal-ha.sar</deploy.jbp.dir>
+        
+        <!-- Sonar -->
+        <sonar.skippedModules>
+			osivia-portal-jbp-core-lib,
+        	osivia-portal-jbp-portlet-lib,
+        	osivia-portal-jbp-server-lib,
+        	osivia-portal-jbp-core-admin-lib,
+        	osivia-portal-jbp-theme-lib,
+        	osivia-portal-jbossas-jbossweb-lib,
+        	osivia-portal-jbossas-jbossweb-lib,
+        	osivia-portal-dependencies,
+        	osivia-portal-dependencies-test,
+        	osivia-portal-distribution
+        </sonar.skippedModules>
+        <!-- <sonar.sources>src/main</sonar.sources>  -->
     </properties>
 
 
