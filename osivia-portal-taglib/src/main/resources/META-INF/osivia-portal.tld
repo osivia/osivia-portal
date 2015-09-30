@@ -13,6 +13,32 @@
     <uri>http://www.osivia.org/jsp/taglib/osivia-portal</uri> 
 
 
+    <!-- Translation -->
+    <tag>
+        <description>Translate internationalization resource property.</description>
+        <display-name>Translation</display-name>
+        <name>translate</name>
+        <tag-class>org.osivia.portal.taglib.taglib.portal.TranslationTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Internationalization resource property key.</description>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        
+        <attribute>
+            <description>Internationalization resource property attributes, separated by commas.</description>
+            <name>args</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
+
+
     <!-- Escape JavaScript function -->
     <function>
         <description>Escapes the characters in a String using JavaScript String rules.</description>
