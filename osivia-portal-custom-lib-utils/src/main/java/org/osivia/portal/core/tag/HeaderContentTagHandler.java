@@ -23,7 +23,7 @@
 package org.osivia.portal.core.tag;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,7 +112,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Portlets resources
         Map<?, ?> results = page.getWindowContextMap();
-        Set<String> resources = new HashSet<String>();
+        Set<String> resources = new LinkedHashSet<String>();
         for (Object name : results.values()) {
             WindowContext wc = (WindowContext) name;
             WindowResult result = wc.getResult();
