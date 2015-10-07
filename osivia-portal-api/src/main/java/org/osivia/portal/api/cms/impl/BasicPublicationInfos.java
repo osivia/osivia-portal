@@ -88,6 +88,9 @@ public class BasicPublicationInfos implements PublicationInfos {
 	
 	/** ???? */
 	private String scope;
+	
+	/** If a document should be displayed in a specific context */
+	private String displayContext;
 
 	/**
 	 * @return the basePath
@@ -245,6 +248,20 @@ public class BasicPublicationInfos implements PublicationInfos {
 	 */
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+
+	/**
+	 * @return the displayContext
+	 */
+	public String getDisplayContext() {
+		return displayContext;
+	}
+
+	/**
+	 * @param displayContext the displayContext to set
+	 */
+	public void setDisplayContext(String displayContext) {
+		this.displayContext = displayContext;
 	}
 
 	
