@@ -1,229 +1,225 @@
-
-var callbackId = "";
-var callbackUrl = "";
-
-var callbackUrlFromEcm = "";
-var currentDocumentId = "";
-var live = "";
-var notificationKey = "";
-var ecmBaseUrl = "";
-//var liveEditLink = "";
+var callbackId = "",
+	callbackUrl = "",
+	callbackUrlFromEcm = "",
+	currentDocumentId = "",
+	live = "",
+	notificationKey = "",
+	ecmBaseUrl = "";
 
 
 /**
- * manage callback after closing fancybox
+ * Manage callback after closing fancybox.
  */
-function callback( )	{
+function callback() {
 	if (callbackId) {
-		var divElt = document.getElementById(callbackId);	
+		var divElt = document.getElementById(callbackId);
 	}
 
 	if (divElt) {
 		// reload portlet
-		updatePortletContent( divElt, callbackUrl);
-		
+		updatePortletContent(divElt, callbackUrl);
+
 	} else if (callbackUrlFromEcm) {
 		// load a new page
 		var $f = jQuery('.fancybox-iframe');
-		
+
 		if ($f && currentDocumentId) {
-			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_', currentDocumentId);
+			var redirectUrl = callbackUrlFromEcm.replace('_NEWID_',
+					currentDocumentId);
 			redirectUrl = redirectUrl.replace('_LIVE_', live);
 			redirectUrl = redirectUrl.replace('_NOTIFKEY_', notificationKey);
-//			if(liveEditLink){
-//				redirectUrl = callbackUrlFromEcm.replace('_LIVEEDIT_', liveEditLink);
-//			}
-			
+
 			if (redirectUrl) {
 				window.location.replace(redirectUrl);
 			}
 		}
-		
 	} else {
 		// reload full page
 		if (!callbackUrl) {
 			// if not specified, stay on the current page
-			callbackUrl = document.URL; 
+			callbackUrl = document.URL;
 		}
-		
+
 		window.location.replace(callbackUrl);
 	}
 }
 
 
 /**
- * Generic callback params
+ * Generic callback params.
  */
-function setCallbackParams( id, url) {
+function setCallbackParams(id, url) {
 	callbackId = id;
 	callbackUrl = url;
 }
 
+
 /**
- * Specific callback params for ECM conversation
+ * Specific callback params for ECM conversation.
  */
-function setCallbackFromEcmParams(url, ecm)	{
+function setCallbackFromEcmParams(url, ecm) {
 	callbackUrlFromEcm = url;
 	ecmBaseUrl = ecm;
-	
-	// setup a callback to handle the dispatched MessageEvent. if
-	// window.postMessage is supported the passed
-	// event will have .data, .origin and .source properties. otherwise, it will
-	// only have the .data property.
+
+	// Setup a callback to handle the dispatched MessageEvent. 
+	// If window.postMessage is supported the passed event will have .data, .origin and .source properties. otherwise, it willonly have the .data property.
 	XD.receiveMessage(function(message) {
-			receiveMessageAction(message);
-		}, ecmBaseUrl);
+		receiveMessageAction(message);
+	}, ecmBaseUrl);
 }
 
 
-function asyncUpdatePortlet(windowId, url)	{
- 	 var divElt = document.getElementById(windowId);
+function asyncUpdatePortlet(windowId, url) {
+	var divElt = document.getElementById(windowId);
 
-	 if( divElt != null) {
-		 // reload portlet
-		 updatePortletContent( divElt, url);
-	 } else {
-		 // reload full page
-		 window.location.replace(url);
-	 }
+	if (divElt != null) {
+		// reload portlet
+		updatePortletContent(divElt, url);
+	} else {
+		// reload full page
+		window.location.replace(url);
+	}
 }
 
 
+$JQry(function() {
 
-$JQry(document).ready(function() {
-	
+	// Fancyframe
 	$JQry(".fancyframe").fancybox({
- 		"type" : "iframe",
- 		"width" : 800, 
- 		"height" : 600
+		"type" : "iframe",
+		"width" : 800,
+		"height" : 600
 	});
 
+	// Fancyframe with callback
 	$JQry(".fancyframe_refresh").fancybox({
- 		"type" : "iframe",
- 		"width" : 800, 
- 		"height" : 600,
- 		"beforeClose" : function() {
-            callback();
+		"type" : "iframe",
+		"width" : 800,
+		"height" : 600,
+		"beforeClose" : function() {
+			callback();
 		},
 		helpers : {
-            title : {
-                type : "outside",
-                position : "top"
-            },
-            overlay: {
-                locked : false
-        	}
-        },
+			title : {
+				type : "outside",
+				position : "top"
+			},
+			overlay : {
+				locked : false
+			}
+		},
 		beforeShow : function() {
-        	var originalTitle = $JQry(this.element).data("original-title");
-        	if (originalTitle) {
-        		this.title = originalTitle;
-        	}
-        }
+			var originalTitle = $JQry(this.element).data("original-title");
+			if (originalTitle) {
+				this.title = originalTitle;
+			}
+		}
 	});
-	
 
+	// Fancybox inline
 	$JQry(".fancybox_inline").fancybox({
 		openEffect : 'none',
-    	closeEffect	: 'none',
-    	helpers : {
-    		title : null
-    	}
-    });
-	
-	$JQry(".fancybox_inline_title").fancybox({
-		openEffect : 'none',
-    	closeEffect	: 'none',
-    	helpers : {
-            title: {
-                type: 'outside',
-                position: 'top'
-            }
-        },
-        beforeShow : function() {
-        	var originalTitle = $JQry(this.element).data("original-title");
-        	if (originalTitle) {
-        		this.title = originalTitle;
-        	}
-        }
-    });
-	
-	$JQry(".fancybox_inline_jstree").fancybox({
-		'titlePosition'     : 'inside',
-        'transitionIn'      : 'none',
-        'transitionOut'     : 'none',
-        'beforeLoad'		: function() {
-        	jstreeOpenAll();
-        	jstreeClearSearch();
-        }
+		closeEffect : 'none',
+		helpers : {
+			title : null
+		}
 	});
 
-    $JQry(".fancybox_inline_tabs").fancybox({
-        'titlePosition' :   'outside',
-        'transitionIn'	:	'elastic',
-	    'transitionOut'	:	'elastic',
-	    'speedIn'		:	600, 
-	    'speedOut'		:	200, 
-	    'overlayShow'	:	true
-    });
+	// Fancybox inline with title
+	$JQry(".fancybox_inline_title").fancybox({
+		openEffect : 'none',
+		closeEffect : 'none',
+		helpers : {
+			title : {
+				type : 'outside',
+				position : 'top'
+			}
+		},
+		beforeShow : function() {
+			var originalTitle = $JQry(this.element).data("original-title");
+			if (originalTitle) {
+				this.title = originalTitle;
+			}
+		}
+	});
 
-    $JQry(".fancybox.thumbnail").fancybox({
-    	type: "image",
-    	openEffect: "elastic",
-    	closeEffect: "elastic",
-    	helpers: {
-    		title: {
-    			type: "inside"
-    		}
-    	},
-    	afterLoad: function() {
-    		var $element = $JQry(this.element),
-    			title = $element.data("title");
-    			
-    		if (title) {
-    			$outer = $JQry(document.createElement("div"));
-    			
-    			$inner = $JQry(document.createElement("div"));
-    			$inner.addClass("text-center");
-    			$inner.text(title);
-    			$inner.appendTo($outer);
-    			
-    			this.title = $outer.html();
-    		}
-    	}
-    });
-    
-    $JQry(".fancybox_video.thumbnail").fancybox({
-    	openEffect: "elastic",
-    	closeEffect: "elastic",
-    	
-    	aspectRatio: true,
-        scrolling: "no",
+	// Fancybox for thumbnails
+	$JQry(".fancybox.thumbnail").fancybox({
+		type : "image",
+		openEffect : "elastic",
+		closeEffect : "elastic",
+		helpers : {
+			title : {
+				type : "inside"
+			}
+		},
+		afterLoad : function() {
+			var $element = $JQry(this.element), title = $element.data("title");
 
-    	afterShow: function() {
-    		var $video = $JQry(this.href).find("video");
-    		
-    		$video[0].play();
-    	}
-    });
-    
+			if (title) {
+				$outer = $JQry(document.createElement("div"));
+
+				$inner = $JQry(document.createElement("div"));
+				$inner.addClass("text-center");
+				$inner.text(title);
+				$inner.appendTo($outer);
+
+				this.title = $outer.html();
+			}
+		}
+	});
+	
+	// Fancybox for video thumbnails
+	$JQry(".fancybox_video.thumbnail").fancybox({
+		openEffect : "elastic",
+		closeEffect : "elastic",
+
+		aspectRatio : true,
+		scrolling : "no",
+
+		afterShow : function() {
+			var $video = $JQry(this.href).find("video");
+
+			$video[0].play();
+		}
+	});
+
+	
+	// Fancybox inline form update
+	$JQry(".fancybox_inline[data-input-name][data-input-value]").click(function(event) {
+		var $this = $JQry(this),
+			name = $this.data("input-name"),
+			value = $this.data("input-value"),
+			$target = $JQry($this.attr("href")),
+			$input;
+		
+		if ($target !== undefined) {
+			$input = $target.find("input[name=" + name + "]");
+			$input.val(value);
+		}
+	});
+	
 });
 
 
+/**
+ * Close fancybox.
+ */
 function closeFancybox() {
 	parent.$JQry.fancybox.close();
 }
 
+
 /**
  * Switch actions after recieving messages from ECM
  */
-function receiveMessageAction(message) {
+function receiveMessageAction(message) {
 	console.log("Receive message : " + message.data);
-	
+
 	if (message.data == 'closeFancyBox') {
 		parent.$JQry.fancybox.close();
 	} else if (message.data.match('currentDocumentId=')) {
-		currentDocumentId = message.data.replace('currentDocumentId=','');
+		currentDocumentId = message.data.replace('currentDocumentId=', '');
 	} else if (message.data.match('live=')) {
 		if (message.data.replace('live=', '') === 'true') {
 			live = "fancyLive";
@@ -231,31 +227,6 @@ function receiveMessageAction(message) {
 			live = "fancyProxy";
 		}
 	} else if (message.data.match('notificationKey=')) {
-		notificationKey = message.data.replace('notificationKey=','');
-	} 
-//	else if(message.data.match('liveEditLink=')){
-//		liveEditLink = message.data.replace('liveEditLink=','');
-//	}
-}
-
-
-
-// Affichage d'une fancybox inline sans titre
-$JQry(document).ready(function() {
-	var fancybox_no_title = $JQry(".fancybox-no-title");
-	var fntDefined = typeof(fancybox_no_title) != 'undefined';
-	var fancybox_inline = $JQry(".fancybox_inline");
-	var fDefined = typeof(fancybox_inline) != 'undefined';
-	/* Trouver autre critère d'égalité */
-	var equals = fancybox_no_title.context == fancybox_inline.context;
-	if (fntDefined && fDefined && equals){	
-		$JQry(".fancybox_inline").fancybox({
-			helpers: { 
-		        title: null
-		    },
-            'transitionIn'      : 'none',
-            'transitionOut'     : 'none'	 		
-		});
+		notificationKey = message.data.replace('notificationKey=', '');
 	}
-});
-
+}

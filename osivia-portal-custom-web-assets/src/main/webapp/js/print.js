@@ -1,5 +1,3 @@
-var $JQry = jQuery.noConflict();
-
 
 $JQry(document).ready(function() {
 	var $content = $JQry(".print-content"),

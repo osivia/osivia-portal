@@ -18,7 +18,7 @@
         <description>Translate internationalization resource property.</description>
         <display-name>Translation</display-name>
         <name>translate</name>
-        <tag-class>org.osivia.portal.taglib.taglib.portal.TranslationTag</tag-class>
+        <tag-class>org.osivia.portal.taglib.portal.tag.TranslationTag</tag-class>
         <body-content>empty</body-content>
         
         <attribute>
@@ -44,7 +44,7 @@
         <description>Escapes the characters in a String using JavaScript String rules.</description>
         <display-name>Escape JavaScript</display-name>
         <name>escapeJavaScript</name>
-        <function-class>org.osivia.portal.taglib.functions.TagFunctions</function-class>
+        <function-class>org.osivia.portal.taglib.portal.functions.TagFunctions</function-class>
         <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
     </function>
     

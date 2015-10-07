@@ -1,18 +1,4 @@
-/*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- */
-package org.osivia.portal.core.tag;
+package org.osivia.portal.taglib.portal.tag;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -29,28 +15,28 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 
 /**
- * Internationalization service tag handler.
+ * Translation tag.
  *
  * @author Cédric Krommenhoek
  * @see SimpleTagSupport
  */
-public class InternationalizationServiceTagHandler extends SimpleTagSupport {
+public class TranslationTag extends SimpleTagSupport {
 
     /** Bundle factory attribute name. */
     private static final String BUNDLE_FACTORY_ATTRIBUTE_NAME = "osivia.internationalization.bundleFactory";
     /** Property attributes separator. */
     private static final String SEPARATOR = ",";
 
-    /** Resource property key. */
+    /** Internationalization resource property key. */
     private String key;
-    /** Resource property arguments, separated by comma. */
+    /** Internationalization resource property arguments, separated by commas. */
     private String args;
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
-    public InternationalizationServiceTagHandler() {
+    public TranslationTag() {
         super();
     }
 
@@ -90,17 +76,8 @@ public class InternationalizationServiceTagHandler extends SimpleTagSupport {
 
 
     /**
-     * Getter for key.
-     *
-     * @return the key
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
      * Setter for key.
-     *
+     * 
      * @param key the key to set
      */
     public void setKey(String key) {
@@ -108,17 +85,8 @@ public class InternationalizationServiceTagHandler extends SimpleTagSupport {
     }
 
     /**
-     * Getter for args.
-     *
-     * @return the args
-     */
-    public String getArgs() {
-        return this.args;
-    }
-
-    /**
      * Setter for args.
-     *
+     * 
      * @param args the args to set
      */
     public void setArgs(String args) {

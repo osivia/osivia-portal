@@ -116,16 +116,6 @@ public class LayoutDeployment extends Deployment {
             } finally {
                 IOTools.safeClose(source);
             }
-
-            // internationalization.tld
-            try {
-                source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
-                this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
-            } catch (IOException e) {
-                throw new DeploymentException("Cannot import internationalization.tld", e);
-            } finally {
-                IOTools.safeClose(source);
-            }
         } else {
             log.warn("Cannot access the WEB-INF folder for the deployed application: " + this.pwa.getId());
         }

@@ -30,14 +30,12 @@
         <url-pattern>/WEB-INF/servlet/view</url-pattern>
     </servlet-mapping>
     
+    
     <jsp-config>
         <taglib>
             <taglib-uri>portal-layout</taglib-uri>
             <taglib-location>theme/portal-layout.tld</taglib-location>
         </taglib>
-        <taglib>
-            <taglib-uri>internationalization</taglib-uri>
-            <taglib-location>theme/internationalization.tld</taglib-location>
-        </taglib>
     </jsp-config>
+    
 </web-app>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -69,6 +69,25 @@ public class Bundle {
      */
     public final String getString(String key, Object... args) {
         return this.internationalizationService.getString(key, this.locale, this.classLoader, args);
+    }
+
+
+    /**
+     * Getter for classLoader.
+     * 
+     * @return the classLoader
+     */
+    public ClassLoader getClassLoader() {
+        return this.classLoader;
+    }
+
+    /**
+     * Getter for locale.
+     * 
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return this.locale;
     }
 
 }

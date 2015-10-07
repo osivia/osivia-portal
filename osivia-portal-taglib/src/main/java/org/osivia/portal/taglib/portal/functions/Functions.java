@@ -1,4 +1,4 @@
-package org.osivia.portal.taglib.functions;
+package org.osivia.portal.taglib.portal.functions;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
