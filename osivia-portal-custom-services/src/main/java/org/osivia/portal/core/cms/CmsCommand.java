@@ -671,8 +671,6 @@ public class CmsCommand extends DynamicCommand {
                 if( "1".equals(this.displayLiveVersion)) {
                     cmsReadItemContext.setDisplayLiveVersion(this.displayLiveVersion);
                     
-                    // Affichage en mode preview pour les éléments d'une liste positionnée sur version live
-                    this.displayContext = InternalConstants.PROXY_PREVIEW;
                 }
                 
 
@@ -760,6 +758,23 @@ public class CmsCommand extends DynamicCommand {
                 }
 
             }
+            
+            
+            // Les liens applicativement posés en LIVE sont interprétés en mode PROXY_PREVIEW
+            // Requete vers des documents LIVE alors qu'ils sont dans un espace de publication
+            
+            if( "1".equals(this.displayLiveVersion)) {
+                if( pubInfos.getPublishSpacePath() != null && !pubInfos.isLiveSpace()){
+                    // Affichage en mode preview pour les éléments d'une liste positionnée sur version live
+                    this.displayContext = InternalConstants.PROXY_PREVIEW;
+                    cmsReadItemContext.setForcedLivePath(this.cmsPath);
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, this.cmsPath);
+                }
+            }
+
+            
+            
+            
 
 
             // Update resource
