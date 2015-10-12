@@ -475,14 +475,20 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
 
+                    
+                    
+                    String forcedLivePath = null;
+                    
 
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
                     if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
                         cmsPath = state.getDocPath();
-                        cmsReadItemContext.setDisplayLiveVersion("1");
+                        forcedLivePath = state.getDocPath();
                     }
 
+                    if( forcedLivePath != null)
+                        cmsReadItemContext.setForcedLivePath(forcedLivePath);
 
 
 
@@ -494,9 +500,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx handlerCtx = new CMSServiceCtx();
                     handlerCtx.setControllerContext(cmd.getControllerContext());
                     handlerCtx.setDoc(cmsItem.getNativeItem());
+                    
+                    
 
                     // Restore handle properties
                     CMSPlayHandlerUtils.restoreHandlerProperties(window, handlerCtx);
+                    
+                    if( forcedLivePath != null)
+                        handlerCtx.setForcedLivePath(forcedLivePath);
+                   
+                    
 
                     // Invoke handler to get player
                     Player contentProperties = getCMSService().getItemHandler(handlerCtx);
