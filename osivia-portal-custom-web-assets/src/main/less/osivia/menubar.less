@@ -58,6 +58,12 @@
         &.affix {
             top: 0;
         }
+        
+        &:not(.affix-top):not(.affix) {
+            .container, .container-fluid {
+                padding: 0;
+            }
+        }
     }
 }
 
