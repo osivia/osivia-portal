@@ -22,6 +22,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NTCredentials;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
 
 
@@ -125,7 +126,8 @@ public abstract class ProxyUtils {
 			boolean pass = false;
 			for (int i = 0; i < nonProxyHostsArray.length; i++) {
 				String a = nonProxyHostsArray[i];
-				if (targetHost.matches(a)) {
+								
+				if (StringUtils.endsWith(targetHost, a)) {
 					pass = true;
 					break;
 				}
