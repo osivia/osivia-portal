@@ -47,6 +47,12 @@ $JQry(document).ready(function() {
 		});
 	});
 	
+	
+	// Comments
+	$JQry(".comments .collapse").on("show.bs.collapse", function(event) {
+		$JQry(".comments .collapse.in").not(event.target).collapse("hide");
+	});
+	
 });
 
 

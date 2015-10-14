@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -34,6 +35,8 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.theming.Breadcrumb;
+import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -42,8 +45,6 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
-import org.osivia.portal.core.security.CmsPermissionHelper;
-import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 import org.osivia.portal.core.theming.IPageHeaderResourceService;
 import org.osivia.portal.core.web.IWebIdService;
 
@@ -170,9 +171,22 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         }
         metadata.put("generator", generator.toString());
 
-        if (document == null) {
+
+        // Maximized portlet breadcrumb item
+        BreadcrumbItem breadcrumbItem = null;
+        Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
+        if ((breadcrumb != null) && CollectionUtils.isNotEmpty(breadcrumb.getChilds())) {
+            breadcrumbItem = breadcrumb.getChilds().get(breadcrumb.getChilds().size() - 1);
+        }
+
+        if (breadcrumbItem != null) {
             // Title
-            attributes.put(Constants.ATTR_HEADER_TITLE, PortalObjectUtils.getDisplayName(page, locale));
+            String title = breadcrumbItem.getName();
+            attributes.put(Constants.ATTR_HEADER_TITLE, title);
+        } else if (document == null) {
+            // Title
+            String title = PortalObjectUtils.getDisplayName(page, locale);
+            attributes.put(Constants.ATTR_HEADER_TITLE, title);
 
             // Canonical URL
             String pagePath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
@@ -181,7 +195,8 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             Map<String, String> documentMetaProperties = document.getMetaProperties();
 
             // Title
-            attributes.put(Constants.ATTR_HEADER_TITLE, documentMetaProperties.get(Constants.HEADER_TITLE));
+            String title = documentMetaProperties.get(Constants.HEADER_TITLE);
+            attributes.put(Constants.ATTR_HEADER_TITLE, title);
 
             // Author
             metadata.put("author", documentMetaProperties.get("osivia.header.meta.author"));

@@ -16,6 +16,7 @@ package org.osivia.portal.core.dynamic;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -44,7 +45,16 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsPageState;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -60,6 +70,10 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
     /** Command info. */
     private static final CommandInfo info = new ActionCommandInfo(false);
+
+    /** CMS service locator. */
+    private static ICMSServiceLocator cmsServiceLocator;
+
 
     /** Page identifier. */
     private String pageId;
@@ -77,6 +91,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
     private String addTobreadcrumb;
     /** Edition state. */
     private EditionState editionState;
+
 
 
 
@@ -155,6 +170,13 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                 properties.put("osivia.dynamic.disable.close", "1");
             }
 
+
+            if (BooleanUtils.toBoolean(this.dynaProps.get("osivia.navigation.reset"))) {
+                // Reset CMS navigation
+                this.resetNavigation(page);
+            }
+
+
             PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState(this.getControllerContext());
 
             if (markerInfo != null) {
@@ -198,13 +220,19 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                 properties.put("osivia.dynamic.close_url", backUrl);
 
 
-                // Back button : exclude cms link and popup
-                if (!"1".equals(properties.get("osivia.dynamic.disable.close"))) {
-                    String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
-                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
+                if (BooleanUtils.toBoolean(this.dynaProps.get("osivia.back.reset"))) {
+                    // Back button reset
+                    PageCustomizerInterceptor.initPageBackInfos(this.getControllerContext());
+                } else {
+                    // Back button : exclude cms link and popup
+                    if (!"1".equals(properties.get("osivia.dynamic.disable.close"))) {
+                        String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                        this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
+                        this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
+                    }
                 }
             }
+
 
             InstanceDefinition instance = this.getControllerContext().getController().getInstanceContainer().getDefinition(this.instanceId);
             if (instance == null) {
@@ -304,6 +332,45 @@ public class StartDynamicWindowCommand extends DynamicCommand {
         } catch (Exception e) {
             throw new ControllerException(e);
         }
+    }
+
+
+    private void resetNavigation(Page page) throws CMSException, ControllerException {
+        // Base path
+        String basePath = page.getProperty("osivia.cms.basePath");
+
+        if (basePath != null) {
+            // CMS service
+            ICMSService cmsService = this.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setControllerContext(this.context);
+            // Navigation item
+            CMSItem navItem = cmsService.getPortalNavigationItem(cmsContext, basePath, basePath);
+
+            CMSPublicationInfos pubInfos = cmsService.getPublicationInfos(cmsContext, basePath);
+
+            Page parent = (Page) page.getParent();
+
+
+            CmsPageState pageState = new CmsPageState(this.getControllerContext(), parent, null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, navItem, basePath,
+                    basePath, page,
+                    null, basePath, pubInfos, true, basePath, null, false);
+            pageState.initState();
+        }
+    }
+
+
+    /**
+     * Get CMS service.
+     *
+     * @return CMS service
+     */
+    private ICMSService getCMSService() {
+        if (cmsServiceLocator == null) {
+            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        }
+        return cmsServiceLocator.getCMSService();
     }
 
 

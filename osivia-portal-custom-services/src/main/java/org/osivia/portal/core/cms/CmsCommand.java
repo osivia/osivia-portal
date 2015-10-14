@@ -17,17 +17,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
@@ -48,10 +43,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
@@ -66,25 +57,18 @@ import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
-import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
-import org.osivia.portal.core.portalobjects.CMSTemplatePage;
-import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
-import org.osivia.portal.core.portalobjects.DynamicTemplatePage;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 import org.osivia.portal.core.web.IWebIdService;
-
-import bsh.Interpreter;
 
 /**
  *
@@ -622,8 +606,6 @@ public class CmsCommand extends DynamicCommand {
 
             Page contextualizationPage = null;
 
-            CMSItem cmsNav = null;
-
             // Current items informations
             CMSServiceCtx cmsReadItemContext = null;
             CMSItem cmsItem = null;
@@ -666,13 +648,13 @@ public class CmsCommand extends DynamicCommand {
 
                 cmsReadItemContext = new CMSServiceCtx();
                 cmsReadItemContext.setControllerContext(controllerContext);
-                
-                
+
+
                 if( "1".equals(this.displayLiveVersion)) {
                     cmsReadItemContext.setDisplayLiveVersion(this.displayLiveVersion);
-                    
+
                 }
-                
+
 
                 // test si mode assistant activé
                 if (level == Level.allowPreviewVersion) {
@@ -758,13 +740,13 @@ public class CmsCommand extends DynamicCommand {
                 }
 
             }
-            
-            
+
+
             // Les liens applicativement posés en LIVE sont interprétés en mode PROXY_PREVIEW
             // Requete vers des documents LIVE alors qu'ils sont dans un espace de publication
-            
+
             if( "1".equals(this.displayLiveVersion)) {
-                if( pubInfos.getPublishSpacePath() != null && !pubInfos.isLiveSpace()){
+                if( (pubInfos.getPublishSpacePath() != null) && !pubInfos.isLiveSpace()){
                     // Affichage en mode preview pour les éléments d'une liste positionnée sur version live
                     this.displayContext = InternalConstants.PROXY_PREVIEW;
                     cmsReadItemContext.setForcedLivePath(this.cmsPath);
@@ -772,9 +754,9 @@ public class CmsCommand extends DynamicCommand {
                 }
             }
 
-            
-            
-            
+
+
+
 
 
             // Update resource
@@ -1118,418 +1100,21 @@ public class CmsCommand extends DynamicCommand {
                 basePublishPath = baseCMSPublicationPage.getDeclaredProperty("osivia.cms.basePath");
             }
 
-            /*
-             * Calcul des éléments de navigation
-             *
-             * - rubrique (cmsNav) - template de page - scope de page - scope
-             * d'item
-             *
-             * On verifie également que tout l'arbre de navigation est
-             * accessible (en terme de droit)
-             */
 
-            boolean disableCMSLocationInPage = false;
-            String ECMPageTemplate = null;
-            String ECMPageTheme = null;
-            String computedPageScope = null;
-
-            String portalSiteScope = null;
-            CMSServiceCtx cmsReadNavContext = new CMSServiceCtx();
-
-            if (baseCMSPublicationPage != null) {
-                portalSiteScope = baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
-                cmsReadNavContext.setControllerContext(controllerContext);
-                cmsReadNavContext.setScope(portalSiteScope);
-                if (level == Level.allowPreviewVersion) {
-                    cmsReadNavContext.setDisplayLiveVersion("1");
-                }
+            // Page state
+            CmsPageState pageState = new CmsPageState(controllerContext, baseCMSPublicationPage, level, this.contextualization, cmsItem, itemPublicationPath,
+                    basePublishPath, currentPage, this.pageParams, this.contentPath, pubInfos, contextualizedInCurrentPage, this.cmsPath, this.displayContext,
+                    this.skipPortletInitialisation);
+            UnavailableResourceResponse response = pageState.initState();
+            if (response != null) {
+                return response;
             }
 
-            if ((baseCMSPublicationPage != null) && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
+            Page page = pageState.getPage();
+            CMSItem cmsNav = pageState.getCmsNav();
+            PortalObjectId pageIdToDiplay = pageState.getPageIdToDiplay();
+            boolean isPageToDisplayUncontextualized = pageState.isPageToDisplayUncontextualized();
 
-                if ("1".equals(baseCMSPublicationPage.getProperty("osivia.cms.directContentPublisher"))) {
-                    /* publication directe d'un contenu sans le publishsite */
-                    cmsNav = cmsItem;
-                    // ECMPageTemplate =
-                    // cmsItem.getProperties().get("pageTemplate");
-                } else {
-
-                    boolean errorDuringCheck = false;
-
-                    String pathToCheck = itemPublicationPath;
-
-                    do {
-
-                        try {
-
-                            CMSItem cmsItemNav = getCMSService().getPortalNavigationItem(cmsReadNavContext, basePublishPath, pathToCheck);
-
-                            if (cmsItemNav == null) {
-                                // Pb de droits, on coupe la branche
-                                cmsNav = null;
-                                ECMPageTemplate = null;
-                                computedPageScope = null;
-                            }
-
-                            else {
-
-                                boolean isNavigationElement = false;
-
-                                String navigationElement = cmsItemNav.getProperties().get("navigationElement");
-
-                                if ((pathToCheck.equals(basePublishPath) || "1".equals(navigationElement))) {
-                                    isNavigationElement = true;
-                                }
-
-                                if (!isNavigationElement) {
-
-                                    cmsNav = null;
-                                    ECMPageTemplate = null;
-                                    computedPageScope = null;
-
-                                }
-
-                                if ((cmsNav == null) && isNavigationElement) {
-                                    cmsNav = cmsItemNav;
-                                }
-
-                                boolean computePageTemplate = true;
-
-
-                                // Sur les pages statiques, on ignore le template par défaut
-
-                                if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
-                                    if ("1".equals(cmsItemNav.getProperties().get("defaultTemplate"))) {
-                                        computePageTemplate = false;
-                                    }
-
-                                }
-
-                                if (ECMPageTemplate == null) {
-                                    boolean isChildPath = (itemPublicationPath.contains(pathToCheck)) && !(itemPublicationPath.equalsIgnoreCase(pathToCheck));
-                                    if (isChildPath) {
-                                        String childrenPageTemplate = cmsItemNav.getProperties().get("childrenPageTemplate");
-                                        if (StringUtils.isNotEmpty(childrenPageTemplate)) {
-                                            ECMPageTemplate = childrenPageTemplate;
-                                        }
-                                    }
-                                }
-
-                                if (computePageTemplate) {
-
-                                    if (cmsItemNav.getProperties().get("pageTemplate") != null) {
-
-                                        if (ECMPageTemplate == null) {
-                                            ECMPageTemplate = cmsItemNav.getProperties().get("pageTemplate");
-                                        }
-
-                                    }
-
-                                    if (cmsItemNav.getProperties().get("theme") != null) {
-                                        if (ECMPageTheme == null) {
-                                            ECMPageTheme = cmsItemNav.getProperties().get("theme");
-                                        }
-                                    }
-
-                                }
-
-                                if (computedPageScope == null) {
-                                    if (cmsItemNav.getProperties().get("pageScope") != null) {
-                                        computedPageScope = cmsItemNav.getProperties().get("pageScope");
-                                    }
-                                }
-
-                            }
-
-                            // One level up
-                            CMSObjectPath parentPath = CMSObjectPath.parse(pathToCheck).getParent();
-                            pathToCheck = parentPath.toString();
-
-                        } catch (CMSException e) {
-                            // Probleme d'acces aux items de navigation de
-                            // niveau supérieur
-                            // on decontextualise
-                            errorDuringCheck = true;
-
-                        }
-
-                    } while (!errorDuringCheck && pathToCheck.contains(basePublishPath));
-
-                    if (errorDuringCheck) {
-                        // pb droits sur la navigation
-                        // le contenu doit être publié dans la page mais sans
-                        // tenir compte de son path ...
-                        cmsNav = null;
-                        disableCMSLocationInPage = true;
-                        ECMPageTemplate = null;
-                    }
-                }
-            }
-
-            /* Recupération du layout */
-
-            String layoutType = null;
-            String layoutPath = null;
-
-            if ((baseCMSPublicationPage != null) && (cmsNav != null)) {
-
-                layoutType = baseCMSPublicationPage.getProperty("osivia.cms.layoutType");
-
-                String layoutRules = null;
-
-                if (layoutType == null) {
-                    // On applique la gestion des layouts pour les sous-pages
-                    // des espaces statiques
-
-                    // Page statique
-                    if (!(baseCMSPublicationPage instanceof DynamicTemplatePage)) {
-                        // En mde navigation cms, toutes les pages sont dynamiques, meme la page d'accueil statique
-                        // Sinon les Sous-pages des pages statiques sont également dynamiques
-
-                        // v2.0-rc7
-                        if (ECMPageTemplate != null) {
-                            layoutType = CmsCommand.LAYOUT_TYPE_SCRIPT;
-                            layoutRules = "return ECMPageTemplate;";
-                        }
-
-                    }
-                } else {
-                    // Gestion des layouts standards
-
-                    if (CmsCommand.LAYOUT_TYPE_SCRIPT.equals(layoutType)) {
-                        layoutRules = baseCMSPublicationPage.getProperty("osivia.cms.layoutRules");
-                    }
-                }
-
-                if (CmsCommand.LAYOUT_TYPE_SCRIPT.equals(layoutType)) {
-
-                    if (layoutRules != null) {
-
-                        // Evaluation beanshell
-                        Interpreter i = new Interpreter();
-                        i.set("doc", cmsNav.getNativeItem());
-
-                        i.set("ECMPageTemplate", ECMPageTemplate);
-
-                        layoutPath = (String) i.eval(layoutRules);
-
-                        if (layoutPath == null) {
-                            if ((baseCMSPublicationPage instanceof CMSTemplatePage)) {
-                                layoutPath = baseCMSPublicationPage.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-                            }
-                        } else {
-
-                            if (!layoutPath.startsWith("/")) {
-                                // Path Relatif
-                                layoutPath = baseCMSPublicationPage.getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + layoutPath;
-                            }
-                        }
-                    } else {
-                        layoutPath = baseCMSPublicationPage.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-                    }
-                }
-            }
-
-            /* Get real page to display */
-
-            PortalObjectId pageIdToDiplay = null;
-
-            if (baseCMSPublicationPage != null) {
-
-                if (layoutPath != null) {
-                    pageIdToDiplay = new PortalObjectId("", baseCMSPublicationPage.getId().getPath().getChild(CMSTemplatePage.PAGE_NAME));
-
-                } else {
-                    pageIdToDiplay = baseCMSPublicationPage.getId();
-
-                    // œpagePath =
-                    // basePage.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-
-                }
-
-                if (cmsNav == null) {
-                    // cmsNav = getCMSService().getContent(cmsReadNavContext,
-                    // baseCMSPublicationPath);
-                    cmsNav = getCMSService().getPortalNavigationItem(cmsReadNavContext, basePublishPath, basePublishPath);
-                }
-
-            } else {
-                pageIdToDiplay = currentPage.getId();
-            }
-
-            /*
-             *
-             * Préparation des paramètres de la page
-             */
-
-            PageNavigationalState previousPNS = null;
-
-            NavigationalStateContext nsContext = (NavigationalStateContext) this.context.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-            Map<QName, String[]> pageState = new HashMap<QName, String[]>();
-
-            if (cmsNav != null) {
-
-                /* Mise à jour paramètre public page courante */
-
-
-                previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
-
-
-                if (this.pageParams != null) {
-                    for (Map.Entry<String, String> entry : this.pageParams.entrySet()) {
-                        pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, entry.getKey()), new String[]{entry.getValue()});
-                    }
-                }
-
-                // Mise à jour du path de navigation
-
-                if (itemPublicationPath.startsWith(basePublishPath) && !disableCMSLocationInPage) {
-                    // String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
-                    String relPath = itemPublicationPath.substring(basePublishPath.length());
-                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"), new String[]{relPath});
-                }
-
-                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[]{cmsNav.getPath()});
-
-                String webId = cmsNav.getWebId();
-
-                if (webId != null) {
-                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.webid"), new String[]{cmsNav.getWebId()});
-                }
-
-
-                // Mise à jour du path de contenu
-                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"), new String[]{this.contentPath});
-
-
-                /*
-                 * Le path CMS identifie de manière unique la session
-                 * puisqu'il s'agit d'une nouvelle page
-                 */
-
-                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.uniqueID"), new String[]{"" + System.currentTimeMillis()});
-
-
-                // Parameterized template
-                Object parameterizedTemplate = this.context.getAttribute(REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
-                if (parameterizedTemplate != null) {
-                    layoutPath = "/default/templates/" + parameterizedTemplate.toString();
-                }
-
-                if (layoutPath != null) {
-                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.layout_path"), new String[]{layoutPath});
-                }
-
-                if ((layoutPath != null) && (ECMPageTheme != null)) {
-                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.theme_path"), new String[]{ECMPageTheme});
-                }
-
-                // Mise à jour du scope de la page
-                if ((computedPageScope != null) && (computedPageScope.length() > 0)) {
-                    pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.pageScope"), new String[]{computedPageScope});
-                }
-
-
-                EditionState editionState = this.getEditionState(controllerContext, pageIdToDiplay, pubInfos, contextualizedInCurrentPage);
-                ContributionService.updateNavigationalState(controllerContext, pageState, editionState);
-
-
-                nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(pageState));
-
-                /*
-                 * Layout has been computed and copied to page state It's time
-                 * to initialize dynamic page
-                 */
-
-                if (layoutPath != null) {
-                    DynamicPortalObjectContainer.clearCache();
-
-                    // TODO : remettre le cmsedition à null
-
-                    PageProperties.getProperties().getPagePropertiesMap().remove("osivia.fetchedPortalProperties");
-                }
-            }
-
-            /* Instanciation de la page */
-
-            Page page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(pageIdToDiplay);
-
-            if (page == null) {
-                page = (Page) controllerContext.getController().getPortalObjectContainer().getObject(currentPage.getId());
-            }
-
-            if (page == null) {
-                if (layoutPath != null) {
-                    logger.error("Le template " + layoutPath + " n'a pas pu être instancié");
-                }
-                return new UnavailableResourceResponse(itemPublicationPath, false);
-            }
-
-
-            /* Propagation des selecteurs */
-
-
-            if (previousPNS != null) {
-                if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
-                    String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
-
-                    if (selectors != null) {
-                        previousPNS = nsContext.getPageNavigationalState(pageIdToDiplay.toString());
-                        pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), selectors);
-                        nsContext.setPageNavigationalState(pageIdToDiplay.toString(), new PageNavigationalState(pageState));
-                    }
-                }
-            }
-
-
-            boolean isPageToDisplayUncontextualized = false;
-
-            if (cmsNav == null) {
-
-                // Pb sur la navigation, on affiche le contenu sauf si le contenu est la page
-                // auquel cas, on reste sur la page (cas d'une page mal définie pointant vers un path cms qui n'est pas un espace de publication)
-                if ((itemPublicationPath != null) && itemPublicationPath.equals(page.getProperty("osivia.cms.basePath"))) {
-                    isPageToDisplayUncontextualized = true;
-                }
-            }
-
-
-            if ((((cmsNav != null) || isPageToDisplayUncontextualized)) && !this.skipPortletInitialisation) {
-
-                /* Reinitialisation des renders parameters et de l'état */
-
-                Iterator i = page.getChildren(Page.WINDOW_MASK).iterator();
-
-                while (i.hasNext()) {
-
-                    Window window = (Window) i.next();
-
-                    NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
-
-                    WindowNavigationalState windowNavState = WindowNavigationalState.create();
-
-                    // On la force en vue NORMAL
-                    WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
-                            ParametersStateString.create());
-                    controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
-                }
-
-                // Réinitialisation des états des fenêtres
-                Collection windows = page.getChildren(PortalObject.WINDOW_MASK);
-
-                // et des anciens caches
-                // (si 2 pages P1 et P2 ont des templates différents dans une même page dynamique,
-                // les caches de P1 sont conservés quand va sur P2 et on revient sur P1
-                for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {
-                    this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, po.getId().toString());
-                    this.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "cached_markup." + po.getId().toString());
-                }
-
-                // Mode normal
-                PageCustomizerInterceptor.unsetMaxMode(windows, controllerContext);
-
-            }
 
             /**
              * Traitement RSS ( à externaliser)
@@ -1696,7 +1281,7 @@ public class CmsCommand extends DynamicCommand {
                         PortalObjectPath.CANONICAL_FORMAT));
 
 
-                EditionState editionState = this.getEditionState(controllerContext, windowID, pubInfos, contextualizedInCurrentPage);
+                EditionState editionState = pageState.getEditionState(windowID, pubInfos, contextualizedInCurrentPage);
 
                 // No automatic back, it's computed at CMS Level
                 if (contextualizationPage != null) {
@@ -1750,66 +1335,6 @@ public class CmsCommand extends DynamicCommand {
     }
 
 
-    /**
-     * compute edition state relevantly to cms command
-     *
-     * @param controllerContext
-     * @param poid
-     * @param pubInfos
-     * @return
-     */
-    private EditionState getEditionState(ControllerContext controllerContext, PortalObjectId poid, CMSPublicationInfos pubInfos,
-            boolean contextualizedInCurrentPage) {
 
-        EditionState editionState = null;
-
-
-        // Default initialization of editionState
-        if (pubInfos.isLiveSpace()) {
-            editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
-        } else {
-            if (InternalConstants.PROXY_PREVIEW.equals(this.displayContext) || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)
-                    || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)) {
-                editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, this.cmsPath);
-            } else {
-                editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, this.cmsPath);
-            }
-        }
-
-
-        // Modified indicator
-        boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext)
-                || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
-
-        if (fancyBox) {
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", true);
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", true);
-        }
-
-        // page marker initialization ( means an applicative back button)
-        if (("menu".equals(this.displayContext) || "taskbar".equals(this.displayContext) || "breadcrumb".equals(this.displayContext)
-                || "destroyedChild".equals(this.displayContext) || "tabs".equals(this.displayContext))) {
-            PageCustomizerInterceptor.initPageBackInfos(controllerContext);
-        } else {
-            // Preserve back in case of fancybox
-            if (!fancyBox && !InternalConstants.PROXY_PREVIEW.equals(this.displayContext)) {
-                // reset back in case of change of tab
-                if (!contextualizedInCurrentPage) {
-                    // Except in mobile mode
-                    PageCustomizerInterceptor.initPageBackInfos(controllerContext, false);
-                    String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
-                } else {
-                    String backPageMarker = (String) this.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
-                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
-                    this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
-
-                }
-
-            }
-        }
-
-        return editionState;
-    }
 
 }

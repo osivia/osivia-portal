@@ -28,6 +28,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
@@ -159,7 +160,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         // Current locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
         // Edition mode
-        String mode = (String) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+        String mode = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
 
         // Current page state
         PageNavigationalState pageState = stateContext.getPageNavigationalState(page.getId().toString());
@@ -172,7 +173,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         boolean publication = ((basePath != null) && StringUtils.startsWith(publicationPath, basePath));
 
         // Breadcrumb memo
-        Breadcrumb breadcrumbMemo = (Breadcrumb) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
+        Breadcrumb breadcrumbMemo = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
         if (breadcrumbMemo == null) {
             breadcrumbMemo = new Breadcrumb();
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumbMemo);
