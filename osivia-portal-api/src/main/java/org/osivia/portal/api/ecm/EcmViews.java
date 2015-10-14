@@ -61,6 +61,9 @@ public enum EcmViews {
     remotePublishing,
     
     /** Remote Publishing validation. */
-    validateRemotePublishing;
+    validateRemotePublishing,
+    
+    /** Global administration */
+    globalAdministration;
     
 }

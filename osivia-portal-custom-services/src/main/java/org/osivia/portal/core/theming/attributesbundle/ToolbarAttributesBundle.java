@@ -389,6 +389,32 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
+        
+        // ECM administration
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(context.getServerInvocation());
+        cmsCtx.setControllerContext(context);
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        
+        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        String ecmAdminUrl;
+		try {
+			ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
+			
+	        String ecmAdminTitle = bundle.getString(InternationalizationConstants.KEY_ECM_ADMINISTRATION);;
+			Element ecmAdministation = DOM4JUtils.generateLinkElement(ecmAdminUrl, HTMLConstants.TARGET_NEW_WINDOW, null, null, ecmAdminTitle , "halflings halflings-hdd", AccessibilityRoles.MENU_ITEM);
+			
+	        Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
+	        ecmAdministation.add(ecmAdministrationNewWindowGlyph);
+			
+			this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);			
+			
+		} catch (CMSException e1) {
+			// do nothing
+		}
+
+        		
+        		
 		// Divider
 		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 

@@ -1,3 +1,20 @@
+Version 4.2.0
+================
+??/11/2015
+
+Content
+------------
+[merge] from portal 4.1.0
+[merge] from portal 4.0.7
+[evol] standard view and exploration view on documents like picture books and links, user can reorder them in standard view
+[evol] file browser more ergonomic : multiselection, move and delete multiple docs
+[evol] service oriented workspaces with a taskbar optionnality defined at left of the publication menu 
+[evol] new webIDs, resolution is supporting remote publication (one or more remote publication)
+[evol] API : new plugin system for CMS customization, developers can define a project and extend lists, views, doctypes, ...
+[evol] API : taglib refactoring, developers can use them in portlets
+
+
+
 Version 4.1.0
 ================
 17/06/2015
