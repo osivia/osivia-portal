@@ -1,5 +1,9 @@
 package org.osivia.portal.core.path;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.portlet.PortletRequest;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -18,11 +22,11 @@ public class BrowserOptions {
     /** CMS base path. */
     private final String cmsBasePath;
     /** Ignored paths. */
-    private final String[] ignoredPaths;
+    private final Set<String> ignoredPaths;
     /** Live indicator. */
     private final boolean live;
-    /** Accepted type, required for move. */
-    private final String acceptedType;
+    /** Accepted types, required for move. */
+    private final Set<String> acceptedTypes;
     /** Workspaces indicator. */
     private final boolean workspaces;
     /** Link indicator. */
@@ -45,13 +49,27 @@ public class BrowserOptions {
         // Request parameters
         this.path = request.getParameter("path");
         this.cmsBasePath = request.getParameter("cmsBasePath");
-        this.ignoredPaths = StringUtils.split(request.getParameter("ignoredPaths"));
         this.live = BooleanUtils.toBoolean(request.getParameter("live"));
-        this.acceptedType = request.getParameter("acceptedType");
         this.workspaces = BooleanUtils.toBoolean(request.getParameter("workspaces"));
         this.link = BooleanUtils.toBoolean(request.getParameter("link"));
         this.displayContext = request.getParameter("displayContext");
         this.popup = BooleanUtils.toBoolean(request.getParameter("popup"));
+
+        // Ignored paths
+        String[] ignoredPaths = StringUtils.split(request.getParameter("ignoredPaths"), ",");
+        if (ignoredPaths == null) {
+            this.ignoredPaths = null;
+        } else {
+            this.ignoredPaths = new HashSet<String>(Arrays.asList(ignoredPaths));
+        }
+
+        // Accepted types
+        String[] acceptedTypes = StringUtils.split(request.getParameter("acceptedTypes"), ",");
+        if (acceptedTypes == null) {
+            this.acceptedTypes = null;
+        } else {
+            this.acceptedTypes = new HashSet<String>(Arrays.asList(acceptedTypes));
+        }
     }
 
 
@@ -75,10 +93,10 @@ public class BrowserOptions {
 
     /**
      * Getter for ignoredPaths.
-     * 
+     *
      * @return the ignoredPaths
      */
-    public String[] getIgnoredPaths() {
+    public Set<String> getIgnoredPaths() {
         return this.ignoredPaths;
     }
 
@@ -92,12 +110,12 @@ public class BrowserOptions {
     }
 
     /**
-     * Getter for acceptedType.
+     * Getter for acceptedTypes.
      *
-     * @return the acceptedType
+     * @return the acceptedTypes
      */
-    public String getAcceptedType() {
-        return this.acceptedType;
+    public Set<String> getAcceptedTypes() {
+        return this.acceptedTypes;
     }
 
     /**

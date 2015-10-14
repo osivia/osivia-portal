@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -255,13 +257,14 @@ public class BrowserService implements IBrowserService {
             for (CMSItem cmsSubItem : cmsSubItems) {
                 // Accepted child
                 boolean acceptedChild;
-                if (options.getAcceptedType() == null) {
+                if (options.getAcceptedTypes() == null) {
                     acceptedChild = true;
                 } else if (cmsSubItem.getType() == null) {
                     acceptedChild = false;
                 } else {
                     DocumentType type = cmsSubItem.getType();
-                    acceptedChild = (type.isFolderish() || cmsSubItem.getType().getPortalFormSubTypes().contains(options.getAcceptedType()));
+                    boolean containsAny = CollectionUtils.containsAny(cmsSubItem.getType().getPortalFormSubTypes(), options.getAcceptedTypes());
+                    acceptedChild = (type.isFolderish() || containsAny);
                 }
 
                 if (acceptedChild) {
@@ -342,11 +345,13 @@ public class BrowserService implements IBrowserService {
         if (type != null) {
             browsable = type.isBrowsable();
             glyph = type.getGlyph();
-            acceptable = (options.getAcceptedType() == null) || type.getPortalFormSubTypes().contains(options.getAcceptedType());
+            if (options.getAcceptedTypes() != null) {
+                acceptable = CollectionUtils.isSubCollection(options.getAcceptedTypes(), type.getPortalFormSubTypes());
+            }
         }
         if (acceptable && (options.getIgnoredPaths() != null)) {
             String currentPath = cmsItem.getPath();
-            String[] ignoredPaths = options.getIgnoredPaths();
+            Set<String> ignoredPaths = options.getIgnoredPaths();
             for (String ignoredPath : ignoredPaths) {
                 String ignoredParentPath = CMSObjectPath.parse(ignoredPath).getParent().toString();
 
