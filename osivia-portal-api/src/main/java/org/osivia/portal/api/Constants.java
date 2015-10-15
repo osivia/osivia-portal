@@ -160,7 +160,7 @@ public final class Constants {
     /** Space configuration request. */
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     /** Redirection URL  */
-    public static final String PORTLET_ATTR_REDIRECTION_URL =  "osivia.redirection.url";    
+    public static final String PORTLET_ATTR_REDIRECTION_URL =  "osivia.redirection.url";
     /** Edition path  */
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
 
@@ -174,11 +174,11 @@ public final class Constants {
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
     /** To refresh all Contents (portlets + CMS). */
     public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
-    /** To close popup. */   
+    /** To close popup. */
     public static final String PORTLET_ATTR_POPUP_CLOSE = "osivia.closePopup";
-    /** To set breadcrumb portlet path. */   
+    /** To set breadcrumb portlet path. */
     public static final String PORTLET_ATTR_PORTLET_PATH = "osivia.portletPath";
-  
+
     public static final String PORTLET_VALUE_ACTIVATE = "true";
 
 
@@ -190,7 +190,14 @@ public final class Constants {
     public static final String WINDOW_PROP_VERSION = "osivia.cms.displayLiveVersion";
     /** The scope of the request. */
     public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
+    /** Maximized CMS URL window property name. */
+    public static final String WINDOW_PROP_MAXIMIZED_CMS_URL = "osivia.maximized.cms.url";
 
+
+    // REQUEST
+
+    /** Portlet CMS URI request attribute name. */
+    public static final String REQUEST_ATTR_URI = WINDOW_PROP_URI;
 
 
     /**

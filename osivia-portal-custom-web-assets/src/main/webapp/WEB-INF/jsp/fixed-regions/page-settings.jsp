@@ -72,21 +72,28 @@ var currentPageId = '${currentPageId}';
     
     // Window properties : mobile collapse check event
     $JQry(document).ready(function() {
-    	$JQry("input[name=displayTitle], input[name=bootstrapPanelStyle], input[name=mobileCollapse]").change(function() {
-            var $form = $JQry(this).parents("form");
-            var $displayTitle = $form.find("input[name=displayTitle]");
-            var displayTitle = $displayTitle.is(":checked");
-            var $displayTitleDecorators = $form.find("input[name=displayDecorators]");
-            var $displayPanel = $form.find("input[name=bootstrapPanelStyle]");
-            var displayPanel = $displayPanel.is(":checked");
-            var $panelCollapse = $form.find("input[name=mobileCollapse]");
-            var panelCollapse = $panelCollapse.is(":checked");
+    	$JQry("input[name=displayTitle], input[name=displayDecorators], input[name=bootstrapPanelStyle], input[name=mobileCollapse]").change(function() {
+            var $form = $JQry(this).parents("form"),
+                $displayTitle = $form.find("input[name=displayTitle]"),
+                displayTitle = $displayTitle.is(":checked"),
+                $displayTitleDecorators = $form.find("input[name=displayDecorators]"),
+                displayTitleDecorators = $displayTitleDecorators.is(":checked"),
+                $maximizedToCms = $form.find("input[name=maximizedToCms]"),
+                $displayPanel = $form.find("input[name=bootstrapPanelStyle]"),
+                displayPanel = $displayPanel.is(":checked"),
+                $panelCollapse = $form.find("input[name=mobileCollapse]"),
+                panelCollapse = $panelCollapse.is(":checked");
             
             // Title decorators
             if (!displayTitle) {
             	$displayTitleDecorators.prop("checked", false);
+            	$maximizedToCms.prop("checked", false);
+            }
+            if (!displayTitleDecorators) {
+            	$maximizedToCms.prop("checked", false);
             }
             $displayTitleDecorators.prop("disabled", !displayTitle);
+            $maximizedToCms.prop("disabled", !(displayTitle && displayTitleDecorators));
             
             // Panel collapse
             if (panelCollapse) {
@@ -552,7 +559,7 @@ var currentPageId = '${currentPageId}';
                                     
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" name="displayTitle" value="1" ${displayTitleChecked}
+                                            <input type="checkbox" name="displayTitle" value="1"
                                                 <c:if test="${window.displayTitle or window.panelCollapse}">checked="checked"</c:if>
                                                 <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
                                             >
@@ -562,12 +569,23 @@ var currentPageId = '${currentPageId}';
                                     
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" name="displayDecorators" value="1" ${displayDecoratorsChecked}
+                                            <input type="checkbox" name="displayDecorators" value="1"
                                                 <c:if test="${window.displayTitleDecorators}">checked="checked"</c:if>
                                                 <c:if test="${not window.displayTitle}">disabled="disabled"</c:if>
                                             >
                                             <span><op:translate key="WINDOW_PROPERTIES_TITLE_MORE" /></span>
                                         </label>
+                                    </div>
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="maximizedToCms"
+                                                <c:if test="${window.maximizedToCms}">checked="checked"</c:if>
+                                                <c:if test="${not window.displayTitleDecorators}">disabled="disabled"</c:if>
+                                            >
+                                            <span><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS" /></span>
+                                        </label>
+                                        <div class="help-block"><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS_HELP" /></div>
                                     </div>
                                 </div>
                             </div>

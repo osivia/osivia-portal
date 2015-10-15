@@ -475,10 +475,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
                     cmsReadItemContext.setControllerContext(cmd.getControllerContext());
 
-                    
-                    
+
+
                     String forcedLivePath = null;
-                    
+
 
                     // Force live version in EDITION mode
                     EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
@@ -487,8 +487,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         forcedLivePath = state.getDocPath();
                     }
 
-                    if( forcedLivePath != null)
+                    if( forcedLivePath != null) {
                         cmsReadItemContext.setForcedLivePath(forcedLivePath);
+                    }
 
 
 
@@ -500,16 +501,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx handlerCtx = new CMSServiceCtx();
                     handlerCtx.setControllerContext(cmd.getControllerContext());
                     handlerCtx.setDoc(cmsItem.getNativeItem());
-                    
-                    
+
+
 
                     // Restore handle properties
                     CMSPlayHandlerUtils.restoreHandlerProperties(window, handlerCtx);
-                    
-                    if( forcedLivePath != null)
+
+                    if( forcedLivePath != null) {
                         handlerCtx.setForcedLivePath(forcedLivePath);
-                   
-                    
+                    }
+
+
 
                     // Invoke handler to get player
                     Player contentProperties = getCMSService().getItemHandler(handlerCtx);
@@ -1355,20 +1357,32 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             properties.setWindowProperty(windowId, "osivia.displayDecorators", "1".equals(window.getDeclaredProperty("osivia.hideDecorators")) ? null
                     : "1");
 
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
 
             if (((RenderWindowCommand) cmd).getTarget() instanceof DynamicWindow) {
-
                 DynamicWindow dynaWIndow = (DynamicWindow) ((RenderWindowCommand) cmd).getTarget();
                 if (dynaWIndow.isSessionWindow()) {
                     if (!"1".equals(window.getDeclaredProperty("osivia.dynamic.unclosable"))) {
-                        properties.setWindowProperty(
-                                windowId,
-                                "osivia.closeUrl",
-                                this.urlFactory.getStopPortletUrl(new PortalControllerContext(controllerCtx),
-                                        window.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
+                        properties.setWindowProperty(windowId, "osivia.closeUrl", this.urlFactory.getStopPortletUrl(portalControllerContext, window.getParent()
+                                .getId().toString(PortalObjectPath.SAFEST_FORMAT), windowId));
                     }
                 }
+            }
 
+
+            // CMS path
+            if (BooleanUtils.toBoolean(window.getDeclaredProperty(Constants.WINDOW_PROP_MAXIMIZED_CMS_URL))) {
+                StringBuilder builder = new StringBuilder();
+                builder.append(Constants.REQUEST_ATTR_URI);
+                builder.append(".");
+                builder.append(windowId);
+
+                String cmsPath = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, builder.toString());
+                if (cmsPath != null) {
+                    String cmsUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, cmsPath, null, null, null, null, null, null, null);
+                    properties.setWindowProperty(windowId, Constants.WINDOW_PROP_MAXIMIZED_CMS_URL, cmsUrl);
+                }
             }
 
 

@@ -585,9 +585,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             String title = StringUtils.trimToEmpty(window.getDeclaredProperty("osivia.title"));
             boolean displayTitle = !StringUtils.equals("1", window.getDeclaredProperty("osivia.hideTitle"));
             boolean displayTitleDecorators = !"1".equals(window.getDeclaredProperty("osivia.hideDecorators"));
+            boolean maximizedToCms = BooleanUtils.toBoolean(window.getDeclaredProperty(Constants.WINDOW_PROP_MAXIMIZED_CMS_URL));
             settings.setTitle(title);
             settings.setDisplayTitle(displayTitle);
             settings.setDisplayTitleDecorators(displayTitleDecorators);
+            settings.setMaximizedToCms(maximizedToCms);
 
             // Panel
             boolean displayPanel = BooleanUtils.toBoolean(window.getDeclaredProperty("osivia.bootstrapPanelStyle"));

@@ -40,6 +40,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.renderer.ActionRendererContext;
 import org.jboss.portal.theme.render.renderer.DecorationRenderer;
 import org.jboss.portal.theme.render.renderer.DecorationRendererContext;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -113,7 +114,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         // Maximized URL
         String maximizedURL = null;
         if (displayDecorators) {
-            maximizedURL = this.getMaximizedURL(drc);
+            maximizedURL = this.getMaximizedURL(properties, drc);
         }
 
 
@@ -174,23 +175,29 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
     /**
      * Get maximized URL.
      *
+     * @param properties page properties
      * @param decorationRendererContext decoration renderer context
      * @return maximized URL, or null if current window can't be maximized
      */
-    private String getMaximizedURL(DecorationRendererContext decorationRendererContext) {
+    private String getMaximizedURL(PageProperties properties, DecorationRendererContext decorationRendererContext) {
         // Maximized URL
         String url = null;
 
-        Collection<?> windowStates = decorationRendererContext.getTriggerableActions(ActionRendererContext.WINDOWSTATES_KEY);
-        if (CollectionUtils.isNotEmpty(windowStates)) {
-            for (Object windowState : windowStates) {
-                ActionRendererContext action = (ActionRendererContext) windowState;
-                String actionName = action.getName();
-                if ("maximized".equals(actionName)) {
-                    if (action.isEnabled()) {
-                        url = action.getURL();
+        // Maximized CMS URL window property
+        url = properties.getWindowProperty(properties.getCurrentWindowId(), Constants.WINDOW_PROP_MAXIMIZED_CMS_URL);
+
+        if (url == null) {
+            Collection<?> windowStates = decorationRendererContext.getTriggerableActions(ActionRendererContext.WINDOWSTATES_KEY);
+            if (CollectionUtils.isNotEmpty(windowStates)) {
+                for (Object windowState : windowStates) {
+                    ActionRendererContext action = (ActionRendererContext) windowState;
+                    String actionName = action.getName();
+                    if ("maximized".equals(actionName)) {
+                        if (action.isEnabled()) {
+                            url = action.getURL();
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

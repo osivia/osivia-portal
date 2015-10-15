@@ -147,6 +147,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             displayDecorators = "0";
                         }
 
+                        // Maximized to CMS indicator
+                        boolean maximizedToCms = BooleanUtils.toBoolean(parameterMap.getValue("maximizedToCms"));
+
                         if (parameterMap.get("bootstrapPanelStyle") != null) {
                             bootstrapPanelStyle = URLDecoder.decode(parameterMap.get("bootstrapPanelStyle")[0], CharEncoding.UTF_8);
                         }
@@ -204,8 +207,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectionDep = "";
                         }
 
-                        return new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title, displayDecorators, bootstrapPanelStyle,
-                                idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID, selectionDep);
+                        return new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title, displayDecorators, maximizedToCms,
+                                bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID,
+                                selectionDep);
                     }
                 }
 
@@ -283,9 +287,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
-                        
+
                         RefreshPageCommand refreshPageCommand = new RefreshPageCommand(pageId);
-                        
+
                         if (parameterMap.get("ecmActionReturn") != null) {
                         	String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
                         	refreshPageCommand.setEcmActionReturn(ecmActionReturn);
@@ -294,7 +298,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         	String newDocId = URLDecoder.decode(parameterMap.get("newDocId")[0], "UTF-8");
                         	refreshPageCommand.setNewDocId(newDocId);
                         }
-                        
+
                         return refreshPageCommand;
                     }
                 }
@@ -450,7 +454,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                                 WindowPropertiesEncoder.decodeProperties(params), addToBreadcrumb, null);
                     }
                 }
-                
+
                 if ("startDynamicWindowInNewPage".equals(action)) {
 
                     String parentId = null;
@@ -476,7 +480,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                                 WindowPropertiesEncoder.decodeProperties(params));
                     }
                 }
-                
+
 
                 if ("destroyDynamicWindow".equals(action)) {
 
@@ -718,7 +722,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         actionCms = URLDecoder.decode(parameterMap.get("actionCms")[0], "UTF-8");
                         if( parameterMap.get("backCMSPageMarker") != null) {
                             backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
-                        }                        
+                        }
 
                         return new PublishContributionCommand(windowId, docPath, actionCms, backCMSPageMarker);
                     }
@@ -732,7 +736,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 //                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
 //                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
 //                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
-//                        
+//
 //                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
 //                        return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
 //                    }
@@ -746,12 +750,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 //                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
 //                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
 //                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
-//                        
+//
 //                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
 //                        return new SubscriptionCommand(cmsPath, ecmCOmmand);
 //                    }
 //				}
-				
+
 				if (EcmCommandDelegate.class.getSimpleName().equals(action)) {
 
                     String cmsPath = null;
@@ -760,15 +764,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
                         cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
                         command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
-                        
+
                 		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
                 		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
-                		
+
                 		return new EcmCommandDelegate(initialCommand, cmsPath);
-                        
+
                     }
 				}
-				
+
 
                 // Toggle advanced CMS tools command
                 if (ToggleAdvancedCMSToolsCommand.ACTION.equals(action)) {

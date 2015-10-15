@@ -16,6 +16,8 @@ public class WindowSettings {
     private boolean displayTitle;
     /** Display window title decorators indicator. */
     private boolean displayTitleDecorators;
+    /** Maximized to CMS indicator. */
+    private boolean maximizedToCms;
 
     /** Display panel indicator. */
     private boolean displayPanel;
@@ -123,6 +125,24 @@ public class WindowSettings {
      */
     public void setDisplayTitleDecorators(boolean displayTitleDecorators) {
         this.displayTitleDecorators = displayTitleDecorators;
+    }
+
+    /**
+     * Getter for maximizedToCms.
+     * 
+     * @return the maximizedToCms
+     */
+    public boolean isMaximizedToCms() {
+        return this.maximizedToCms;
+    }
+
+    /**
+     * Setter for maximizedToCms.
+     * 
+     * @param maximizedToCms the maximizedToCms to set
+     */
+    public void setMaximizedToCms(boolean maximizedToCms) {
+        this.maximizedToCms = maximizedToCms;
     }
 
     /**

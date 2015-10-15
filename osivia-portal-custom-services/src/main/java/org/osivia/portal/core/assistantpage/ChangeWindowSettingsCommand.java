@@ -24,6 +24,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.Constants;
 
 /**
  * Change window settings command.
@@ -46,6 +47,8 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
     private final String title;
     /** Hide decorators indicator. */
     private final boolean hideDecorators;
+    /** Maximized to CMS indicator. */
+    private final boolean maximizedToCms;
 	/** Bootstrap panel style indicator. */
     private final boolean bootstrapPanelStyle;
 
@@ -69,6 +72,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      * @param displayTitle display title indicator
      * @param title title value
      * @param displayDecorators display decorators indicator
+     * @param maximizedToCms maximized to CMS indicator
      * @param bootstrapPanelStyle Bootstrap panel style indicator
      * @param idPerso
      * @param ajaxLink
@@ -81,8 +85,8 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      * @param selectionDep
      */
     public ChangeWindowSettingsCommand(String windowId, List<String> style, String mobileCollapse, String displayTitle, String title, String displayDecorators,
-            String bootstrapPanelStyle, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet, String conditionalScope,
-            String bshActivation, String bshScript, String cacheID, String selectionDep) {
+            boolean maximizedToCms, String bootstrapPanelStyle, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet,
+            String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep) {
         this.windowId = windowId;
         this.style = style;
 
@@ -90,6 +94,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         this.hideTitle = "0".equals(displayTitle);
         this.title = title;
         this.hideDecorators = "0".equals(displayDecorators);
+        this.maximizedToCms = maximizedToCms;
         this.bootstrapPanelStyle = BooleanUtils.toBoolean(bootstrapPanelStyle);
 
         this.idPerso = idPerso;
@@ -103,7 +108,12 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         this.selectionDep = selectionDep;
     }
 
-	public ControllerResponse executeAssistantCommand() throws Exception {
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+    public ControllerResponse executeAssistantCommand() throws Exception {
 		// Récupération window
 		PortalObjectId poid = PortalObjectId.parse(this.windowId, PortalObjectPath.SAFEST_FORMAT);
 		PortalObject window = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
@@ -147,6 +157,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 
         // Display decorators indicator
         window.setDeclaredProperty("osivia.hideDecorators", BooleanUtils.toString(this.hideDecorators, "1", null));
+
+        // Maximized to CMS indicator
+        window.setDeclaredProperty(Constants.WINDOW_PROP_MAXIMIZED_CMS_URL, String.valueOf(this.maximizedToCms));
 
 
 		if( "1".equals(this.ajaxLink)) {

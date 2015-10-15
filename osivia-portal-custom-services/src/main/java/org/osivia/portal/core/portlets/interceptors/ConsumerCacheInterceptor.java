@@ -116,6 +116,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
     }
 
 
+    @Override
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         // Compute the cache key
         String scopeKey = "cached_markup." + invocation.getWindowContext().getId();
@@ -433,7 +434,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                         filterAttributes.put(Constants.PORTLET_ATTR_MENU_BAR, orig.getAttributes().get(Constants.PORTLET_ATTR_MENU_BAR));
                         filterAttributes.put("osivia.portletPath", orig.getAttributes().get("osivia.portletPath"));
                         filterAttributes.put("osivia.popupCallbackUrl", orig.getAttributes().get("osivia.popupCallbackUrl"));
-
+                        filterAttributes.put(Constants.REQUEST_ATTR_URI, orig.getAttributes().get(Constants.REQUEST_ATTR_URI));
 
                         cacheFragment = new FragmentResponse(orig.getProperties(), filterAttributes, orig.getContentType(), orig.getBytes(), orig.getChars(),
                                 orig.getTitle(), orig.getCacheControl(), orig.getNextModes());

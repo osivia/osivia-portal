@@ -84,13 +84,29 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
                     }
                 }
 
-                // Empty portlet
+                // Popup callback URL
                 if (cr.getAttributes().get("osivia.popupCallbackUrl") != null) {
                     if (invocation.getWindowContext() instanceof WindowContextImpl) {
                         String windowId = invocation.getWindowContext().getId();
                         windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
                         ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl" + windowId,
                                 cr.getAttributes().get("osivia.popupCallbackUrl"));
+                    }
+                }
+
+                // CMS path
+                Object cmsPath = cr.getAttributes().get(Constants.REQUEST_ATTR_URI);
+                if (cmsPath != null) {
+                    if (invocation.getWindowContext() instanceof WindowContextImpl) {
+                        String windowId = invocation.getWindowContext().getId();
+                        windowId = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+
+                        StringBuilder builder = new StringBuilder();
+                        builder.append(Constants.REQUEST_ATTR_URI);
+                        builder.append(".");
+                        builder.append(windowId);
+
+                        ctx.setAttribute(ControllerCommand.REQUEST_SCOPE, builder.toString(), cmsPath);
                     }
                 }
 
@@ -130,7 +146,7 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
                         }
                     }
                 }
-                
+
                 /* breadcrumb path set by portlet */
 
                  if (invocation.getWindowContext() instanceof WindowContextImpl) {
@@ -145,8 +161,9 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
                                     Constants.PORTLET_ATTR_PORTLET_PATH + windowId);
 
                             int oldSize = 0;
-                            if (oldPortletPath != null)
+                            if (oldPortletPath != null) {
                                 oldSize = oldPortletPath.size();
+                            }
 
                             // Deeper link : generate BACK
 
@@ -211,8 +228,8 @@ public class PortletAttributesController extends PortletInvokerInterceptor {
             }
             // End of dynamic properties
         }
-        
-        
+
+
 
         return response;
     }
