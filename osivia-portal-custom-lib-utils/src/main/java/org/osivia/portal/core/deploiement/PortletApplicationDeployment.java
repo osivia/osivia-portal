@@ -88,7 +88,11 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
 
         InputStream source = null;
         try {
-            // Spring
+            // internationalization.tld
+            source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/internationalization.tld"));
+            this.pwa.importFile("/WEB-INF/theme", "internationalization.tld", source, false);
+
+            // spring
             source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/spring.tld"));
             this.pwa.importFile("/WEB-INF/theme", "spring.tld", source, false);
             source = IOTools.safeBufferedWrapper(Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/theme/spring-form.tld"));
