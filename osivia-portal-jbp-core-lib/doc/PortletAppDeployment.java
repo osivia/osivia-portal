@@ -16,6 +16,7 @@ import org.jboss.portal.core.metadata.ServiceMetaData;
 import org.jboss.portal.core.metadata.portlet.JBossApplicationMetaData;
 import org.jboss.portal.core.model.instance.DuplicateInstanceException;
 import org.jboss.portal.core.model.instance.Instance;
+import org.jboss.portal.core.model.instance.NoSuchInstanceException;
 import org.jboss.portal.core.model.instance.metadata.InstanceMetaData;
 import org.jboss.portal.portlet.InvalidPortletIdException;
 import org.jboss.portal.portlet.NoSuchPortletException;
@@ -377,7 +378,20 @@ public class PortletAppDeployment extends org.jboss.portal.portlet.deployment.jb
       else if (metaDataCtx.ifExists == OVERWRITE_IF_EXISTS)
       {
          log.debug("Reconfiguring instance " + metaData.getId() + " that already exists");
-         configureInstance(instance, metaData);
+         try    {
+         
+             configureInstance(instance, metaData);
+         }   catch (NoSuchPortletException e)   {
+             // Context may have changed so portlet is not yet accessible
+             // Delete and then Create the instance
+             try {
+                factory.getInstanceContainer().destroyDefinition(metaData.getId());
+             }
+               catch (NoSuchInstanceException e1) {
+               log.error(" Can't redeploy. Portlet has changed context");
+            }             
+             createInstance(metaData);
+         }
       }
       else
       {
