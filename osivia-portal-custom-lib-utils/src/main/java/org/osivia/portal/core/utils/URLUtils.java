@@ -75,7 +75,11 @@ public final class URLUtils {
             int port = request.getServerPort();
 
             try {
-                URL url = new URL(scheme, host, port, path);
+                URL url;
+                if( port != 80)
+                    url = new URL(scheme, host, port, path);
+                else
+                    url = new URL(scheme, host,  path);                    
                 buffer.append(url);
             } catch (MalformedURLException e1) {
                 return null;
