@@ -111,9 +111,9 @@ public class InitPageInterceptor extends ControllerInterceptor {
             } else if (page.equals(portal.getDefaultPage()) && "1".equals(pageMarker)) {
                 // Disconnection : default page and page marker = 1
             	// Avoid loop on /pagemarker/1/cms/...
-            	if( !portalRequestPath.startsWith("/pagemarker/1"))	{
-            		defaultPage = true;
-            	}
+                if (!(portalRequestPath.startsWith("/pagemarker/1") || portalRequestPath.startsWith("/web/"))) {
+                    defaultPage = true;
+                }
             }
 
             // State initialization indicator
