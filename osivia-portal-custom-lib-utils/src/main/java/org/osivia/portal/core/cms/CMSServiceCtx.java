@@ -57,6 +57,135 @@ public class CMSServiceCtx {
     private String parentPath;
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((this.cmsReferrerNavigationPath == null) ? 0 : this.cmsReferrerNavigationPath.hashCode());
+        result = (prime * result) + ((this.contextualizationBasePath == null) ? 0 : this.contextualizationBasePath.hashCode());
+        result = (prime * result) + ((this.creationPath == null) ? 0 : this.creationPath.hashCode());
+        result = (prime * result) + ((this.creationType == null) ? 0 : this.creationType.hashCode());
+        result = (prime * result) + ((this.displayContext == null) ? 0 : this.displayContext.hashCode());
+        result = (prime * result) + ((this.displayLiveVersion == null) ? 0 : this.displayLiveVersion.hashCode());
+        result = (prime * result) + ((this.forcePublicationInfosScope == null) ? 0 : this.forcePublicationInfosScope.hashCode());
+        result = (prime * result) + ((this.forcedLivePath == null) ? 0 : this.forcedLivePath.hashCode());
+        result = (prime * result) + ((this.hideMetaDatas == null) ? 0 : this.hideMetaDatas.hashCode());
+        result = (prime * result) + (this.isAsyncCacheRefreshing ? 1231 : 1237);
+        result = (prime * result) + ((this.parentId == null) ? 0 : this.parentId.hashCode());
+        result = (prime * result) + ((this.parentPath == null) ? 0 : this.parentPath.hashCode());
+        result = (prime * result) + ((this.scope == null) ? 0 : this.scope.hashCode());
+        return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        CMSServiceCtx other = (CMSServiceCtx) obj;
+        if (this.cmsReferrerNavigationPath == null) {
+            if (other.cmsReferrerNavigationPath != null) {
+                return false;
+            }
+        } else if (!this.cmsReferrerNavigationPath.equals(other.cmsReferrerNavigationPath)) {
+            return false;
+        }
+        if (this.contextualizationBasePath == null) {
+            if (other.contextualizationBasePath != null) {
+                return false;
+            }
+        } else if (!this.contextualizationBasePath.equals(other.contextualizationBasePath)) {
+            return false;
+        }
+        if (this.creationPath == null) {
+            if (other.creationPath != null) {
+                return false;
+            }
+        } else if (!this.creationPath.equals(other.creationPath)) {
+            return false;
+        }
+        if (this.creationType == null) {
+            if (other.creationType != null) {
+                return false;
+            }
+        } else if (!this.creationType.equals(other.creationType)) {
+            return false;
+        }
+        if (this.displayContext == null) {
+            if (other.displayContext != null) {
+                return false;
+            }
+        } else if (!this.displayContext.equals(other.displayContext)) {
+            return false;
+        }
+        if (this.displayLiveVersion == null) {
+            if (other.displayLiveVersion != null) {
+                return false;
+            }
+        } else if (!this.displayLiveVersion.equals(other.displayLiveVersion)) {
+            return false;
+        }
+        if (this.forcePublicationInfosScope == null) {
+            if (other.forcePublicationInfosScope != null) {
+                return false;
+            }
+        } else if (!this.forcePublicationInfosScope.equals(other.forcePublicationInfosScope)) {
+            return false;
+        }
+        if (this.forcedLivePath == null) {
+            if (other.forcedLivePath != null) {
+                return false;
+            }
+        } else if (!this.forcedLivePath.equals(other.forcedLivePath)) {
+            return false;
+        }
+        if (this.hideMetaDatas == null) {
+            if (other.hideMetaDatas != null) {
+                return false;
+            }
+        } else if (!this.hideMetaDatas.equals(other.hideMetaDatas)) {
+            return false;
+        }
+        if (this.isAsyncCacheRefreshing != other.isAsyncCacheRefreshing) {
+            return false;
+        }
+        if (this.parentId == null) {
+            if (other.parentId != null) {
+                return false;
+            }
+        } else if (!this.parentId.equals(other.parentId)) {
+            return false;
+        }
+        if (this.parentPath == null) {
+            if (other.parentPath != null) {
+                return false;
+            }
+        } else if (!this.parentPath.equals(other.parentPath)) {
+            return false;
+        }
+        if (this.scope == null) {
+            if (other.scope != null) {
+                return false;
+            }
+        } else if (!this.scope.equals(other.scope)) {
+            return false;
+        }
+        return true;
+    }
+
+
     public String getCmsReferrerNavigationPath() {
         return this.cmsReferrerNavigationPath;
     }
