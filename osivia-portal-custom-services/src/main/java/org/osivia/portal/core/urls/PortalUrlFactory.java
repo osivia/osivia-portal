@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
@@ -57,7 +56,6 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -323,7 +321,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         try {
             String templateInstanciationParentId = null;
-            String portalPersistentName = getPortalPersistentName(ctx);
+            String portalPersistentName = this.getPortalPersistentName(ctx);
 
             // Direct CMS Link : use CMSCommand
             if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
@@ -386,7 +384,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         try {
             if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
 
-                String portalPersistentName = getPortalPersistentName(portalControllerContext);
+                String portalPersistentName = this.getPortalPersistentName(portalControllerContext);
 
                 Portal portal = PortalObjectUtils.getPortal(ControllerContextAdapter.getControllerContext(portalControllerContext));
                 boolean isWebMode = PortalObjectUtils.isSpaceSite(portal);

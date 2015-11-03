@@ -15,11 +15,14 @@
 package org.osivia.portal.core.web;
 
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
@@ -40,6 +43,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -183,24 +187,48 @@ public class WebCommand extends DynamicCommand {
             String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters);
             cmsCmd.setCmsPath(cmsPath);
 
+
             // Page parameters
             Map<String, String> pageParameters = new HashMap<String, String>();
             cmsCmd.setPageParams(pageParameters);
 
-
+            // Query parameters
             ParameterMap parameterMap = controllerCtx.getServerInvocation().getServerContext().getQueryParameterMap();
 
-            // Search query parameter
-            if (parameterMap.containsKey("q")) {
+            // Search query and filters parameters
+            if (parameterMap.containsKey("q") || parameterMap.containsKey("f")) {
+                // Selectors
+                Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(null);
+
+                // Search query
                 String[] searchQueryParameter = parameterMap.get("q");
                 if (ArrayUtils.isNotEmpty(searchQueryParameter)) {
                     String searchQuery = URLDecoder.decode(searchQueryParameter[0], CharEncoding.UTF_8);
                     pageParameters.put("osivia.keywords", searchQuery);
+
+                    // Value
+                    selectors.put("q", Arrays.asList(StringUtils.split(searchQuery)));
                 }
+
+                // Search filters
+                String[] searchFiltersParameter = parameterMap.get("f");
+                if (ArrayUtils.isNotEmpty(searchFiltersParameter)) {
+                    String searchFilters = URLDecoder.decode(searchFiltersParameter[0], CharEncoding.UTF_8);
+
+                    // Values
+                    String[] filters = StringUtils.split(searchFilters, "&");
+                    for (String filter : filters) {
+                        String[] selector = StringUtils.split(filter, "=");
+                        if (selector.length == 2) {
+                            selectors.put(selector[0], Arrays.asList(new String[]{selector[1]}));
+                        }
+                    }
+                }
+
+                pageParameters.put("selectors", PageParametersEncoder.encodeProperties(selectors));
             }
 
-
-            // FIXME
+            // Page template parameter
             if (parameterMap.containsKey("page")) {
                 String[] pageParameter = parameterMap.get("page");
                 if (ArrayUtils.isNotEmpty(pageParameter)) {
