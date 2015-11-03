@@ -389,32 +389,32 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
-        
+
         // ECM administration
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(context.getServerInvocation());
         cmsCtx.setControllerContext(context);
         Map<String, String> requestParameters = new HashMap<String, String>();
-        
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         String ecmAdminUrl;
 		try {
 			ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
-			
+
 	        String ecmAdminTitle = bundle.getString(InternationalizationConstants.KEY_ECM_ADMINISTRATION);;
 			Element ecmAdministation = DOM4JUtils.generateLinkElement(ecmAdminUrl, HTMLConstants.TARGET_NEW_WINDOW, null, null, ecmAdminTitle , "halflings halflings-hdd", AccessibilityRoles.MENU_ITEM);
-			
+
 	        Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
 	        ecmAdministation.add(ecmAdministrationNewWindowGlyph);
-			
-			this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);			
-			
+
+			this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);
+
 		} catch (CMSException e1) {
 			// do nothing
 		}
 
-        		
-        		
+
+
 		// Divider
 		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
@@ -670,6 +670,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Published indicator
         Boolean published = publicationInfos.isPublished();
 
+        // Content
+        CMSItem content = cmsService.getContent(cmsCtx, path);
+        cmsCtx.setDoc(content.getNativeItem());
+
         // Close URL
         String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
                 null, null);
@@ -778,6 +782,45 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
 
+        // Move
+        String moveTitle = bundle.getString("MOVE");
+        if (basePath.equals(pagePath)) {
+            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_MOVE"));
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+        } else if (modePreview) {
+            // URL
+            String url = cmsService.getMoveUrl(cmsCtx);
+
+            Element moveLink = DOM4JUtils.generateLinkElement(url, null, null, "fancyframe_refresh", moveTitle, "halflings halflings-move",
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, null);
+        } else {
+            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, previewRequired);
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+        }
+
+
+        // Reorder
+        String reorderTitle = bundle.getString("REORDER");
+        String reorderUrl = cmsService.getReorderUrl(cmsCtx);
+        if (reorderUrl != null) {
+            if (modePreview) {
+                Element reorderLink = DOM4JUtils.generateLinkElement(reorderUrl, null, null, "fancyframe_refresh", reorderTitle, "halflings halflings-sort",
+                        AccessibilityRoles.MENU_ITEM);
+                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, null);
+            } else {
+                Element reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, reorderTitle, "halflings halflings-sort",
+                        AccessibilityRoles.MENU_ITEM);
+                DOM4JUtils.addAttribute(reorderLink, HTMLConstants.TITLE, previewRequired);
+                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, "disabled");
+            }
+        }
+
+
         // CMS publish document
         String cmsPublishTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_PUBLISH);
         if (modePreview) {
@@ -801,7 +844,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // CMS unpublish document
         String cmsUnpublishTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH);
-        if (modePreview && published && !basePath.equals(pagePath)) {
+        if (basePath.equals(pagePath)) {
+            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsUnpublishTitle,
+                    "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_UNPUBLISH"));
+            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
+        } else if (modePreview && published) {
             // URL
             CMSPublishDocumentCommand cmsUnpublishCommand = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
                     CMSPublishDocumentCommand.UNPUBLISH);
@@ -817,28 +865,30 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                     "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
             if (!modePreview) {
                 DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, previewRequired);
-            } else if (!published) {
+            } else {
                 String publishRequired = bundle.getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED);
                 DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, publishRequired);
-            } else {
-                String notRootPage = bundle.getString(InternationalizationConstants.KEY_PTITLE_NOT_ROOTPAGE);
-                DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, notRootPage);
             }
-
             this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
         }
 
 
         // CMS delete document
         String cmsDeleteTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_DELETE);
-        if (modePreview) {
+        if (basePath.equals(pagePath)) {
+            // Link
+            Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle, "halflings halflings-trash",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_SUPPRESSION"));
+            this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+        } else if (modePreview) {
             // User can only delete a document which its parent is editable.
             CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
             String parentPath = parent.toString();
             CMSPublicationInfos parentPubInfos = cmsService.getPublicationInfos(cmsCtx, parentPath);
 
-            // Check if parent is editable and if user is not at the root of the web site
-            if (parentPubInfos.isEditableByUser() && !basePath.equals(pagePath)) {
+            // Check if parent is editable
+            if (parentPubInfos.isEditableByUser()) {
                 // URL
                 CMSDeleteDocumentCommand cmsDeleteCommand = new CMSDeleteDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
                 String cmsDeleteURL = context.renderURL(cmsDeleteCommand, urlContext, URLFormat.newInstance(true, true));
@@ -877,7 +927,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // URL
         Map<String, String> windowProperties = new HashMap<String, String>();
         windowProperties.put("osivia.cms.basePath", basePath);
-        String siteMapURL = this.urlFactory.getStartPortletUrl(new PortalControllerContext(context), "osivia-portal-custom-web-assets-sitemapPortletInstance",
+        String siteMapURL = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-custom-web-assets-sitemapPortletInstance",
                 windowProperties, true);
         // Link
         Element siteMapLink = DOM4JUtils.generateLinkElement(siteMapURL, null, null, HTML_CLASS_FANCYFRAME_REFRESH, siteMapTitle,

@@ -152,8 +152,6 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_PUBLISH_REQUIRED = "PTITLE_PUBLISH_REQUIRED";
     /** Bundle resource key for CMS edition */
-    public static final String KEY_PTITLE_NOT_ROOTPAGE = "PTITLE_NOT_ROOTPAGE";
-    /** Bundle resource key for CMS edition */
     public static final String KEY_PTITLE_DELETE_FORBIDDEN = "PTITLE_DELETE_FORBIDDEN";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_MEDIA_LIB = "SUBMENU_CMS_MEDIA_LIB";

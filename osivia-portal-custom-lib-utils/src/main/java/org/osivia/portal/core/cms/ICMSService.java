@@ -429,4 +429,24 @@ public interface ICMSService {
      */
     PanelPlayer getNavigationPanelPlayer(String instance);
 
+
+    /**
+     * Get move URL.
+     *
+     * @param cmsContext CMS context
+     * @return URL
+     * @throws CMSException
+     */
+    String getMoveUrl(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get reorder URL
+     *
+     * @param cmsContext CMS context
+     * @return URL
+     * @throws CMSException
+     */
+    String getReorderUrl(CMSServiceCtx cmsContext) throws CMSException;
+
 }
