@@ -690,10 +690,6 @@ public class CmsCommand extends DynamicCommand {
 
                     }
 
-                    boolean isPermaLink = currentPage == null;
-                    if (isPermaLink && hasWebId) {
-                        cmsReadItemContext.setDisplayLiveVersion("1");
-                    }
 
 
                     // Attention, cet appel peut modifier si nécessaire le
@@ -718,6 +714,7 @@ public class CmsCommand extends DynamicCommand {
                     this.cmsPath = pubInfos.getDocumentPath();
 
                     // ManyProxies case
+                    boolean isPermaLink = currentPage == null;
                     if (!isPermaLink && hasWebId) {
                         if (pubInfos.hasManyPublications()
                                 && (StringUtils.isBlank(cmsReadItemContext.getParentId()) || StringUtils.isBlank(cmsReadItemContext.getParentPath()))) {
