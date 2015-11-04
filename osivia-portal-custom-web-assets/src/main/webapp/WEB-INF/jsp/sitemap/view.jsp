@@ -1,50 +1,60 @@
-<%@page import="org.osivia.portal.core.portlets.sitemap.SitemapFormatter"%>
-<%@page import="org.osivia.portal.core.portlets.sitemap.SitemapPortlet"%>
-<%@page import="org.osivia.portal.core.sitemap.Sitemap"%>
-<%@ page contentType="text/plain; charset=UTF-8"%>
-<%@page import="java.io.IOException"%>
-<%@page import="org.jboss.portal.core.controller.ControllerContext"%>
-<%@page import="org.osivia.portal.api.Constants"%>
-<%@page import="org.osivia.portal.core.formatters.IFormatter"%>
-<%@page import="java.util.ResourceBundle"%>
+<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
-<%@ taglib uri="http://java.sun.com/portlet_2_0" prefix="portlet"%>
+
+<%@ page contentType="text/html" isELIgnored="false"%>
+
+
 <portlet:defineObjects />
 
-<%
-    // Resource bundle
-    //ResourceBundle rb = ResourceBundle.getBundle(IFormatter.RESOURCE_BUNDLE_NAME, request.getLocale());
-
-    //Formatter
-    SitemapFormatter formatter = (SitemapFormatter) request.getAttribute(SitemapPortlet.ATTR_SITEMAP_FORMATTER);
-
-    //Current page
-    //Page currentPage = (Page) request.getAttribute(Constants.ATTR_TOOLBAR_SETTINGS_PAGE);
-
-    //Controller context
-    ControllerContext context = (ControllerContext) request.getAttribute(SitemapPortlet.ATTR_SITEMAP_CONTEXT);
-    
-    Sitemap itemToDisplay = (Sitemap) renderRequest.getAttribute(SitemapPortlet.ATTR_SITEMAP_ITEMS);
-%>
+<portlet:resourceURL id="lazyLoading" var="lazyLoadingUrl">
+    <portlet:param name="cmsBasePath" value="${cmsBasePath}" />
+    <portlet:param name="cmsNavigationPath" value="${cmsNavigationPath}" />
+    <portlet:param name="link" value="true" />
+    <portlet:param name="live" value="${live}" />
+    <portlet:param name="forceReload" value="true" />
+    <portlet:param name="popup" value="true" />
+    <portlet:param name="highlight" value="true" />
+</portlet:resourceURL>
 
 
-<form action="osivia.sitemap.go" method="get" class="fancybox-form">
-	<input type="hidden" name="action" value="makeDefaultPage" /> 
-	<input type="hidden" name="jstreeSitemap" />
+<div>
+    <p class="lead">
+        <i class="glyphicons glyphicons-google-maps"></i>
+        <span><op:translate key="SITEMAP_PORTLET_TITLE" /></span>
+    </p>
 
-	<div class="fancybox-table">
-		<div class="fancybox-table-row">
-			<div class="fancybox-table-cell">
-				<input type="text" placeholder="Filtrer" onkeyup="jstreeSearch('jstreeSitemap', this.value)" />
-			</div>
-		</div>
-		
-		<div class="fancybox-table-row">
-			<div class="fancybox-table-cell">
-				<div id="jstreeSitemap" class="jstree-links-sitemap">
-					<%=formatter.formatHtmlTreeSitemap(itemToDisplay)%>
-				</div>
-			</div>
-		</div>
-	</div>
-</form>
+    <dl class="dl-horizontal">
+        <dt><op:translate key="LEGEND" /></dt>
+        <dd>
+            <span><op:translate key="DOCUMENT_UP_TO_DATE" /></span>
+            <br>
+            <span class="text-warning"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></span>
+            <br>
+            <span><strong><op:translate key="DOCUMENT_CURRENT" /></strong></span>
+        </dd>
+    </dl>
+
+    <c:choose>
+        <c:when test="${live}">
+            <div class="panel panel-info">
+                <div class="panel-heading">Versions de travail</div>
+            
+                <div class="panel-body">
+                    <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingUrl}"></div>
+                </div>
+            </div>
+        </c:when>
+        
+        <c:otherwise>
+            <div class="panel panel-success">
+                <div class="panel-heading">Versions en ligne</div>
+            
+                <div class="panel-body">
+                    <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingUrl}"></div>
+                </div>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</div>

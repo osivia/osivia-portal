@@ -28,15 +28,11 @@
     <deployment>
         <if-exists>overwrite</if-exists>
         <instance>
+            <instance-id>osivia-portal-sitemap-instance</instance-id>
+            <portlet-ref>osivia-portal-sitemap</portlet-ref>
             <display-name xml:lang="en">Site map</display-name>
             <display-name xml:lang="fr">Plan du site</display-name>
-            <instance-id>osivia-portal-custom-web-assets-sitemapPortletInstance</instance-id>
-            <portlet-ref>osivia-portal-custom-web-assets-sitemapPortlet</portlet-ref>
             <security-constraint>
-                <policy-permission>
-                    <action-name>admin</action-name>
-                    <role-name>Administrators</role-name>
-                </policy-permission>
                 <policy-permission>
                     <action-name>view</action-name>
                     <unchecked />

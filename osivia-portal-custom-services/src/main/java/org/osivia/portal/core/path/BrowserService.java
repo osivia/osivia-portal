@@ -23,10 +23,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
+import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 
@@ -91,10 +91,7 @@ public class BrowserService implements IBrowserService {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-        cmsContext.setRequest(portalControllerContext.getRequest());
-        cmsContext.setPortletCtx(portalControllerContext.getPortletCtx());
+        CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
@@ -290,11 +287,7 @@ public class BrowserService implements IBrowserService {
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
         // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-        if (options.isLive()) {
-            cmsContext.setDisplayLiveVersion("1");
-        }
+        CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
         return cmsService.getContent(cmsContext, options.getCmsBasePath());
     }
@@ -314,11 +307,7 @@ public class BrowserService implements IBrowserService {
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
         // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-        if (options.isLive()) {
-            cmsContext.setDisplayLiveVersion("1");
-        }
+        CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
         return cmsService.getPortalSubitems(cmsContext, parentPath);
     }
@@ -332,10 +321,20 @@ public class BrowserService implements IBrowserService {
      * @param root root indicator
      * @param options browser options
      * @return JSON object
+     * @throws CMSException
      * @throws JSONException
      */
     private JSONObject generateJSONObject(PortalControllerContext portalControllerContext, CMSItem cmsItem, boolean root, BrowserOptions options)
-            throws JSONException {
+            throws CMSException, JSONException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
+        // Publication infos
+        CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, cmsItem.getPath());
+        // Path
+        String path = publicationInfos.getDocumentPath();
+
         // CMS item type
         DocumentType type = cmsItem.getType();
 
@@ -362,11 +361,18 @@ public class BrowserService implements IBrowserService {
             }
         }
 
+        // Expanded indicator
+        boolean expanded = root;
+        if (!expanded && (options.getCmsNavigationPath() != null)) {
+            expanded = StringUtils.startsWith(options.getCmsNavigationPath() + "/", path + "/");
+        }
+
         // URL
         String url = null;
         if (options.isLink()) {
-            url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, cmsItem.getPath(), null, null, options.getDisplayContext(), null, null, null,
-                    null);
+            String displayLiveVersion = BooleanUtils.toString(options.isLive(), "1", null);
+            url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, cmsItem.getPath(), null, null, options.getDisplayContext(), null, null,
+                    displayLiveVersion, null);
             if (options.isPopup()) {
                 url = this.portalURLFactory.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
             }
@@ -382,10 +388,10 @@ public class BrowserService implements IBrowserService {
         object.put("folder", browsable);
 
         // Lazy indicator
-        object.put("lazy", !root && browsable);
+        object.put("lazy", !expanded && browsable);
 
         // Expanded indicator
-        object.put("expanded", root);
+        object.put("expanded", expanded);
 
         // Path
         object.put("path", cmsItem.getPath());
@@ -408,14 +414,24 @@ public class BrowserService implements IBrowserService {
         if (!acceptable) {
             extraClasses.append("text-muted ");
         }
-        if (InternalConstants.PROXY_PREVIEW.equals(options.getDisplayContext())) {
+        if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
+            extraClasses.append("active ");
+        }
+        if (options.isHighlight()) {
             if (root) {
                 extraClasses.append("text-muted ");
             } else if (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified())) {
-                extraClasses.append("text-info ");
+                extraClasses.append("text-warning ");
             }
         }
         object.put("extraClasses", extraClasses.toString());
+
+        // Children
+        if (!root && expanded) {
+            BrowserOptions childrenOptions = new BrowserOptions(options, path);
+            JSONArray childrenJSONArray = this.generateLazyJSONArray(portalControllerContext, childrenOptions);
+            object.put("children", childrenJSONArray);
+        }
 
         return object;
     }
@@ -473,6 +489,24 @@ public class BrowserService implements IBrowserService {
         }
 
         return object;
+    }
+
+
+    /**
+     * Get CMS context.
+     *
+     * @param portalControllerContext portal controller context
+     * @param options browser options
+     * @return CMS context
+     */
+    private CMSServiceCtx getCMSContext(PortalControllerContext portalControllerContext, BrowserOptions options) {
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+        if (options.isLive()) {
+            cmsContext.setDisplayLiveVersion("1");
+        }
+        cmsContext.setForceReload(options.isForceReload());
+        return cmsContext;
     }
 
 

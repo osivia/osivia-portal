@@ -12,6 +12,7 @@
     <portlet:param name="link" value="true" />
     <portlet:param name="displayContext" value="proxy_preview" />
     <portlet:param name="popup" value="true" />
+    <portlet:param name="highlight" value="true" />
     
     <c:if test="${not empty cmsBasePath}">
         <portlet:param name="cmsBasePath" value="${cmsBasePath}" />
@@ -23,15 +24,15 @@
 <div>
     <p class="lead">
         <i class="glyphicons glyphicons-search"></i>
-        <span><op:translate key="BROWSE_PORTLET_LEGEND" /></span>
+        <span><op:translate key="BROWSE_PORTLET_TITLE" /></span>
     </p>
     
     <dl class="dl-horizontal">
-        <dt><op:translate key="BROWSE_PORTLET_HELP_TITLE" /></dt>
+        <dt><op:translate key="LEGEND" /></dt>
         <dd>
-            <span><op:translate key="BROWSE_PORTLET_HELP_DESCRIPTION_PUBLISHED" /></span>
+            <span><op:translate key="DOCUMENT_UP_TO_DATE" /></span>
             <br>
-            <span class="text-info"><op:translate key="BROWSE_PORTLET_HELP_DESCRIPTION_EDITED" /></span>
+            <span class="text-warning"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></span>
         </dd>
     </dl>
     

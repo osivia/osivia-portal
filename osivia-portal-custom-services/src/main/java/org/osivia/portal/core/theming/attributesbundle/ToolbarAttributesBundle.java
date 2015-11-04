@@ -922,17 +922,15 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
 
-        // Site map
-        String siteMapTitle = bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP);
         // URL
-        Map<String, String> windowProperties = new HashMap<String, String>();
-        windowProperties.put("osivia.cms.basePath", basePath);
-        String siteMapURL = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-custom-web-assets-sitemapPortletInstance",
-                windowProperties, true);
+        Map<String, String> sitemapProperties = new HashMap<String, String>();
+        sitemapProperties.put("osivia.cms.path", path);
+        sitemapProperties.put("osivia.cms.basePath", basePath);
+        String sitemapUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties, true);
         // Link
-        Element siteMapLink = DOM4JUtils.generateLinkElement(siteMapURL, null, null, HTML_CLASS_FANCYFRAME_REFRESH, siteMapTitle,
-                "halflings halflings-map-marker", AccessibilityRoles.MENU_ITEM);
-        this.addSubMenuElement(cmsEditionMenuUL, siteMapLink, null);
+        Element sitemapLink = DOM4JUtils.generateLinkElement(sitemapUrl, null, null, HTML_CLASS_FANCYFRAME_REFRESH,
+                bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "halflings halflings-map-marker", AccessibilityRoles.MENU_ITEM);
+        this.addSubMenuElement(cmsEditionMenuUL, sitemapLink, null);
 
 
         // Media library

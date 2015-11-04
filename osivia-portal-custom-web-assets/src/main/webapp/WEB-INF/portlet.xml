@@ -20,11 +20,13 @@
 
 
     <portlet>
-        <description>Sitemap Portlet</description>
-        <portlet-name>osivia-portal-custom-web-assets-sitemapPortlet</portlet-name>
-        <display-name>Osivia Sitemap Portlet</display-name>
+        <portlet-name>osivia-portal-sitemap</portlet-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 
-        <portlet-class>org.osivia.portal.core.portlets.sitemap.SitemapPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/osivia-portal-sitemap-portlet.xml</value>
+        </init-param>
 
         <expiration-cache>180</expiration-cache>
 
@@ -33,23 +35,20 @@
             <portlet-mode>view</portlet-mode>
         </supports>
 
-        <supported-locale>en</supported-locale>
-        <supported-locale>fr</supported-locale>
-
         <portlet-info>
-            <title>Sitemap portlet</title>
-            <short-title>Sitemap portlet</short-title>
-            <keywords>Portlet,site,sitemap,map,CMS</keywords>
+            <title>Site map</title>
         </portlet-info>
     </portlet>
 
 
     <portlet>
-        <description>Live content browser portlet</description>
         <portlet-name>osivia-portal-browser</portlet-name>
-        <display-name>Osivia live content browser portlet</display-name>
-
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/osivia-portal-browser-portlet.xml</value>
+        </init-param>
 
         <expiration-cache>180</expiration-cache>
 
@@ -59,9 +58,7 @@
         </supports>
 
         <portlet-info>
-            <title>Live content browser portlet</title>
-            <short-title>Browser portlet</short-title>
-            <keywords>portlet,browser,live</keywords>
+            <title>Live content browser</title>
         </portlet-info>
     </portlet>
 

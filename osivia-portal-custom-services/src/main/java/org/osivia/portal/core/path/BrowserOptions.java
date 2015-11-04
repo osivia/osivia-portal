@@ -17,10 +17,12 @@ import org.osivia.portal.api.context.PortalControllerContext;
  */
 public class BrowserOptions {
 
-    /** Current path. */
+    /** Requested path, used for lazy loading resource request ; DO NOT SET IT. */
     private final String path;
     /** CMS base path. */
     private final String cmsBasePath;
+    /** CMS navigation path. */
+    private final String cmsNavigationPath;
     /** Ignored paths. */
     private final Set<String> ignoredPaths;
     /** Live indicator. */
@@ -33,8 +35,12 @@ public class BrowserOptions {
     private final boolean link;
     /** Link display context. */
     private final String displayContext;
+    /** Force reload indicator. */
+    private final boolean forceReload;
     /** Popup indicator. */
     private final boolean popup;
+    /** Highlight indicator. */
+    private final boolean highlight;
 
 
     /**
@@ -43,17 +49,22 @@ public class BrowserOptions {
      * @param portalControllerContext portal controller context
      */
     public BrowserOptions(PortalControllerContext portalControllerContext) {
+        super();
+
         // Request
         PortletRequest request = portalControllerContext.getRequest();
 
         // Request parameters
         this.path = request.getParameter("path");
         this.cmsBasePath = request.getParameter("cmsBasePath");
+        this.cmsNavigationPath = request.getParameter("cmsNavigationPath");
         this.live = BooleanUtils.toBoolean(request.getParameter("live"));
         this.workspaces = BooleanUtils.toBoolean(request.getParameter("workspaces"));
         this.link = BooleanUtils.toBoolean(request.getParameter("link"));
         this.displayContext = request.getParameter("displayContext");
+        this.forceReload = BooleanUtils.toBoolean(request.getParameter("forceReload"));
         this.popup = BooleanUtils.toBoolean(request.getParameter("popup"));
+        this.highlight = BooleanUtils.toBoolean(request.getParameter("highlight"));
 
         // Ignored paths
         String[] ignoredPaths = StringUtils.split(request.getParameter("ignoredPaths"), ",");
@@ -74,6 +85,30 @@ public class BrowserOptions {
 
 
     /**
+     * Clone constructor.
+     *
+     * @param options original browser options
+     * @param path new requested path
+     */
+    public BrowserOptions(BrowserOptions options, String path) {
+        super();
+
+        this.path = path;
+        this.cmsBasePath = options.cmsBasePath;
+        this.cmsNavigationPath = options.cmsNavigationPath;
+        this.ignoredPaths = options.ignoredPaths;
+        this.live = options.live;
+        this.acceptedTypes = options.acceptedTypes;
+        this.workspaces = options.workspaces;
+        this.link = options.link;
+        this.displayContext = options.displayContext;
+        this.forceReload = options.forceReload;
+        this.popup = options.popup;
+        this.highlight = options.highlight;
+    }
+
+
+    /**
      * Getter for path.
      *
      * @return the path
@@ -89,6 +124,15 @@ public class BrowserOptions {
      */
     public String getCmsBasePath() {
         return this.cmsBasePath;
+    }
+
+    /**
+     * Getter for cmsNavigationPath.
+     *
+     * @return the cmsNavigationPath
+     */
+    public String getCmsNavigationPath() {
+        return this.cmsNavigationPath;
     }
 
     /**
@@ -146,12 +190,30 @@ public class BrowserOptions {
     }
 
     /**
+     * Getter for forceReload.
+     *
+     * @return the forceReload
+     */
+    public boolean isForceReload() {
+        return this.forceReload;
+    }
+
+    /**
      * Getter for popup.
      *
      * @return the popup
      */
     public boolean isPopup() {
         return this.popup;
+    }
+
+    /**
+     * Getter for highlight.
+     *
+     * @return the highlight
+     */
+    public boolean isHighlight() {
+        return this.highlight;
     }
 
 }

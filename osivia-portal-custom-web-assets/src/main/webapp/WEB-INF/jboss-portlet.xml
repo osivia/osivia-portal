@@ -23,12 +23,7 @@
     
     <!-- Site map -->
     <portlet>
-        <portlet-name>osivia-portal-custom-web-assets-sitemapPortlet</portlet-name>
-  
-        <transaction>
-            <trans-attribute>Required</trans-attribute>            
-        </transaction>
-        
+        <portlet-name>osivia-portal-sitemap</portlet-name>
     </portlet>
     
     
