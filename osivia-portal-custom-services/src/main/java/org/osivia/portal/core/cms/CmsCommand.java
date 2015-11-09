@@ -699,12 +699,17 @@ public class CmsCommand extends DynamicCommand {
                     // In any case we recheck the main content of the page
                     // No extra-cost because getPublicationInfos is optimized for performance
                     
-                    boolean forceReload = cmsReadItemContext.isForceReload();
-                    if( !forceReload)                    
-                        cmsReadItemContext.setForceReload(true);                    
+                    boolean forceReload = false;
+                    if( hasWebId)   {
+                        forceReload = cmsReadItemContext.isForceReload();
+                        if( !forceReload)                    
+                            cmsReadItemContext.setForceReload(true);       
+                    }
                     pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
-                    if( !forceReload)
-                        cmsReadItemContext.setForceReload(false);          
+                    if( hasWebId)   {
+                        if( !forceReload)
+                            cmsReadItemContext.setForceReload(false);   
+                    }
 
 
                     

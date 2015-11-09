@@ -184,7 +184,8 @@ public class WebCommand extends DynamicCommand {
             }
 
             // CMS path
-            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters);
+            // Must reload (webId may have be moved, so cms path might be false)
+            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters, true);
             cmsCmd.setCmsPath(cmsPath);
 
 
@@ -245,13 +246,23 @@ public class WebCommand extends DynamicCommand {
     }
 
 
+    /**
+     * Checks and returns the correct PageId.
+     * If necessary, executes a cmsCommand
+     * 
+     * @param controllerCtx
+     * @return
+     * @throws InvocationException
+     * @throws ControllerException
+     * @throws Exception
+     */
     private PortalObjectId getPageId(ControllerContext controllerCtx) throws InvocationException, ControllerException, Exception {
 
        // Transformation du requestpath
        CmsCommand cmsCmd = new CmsCommand();
        cmsCmd.setExtendedParameters(this.extendedParameters);
 
-       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters);
+       String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters, false);
        cmsCmd.setCmsPath(cmsPath);
 
 

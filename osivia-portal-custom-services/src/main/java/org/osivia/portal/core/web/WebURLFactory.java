@@ -141,7 +141,7 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @return
      * @throws ControllerException
      */
-    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, ExtendedParameters extendedParameters) throws Exception {
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, ExtendedParameters extendedParameters, boolean reload) throws Exception {
 
 
         CMSServiceCtx cmsContext = new CMSServiceCtx();
@@ -170,7 +170,9 @@ public class WebURLFactory extends URLFactoryDelegate {
             if( modePreview)
                 cmsContext.setDisplayLiveVersion("1");
             
-
+            if( reload)
+                cmsContext.setForceReload(true);
+            
             cmsPath = getCMSService().adaptWebPathToCms(cmsContext, cmsPath);
         }
 
