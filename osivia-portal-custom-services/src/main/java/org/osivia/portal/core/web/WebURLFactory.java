@@ -110,7 +110,7 @@ public class WebURLFactory extends URLFactoryDelegate {
      * @param controllerContext
      * @return null if not a URL Policy is disabled
      */
-    private static String getWebPortalBasePath(ControllerContext controllerContext) {
+    public static String getWebPortalBasePath(ControllerContext controllerContext) {
 
         Portal webPortal = null;
         String basePath = null;

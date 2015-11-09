@@ -168,11 +168,23 @@ public class WebCommand extends DynamicCommand {
             cmsCmd.setExtendedParameters(this.extendedParameters);
 
             // Case of possible Many Remote proxies
+            
+            //FIXME: move to csmCommand because /cms/_webId url may be unconsistent
+            
             if (this.extendedParameters == null) {
                 CMSServiceCtx cmsContext = new CMSServiceCtx();
                 cmsContext.setControllerContext(controllerCtx);
-                CMSPublicationInfos publicationInfos = getCMSService().getPublicationInfos(cmsContext,
-                        WebIdService.PREFIX_WEBID_FETCH_PUB_INFO.concat(this.webPath));
+                
+                String pathToFetch = this.webPath;
+                
+                if (pathToFetch.length() <= 1) {
+                    pathToFetch = WebURLFactory.getWebPortalBasePath(controllerCtx);
+                }   else    {
+                    pathToFetch =  WebIdService.PREFIX_WEBID_FETCH_PUB_INFO.concat(pathToFetch);
+                }
+                
+                
+                CMSPublicationInfos publicationInfos = getCMSService().getPublicationInfos(cmsContext,pathToFetch);
 
                 if (publicationInfos.hasManyPublications()) {
                     PortalObjectId pageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
