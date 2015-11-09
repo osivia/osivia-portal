@@ -39,7 +39,16 @@
         ul {
             margin-bottom: 0;
         }
-    }    
+    }
+    
+    &.ui-fancytree-disabled {
+        opacity: 0.65;
+        
+        &, .fancytree-node {
+            cursor: not-allowed;
+            pointer-event: none;
+        }
+    }
 }
 
 
@@ -68,7 +77,7 @@
         background-color: fade(#eee, 20%);
     }
     
-    &.active {
+    &.current {
         font-weight: bold;
     }
 }

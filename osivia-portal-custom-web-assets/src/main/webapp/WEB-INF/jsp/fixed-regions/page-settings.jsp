@@ -9,8 +9,6 @@
 <c:set var="currentPageId"><formatter:safeId portalObjectId="${currentPage.id}" /></c:set>
 <c:set var="currentPageDisplayName"><formatter:displayName object="${currentPage}"/></c:set>
 
-<c:if test="${requestScope['osivia.toolbarSettings.draftPage']}">
-</c:if>
 
 <c:if test="${requestScope['osivia.toolbarSettings.selectorsPropagation']}">
     <c:set var="selectorsPropationChecked" value="checked" />
@@ -69,6 +67,7 @@ var currentPageId = '${currentPageId}';
     		$content.collapse("hide");
     	}
     }
+
     
     // Window properties : mobile collapse check event
     $JQry(document).ready(function() {
@@ -111,231 +110,370 @@ var currentPageId = '${currentPageId}';
     <div class="hidden">
     
         <!-- Page creation -->
-        <div id="page-creation" class="container">
+        <div id="page-creation" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
-                <input type="hidden" name="action" value="createPage" />
-                <input type="hidden" name="jstreePageParentSelect" value="${portalId}" />
-                <input type="hidden" name="jstreePageModelSelect" />
-            
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="new-page-name" class="control-label required col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_NAME" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <input id="new-page-name" type="text" name="name" class="form-control" placeholder='<op:translate key="NEW_PAGE_NAME" />' required="required" />
-                    </div>
-                </div>
+                <fieldset>
+                    <legend>
+                        <i class="glyphicons glyphicons-plus"></i>
+                        <span><op:translate key="SUBMENU_PAGE_CREATION" /></span>
+                    </legend>
+
+                    <input type="hidden" name="action" value="createPage">
                 
-                <div class="form-group">
-                    <!-- Model -->
-                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_MODEL" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" onchange="jstreeToggleLock('jstreePageModelSelect', this.checked)" />
-                                <op:translate key="NEW_PAGE_NO_MODEL" />
-                            </label>
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="new-page-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
+                        <div class="col-sm-8 col-lg-10">
+                            <input id="new-page-name" type="text" name="name" class="form-control" required="required">
                         </div>
-                        <div class="well">
-                            <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageModelSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <!-- Model -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"><op:translate key="NEW_PAGE_MODEL" /></label>
+                                <div class="col-sm-8">
+                                    <div class="selector">
+                                        <input type="hidden" name="model" class="selector-value">
+                                
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <div class="fancytree fancytree-selector fixed-height">
+                                                    <p class="input-group input-group-sm">
+                                                        <span class="input-group-addon">
+                                                            <i class="halflings halflings-filter"></i>
+                                                        </span>
+                                                        
+                                                        <input type="text" class="form-control" placeholder="${filterLabel}">
+                                                        
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <i class="halflings halflings-erase"></i>
+                                                                <span class="sr-only">${clearFilterLabel}</span>
+                                                            </button>
+                                                        </span>
+                                                    </p>
+                            
+                                                    <c:out value="${requestScope['osivia.settings.models']}" escapeXml="false" />
+                                                </div>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-toggle="fancytree">
+                                            <span><op:translate key="NEW_PAGE_NO_MODEL" /></span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="jstreePageModelSelect" class="jstree-select-unique">
-                                <formatter:tree id="jstreePageModelSelect" type="model" />
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <!-- Parent -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label required"><op:translate key="NEW_PAGE_PARENT" /></label>
+                                <div class="col-sm-8">
+                                    <div class="selector">
+                                        <input type="hidden" name="parent" class="selector-value">
+                                
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <div class="fancytree fancytree-selector fixed-height">
+                                                    <p class="input-group input-group-sm">
+                                                        <span class="input-group-addon">
+                                                            <i class="halflings halflings-filter"></i>
+                                                        </span>
+                                                        
+                                                        <input type="text" class="form-control" placeholder="${filterLabel}">
+                                                        
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <i class="halflings halflings-erase"></i>
+                                                                <span class="sr-only">${clearFilterLabel}</span>
+                                                            </button>
+                                                        </span>
+                                                    </p>
+                            
+                                                    <c:out value="${requestScope['osivia.settings.pageParents']}" escapeXml="false" />
+                                                </div>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Parent -->
-                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_PAGE_PARENT" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <div class="well">
-                            <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageParentSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
-                            </div>
-                            <div id="jstreePageParentSelect" class="jstree-select-unique">
-                                <formatter:tree id="jstreePageParentSelect" type="parentPage" />
-                            </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8 col-lg-offset-2 col-lg-10">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="glyphicons glyphicons-floppy-disk"></i>
+                                <span><op:translate key="SAVE" /></span>
+                            </button>
+                        
+                            <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <span><op:translate key="CANCEL" /></span>
+                            </button>
                         </div>
                     </div>
-                </div>
-            
-                <div class="form-group">
-                    <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="NEW_PAGE_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
-                    </div>
-                </div>
+                </fieldset>
             </form>
         </div>
         
+        
         <!-- Template creation -->
-        <div id="template-creation" class="container">
+        <div id="template-creation" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
-                <input type="hidden" name="action" value="createTemplate" />
-                <input type="hidden" name="jstreeTemplateParentSelect" value="${portalId}" />
-                <input type="hidden" name="jstreeTemplateModelSelect" />
+                <fieldset>
+                    <legend>
+                        <i class="glyphicons glyphicons-plus"></i>
+                        <span><op:translate key="SUBMENU_TEMPLATE_CREATION" /></span>
+                    </legend>
+                    
+                    <input type="hidden" name="action" value="createPage">
                 
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="new-template-name" class="control-label required col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_NAME" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <input id="new-template-name" type="text" name="name" class="form-control" placeholder='<op:translate key="NEW_TEMPLATE_NAME" />' required="required" />
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <!-- Model -->
-                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_MODEL" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" onchange="jstreeToggleLock('jstreeTemplateModelSelect', this.checked)" />
-                                <op:translate key="NEW_TEMPLATE_NO_MODEL" />
-                            </label>
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="new-template-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
+                        <div class="col-sm-8 col-lg-10">
+                            <input id="new-template-name" type="text" name="name" class="form-control" required="required">
                         </div>
-                        <div class="well">
-                            <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateModelSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <!-- Model -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label"><op:translate key="NEW_TEMPLATE_MODEL" /></label>
+                                <div class="col-sm-8">
+                                    <div class="selector">
+                                        <input type="hidden" name="model" class="selector-value">
+                                
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <div class="fancytree fancytree-selector fixed-height">
+                                                    <p class="input-group input-group-sm">
+                                                        <span class="input-group-addon">
+                                                            <i class="halflings halflings-filter"></i>
+                                                        </span>
+                                                        
+                                                        <input type="text" class="form-control" placeholder="${filterLabel}">
+                                                        
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <i class="halflings halflings-erase"></i>
+                                                                <span class="sr-only">${clearFilterLabel}</span>
+                                                            </button>
+                                                        </span>
+                                                    </p>
+                            
+                                                    <c:out value="${requestScope['osivia.settings.models']}" escapeXml="false" />
+                                                </div>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" data-toggle="fancytree">
+                                            <span><op:translate key="NEW_TEMPLATE_NO_MODEL" /></span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="jstreeTemplateModelSelect" class="jstree-select-unique">
-                                <formatter:tree id="jstreeTemplateModelSelect" type="model" />
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <!-- Parent -->
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label required"><op:translate key="NEW_TEMPLATE_PARENT" /></label>
+                                <div class="col-sm-8">
+                                    <div class="selector">
+                                        <input type="hidden" name="parent" class="selector-value">
+                                
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <div class="fancytree fancytree-selector fixed-height">
+                                                    <p class="input-group input-group-sm">
+                                                        <span class="input-group-addon">
+                                                            <i class="halflings halflings-filter"></i>
+                                                        </span>
+                                                        
+                                                        <input type="text" class="form-control" placeholder="${filterLabel}">
+                                                        
+                                                        <span class="input-group-btn">
+                                                            <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <i class="halflings halflings-erase"></i>
+                                                                <span class="sr-only">${clearFilterLabel}</span>
+                                                            </button>
+                                                        </span>
+                                                    </p>
+                            
+                                                    <c:out value="${requestScope['osivia.settings.templateParents']}" escapeXml="false" />
+                                                </div>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Parent -->
-                    <label class="control-label col-sm-4 col-lg-3"><op:translate key="NEW_TEMPLATE_PARENT" /></label>
-                    <div class="col-sm-8 col-lg-3">
-                        <div class="well">
-                            <div class="jstree-filter input-group input-group-sm">
-                                <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                                <input type="text" class="form-control" onkeyup="jstreeSearch('jstreeTemplateParentSelect', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
-                            </div>
-                            <div id="jstreeTemplateParentSelect" class="jstree-select-unique">
-                                <formatter:tree id="jstreeTemplateParentSelect" type="parentTemplate" />
-                            </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4 col-sm-8 col-lg-offset-2 col-lg-10">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="glyphicons glyphicons-floppy-disk"></i>
+                                <span><op:translate key="SAVE" /></span>
+                            </button>
+                        
+                            <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <span><op:translate key="CANCEL" /></span>
+                            </button>
                         </div>
                     </div>
-                </div>
-            
-                <div class="form-group">
-                    <div class="col-sm-offset-4 col-lg-offset-3 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="NEW_TEMPLATE_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
-                    </div>
-                </div>
+                </fieldset>
             </form>
         </div>
         
         
         <!-- Properties -->
-        <div id="page-properties" class="container">
+        <div id="page-properties" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
-                <input type="hidden" name="action" value="changePageProperties" />
-                <input type="hidden" name="pageId" value="${currentPageId}" />
+                <fieldset>
+                    <legend>
+                        <i class="glyphicons glyphicons-cogwheel"></i>
+                        <span><op:translate key="SUBMENU_PROPERTIES" /></span>
+                    </legend>
                 
-                <!-- Name -->
-                <div class="form-group">                
-                    <label for="properties-page-name" class="control-label required col-sm-4"><op:translate key="PAGE_NAME" /></label>
-                    <div class="col-sm-8">
-                        <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" placeholder='<op:translate key="PAGE_NAME" />' required="required" />
-                    </div>
-                </div>
-                
-                <!-- Draft mode -->
-                <div class="form-group">
-                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><op:translate key="PAGE_DRAFT_MODE" /></label>
-                    <div class="col-sm-8">
-                        <div class="checkbox">
-                            <input id="properties-page-draft-mode" type="checkbox" name="draftPage" value="1" ${draftModeChecked} ${propertiesDisabled} />
+                    <input type="hidden" name="action" value="changePageProperties" />
+                    <input type="hidden" name="pageId" value="${currentPageId}" />
+                    
+                    <!-- Name -->
+                    <div class="form-group">                
+                        <label for="properties-page-name" class="col-sm-3 control-label required"><op:translate key="PAGE_NAME" /></label>
+                        <div class="col-sm-9">
+                            <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" required="required">
                         </div>
                     </div>
-                </div>
+                </fieldset>
                 
-                <!-- Layout -->
-                <div class="form-group">
-                    <label for="properties-page-layout" class="control-label col-sm-4"><op:translate key="PAGE_LAYOUT" /></label>
-                    <div class="col-sm-8">
-                        <select id="properties-page-layout" name="newLayout" class="form-control" ${propertiesDisabled}>
-                            <!-- Default layout -->
-                            <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">
-                                <c:set var="defaultLayoutSelected" value="selected" />
-                            </c:if> 
-                            <option value="" ${defaultLayoutSelected}><op:translate key="PAGE_DEFAULT_LAYOUT" /></option>
-                        
-                            <!-- Layouts list -->
-                            <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
-                                <c:if test="${requestScope['osivia.toolbarSettings.currentLayout'] eq layout.layoutInfo.name}">
-                                    <c:set var="layoutSelected" value="selected" />
-                                </c:if>
-                                
-                                <option value="${layout.layoutInfo.name}" ${layoutSelected}>${layout.layoutInfo.name}</option>
-                                
-                                <c:remove var="layoutSelected" />
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Theme -->
-                <div class="form-group">
-                    <label for="properties-page-theme" class="control-label col-sm-4"><op:translate key="PAGE_THEME" /></label>
-                    <div class="col-sm-8">
-                        <select id="properties-page-theme" name="newTheme" class="form-control" ${propertiesDisabled}>
-                            <!-- Default theme -->
-                            <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">
-                                <c:set var="defaultThemeSelected" value="selected" />
-                            </c:if> 
-                            <option value="" ${defaultThemeSelected}><op:translate key="PAGE_DEFAULT_THEME" /></option>
-                        
-                            <!-- Themes list -->
-                            <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
-                                <c:if test="${requestScope['osivia.toolbarSettings.currentTheme'] eq theme.themeInfo.name}">
-                                    <c:set var="themeSelected" value="selected" />
-                                </c:if>
-                                
-                                <option value="${theme.themeInfo.name}" ${themeSelected}>${theme.themeInfo.name}</option>
-                                
-                                <c:remove var="themeSelected" />
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Category -->
-                <div class="form-group">
-                    <label for="properties-page-category" class="control-label col-sm-4"><op:translate key="PAGE_CATEGORY" /></label>
-                    <div class="col-sm-8">
-                        <select id="properties-page-category" name="pageCategory" class="form-control" ${propertiesDisabled}>
-                            <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">                                                
-                                <option value="${category.key}"
-                                    <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">selected="selected"</c:if>
-                                >${category.value}</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                </div>
-                
-                 <!-- Selectors propagation mode -->
-                <div class="form-group">
-                    <label for="properties-page-draft-mode" class="control-label col-sm-4"><op:translate key="PAGE_SELECTOR_PROPAGATION" /></label>
-                    <div class="col-sm-8">
-                        <div class="checkbox">
-                            <input id="properties-page-draft-mode" type="checkbox" name="selectorsPropagation" value="1" ${selectorsPropationChecked} ${propertiesDisabled} />
+                <fieldset
+                    <c:if test="${requestScope['osivia.toolbarSettings.cmsTemplated']}">disabled="disabled"</c:if>
+                >    
+                    <!-- Draft mode -->
+                    <div class="form-group">
+                        <label for="properties-page-draft-mode" class="col-sm-3 control-label"><op:translate key="PAGE_DRAFT_MODE" /></label>
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="properties-page-draft-mode" type="checkbox" name="draftPage" value="1"
+                                        <c:if test="${requestScope['osivia.toolbarSettings.draftPage']}">checked="checked"</c:if>
+                                    >
+                                    <span><op:translate key="PAGE_DRAFT_MODE_ACTION" /></span>
+                                </label>
+                            </div>
+                            
+                            <div class="help-block"><op:translate key="PAGE_DRAFT_MODE_HELP" /></div>
                         </div>
                     </div>
-                </div>
-                
+                    
+                    <!-- Layout -->
+                    <div class="form-group">
+                        <label for="properties-page-layout" class="col-sm-3 control-label"><op:translate key="PAGE_LAYOUT" /></label>
+                        <div class="col-sm-9">
+                            <select id="properties-page-layout" name="newLayout" class="form-control">
+                                <!-- Default layout -->
+                                <option value=""
+                                    <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">selected="selected"</c:if>
+                                >
+                                    <op:translate key="PAGE_DEFAULT_LAYOUT" />
+                                </option>
+                            
+                                <!-- Layouts list -->
+                                <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
+                                    <option value="${layout.layoutInfo.name}" ${layoutSelected}
+                                        <c:if test="${requestScope['osivia.toolbarSettings.currentLayout'] eq layout.layoutInfo.name}">selected="selected"</c:if>
+                                    >
+                                        ${layout.layoutInfo.name}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Theme -->
+                    <div class="form-group">
+                        <label for="properties-page-theme" class="col-sm-3 control-label"><op:translate key="PAGE_THEME" /></label>
+                        <div class="col-sm-9">
+                            <select id="properties-page-theme" name="newTheme" class="form-control">
+                                <!-- Default theme -->
+                                <option value=""
+                                    <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">selected="selected"</c:if>
+                                >
+                                    <op:translate key="PAGE_DEFAULT_THEME" />
+                                </option>
+                            
+                                <!-- Themes list -->
+                                <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
+                                    <option value="${theme.themeInfo.name}" ${themeSelected}
+                                        <c:if test="${requestScope['osivia.toolbarSettings.currentTheme'] eq theme.themeInfo.name}">selected="selected"</c:if>
+                                    >
+                                        ${theme.themeInfo.name}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="properties-page-category" class="col-sm-3 control-label"><op:translate key="PAGE_CATEGORY" /></label>
+                        <div class="col-sm-9">
+                            <select id="properties-page-category" name="pageCategory" class="form-control">
+                                <c:forEach var="category" items="${requestScope['osivia.toolbarSettings.pageCategories']}">                                                
+                                    <option value="${category.key}"
+                                        <c:if test="${requestScope['osivia.toolbarSettings.pageCategory'] eq category.key}">selected="selected"</c:if>
+                                    >
+                                        ${category.value}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+                    
+                     <!-- Selectors propagation mode -->
+                    <div class="form-group">
+                        <label for="properties-page-selectors-propagation" class="col-sm-3 control-label"><op:translate key="PAGE_SELECTOR_PROPAGATION" /></label>
+                        <div class="col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <input id="properties-page-selectors-propagation" type="checkbox" name="selectorsPropagation" value="1"
+                                        <c:if test="${requestScope['osivia.toolbarSettings.selectorsPropagation']}">checked="checked"</c:if>
+                                    >
+                                    <span><op:translate key="PAGE_SELECTOR_PROPAGATION_ACTION" /></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                    
                 <div class="form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
+                    <div class="col-sm-offset-3 col-sm-9">
                         <c:if test="${currentPageTemplateIndicator}">
                             <p class="help-block"><op:translate key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED" /></p>
                         </c:if>
-                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="CHANGE" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="glyphicons glyphicons-floppy-disk"></i>
+                            <op:translate key="CHANGE" />
+                        </button>
+                        
+                        <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                            <op:translate key="CANCEL" />
+                        </button>
                     </div>
                 </div>
             </form>
@@ -345,29 +483,62 @@ var currentPageId = '${currentPageId}';
         <!-- Move -->
         <div id="page-location" class="container-fluid">
             <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
-                <input type="hidden" name="action" value="changePageOrder" />
-                <input type="hidden" name="pageId" value="${currentPageId}" />
-                <input type="hidden" name="jstreePageOrder" />
-                
-                <div class="form-group">
-                    <p class="help-block"><op:translate key="PAGE_ORDER" /></p>
-                    <div class="well">
-                        <div class="jstree-filter input-group input-group-sm">
-                            <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                            <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePageOrder', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
-                        </div>
-                        <div id="jstreePageOrder" class="jstree-select-unique">
-                            <formatter:tree id="jstreePageOrder" type="move" />
+                <fieldset>
+                    <legend>
+                        <i class="glyphicons glyphicons-move"></i>
+                        <span><op:translate key="SUBMENU_LOCATION" /></span>
+                    </legend>
+                    
+                    <input type="hidden" name="action" value="changePageOrder" />
+                    <input type="hidden" name="pageId" value="${currentPageId}" />
+                    
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label required"><op:translate key="LOCATION" /></label>
+                        <div class="col-sm-9">
+                            <div class="selector">
+                                <input type="hidden" name="destination" class="selector-value">
+                        
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="fancytree fancytree-selector fixed-height">
+                                            <p class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <i class="halflings halflings-filter"></i>
+                                                </span>
+                                                
+                                                <input type="text" class="form-control" placeholder="${filterLabel}">
+                                                
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                        <i class="halflings halflings-erase"></i>
+                                                        <span class="sr-only">${clearFilterLabel}</span>
+                                                    </button>
+                                                </span>
+                                            </p>
+                    
+                                            <c:out value="${requestScope['osivia.settings.locations']}" escapeXml="false" />
+                                        </div>
+                                    </div>  
+                                </div>
+                            </div>
+                            
+                            <div class="help-block"><op:translate key="PAGE_ORDER_HELP" /></div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <div class="col-sm-offset-4 col-sm-8">
-                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_ORDER_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                    
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="glyphicons glyphicons-floppy-disk"></i>
+                                <span><op:translate key="SAVE" /></span>
+                            </button>
+                        
+                            <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <span><op:translate key="CANCEL" /></span>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
             </form>
         </div>
         
@@ -487,18 +658,38 @@ var currentPageId = '${currentPageId}';
         
         
         <!-- Elements list -->
+        <c:set var="filterLabel"><op:translate key="FILTER" /></c:set>
+        <c:set var="clearFilterLabel"><op:translate key="CLEAR_FILTER" /></c:set>
         <div id="pages-list" class="container-fluid">
-            <div class="well">
-                <div class="jstree-filter input-group input-group-sm">
-                    <span class="input-group-addon"><i class="halflings halflings-filter"></i></span>
-                    <input type="text" class="form-control" onkeyup="jstreeSearch('jstreePagesList', this.value)" placeholder='<op:translate key="JSTREE_FILTER" />' />
-                </div>
-                <div id="jstreePagesList" class="jstree-links">
-                    <formatter:tree id="jstreePagesList" type="alphaOrder" />
-                </div>
+            <p class="lead">
+                <i class="glyphicons glyphicons-sort-by-alphabet"></i>
+                <span><op:translate key="SUBMENU_PAGES_LIST" /></span>
+            </p>
+        
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="fancytree fancytree-links fixed-height">
+                        <p class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <i class="halflings halflings-filter"></i>
+                            </span>
+                            
+                            <input type="text" class="form-control" placeholder="${filterLabel}">
+                            
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                    <i class="halflings halflings-erase"></i>
+                                    <span class="sr-only">${clearFilterLabel}</span>
+                                </button>
+                            </span>
+                        </p>
+
+                        <c:out value="${requestScope['osivia.settings.elements']}" escapeXml="false" />
+                    </div>
+                </div>  
             </div>
         </div>
-        
+
         
         <!-- Add portlet -->
         <div id="add-portlet" class="container-fluid">

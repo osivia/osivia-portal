@@ -415,7 +415,7 @@ public class BrowserService implements IBrowserService {
             extraClasses.append("text-muted ");
         }
         if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
-            extraClasses.append("active ");
+            extraClasses.append("current ");
         }
         if (options.isHighlight()) {
             if (root) {

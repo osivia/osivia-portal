@@ -14,9 +14,13 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,7 +34,9 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -44,12 +50,16 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.Role;
 import org.jboss.portal.security.AuthorizationDomainRegistry;
 import org.jboss.portal.security.RoleSecurityBinding;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
@@ -65,6 +75,8 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -79,7 +91,11 @@ import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageType;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.PortalObjectNameComparator;
+import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
 
@@ -110,6 +126,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final IFormatter formatter;
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
+    /** Portal authorization manager factory. */
+    private final PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
     /** Bundle factory. */
@@ -137,6 +155,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.formatter = Locator.findMBean(IFormatter.class, "osivia:service=Interceptor,type=Command,name=AssistantPageCustomizer");
         // Portal object container
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
+        // Portal authorization manager factory
+        this.portalAuthorizationManagerFactory = Locator.findMBean(PortalAuthorizationManagerFactory.class, "portal:service=PortalAuthorizationManagerFactory");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
         // Bundle factory
@@ -163,6 +183,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_RECONTEXTUALIZATION_SUPPORT);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
+        this.names.add("osivia.settings.elements");
     }
 
 
@@ -527,9 +548,32 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 }
             }
 
+
+            // Window settings
             List<WindowSettings> windowSettings = this.getWindowSettings(bundle, page.getPortal(), windows);
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS, windowSettings);
         }
+
+
+        // Elements list
+        String elements = this.generateElementsTree(page, controllerContext);
+        attributes.put("osivia.settings.elements", elements);
+
+        // Models
+        String models = this.generateModelsTree(page, controllerContext);
+        attributes.put("osivia.settings.models", models);
+
+        // Page parents
+        String pageParents = this.generatePageParentsTree(page, controllerContext);
+        attributes.put("osivia.settings.pageParents", pageParents);
+
+        // Template parents
+        String templateParents = this.generateTemplateParentsTree(page, controllerContext);
+        attributes.put("osivia.settings.templateParents", templateParents);
+
+        // Locations
+        String locations = this.generateLocationsTree(page, controllerContext);
+        attributes.put("osivia.settings.locations", locations);
     }
 
 
@@ -561,6 +605,331 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 renderCtx = rendition.getPageResult().getRegion2(regionName);
             }
         }
+    }
+
+
+    /**
+     * Generate models tree.
+     *
+     * @param currentPage current page
+     * @param controllerContext controller context
+     * @return models tree
+     */
+    private String generateModelsTree(Page currentPage, ControllerContext controllerContext) {
+        // Portal
+        Portal portal = currentPage.getPortal();
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+
+        // Children
+        Comparator<PortalObject> comparator = PortalObjectOrderComparator.getInstance();
+        Collection<Page> children = this.getPageChildren(controllerContext, portal, comparator, null);
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(null, controllerContext, child, comparator, true, null, false));
+        }
+
+        return DOM4JUtils.write(ul);
+    }
+
+
+    /**
+     * Generate page parents tree.
+     *
+     * @param currentPage current page
+     * @param controllerContext controller context
+     * @return template parents tree
+     */
+    private String generatePageParentsTree(Page currentPage, ControllerContext controllerContext) {
+        // Locale
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+
+        // Portal
+        Portal portal = currentPage.getPortal();
+        // Portal identifier
+        String portalId;
+        try {
+            portalId = URLEncoder.encode(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+        } catch (IOException e) {
+            portalId = null;
+        }
+
+        // Root container
+        Element rootContainer = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
+
+        // Root
+        Element root = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("ROOT_NODE"));
+        DOM4JUtils.addDataAttribute(root, "path", portalId);
+        DOM4JUtils.addDataAttribute(root, "folder", String.valueOf(true));
+        DOM4JUtils.addDataAttribute(root, "expanded", String.valueOf(true));
+        rootContainer.add(root);
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+        root.add(ul);
+
+        // Children
+        Comparator<PortalObject> comparator = PortalObjectOrderComparator.getInstance();
+        Collection<Page> children = this.getPageChildren(controllerContext, portal, comparator, false);
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(null, controllerContext, child, comparator, false, false, false));
+        }
+
+        return DOM4JUtils.write(rootContainer);
+    }
+
+
+    /**
+     * Generate template parents tree.
+     *
+     * @param currentPage current page
+     * @param controllerContext controller context
+     * @return template parents tree
+     */
+    private String generateTemplateParentsTree(Page currentPage, ControllerContext controllerContext) {
+        // Portal
+        Portal portal = currentPage.getPortal();
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+
+        // Children
+        Comparator<PortalObject> comparator = PortalObjectOrderComparator.getInstance();
+        Collection<Page> children = this.getPageChildren(controllerContext, portal, comparator, true);
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(null, controllerContext, child, comparator, false, true, false));
+        }
+
+        return DOM4JUtils.write(ul);
+    }
+
+
+    /**
+     * Generate elements tree.
+     *
+     * @param currentPage current page
+     * @param controllerContext controller context
+     * @return elements tree
+     */
+    private String generateElementsTree(Page currentPage, ControllerContext controllerContext) {
+        // Locale
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+
+        // Portal
+        Portal portal = currentPage.getPortal();
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+
+        // Children
+        Comparator<PortalObject> comparator = new PortalObjectNameComparator(locale);
+        Collection<Page> children = this.getPageChildren(controllerContext, portal, comparator, null);
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, false, null, false));
+        }
+
+        return DOM4JUtils.write(ul);
+    }
+
+
+    /**
+     * Generate locations tree.
+     *
+     * @param currentPage current page
+     * @param controllerContext controller context
+     * @return locations tree
+     */
+    private String generateLocationsTree(Page currentPage, ControllerContext controllerContext) {
+        // Locale
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+
+        // Portal
+        Portal portal = currentPage.getPortal();
+        // Templates indicator
+        boolean templates = PortalObjectUtils.isTemplate(currentPage);
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+
+        // Children
+        Comparator<PortalObject> comparator = PortalObjectOrderComparator.getInstance();
+        Collection<Page> children = this.getPageChildren(controllerContext, portal, comparator, templates);
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, false, templates, true));
+        }
+
+        if (!templates) {
+            // Virtual end node
+            StringBuilder builder = new StringBuilder();
+            try {
+                builder.append(URLEncoder.encode(currentPage.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8));
+                builder.append(InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
+            } catch (IOException e) {
+                // Do nothing
+            }
+            Element virtual = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("VIRTUAL_END_NODE"));
+            DOM4JUtils.addDataAttribute(virtual, "path", builder.toString());
+            DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-asterisk");
+            ul.add(virtual);
+        }
+
+        return DOM4JUtils.write(ul);
+    }
+
+
+    /**
+     * Generate fancytree node DOM4J element.
+     *
+     * @param currentPage current page, may be null
+     * @param controllerContext controller context
+     * @param page page
+     * @param comparator portal object comparator, may be null
+     * @param models models indicator
+     * @param templates templates indicator, must be null for templates and non-templates union
+     * @param virtualEndNode add virtual end node indicator
+     * @return node DOM4J element
+     */
+    private Element generateTreeNode(Page currentPage, ControllerContext controllerContext, Page page, Comparator<PortalObject> comparator, boolean models,
+            Boolean templates, boolean virtualEndNode) {
+        // Locale
+        Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+
+        // Title
+        String title = PortalObjectUtils.getDisplayName(page, locale);
+
+        // Page identifier
+        String pageId;
+        try {
+            pageId = URLEncoder.encode(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+        } catch (IOException e) {
+            pageId = null;
+        }
+
+        // URL
+        ViewPageCommand showPage = new ViewPageCommand(page.getId());
+        String url = new PortalURLImpl(showPage, controllerContext, null, null).toString();
+        url += "?init-state=true";
+
+
+        // LI
+        StringBuilder extraClasses = new StringBuilder();
+        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+        DOM4JUtils.addDataAttribute(li, "path", pageId);
+        if (PortalObjectUtils.isTemplate(page)) {
+            if (page.getParent() instanceof Portal) {
+                // Template root
+                DOM4JUtils.addDataAttribute(li, "folder", String.valueOf(true));
+                DOM4JUtils.addDataAttribute(li, "expanded", String.valueOf(true));
+
+                if (virtualEndNode) {
+                    DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
+                    extraClasses.append("text-muted ");
+                }
+            } else {
+                // Template
+                DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-construction-cone");
+            }
+        } else if (PageType.getPageType(page, controllerContext).isSpace()) {
+            // Space
+            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-global");
+        } else {
+            // Page
+            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-more-items");
+        }
+        if (page.equals(currentPage)) {
+            extraClasses.append("current ");
+        } else if (PortalObjectUtils.isAncestor(page, currentPage)) {
+            DOM4JUtils.addDataAttribute(li, "expanded", String.valueOf(true));
+        }
+        if (virtualEndNode && (page.equals(currentPage) || PortalObjectUtils.isAncestor(currentPage, page))) {
+            DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
+            extraClasses.append("text-muted ");
+        }
+
+
+        // Link
+        Element link = DOM4JUtils.generateLinkElement(url, null, null, null, title);
+        li.add(link);
+
+        if (!page.getName().equals(title)) {
+            // Sub-title
+            Element subtitle = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, "(" + page.getName() + ")");
+            link.add(subtitle);
+        }
+
+
+        // UL
+        Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, StringUtils.EMPTY);
+        li.add(ul);
+
+        // Children
+        Collection<Page> children = this.getPageChildren(controllerContext, page, comparator, templates);
+        if (models && !children.isEmpty()) {
+            DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
+            extraClasses.append("text-muted ");
+        }
+        for (Page child : children) {
+            ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, models, templates, virtualEndNode));
+        }
+
+        if (virtualEndNode && !page.equals(currentPage) && !PortalObjectUtils.isAncestor(currentPage, page)) {
+            // Virtual end node
+            Element virtual = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("VIRTUAL_END_NODE"));
+            DOM4JUtils.addDataAttribute(virtual, "path", pageId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
+            DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-asterisk");
+            ul.add(virtual);
+        }
+
+        DOM4JUtils.addAttribute(li, HTMLConstants.CLASS, extraClasses.toString());
+
+        return li;
+    }
+
+
+    /**
+     * Get portal object page children.
+     *
+     * @param controllerContext controller context
+     * @param parent parent portal object
+     * @param comparator portal objects comparator, may be null
+     * @param templates templates indicator, must be null for templates and non-templates union
+     * @return page children
+     */
+    private Collection<Page> getPageChildren(ControllerContext controllerContext, PortalObject parent, Comparator<PortalObject> comparator, Boolean templates) {
+        // Portal authorization manager
+        PortalAuthorizationManager authorizationManager = this.portalAuthorizationManagerFactory.getManager();
+
+        // Pages
+        Collection<Page> pages;
+        if (comparator != null) {
+            pages = new TreeSet<Page>(comparator);
+        } else {
+            pages = new ArrayList<Page>();
+        }
+
+        // Parent children
+        Collection<PortalObject> children = parent.getChildren(PortalObject.PAGE_MASK);
+        for (PortalObject child : children) {
+            // Permission
+            PortalObjectPermission permission = new PortalObjectPermission(child.getId(), PortalObjectPermission.VIEW_MASK);
+            if (authorizationManager.checkPermission(permission)) {
+                Page page = (Page) child;
+                PageType pageType = PageType.getPageType(page, controllerContext);
+
+                if (((templates != null) || PageType.STATIC_PAGE.equals(pageType)) && (BooleanUtils.isNotTrue(templates) || PortalObjectUtils.isTemplate(page))
+                        && (BooleanUtils.isNotFalse(templates) || !PortalObjectUtils.isTemplate(page))) {
+                    pages.add(page);
+                }
+            }
+        }
+
+        return pages;
     }
 
 

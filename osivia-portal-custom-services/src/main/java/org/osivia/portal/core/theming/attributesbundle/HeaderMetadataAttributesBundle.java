@@ -16,6 +16,7 @@ package org.osivia.portal.core.theming.attributesbundle;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -42,6 +43,8 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.DocumentMetadata;
+import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -128,9 +131,12 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
 
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
-        cmsCtx.setControllerContext(controllerContext);
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setServerInvocation(controllerContext.getServerInvocation());
+        cmsContext.setControllerContext(controllerContext);
 
         // Get content path
         String contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
@@ -141,10 +147,11 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             try {
                 Boolean pageInEditionMode =  (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
                 if( pageInEditionMode)  {
-                    cmsCtx.setDisplayLiveVersion("1");
+                    cmsContext.setDisplayLiveVersion("1");
                 }
 
-                document = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
+                document = cmsService.getContent(cmsContext, contentPath);
+                cmsContext.setDoc(document.getNativeItem());
             } catch (CMSException e) {
                 // Do nothing
             }
@@ -192,24 +199,26 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             String pagePath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
             attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, portalBaseURL + pagePath);
         } else {
-            Map<String, String> documentMetaProperties = document.getMetaProperties();
+            try {
+                // Document metadata
+                DocumentMetadata documentMetadata = cmsService.getDocumentMetadata(cmsContext);
 
-            // Title
-            String title = documentMetaProperties.get(Constants.HEADER_TITLE);
-            attributes.put(Constants.ATTR_HEADER_TITLE, title);
+                // Title
+                attributes.put(Constants.ATTR_HEADER_TITLE, documentMetadata.getTitle());
 
-            // Author
-            metadata.put("author", documentMetaProperties.get("osivia.header.meta.author"));
-            // Description
-            metadata.put("description", documentMetaProperties.get("osivia.header.meta.description"));
-            // Keywords
-            metadata.put("keywords", documentMetaProperties.get("osivia.header.meta.keywords"));
+                // SEO properties
+                for (Entry<String, String> property : documentMetadata.getSeo().entrySet()) {
+                    metadata.put(property.getKey(), property.getValue());
+                }
+            } catch (CMSException e) {
+                // Do nothing
+            }
 
             // CMS path
             String cmsPath;
             if (PortalObjectUtils.isSpaceSite(page) && StringUtils.isNotEmpty(document.getWebId())) {
                 // Web URL
-                cmsPath = this.webIdService.itemToPageUrl(cmsCtx, document);
+                cmsPath = this.webIdService.itemToPageUrl(cmsContext, document);
             } else {
                 // CMS permalink
                 cmsPath = document.getPath();

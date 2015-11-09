@@ -247,12 +247,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("changePageOrder".equals(action)) {
-                    String pageId;
-                    String destinationId;
-
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("jstreePageOrder") != null)) {
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        destinationId = URLDecoder.decode(parameterMap.get("jstreePageOrder")[0], CharEncoding.UTF_8);
+                    String[] pageIdParameter = parameterMap.get("pageId");
+                    String[] destinationIdParameter = parameterMap.get("destination");
+                    if ((pageIdParameter != null) && (destinationIdParameter != null)) {
+                        String pageId = URLDecoder.decode(pageIdParameter[0], CharEncoding.UTF_8);
+                        String destinationId = URLDecoder.decode(destinationIdParameter[0], CharEncoding.UTF_8);
                         return new MovePageCommand(pageId, destinationId);
                     }
                 }
@@ -387,31 +386,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("createPage".equals(action)) {
-                    String name;
-                    String parentId;
-                    String modelId;
+                    String[] nameParameter = parameterMap.get("name");
+                    String[] modelIdParameter = parameterMap.get("model");
+                    String[] parentIdParameter = parameterMap.get("parent");
 
-                    if ((parameterMap.get("name") != null) && (parameterMap.get("jstreePageParentSelect") != null)
-                            && (parameterMap.get("jstreePageModelSelect") != null)) {
-                        name = URLDecoder.decode(parameterMap.get("name")[0], CharEncoding.UTF_8);
-                        parentId = URLDecoder.decode(parameterMap.get("jstreePageParentSelect")[0], CharEncoding.UTF_8);
-                        modelId = URLDecoder.decode(parameterMap.get("jstreePageModelSelect")[0], CharEncoding.UTF_8);
-
-                        return new CreatePageCommand(name, parentId, modelId);
-                    }
-                }
-
-                if ("createTemplate".equals(action)) {
-                    String name;
-                    String parentId;
-                    String modelId;
-
-                    if ((parameterMap.get("name") != null) && (parameterMap.get("jstreeTemplateParentSelect") != null)
-                            && (parameterMap.get("jstreeTemplateModelSelect") != null)) {
-                        name = URLDecoder.decode(parameterMap.get("name")[0], CharEncoding.UTF_8);
-                        parentId = URLDecoder.decode(parameterMap.get("jstreeTemplateParentSelect")[0], CharEncoding.UTF_8);
-                        modelId = URLDecoder.decode(parameterMap.get("jstreeTemplateModelSelect")[0], CharEncoding.UTF_8);
-
+                    if ((nameParameter != null) && (parentIdParameter != null)) {
+                        String name = URLDecoder.decode(nameParameter[0], CharEncoding.UTF_8);
+                        String modelId;
+                        if (modelIdParameter != null) {
+                            modelId = URLDecoder.decode(modelIdParameter[0], CharEncoding.UTF_8);
+                        } else {
+                            modelId = null;
+                        }
+                        String parentId = URLDecoder.decode(parentIdParameter[0], CharEncoding.UTF_8);
                         return new CreatePageCommand(name, parentId, modelId);
                     }
                 }

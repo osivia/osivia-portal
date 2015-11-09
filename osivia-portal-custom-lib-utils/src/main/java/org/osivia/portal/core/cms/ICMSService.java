@@ -449,4 +449,24 @@ public interface ICMSService {
      */
     String getReorderUrl(CMSServiceCtx cmsContext) throws CMSException;
 
+
+    /**
+     * Get adapted navigation path.
+     *
+     * @param cmsContext CMS context
+     * @return adapted navigation path
+     * @throws CMSException
+     */
+    String getAdaptedNavigationPath(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get document metadata.
+     *
+     * @param cmsContext CMS context
+     * @return document metadata
+     * @throws CMSException
+     */
+    DocumentMetadata getDocumentMetadata(CMSServiceCtx cmsContext) throws CMSException;
+
 }

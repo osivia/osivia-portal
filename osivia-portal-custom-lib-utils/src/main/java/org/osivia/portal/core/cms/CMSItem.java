@@ -29,8 +29,6 @@ public class CMSItem {
     private final String path;
     /** CMS item properties. */
     private final Map<String, String> properties;
-    /** CMS item meta-properties, used for SEO. */
-    private final Map<String, String> metaProperties;
     /** Domain identifier. */
     private final String domainId;
     /** Web identifier */
@@ -65,7 +63,6 @@ public class CMSItem {
         }
         this.domainId = domainId;
         this.webId = webId;
-        this.metaProperties = new HashMap<String, String>();
     }
 
 
@@ -157,15 +154,6 @@ public class CMSItem {
      */
     public Map<String, String> getProperties() {
         return this.properties;
-    }
-
-    /**
-     * Getter for metaProperties.
-     *
-     * @return the metaProperties
-     */
-    public Map<String, String> getMetaProperties() {
-        return this.metaProperties;
     }
 
     /**

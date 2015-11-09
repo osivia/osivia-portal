@@ -604,7 +604,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Page location
         String pageLocationTitle = bundle.getString(InternationalizationConstants.KEY_LOCATION);
         Element pageLocation = DOM4JUtils.generateLinkElement(URL_PAGE_LOCATION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageLocationTitle,
-                "halflings halflings-sort", AccessibilityRoles.MENU_ITEM);
+                "halflings halflings-move", AccessibilityRoles.MENU_ITEM);
         this.addSubMenuElement(editionMenuUL, pageLocation, null);
 
         // Divider

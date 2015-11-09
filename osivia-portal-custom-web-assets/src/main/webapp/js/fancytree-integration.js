@@ -39,8 +39,54 @@ $JQry(document).ready(function() {
 	});
 	
 	
+	// Fancytree with links
+	$JQry(".fancytree.fancytree-selector").fancytree({
+		activeVisible : true,
+		autoActivate : false,
+		clickFolderMode : 1,
+		extensions : ["filter", "glyph"],
+		tabbable : false,
+		titlesTabbable : true,
+		toggleEffect : false,
+		
+		filter : {
+			mode : "hide"
+		},
+		
+		glyph : {
+			map : {
+				doc : "glyphicons glyphicons-file",
+				docOpen: "glyphicons glyphicons-file",
+				error: "halflings halflings-exclamation-sign text-error",
+				expanderClosed: "glyphicons glyphicons-collapse",
+				expanderLazy: "glyphicons glyphicons-collapse",
+				expanderOpen: "glyphicons glyphicons-expand",
+				folder: "glyphicons glyphicons-folder-closed",
+				folderOpen: "glyphicons glyphicons-folder-open",
+				loading: "halflings halflings-hourglass text-info"
+			}
+		},
+		
+		activate : function(event, data) {
+			var $selector = data.tree.$div.closest(".selector"),
+				$input = $selector.find("input.selector-value"),
+				path = data.node.data.path;
+			
+			$input.val(path);
+		},
+		
+		click : function(event, data) {
+			if (data.targetType == "expander") {
+				return true;
+			} else {
+				return data.node.data.acceptable;
+			}
+		}
+	});
+	
+	
 	// Fancytree selector with lazy loading
-	$JQry(".fancytree.fancytree-selector").each(function() {
+	$JQry(".fancytree.fancytree-selector-lazy").each(function() {
 		var $this = $JQry(this),
 			url = $this.data("lazyloadingurl");
 
@@ -49,7 +95,7 @@ $JQry(document).ready(function() {
 			activeVisible : true,
 			autoActivate : false,
 			clickFolderMode : 1,
-			extensions : ["filter", "glyph"],
+			extensions : ["glyph"],
 			tabbable : false,
 			titlesTabbable : false,
 			toggleEffect : false,
@@ -169,11 +215,34 @@ $JQry(document).ready(function() {
 	$JQry(".fancytree button").click(function(event) {
 		var $tree = $JQry(this).closest(".fancytree"),
 			tree = $tree.fancytree("getTree"),
-			$input = $tree.find("input[type=text]");
+			$filter = $tree.find("input[type=text]");
 			
-		$input.val("");
+		$filter.val("");
 		
 		clearFilter(tree);
+	});
+	
+	
+	// Fancybox checkbox toggle
+	$JQry("input[type=checkbox][data-toggle=fancytree]").change(function(event) {
+		var $checkbox = $JQry(this),
+		    checked = $checkbox.is(":checked"),
+	        $formGroup = $checkbox.closest(".form-group"),
+	        $selector = $formGroup.find("input.selector-value"),
+	        $tree = $formGroup.find(".fancytree"),
+	        tree = $tree.fancytree("getTree"),
+	        $filter = $tree.find("input[type=text]");
+
+		if (checked) {
+			$tree.fancytree("disable");
+			$selector.val("");
+			tree.activateKey(false);
+		} else {
+			$tree.fancytree("enable");
+		}
+		
+		$selector.prop("disabled", checked);
+		$filter.prop("disabled", checked);
 	});
 	
 });
