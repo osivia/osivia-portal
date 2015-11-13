@@ -26,15 +26,13 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.internationalization.Bundle;
-import org.osivia.portal.api.internationalization.IBundleFactory;
-import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
@@ -46,6 +44,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentMetadata;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.theming.IPageHeaderResourceService;
@@ -69,8 +68,6 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory portalURLFactory;
     /** WebId service. */
     private final IWebIdService webIdService;
-    /** Bundle factory. */
-    private final IBundleFactory bundleFactory;
 
     /** Header metadata attributes names. */
     private final Set<String> names;
@@ -88,10 +85,6 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
         // WebId service
         this.webIdService = Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
-        // Bundle factory
-        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
-                IInternationalizationService.MBEAN_NAME);
-        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
         // Properties
         this.names = new TreeSet<String>();
@@ -99,6 +92,7 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_HEADER_METADATA);
         this.names.add(Constants.ATTR_HEADER_PORTAL_BASE_URL);
         this.names.add(Constants.ATTR_HEADER_CANONICAL_URL);
+        this.names.add(Constants.ATTR_HEADER_APPLICATION_NAME);
     }
 
 
@@ -125,10 +119,10 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Current page
         Page page = renderPageCommand.getPage();
+        // Current portal
+        Portal portal = page.getPortal();
         // Current locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
-        // Bundle
-        Bundle bundle = this.bundleFactory.getBundle(locale);
 
 
         // CMS service
@@ -163,12 +157,16 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 + controllerContext.getServerInvocation().getServerContext().getPortalContextPath();
         attributes.put(Constants.ATTR_HEADER_PORTAL_BASE_URL, portalBaseURL);
 
+
         // Metadata
         Map<String, String> metadata = new HashMap<String, String>();
         attributes.put(Constants.ATTR_HEADER_METADATA, metadata);
 
         // Application name
-        metadata.put("application-name", bundle.getString("BRAND"));
+        String applicationName = InternationalizationUtils.getApplicationName(portal, locale);
+        attributes.put(Constants.ATTR_HEADER_APPLICATION_NAME, applicationName);
+        metadata.put("application-name", applicationName);
+
         // Generator
         StringBuilder generator = new StringBuilder("OSIVIA Portal");
         String version = this.pageHeaderResourceService.getPortalVersion(controllerContext);

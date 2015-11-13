@@ -64,6 +64,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -270,10 +271,24 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                     if (Boolean.TRUE.equals(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.showMenuBarItem"))) {
                         List<MenubarItem> menubarItems = (List<MenubarItem>) attributes.get(Constants.PORTLET_ATTR_MENU_BAR);
                         if (menubarItems != null) {
+                            // Locale
+                            Locale locale;
+                            if ((controllerContext.getServerInvocation() != null) && (controllerContext.getServerInvocation().getRequest() != null)) {
+                                locale = controllerContext.getServerInvocation().getRequest().getLocale();
+                            } else {
+                                locale = Locale.getDefault();
+                            }
+
+                            // Title
                             String title = window.getDeclaredProperty("osivia.title");
                             if (title == null) {
                                 title = fr.getTitle();
                             }
+                            String applicationName = InternationalizationUtils.getApplicationName(window, locale);
+                            if (StringUtils.isNotBlank(applicationName)) {
+                                title += " - " + applicationName;
+                            }
+
 
                             PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                                     "osivia.popupModeWindowID");
@@ -298,13 +313,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 customizationAttributes.put("windowId", windowId);
                                 customizationAttributes.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
-                                // Locale
-                                Locale locale;
-                                if ((controllerContext.getServerInvocation() != null) && (controllerContext.getServerInvocation().getRequest() != null)) {
-                                    locale = controllerContext.getServerInvocation().getRequest().getLocale();
-                                } else {
-                                    locale = Locale.getDefault();
-                                }
+
 
                                 CustomizationContext customizationContext = new CustomizationContext(customizationAttributes, locale);
                                 this.customizationService.customize("MENUBAR_PRINT_ITEM", customizationContext);

@@ -114,6 +114,8 @@ public final class Constants {
     public static final String ATTR_HEADER_PORTAL_BASE_URL = "osivia.header.portal.url";
     /** Canonical URL. */
     public static final String ATTR_HEADER_CANONICAL_URL = "osivia.header.canonical.url";
+    /** Application name. */
+    public static final String ATTR_HEADER_APPLICATION_NAME = "osivia.header.application.name";
 
 
     // Toolbar

@@ -87,7 +87,7 @@ function portalLogout() {
                 
                 
                 <!-- Brand -->
-                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs"><op:translate key="BRAND" /></a>
+                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs">${requestScope['osivia.header.application.name']}</a>
             </div>
                 
             <div class="collapse navbar-collapse">

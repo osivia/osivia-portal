@@ -44,9 +44,12 @@
                         <p class="text-overflow">
                             <c:choose>
                                 <c:when test="${not empty userPortal.defaultPage}">
-                                    <a href="${userPortal.defaultPage.url}"><op:translate key="BRAND" /></a>
+                                    <a href="${userPortal.defaultPage.url}">${requestScope['osivia.header.application.name']}</a>
                                 </c:when>
-                                <c:otherwise><op:translate key="BRAND" /></c:otherwise>
+                                
+                                <c:otherwise>
+                                    <span>${requestScope['osivia.header.application.name']}</span>
+                                </c:otherwise>
                             </c:choose>
                         </p>
                     </div>
