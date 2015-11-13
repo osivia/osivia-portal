@@ -696,8 +696,18 @@ public class CmsCommand extends DynamicCommand {
 
                     // Attention, cet appel peut modifier si nécessaire le
                     // scope de cmsReadItemContext
-                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());     
-                    
+                    boolean forceReload = false;
+                    if (hasWebId) {
+                        forceReload = cmsReadItemContext.isForceReload();
+                        if (!forceReload)
+                            cmsReadItemContext.setForceReload(true);
+                    }
+                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
+                    if (hasWebId) {
+                        if (!forceReload)
+                            cmsReadItemContext.setForceReload(false);
+                    }
+                                        
                     // Le path eventuellement en ID a été retranscrit en chemin
                     this.cmsPath = pubInfos.getDocumentPath();
 
