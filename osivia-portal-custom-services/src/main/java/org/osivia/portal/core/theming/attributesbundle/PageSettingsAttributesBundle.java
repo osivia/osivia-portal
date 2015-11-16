@@ -664,6 +664,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         DOM4JUtils.addDataAttribute(root, "path", portalId);
         DOM4JUtils.addDataAttribute(root, "folder", String.valueOf(true));
         DOM4JUtils.addDataAttribute(root, "expanded", String.valueOf(true));
+        DOM4JUtils.addDataAttribute(root, "retain", String.valueOf(true));
         rootContainer.add(root);
 
         // UL
@@ -810,6 +811,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         } catch (IOException e) {
             pageId = null;
         }
+        // Page type
+        PageType pageType = PageType.getPageType(page, controllerContext);
 
         // URL
         ViewPageCommand showPage = new ViewPageCommand(page.getId());
@@ -826,6 +829,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 // Template root
                 DOM4JUtils.addDataAttribute(li, "folder", String.valueOf(true));
                 DOM4JUtils.addDataAttribute(li, "expanded", String.valueOf(true));
+                DOM4JUtils.addDataAttribute(li, "retain", String.valueOf(true));
 
                 if (virtualEndNode) {
                     DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
@@ -835,7 +839,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 // Template
                 DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-construction-cone");
             }
-        } else if (PageType.getPageType(page, controllerContext).isSpace()) {
+        } else if (pageType.isSpace()) {
             // Space
             DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-global");
         } else {
@@ -857,7 +861,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         Element link = DOM4JUtils.generateLinkElement(url, null, null, null, title);
         li.add(link);
 
-        if (!page.getName().equals(title)) {
+        if (pageType.isPortalPage() && !page.getName().equals(title)) {
             // Sub-title
             Element subtitle = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, "(" + page.getName() + ")");
             link.add(subtitle);
@@ -869,21 +873,23 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         li.add(ul);
 
         // Children
-        Collection<Page> children = this.getPageChildren(controllerContext, page, comparator, templates);
-        if (models && !children.isEmpty()) {
-            DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
-            extraClasses.append("text-muted ");
-        }
-        for (Page child : children) {
-            ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, models, templates, virtualEndNode));
-        }
+        if (!(virtualEndNode && pageType.isSpace())) {
+            Collection<Page> children = this.getPageChildren(controllerContext, page, comparator, templates);
+            if (models && !children.isEmpty()) {
+                DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
+                extraClasses.append("text-muted ");
+            }
+            for (Page child : children) {
+                ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, models, templates, virtualEndNode));
+            }
 
-        if (virtualEndNode && !page.equals(currentPage) && !PortalObjectUtils.isAncestor(currentPage, page)) {
-            // Virtual end node
-            Element virtual = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("VIRTUAL_END_NODE"));
-            DOM4JUtils.addDataAttribute(virtual, "path", pageId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
-            DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-asterisk");
-            ul.add(virtual);
+            if (virtualEndNode && !page.equals(currentPage) && !PortalObjectUtils.isAncestor(currentPage, page)) {
+                // Virtual end node
+                Element virtual = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("VIRTUAL_END_NODE"));
+                DOM4JUtils.addDataAttribute(virtual, "path", pageId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
+                DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-asterisk");
+                ul.add(virtual);
+            }
         }
 
         DOM4JUtils.addAttribute(li, HTMLConstants.CLASS, extraClasses.toString());
@@ -922,7 +928,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 Page page = (Page) child;
                 PageType pageType = PageType.getPageType(page, controllerContext);
 
-                if (((templates != null) || PageType.STATIC_PAGE.equals(pageType)) && (BooleanUtils.isNotTrue(templates) || PortalObjectUtils.isTemplate(page))
+                if (!pageType.isTemplated() && (BooleanUtils.isNotTrue(templates) || PortalObjectUtils.isTemplate(page))
                         && (BooleanUtils.isNotFalse(templates) || !PortalObjectUtils.isTemplate(page))) {
                     pages.add(page);
                 }
