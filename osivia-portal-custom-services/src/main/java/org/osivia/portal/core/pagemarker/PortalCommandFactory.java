@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -43,6 +45,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
@@ -212,12 +215,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         // 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
-            // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
-            // The cause: the close associated command is executed twice (during the close and the closed phase)
-            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-            NotificationsUtils.getNotificationsService().getNotificationsList(portalControllerContext).clear();
-
-
             path = requestPath.substring(POPUP_CLOSED_PATH.length() - 1);
             popupClosed = true;
         }
@@ -283,6 +280,18 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+
+
+		if( popupClosed){
+            // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
+            // The cause: the close associated command is executed twice (during the close and the closed phase)
+        	// The only use case is the mapsite portlet in web site
+        	if( cmd instanceof CmsCommand)	{
+        		PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+        		NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext, new ArrayList<Notifications>());
+        	}
+
+        }
 
 
         // Restauration of pages in case of loose of sessions
@@ -396,12 +405,16 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
             // Back URL when maximization is explicitly invoked
             if (WindowState.MAXIMIZED.equals(windowState)) {
-                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
+                Mode mode = ((InvokePortletWindowRenderCommand) cmd).getMode();
+                if (!Mode.ADMIN.equals(mode)) {
+                    NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, ((InvokePortletWindowRenderCommand) cmd).getTargetId());
 
-                WindowNavigationalState oldState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                    WindowNavigationalState oldState = (WindowNavigationalState) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE,
+                            nsKey);
 
-                if ((oldState == null) || !WindowState.MAXIMIZED.equals(oldState.getWindowState())) {
-                    updateBack = true;
+                    if ((oldState == null) || !WindowState.MAXIMIZED.equals(oldState.getWindowState())) {
+                        updateBack = true;
+                    }
                 }
             }
 

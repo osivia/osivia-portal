@@ -139,10 +139,11 @@ public interface ICMSService {
      * @param publishSpacePath publish space path
      * @param sitePath site path
      * @param navigationScope navigation scope
+     * @param isSpaceSite if the portal is a space site
      * @return editable windows
      * @throws CMSException
      */
-    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsContext, String path, String publishSpacePath, String sitePath, String navigationScope)
+    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsContext, String path, String publishSpacePath, String sitePath, String navigationScope, Boolean isSpaceSite)
             throws CMSException;
 
 

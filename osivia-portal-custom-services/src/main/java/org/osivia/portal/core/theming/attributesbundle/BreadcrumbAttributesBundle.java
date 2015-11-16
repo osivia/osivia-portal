@@ -62,6 +62,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -135,6 +136,33 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_BREADCRUMB, breadcrumb);
     }
 
+    
+    
+    private CMSItem computeContent(ControllerContext controllerContext, String contentPath)	{
+
+        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+        cmsCtx.setControllerContext(controllerContext);
+    	
+        // Get ECM object
+        CMSItem document = null;
+        if (contentPath != null) {
+            try {
+                Boolean pageInEditionMode =  (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                if( pageInEditionMode)  {
+                    cmsCtx.setDisplayLiveVersion("1");
+                }
+
+                document = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
+            } catch (CMSException e) {
+                // Do nothing
+            }
+        }
+
+        return document;
+    }
+    
+    
 
     /**
      * Utility method used to compute breadcrumb value.
@@ -241,6 +269,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     cmxCtx.setDisplayLiveVersion("1");
                 }
 
+                int currentLevel = 0;
+                
                 while (StringUtils.contains(publicationPath, basePath)) {
                     // Exclude root publish Site for domain
                     // (will be computed later, the same as others spaces)
@@ -254,7 +284,17 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     Map<String, String> pageParams = new HashMap<String, String>();
 
                     try {
-                        CMSItem cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                    	CMSItem cmsItem = null;
+                    	if( currentLevel == 0)	{
+                    		// First navigation item must be fetched directly (not in navigation)
+                    		// to get the correct edition state
+                    		//title = document.getMetaProperties().get(Constants.HEADER_TITLE);
+                    		cmsItem = computeContent(controllerContext, publicationPath);
+                    	}
+                    	else               	
+                    		cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                    	
+                    	
                         String url;
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
                             String webPath = this.webIdService.itemToPageUrl(cmxCtx, cmsItem);
@@ -273,6 +313,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
                             breadcrumb.getChilds().add(0, breadcrumbItem);
                         }
+                        
+                        currentLevel++;
+                        
                     } catch (CMSException e) {
                         throw new ControllerException(e);
                     }

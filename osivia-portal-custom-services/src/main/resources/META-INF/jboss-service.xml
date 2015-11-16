@@ -412,6 +412,9 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean"
         xmbean-dd="">
         <xmbean />
+        <depends
+            optional-attribute-name="CustomizationService"
+            proxy-type="attribute">osivia:service=CustomizationService</depends>        
     </mbean>
 
 

@@ -557,6 +557,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
+            ControllerContext controllerCtx = cmd.getControllerContext();
+            HttpServletRequest request = rpc.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+
+			// Set page properties into request
+            request.setAttribute("osivia.pageProperties", rpc.getPage().getProperties());
+
 
             /* Controle du host */
             String host = portal.getDeclaredProperty("osivia.site.hostName");
@@ -570,9 +576,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 return new RedirectionResponse(url.toString());
             }
 
-
-            ControllerContext controllerCtx = cmd.getControllerContext();
-            HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
 
             controlDefaultPageCache(this.portalObjectContainer, cmd, controllerCtx);
 

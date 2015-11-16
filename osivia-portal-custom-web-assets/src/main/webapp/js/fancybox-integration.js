@@ -88,7 +88,12 @@ $JQry(function() {
 	$JQry(".fancyframe").fancybox({
 		"type" : "iframe",
 		"width" : 800,
-		"height" : 600
+		"height" : 600,
+ 		helpers: {
+ 			overlay: {
+ 				closeClick: false
+ 			}
+ 		}
 	});
 
 	// Fancyframe with callback
@@ -105,6 +110,7 @@ $JQry(function() {
 				position : "top"
 			},
 			overlay : {
+				closeClick: false,
 				locked : false
 			}
 		},
