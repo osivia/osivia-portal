@@ -429,12 +429,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
             properties.put("osivia.ajaxLink", "1");
 			properties.put("osivia.hideTitle", "1");
-
+			
+			String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
+            properties.put("osivia.title",usersAdministrationTitle);
+            
 			String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
 					bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "toutatice-identite-gestionpersonnes-portailPortletInstance",
 					properties, parameters);
 
-			String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
             Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
                     "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
 			this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
@@ -443,11 +445,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		}
 
 		try {
+            String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
+            properties.put("osivia.title",groupsAdministrationTitle);
+			
 			String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
 					bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "toutatice-identite-gestiongroupes-portailPortletInstance",
 					properties, parameters);
-
-            String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
+            
             Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
                     "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
 			this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
@@ -456,11 +460,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 		}
 
 		try {
+			
+            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
+            properties.put("osivia.title",workspacesAdministrationTitle);
+			
 			String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
 					bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "toutatice-workspace-gestionworkspace-portailPortletInstance",
 					properties, parameters);
-
-            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
+            
             Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
                     "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
 			this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
