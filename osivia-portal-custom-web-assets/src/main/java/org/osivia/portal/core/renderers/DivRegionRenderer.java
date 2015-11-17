@@ -145,8 +145,24 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Panel
         if (this.showCMSTools(irrc)) {
+            boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+            boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
+
             markup.println("<div class='panel panel-default'><div class='panel-body'>");
-            this.printFragmentCommands(irrc, bundle, markup);
+
+            if (showAdvancedCMSTools) {
+                markup.print("<p class='text-muted'><span>");
+                markup.print(irrc.getId());
+                markup.print("</span>");
+                if (locked) {
+                    markup.print(" <i class='halflings halflings-glyph-lock'></i>");
+                }
+                markup.println("</p>");
+            }
+
+            if (!locked) {
+                this.printFragmentCommands(irrc, bundle, markup);
+            }
         }
 
         // Region layout row
@@ -270,9 +286,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         boolean showCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_CMS_TOOLS_INDICATOR_PROPERTY));
         boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
         boolean inherited = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY));
-        boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
 
-        return irrc.isCMS() && showCMSTools && !locked && (showAdvancedCMSTools || !inherited);
+        return irrc.isCMS() && showCMSTools && (showAdvancedCMSTools || !inherited);
     }
 
 
