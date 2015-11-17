@@ -418,9 +418,7 @@ public class BrowserService implements IBrowserService {
             extraClasses.append("current ");
         }
         if (options.isHighlight()) {
-            if (root) {
-                extraClasses.append("text-muted ");
-            } else if (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified())) {
+            if (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified())) {
                 extraClasses.append("text-warning ");
             }
         }
