@@ -73,12 +73,18 @@
     
     cursor: pointer;
     
-    &:not(.fancytree-active):not(.fancytree-drop-accept):not(.fancytree-drop-reject):hover {
+    &:not(.fancytree-active):not(.fancytree-drop-accept):not(.fancytree-drop-reject):not(.not-allowed):hover {
         background-color: fade(#eee, 20%);
     }
     
     &.current {
         font-weight: bold;
+    }
+    
+    &.not-allowed {
+        > :not(.fancytree-expander) {
+            cursor: not-allowed;
+        }
     }
 }
 

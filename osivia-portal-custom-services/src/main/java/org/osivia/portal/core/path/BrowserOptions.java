@@ -29,6 +29,10 @@ public class BrowserOptions {
     private final boolean live;
     /** Accepted types, required for move. */
     private final Set<String> acceptedTypes;
+    /** Included types, all by default. */
+    private final Set<String> includedTypes;
+    /** Excluded types, neither by default. */
+    private final Set<String> excludedTypes;
     /** Workspaces indicator. */
     private final boolean workspaces;
     /** Link indicator. */
@@ -81,6 +85,22 @@ public class BrowserOptions {
         } else {
             this.acceptedTypes = new HashSet<String>(Arrays.asList(acceptedTypes));
         }
+
+        // Included types
+        String[] includedTypes = StringUtils.split(request.getParameter("includedTypes"), ",");
+        if (includedTypes == null) {
+            this.includedTypes = null;
+        } else {
+            this.includedTypes = new HashSet<String>(Arrays.asList(includedTypes));
+        }
+
+        // Excluded types
+        String[] excludedTypes = StringUtils.split(request.getParameter("excludedTypes"), ",");
+        if (excludedTypes == null) {
+            this.excludedTypes = null;
+        } else {
+            this.excludedTypes = new HashSet<String>(Arrays.asList(excludedTypes));
+        }
     }
 
 
@@ -99,6 +119,8 @@ public class BrowserOptions {
         this.ignoredPaths = options.ignoredPaths;
         this.live = options.live;
         this.acceptedTypes = options.acceptedTypes;
+        this.includedTypes = options.includedTypes;
+        this.excludedTypes = options.excludedTypes;
         this.workspaces = options.workspaces;
         this.link = options.link;
         this.displayContext = options.displayContext;
@@ -160,6 +182,24 @@ public class BrowserOptions {
      */
     public Set<String> getAcceptedTypes() {
         return this.acceptedTypes;
+    }
+
+    /**
+     * Getter for includedTypes.
+     *
+     * @return the includedTypes
+     */
+    public Set<String> getIncludedTypes() {
+        return this.includedTypes;
+    }
+
+    /**
+     * Getter for excludedTypes.
+     *
+     * @return the excludedTypes
+     */
+    public Set<String> getExcludedTypes() {
+        return this.excludedTypes;
     }
 
     /**

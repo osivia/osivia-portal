@@ -8,14 +8,19 @@
 <portlet:defineObjects />
 
 <portlet:resourceURL id="lazyLoading" var="lazyLoadingURL">
+    <portlet:param name="cmsBasePath" value="${cmsBasePath}" />
     <portlet:param name="live" value="true" />
     <portlet:param name="link" value="true" />
     <portlet:param name="displayContext" value="proxy_preview" />
     <portlet:param name="popup" value="true" />
     <portlet:param name="highlight" value="true" />
     
-    <c:if test="${not empty cmsBasePath}">
-        <portlet:param name="cmsBasePath" value="${cmsBasePath}" />
+    <c:if test="${not empty cmsNavigationPath}">
+        <portlet:param name="cmsNavigationPath" value="${cmsNavigationPath}" />
+    </c:if>
+    
+    <c:if test="${not empty excludedTypes}">
+        <portlet:param name="excludedTypes" value="${excludedTypes}" />
     </c:if>
 </portlet:resourceURL>
 
@@ -33,6 +38,8 @@
             <span><op:translate key="DOCUMENT_UP_TO_DATE" /></span>
             <br>
             <span class="text-warning"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></span>
+            <br>
+            <span><strong><op:translate key="DOCUMENT_CURRENT" /></strong></span>
         </dd>
     </dl>
     

@@ -13,6 +13,7 @@
     <portlet:param name="cmsNavigationPath" value="${cmsNavigationPath}" />
     <portlet:param name="link" value="true" />
     <portlet:param name="live" value="${live}" />
+    <portlet:param name="includedTypes" value="PortalSite,PortalPage" />
     <portlet:param name="forceReload" value="true" />
     <portlet:param name="popup" value="true" />
     <portlet:param name="highlight" value="true" />

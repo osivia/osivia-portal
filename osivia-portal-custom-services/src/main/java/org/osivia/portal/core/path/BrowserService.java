@@ -252,19 +252,14 @@ public class BrowserService implements IBrowserService {
         List<CMSItem> cmsSubItems = this.getChildrenCMSItem(portalControllerContext, options, parentPath);
         if (cmsSubItems != null) {
             for (CMSItem cmsSubItem : cmsSubItems) {
-                // Accepted child
-                boolean acceptedChild;
-                if (options.getAcceptedTypes() == null) {
-                    acceptedChild = true;
-                } else if (cmsSubItem.getType() == null) {
-                    acceptedChild = false;
-                } else {
+                // Add child indicator
+                boolean add = this.isAcceptable(cmsSubItem, options);
+                if (!add) {
                     DocumentType type = cmsSubItem.getType();
-                    boolean containsAny = CollectionUtils.containsAny(cmsSubItem.getType().getPortalFormSubTypes(), options.getAcceptedTypes());
-                    acceptedChild = (type.isFolderish() || containsAny);
+                    add = ((type != null) && type.isFolderish());
                 }
 
-                if (acceptedChild) {
+                if (add) {
                     childrenJSONArray.put(this.generateJSONObject(portalControllerContext, cmsSubItem, false, options));
                 }
             }
@@ -337,18 +332,17 @@ public class BrowserService implements IBrowserService {
 
         // CMS item type
         DocumentType type = cmsItem.getType();
-
         boolean browsable = false;
         String glyph = null;
-        boolean acceptable = true;
         if (type != null) {
             browsable = type.isBrowsable();
             glyph = type.getGlyph();
-            if (options.getAcceptedTypes() != null) {
-                acceptable = CollectionUtils.isSubCollection(options.getAcceptedTypes(), type.getPortalFormSubTypes());
-            }
         }
-        if (acceptable && (options.getIgnoredPaths() != null)) {
+
+        // Acceptable indicator
+        boolean acceptable = this.isAcceptable(cmsItem, options);
+
+        if (acceptable && (options.getAcceptedTypes() != null) && (options.getIgnoredPaths() != null)) {
             String currentPath = cmsItem.getPath();
             Set<String> ignoredPaths = options.getIgnoredPaths();
             for (String ignoredPath : ignoredPaths) {
@@ -412,16 +406,14 @@ public class BrowserService implements IBrowserService {
         // Extra-classes
         StringBuilder extraClasses = new StringBuilder();
         if (!acceptable) {
-            extraClasses.append("text-muted ");
+            extraClasses.append("text-muted not-allowed ");
+        } else if (options.isHighlight() && (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified()))) {
+            extraClasses.append("text-warning ");
         }
         if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
             extraClasses.append("current ");
         }
-        if (options.isHighlight()) {
-            if (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified())) {
-                extraClasses.append("text-warning ");
-            }
-        }
+
         object.put("extraClasses", extraClasses.toString());
 
         // Children
@@ -487,6 +479,48 @@ public class BrowserService implements IBrowserService {
         }
 
         return object;
+    }
+
+
+    /**
+     * Check if a CMS item is acceptable.
+     *
+     * @param cmsItem CMS item
+     * @param options browser options
+     * @return true if acceptable
+     */
+    private boolean isAcceptable(CMSItem cmsItem, BrowserOptions options) {
+        DocumentType type = cmsItem.getType();
+
+        // Accepted child
+        boolean acceptedChild;
+        if (options.getAcceptedTypes() == null) {
+            acceptedChild = true;
+        } else if (type == null) {
+            acceptedChild = false;
+        } else {
+            acceptedChild = CollectionUtils.containsAny(type.getPortalFormSubTypes(), options.getAcceptedTypes());
+        }
+
+        // Included child
+        boolean includedChild;
+        if (options.getIncludedTypes() == null) {
+            includedChild = true;
+        } else if (type == null) {
+            includedChild = false;
+        } else {
+            includedChild = options.getIncludedTypes().contains(type.getName());
+        }
+
+        // Excluded child
+        boolean excludedChild;
+        if ((options.getExcludedTypes() == null) || (type == null)) {
+            excludedChild = false;
+        } else {
+            excludedChild = options.getExcludedTypes().contains(type.getName());
+        }
+
+        return acceptedChild && includedChild && !excludedChild;
     }
 
 

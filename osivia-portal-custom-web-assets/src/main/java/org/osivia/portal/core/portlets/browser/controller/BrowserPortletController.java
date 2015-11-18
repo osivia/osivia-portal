@@ -25,6 +25,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -99,8 +100,8 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
         // Current window
         PortalWindow window = WindowFactory.getWindow(request);
 
-        // CMS base path
-        String cmsBasePath = window.getProperty("osivia.browser.path");
+        // CMS bas path
+        String cmsBasePath = window.getProperty("osivia.browser.basePath");
         if (StringUtils.isBlank(cmsBasePath)) {
             cmsBasePath = window.getPageProperty("osivia.cms.basePath");
             if (StringUtils.isBlank(cmsBasePath)) {
@@ -109,6 +110,16 @@ public class BrowserPortletController extends PortalGenericPortlet implements Po
             }
         }
         request.setAttribute("cmsBasePath", cmsBasePath);
+
+        // CMS navigation path
+        String cmsNavigationPath = window.getProperty("osivia.browser.navigationPath");
+        request.setAttribute("cmsNavigationPath", cmsNavigationPath);
+
+        // Excluded types
+        boolean space = BooleanUtils.toBoolean(window.getProperty("osivia.browser.space"));
+        if (space) {
+            request.setAttribute("excludedTypes", "PortalSite,PortalPage");
+        }
 
         return VIEW_PATH;
     }

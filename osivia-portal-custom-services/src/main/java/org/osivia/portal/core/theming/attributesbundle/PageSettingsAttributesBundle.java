@@ -833,7 +833,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
                 if (virtualEndNode) {
                     DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
-                    extraClasses.append("text-muted ");
+                    extraClasses.append("text-muted not-allowed ");
                 }
             } else {
                 // Template
@@ -853,7 +853,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         }
         if (virtualEndNode && (page.equals(currentPage) || PortalObjectUtils.isAncestor(currentPage, page))) {
             DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
-            extraClasses.append("text-muted ");
+            extraClasses.append("text-muted not-allowed ");
         }
 
 
@@ -877,7 +877,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             Collection<Page> children = this.getPageChildren(controllerContext, page, comparator, templates);
             if (models && !children.isEmpty()) {
                 DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
-                extraClasses.append("text-muted ");
+                extraClasses.append("text-muted not-allowed ");
             }
             for (Page child : children) {
                 ul.add(this.generateTreeNode(currentPage, controllerContext, child, comparator, models, templates, virtualEndNode));

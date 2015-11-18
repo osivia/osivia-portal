@@ -192,6 +192,14 @@ $JQry(document).ready(function() {
 					}
 				}
 			},
+			
+			click : function(event, data) {
+				if (data.targetType == "expander") {
+					return true;
+				} else {
+					return data.node.data.acceptable;
+				}
+			},
 
 			lazyLoad : function(event, data) {
 				var node = data.node;
