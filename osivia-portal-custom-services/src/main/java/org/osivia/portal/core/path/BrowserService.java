@@ -364,9 +364,8 @@ public class BrowserService implements IBrowserService {
         // URL
         String url = null;
         if (options.isLink()) {
-            String displayLiveVersion = BooleanUtils.toString(options.isLive(), "1", null);
             url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, cmsItem.getPath(), null, null, options.getDisplayContext(), null, null,
-                    displayLiveVersion, null);
+                    null, null);
             if (options.isPopup()) {
                 url = this.portalURLFactory.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
             }
