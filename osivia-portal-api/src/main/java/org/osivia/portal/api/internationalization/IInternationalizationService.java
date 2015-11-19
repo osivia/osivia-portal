@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -58,7 +58,7 @@ public interface IInternationalizationService {
 
     /**
      * Access to class loader localized resource property, which can be customized.
-     * 
+     *
      * @param key resource property key
      * @param locale locale
      * @param classLoader class loader, may be null to access default portal resource
@@ -66,5 +66,18 @@ public interface IInternationalizationService {
      * @return localized resource property value
      */
     String getString(String key, Locale locale, ClassLoader classLoader, Object... args);
+
+
+    /**
+     * Access to customized class loader localized resource property, which can be customized.
+     *
+     * @param key resource property key
+     * @param locale locale
+     * @param classLoader class loader, may be null to access default portal resource
+     * @param customizedClassLoader customized class loader, may be null
+     * @param args resource property arguments
+     * @return localized resource property value
+     */
+    String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args);
 
 }
