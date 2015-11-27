@@ -62,7 +62,6 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
-import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -289,10 +288,10 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     		// First navigation item must be fetched directly (not in navigation)
                     		// to get the correct edition state
                     		//title = document.getMetaProperties().get(Constants.HEADER_TITLE);
-                    		cmsItem = computeContent(controllerContext, publicationPath);
-                    	}
-                    	else               	
-                    		cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                    		cmsItem = this.computeContent(controllerContext, publicationPath);
+                    	} else {
+                            cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                        }
                     	
                     	
                         String url;
