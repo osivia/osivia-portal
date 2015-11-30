@@ -45,6 +45,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentMetadata;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PagePathUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -178,8 +179,8 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         metadata.put("generator", generator.toString());
 
 
-        // Maximized window
-        WindowContext maximizedWindow = null;
+        // Maximized window context
+        WindowContext maximizedWindowContext = null;
         Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
         if ((breadcrumb != null) && CollectionUtils.isNotEmpty(breadcrumb.getChilds())) {
             Map<?, ?> windowContextMap = pageRendition.getPageResult().getWindowContextMap();
@@ -187,7 +188,7 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 WindowContext windowContext = (WindowContext) value;
 
                 if (WindowState.MAXIMIZED.equals(windowContext.getWindowState())) {
-                    maximizedWindow = windowContext;
+                    maximizedWindowContext = windowContext;
                     break;
                 }
             }
@@ -199,9 +200,12 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         // Canonical URL
         String canonicalUrl;
 
-        if (maximizedWindow != null) {
+        if (maximizedWindowContext != null) {
             // Title
-            title = maximizedWindow.getResult().getTitle();
+            title = maximizedWindowContext.getProperty(InternalConstants.PROP_WINDOW_TITLE);
+            if (title == null) {
+                title = maximizedWindowContext.getResult().getTitle();
+            }
 
             // Canonical URL
             canonicalUrl = null;
