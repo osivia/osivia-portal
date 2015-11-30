@@ -355,8 +355,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
             // Parameters
             try {
-                asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);
-                asu.setParameterValue(AdvancedSearchCommand.PAGE_ID_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getPageId(), CharEncoding.UTF_8));
+                asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);                
                 asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getSearch(), CharEncoding.UTF_8));
                 asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME,
                         URLEncoder.encode(String.valueOf(advancedSearchCommand.isAdvancedSearch()), CharEncoding.UTF_8));

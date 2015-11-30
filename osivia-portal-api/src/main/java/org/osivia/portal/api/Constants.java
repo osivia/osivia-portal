@@ -98,8 +98,6 @@ public final class Constants {
 
     /** Search URL attribute name. */
     public static final String ATTR_SEARCH_URL = "osivia.search.url";
-    /** Advanced search URL attribute name. */
-    public static final String ATTR_ADVANCED_SEARCH_URL = "osivia.advancedSearch.url";
     /** Search web URL attribute name. */
     public static final String ATTR_SEARCH_WEB_URL = "osivia.search.web.url";
 

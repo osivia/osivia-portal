@@ -14,11 +14,12 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
-import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 
 /**
@@ -51,8 +52,6 @@ public class AdvancedSearchCommand extends ControllerCommand {
     /** Command info. */
     private static final CommandInfo commandInfo = new ActionCommandInfo(false);
 
-    /** Current page identifier. */
-    private final String pageId;
     /** Search content. */
     private final String search;
     /** Advanced search indicator. */
@@ -62,12 +61,10 @@ public class AdvancedSearchCommand extends ControllerCommand {
     /**
      * Constructor.
      *
-     * @param pageId current page identifier
      * @param search search content
      * @param advancedSearch advanced search indicator
      */
-    public AdvancedSearchCommand(String pageId, String search, boolean advancedSearch) {
-        this.pageId = pageId;
+    public AdvancedSearchCommand(String search, boolean advancedSearch) {
         this.search = search;
         this.advancedSearch = advancedSearch;
     }
@@ -79,10 +76,12 @@ public class AdvancedSearchCommand extends ControllerCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         // Portal identifier
-        PortalObjectId pagePortalObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
-        Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(pagePortalObjectId);
-        String portalId = page.getPortal().getId().toString(PortalObjectPath.SAFEST_FORMAT);
+        Portal portal = PortalObjectUtils.getPortal(context);
+        
+        String portalId = portal.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
+        
+        
         // Search keywords
         Map<String, List<String>> selectors = new HashMap<String, List<String>>();
         selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
@@ -117,14 +116,6 @@ public class AdvancedSearchCommand extends ControllerCommand {
         return commandInfo;
     }
 
-    /**
-     * Getter for pageId.
-     *
-     * @return the pageId
-     */
-    public String getPageId() {
-        return this.pageId;
-    }
 
     /**
      * Getter for search.

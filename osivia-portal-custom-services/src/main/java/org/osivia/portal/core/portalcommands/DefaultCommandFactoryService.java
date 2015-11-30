@@ -602,12 +602,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                 // Advanced search command
                 if (AdvancedSearchCommand.COMMAND_ACTION_VALUE.equals(action)) {
-                    String[] pageIdParameterMap = parameterMap.get(AdvancedSearchCommand.PAGE_ID_PARAMETER_NAME);
                     String[] searchParameterMap = parameterMap.get(AdvancedSearchCommand.SEARCH_PARAMETER_NAME);
                     String[] advancedSearchParameterMap = parameterMap.get(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME);
 
-                    if ((pageIdParameterMap != null) && (searchParameterMap != null)) {
-                        String pageId = URLDecoder.decode(pageIdParameterMap[0], CharEncoding.UTF_8);
+                    if (searchParameterMap != null) {
+
                         String search = URLDecoder.decode(searchParameterMap[0], CharEncoding.UTF_8);
 
                         boolean advancedSearch = false;
@@ -615,7 +614,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             advancedSearch = BooleanUtils.toBoolean(URLDecoder.decode(advancedSearchParameterMap[0], CharEncoding.UTF_8));
                         }
 
-                        return new AdvancedSearchCommand(pageId, search, advancedSearch);
+                        return new AdvancedSearchCommand(search, advancedSearch);
                     }
                 }
 

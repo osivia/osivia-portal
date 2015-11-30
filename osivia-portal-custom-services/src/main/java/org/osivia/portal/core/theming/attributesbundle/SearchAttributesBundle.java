@@ -19,19 +19,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
-import org.jboss.portal.server.request.URLContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
-import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.web.IWebIdService;
 
 /**
@@ -68,7 +64,6 @@ public final class SearchAttributesBundle implements IAttributesBundle {
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_SEARCH_URL);
-        this.names.add(Constants.ATTR_ADVANCED_SEARCH_URL);
         this.names.add(Constants.ATTR_SEARCH_WEB_URL);
     }
 
@@ -92,14 +87,11 @@ public final class SearchAttributesBundle implements IAttributesBundle {
     public void fill(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
-        // URL context
-        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Portal identifier
         String portalId = renderPageCommand.getPortal().getId().toString();
-        // Current page identifier
-        String pageId = PortalObjectUtils.getHTMLSafeId(renderPageCommand.getPage().getId());
+
 
         // Properties
         Map<String, String> properties = new HashMap<String, String>();
@@ -118,11 +110,6 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         } catch (Exception e) {
             throw new ControllerException(e);
         }
-
-        // Advanced search command URL
-        AdvancedSearchCommand advancedSearchCommand = new AdvancedSearchCommand(pageId, StringUtils.EMPTY, true);
-        String advancedSearchCommandUrl = controllerContext.renderURL(advancedSearchCommand, urlContext, null);
-        attributes.put(Constants.ATTR_ADVANCED_SEARCH_URL, advancedSearchCommandUrl);
 
         // Search web URL
         String searchWebURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, "search");
