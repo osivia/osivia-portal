@@ -3,8 +3,13 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<c:set var="title" value="${requestScope['osivia.header.title']}" />
+<c:if test="${not empty title}"><c:set var="title" value="${title} - " /></c:if>
+<c:set var="title" value="${title}${requestScope['osivia.header.application.name']}" />
+
+
 <meta charset="UTF-8">
-<title>${requestScope['osivia.header.title']} - ${requestScope['osivia.header.application.name']}</title>
+<title>${title}</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <c:forEach var="meta" items="${requestScope['osivia.header.metadata']}">

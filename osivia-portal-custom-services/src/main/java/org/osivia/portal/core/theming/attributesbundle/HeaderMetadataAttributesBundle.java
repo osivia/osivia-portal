@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
@@ -30,12 +31,12 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
+import org.jboss.portal.theme.page.WindowContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.Breadcrumb;
-import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
@@ -177,39 +178,54 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         metadata.put("generator", generator.toString());
 
 
-        // Maximized portlet breadcrumb item
-        BreadcrumbItem breadcrumbItem = null;
+        // Maximized window
+        WindowContext maximizedWindow = null;
         Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
         if ((breadcrumb != null) && CollectionUtils.isNotEmpty(breadcrumb.getChilds())) {
-            breadcrumbItem = breadcrumb.getChilds().get(breadcrumb.getChilds().size() - 1);
+            Map<?, ?> windowContextMap = pageRendition.getPageResult().getWindowContextMap();
+            for (Object value : windowContextMap.values()) {
+                WindowContext windowContext = (WindowContext) value;
+
+                if (WindowState.MAXIMIZED.equals(windowContext.getWindowState())) {
+                    maximizedWindow = windowContext;
+                    break;
+                }
+            }
         }
 
-        if (breadcrumbItem != null) {
+
+        // Title
+        String title;
+        // Canonical URL
+        String canonicalUrl;
+
+        if (maximizedWindow != null) {
             // Title
-            String title = breadcrumbItem.getName();
-            attributes.put(Constants.ATTR_HEADER_TITLE, title);
+            title = maximizedWindow.getResult().getTitle();
+
+            // Canonical URL
+            canonicalUrl = null;
         } else if (document == null) {
             // Title
-            String title = PortalObjectUtils.getDisplayName(page, locale);
-            attributes.put(Constants.ATTR_HEADER_TITLE, title);
+            title = PortalObjectUtils.getDisplayName(page, locale);
 
             // Canonical URL
             String pagePath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
-            attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, portalBaseURL + pagePath);
+            canonicalUrl = portalBaseURL + pagePath;
         } else {
             try {
                 // Document metadata
                 DocumentMetadata documentMetadata = cmsService.getDocumentMetadata(cmsContext);
 
                 // Title
-                attributes.put(Constants.ATTR_HEADER_TITLE, documentMetadata.getTitle());
+                title = documentMetadata.getTitle();
 
                 // SEO properties
                 for (Entry<String, String> property : documentMetadata.getSeo().entrySet()) {
                     metadata.put(property.getKey(), property.getValue());
                 }
             } catch (CMSException e) {
-                // Do nothing
+                title = null;
             }
 
             // CMS path
@@ -223,14 +239,15 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             }
 
             // Canonical URL
-            String canonicalURL;
             try {
-                canonicalURL = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, cmsPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+                canonicalUrl = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, cmsPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
             } catch (PortalException e) {
-                canonicalURL = null;
+                canonicalUrl = null;
             }
-            attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, canonicalURL);
         }
+
+        attributes.put(Constants.ATTR_HEADER_TITLE, title);
+        attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, canonicalUrl);
     }
 
 
