@@ -108,6 +108,18 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	protected String getMessage(PortalControllerContext pcc, String label) {
 		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
 		return bundle.getString(label);
+	}	
+	
+	/**
+	 * Return a label in resources files
+	 * @param pcc
+	 * @param label the key in resources bundle
+	 * @param args some args
+	 * @return the label translated
+	 */
+	protected String getMessage(PortalControllerContext pcc, String label, Object... args) {
+		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
+		return bundle.getString(label, args);
 	}
 	
 	/**
@@ -136,7 +148,7 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 *            variables
 	 */
 	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType, Object... args) {
-		String string = getMessage(pcc, label);
+		String string = getMessage(pcc, label, args);
 		getNotificationsService().addSimpleNotification(pcc, string, notificationType);
 	}
 }
