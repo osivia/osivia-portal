@@ -26,26 +26,6 @@
     </tag>
     
     <tag>
-        <description>Generate portal objects JSTree HTML data.</description>
-        <display-name>Generate JSTree HTML data</display-name>
-        <name>tree</name>
-        <tag-class>org.osivia.portal.core.tags.FormatterHTMLTreeTag</tag-class>
-        <body-content>empty</body-content>
-        
-        <attribute>
-            <description>Tree identifier.</description>
-            <name>id</name>
-            <required>true</required>
-        </attribute>
-        
-        <attribute>
-            <description>Tree type.</description>
-            <name>type</name>
-            <required>true</required>
-        </attribute>
-    </tag>
-    
-    <tag>
         <description>Get portal object display name.</description>
         <display-name>Get display name</display-name>
         <name>displayName</name>

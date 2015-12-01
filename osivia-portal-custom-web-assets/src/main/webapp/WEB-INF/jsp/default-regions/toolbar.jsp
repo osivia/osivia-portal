@@ -109,7 +109,17 @@ function portalLogout() {
                         <c:out value="${requestScope['osivia.toolbar.administrationContent']}" escapeXml="false" />
     
                         <!-- User links -->
-                        <ul class="nav navbar-nav navbar-right">                        
+                        <ul class="nav navbar-nav navbar-right">
+                            <!-- Help -->
+                            <c:if test="${requestScope['osivia.toolbar.helpURL'] != null}">
+                                <li>
+                                    <a href="${requestScope['osivia.toolbar.helpURL']}" class="navbar-link">
+                                        <i class="halflings halflings-question-sign"></i>
+                                        <span class="hidden-sm"><op:translate key="HELP" /></span>
+                                    </a>
+                                </li>
+                            </c:if>
+                            
                             <!-- User bar -->
                             <li>
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -134,17 +144,7 @@ function portalLogout() {
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
-
-                            <!-- Help -->
-                            <c:if test="${requestScope['osivia.toolbar.helpURL'] != null}">
-	                            <li>
-	                                <a href="${requestScope['osivia.toolbar.helpURL']}" class="navbar-link">
-	                                    <i class="halflings halflings-question-sign"></i>
-	                                    <span class="hidden-sm"><op:translate key="HELP" /></span>
-	                                </a>
-	                            </li>
-                            </c:if>                           
+                            </li>                           
                         </ul>
                     </c:otherwise>
                 </c:choose>

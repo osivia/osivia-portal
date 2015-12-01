@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -100,11 +100,11 @@ public class MovePageCommand extends AssistantCommand {
         String pageName = PortalObjectUtils.getDisplayName(page, locale);
         String key;
         if (PageType.getPageType(page, this.getControllerContext()).isSpace()) {
-            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_SPACE;
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_SPACE;
         } else if (PortalObjectUtils.isTemplate(page)) {
-            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_TEMPLATE;
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_TEMPLATE;
         } else {
-            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_DELETE_PAGE_COMMAND_PAGE;
+            key = InternationalizationConstants.KEY_SUCCESS_MESSAGE_MOVE_PAGE_COMMAND_PAGE;
         }
 
         // Check parents

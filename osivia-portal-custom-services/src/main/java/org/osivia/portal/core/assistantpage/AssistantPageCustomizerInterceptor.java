@@ -6,16 +6,12 @@ package org.osivia.portal.core.assistantpage;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,21 +28,17 @@ import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.portlet.info.PortletIconInfo;
 import org.jboss.portal.core.portlet.info.PortletInfoInfo;
 import org.jboss.portal.portlet.Portlet;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.info.PortletInfo;
 import org.jboss.portal.portlet.state.PropertyMap;
-import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -61,12 +53,6 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
-import org.osivia.portal.core.page.PageType;
-import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
-import org.osivia.portal.core.portalobjects.PortalObjectNameComparator;
-import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
-import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
 
@@ -77,28 +63,6 @@ import org.osivia.portal.core.profils.ProfilBean;
  * @see IFormatter
  */
 public class AssistantPageCustomizerInterceptor extends ControllerInterceptor implements IFormatter {
-
-    // HTML classes
-    /** HTML rel "page" for "li" nodes. */
-    private static final String HTML_REL_PAGE = "page";
-    /** HTML rel "template" for "li" nodes. */
-    private static final String HTML_REL_TEMPLATE = "template";
-    /** HTML rel "space" for "li" nodes. */
-    private static final String HTML_REL_SPACE = "space";
-
-    // HTML tree options names
-    /** Display root option name. */
-    private static final String DISPLAY_ROOT = "display-root";
-    /** Display virtual end nodes option name. */
-    private static final String DISPLAY_VIRTUAL_END_NODES = "display-virtual-end-nodes";
-    /** Sort alphabetically option name. */
-    private static final String SORT_ALPHABETICALLY = "sort-alphabetically";
-    /** Hide dynamic pages option name. */
-    private static final String HIDE_DYNAMIC_PAGES = "hide-dynamic-pages";
-    /** Templated pages filter option name. */
-    private static final String TEMPLATED_PAGES_FILTER = "templated-pages-filter";
-    /** Non-templated pages filter option name. */
-    private static final String NON_TEMPLATED_PAGES_FILTER = "non-templated-pages-filter";
 
     /** Default icon location. */
     private static final String DEFAULT_ICON_LOCATION = "/portal-core/images/portletIcon_Default1.gif";
@@ -402,232 +366,6 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
         }
 
         return DOM4JUtils.write(select);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public String formatHTMLTreeModels(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        Set<String> options = new TreeSet<String>();
-        options.add(HIDE_DYNAMIC_PAGES);
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String formatHTMLTreePageParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        Set<String> options = new TreeSet<String>();
-        options.add(DISPLAY_ROOT);
-        options.add(HIDE_DYNAMIC_PAGES);
-        options.add(NON_TEMPLATED_PAGES_FILTER);
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String formatHTMLTreeTemplateParent(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        Set<String> options = new TreeSet<String>();
-        options.add(HIDE_DYNAMIC_PAGES);
-        options.add(TEMPLATED_PAGES_FILTER);
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String formatHTMLTreePortalObjectsMove(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        Set<String> options = new TreeSet<String>();
-        options.add(DISPLAY_VIRTUAL_END_NODES);
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String formatHTMLTreePortalObjectsAlphaOrder(Page currentPage, ControllerContext context, String idPrefix) throws IOException {
-        Set<String> options = new TreeSet<String>();
-        options.add(SORT_ALPHABETICALLY);
-        return this.formatHtmlTreePortalObjects(currentPage, context, idPrefix, options);
-    }
-
-    /**
-     * Utility method used to format hierarchical tree pages into HTML data, with UL and LI nodes.
-     *
-     * @param currentPage current page
-     * @param context controller context
-     * @param idPrefix avoid multiples identifiers with this prefix
-     * @param options format options
-     * @return HTML data
-     */
-    private String formatHtmlTreePortalObjects(Page currentPage, ControllerContext context, String idPrefix, Set<String> options) throws IOException {
-        if ((currentPage == null) || (context == null)) {
-            return null;
-        }
-
-        Locale locale = context.getServerInvocation().getRequest().getLocale();
-
-        String virtualEndNodesText = null;
-        if (options.contains(DISPLAY_VIRTUAL_END_NODES)) {
-            virtualEndNodesText = this.internationalizationService.getString(InternationalizationConstants.KEY_VIRTUAL_END_NODES, locale);
-        }
-
-
-        IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
-        dynamicObjectContainer.startPersistentIteration();
-
-        Portal portal =  (Portal) this.portalObjectContainer.getObject(currentPage.getPortal().getId());
-
-        // Recursive tree generation
-        Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(portal, context, idPrefix, virtualEndNodesText, options);
-        dynamicObjectContainer.stopPersistentIteration();
-
-
-        // Root generation
-        Element ul;
-        if (options.contains(DISPLAY_ROOT) && (ulChildren != null)) {
-            String portalId = this.formatHtmlSafeEncodingId(portal.getId());
-
-            ul = new DOMElement(QName.get(HTMLConstants.UL));
-
-            Element li = new DOMElement(QName.get(HTMLConstants.LI));
-            li.addAttribute(QName.get(HTMLConstants.ID), idPrefix + portalId);
-            li.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
-            ul.add(li);
-
-            Element a = new DOMElement(QName.get(HTMLConstants.A));
-            a.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
-            a.setText(this.internationalizationService.getString(InternationalizationConstants.KEY_ROOT_NODE, locale));
-            li.add(a);
-
-            li.add(ulChildren);
-        } else {
-            ul = ulChildren;
-        }
-
-        // Get HTML data
-        if (ul == null) {
-            return StringUtils.EMPTY;
-        } else {
-            return ul.asXML();
-        }
-    }
-
-    /**
-     * Utility method used to generate recursive HTML tree of portal objects.
-     *
-     * @param parent parent page or portal
-     * @param context controller context, which contains locales and URL generation data
-     * @param idPrefix avoid multiples identifiers with this prefix
-     * @param virtualEndNodesText virtual end nodes text, null if these nodes aren't to be displayed
-     * @param options format options
-     * @return HTML "ul" node
-     * @throws IOException
-     */
-    private Element generateRecursiveHtmlTreePortalObjects(PortalObject parent, ControllerContext context, String idPrefix, String virtualEndNodesText,
-            Set<String> options) throws IOException {
-        Locale[] locales = context.getServerInvocation().getRequest().getLocales();
-
-        Collection<PortalObject> children = parent.getChildren(PortalObject.PAGE_MASK);
-        if (CollectionUtils.isEmpty(children)) {
-            return null;
-        }
-
-        // Contrôle des droits et tri des pages
-        PortalAuthorizationManager authManager = this.portalAuthorizationManagerFactory.getManager();
-
-        SortedSet<Page> sortedPages;
-        if (options.contains(SORT_ALPHABETICALLY)) {
-            PortalObjectNameComparator comparator = new PortalObjectNameComparator(locales);
-            sortedPages = new TreeSet<Page>(comparator);
-        } else {
-            sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
-        }
-
-        for (PortalObject child : children) {
-            PortalObjectPermission permission = new PortalObjectPermission(child.getId(), PortalObjectPermission.VIEW_MASK);
-
-            if (authManager.checkPermission(permission)) {
-                Page page = (Page) child;
-                PageType pageType = PageType.getPageType(page, context);
-
-                // Check display if current page is a dynamic page
-                boolean checkDynamicDisplay = !(options.contains(HIDE_DYNAMIC_PAGES) && !PageType.STATIC_PAGE.equals(pageType));
-                // Check display if current page is a template
-                boolean checkTemplateDisplay = !(options.contains(TEMPLATED_PAGES_FILTER) && !PortalObjectUtils.isTemplate(page));
-                // Check display if current page isn't a template
-                boolean checkNonTemplateDisplay = !(options.contains(NON_TEMPLATED_PAGES_FILTER) && PortalObjectUtils.isTemplate(page));
-
-                if (checkDynamicDisplay && checkTemplateDisplay && checkNonTemplateDisplay) {
-                    sortedPages.add(page);
-                }
-            }
-        }
-
-        if (CollectionUtils.isEmpty(sortedPages)) {
-            return null;
-        }
-
-        // Generate HTML node for each page
-        Element ul = new DOMElement(QName.get(HTMLConstants.UL));
-        ul.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
-
-        for (Page page : sortedPages) {
-            String pageId = this.formatHtmlSafeEncodingId(page.getId());
-            String pageName = PortalObjectUtils.getDisplayName(page, locales);
-
-            // URL
-            ViewPageCommand showPage = new ViewPageCommand(page.getId());
-            String url = new PortalURLImpl(showPage, context, null, null).toString();
-            url = url + "?init-state=true";
-
-            Element li = new DOMElement(QName.get(HTMLConstants.LI));
-            li.addAttribute(QName.get(HTMLConstants.ID), idPrefix + pageId);
-            li.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
-            if (PortalObjectUtils.isTemplate(page)) {
-                // Template
-                li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_TEMPLATE);
-            } else if (PageType.getPageType(page, context).isSpace()) {
-                // Space
-                li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_SPACE);
-            } else {
-                // Page
-                li.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_PAGE);
-            }
-            ul.add(li);
-
-            Element a = new DOMElement(QName.get(HTMLConstants.A));
-            a.addAttribute(QName.get(HTMLConstants.HREF), url);
-            a.setText(pageName);
-            li.add(a);
-
-            // Recursive generation
-            Element ulChildren = this.generateRecursiveHtmlTreePortalObjects(page, context, idPrefix, virtualEndNodesText, options);
-            if (ulChildren != null) {
-                li.add(ulChildren);
-            }
-        }
-
-        // Virtual end node
-        if (StringUtils.isNotEmpty(virtualEndNodesText)) {
-            String parentId = this.formatHtmlSafeEncodingId(parent.getId());
-
-            Element liVirtualEndNode = new DOMElement(QName.get(HTMLConstants.LI));
-            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.ID), idPrefix + parentId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
-            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.CLASS), HTMLConstants.CLASS_NAVIGATION_ITEM);
-            liVirtualEndNode.addAttribute(QName.get(HTMLConstants.REL), HTML_REL_PAGE);
-
-            Element aVirtualEndNode = new DOMElement(QName.get(HTMLConstants.A));
-            aVirtualEndNode.addAttribute(QName.get(HTMLConstants.HREF), HTMLConstants.A_HREF_DEFAULT);
-            aVirtualEndNode.setText(virtualEndNodesText);
-            liVirtualEndNode.add(aVirtualEndNode);
-
-            ul.add(liVirtualEndNode);
-        }
-
-        return ul;
     }
 
 

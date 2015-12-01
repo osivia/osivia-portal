@@ -767,7 +767,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Virtual end node
             StringBuilder builder = new StringBuilder();
             try {
-                builder.append(URLEncoder.encode(currentPage.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8));
+                builder.append(URLEncoder.encode(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8));
                 builder.append(InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
             } catch (IOException e) {
                 // Do nothing
