@@ -24,10 +24,12 @@ package org.jboss.portal.core.model.portal.command.render;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -79,11 +81,11 @@ import org.osivia.portal.core.profils.IProfilManager;
 
 /**
  * Render a full page.
- *
+ * 
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 11068 $
- *
- *
+ * 
+ * 
  *          Cette classe implémente le multithread dans le rendu des pages
  *          afin de paralléliser les appels de portlets
  */
@@ -107,7 +109,7 @@ public final class RenderPageCommand extends PageCommand {
 
     /**
      * Get the command info (runtime info about the command)
-     *
+     * 
      * @return info about the command
      */
     @Override
@@ -117,7 +119,7 @@ public final class RenderPageCommand extends PageCommand {
 
     /**
      * Returns the modifiable list of windows.
-     *
+     * 
      * @return the windows on the page
      */
     public Collection<PortalObject> getWindows() {
@@ -169,7 +171,7 @@ public final class RenderPageCommand extends PageCommand {
 
     /**
      * execute the command
-     *
+     * 
      * @throws InvocationException
      */
     @SuppressWarnings("unchecked")
@@ -255,7 +257,7 @@ public final class RenderPageCommand extends PageCommand {
 
             // v1.0.25 : affichage conditionnel portlet
 
-            List<Window> filteredWindows = new ArrayList<Window>();
+            Set<Window> filteredWindows = new TreeSet<Window>(new WindowComparator());
 
 
             // filtre sur popup
@@ -407,7 +409,7 @@ public final class RenderPageCommand extends PageCommand {
      * The name of the layout to use can be defined as a property in the portal, or the individual page. The page property overwrites the portal property. If no
      * property was set, a default layout with the name "nodesk" is assumed.
      * </p>
-     *
+     * 
      * @param layoutService the layout service that allows access to the layout
      * @param page the page that hosts the markup container to render (the page, region, window,...)
      * @return a <code>PortalLayout</code> for the defined layout name
@@ -416,5 +418,32 @@ public final class RenderPageCommand extends PageCommand {
         String layoutIdString = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         return layoutService.getLayoutById(layoutIdString);
     }
+
+
+    class WindowComparator implements Comparator<Window> {
+
+        public int compare(Window w1, Window w2) {
+
+            String order1 = w1.getDeclaredProperty("osivia.sequence.priority");
+            String order2 = w2.getDeclaredProperty("osivia.sequence.priority");
+            
+            // Window with no priority will be executed in parallel mode
+            // So they are sorted before priority windows
+
+            if (order1 == null) {
+                if (order2 == null) {
+                    return w1.getName().compareTo(w2.getName());
+                } else
+                    return -1;
+            } else if (order2 == null) {
+                return 1;
+            } else {
+                return Integer.valueOf(order1).compareTo(Integer.valueOf(order2));
+            }
+
+        }
+
+    }
+
 
 }

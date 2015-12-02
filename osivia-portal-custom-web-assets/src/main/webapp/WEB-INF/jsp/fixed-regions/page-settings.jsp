@@ -913,6 +913,15 @@ var currentPageId = '${currentPageId}';
                                 </div>
                             </div>
                             
+                            
+                             <!-- Shared cache identifier -->
+                            <div class="form-group">
+                                <label for="${window.id}-priority" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PRIORITY" /></label>
+                                <div class="col-sm-9">
+                                    <input id="${window.id}-priority" type="text" name="priority" value="${window.priority}" class="form-control">
+                                </div>
+                            </div>
+                            
                             <!-- BeanShell -->
                             <c:remove var="beanShellContent" />
                             <c:if test="${window.beanShell}">

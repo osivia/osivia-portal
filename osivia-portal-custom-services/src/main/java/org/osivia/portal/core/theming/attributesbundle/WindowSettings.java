@@ -3,11 +3,13 @@ package org.osivia.portal.core.theming.attributesbundle;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 /**
  * Window settings java-bean.
  *
  * @author Cédric Krommenhoek
  */
+
 public class WindowSettings {
 
     /** Window title. */
@@ -49,6 +51,12 @@ public class WindowSettings {
 
     /** Selection dependency indicator. */
     private boolean selectionDependency;
+    
+    /** The priority. */
+    private String priority;
+
+
+    
 
 
     /** Window identifier. */
@@ -369,6 +377,26 @@ public class WindowSettings {
      */
     public Map<String, String> getScopes() {
         return this.scopes;
+    }
+    
+    /**
+     * Getter for priority.
+     *
+     * @return the priority
+     */
+    public String getPriority() {
+        return priority;
+    }
+
+
+    
+    /**
+     * Setter for priority.
+     *
+     * @param priority the new priority
+     */
+    public void setPriority(String priority) {
+        this.priority = priority;
     }
 
 }

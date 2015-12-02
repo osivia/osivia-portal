@@ -1028,6 +1028,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Selection dependency indicator
             boolean selectionDependency = "selection".equals(window.getProperty("osivia.cacheEvents"));
             settings.setSelectionDependency(selectionDependency);
+            
+            // Customization identifier
+            String priority = window.getDeclaredProperty("osivia.sequence.priority");
+            settings.setPriority(priority);
+
         }
 
         return windowSettings;

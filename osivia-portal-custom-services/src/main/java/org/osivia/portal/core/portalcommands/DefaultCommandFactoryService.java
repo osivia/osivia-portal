@@ -115,6 +115,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String bshScript;
                     String cacheID;
                     String selectionDep;
+                    String priority;
 
 
                     if (parameterMap.get("windowId") != null) {
@@ -207,9 +208,16 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectionDep = "";
                         }
 
+                        
+                        if (parameterMap.get("priority") != null) {
+                            priority = URLDecoder.decode(parameterMap.get("priority")[0], CharEncoding.UTF_8);
+                        } else {
+                            priority = "";
+                        }
+                        
                         return new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title, displayDecorators, maximizedToCms,
                                 bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID,
-                                selectionDep);
+                                selectionDep, priority);
                     }
                 }
 

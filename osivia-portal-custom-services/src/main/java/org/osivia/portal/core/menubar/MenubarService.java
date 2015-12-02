@@ -281,9 +281,8 @@ public class MenubarService implements IMenubarService {
         Element toolbar;
         if (MapUtils.isNotEmpty(sortedItems)) {
             // Toolbar
-            toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar", null);
+            toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar no-ajax-link", null);
             DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
-
 
             // Loop on menubar groups
             for (Entry<MenubarGroup, Set<MenubarItem>> sortedItemsEntry : sortedItems.entrySet()) {

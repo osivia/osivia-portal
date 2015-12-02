@@ -61,6 +61,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String bshScript;
 	private String cacheID;
 	private String selectionDep;
+	private String priority;
 
 
     /**
@@ -86,7 +87,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      */
     public ChangeWindowSettingsCommand(String windowId, List<String> style, String mobileCollapse, String displayTitle, String title, String displayDecorators,
             boolean maximizedToCms, String bootstrapPanelStyle, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet,
-            String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep) {
+            String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep, String priority) {
         this.windowId = windowId;
         this.style = style;
 
@@ -106,6 +107,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         this.bshScript = bshScript;
         this.cacheID = cacheID;
         this.selectionDep = selectionDep;
+        this.priority = priority;
     }
 
 
@@ -233,6 +235,12 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
             window.setDeclaredProperty("osivia.cacheEvents", "selection");
         } else if (window.getDeclaredProperty("osivia.cacheEvents") != null) {
             window.setDeclaredProperty("osivia.cacheEvents", null);
+        }
+
+        if (this.priority.length() > 0) {
+            window.setDeclaredProperty("osivia.sequence.priority", this.priority);
+        } else if (window.getDeclaredProperty("osivia.sequence.priority") != null) {
+            window.setDeclaredProperty("osivia.sequence.priority", null);
         }
 
 		return new UpdatePageResponse(page.getId());
