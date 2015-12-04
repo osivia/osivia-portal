@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,49 +21,53 @@ import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
  * Selection service interface.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public interface ISelectionService {
 
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=SelectionService";
+
+
     /**
      * Add item to a specified selection.
-     * 
-     * @param portalCtx portal controller context
-     * @param selectionId specified selection identifier
-     * @param selectionItem item to add
+     *
+     * @param portalControllerContext portal controller context
+     * @param id specified selection identifier
+     * @param item selection item to add
      * @return true if the item has been added
      */
-    boolean addItem(PortalControllerContext portalCtx, String selectionId, SelectionItem selectionItem);
+    boolean addItem(PortalControllerContext portalControllerContext, String id, SelectionItem item);
 
 
     /**
      * Remove item to a specified selection.
-     * 
-     * @param portalCtx portal controller context
-     * @param selectionId specified selection identifier
+     *
+     * @param portalControllerContext portal controller context
+     * @param id specified selection identifier
      * @param itemId item to remove identifier
      * @return true if the item has been removed
      */
-    boolean removeItem(PortalControllerContext portalCtx, String selectionId, String itemId);
+    boolean removeItem(PortalControllerContext portalControllerContext, String id, String itemId);
 
 
     /**
      * Access to a specified selection items set.
-     * 
-     * @param portalCtx portal controller context
-     * @param selectionId specified selection identifier
+     *
+     * @param portalControllerContext portal controller context
+     * @param id specified selection identifier
      * @return the selection items set
      */
-    Set<SelectionItem> getSelectionItems(PortalControllerContext portalCtx, String selectionId);
+    Set<SelectionItem> getSelectionItems(PortalControllerContext portalControllerContext, String id);
 
 
     /**
      * Delete a specified selection.
-     * 
-     * @param portalCtx portal controller context
-     * @param selectionId specified selection identifier
+     *
+     * @param portalControllerContext portal controller context
+     * @param id specified selection identifier
      */
-    void deleteSelection(PortalControllerContext portalCtx, String selectionId);
+    void deleteSelection(PortalControllerContext portalControllerContext, String id);
 
 }

@@ -913,12 +913,26 @@ var currentPageId = '${currentPageId}';
                                 </div>
                             </div>
                             
-                            
-                             <!-- Shared cache identifier -->
+                            <!-- Shared cache identifier -->
                             <div class="form-group">
                                 <label for="${window.id}-priority" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PRIORITY" /></label>
                                 <div class="col-sm-9">
-                                    <input id="${window.id}-priority" type="text" name="priority" value="${window.priority}" class="form-control">
+                                    <input id="${window.id}-priority" type="number" name="priority" value="${window.priority}" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <!-- Selection dependency indicator -->
+                            <div class="form-group">
+                                <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
+                                <div class="col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input id="${window.id}-selection-dependency" type="checkbox" name="selectionDep" value="1"
+                                                <c:if test="${window.selectionDependency}">checked="checked"</c:if>
+                                            >
+                                            <span><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE" /></span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -988,22 +1002,6 @@ rightCellToggle.add(example);
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Selection dependency indicator -->
-                            <div class="form-group">
-                                <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
-                                <div class="col-sm-9">
-                                    <div class="checkbox">
-                                        <label>
-                                            <input id="${window.id}-selection-dependency" type="checkbox" name="selectionDep" value="1"
-                                                <c:if test="${window.selectionDependency}">checked="checked"</c:if>
-                                            >
-                                            <span><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE" /></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            
                         </fieldset>
                         
                         <div class="navbar navbar-default navbar-fixed-bottom">

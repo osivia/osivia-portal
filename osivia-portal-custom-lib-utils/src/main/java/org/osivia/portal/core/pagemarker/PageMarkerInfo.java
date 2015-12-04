@@ -16,18 +16,18 @@ package org.osivia.portal.core.pagemarker;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.osivia.portal.api.notifications.Notifications;
-import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.UserPortal;
+import org.osivia.portal.core.attributes.AttributesStorage;
+import org.osivia.portal.core.attributes.StorageAttributeKey;
+import org.osivia.portal.core.attributes.StorageAttributeValue;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.portlet.PortletStatusContainer;
-import org.osivia.portal.core.selection.SelectionMapIdentifiers;
 
 
 /**
@@ -79,10 +79,10 @@ public class PageMarkerInfo implements Serializable {
     private PortletStatusContainer portletStatusContainer;
     /** Refresh back indicator. */
     private boolean refreshBack;
-    /** Selections map. */
-    private Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap;
-    /** Selection timestamp. */
-    private Long selectionTs;
+    /** Storage. */
+    private Map<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> storage;
+    /** Storage timestamps. */
+    private Map<AttributesStorage, Long> storageTimestamps;
     /** User tabs count. */
     private Long tabbedNavHeaderCount;
     /** User name. */
@@ -435,39 +435,39 @@ public class PageMarkerInfo implements Serializable {
     }
 
     /**
-     * Getter for selectionsMap.
+     * Getter for storage.
      *
-     * @return the selectionsMap
+     * @return the storage
      */
-    public Map<SelectionMapIdentifiers, Set<SelectionItem>> getSelectionsMap() {
-        return this.selectionsMap;
+    public Map<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> getStorage() {
+        return this.storage;
     }
 
     /**
-     * Setter for selectionsMap.
+     * Setter for storage.
      *
-     * @param selectionsMap the selectionsMap to set
+     * @param storage the storage to set
      */
-    public void setSelectionsMap(Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap) {
-        this.selectionsMap = selectionsMap;
+    public void setStorage(Map<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> storage) {
+        this.storage = storage;
     }
 
     /**
-     * Getter for selectionTs.
-     *
-     * @return the selectionTs
+     * Getter for storageTimestamps.
+     * 
+     * @return the storageTimestamps
      */
-    public Long getSelectionTs() {
-        return this.selectionTs;
+    public Map<AttributesStorage, Long> getStorageTimestamps() {
+        return this.storageTimestamps;
     }
 
     /**
-     * Setter for selectionTs.
-     *
-     * @param selectionTs the selectionTs to set
+     * Setter for storageTimestamps.
+     * 
+     * @param storageTimestamps the storageTimestamps to set
      */
-    public void setSelectionTs(Long selectionTs) {
-        this.selectionTs = selectionTs;
+    public void setStorageTimestamps(Map<AttributesStorage, Long> storageTimestamps) {
+        this.storageTimestamps = storageTimestamps;
     }
 
     /**

@@ -769,6 +769,14 @@
         <xmbean />
     </mbean>
     
+    <!-- Portlet sequencing service -->
+    <mbean
+        code="org.osivia.portal.core.sequencing.PortletSequencingService"
+        name="osivia:service=PortletSequencingService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
     
     <!-- Contribution service -->
     <mbean

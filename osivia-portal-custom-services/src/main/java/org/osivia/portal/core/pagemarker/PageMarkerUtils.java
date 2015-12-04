@@ -19,12 +19,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
@@ -57,10 +55,13 @@ import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.portlet.IPortletStatusService;
-import org.osivia.portal.api.selection.SelectionItem;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
 import org.osivia.portal.api.theming.UserPortal;
+import org.osivia.portal.core.attributes.AttributesStorage;
+import org.osivia.portal.core.attributes.StorageAttributeKey;
+import org.osivia.portal.core.attributes.StorageAttributeValue;
+import org.osivia.portal.core.attributes.StorageScope;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -70,9 +71,6 @@ import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portlet.PortletStatusContainer;
 import org.osivia.portal.core.security.CmsPermissionHelper;
-import org.osivia.portal.core.selection.SelectionMapIdentifiers;
-import org.osivia.portal.core.selection.SelectionScope;
-import org.osivia.portal.core.selection.SelectionService;
 
 /**
  * Utility class for page marker.
@@ -303,12 +301,27 @@ public class PageMarkerUtils {
             markerInfo.setPopupModeOriginalPageID(popupModeOrginalPageID);
 
 
-            // Sauvegarde de l'ensemble des sélections
-            Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) controllerCtx.getAttribute(
-                    ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP);
-            if (selectionsMap != null) {
-                markerInfo.setSelectionsMap(selectionsMap);
+            // Attributes storage
+            Map<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> storage = new HashMap<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>>();
+            for (AttributesStorage value : AttributesStorage.values()) {
+                Map<StorageAttributeKey, StorageAttributeValue> attributes = (Map<StorageAttributeKey, StorageAttributeValue>) controllerCtx.getAttribute(
+                        Scope.PRINCIPAL_SCOPE, value.getAttributeName());
+                if (attributes != null) {
+                    storage.put(value, attributes);
+                }
             }
+            markerInfo.setStorage(storage);
+
+
+            // Attributes storage timestamps
+            Map<AttributesStorage, Long> storageTimestamps = new HashMap<AttributesStorage, Long>();
+            for (AttributesStorage value : AttributesStorage.values()) {
+                Long timestamp = (Long) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, value.getTimestampAttributeName());
+                if (timestamp != null) {
+                    storageTimestamps.put(value, timestamp);
+                }
+            }
+            markerInfo.setStorageTimestamps(storageTimestamps);
 
 
             // Portlet status container
@@ -329,12 +342,6 @@ public class PageMarkerUtils {
             if ("1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.saveClosingAction"))
                     && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.popupModeClosing"))) {
                 markerInfo.setClosingPopupAction(true);
-            }
-
-
-            Long selectionTs = (Long) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
-            if (selectionTs != null) {
-                markerInfo.setSelectionTs(selectionTs);
             }
         }
 
@@ -483,7 +490,7 @@ public class PageMarkerUtils {
 
                 String tabPagePath = StringUtils.removeStart(newPath, "/portal");
                 String slashedTabPagePath = tabPagePath + "/";
- 
+
                 for (PageMarkerInfo pagemarkerInfo : list) {
                     // Is it a subpage of the tab ?
 
@@ -632,39 +639,48 @@ public class PageMarkerUtils {
                                 markerInfo.getPopupModeOriginalPageID());
 
 
-                        // Restauration de l'ensemble des sélection
-                        Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = markerInfo.getSelectionsMap();
-                        if (selectionsMap != null) {
+                        // Attributes storage
+                        Map<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> storage = markerInfo.getStorage();
+                        if (storage != null) {
                             PortalObjectId pageId = page.getId();
 
-                            Map<SelectionMapIdentifiers, Set<SelectionItem>> newSelectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>(
-                                    selectionsMap.size());
-
                             try {
+                                for (Entry<AttributesStorage, Map<StorageAttributeKey, StorageAttributeValue>> entry : storage.entrySet()) {
+                                    AttributesStorage attributesStorage = entry.getKey();
+                                    Map<StorageAttributeKey, StorageAttributeValue> attributes = entry.getValue();
 
-                                // Parcours de tous les éléments de la map
-                                Set<Entry<SelectionMapIdentifiers, Set<SelectionItem>>> entrySet = selectionsMap.entrySet();
-                                for (Entry<SelectionMapIdentifiers, Set<SelectionItem>> entry : entrySet) {
-                                    SelectionMapIdentifiers selectionMapIdentifiers = entry.getKey();
-                                    Set<SelectionItem> selectionSet = entry.getValue();
+                                    Map<StorageAttributeKey, StorageAttributeValue> newAttributes = new HashMap<StorageAttributeKey, StorageAttributeValue>(
+                                            attributes.size());
+                                    for (Entry<StorageAttributeKey, StorageAttributeValue> attribute : attributes.entrySet()) {
+                                        StorageAttributeKey key = attribute.getKey();
+                                        StorageAttributeValue value = attribute.getValue();
 
-                                    SelectionScope scope = selectionMapIdentifiers.getScope();
-                                    if ((SelectionScope.SCOPE_NAVIGATION.equals(scope))
-                                            || ((SelectionScope.SCOPE_PAGE.equals(scope)) && pageId.equals(selectionMapIdentifiers.getPageId()))) {
-                                        // Scope navigation ou scope page concernant la page courante
-                                        Set<SelectionItem> newSelectionSet = new LinkedHashSet<SelectionItem>(selectionSet);
-                                        newSelectionsMap.put(selectionMapIdentifiers, newSelectionSet);
-                                    } else {
-                                        // Scope session ou scope page ne concernant pas la page courante
-                                        newSelectionsMap.put(selectionMapIdentifiers, selectionSet);
+                                        StorageScope scope = key.getScope();
+                                        if (StorageScope.NAVIGATION.equals(scope) || (StorageScope.PAGE.equals(scope) && pageId.equals(key.getPageId()))) {
+                                            StorageAttributeValue newValue = value.clone();
+                                            newAttributes.put(key, newValue);
+                                        } else {
+                                            newAttributes.put(key, value);
+                                        }
                                     }
+
+                                    controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, attributesStorage.getAttributeName(), newAttributes);
                                 }
-
                             } catch (ClassCastException e) {
-                                // Pb lie au reload du service, on ignore la map
+                                // Error can occur on service reload, ignore attributes storage
                             }
+                        }
 
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_MAP, newSelectionsMap);
+
+                        // Attributes storage timestamps
+                        Map<AttributesStorage, Long> storageTimestamps = markerInfo.getStorageTimestamps();
+                        if (storageTimestamps != null) {
+                            for (Entry<AttributesStorage, Long> entry : storageTimestamps.entrySet()) {
+                                AttributesStorage attributesStorage = entry.getKey();
+                                Long timestamp = entry.getValue();
+
+                                controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, attributesStorage.getTimestampAttributeName(), timestamp);
+                            }
                         }
 
 
@@ -675,11 +691,6 @@ public class PageMarkerUtils {
                             controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE, clone);
                         }
 
-
-                        if (markerInfo.getSelectionTs() != null) {
-                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP,
-                                    markerInfo.getSelectionTs());
-                        }
 
                         if (CollectionUtils.isNotEmpty(markerInfo.getNotificationsList())) {
                             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);

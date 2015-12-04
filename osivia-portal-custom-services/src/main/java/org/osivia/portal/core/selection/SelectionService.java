@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,248 +14,189 @@
  */
 package org.osivia.portal.core.selection;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
-
-import javax.portlet.PortletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.selection.ISelectionService;
 import org.osivia.portal.api.selection.SelectionItem;
+import org.osivia.portal.core.attributes.AttributesStorageService;
+import org.osivia.portal.core.attributes.StorageScope;
+import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Selection service implementation.
  *
- * @see ISelectionService
  * @author Cédric Krommenhoek
+ * @see AttributesStorageService
+ * @see SelectionAttributeKey
+ * @see SelectionAttributeValue
+ * @see ISelectionService
  */
-public class SelectionService implements ISelectionService {
+public class SelectionService extends AttributesStorageService<SelectionAttributeKey, SelectionAttributeValue> implements ISelectionService {
 
-    /** Selections map attribute. */
-    public static final String ATTR_SELECTIONS_MAP = "osivia.selections";
-    /** Selections timestamp attribute. */
-    public static final String ATTR_SELECTIONS_TIMESTAMP = "osivia.selections.ts";
+    /** Selection scope property prefix. */
+    private static final String SCOPE_PREFIX = "osivia.selection.";
+    /** Selection scope property suffix. */
+    private static final String SCOPE_SUFFIX = ".scope";
 
-    /** Selection scope property prefixe. */
-    private static final String PREFIXE_SELECTION_SCOPE = "osivia.selection.";
-    /** Selection scope property suffixe. */
-    private static final String SUFFIXE_SELECTION_SCOPE = ".scope";
 
     /** Logger. */
-    protected static Log logger = LogFactory.getLog(SelectionService.class);
+    private final Log logger;
+
 
     /**
-     * {@inheritDoc}
+     * Constructor.
      */
-    public boolean addItem(PortalControllerContext portalCtx, String selectionId, SelectionItem selectionItem) {
-        // Debug log
-        if (logger.isDebugEnabled()) {
-            logger.debug("addItem");
-        }
-        Object request = portalCtx.getRequest();
-
-        if (request instanceof PortletRequest) {
-            PortletRequest portletRequest = (PortletRequest) request;
-
-            Set<SelectionItem> selectionItemsSet = this.getSelectionItemsSet(portletRequest, selectionId);
-            boolean isAdded = selectionItemsSet.add(selectionItem);
-
-            if (isAdded) {
-                // Save into session
-                this.setSelectionItemSet(portletRequest, selectionId, selectionItemsSet);
-            }
-
-            return isAdded;
-        }
-
-        // Cannot add item
-        return false;
+    public SelectionService() {
+        super();
+        this.logger = LogFactory.getLog(this.getClass());
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public boolean removeItem(PortalControllerContext portalCtx, String selectionId, String itemId) {
+    public boolean addItem(PortalControllerContext portalControllerContext, String id, SelectionItem item) {
         // Debug log
-        if (logger.isDebugEnabled()) {
-            logger.debug("removeItem");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("addItem");
         }
 
-        Object request = portalCtx.getRequest();
+        // Key
+        SelectionAttributeKey key = this.generateKey(portalControllerContext, id);
 
-        if (request instanceof PortletRequest) {
-            PortletRequest portletRequest = (PortletRequest) request;
+        // Selection items
+        Set<SelectionItem> items = this.getSelectionItems(portalControllerContext, key);
 
-            Set<SelectionItem> selectionItemsSet = this.getSelectionItemsSet(portletRequest, selectionId);
-            SelectionItem selectionItem = new SelectionItem(itemId, null, null);
-            boolean isRemoved = selectionItemsSet.remove(selectionItem);
-
-            if (isRemoved) {
-                // Save into session
-                this.setSelectionItemSet(portletRequest, selectionId, selectionItemsSet);
-            }
-
-            return isRemoved;
+        // Add
+        boolean isAdded = items.add(item);
+        if (isAdded) {
+            this.notifyUpdate(portalControllerContext, key);
         }
 
-        // Cannot remove item
-        return false;
+        return isAdded;
     }
+
 
     /**
      * {@inheritDoc}
      */
-    public Set<SelectionItem> getSelectionItems(PortalControllerContext portalCtx, String selectionId) {
+    public boolean removeItem(PortalControllerContext portalControllerContext, String id, String itemId) {
         // Debug log
-        if (logger.isDebugEnabled()) {
-            logger.debug("getSelectionItemsSet");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("removeItem");
         }
 
-        Object request = portalCtx.getRequest();
+        // Key
+        SelectionAttributeKey key = this.generateKey(portalControllerContext, id);
 
-        if (request instanceof PortletRequest) {
-            PortletRequest portletRequest = (PortletRequest) request;
-            return this.getSelectionItemsSet(portletRequest, selectionId);
+        // Selection items
+        Set<SelectionItem> items = this.getSelectionItems(portalControllerContext, key);
+
+        // Remove
+        SelectionItem item = new SelectionItem(itemId, null, null);
+        boolean isRemoved = items.remove(item);
+        if (isRemoved) {
+            this.notifyUpdate(portalControllerContext, key);
         }
 
-        // Cannot access selection item set
-        return null;
+        return isRemoved;
     }
+
 
     /**
      * {@inheritDoc}
      */
-    public void deleteSelection(PortalControllerContext portalCtx, String selectionId) {
+    public Set<SelectionItem> getSelectionItems(PortalControllerContext portalControllerContext, String id) {
         // Debug log
-        if (logger.isDebugEnabled()) {
-            logger.debug("deleteSelection");
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("getSelectionItemsSet");
         }
 
-        Object request = portalCtx.getRequest();
+        // Key
+        SelectionAttributeKey key = this.generateKey(portalControllerContext, id);
 
-        if (request instanceof PortletRequest) {
-            PortletRequest portletRequest = (PortletRequest) request;
-            ControllerContext context = this.getContext(portletRequest);
-            Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = this.getSelectionsMap(context);
-            SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(portletRequest, selectionId);
-            selectionsMap.remove(selectionIdentifiers);
-            context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
+        return this.getSelectionItems(portalControllerContext, key);
+    }
 
-            // Portal notification timestamp
-            context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
 
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteSelection(PortalControllerContext portalControllerContext, String id) {
+        // Debug log
+        if (this.logger.isDebugEnabled()) {
+            this.logger.debug("deleteSelection");
+        }
+
+        // Key
+        SelectionAttributeKey key = this.generateKey(portalControllerContext, id);
+
+        // Selection items
+        Set<SelectionItem> items = this.getSelectionItems(portalControllerContext, key);
+
+        boolean empty = items.isEmpty();
+        items.clear();
+        if (!empty) {
+            this.notifyUpdate(portalControllerContext, key);
         }
     }
 
-    /**
-     * Utility method used to access the current context.
-     *
-     * @param request generated request
-     * @return the current context
-     */
-    private ControllerContext getContext(PortletRequest portletRequest) {
-        ControllerContext context = (ControllerContext) portletRequest.getAttribute("osivia.controller");
-        return context;
-    }
 
     /**
-     * Utility method used to access the session selection items set.
+     * Generate selection attribute key.
      *
-     * @param httpSession session
-     * @param selectionId specified selection identifier
-     * @return the selection items set
-     */
-    private Set<SelectionItem> getSelectionItemsSet(PortletRequest request, String selectionId) {
-        ControllerContext context = this.getContext(request);
-        Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = this.getSelectionsMap(context);
-        SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(request, selectionId);
-        Set<SelectionItem> selectionItemsSet;
-        if (selectionsMap.containsKey(selectionIdentifiers)) {
-            selectionItemsSet = selectionsMap.get(selectionIdentifiers);
-        } else {
-            selectionItemsSet = new LinkedHashSet<SelectionItem>();
-            selectionsMap.put(selectionIdentifiers, selectionItemsSet);
-            context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
-            if (logger.isDebugEnabled()) {
-                logger.info("Selection item set initialized (id = " + selectionId + ").");
-            }
-        }
-        return selectionItemsSet;
-    }
-
-    /**
-     * Utility method used to save the selection items set.
-     *
-     * @param context context
-     * @param selectionId specified selection identifier
-     * @param selectionItemsSet selection item set to save
-     */
-    private void setSelectionItemSet(PortletRequest request, String selectionId, Set<SelectionItem> selectionItemsSet) {
-        ControllerContext context = this.getContext(request);
-        Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = this.getSelectionsMap(context);
-        SelectionMapIdentifiers selectionIdentifiers = this.getSelectionMapIdentifiers(request, selectionId);
-        selectionsMap.put(selectionIdentifiers, selectionItemsSet);
-        context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
-
-        // Portal notification timestamp
-        context.setAttribute(Scope.PRINCIPAL_SCOPE,ATTR_SELECTIONS_TIMESTAMP, System.currentTimeMillis());
-    }
-
-
-    /**
-     * Utility method used to access the selections map.
-     *
-     * @param context context
-     * @return the selections map
-     */
-    @SuppressWarnings("unchecked")
-    private Map<SelectionMapIdentifiers, Set<SelectionItem>> getSelectionsMap(ControllerContext context) {
-        // Map loader from session
-        Map<SelectionMapIdentifiers, Set<SelectionItem>> selectionsMap = (Map<SelectionMapIdentifiers, Set<SelectionItem>>) context.getAttribute(
-                Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP);
-
-        // If null, initialization
-        if (selectionsMap == null) {
-            selectionsMap = new HashMap<SelectionMapIdentifiers, Set<SelectionItem>>();
-            context.setAttribute(Scope.PRINCIPAL_SCOPE, ATTR_SELECTIONS_MAP, selectionsMap);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Selections map initialized.");
-            }
-        }
-
-        return selectionsMap;
-    }
-
-    /**
-     * Utility method used to generate selection map identifiers.
-     *
-     * @param request generated request
+     * @param portalControllerContext portal controller context
      * @param selectionId selection identifier
-     * @return selection map identifiers
+     * @return key
      */
-    private SelectionMapIdentifiers getSelectionMapIdentifiers(PortletRequest request, String selectionId) {
-        Window window = (Window) request.getAttribute("osivia.window");
-        Page page = window.getPage();
-        String scopeProperty = page.getDeclaredProperty(PREFIXE_SELECTION_SCOPE + selectionId + SUFFIXE_SELECTION_SCOPE);
-        SelectionScope scope = SelectionScope.fromScopeName(scopeProperty);
+    private SelectionAttributeKey generateKey(PortalControllerContext portalControllerContext, String selectionId) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        PortalObjectId pageId = null;
-        if (SelectionScope.SCOPE_PAGE.equals(scope)) {
+        // Page
+        Page page = PortalObjectUtils.getPage(controllerContext);
+
+        // Scope
+        String scopeName = page.getDeclaredProperty(SCOPE_PREFIX + selectionId + SCOPE_SUFFIX);
+        StorageScope scope = StorageScope.fromName(scopeName);
+
+        // Page identifier
+        PortalObjectId pageId;
+        if (StorageScope.PAGE.equals(scope)) {
             pageId = page.getId();
+        } else {
+            pageId = null;
         }
 
-        SelectionMapIdentifiers selectionIdentifiers = new SelectionMapIdentifiers(selectionId, scope, pageId);
-        return selectionIdentifiers;
+        return new SelectionAttributeKey(selectionId, scope, pageId);
+    }
+
+
+    /**
+     * Get selection items.
+     *
+     * @param portalControllerContext portal controller context
+     * @param key selection attribute key
+     * @return selection items
+     */
+    private Set<SelectionItem> getSelectionItems(PortalControllerContext portalControllerContext, SelectionAttributeKey key) {
+        SelectionAttributeValue attribute = this.getStorageAttribute(portalControllerContext, key);
+        if (attribute == null) {
+            attribute = new SelectionAttributeValue();
+            this.setStorageAttributes(portalControllerContext, key, attribute);
+
+            if (this.logger.isDebugEnabled()) {
+                this.logger.info("Selection items initialized (id = " + key.getId() + ").");
+            }
+        }
+        return attribute.getItems();
     }
 
 }

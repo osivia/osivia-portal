@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -53,6 +54,7 @@ import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
 import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.core.attributes.AttributesStorage;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.mt.CacheEntry;
@@ -60,7 +62,6 @@ import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicPersistentWindow;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
-import org.osivia.portal.core.selection.SelectionService;
 import org.osivia.portal.core.tracker.ITracker;
 
 /**
@@ -262,15 +263,25 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
             // v2.0.8 : gestion des evenements de selection
 
             long selectionTs = -1;
+            long sequencingTs = -1;
 
             if ((cachedEntry != null) && (window != null)) {
                 if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
                     // Le cache est-il bien conforme à la selection
-
-                    Long savedSelectionTS = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, SelectionService.ATTR_SELECTIONS_TIMESTAMP);
-                    if (savedSelectionTS != null) {
-                        selectionTs = savedSelectionTS.longValue();
+                    Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.SELECTION.getTimestampAttributeName());
+                    if (timestamp != null) {
+                        selectionTs = timestamp.longValue();
                         if (cachedEntry.selectionTs != selectionTs) {
+                            cachedEntry = null;
+                        }
+                    }
+                }
+
+                if (StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
+                    Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.PORTLET_SEQUENCING.getTimestampAttributeName());
+                    if (timestamp != null) {
+                        sequencingTs = timestamp.longValue();
+                        if (cachedEntry.sequencingTs != sequencingTs) {
                             cachedEntry = null;
                         }
                     }
@@ -444,7 +455,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                     StateString cacheAdditionnalState = ParametersStateString.create(additionnalState);
 
                     CacheEntry cacheEntry = new CacheEntry(navigationalState, publicNavigationalState, windowState, cacheAdditionnalState, mode, cacheFragment,
-                            expirationTimeMillis, validationToken, windowCreationPageMarker, selectionTs, null);
+                            expirationTimeMillis, validationToken, windowCreationPageMarker, selectionTs, sequencingTs, null);
 
 
                     userContext.setAttribute(scopeKey, cacheEntry);
@@ -463,7 +474,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                             sharedID = computedCacheID(sharedID, window, publicNavigationalState);
 
                             CacheEntry sharedCacheEntry = new CacheEntry(null, null, null, null, null, fragment, expirationTimeMillis, null, null, selectionTs,
-                                    invocation.getWindowContext().getId());
+                                    sequencingTs, invocation.getWindowContext().getId());
                             userContext.setAttribute("sharedcache." + sharedID, sharedCacheEntry);
                         }
                     }
@@ -498,7 +509,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
 
                             CacheEntry initCacheEntry = new CacheEntry(navigationalState, publicNavigationalState, windowState, cacheAdditionnalState, mode,
                                     fragment, System.currentTimeMillis() + (30 * 1000), // 10 sec.
-                                    null, null, selectionTs, null);
+                                    null, null, selectionTs, sequencingTs, null);
                             // v2.0.2 -JSS20130318 - déja fait !!!
                             // userContext.setAttribute(scopeKey, cacheEntry);
 

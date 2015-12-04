@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -302,11 +303,13 @@ public class AjaxResponseHandler implements ResponseHandler {
 
 
                 for (PortalObject window : windows) {
-                    
-                    if( window.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME))
-                        dirtyWindowIds.add(window.getId());
 
-                    if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
+                    if (window.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME)) {
+                        dirtyWindowIds.add(window.getId());
+                    }
+
+                    if (("selection".equals(window.getProperty("osivia.cacheEvents")))
+                            || (StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority")))) {
                         if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
                             if (!dirtyWindowIds.contains(window.getId())) {
                                 dirtyWindowIds.add(window.getId());
