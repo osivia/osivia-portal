@@ -36,7 +36,7 @@ public abstract class AttributesStorageService<K extends StorageAttributeKey, V 
      */
     protected V getStorageAttribute(PortalControllerContext portalControllerContext, K key) {
         // Storage
-        Map<K, V> storage = this.getStorage(portalControllerContext, key);
+        Map<K, V> storage = this.getStorage(portalControllerContext, key.getStorage());
 
         return storage.get(key);
     }
@@ -51,7 +51,7 @@ public abstract class AttributesStorageService<K extends StorageAttributeKey, V 
      */
     protected void setStorageAttributes(PortalControllerContext portalControllerContext, K key, V value) {
         // Storage
-        Map<K, V> storage = this.getStorage(portalControllerContext, key);
+        Map<K, V> storage = this.getStorage(portalControllerContext, key.getStorage());
 
         storage.put(key, value);
 
@@ -91,16 +91,16 @@ public abstract class AttributesStorageService<K extends StorageAttributeKey, V 
      * Get attributes storage.
      *
      * @param portalControllerContext portal controller context
-     * @param key attribute key
+     * @param type attributes storage type
      * @return attributes
      */
     @SuppressWarnings("unchecked")
-    private Map<K, V> getStorage(PortalControllerContext portalControllerContext, K key) {
+    protected Map<K, V> getStorage(PortalControllerContext portalControllerContext, AttributesStorage type) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Attribute name
-        String attribute = key.getStorage().getAttributeName();
+        String attribute = type.getAttributeName();
 
         // Storage
         Map<K, V> storage = (Map<K, V>) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, attribute);

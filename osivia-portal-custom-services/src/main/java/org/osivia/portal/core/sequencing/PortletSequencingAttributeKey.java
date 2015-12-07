@@ -98,4 +98,14 @@ public class PortletSequencingAttributeKey implements StorageAttributeKey {
         return true;
     }
 
+
+    /**
+     * Getter for name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+
 }

@@ -1,5 +1,7 @@
 package org.osivia.portal.api.sequencing;
 
+import java.util.Map;
+
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -24,8 +26,17 @@ public interface IPortletSequencingService {
 
 
     /**
-     * Set sequencing attribute.
+     * Get sequencing attributes.
      * 
+     * @param portalControllerContext portal controller context
+     * @return attributes
+     */
+    Map<String, Object> getAttributes(PortalControllerContext portalControllerContext);
+
+
+    /**
+     * Set sequencing attribute.
+     *
      * @param portalControllerContext portal controller context
      * @param name attribute name
      * @param value attribute value
