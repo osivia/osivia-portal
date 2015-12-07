@@ -60,6 +60,22 @@ public abstract class AttributesStorageService<K extends StorageAttributeKey, V 
 
 
     /**
+     * Remove storage attribute.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param key attribute key
+     */
+    protected void removeStorageAttribute(PortalControllerContext portalControllerContext, K key) {
+        // Storage
+        Map<K, V> storage = this.getStorage(portalControllerContext, key.getStorage());
+
+        storage.remove(key);
+
+        this.notifyUpdate(portalControllerContext, key);
+    }
+
+
+    /**
      * Notify update.
      *
      * @param portalControllerContext portal controller context

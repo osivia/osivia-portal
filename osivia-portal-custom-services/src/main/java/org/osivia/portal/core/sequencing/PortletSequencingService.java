@@ -51,14 +51,26 @@ public class PortletSequencingService extends AttributesStorageService<PortletSe
      * {@inheritDoc}
      */
     public Map<String, Object> getAttributes(PortalControllerContext portalControllerContext) {
+        // Page identifier
+        PortalObjectId pageId = this.getPageId(portalControllerContext);
+
+        // Storage
         Map<PortletSequencingAttributeKey, PortletSequencingAttributeValue> storage = this.getStorage(portalControllerContext,
                 AttributesStorage.PORTLET_SEQUENCING);
 
-        Map<String, Object> result = new HashMap<String, Object>(storage.size());
+        Map<String, Object> result = new HashMap<String, Object>();
         for (Entry<PortletSequencingAttributeKey, PortletSequencingAttributeValue> entry : storage.entrySet()) {
-            String name = entry.getKey().getName();
-            Object attribute = entry.getValue().getAttribute();
-            result.put(name, attribute);
+            try {
+                PortletSequencingAttributeKey key = entry.getKey();
+                if (pageId.equals(key.getPageId())) {
+                    String name = key.getName();
+                    Object attribute = entry.getValue().getAttribute();
+                    result.put(name, attribute);
+                }
+
+            } catch (ClassCastException e) {
+                // Do nothing
+            }
         }
 
         return result;
@@ -79,6 +91,20 @@ public class PortletSequencingService extends AttributesStorageService<PortletSe
         PortletSequencingAttributeValue value = new PortletSequencingAttributeValue(attribute);
 
         this.setStorageAttributes(portalControllerContext, key, value);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void removeAttribute(PortalControllerContext portalControllerContext, String name) {
+        // Page identifier
+        PortalObjectId pageId = this.getPageId(portalControllerContext);
+
+        // Key
+        PortletSequencingAttributeKey key = new PortletSequencingAttributeKey(pageId, name);
+
+        this.removeStorageAttribute(portalControllerContext, key);
     }
 
 }

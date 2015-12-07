@@ -105,7 +105,7 @@ public class ThreadCacheManager extends PortletInvokerInterceptor
 				}
 			}
 
-            if (StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
+            if ((cachedEntry != null) && StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
                 Long timestamp = (Long) context.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.PORTLET_SEQUENCING.getTimestampAttributeName());
                 if ((timestamp != null) && (cachedEntry.creationTimeMillis < timestamp.longValue())) {
                     cachedEntry = null;

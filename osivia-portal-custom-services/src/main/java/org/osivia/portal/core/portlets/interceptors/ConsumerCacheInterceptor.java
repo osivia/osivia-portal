@@ -277,7 +277,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                     }
                 }
 
-                if (StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
+                if ((cachedEntry != null) && StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
                     Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.PORTLET_SEQUENCING.getTimestampAttributeName());
                     if (timestamp != null) {
                         sequencingTs = timestamp.longValue();

@@ -27,7 +27,7 @@ public interface IPortletSequencingService {
 
     /**
      * Get sequencing attributes.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return attributes
      */
@@ -42,5 +42,14 @@ public interface IPortletSequencingService {
      * @param value attribute value
      */
     void setAttribute(PortalControllerContext portalControllerContext, String name, Object value);
+
+
+    /**
+     * Remove sequencing attribute.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param name attribute name
+     */
+    void removeAttribute(PortalControllerContext portalControllerContext, String name);
 
 }
