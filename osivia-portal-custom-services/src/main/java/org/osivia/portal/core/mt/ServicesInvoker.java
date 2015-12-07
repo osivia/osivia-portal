@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
@@ -259,7 +260,8 @@ public class ServicesInvoker {
                     WindowNavigationalState windowState = ctx.getWindowNavigationalState(window.getId().toString());
 
 
-                    if (ThreadCacheManager.isPresumedCached(this.context, pageNavigationalState, window, windowState)) {
+                    if (ThreadCacheManager.isPresumedCached(this.context, pageNavigationalState, window, windowState)
+                            || StringUtils.isNotBlank(window.getDeclaredProperty("osivia.sequence.priority"))) {
                         // if( ThreadCacheManager.isPresumedCached(context, window) || (true)) {
 
                         WindowRendition rendition = renderCmd.render(this.context);

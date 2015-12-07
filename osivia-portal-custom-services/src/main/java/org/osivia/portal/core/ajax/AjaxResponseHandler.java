@@ -16,11 +16,12 @@ package org.osivia.portal.core.ajax;
 
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -353,11 +354,11 @@ public class AjaxResponseHandler implements ResponseHandler {
 
             //
             if (!fullRefresh) {
-                ArrayList<PortalObject> refreshedWindows = new ArrayList<PortalObject>();
+                Set<Window> refreshedWindows = new TreeSet<Window>(new WindowComparator());
                 for (PortalObject child : page.getChildren(PortalObject.WINDOW_MASK)) {
                     PortalObjectId childId = child.getId();
                     if (dirtyWindowIds.contains(childId)) {
-                        refreshedWindows.add(child);
+                        refreshedWindows.add((Window) child);
                     }
                 }
 
@@ -531,6 +532,33 @@ public class AjaxResponseHandler implements ResponseHandler {
             }
         }
         return resp;
+    }
+
+
+    private class WindowComparator implements Comparator<Window> {
+
+        public int compare(Window w1, Window w2) {
+
+            String order1 = w1.getDeclaredProperty("osivia.sequence.priority");
+            String order2 = w2.getDeclaredProperty("osivia.sequence.priority");
+
+            // Window with no priority will be executed in parallel mode
+            // So they are sorted before priority windows
+
+            if (order1 == null) {
+                if (order2 == null) {
+                    return w1.getName().compareTo(w2.getName());
+                } else {
+                    return -1;
+                }
+            } else if (order2 == null) {
+                return 1;
+            } else {
+                return Integer.valueOf(order1).compareTo(Integer.valueOf(order2));
+            }
+
+        }
+
     }
 
 }
