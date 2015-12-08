@@ -4,7 +4,8 @@ var callbackId = "",
 	currentDocumentId = "",
 	live = "",
 	notificationKey = "",
-	ecmBaseUrl = "";
+	ecmBaseUrl = "",
+	postMessageInitialized = false;
 
 
 /**
@@ -66,9 +67,12 @@ function setCallbackFromEcmParams(url, ecm) {
 
 	// Setup a callback to handle the dispatched MessageEvent. 
 	// If window.postMessage is supported the passed event will have .data, .origin and .source properties. otherwise, it willonly have the .data property.
-	XD.receiveMessage(function(message) {
-		receiveMessageAction(message);
-	}, ecmBaseUrl);
+	if (!postMessageInitialized) {
+		XD.receiveMessage(function(message) {
+			receiveMessageAction(message);
+		}, ecmBaseUrl);
+		postMessageInitialized = true;
+	}
 }
 
 
