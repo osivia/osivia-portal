@@ -32,6 +32,7 @@ import java.util.Locale;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
@@ -149,12 +150,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         out.print(">");
 
 
-        // Dyna window content
-        out.print("<div class='dyna-window-content");
+        // Well
         if (showCMSTools) {
-            out.print(" well well-sm clearfix");
+            out.print("<div class='well well-sm clearfix'>");
         }
-        out.print("'>");
 
 
         // Edit / remove fragment actions
@@ -178,11 +177,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Edition button
             String editionURL = wrc.getProperty("osivia.cmsEditUrl");
             StringBuilder editionOnClick = new StringBuilder();
-            editionOnClick.append("callbackUrl='");
-            editionOnClick.append(rendererContext.getProperty("osivia.cmsEditCallbackUrl"));
-            editionOnClick.append("'; callBackId='");
+            editionOnClick.append("setCallbackParams('");
             editionOnClick.append(rendererContext.getProperty("osivia.cmsEditCallbackId"));
-            editionOnClick.append("'; setCallbackFromEcmParams('', '");
+            editionOnClick.append("', '");
+            editionOnClick.append(rendererContext.getProperty("osivia.cmsEditCallbackUrl"));
+            editionOnClick.append("'); setCallbackFromEcmParams('', '");
             editionOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             editionOnClick.append("');");
             String editionTitle = bundle.getString("CMS_EDIT_FRAGMENT");
@@ -209,6 +208,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 // Do nothing
             }
         }
+
+
+        // Dyna window content
+        out.print("<div class='dyna-window-content'>");
 
 
         String scripts = properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
@@ -311,6 +314,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Dyna window content
         out.print("</div>");
 
+        // Well
+        if (showCMSTools) {
+            out.print("</div>");
+        }
+
         // in cms mode, create a new fragment below the current window
         if (showCMSTools) {
             // Toolbar
@@ -321,16 +329,20 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             toolbar.add(group);
 
             // Add fragment
+            String addFragmentId = StringEscapeUtils.escapeHtml(rendererContext.getProperty("osivia.cmsEditCallbackId") + "-add");
             String addFragmentURL = wrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
             addFragmentOnClick.append("callbackUrl='");
             addFragmentOnClick.append(wrc.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append("#");
+            addFragmentOnClick.append(addFragmentId);
             addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
             addFragmentOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
 
             Element addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(),
                     "btn btn-default fancyframe_refresh", null, "halflings halflings-plus");
+            DOM4JUtils.addAttribute(addFragmentButton, HTMLConstants.ID, addFragmentId);
             DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
             group.add(addFragmentButton);
 

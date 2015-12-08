@@ -39,6 +39,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -364,17 +365,20 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         if (inherited) {
             addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", null, "halflings halflings-plus", null);
         } else {
-            // Add fragment button
+            String addFragmentId = StringEscapeUtils.escapeHtml(irrc.getId() + "-add");
             String addFragmentURL = irrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
             addFragmentOnClick.append("callbackUrl='");
             addFragmentOnClick.append(irrc.getProperty("osivia.cmsCreateCallBackURL"));
+            addFragmentOnClick.append("#");
+            addFragmentOnClick.append(addFragmentId);
             addFragmentOnClick.append("'; setCallbackFromEcmParams('', '");
             addFragmentOnClick.append(irrc.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
 
             addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", null,
                     "halflings halflings-plus");
+            DOM4JUtils.addAttribute(addFragmentButton, HTMLConstants.ID, addFragmentId);
         }
         DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
         group.add(addFragmentButton);

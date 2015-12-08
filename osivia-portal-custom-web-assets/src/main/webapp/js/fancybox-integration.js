@@ -19,6 +19,9 @@ function callback() {
 		// reload portlet
 		updatePortletContent(divElt, callbackUrl);
 
+		// Reinit callback id & URL
+		callbackId = "";
+		callbackUrl = "";
 	} else if (callbackUrlFromEcm) {
 		// load a new page
 		var $f = jQuery('.fancybox-iframe');
