@@ -22,7 +22,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
@@ -329,11 +332,27 @@ public class ServicesInvoker {
         if (maxDelai != null) {
             timeout = Integer.parseInt(maxDelai);
         }
+        
+        
+        long timeoutms = timeout * 1000;
 
+        while (pageFutures.size() > 0 ) {
 
-        while ((this.estTermine() == false) && ((System.currentTimeMillis() - debut) < (timeout * 1000))) {
-            ;
+            Entry<PortalObjectId, Future<?>> nextElement = pageFutures.entrySet().iterator().next();
+
+            long futureTimeout = timeoutms - (System.currentTimeMillis() - debut);
+
+            if (futureTimeout < 0)
+                break;
+            else
+                try {
+                    nextElement.getValue().get(futureTimeout, TimeUnit.MILLISECONDS);
+                    pageFutures.remove(nextElement.getKey());
+                } catch (TimeoutException e) {
+                    break;
+                }
         }
+
 
 
         this.parallelisationExpired = true;
@@ -438,23 +457,15 @@ public class ServicesInvoker {
 
 
     protected synchronized void finRequete(Window window, WindowRendition rendition) {
+
         if (!this.hasParallelisationExpired()) {
             this.renditions.add(new Reponse(window, rendition));
         }
+     
     }
 
 
-    private synchronized boolean estTermine() throws Exception {
 
-        boolean res = (this.nbWindows == this.renditions.size());
-
-        if (res == false) {
-            // wait( 100);
-            this.wait(10);
-        }
-        return res;
-
-    }
 
     // Map<PortalObjectId, ServiceThread> currentThreads = new HashMap<PortalObjectId, ServiceThread>();
     // v 1.0.16
