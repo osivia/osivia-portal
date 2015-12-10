@@ -470,4 +470,14 @@ public interface ICMSService {
      */
     DocumentMetadata getDocumentMetadata(CMSServiceCtx cmsContext) throws CMSException;
 
+
+    /**
+     * Get documents metadata.
+     *
+     * @param cmsContext CMS context
+     * @return documents metadata
+     * @throws CMSException
+     */
+    DocumentsMetadata getDocumentsMetadata(CMSServiceCtx cmsContext) throws CMSException;
+
 }

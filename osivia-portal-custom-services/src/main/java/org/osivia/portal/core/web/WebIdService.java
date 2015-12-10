@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -18,7 +18,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
@@ -48,17 +47,14 @@ public class WebIdService implements IWebIdService {
     private IPortalUrlFactory portalURLFactory;
 
     /** CMS service locator. */
-    private final ICMSServiceLocator cmsServiceLocator;
+    private ICMSServiceLocator cmsServiceLocator;
+
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public WebIdService() {
-
         super();
-        // CMS service locator
-        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-
     }
 
 
@@ -249,24 +245,6 @@ public class WebIdService implements IWebIdService {
 
 
     /**
-     * Getter for portalURLFactory.
-     *
-     * @return the portalURLFactory
-     */
-    public IPortalUrlFactory getPortalURLFactory() {
-        return this.portalURLFactory;
-    }
-
-    /**
-     * Setter for portalURLFactory.
-     *
-     * @param portalURLFactory the portalURLFactory to set
-     */
-    public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
-        this.portalURLFactory = portalURLFactory;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public String getParentId(CMSServiceCtx cmsContext, String documentPath) throws CMSException {
@@ -275,7 +253,7 @@ public class WebIdService implements IWebIdService {
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
         String parentPath = cmsService.getParentPath(documentPath);
-        
+
         if (StringUtils.isNotBlank(parentPath)) {
 
             CMSItem parentItem = cmsService.getContent(cmsContext, parentPath);
@@ -284,6 +262,25 @@ public class WebIdService implements IWebIdService {
         }
 
         return parentId;
+    }
+
+
+    /**
+     * Setter for portalURLFactory.
+     * 
+     * @param portalURLFactory the portalURLFactory to set
+     */
+    public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
+        this.portalURLFactory = portalURLFactory;
+    }
+
+    /**
+     * Setter for cmsServiceLocator.
+     * 
+     * @param cmsServiceLocator the cmsServiceLocator to set
+     */
+    public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {
+        this.cmsServiceLocator = cmsServiceLocator;
     }
 
 }

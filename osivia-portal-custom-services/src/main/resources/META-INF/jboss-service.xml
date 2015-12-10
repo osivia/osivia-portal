@@ -887,6 +887,24 @@
         <depends
             optional-attribute-name="PortalURLFactory"
             proxy-type="attribute">osivia:service=UrlFactory</depends>
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
+    <!-- Web URL service -->
+    <mbean
+        code="org.osivia.portal.core.web.WebUrlService"
+        name="osivia:service=webUrlService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="PortalURLFactory"
+            proxy-type="attribute">osivia:service=PortalUrlFactory</depends>
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
 
     <!-- Page header resource service -->
