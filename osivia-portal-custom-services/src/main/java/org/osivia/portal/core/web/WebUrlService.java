@@ -81,7 +81,14 @@ public class WebUrlService implements IWebUrlService {
         }
 
         if (webId == null) {
-            String segment = StringUtils.substringAfterLast(webPath, "/");
+            // Segment
+            String segment;
+            if (StringUtils.contains(webPath, "/")) {
+                segment = StringUtils.substringAfterLast(webPath, "/");
+            } else {
+                segment = webPath;
+            }
+
             if (segment.startsWith(WEB_ID_PREFIX)) {
                 // Default webId
                 webId = StringUtils.removeStart(segment, WEB_ID_PREFIX);
