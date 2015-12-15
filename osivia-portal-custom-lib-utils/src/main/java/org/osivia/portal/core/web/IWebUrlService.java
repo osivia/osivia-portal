@@ -1,7 +1,9 @@
 package org.osivia.portal.core.web;
 
-import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.core.cms.CMSItem;
+import java.util.concurrent.TimeUnit;
+
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.core.cms.CMSServiceCtx;
 
 /**
  * Web URL service interface.
@@ -10,37 +12,39 @@ import org.osivia.portal.core.cms.CMSItem;
  */
 public interface IWebUrlService {
 
-    /** Web URL segment webid prefix. */
-    String WEBID_PREFIX = "id_";
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=webUrlService";
+
+    /** Web URL segment webId prefix. */
+    String WEB_ID_PREFIX = "id_";
+
+    /** Cache validity property name. */
+    String CACHE_VALIDITY_PROPERTY = "url.cache.validity";
+    /** Cache validity default value. */
+    long CACHE_VALIDITY_DEFAULT_VALUE = TimeUnit.HOURS.toMillis(1);
 
 
     /**
-     * Create web URL.
+     * Get web path from webId.
      *
-     * @param portalControllerContext portal controller context
-     * @param cmsItem CMS item
-     * @return web URL
+     * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param webId webId
+     * @return web path
+     * @throws PortalException
      */
-    String create(PortalControllerContext portalControllerContext, CMSItem cmsItem);
+    String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId) throws PortalException;
 
 
     /**
-     * Create web URL.
+     * Get webId from web path.
      *
-     * @param portalControllerContext portal controller context
-     * @param path cms path
-     * @return web URL
+     * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param webPath web path
+     * @return webId
+     * @throws PortalException
      */
-    String create(PortalControllerContext portalControllerContext, String path);
-
-
-    /**
-     * Resolve web URL to CMS item.
-     *
-     * @param portalControllerContext portal controller context
-     * @param webUrl web URL
-     * @return CMS item
-     */
-    CMSItem resolve(PortalControllerContext portalControllerContext, String webUrl);
+    String getWebId(CMSServiceCtx cmsContext, String basePath, String webPath) throws PortalException;
 
 }

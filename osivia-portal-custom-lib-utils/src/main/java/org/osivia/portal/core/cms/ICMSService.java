@@ -475,9 +475,11 @@ public interface ICMSService {
      * Get documents metadata.
      *
      * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param timestamp timestamp, may be null for full refresh
      * @return documents metadata
      * @throws CMSException
      */
-    DocumentsMetadata getDocumentsMetadata(CMSServiceCtx cmsContext) throws CMSException;
+    DocumentsMetadata getDocumentsMetadata(CMSServiceCtx cmsContext, String basePath, Long timestamp) throws CMSException;
 
 }

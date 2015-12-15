@@ -72,7 +72,13 @@ public class WebIdService implements IWebIdService {
      * {@inheritDoc}
      */
     public String webIdToFetchInfoService(String webid) {
-        return PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
+        String fetchPath;
+        if (webid != null) {
+            fetchPath = PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
+        } else {
+            fetchPath = null;
+        }
+        return fetchPath;
     }
 
 
@@ -267,7 +273,7 @@ public class WebIdService implements IWebIdService {
 
     /**
      * Setter for portalURLFactory.
-     * 
+     *
      * @param portalURLFactory the portalURLFactory to set
      */
     public void setPortalURLFactory(IPortalUrlFactory portalURLFactory) {
@@ -276,7 +282,7 @@ public class WebIdService implements IWebIdService {
 
     /**
      * Setter for cmsServiceLocator.
-     * 
+     *
      * @param cmsServiceLocator the cmsServiceLocator to set
      */
     public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {

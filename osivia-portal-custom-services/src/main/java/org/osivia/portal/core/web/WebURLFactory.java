@@ -30,6 +30,7 @@ import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
@@ -41,6 +42,7 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.ExtendedParameters;
@@ -67,6 +69,8 @@ public class WebURLFactory extends URLFactoryDelegate {
     private static ICMSServiceLocator cmsServiceLocator;
     /** WebId service. */
     private static IWebIdService webIdService;
+    /** Web URL service. */
+    private static IWebUrlService webUrlService;
 
 
     /** Path. */
@@ -85,9 +89,8 @@ public class WebURLFactory extends URLFactoryDelegate {
      * Get CMS Service.
      *
      * @return CMS service
-     * @throws Exception
      */
-    public static ICMSService getCMSService() throws Exception {
+    public static ICMSService getCMSService() {
         if (cmsServiceLocator == null) {
             cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
@@ -97,12 +100,11 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
     /**
-     * Get webid service.
+     * Get webId service.
      *
      * @return webId service
      */
     public static IWebIdService getWebIdService() {
-
         if (webIdService == null) {
             webIdService = Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
         }
@@ -112,28 +114,33 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
     /**
+     * Get web URL service.
+     *
+     * @return web URL service
+     */
+    public static IWebUrlService getWebUrlService() {
+        if (webUrlService == null) {
+            webUrlService = Locator.findMBean(IWebUrlService.class, IWebUrlService.MBEAN_NAME);
+        }
+        return webUrlService;
+    }
+
+
+    /**
      * Returns the defaut CMS path for current portalSite.
      *
-     * @param controllerContext
+     * @param controllerContext controller context
      * @return null if not a URL Policy is disabled
      */
     public static String getWebPortalBasePath(ControllerContext controllerContext) {
-
-        Portal webPortal = null;
         String basePath = null;
 
         String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-
         if (portalName != null) {
-
-            webPortal = (Portal) controllerContext.getController().getPortalObjectContainer()
-                    .getObject(PortalObjectId.parse("", "/" + portalName, PortalObjectPath.CANONICAL_FORMAT));
-
-            if (InternalConstants.PORTAL_URL_POLICY_WEB.equals(webPortal.getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
-
-                if (webPortal != null) {
-                    basePath = webPortal.getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
-                }
+            Portal webPortal = (Portal) controllerContext.getController().getPortalObjectContainer()
+                    .getObject(PortalObjectId.parse(StringUtils.EMPTY, "/" + portalName, PortalObjectPath.CANONICAL_FORMAT));
+            if ((webPortal != null) && InternalConstants.PORTAL_URL_POLICY_WEB.equals(webPortal.getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
+                basePath = webPortal.getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
             }
         }
 
@@ -142,15 +149,23 @@ public class WebURLFactory extends URLFactoryDelegate {
 
 
     /**
-     * @param controllerContext
-     * @param webPath
-     * @return
+     * Adapt web URL to CMS path.
+     *
+     * @param controllerContext controller context
+     * @param webPath web path
+     * @param extendedParameters extended parameters
+     * @param reload reload indicator
+     * @return CMS path
      * @throws ControllerException
      */
     public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, ExtendedParameters extendedParameters, boolean reload)
             throws Exception {
+        // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
+        if (CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW)) {
+            cmsContext.setDisplayLiveVersion("1");
+        }
 
         if (extendedParameters != null) {
             String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
@@ -164,98 +179,95 @@ public class WebURLFactory extends URLFactoryDelegate {
             }
         }
 
-        String cmsPath = null;
-        // if webpath is empty or equals '/', get default page associated with the portal
-        if (webPath.length() <= 1) {
-            cmsPath = getWebPortalBasePath(controllerContext);
-        } else {
-            cmsPath = getWebIdService().webIdToFetchInfoService(webPath);
+        // Base path
+        String basePath = WebURLFactory.getWebPortalBasePath(controllerContext);
 
-            boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
-            if (modePreview) {
-                cmsContext.setDisplayLiveVersion("1");
-            }
+        // WebId
+        String webId = getWebUrlService().getWebId(cmsContext, basePath, webPath);
 
-            if (reload) {
-                cmsContext.setForceReload(true);
-            }
+        // Path to fetch
+        String pathToFetch = getWebIdService().webIdToFetchInfoService(webId);
 
-            cmsPath = getCMSService().adaptWebPathToCms(cmsContext, cmsPath);
+        if (reload) {
+            cmsContext.setForceReload(true);
         }
 
-        return cmsPath;
+        return getCMSService().adaptWebPathToCms(cmsContext, pathToFetch);
     }
 
 
     /**
-     * Converts Classic portal urls to web urls
+     * Converts classic portal URL to web URL.
      *
-     *
-     * @param controllerContext
-     * @param invocation
-     * @param cmd
-     * @param standardURL
-     * @return the Web URL
+     * @param controllerContext controller context
+     * @param invocation server invocation
+     * @param command controller command
+     * @param standardURL standard URL
+     * @return web URL
      */
-    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd, ServerURL standardURL) {
+    public static ServerURL doWebMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand command, ServerURL standardURL) {
         if (getWebPortalBasePath(controllerContext) == null) {
             return null;
         }
 
+        if (command instanceof CmsCommand) {
+            CmsCommand cmsCommand = (CmsCommand) command;
+            if (cmsCommand.getCmsPath().startsWith(IWebIdService.PREFIX_WEBPATH)) {
+                // CMS context
+                CMSServiceCtx cmsContext = new CMSServiceCtx();
+                cmsContext.setControllerContext(controllerContext);
+                if (CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW)) {
+                    cmsContext.setDisplayLiveVersion("1");
+                }
 
-        if (cmd instanceof CmsCommand) {
-            CmsCommand cmsCmd = (CmsCommand) cmd;
-            if (cmsCmd.getCmsPath().startsWith(IWebIdService.PREFIX_WEBPATH)) {
-
-                if (cmsCmd.getPortalPersistentName() != null) {
+                if (cmsCommand.getPortalPersistentName() != null) {
                     return null;
                 }
-                if (StringUtils.equals("detailedView", cmsCmd.getDisplayContext())) {
+                if (StringUtils.equals("detailedView", cmsCommand.getDisplayContext())) {
                     return null;
                 }
 
+                // WebId
+                String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.PREFIX_WEBPATH);
+                webId = StringUtils.substringAfterLast(webId, "/");
 
-                String newPath = cmsCmd.getCmsPath().substring(IWebIdService.PREFIX_WEBPATH.length());
+                // Base path
+                String basePath = getWebPortalBasePath(controllerContext);
 
-                // TODO : portlet list : impossible d'afficher des ressources hors portal site en webid
-                // avec cette clause
-                // if (!StringUtils.isEmpty(cmsCmd.getDisplayLiveVersion()))
-                // return null;
-
-                String webPath = newPath;
-
-                // webPath = adaptCMSPathToWebURL(controllerContext, newPath);
-
-                if (webPath != null) {
-                    WebCommand webCommand = new WebCommand();
-                    webCommand.setWebPath(webPath);
-                    webCommand.setSupportingPageMarker(false);
-                    webCommand.setExtendedParameters(cmsCmd.getExtendedParameters());
-
-                    ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
-
-                    return serverURL;
+                // Web path
+                String webPath = null;
+                if (basePath != null) {
+                    try {
+                        webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
+                    } catch (PortalException e) {
+                        // Do nothing
+                    }
                 }
+                if (webPath == null) {
+                    webPath = "/" + IWebUrlService.WEB_ID_PREFIX + webId;
+                }
+
+
+                // Web command
+                WebCommand webCommand = new WebCommand(webPath);
+                webCommand.setSupportingPageMarker(false);
+                webCommand.setExtendedParameters(cmsCommand.getExtendedParameters());
+
+                return controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
             }
         }
 
-        if (cmd instanceof PortalObjectCommand) {
-            PortalObjectCommand invCmd = (PortalObjectCommand) cmd;
+        if (command instanceof PortalObjectCommand) {
+            PortalObjectCommand portalObjectCommand = (PortalObjectCommand) command;
+            PortalObjectId targetId = portalObjectCommand.getTargetId();
+            PortalObject portalObject = controllerContext.getController().getPortalObjectContainer().getObject(targetId);
+            if (portalObject instanceof Window) {
+                Window window = (Window) portalObject;
+                Page page = window.getPage();
 
-            PortalObjectId poid = invCmd.getTargetId();
-
-            PortalObject po = controllerContext.getController().getPortalObjectContainer().getObject(poid);
-
-            if (po instanceof Window) {
-                Window window = (Window) po;
-
-
-                WebCommand webCommand = new WebCommand();
-                // String pathNavigation = PagePathUtils.getNavigationPath(controllerContext, window.getPage().getId());
-
-                String pageWebId = PagePathUtils.getNavigationWebId(controllerContext, window.getPage().getId());
-
-                if (StringUtils.isEmpty(pageWebId)) {
+                // WebId
+                String webId = PagePathUtils.getNavigationWebId(controllerContext, page.getId());
+                if (StringUtils.isEmpty(webId)) {
                     return null;
                 }
 
@@ -268,17 +280,28 @@ public class WebURLFactory extends URLFactoryDelegate {
                 }
 
 
-                // String webPath = "/" + adaptCMSPathToWebURL(controllerContext, pageWebId);
-                // TODO explicite ?
-                String webPath = "/" + pageWebId.concat(WebIdService.SUFFIX_WEBPATH);
+                // CMS context
+                CMSServiceCtx cmsContext = new CMSServiceCtx();
+                cmsContext.setControllerContext(controllerContext);
 
-                webCommand.setWebPath(webPath);
-                webCommand.setWindowName(window.getName());
+                // Base path
+                String basePath = getWebPortalBasePath(controllerContext);
 
-                if (cmd instanceof InvokePortletWindowResourceCommand) {
-                    webCommand.setSupportingPageMarker(false);
+                // Web path
+                String webPath;
+                try {
+                    webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
+                } catch (PortalException e) {
+                    webPath = null;
                 }
 
+
+                // Web command
+                WebCommand webCommand = new WebCommand(webPath);
+                webCommand.setWindowName(window.getName());
+                if (command instanceof InvokePortletWindowResourceCommand) {
+                    webCommand.setSupportingPageMarker(false);
+                }
 
                 ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
                 serverURL.getParameterMap().append(standardURL.getParameterMap());
@@ -294,36 +317,29 @@ public class WebURLFactory extends URLFactoryDelegate {
     /**
      * {@inheritDoc}
      */
-    public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
-        if (cmd == null) {
+    public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand command) {
+        if (command == null) {
             throw new IllegalArgumentException("No null command accepted");
         }
 
-        if (cmd instanceof WebCommand) {
-            WebCommand webCmmand = (WebCommand) cmd;
+        if (command instanceof WebCommand) {
+            WebCommand webCommand = (WebCommand) command;
 
             //
             AbstractServerURL asu = new AbstractServerURL();
             // asu.setPortalRequestPath(path);
-            String cmsPath = webCmmand.getWebPath();
+            String cmsPath = webCommand.getWebPath();
 
             String portalRequestPath = this.path;
 
 
             if (cmsPath != null) {
-                // Incohérence : le webpath contient un WebID
-                // WebCommand, non construit par une CMSCommand ou PortalObjectCommand mais par le WebCommandFactory
-                // Il faudrait 2 champs différents dans WebCommand
-                if (!cmsPath.startsWith("/")) {
-                    cmsPath = "/" + cmsPath.concat(WebIdService.SUFFIX_WEBPATH);
-                }
-
                 portalRequestPath += cmsPath;
             }
 
             asu.setPortalRequestPath(portalRequestPath);
 
-            ExtendedParameters extendedParameters = webCmmand.getExtendedParameters();
+            ExtendedParameters extendedParameters = webCommand.getExtendedParameters();
             if (extendedParameters != null) {
 
                 String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
@@ -348,7 +364,7 @@ public class WebURLFactory extends URLFactoryDelegate {
             }
 
 
-            String windowName = webCmmand.getWindowName();
+            String windowName = webCommand.getWindowName();
             if (windowName != null) {
                 try {
                     asu.setParameterValue(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW, URLEncoder.encode(windowName, "UTF-8"));
@@ -357,20 +373,31 @@ public class WebURLFactory extends URLFactoryDelegate {
                 }
             }
 
-            if (webCmmand.isSupportingPageMarker()) {
+            if (webCommand.isSupportingPageMarker()) {
                 asu.setParameterValue(InternalConstants.PORTAL_WEB_URL_PARAM_PAGEMARKER, PageMarkerUtils.getCurrentPageMarker(controllerContext));
             }
 
             return asu;
         }
+
         return null;
     }
 
 
+    /**
+     * Getter for path.
+     *
+     * @return the path
+     */
     public String getPath() {
         return this.path;
     }
 
+    /**
+     * Setter for path.
+     *
+     * @param path the path to set
+     */
     public void setPath(String path) {
         this.path = path;
     }
