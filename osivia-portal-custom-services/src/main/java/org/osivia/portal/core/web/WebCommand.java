@@ -147,18 +147,19 @@ public class WebCommand extends DynamicCommand {
 
                 // WebId
                 String webId = this.webUrlService.getWebId(cmsContext, basePath, this.webPath);
+                if (webId != null) {
+                    // Path to fetch
+                    String pathToFetch = this.webIdService.webIdToFetchInfoService(webId);
 
-                // Path to fetch
-                String pathToFetch = this.webIdService.webIdToFetchInfoService(webId);
+                    // Publication infos
+                    CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, pathToFetch);
 
-                // Publication infos
-                CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, pathToFetch);
-
-                if (publicationInfos.hasManyPublications()) {
-                    PortalObjectId pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
-                    Page currentPage = (Page) controllerContext.getController().getPortalObjectContainer().getObject(pageId);
-                    if (currentPage != null) {
-                        return this.displayManyPublications(currentPage, publicationInfos.getDocumentPath());
+                    if (publicationInfos.hasManyPublications()) {
+                        PortalObjectId pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
+                        Page currentPage = (Page) controllerContext.getController().getPortalObjectContainer().getObject(pageId);
+                        if (currentPage != null) {
+                            return this.displayManyPublications(currentPage, publicationInfos.getDocumentPath());
+                        }
                     }
                 }
             }

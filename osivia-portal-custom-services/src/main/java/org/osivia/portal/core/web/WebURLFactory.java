@@ -42,7 +42,6 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.ExtendedParameters;
@@ -235,18 +234,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 String basePath = getWebPortalBasePath(controllerContext);
 
                 // Web path
-                String webPath = null;
-                if (basePath != null) {
-                    try {
-                        webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
-                    } catch (PortalException e) {
-                        // Do nothing
-                    }
-                }
-                if (webPath == null) {
-                    webPath = "/" + IWebUrlService.WEB_ID_PREFIX + webId;
-                }
-
+                String webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
 
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);
@@ -288,13 +276,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 String basePath = getWebPortalBasePath(controllerContext);
 
                 // Web path
-                String webPath;
-                try {
-                    webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
-                } catch (PortalException e) {
-                    webPath = null;
-                }
-
+                String webPath = getWebUrlService().getWebPath(cmsContext, basePath, webId);
 
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);

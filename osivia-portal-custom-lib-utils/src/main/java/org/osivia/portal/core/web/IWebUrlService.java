@@ -2,7 +2,6 @@ package org.osivia.portal.core.web;
 
 import java.util.concurrent.TimeUnit;
 
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 
 /**
@@ -31,9 +30,8 @@ public interface IWebUrlService {
      * @param basePath CMS base path
      * @param webId webId
      * @return web path
-     * @throws PortalException
      */
-    String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId) throws PortalException;
+    String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId);
 
 
     /**
@@ -43,8 +41,7 @@ public interface IWebUrlService {
      * @param basePath CMS base path
      * @param webPath web path
      * @return webId
-     * @throws PortalException
      */
-    String getWebId(CMSServiceCtx cmsContext, String basePath, String webPath) throws PortalException;
+    String getWebId(CMSServiceCtx cmsContext, String basePath, String webPath);
 
 }

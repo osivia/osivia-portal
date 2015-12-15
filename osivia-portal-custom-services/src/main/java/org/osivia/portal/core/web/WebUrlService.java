@@ -1,9 +1,9 @@
 package org.osivia.portal.core.web;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentsMetadata;
@@ -46,28 +46,49 @@ public class WebUrlService implements IWebUrlService {
     /**
      * {@inheritDoc}
      */
-    public String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId) throws PortalException {
-        DocumentsMetadata metadata;
+    public String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId) {
+        String webPath;
         try {
-            metadata = this.getMetadata(cmsContext, basePath);
+            DocumentsMetadata metadata = this.getMetadata(cmsContext, basePath);
+            webPath = metadata.getWebPath(webId);
         } catch (CMSException e) {
-            throw new PortalException(e);
+            webPath = null;
         }
-        return metadata.getWebPath(webId);
+
+        if (webPath == null) {
+            // Default web path
+            StringBuilder builder = new StringBuilder();
+            builder.append("/");
+            builder.append(WEB_ID_PREFIX);
+            builder.append(webId);
+            webPath = builder.toString();
+        }
+
+        return webPath;
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public String getWebId(CMSServiceCtx cmsContext, String basePath, String webPath) throws PortalException {
-        DocumentsMetadata metadata;
+    public String getWebId(CMSServiceCtx cmsContext, String basePath, String webPath) {
+        String webId;
         try {
-            metadata = this.getMetadata(cmsContext, basePath);
+            DocumentsMetadata metadata = this.getMetadata(cmsContext, basePath);
+            webId = metadata.getWebId(webPath);
         } catch (CMSException e) {
-            throw new PortalException(e);
+            webId = null;
         }
-        return metadata.getWebId(webPath);
+
+        if (webId == null) {
+            String segment = StringUtils.substringAfterLast(webPath, "/");
+            if (segment.startsWith(WEB_ID_PREFIX)) {
+                // Default webId
+                webId = StringUtils.removeStart(segment, WEB_ID_PREFIX);
+            }
+        }
+
+        return webId;
     }
 
 
@@ -80,6 +101,10 @@ public class WebUrlService implements IWebUrlService {
      * @throws CMSException
      */
     private DocumentsMetadata getMetadata(CMSServiceCtx cmsContext, String basePath) throws CMSException {
+        if (basePath == null) {
+            throw new CMSException(CMSException.ERROR_NOTFOUND);
+        }
+
         // Controller context
         ControllerContext controllerContext = cmsContext.getControllerContext();
 
