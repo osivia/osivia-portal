@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -60,30 +60,17 @@ public class WebCommandFactoryService extends AbstractCommandFactory  {
     }
 
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
-        String cmsPath = null;
-
-        String toAnalize = requestPath;
-
         ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
 
-
-        /* Standard decoding */
-
-        toAnalize = requestPath;
-
-
         try {
-
-            cmsPath = getWebIdService().webPathToWebId(toAnalize);
-            WebCommand cmsCommand = new WebCommand(cmsPath);
-
+            WebCommand cmsCommand = new WebCommand(requestPath);
 
             if (parameterMap != null) {
                 try {
                     if (parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW) != null) {
                         cmsCommand.setWindowName(URLDecoder.decode(parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW)[0], "UTF-8"));
                     }
-                    
+
                     try {
                         ExtendedParameters extendedParameters = null;
                         if (parameterMap.get(CmsExtendedParameters.parentId.name()) != null) {
@@ -102,24 +89,24 @@ public class WebCommandFactoryService extends AbstractCommandFactory  {
                     } catch (UnsupportedEncodingException e) {
                         // ignore
                     }
-                    
-                    
+
+
                     if( parameterMap.size() == 0)   {
                         // pas de paramètre : partage en mode anonyme
                         HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
-                        
+
                         if (request.getUserPrincipal() == null) {
                             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
                             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.skipCacheNavigationControl", "1");
                         }
                     }
-                    
-                    
+
+
                 } catch (UnsupportedEncodingException e) {
                     // ignore
                 }
 
-            }   
+            }
 
             // Remove implicit parameters
             parameterMap.remove(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW);

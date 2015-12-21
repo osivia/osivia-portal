@@ -1,5 +1,7 @@
 package org.osivia.portal.core.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentsMetadata;
 import org.osivia.portal.core.cms.ICMSService;
@@ -51,7 +54,12 @@ public class WebUrlServiceTest {
     @Before
     public void setUp() throws Exception {
         // Documents metadata
-        DocumentsMetadata metadata = EasyMock.createNiceMock(DocumentsMetadata.class);
+        DocumentsMetadata metadata = EasyMock.createMock(DocumentsMetadata.class);
+        EasyMock.expect(metadata.getWebPath(EasyMock.anyObject(String.class))).andReturn("/domain/web-path").anyTimes();
+        EasyMock.expect(metadata.getWebId(EasyMock.anyObject(String.class))).andReturn("webId").anyTimes();
+        metadata.update(EasyMock.anyObject(DocumentsMetadata.class));
+        EasyMock.expectLastCall().anyTimes();
+        EasyMock.expect(metadata.getTimestamp()).andReturn(System.currentTimeMillis() - 1).anyTimes();
         EasyMock.replay(metadata);
 
         // Controller context
@@ -75,6 +83,11 @@ public class WebUrlServiceTest {
                         EasyMock.captureLong(timestampCapture))).andStubReturn(metadata);
         EasyMock.replay(this.cmsService);
 
+        // Cache service
+        ICacheService cacheService = EasyMock.createMock(ICacheService.class);
+        EasyMock.expect(cacheService.checkIfPortalParametersReloaded(EasyMock.anyLong())).andReturn(false).anyTimes();
+        EasyMock.replay(cacheService);
+
         // CMS service locator
         ICMSServiceLocator cmsServiceLocator = EasyMock.createMock(ICMSServiceLocator.class);
         EasyMock.expect(cmsServiceLocator.getCMSService()).andStubReturn(this.cmsService);
@@ -82,6 +95,7 @@ public class WebUrlServiceTest {
 
         // Service
         this.service = new WebUrlService();
+        this.service.setCacheService(cacheService);
         this.service.setCmsServiceLocator(cmsServiceLocator);
     }
 
@@ -95,16 +109,24 @@ public class WebUrlServiceTest {
     public final void test() throws PortalException {
         ExecutorService executor = Executors.newFixedThreadPool(6);
 
+        List<Exception> exceptions = new ArrayList<Exception>();
+
         // Multiple calls
-        for (int i = 0; i < 100; i++) {
-            Runnable serviceRunnable = new ServiceRunnable();
+        for (int i = 0; i < 20; i++) {
+            Runnable serviceRunnable = new ServiceRunnable(exceptions);
             executor.execute(serviceRunnable);
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(3, TimeUnit.SECONDS);
+            executor.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Assert.fail(e.getMessage());
+        }
+
+        if (!exceptions.isEmpty()) {
+            Exception exception = exceptions.iterator().next();
+            exception.printStackTrace();
+            Assert.fail(exception.getMessage());
         }
 
         EasyMock.verify(this.cmsService);
@@ -194,11 +216,16 @@ public class WebUrlServiceTest {
      */
     private class ServiceRunnable implements Runnable {
 
+        /** Exceptions. */
+        private final List<Exception> exceptions;
+
+
         /**
          * Constructor.
          */
-        public ServiceRunnable() {
+        public ServiceRunnable(List<Exception> exceptions) {
             super();
+            this.exceptions = exceptions;
         }
 
         /**
@@ -210,7 +237,7 @@ public class WebUrlServiceTest {
                 Thread.sleep(200);
                 WebUrlServiceTest.this.service.getWebId(WebUrlServiceTest.this.cmsContext, BASE_PATH, UUID.randomUUID().toString());
             } catch (Exception e) {
-                Assert.fail(e.getMessage());
+                this.exceptions.add(e);
             }
         }
 

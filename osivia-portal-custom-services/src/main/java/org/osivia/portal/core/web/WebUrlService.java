@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentsMetadata;
@@ -29,6 +30,8 @@ public class WebUrlService implements IWebUrlService {
     private final long validity;
 
 
+    /** Cache service. */
+    private ICacheService cacheService;
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
 
@@ -134,10 +137,9 @@ public class WebUrlService implements IWebUrlService {
         if (metadata == null) {
             // Global cache
             metadata = this.cache.getMetadata(basePath, live);
-            if ((metadata == null) || ((metadata.getTimestamp() - this.validity) > System.currentTimeMillis())) {
+            if (this.requireRefresh(metadata)) {
                 // Full refresh
-                metadata = cmsService.getDocumentsMetadata(cmsContext, basePath, null);
-                this.cache.setMetadata(basePath, live, metadata);
+                metadata = this.fullRefresh(cmsContext, basePath, live);
             } else {
                 // Updates
                 long timestamp = metadata.getTimestamp();
@@ -150,6 +152,60 @@ public class WebUrlService implements IWebUrlService {
         return metadata;
     }
 
+
+    /**
+     * Check if current documents metadata require full refresh.
+     *
+     * @param metadata documents metadata
+     * @return true if full refresh
+     */
+    private boolean requireRefresh(DocumentsMetadata metadata) {
+        boolean refresh;
+        if (metadata == null) {
+            refresh = true;
+        } else {
+            long timestamp = metadata.getTimestamp();
+
+            boolean portalRefresh = !this.cacheService.checkIfPortalParametersReloaded(timestamp);
+            boolean expiredCache = (timestamp - this.validity) > System.currentTimeMillis();
+
+            refresh = portalRefresh || expiredCache;
+        }
+        return refresh;
+    }
+
+
+    /**
+     * Documents metadata full refresh.
+     *
+     * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param live live version indicator
+     * @return documents metadata
+     * @throws CMSException
+     */
+    private synchronized DocumentsMetadata fullRefresh(CMSServiceCtx cmsContext, String basePath, boolean live) throws CMSException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+
+        DocumentsMetadata metadata = this.cache.getMetadata(basePath, live);
+        if (this.requireRefresh(metadata)) {
+            metadata = cmsService.getDocumentsMetadata(cmsContext, basePath, null);
+            this.cache.setMetadata(basePath, live, metadata);
+        }
+
+        return metadata;
+    }
+
+
+    /**
+     * Setter for cacheService.
+     *
+     * @param cacheService the cacheService to set
+     */
+    public void setCacheService(ICacheService cacheService) {
+        this.cacheService = cacheService;
+    }
 
     /**
      * Setter for cmsServiceLocator.
