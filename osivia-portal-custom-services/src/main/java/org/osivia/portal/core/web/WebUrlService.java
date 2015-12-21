@@ -167,7 +167,7 @@ public class WebUrlService implements IWebUrlService {
             long timestamp = metadata.getTimestamp();
 
             boolean portalRefresh = !this.cacheService.checkIfPortalParametersReloaded(timestamp);
-            boolean expiredCache = (timestamp - this.validity) > System.currentTimeMillis();
+            boolean expiredCache = (timestamp + this.validity) < System.currentTimeMillis();
 
             refresh = portalRefresh || expiredCache;
         }
