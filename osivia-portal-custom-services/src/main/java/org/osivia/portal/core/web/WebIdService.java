@@ -61,20 +61,10 @@ public class WebIdService implements IWebIdService {
     /**
      * {@inheritDoc}
      */
-    public String webPathToFetchInfoService(String webpath) {
-        String[] segments = webpath.split(SLASH);
-        String webid = segments[segments.length - 1];
-        return PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public String webIdToFetchInfoService(String webid) {
+    public String webIdToFetchPath(String webId) {
         String fetchPath;
-        if (webid != null) {
-            fetchPath = PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
+        if (webId != null) {
+            fetchPath = FETCH_PATH_PREFIX.concat(webId);
         } else {
             fetchPath = null;
         }
@@ -85,24 +75,64 @@ public class WebIdService implements IWebIdService {
     /**
      * {@inheritDoc}
      */
-    public String pageUrlToFetchInfoService(String pageUrl) {
-        String[] split = pageUrl.split("/");
-        String webid = split[split.length - 1];
-
-        int indexOfDot = webid.indexOf(".");
-        if (indexOfDot >= 0) {
-            webid = webid.substring(0, indexOfDot);
-        }
-
-        webid = PREFIX_WEBID_FETCH_PUB_INFO.concat(webid);
-
-        return webid;
+    public String cmsPathToFetchPath(String cmsPath) {
+        String webId = StringUtils.substringAfterLast(cmsPath, SLASH);
+        webId = StringUtils.substringBefore(webId, DOT);
+        return this.webIdToFetchPath(webId);
     }
 
 
     /**
      * {@inheritDoc}
      */
+    public String webIdToCmsPath(String webId) {
+        StringBuilder path = new StringBuilder();
+        path.append(CMS_PATH_PREFIX);
+        path.append(SLASH);
+        path.append(webId);
+        return path.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getParentWebId(CMSServiceCtx cmsContext, String path) {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+
+        // Parent webId
+        String parentWebId = null;
+
+        String parentPath = cmsService.getParentPath(path);
+        if (StringUtils.isNotBlank(parentPath)) {
+            try {
+                CMSItem parent = cmsService.getContent(cmsContext, parentPath);
+                parentWebId = parent.getWebId();
+            } catch (CMSException e) {
+                // Do nothing
+            }
+        }
+
+        return parentWebId;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Deprecated
+    public String webPathToFetchInfoService(String webpath) {
+        String[] segments = webpath.split(SLASH);
+        String webid = segments[segments.length - 1];
+        return FETCH_PATH_PREFIX.concat(webid);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Deprecated
     public String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem) {
         String webid = cmsItem.getWebId();
         String explicitUrl = cmsItem.getProperties().get(EXPLICIT_URL);
@@ -149,7 +179,7 @@ public class WebIdService implements IWebIdService {
 
         StringBuilder webPath = new StringBuilder();
         if (StringUtils.isNotEmpty(webid)) {
-            webPath.append(PREFIX_WEBPATH);
+            webPath.append(CMS_PATH_PREFIX);
             webPath.append(SLASH);
 
             if (StringUtils.isNotEmpty(parentWebIdPath.toString())) {
@@ -180,7 +210,7 @@ public class WebIdService implements IWebIdService {
                     }
                 }
             } else {
-                webPath.append(SUFFIX_WEBPATH);
+                webPath.append(".html");
             }
 
             if (StringUtils.isNotEmpty(parameters)) {
@@ -190,36 +220,13 @@ public class WebIdService implements IWebIdService {
         }
 
         return StringUtils.trimToNull(webPath.toString());
-
     }
 
 
     /**
      * {@inheritDoc}
      */
-    public String webPathToWebId(String webpath) {
-
-        String[] segments = webpath.split("/");
-        if (segments.length > 1) {
-
-            String webid = segments[segments.length - 1];
-
-            int indexOfDot = webid.indexOf(".");
-            if (indexOfDot >= 0) {
-                webid = webid.substring(0, indexOfDot);
-            }
-
-            return webid;
-
-        } else {
-            return webpath;
-        }
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
+    @Deprecated
     public String generateCanonicalWebURL(PortalControllerContext portalControllerContext, String domainId, String webId) {
         StringBuilder url = new StringBuilder();
 
@@ -250,25 +257,7 @@ public class WebIdService implements IWebIdService {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getParentId(CMSServiceCtx cmsContext, String documentPath) throws CMSException {
-        String parentId = StringUtils.EMPTY;
 
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-
-        String parentPath = cmsService.getParentPath(documentPath);
-
-        if (StringUtils.isNotBlank(parentPath)) {
-
-            CMSItem parentItem = cmsService.getContent(cmsContext, parentPath);
-            parentId = parentItem.getWebId();
-
-        }
-
-        return parentId;
-    }
 
 
     /**

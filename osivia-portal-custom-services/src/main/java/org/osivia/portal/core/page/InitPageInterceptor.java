@@ -43,7 +43,6 @@ import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
@@ -135,9 +134,7 @@ public class InitPageInterceptor extends ControllerInterceptor {
                         String path = page.getDeclaredProperty("osivia.cms.basePath");
 
                         if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
-                            CMSServiceCtx cmsContext = new CMSServiceCtx();
-                            cmsContext.setControllerContext(controllerContext);
-                            path = this.webIdService.itemToPageUrl(cmsContext, pagePublishSpaceConfig);
+                            path = this.webIdService.webIdToCmsPath(pagePublishSpaceConfig.getWebId());
                         }
 
                         // Page state initialization

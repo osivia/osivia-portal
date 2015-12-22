@@ -236,7 +236,7 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             String cmsPath;
             if (PortalObjectUtils.isSpaceSite(page) && StringUtils.isNotEmpty(document.getWebId())) {
                 // Web URL
-                cmsPath = this.webIdService.itemToPageUrl(cmsContext, document);
+                cmsPath = this.webIdService.webIdToCmsPath(document.getWebId());
             } else {
                 // CMS permalink
                 cmsPath = document.getPath();

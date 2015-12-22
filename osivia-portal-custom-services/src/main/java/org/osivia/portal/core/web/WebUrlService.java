@@ -49,6 +49,17 @@ public class WebUrlService implements IWebUrlService {
     /**
      * {@inheritDoc}
      */
+    public String getBasePath(CMSServiceCtx cmsContext) {
+        // Controller context
+        ControllerContext controllerContext = cmsContext.getControllerContext();
+
+        return WebURLFactory.getWebPortalBasePath(controllerContext);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     public String getWebPath(CMSServiceCtx cmsContext, String basePath, String webId) {
         String webPath;
         try {

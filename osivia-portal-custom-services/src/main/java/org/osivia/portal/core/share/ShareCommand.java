@@ -58,7 +58,7 @@ public class ShareCommand extends DynamicCommand {
      */
     public ShareCommand(String webId){
         this.webId = webId;
-        this.prefixedWebId = IWebIdService.PREFIX_WEBPATH + webId;
+        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
     } 
     
     /**
@@ -70,7 +70,7 @@ public class ShareCommand extends DynamicCommand {
     public ShareCommand(String webId, String parentId) {
         this.webId = webId;
         this.parentId = parentId;
-        this.prefixedWebId = IWebIdService.PREFIX_WEBPATH + webId;
+        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
     }
     
     /**

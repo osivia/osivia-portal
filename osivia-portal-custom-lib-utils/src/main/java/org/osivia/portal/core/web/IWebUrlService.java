@@ -24,6 +24,15 @@ public interface IWebUrlService {
 
 
     /**
+     * Get current CMS base path.
+     * 
+     * @param cmsContext CMS context
+     * @return CMS base path
+     */
+    String getBasePath(CMSServiceCtx cmsContext);
+
+
+    /**
      * Get web path from webId.
      *
      * @param cmsContext CMS context

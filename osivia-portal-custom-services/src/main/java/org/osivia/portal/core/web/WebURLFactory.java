@@ -185,7 +185,7 @@ public class WebURLFactory extends URLFactoryDelegate {
         String webId = getWebUrlService().getWebId(cmsContext, basePath, webPath);
 
         // Path to fetch
-        String pathToFetch = getWebIdService().webIdToFetchInfoService(webId);
+        String pathToFetch = getWebIdService().webIdToFetchPath(webId);
 
         if (reload) {
             cmsContext.setForceReload(true);
@@ -211,7 +211,7 @@ public class WebURLFactory extends URLFactoryDelegate {
 
         if (command instanceof CmsCommand) {
             CmsCommand cmsCommand = (CmsCommand) command;
-            if (cmsCommand.getCmsPath().startsWith(IWebIdService.PREFIX_WEBPATH)) {
+            if (cmsCommand.getCmsPath().startsWith(IWebIdService.CMS_PATH_PREFIX)) {
                 // CMS context
                 CMSServiceCtx cmsContext = new CMSServiceCtx();
                 cmsContext.setControllerContext(controllerContext);
@@ -227,7 +227,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 }
 
                 // WebId
-                String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.PREFIX_WEBPATH);
+                String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.CMS_PATH_PREFIX);
                 webId = StringUtils.substringAfterLast(webId, "/");
 
                 // Base path

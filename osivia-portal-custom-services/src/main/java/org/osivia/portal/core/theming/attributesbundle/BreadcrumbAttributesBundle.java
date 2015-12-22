@@ -135,14 +135,14 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_BREADCRUMB, breadcrumb);
     }
 
-    
-    
+
+
     private CMSItem computeContent(ControllerContext controllerContext, String contentPath)	{
 
         CMSServiceCtx cmsCtx = new CMSServiceCtx();
         cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
         cmsCtx.setControllerContext(controllerContext);
-    	
+
         // Get ECM object
         CMSItem document = null;
         if (contentPath != null) {
@@ -160,8 +160,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
         return document;
     }
-    
-    
+
+
 
     /**
      * Utility method used to compute breadcrumb value.
@@ -269,7 +269,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 }
 
                 int currentLevel = 0;
-                
+
                 while (StringUtils.contains(publicationPath, basePath)) {
                     // Exclude root publish Site for domain
                     // (will be computed later, the same as others spaces)
@@ -292,11 +292,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     	} else {
                             cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         }
-                    	
-                    	
+
+
                         String url;
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
-                            String webPath = this.webIdService.itemToPageUrl(cmxCtx, cmsItem);
+                            String webPath = this.webIdService.webIdToCmsPath(cmsItem.getWebId());
 
                             url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
@@ -312,9 +312,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
                             breadcrumb.getChilds().add(0, breadcrumbItem);
                         }
-                        
+
                         currentLevel++;
-                        
+
                     } catch (CMSException e) {
                         throw new ControllerException(e);
                     }

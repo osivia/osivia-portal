@@ -517,9 +517,9 @@ public class CmsCommand extends DynamicCommand {
 
             // Decode webid paths if given
             boolean hasWebId = false;
-            if (this.cmsPath.startsWith(IWebIdService.PREFIX_WEBPATH)) {
+            if (this.cmsPath.startsWith(IWebIdService.CMS_PATH_PREFIX)) {
                 hasWebId = true;
-                this.cmsPath = this.getWebIdService().pageUrlToFetchInfoService(this.cmsPath);
+                this.cmsPath = this.getWebIdService().cmsPathToFetchPath(this.cmsPath);
             }
 
 

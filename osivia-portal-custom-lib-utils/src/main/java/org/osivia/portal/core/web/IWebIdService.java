@@ -14,7 +14,6 @@
 package org.osivia.portal.core.web;
 
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 
@@ -35,15 +34,49 @@ public interface IWebIdService {
     String PARENT_PATH = "parentPath";
 
     /** Prefix used to query document in the ECM. */
-    String PREFIX_WEBID_FETCH_PUB_INFO = "webId:";
-    /** Prefix for webpaths used in the cms URL. */
-    String PREFIX_WEBPATH = "/_webid";
-
-    /** Default suffix for pages. */
-    String SUFFIX_WEBPATH = ".html";
+    String FETCH_PATH_PREFIX = "webId:";
+    /** Prefix for CMS path. */
+    String CMS_PATH_PREFIX = "/_webid";
 
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=webIdService";
+
+
+    /**
+     * Convert webId to fetch publication infos path.
+     *
+     * @param webId webId
+     * @return fetch publication infos path (e.g. webId:example)
+     */
+    String webIdToFetchPath(String webId);
+
+
+    /**
+     * Convert CMS path to fetch publication infos path.
+     *
+     * @param cmsPath CMS path (e.g. /_webid/example)
+     * @return fetch publication infos path (e.g. webId:example)
+     */
+    String cmsPathToFetchPath(String cmsPath);
+
+
+    /**
+     * Convert webId to CMS path.
+     *
+     * @param webId webId
+     * @return CMS path (e.g. /_webid/example)
+     */
+    String webIdToCmsPath(String webId);
+
+
+    /**
+     * Get first parent webId, if any.
+     *
+     * @param cmsContext CMS context
+     * @param path document CMS path
+     * @return parent webId.
+     */
+    String getParentWebId(CMSServiceCtx cmsContext, String path);
 
 
     /**
@@ -52,25 +85,8 @@ public interface IWebIdService {
      * @param webpath full webpath
      * @return webId:webid for fetchPublicationInfos
      */
+    @Deprecated
     String webPathToFetchInfoService(String webpath);
-
-
-    /**
-     * Get Url for FetchPublicationInfos service.
-     *
-     * @param webpath webid
-     * @return webId:webid for fetchPublicationInfos
-     */
-    String webIdToFetchInfoService(String webpath);
-
-
-    /**
-     * Get Url for FetchPublicationInfos service.
-     *
-     * @param pageUrl /_webid/a/path
-     * @return webId:domain-id/webid for fetchPublicationInfos
-     */
-    String pageUrlToFetchInfoService(String pageUrl);
 
 
     /**
@@ -80,26 +96,9 @@ public interface IWebIdService {
      * @param cmsItem CMS item
      * @return /_webid/full/web/path.html
      */
+    @Deprecated
     String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem);
 
-
-    /**
-     * Get only webid in a webpath.
-     *
-     * @param webpath : /_webid/full/web/path.html
-     * @return webid : "path"
-     */
-    String webPathToWebId(String webpath);
-    
-    /**
-     * Get first parent webid if any.
-     * 
-     * @param cmsContext
-     * @param documentPath
-     * @return first parent webid.
-     * @throws CMSException
-     */
-    String getParentId(CMSServiceCtx cmsContext, String documentPath) throws CMSException;
 
     /**
      * Generate canonical web URL.
@@ -110,6 +109,7 @@ public interface IWebIdService {
      * @param webId webId
      * @return canonical web URL
      */
+    @Deprecated
     String generateCanonicalWebURL(PortalControllerContext portalControllerContext, String domainId, String webId);
 
 }

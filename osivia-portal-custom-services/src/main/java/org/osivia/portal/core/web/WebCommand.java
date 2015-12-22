@@ -149,7 +149,7 @@ public class WebCommand extends DynamicCommand {
                 String webId = this.webUrlService.getWebId(cmsContext, basePath, this.webPath);
                 if (webId != null) {
                     // Path to fetch
-                    String pathToFetch = this.webIdService.webIdToFetchInfoService(webId);
+                    String pathToFetch = this.webIdService.webIdToFetchPath(webId);
 
                     // Publication infos
                     CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, pathToFetch);

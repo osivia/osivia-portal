@@ -24,6 +24,7 @@ import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
@@ -112,8 +113,14 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         }
 
         // Search web URL
-        String searchWebURL = this.webIdService.generateCanonicalWebURL(portalControllerContext, null, "search");
-        attributes.put(Constants.ATTR_SEARCH_WEB_URL, searchWebURL);
+        String searchUrl;
+        try {
+            String searchPath = this.webIdService.webIdToCmsPath("search");
+            searchUrl = this.portalURLFactory.getPermaLink(portalControllerContext, null, null, searchPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+        } catch (PortalException e) {
+            searchUrl = null;
+        }
+        attributes.put(Constants.ATTR_SEARCH_WEB_URL, searchUrl);
     }
 
 
