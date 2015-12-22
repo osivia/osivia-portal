@@ -900,9 +900,6 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
         <depends
-            optional-attribute-name="CacheService"
-            proxy-type="attribute">osivia:service=CacheServices</depends>
-        <depends
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>

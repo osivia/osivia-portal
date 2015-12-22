@@ -2,9 +2,10 @@ package org.osivia.portal.core.web;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentsMetadata;
@@ -29,9 +30,10 @@ public class WebUrlService implements IWebUrlService {
     /** Cache validity (in milliseconds). */
     private final long validity;
 
+    /** Log. */
+    private final Log log;
 
-    /** Cache service. */
-    private ICacheService cacheService;
+
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
 
@@ -41,8 +43,9 @@ public class WebUrlService implements IWebUrlService {
      */
     public WebUrlService() {
         super();
-        this.cache = new WebUrlCache();
         this.validity = NumberUtils.toLong(System.getProperty(CACHE_VALIDITY_PROPERTY), CACHE_VALIDITY_DEFAULT_VALUE);
+        this.cache = new WebUrlCache(this.validity);
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -139,7 +142,7 @@ public class WebUrlService implements IWebUrlService {
         // Request cache
         WebUrlCache requestCache = (WebUrlCache) controllerContext.getAttribute(Scope.REQUEST_SCOPE, REQUEST_ATTRIBUTE);
         if (requestCache == null) {
-            requestCache = new WebUrlCache();
+            requestCache = new WebUrlCache(this.validity);
             controllerContext.setAttribute(Scope.REQUEST_SCOPE, REQUEST_ATTRIBUTE, requestCache);
         }
 
@@ -148,7 +151,7 @@ public class WebUrlService implements IWebUrlService {
         if (metadata == null) {
             // Global cache
             metadata = this.cache.getMetadata(basePath, live);
-            if (this.requireRefresh(metadata)) {
+            if (metadata == null) {
                 // Full refresh
                 metadata = this.fullRefresh(cmsContext, basePath, live);
             } else {
@@ -165,28 +168,6 @@ public class WebUrlService implements IWebUrlService {
 
 
     /**
-     * Check if current documents metadata require full refresh.
-     *
-     * @param metadata documents metadata
-     * @return true if full refresh
-     */
-    private boolean requireRefresh(DocumentsMetadata metadata) {
-        boolean refresh;
-        if (metadata == null) {
-            refresh = true;
-        } else {
-            long timestamp = metadata.getTimestamp();
-
-            boolean portalRefresh = !this.cacheService.checkIfPortalParametersReloaded(timestamp);
-            boolean expiredCache = (timestamp + this.validity) < System.currentTimeMillis();
-
-            refresh = portalRefresh || expiredCache;
-        }
-        return refresh;
-    }
-
-
-    /**
      * Documents metadata full refresh.
      *
      * @param cmsContext CMS context
@@ -196,11 +177,22 @@ public class WebUrlService implements IWebUrlService {
      * @throws CMSException
      */
     private synchronized DocumentsMetadata fullRefresh(CMSServiceCtx cmsContext, String basePath, boolean live) throws CMSException {
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-
         DocumentsMetadata metadata = this.cache.getMetadata(basePath, live);
-        if (this.requireRefresh(metadata)) {
+        if (metadata == null) {
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+
+            // Log
+            if (this.log.isDebugEnabled()) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("Full refresh [basePath='");
+                builder.append(basePath);
+                builder.append("' ; live=");
+                builder.append(live);
+                builder.append("]");
+                this.log.debug(builder.toString());
+            }
+
             metadata = cmsService.getDocumentsMetadata(cmsContext, basePath, null);
             this.cache.setMetadata(basePath, live, metadata);
         }
@@ -208,15 +200,6 @@ public class WebUrlService implements IWebUrlService {
         return metadata;
     }
 
-
-    /**
-     * Setter for cacheService.
-     *
-     * @param cacheService the cacheService to set
-     */
-    public void setCacheService(ICacheService cacheService) {
-        this.cacheService = cacheService;
-    }
 
     /**
      * Setter for cmsServiceLocator.

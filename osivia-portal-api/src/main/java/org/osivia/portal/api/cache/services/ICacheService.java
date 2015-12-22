@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,7 +10,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.api.cache.services;
 
@@ -20,9 +19,13 @@ import org.osivia.portal.api.PortalException;
 
 
 /**
- * The Interface ICacheService.
+ * Cache service interface.
  */
-public interface ICacheService extends Serializable{
+public interface ICacheService extends Serializable {
+
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=CacheServices";
+
 
     /**
      * Gets the cache.
@@ -31,17 +34,15 @@ public interface ICacheService extends Serializable{
      * @return the cache
      * @throws PortalException the portal exception
      */
-    public Object getCache( CacheInfo infos) throws PortalException;
-    
+    Object getCache(CacheInfo infos) throws PortalException;
+
 
     /**
      * Inits the portal parameters.
      */
-    public void initPortalParameters();
-    
-    public boolean checkIfPortalParametersReloaded( long savedTS);
+    void initPortalParameters();
 
 
+    boolean checkIfPortalParametersReloaded(long savedTS);
 
-	
 }

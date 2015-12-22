@@ -7,6 +7,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
@@ -14,19 +17,28 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentsMetadata;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Web URL service implementation test.
  *
  * @author Cédric Krommenhoek
+ * @see WebUrlService
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Locator.class)
 public class WebUrlServiceTest {
 
     /** Base path test value. */
@@ -35,7 +47,6 @@ public class WebUrlServiceTest {
 
     /** Class under class. */
     private WebUrlService service;
-
 
     /** CMS service mock. */
     private ICMSService cmsService;
@@ -51,8 +62,36 @@ public class WebUrlServiceTest {
     }
 
 
+    /**
+     * Class initialization.
+     */
+    @BeforeClass
+    public static void init() {
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.TRACE);
+    }
+
+
+    /**
+     * Test set-up.
+     *
+     * @throws Exception
+     */
     @Before
     public void setUp() throws Exception {
+        // Cache service
+        ICacheService cacheService = EasyMock.createMock(ICacheService.class);
+        EasyMock.expect(cacheService.checkIfPortalParametersReloaded(EasyMock.anyLong())).andReturn(true).anyTimes();
+        EasyMock.replay(cacheService);
+
+
+        // Locator
+        PowerMock.mockStatic(Locator.class);
+        EasyMock.expect(Locator.findMBean(ICacheService.class, ICacheService.MBEAN_NAME)).andStubReturn(cacheService);
+
+        PowerMock.replayAll();
+
+
         // Documents metadata
         DocumentsMetadata metadata = EasyMock.createMock(DocumentsMetadata.class);
         EasyMock.expect(metadata.getWebPath(EasyMock.anyObject(String.class))).andReturn("/domain/web-path").anyTimes();
@@ -83,11 +122,6 @@ public class WebUrlServiceTest {
                         EasyMock.captureLong(timestampCapture))).andStubReturn(metadata);
         EasyMock.replay(this.cmsService);
 
-        // Cache service
-        ICacheService cacheService = EasyMock.createMock(ICacheService.class);
-        EasyMock.expect(cacheService.checkIfPortalParametersReloaded(EasyMock.anyLong())).andReturn(false).anyTimes();
-        EasyMock.replay(cacheService);
-
         // CMS service locator
         ICMSServiceLocator cmsServiceLocator = EasyMock.createMock(ICMSServiceLocator.class);
         EasyMock.expect(cmsServiceLocator.getCMSService()).andStubReturn(this.cmsService);
@@ -95,7 +129,6 @@ public class WebUrlServiceTest {
 
         // Service
         this.service = new WebUrlService();
-        this.service.setCacheService(cacheService);
         this.service.setCmsServiceLocator(cmsServiceLocator);
     }
 

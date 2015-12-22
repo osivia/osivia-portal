@@ -3,6 +3,8 @@ package org.osivia.portal.core.web;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.osivia.portal.api.cache.services.ICacheService;
+import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.DocumentsMetadata;
 
 /**
@@ -13,15 +15,25 @@ import org.osivia.portal.core.cms.DocumentsMetadata;
 public class WebUrlCache {
 
     /** Cache. */
-    private final Map<Key, DocumentsMetadata> cache;
+    private final Map<Key, Value> cache;
+    /** Cache validity (in milliseconds). */
+    private final long validity;
+    /** Cache service. */
+    private final ICacheService cacheService;
 
 
     /**
      * Constructor.
+     *
+     * @param validity cache validity (in milliseconds)
      */
-    public WebUrlCache() {
+    public WebUrlCache(long validity) {
         super();
-        this.cache = new ConcurrentHashMap<Key, DocumentsMetadata>();
+        this.cache = new ConcurrentHashMap<Key, Value>();
+        this.validity = validity;
+
+        // Cache service
+        this.cacheService = Locator.findMBean(ICacheService.class, ICacheService.MBEAN_NAME);
     }
 
 
@@ -34,7 +46,28 @@ public class WebUrlCache {
      */
     public DocumentsMetadata getMetadata(String basePath, boolean live) {
         Key key = new Key(basePath, live);
-        return this.cache.get(key);
+        Value value = this.cache.get(key);
+
+        DocumentsMetadata metadata;
+        if (value == null) {
+            // Unknown value
+            metadata = null;
+        } else {
+            // Cached value
+            boolean expired = (value.timestamp + this.validity) < System.currentTimeMillis();
+            boolean reinitialized = !this.cacheService.checkIfPortalParametersReloaded(value.timestamp);
+
+            if (expired || reinitialized) {
+                // Expired or reinitilized value
+                this.cache.remove(key);
+                metadata = null;
+            } else {
+                // Up to date value
+                metadata = value.metadata;
+            }
+        }
+
+        return metadata;
     }
 
 
@@ -47,7 +80,8 @@ public class WebUrlCache {
      */
     public void setMetadata(String basePath, boolean live, DocumentsMetadata metadata) {
         Key key = new Key(basePath, live);
-        this.cache.put(key, metadata);
+        Value value = new Value(metadata, System.currentTimeMillis());
+        this.cache.put(key, value);
     }
 
 
@@ -128,6 +162,34 @@ public class WebUrlCache {
          */
         private WebUrlCache getOuterType() {
             return WebUrlCache.this;
+        }
+
+    }
+
+
+    /**
+     * Cache value inner-class.
+     *
+     * @author Cédric Krommenhoek
+     */
+    private class Value {
+
+        /** Documents metadata. */
+        private final DocumentsMetadata metadata;
+        /** Timestamp. */
+        private final long timestamp;
+
+
+        /**
+         * Constructor.
+         *
+         * @param metadata documents metadata
+         * @param timestamp timestamp
+         */
+        public Value(DocumentsMetadata metadata, long timestamp) {
+            super();
+            this.metadata = metadata;
+            this.timestamp = timestamp;
         }
 
     }
