@@ -3,8 +3,6 @@ package org.osivia.portal.core.web;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.osivia.portal.api.cache.services.ICacheService;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.DocumentsMetadata;
 
 /**
@@ -16,24 +14,27 @@ public class WebUrlCache {
 
     /** Cache. */
     private final Map<Key, Value> cache;
-    /** Cache validity (in milliseconds). */
-    private final long validity;
-    /** Cache service. */
-    private final ICacheService cacheService;
 
 
     /**
      * Constructor.
-     *
-     * @param validity cache validity (in milliseconds)
      */
-    public WebUrlCache(long validity) {
+    public WebUrlCache() {
         super();
         this.cache = new ConcurrentHashMap<Key, Value>();
-        this.validity = validity;
+    }
 
-        // Cache service
-        this.cacheService = Locator.findMBean(ICacheService.class, ICacheService.MBEAN_NAME);
+
+    /**
+     * Get cache value.
+     *
+     * @param basePath CMS base path
+     * @param live live version indicator
+     * @return cache value
+     */
+    public Value getValue(String basePath, boolean live) {
+        Key key = new Key(basePath, live);
+        return this.cache.get(key);
     }
 
 
@@ -49,24 +50,11 @@ public class WebUrlCache {
         Value value = this.cache.get(key);
 
         DocumentsMetadata metadata;
-        if (value == null) {
-            // Unknown value
-            metadata = null;
+        if (value != null) {
+            metadata = value.metadata;
         } else {
-            // Cached value
-            boolean expired = (value.timestamp + this.validity) < System.currentTimeMillis();
-            boolean reinitialized = !this.cacheService.checkIfPortalParametersReloaded(value.timestamp);
-
-            if (expired || reinitialized) {
-                // Expired or reinitilized value
-                this.cache.remove(key);
-                metadata = null;
-            } else {
-                // Up to date value
-                metadata = value.metadata;
-            }
+            metadata = null;
         }
-
         return metadata;
     }
 
@@ -172,12 +160,12 @@ public class WebUrlCache {
      *
      * @author Cédric Krommenhoek
      */
-    private class Value {
+    public class Value {
 
         /** Documents metadata. */
         private final DocumentsMetadata metadata;
         /** Timestamp. */
-        private final long timestamp;
+        private long timestamp;
 
 
         /**
@@ -189,6 +177,34 @@ public class WebUrlCache {
         public Value(DocumentsMetadata metadata, long timestamp) {
             super();
             this.metadata = metadata;
+            this.timestamp = timestamp;
+        }
+
+
+        /**
+         * Getter for metadata.
+         *
+         * @return the metadata
+         */
+        public DocumentsMetadata getMetadata() {
+            return this.metadata;
+        }
+
+        /**
+         * Getter for timestamp.
+         *
+         * @return the timestamp
+         */
+        public long getTimestamp() {
+            return this.timestamp;
+        }
+
+        /**
+         * Setter for timestamp.
+         * 
+         * @param timestamp the timestamp to set
+         */
+        public void setTimestamp(long timestamp) {
             this.timestamp = timestamp;
         }
 

@@ -21,11 +21,15 @@ public interface IWebUrlService {
     String CACHE_VALIDITY_PROPERTY = "url.cache.validity";
     /** Cache validity default value. */
     long CACHE_VALIDITY_DEFAULT_VALUE = TimeUnit.HOURS.toMillis(1);
+    /** Update validity property name. */
+    String UPDATE_VALIDITY_PROPERTY = "url.update.validity";
+    /** Update validity default value. */
+    long UPDATE_VALIDITY_DEFAULT_VALUE = TimeUnit.MINUTES.toMillis(1);
 
 
     /**
      * Get current CMS base path.
-     * 
+     *
      * @param cmsContext CMS context
      * @return CMS base path
      */
