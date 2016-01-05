@@ -281,9 +281,9 @@ public class WebURLFactory extends URLFactoryDelegate {
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);
                 webCommand.setWindowName(window.getName());
-                if (command instanceof InvokePortletWindowResourceCommand) {
-                    webCommand.setSupportingPageMarker(false);
-                }
+//                if (command instanceof InvokePortletWindowResourceCommand) {
+//                    webCommand.setSupportingPageMarker(false);
+//                }
 
                 ServerURL serverURL = controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
                 serverURL.getParameterMap().append(standardURL.getParameterMap());

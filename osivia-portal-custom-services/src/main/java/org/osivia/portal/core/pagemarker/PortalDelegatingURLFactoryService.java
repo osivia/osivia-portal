@@ -119,7 +119,8 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 				pageMarkerInsertion = false;
 		}
 		
-		if( ! (cmd instanceof InvokePortletWindowResourceCommand) && pageMarkerInsertion)	{
+//		if( ! (cmd instanceof InvokePortletWindowResourceCommand) && pageMarkerInsertion)	{
+	      if( pageMarkerInsertion)   {
 		
 			String pageMarker =  PageMarkerUtils.getCurrentPageMarker(controllerContext);
 			
