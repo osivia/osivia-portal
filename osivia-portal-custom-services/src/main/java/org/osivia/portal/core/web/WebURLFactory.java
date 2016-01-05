@@ -281,6 +281,14 @@ public class WebURLFactory extends URLFactoryDelegate {
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);
                 webCommand.setWindowName(window.getName());
+                
+                // Ressource with ID must preserve navigation context
+                if( command instanceof InvokePortletWindowResourceCommand) {
+                     if( ((InvokePortletWindowResourceCommand) command).getResourceId() == null)   {
+                        webCommand.setSupportingPageMarker(false);
+                    }
+                }
+
 //                if (command instanceof InvokePortletWindowResourceCommand) {
 //                    webCommand.setSupportingPageMarker(false);
 //                }

@@ -119,6 +119,18 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 				pageMarkerInsertion = false;
 		}
 		
+        // Ressource with ID must preserve navigation context
+
+		if( cmd instanceof InvokePortletWindowResourceCommand) {
+		    pageMarkerInsertion = false;
+	
+		    if( ((InvokePortletWindowResourceCommand) cmd).getResourceId() != null)   {
+		        pageMarkerInsertion = true;
+		    }
+		}
+		
+		
+		
 //		if( ! (cmd instanceof InvokePortletWindowResourceCommand) && pageMarkerInsertion)	{
 	      if( pageMarkerInsertion)   {
 		
