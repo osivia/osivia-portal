@@ -47,6 +47,10 @@ public class DocumentType {
     private final String glyph;
     /** CMS item is root type */
     private final boolean isRootType;
+    /** CMS item live editable indicator. */
+    private final boolean liveEditable;    
+
+
 
 
 
@@ -91,7 +95,26 @@ public class DocumentType {
     
     /**
      * Constructor.
-     * 
+     *
+     * @param name the name
+     * @param folderish the folderish
+     * @param navigable the navigable
+     * @param browsable the browsable
+     * @param ordered the ordered
+     * @param forcePortalContextualization the force portal contextualization
+     * @param supportsPortalForms the supports portal forms
+     * @param portalFormSubTypes the portal form sub types
+     * @param defaultTemplate the default template
+     * @param glyph the glyph
+     * @param isRootType the is root type
+     */
+    public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType, true);
+    }
+
+    
+    /**
      * @param name
      * @param folderish
      * @param navigable
@@ -103,12 +126,13 @@ public class DocumentType {
      * @param defaultTemplate
      * @param glyph
      * @param isRootType
+     * @param moveable
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
-            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
-        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType, true);
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable)   {
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType,moveable, false);
     }
-
+    
     /**
      * Constructor.
      *
@@ -124,7 +148,7 @@ public class DocumentType {
      * @param glyph CMS item customized glyph, may be null for default glyph
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
-            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable) {
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable, boolean liveEditable) {
         super();
         this.name = name;
         this.folderish = folderish;
@@ -138,6 +162,7 @@ public class DocumentType {
         this.glyph = glyph;
         this.isRootType = isRootType;
         this.movable = moveable;
+        this.liveEditable = liveEditable;
     }
 
     /**
@@ -294,6 +319,15 @@ public class DocumentType {
         return movable;
     }
 
+
+    /**
+     * Checks if is live editable.
+     *
+     * @return true, if is live editable
+     */
+    public boolean isLiveEditable() {
+        return liveEditable;
+    }
 
 	
 }
