@@ -29,6 +29,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+import org.osivia.portal.core.web.IWebUrlService;
 import org.osivia.portal.core.web.WebCommand;
 
 /**
@@ -88,7 +89,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE);
 
             // Command
-            WebCommand webCommand = new WebCommand("error");
+            WebCommand webCommand = new WebCommand(IWebUrlService.WEB_ID_PREFIX + "error");
             errorResponse = controllerContext.execute(webCommand);
 
             // Error label
