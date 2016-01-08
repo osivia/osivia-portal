@@ -38,6 +38,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
+import org.jboss.portal.portlet.cache.CacheLevel;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
@@ -284,7 +285,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 
                 // Ressource with ID must preserve navigation context
                 if( command instanceof InvokePortletWindowResourceCommand) {
-                     if( ((InvokePortletWindowResourceCommand) command).getResourceId() == null)   {
+                     if( ((InvokePortletWindowResourceCommand) command).getCacheability() != CacheLevel.FULL)   {
                         webCommand.setSupportingPageMarker(false);
                     }
                 }

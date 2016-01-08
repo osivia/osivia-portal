@@ -41,6 +41,7 @@ import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowReso
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.portlet.cache.CacheLevel;
 import org.jboss.portal.portlet.invocation.response.ErrorResponse;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
@@ -124,7 +125,7 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
 		if( cmd instanceof InvokePortletWindowResourceCommand) {
 		    pageMarkerInsertion = false;
 	
-		    if( ((InvokePortletWindowResourceCommand) cmd).getResourceId() != null)   {
+		    if( ((InvokePortletWindowResourceCommand) cmd).getCacheability() != CacheLevel.FULL)   {
 		        pageMarkerInsertion = true;
 		    }
 		}
