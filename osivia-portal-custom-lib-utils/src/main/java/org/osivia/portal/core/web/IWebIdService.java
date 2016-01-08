@@ -36,7 +36,7 @@ public interface IWebIdService {
     /** Prefix used to query document in the ECM. */
     String FETCH_PATH_PREFIX = "webId:";
     /** Prefix for CMS path. */
-    String CMS_PATH_PREFIX = "/_webid";
+    String CMS_PATH_PREFIX = "/_id";
 
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=webIdService";
@@ -54,7 +54,7 @@ public interface IWebIdService {
     /**
      * Convert CMS path to fetch publication infos path.
      *
-     * @param cmsPath CMS path (e.g. /_webid/example)
+     * @param cmsPath CMS path (e.g. /_id/example)
      * @return fetch publication infos path (e.g. webId:example)
      */
     String cmsPathToFetchPath(String cmsPath);
@@ -64,7 +64,7 @@ public interface IWebIdService {
      * Convert webId to CMS path.
      *
      * @param webId webId
-     * @return CMS path (e.g. /_webid/example)
+     * @return CMS path (e.g. /_id/example)
      */
     String webIdToCmsPath(String webId);
 
@@ -94,7 +94,7 @@ public interface IWebIdService {
      *
      * @param cmsContext CMS context
      * @param cmsItem CMS item
-     * @return /_webid/full/web/path.html
+     * @return /_id/full/web/path.html
      */
     @Deprecated
     String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem);

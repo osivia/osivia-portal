@@ -40,8 +40,9 @@ public class ShareCommand extends DynamicCommand {
     
     /** WebId. */
     private String webId;
-    /** Parent id. */
-    private String parentId;
+    /** Extended parameters: parentId or parentPath for the moment. */
+    private ExtendedParameters extendedParameters;
+    
     /** Prefixed webId. */
     private String prefixedWebId;
     
@@ -60,18 +61,6 @@ public class ShareCommand extends DynamicCommand {
         this.webId = webId;
         this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
     } 
-    
-    /**
-     * Constructor.
-     * 
-     * @param webId
-     * @param parentId
-     */
-    public ShareCommand(String webId, String parentId) {
-        this.webId = webId;
-        this.parentId = parentId;
-        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
-    }
     
     /**
      * {@inheritDoc}
@@ -96,19 +85,19 @@ public class ShareCommand extends DynamicCommand {
     }
 
     /**
-     * @return the parentId
+     * @return the extendedParameters
      */
-    public String getParentId() {
-        return parentId;
-    }
-
-    /**
-     * @param parentId the parentId to set
-     */
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public ExtendedParameters getExtendedParameters() {
+        return extendedParameters;
     }
     
+    /**
+     * @param extendedParameters the extendedParameters to set
+     */
+    public void setExtendedParameters(ExtendedParameters extendedParameters) {
+        this.extendedParameters = extendedParameters;
+    }
+
     /**
      * @return prefixed webId.
      */
@@ -146,6 +135,7 @@ public class ShareCommand extends DynamicCommand {
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
+        cmsCommand.setExtendedParameters(this.extendedParameters);
         
         return this.context.execute(cmsCommand);
     }

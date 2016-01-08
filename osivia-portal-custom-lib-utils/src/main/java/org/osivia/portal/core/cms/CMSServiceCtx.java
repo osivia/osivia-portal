@@ -49,8 +49,6 @@ public class CMSServiceCtx {
 
     private String forcedLivePath;
 
-    /** The referrer base path. */
-    private String cmsReferrerNavigationPath;
     /** The parent identifier (webid). */
     private String parentId;
     /** The parent path. */
@@ -64,7 +62,6 @@ public class CMSServiceCtx {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = (prime * result) + ((this.cmsReferrerNavigationPath == null) ? 0 : this.cmsReferrerNavigationPath.hashCode());
         result = (prime * result) + ((this.contextualizationBasePath == null) ? 0 : this.contextualizationBasePath.hashCode());
         result = (prime * result) + ((this.creationPath == null) ? 0 : this.creationPath.hashCode());
         result = (prime * result) + ((this.creationType == null) ? 0 : this.creationType.hashCode());
@@ -95,13 +92,6 @@ public class CMSServiceCtx {
             return false;
         }
         CMSServiceCtx other = (CMSServiceCtx) obj;
-        if (this.cmsReferrerNavigationPath == null) {
-            if (other.cmsReferrerNavigationPath != null) {
-                return false;
-            }
-        } else if (!this.cmsReferrerNavigationPath.equals(other.cmsReferrerNavigationPath)) {
-            return false;
-        }
         if (this.contextualizationBasePath == null) {
             if (other.contextualizationBasePath != null) {
                 return false;
@@ -183,15 +173,6 @@ public class CMSServiceCtx {
             return false;
         }
         return true;
-    }
-
-
-    public String getCmsReferrerNavigationPath() {
-        return this.cmsReferrerNavigationPath;
-    }
-
-    public void setCmsReferrerNavigationPath(String cmsReferrerNavigationPath) {
-        this.cmsReferrerNavigationPath = cmsReferrerNavigationPath;
     }
 
     /**

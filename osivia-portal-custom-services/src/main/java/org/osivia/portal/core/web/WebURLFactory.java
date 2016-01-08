@@ -64,7 +64,9 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
  * @see URLFactoryDelegate
  */
 public class WebURLFactory extends URLFactoryDelegate {
-
+    
+    /** Slash separator. */
+    private static final String SLASH = "/";
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
     /** WebId service. */
@@ -228,8 +230,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 }
 
                 // WebId
-                String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.CMS_PATH_PREFIX);
-                webId = StringUtils.substringAfterLast(webId, "/");
+                String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.CMS_PATH_PREFIX.concat(SLASH));
 
                 // Base path
                 String basePath = getWebPortalBasePath(controllerContext);

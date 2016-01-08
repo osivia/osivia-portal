@@ -591,15 +591,6 @@ public class CmsCommand extends DynamicCommand {
                     // Le path eventuellement en ID a été retranscrit en chemin
                     this.cmsPath = pubInfos.getDocumentPath();
 
-                    // ManyProxies case
-                    boolean isPermaLink = currentPage == null;
-                    if (!isPermaLink && hasWebId) {
-                        if (pubInfos.hasManyPublications()
-                                && (StringUtils.isBlank(cmsReadItemContext.getParentId()) || StringUtils.isBlank(cmsReadItemContext.getParentPath()))) {
-                            return this.displayManyPublications(currentPage);
-                        }
-                    }
-
                     level = CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, this.cmsPath);
 
                     // if access is denied, continue with the path of the last page visited the user will see a notification
@@ -617,9 +608,7 @@ public class CmsCommand extends DynamicCommand {
 
                     throw e;
                     // TODO : gerer les cas d'erreurs
-                } finally {
-                    cmsReadItemContext.setCmsReferrerNavigationPath(null);
-                }
+                } 
 
             }
 
@@ -1094,33 +1083,6 @@ public class CmsCommand extends DynamicCommand {
         } catch (Exception e) {
             throw new ControllerException(e);
         }
-    }
-
-
-    /**
-     * Display the publications list for current document.
-     *
-     * @param currentPage
-     * @return ControllerResponse
-     * @throws ControllerException
-     */
-    private ControllerResponse displayManyPublications(Page currentPage) throws ControllerException {
-        String pageId = currentPage.getId().toString(PortalObjectPath.SAFEST_FORMAT);
-        String portletInstance = "toutatice-portail-cms-nuxeo-viewDocumentPortletInstance";
-        Map<String, String> windowProperties = new HashMap<String, String>(1);
-        windowProperties.put(Constants.WINDOW_PROP_URI, this.cmsPath.toString());
-        windowProperties.put("osivia.document.onlyRemoteSections", "true");
-        windowProperties.put("osivia.document.remoteSectionsPage", "true");
-        windowProperties.put("osivia.cms.contextualization", "1");
-
-        windowProperties.put("osivia.hideTitle", "1");
-        String title = itlzService.getString("SECTIONS_PORTLET_LINK", this.getControllerContext().getServerInvocation().getRequest().getLocale());
-        windowProperties.put("osivia.title", title);
-
-        StartDynamicWindowCommand windowCmd = new StartDynamicWindowCommand(pageId, "virtual", portletInstance, "PlayerPublicationsWindow", windowProperties,
-                new HashMap<String, String>(), "1", null);
-
-        return this.context.execute(windowCmd);
     }
 
 
