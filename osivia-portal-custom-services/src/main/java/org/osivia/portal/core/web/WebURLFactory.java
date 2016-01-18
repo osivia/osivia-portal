@@ -46,6 +46,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.ExtendedParameters;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.CmsExtendedParameters;
@@ -64,7 +65,7 @@ import org.osivia.portal.core.security.CmsPermissionHelper;
  * @see URLFactoryDelegate
  */
 public class WebURLFactory extends URLFactoryDelegate {
-    
+
     /** Slash separator. */
     private static final String SLASH = "/";
     /** CMS service locator. */
@@ -186,6 +187,9 @@ public class WebURLFactory extends URLFactoryDelegate {
 
         // WebId
         String webId = getWebUrlService().getWebId(cmsContext, basePath, webPath);
+        if (webId == null) {
+            throw new CMSException(CMSException.ERROR_NOTFOUND);
+        }
 
         // Path to fetch
         String pathToFetch = getWebIdService().webIdToFetchPath(webId);
@@ -283,7 +287,7 @@ public class WebURLFactory extends URLFactoryDelegate {
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);
                 webCommand.setWindowName(window.getName());
-                
+
                 // Ressource with ID must preserve navigation context
                 if( command instanceof InvokePortletWindowResourceCommand) {
                      if( ((InvokePortletWindowResourceCommand) command).getCacheability() != CacheLevel.FULL)   {
