@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -54,7 +54,7 @@ public class ProfilManager implements IProfilManager {
     protected ICacheService cacheService;
 
     public ICacheService getCacheService() {
-        return cacheService;
+        return this.cacheService;
     }
 
     public void setCacheService(ICacheService cacheService) {
@@ -65,13 +65,13 @@ public class ProfilManager implements IProfilManager {
     private long cacheCount = 0;
 
     private Portal getDefaultPortal() {
-        return getPortalObjectContainer().getContext().getDefaultPortal();
+        return this.getPortalObjectContainer().getContext().getDefaultPortal();
     }
 
     /**
      * Renvoie la liste des rôles filtrée, ordonnée avec en plus les roles
      * unchecked et Authenticated
-     * 
+     *
      * @return
      */
 
@@ -82,12 +82,12 @@ public class ProfilManager implements IProfilManager {
         Set<String> rolesInserted = new HashSet<String>();
 
 
-        for (ProfilBean profil : getListeProfils()) {
+        for (ProfilBean profil : this.getListeProfils()) {
             if (!rolesInserted.contains(profil.getRoleName())) {
                 rolesInserted.add(profil.getRoleName());
                 String roleDisplayName = "Role " + profil.getRoleName();
                 try {
-                    Role role = getRoleModule().findRoleByName(profil.getRoleName());
+                    Role role = this.getRoleModule().findRoleByName(profil.getRoleName());
                     roleDisplayName = role.getDisplayName();
 
                 } catch (Exception e) {
@@ -100,8 +100,9 @@ public class ProfilManager implements IProfilManager {
 
         filteredRoles.add(new FilteredRole(SecurityConstants.UNCHECKED_ROLE_NAME, "Utilisateurs anonymes"));
 
-        if ("1".equals(System.getProperty("sso.undeclared-user")))
+        if ("1".equals(System.getProperty("sso.undeclared-user"))) {
             filteredRoles.add(new FilteredRole("undeclared-user", "Utilisateurs non déclarés"));
+        }
 
         return filteredRoles;
 
@@ -113,8 +114,9 @@ public class ProfilManager implements IProfilManager {
 
         String encodedList = portal.getDeclaredProperty("osivia.profils");
         List<ProfilBean> profils = serializer.decodeAll(encodedList);
-        if (profils == null)
+        if (profils == null) {
             profils = new ArrayList<ProfilBean>();
+        }
 
         return profils;
 
@@ -122,11 +124,12 @@ public class ProfilManager implements IProfilManager {
 
     public ProfilBean getProfil(String name) {
 
-        List<ProfilBean> profils = getListeProfils();
+        List<ProfilBean> profils = this.getListeProfils();
 
         for (ProfilBean profil : profils) {
-            if (profil.getName().equals(name))
+            if (profil.getName().equals(name)) {
                 return profil;
+            }
         }
 
         return null;
@@ -135,25 +138,26 @@ public class ProfilManager implements IProfilManager {
 
     public List<ProfilBean> getListeProfils() {
 
-        if (listeProfilsCache != null) {
+        if (this.listeProfilsCache != null) {
 
-            long newCacheCount = getCacheService().getProfilsCount();
+            long newCacheCount = this.getCacheService().getProfilsCount();
 
-            if (cacheCount < newCacheCount)
-                initListeProfils();
+            if (this.cacheCount < newCacheCount) {
+                this.initListeProfils();
+            }
 
-            if (cacheCount > newCacheCount) {
+            if (this.cacheCount > newCacheCount) {
                 // Peut arriver si les gestionnaire de cache (jboss cache) a planté
                 // On remet à jour le cache centralisé qui porte la valeur de référence
 
                 do {
-                    getCacheService().incrementProfilsCount();
-                } while (cacheCount > getCacheService().getProfilsCount());
+                    this.getCacheService().incrementProfilsCount();
+                } while (this.cacheCount > this.getCacheService().getProfilsCount());
             }
         }
 
-        if (listeProfilsCache == null) {
-            initListeProfils();
+        if (this.listeProfilsCache == null) {
+            this.initListeProfils();
         }
 
         // v2.MS Get current portal name
@@ -162,7 +166,7 @@ public class ProfilManager implements IProfilManager {
 
         /*
          * String portalName = null;
-         * 
+         *
          * try {
          * portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
          * if (portalName == null)
@@ -174,9 +178,14 @@ public class ProfilManager implements IProfilManager {
         String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
 
 
-        List<ProfilBean> profils = listeProfilsCache.get(portalName);
+        List<ProfilBean> profils = this.listeProfilsCache.get(portalName);
         // if( profils == null || profils.size() == 0)
         // profils = listeProfilsCache.get("default");
+
+
+        if (profils == null) {
+            profils = new ArrayList<ProfilBean>(0);
+        }
 
         return profils;
     }
@@ -184,26 +193,27 @@ public class ProfilManager implements IProfilManager {
 
     private synchronized void initListeProfils() {
 
-        long newCacheCount = getCacheService().getProfilsCount();
+        long newCacheCount = this.getCacheService().getProfilsCount();
 
-        if (listeProfilsCache == null || cacheCount < newCacheCount) {
+        if ((this.listeProfilsCache == null) || (this.cacheCount < newCacheCount)) {
 
-            listeProfilsCache = new HashMap<String, List<ProfilBean>>();
+            this.listeProfilsCache = new HashMap<String, List<ProfilBean>>();
 
-            for (PortalObject po : getPortalObjectContainer().getContext().getChildren(PortalObject.PORTAL_MASK)) {
+            for (PortalObject po : this.getPortalObjectContainer().getContext().getChildren(PortalObject.PORTAL_MASK)) {
 
                 List<ProfilBean> profilByPortal = new ArrayList<ProfilBean>();
-                listeProfilsCache.put(((Portal) po).getName(), profilByPortal);
+                this.listeProfilsCache.put(((Portal) po).getName(), profilByPortal);
 
-                for (ProfilBean profilPortail : getListeProfils((Portal) po)) {
+                for (ProfilBean profilPortail : this.getListeProfils((Portal) po)) {
 
 
-                    if (!profilByPortal.contains(profilPortail))
+                    if (!profilByPortal.contains(profilPortail)) {
                         profilByPortal.add(profilPortail);
+                    }
                 }
             }
 
-            cacheCount = getCacheService().getProfilsCount();
+            this.cacheCount = this.getCacheService().getProfilsCount();
 
         }
 
@@ -218,7 +228,7 @@ public class ProfilManager implements IProfilManager {
 
 
         /* Réinitialiser les caches de profils (cluster ) */
-        getCacheService().incrementProfilsCount();
+        this.getCacheService().incrementProfilsCount();
 
     }
 
@@ -246,11 +256,11 @@ public class ProfilManager implements IProfilManager {
 
             /* On parcourt les espaces pour voir celui qui correspond au profil */
 
-            for (ProfilBean profil : getListeProfils()) {
+            for (ProfilBean profil : this.getListeProfils()) {
                 Iterator iter = pp.getRoles().iterator();
                 while (iter.hasNext()) {
                     Principal principal = (Principal) iter.next();
-                    if (principal.getName().equals(profil.getRoleName()) && profil.getDefaultPageName().length() > 0) {
+                    if (principal.getName().equals(profil.getRoleName()) && (profil.getDefaultPageName().length() > 0)) {
 
                         session.setAttribute(ATTRIBUTE_PROFILE_NAME, profil);
                         return profil;
@@ -262,8 +272,9 @@ public class ProfilManager implements IProfilManager {
             /* Aucun profil trouve, création d'un profil par défaut */
 
             String pageAccueilConnecte = portal.getDeclaredProperty("osivia.unprofiled_home_page");
-            if (pageAccueilConnecte == null)
+            if (pageAccueilConnecte == null) {
                 pageAccueilConnecte = portal.getDefaultPage().getName();
+            }
 
             ProfilBean profilDefaut = new ProfilBean(DEFAULT_PROFIL_NAME, "default", pageAccueilConnecte, "");
             session.setAttribute(ATTRIBUTE_PROFILE_NAME, profilDefaut);
@@ -276,9 +287,9 @@ public class ProfilManager implements IProfilManager {
     }
 
     /**
-     * 
+     *
      * Vérifie si l'utilisateur a le profil
-     * 
+     *
      * @param name
      * @return
      */
@@ -305,15 +316,16 @@ public class ProfilManager implements IProfilManager {
             subject = PageProperties.getProperties().getBinarySubject();
         }
 
-        if (subject == null)
+        if (subject == null) {
             return false;
+        }
 
         // utilisation mapping standard du portail
         JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
 
         boolean check = false;
 
-        ProfilBean profil = getProfil(name);
+        ProfilBean profil = this.getProfil(name);
 
         if (profil != null) {
             Iterator iter = pp.getRoles().iterator();
@@ -331,18 +343,18 @@ public class ProfilManager implements IProfilManager {
 
     public ProfilBean getProfilPrincipalUtilisateur() {
 
-        HttpSession session = getTracker().getHttpSession();
+        HttpSession session = this.getTracker().getHttpSession();
 
         ProfilBean profil = (ProfilBean) session.getAttribute(ATTRIBUTE_PROFILE_NAME);
         if (profil == null) {
-            profil = creerProfilPrincipal(session, getDefaultPortal());
+            profil = this.creerProfilPrincipal(session, this.getDefaultPortal());
         }
         return profil;
 
     }
 
     public IdentityServiceController getIdentityServiceController() {
-        return identityServiceController;
+        return this.identityServiceController;
     }
 
     public void setIdentityServiceController(IdentityServiceController identityServiceController) {
@@ -350,7 +362,7 @@ public class ProfilManager implements IProfilManager {
     }
 
     public ITracker getTracker() {
-        return tracker;
+        return this.tracker;
     }
 
     public void setTracker(ITracker tracker) {
@@ -358,14 +370,14 @@ public class ProfilManager implements IProfilManager {
     }
 
     public RoleModule getRoleModule() throws Exception {
-        if (roleModule == null) {
-            roleModule = (RoleModule) getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
+        if (this.roleModule == null) {
+            this.roleModule = (RoleModule) this.getIdentityServiceController().getIdentityContext().getObject(IdentityContext.TYPE_ROLE_MODULE);
         }
-        return roleModule;
+        return this.roleModule;
     }
 
     public PortalObjectContainer getPortalObjectContainer() {
-        return portalObjectContainer;
+        return this.portalObjectContainer;
     }
 
     public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
