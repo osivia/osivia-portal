@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
@@ -110,10 +108,10 @@ public class InitPageInterceptor extends ControllerInterceptor {
                 // Default page
                 defaultPage = true;
             } else if (page.equals(portal.getDefaultPage()) && "1".equals(pageMarker)) {
-                // Disconnection : default page and page marker = 1
-            	// Avoid loop on /pagemarker/1/cms/...
-                if (!(portalRequestPath.startsWith("/pagemarker/1/") || portalRequestPath.startsWith("/web/"))) {
+                Boolean initialRedirection = (Boolean) controllerContext.getAttribute(Scope.SESSION_SCOPE, "initialRedirection");
+                if (BooleanUtils.isNotTrue(initialRedirection)) {
                     defaultPage = true;
+                    controllerContext.setAttribute(Scope.SESSION_SCOPE, "initialRedirection", true);
                 }
             }
 
@@ -126,7 +124,7 @@ public class InitPageInterceptor extends ControllerInterceptor {
                 initState = false;
             }
 
- 
+
 
             if (initState || defaultPage) {
                 CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerContext, page);
