@@ -3,47 +3,6 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
-
-<c:set var="appsLogout" value="${requestScope['osivia.sso.applications']}" />
-<c:set var="logoutMessage"><op:translate key="LOGOUT_MESSAGE" /></c:set>
-
-
-<script type="text/javascript">
-
-// Popover
-$JQry("#logout-popover").popover({
-    container : "body"
-});
-
-
-function callLogout() {
-    var $popover = $JQry("#logout-popover");
-    
-    // Disabled dropdown menu
-    var $menu = $popover.parent();
-    $menu.addClass("disabled");
-    $menu.find("[data-toggle=dropdown]").addClass("disabled");
-    
-    // Popover
-    $popover.popover("show");
-    
-    var delog = "";
-
-    <c:forEach var="app" items="${appsLogout}" varStatus="status" >
-        delog += "<img src='${app}' />";
-    </c:forEach>
-
-    $("disconnection").update(delog);
-    window.setTimeout("portalLogout()", 3000)
-}
-
-function portalLogout() {
-    document.location = "${requestScope['osivia.toolbar.signOutURL']}";
-}
-
-</script>
-
-
 <c:if test="${empty requestScope['osivia.toolbar.principal']}">
     <c:set var="toolbarDisplayClass" value="visible-xs" />
 </c:if>
@@ -122,11 +81,9 @@ function portalLogout() {
                                     <span class="caret"></span>
                                 </a>
 
-								<div id="logout-popover" data-content="${logoutMessage}" data-placement="bottom"></div>
-
                                 <ul class="dropdown-menu" role="menu">
                                      <li role="presentation">
-                                        <a role="menuitem" href="#" onclick="callLogout()">
+                                        <a href="#" onclick="callLogout()" role="menuitem">
                                             <i class="halflings halflings-log-out"></i>
                                             <span><op:translate key="LOGOUT" /></span>
                                         </a>
@@ -152,5 +109,17 @@ function portalLogout() {
     </div>
 </div>
 
-<!-- Technical div for applications disconnection -->
-<div id="disconnection" class="hidden"></div>
+
+<!-- Disconnection modal -->
+<div id="disconnection" class="modal fade" data-apps="${op:join(requestScope['osivia.sso.applications'], '|')}" data-redirection="${requestScope['osivia.toolbar.signOutURL']}">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <i class="glyphicons glyphicons-exit"></i>
+                <span><op:translate key="LOGOUT_MESSAGE" /></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="apps-container hidden"></div>
+</div>

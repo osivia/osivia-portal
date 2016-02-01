@@ -160,7 +160,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // bxSlider
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.min.js'></script>");
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/bxslider-integration.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/bxslider-integration.min.js'></script>");
+
+        // Logout
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/logout.min.js'></script>");
 
         // Glyphicons
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons.min.css'>");

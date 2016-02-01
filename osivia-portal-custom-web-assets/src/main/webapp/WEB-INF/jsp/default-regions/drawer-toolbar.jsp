@@ -84,7 +84,7 @@
                                         </li>
                                         
                                         <li role="presentation">
-                                            <a href="${requestScope['osivia.toolbar.signOutURL']}" data-toggle="collapse" role="menuitem">
+                                            <a href="#" onclick="logout()" role="menuitem">
                                                 <i class="halflings halflings-log-out"></i>
                                                 <span><op:translate key="LOGOUT" /></span>
                                             </a>

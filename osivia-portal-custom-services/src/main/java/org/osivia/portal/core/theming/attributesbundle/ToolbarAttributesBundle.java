@@ -212,8 +212,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
         // Current page
         Page page = renderPageCommand.getPage();
-		// Bundle
-		Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
+        // Bundle
+        Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
 
         // Principal
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
@@ -245,13 +245,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // View profile
             try {
                 Map<String, String> properties = new HashMap<String, String>();
-				properties.put("osivia.hideTitle", "1");
+                properties.put("osivia.hideTitle", "1");
 
                 Map<String, String> parameters = new HashMap<String, String>();
 
                 myProfileUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "myprofile",
-                        bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "directory-person-card-instance", properties,
-                        parameters);
+                        bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "directory-person-card-instance", properties, parameters);
 
             } catch (PortalException e) {
                 // Do nothing
@@ -383,8 +382,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(this.adminPortalId);
         String jbossAdministrationURL = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
-        Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, HTMLConstants.TARGET_NEW_WINDOW, null, null,
-                jbossAdministrationTitle, "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
+        Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, "jboss", null, null, jbossAdministrationTitle,
+                "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
         Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
         this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
@@ -398,85 +397,81 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         String ecmAdminUrl;
-		try {
-			ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
+        try {
+            ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
+            String ecmAdminTitle = bundle.getString(InternationalizationConstants.KEY_ECM_ADMINISTRATION);
+            Element ecmAdministation = DOM4JUtils.generateLinkElement(ecmAdminUrl, "ged", null, null, ecmAdminTitle, "halflings halflings-hdd",
+                    AccessibilityRoles.MENU_ITEM);
 
-	        String ecmAdminTitle = bundle.getString(InternationalizationConstants.KEY_ECM_ADMINISTRATION);;
-			Element ecmAdministation = DOM4JUtils.generateLinkElement(ecmAdminUrl, HTMLConstants.TARGET_NEW_WINDOW, null, null, ecmAdminTitle , "halflings halflings-hdd", AccessibilityRoles.MENU_ITEM);
+            Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
+            ecmAdministation.add(ecmAdministrationNewWindowGlyph);
 
-	        Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
-	        ecmAdministation.add(ecmAdministrationNewWindowGlyph);
-
-			this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);
-
-		} catch (CMSException e1) {
-			// do nothing
-		}
-
+            this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);
+        } catch (CMSException e1) {
+            // do nothing
+        }
 
 
-		// Divider
-		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        // Divider
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
-		// Identity administration
+        // Identity administration
 
-		// users
-		Map<String, String> properties = new HashMap<String, String>();
-		Map<String, String> parameters = new HashMap<String, String>();
+        // users
+        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<String, String>();
 
-		try {
+        try {
 
             properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
             properties.put("osivia.ajaxLink", "1");
-			properties.put("osivia.hideTitle", "1");
+            properties.put("osivia.hideTitle", "1");
 
-			String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
-            properties.put("osivia.title",usersAdministrationTitle);
+            String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
+            properties.put("osivia.title", usersAdministrationTitle);
 
-			String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
-                    bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance",
-					properties, parameters);
+            String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
+                    bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties, parameters);
 
             Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
                     "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
-			this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
-		} catch (PortalException e) {
-			// no item if portlet is not present
-		}
+            this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
+        } catch (PortalException e) {
+            // no item if portlet is not present
+        }
 
-		try {
+        try {
             String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
-            properties.put("osivia.title",groupsAdministrationTitle);
+            properties.put("osivia.title", groupsAdministrationTitle);
 
-			String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
-                    bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance",
-					properties, parameters);
+            String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
+                    bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance", properties, parameters);
 
             Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
                     "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
-			this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
-		} catch (PortalException e) {
-			// no item if portlet is not present
-		}
+            this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
+        } catch (PortalException e) {
+            // no item if portlet is not present
+        }
 
-		try {
+        try {
 
             String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
-            properties.put("osivia.title",workspacesAdministrationTitle);
+            properties.put("osivia.title", workspacesAdministrationTitle);
 
-			String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
-                    bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance",
-					properties, parameters);
+            String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
+                    bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance", properties,
+                    parameters);
 
             Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
                     "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
-			this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
-		} catch (PortalException e) {
-			// no item if portlet is not present
-		}
+            this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
+        } catch (PortalException e) {
+            // no item if portlet is not present
+        }
 
-		// Divider
-		this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        // Divider
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
@@ -720,7 +715,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         // Toggle avanced CMS tools
-        boolean showAdvancedTools = BooleanUtils.toBoolean((Boolean) context.getAttribute(Scope.SESSION_SCOPE, InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+        boolean showAdvancedTools = BooleanUtils.toBoolean((Boolean) context.getAttribute(Scope.SESSION_SCOPE,
+                InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
         String toggleAdvancedToolsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_TOGGLE_ADVANCED_TOOLS);
         String toggleAdvancedToolsGlyphicon;
         if (showAdvancedTools) {

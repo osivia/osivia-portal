@@ -44,8 +44,18 @@
         <description>Escapes the characters in a String using JavaScript String rules.</description>
         <display-name>Escape JavaScript</display-name>
         <name>escapeJavaScript</name>
-        <function-class>org.osivia.portal.taglib.portal.functions.TagFunctions</function-class>
+        <function-class>org.osivia.portal.taglib.portal.functions.Functions</function-class>
         <function-signature>java.lang.String escapeJavaScript(java.lang.String)</function-signature>
+    </function>
+    
+    
+    <!-- Join function -->
+    <function>
+        <description>Joins all elements of a collection or array into a string.</description>
+        <name>join</name>
+        <function-class>org.osivia.portal.taglib.portal.functions.Functions</function-class>
+        <function-signature>java.lang.String join(java.lang.Object, java.lang.String)</function-signature>
+        <example>${op:join(array, ";")}</example>
     </function>
     
 </taglib>
