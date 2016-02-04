@@ -13,7 +13,11 @@
  */
 package org.osivia.portal.api.theming;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User portal java-bean.
@@ -22,10 +26,15 @@ public class UserPortal {
 
     /** Portal name. */
     private String name;
-    /** User pages. */
-    private List<UserPage> userPages;
     /** Default page. */
     private UserPage defaultPage;
+    /** Displayed pages count. */
+    private int displayedPagesCount;
+
+    /** User pages. */
+    private final List<UserPage> userPages;
+    /** User pages groups. */
+    private final Map<String, UserPagesGroup> groups;
 
 
     /**
@@ -33,6 +42,34 @@ public class UserPortal {
      */
     public UserPortal() {
         super();
+        this.userPages = new ArrayList<UserPage>();
+        this.groups = new LinkedHashMap<String, UserPagesGroup>();
+    }
+
+
+    /**
+     * Get user pages group.
+     *
+     * @param name group name
+     * @return group
+     */
+    public UserPagesGroup getGroup(String name) {
+        UserPagesGroup group = this.groups.get(name);
+        if (group == null) {
+            group = new UserPagesGroup(name);
+            this.groups.put(name, group);
+        }
+        return group;
+    }
+
+
+    /**
+     * Get user pages groups.
+     *
+     * @return groups
+     */
+    public Collection<UserPagesGroup> getGroups() {
+        return this.groups.values();
     }
 
 
@@ -55,26 +92,8 @@ public class UserPortal {
     }
 
     /**
-     * Getter for userPages.
-     *
-     * @return the userPages
-     */
-    public List<UserPage> getUserPages() {
-        return this.userPages;
-    }
-
-    /**
-     * Setter for userPages.
-     *
-     * @param userPages the userPages to set
-     */
-    public void setUserPages(List<UserPage> userPages) {
-        this.userPages = userPages;
-    }
-
-    /**
      * Getter for defaultPage.
-     * 
+     *
      * @return the defaultPage
      */
     public UserPage getDefaultPage() {
@@ -83,11 +102,38 @@ public class UserPortal {
 
     /**
      * Setter for defaultPage.
-     * 
+     *
      * @param defaultPage the defaultPage to set
      */
     public void setDefaultPage(UserPage defaultPage) {
         this.defaultPage = defaultPage;
+    }
+
+    /**
+     * Getter for displayedPagesCount.
+     *
+     * @return the displayedPagesCount
+     */
+    public int getDisplayedPagesCount() {
+        return this.displayedPagesCount;
+    }
+
+    /**
+     * Setter for displayedPagesCount.
+     *
+     * @param displayedPagesCount the displayedPagesCount to set
+     */
+    public void setDisplayedPagesCount(int displayedPagesCount) {
+        this.displayedPagesCount = displayedPagesCount;
+    }
+
+    /**
+     * Getter for userPages.
+     *
+     * @return the userPages
+     */
+    public List<UserPage> getUserPages() {
+        return this.userPages;
     }
 
 }

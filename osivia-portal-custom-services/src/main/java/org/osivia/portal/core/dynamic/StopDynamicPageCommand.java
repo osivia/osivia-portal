@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,42 +22,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.controller.NoSuchResourceException;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
-import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.theme.LayoutService;
-import org.jboss.portal.theme.PageService;
-import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.UserPage;
+import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.core.assistantpage.AssistantCommand;
-import org.osivia.portal.core.cache.global.ICacheService;
-import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
@@ -70,9 +62,9 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
 	private static final CommandInfo info = new ActionCommandInfo(false);
 	protected static final Log logger = LogFactory.getLog(StopDynamicPageCommand.class);
-	
+
     IPortalUrlFactory urlFactory;
-	
+
     public IPortalUrlFactory getUrlFactory()throws Exception {
 
         if (this.urlFactory == null) {
@@ -83,7 +75,8 @@ public class StopDynamicPageCommand extends DynamicCommand {
     }
 
 
-	public CommandInfo getInfo() {
+	@Override
+    public CommandInfo getInfo() {
 		return info;
 	}
 
@@ -96,126 +89,166 @@ public class StopDynamicPageCommand extends DynamicCommand {
 		this.pageId = pageId;
 	}
 
-	public ControllerResponse execute() throws ControllerException {
+	@Override
+    public ControllerResponse execute() throws ControllerException {
 
 		try {
 
-			PortalObjectId poid = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
-			Page page = (Page) getControllerContext().getController().getPortalObjectContainer().getObject(poid);
+			PortalObjectId poid = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
+			Page page = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
 
 			Page redirectPage = null;
 			String redirectUrl = null;
-			
+
 			Page pageToRefresh = null;
 
 			if (page == null) {
 				// The session can have expired, no actions
-				redirectPage = (Page) getControllerContext().getController().getPortalObjectContainer().getContext()
+				redirectPage = this.getControllerContext().getController().getPortalObjectContainer().getContext()
 						.getDefaultPortal().getDefaultPage();
 			} else {
-			    
+
 
                 String domainDeleted = TabsCustomizerInterceptor.getInheritedPageDomain( page);
- 		    
+
 
 				PortalObject parent = page.getParent();
-				
-				
+
+
                 /* Get current page before it is deleted */
-                
-                Page currentPage = null;   
-                 
-                PortalObjectId currentPageId = (PortalObjectId) getControllerContext().getAttribute(
+
+                Page currentPage = null;
+
+                PortalObjectId currentPageId = (PortalObjectId) this.getControllerContext().getAttribute(
                         ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
                 if( currentPageId != null)  {
-                    currentPage  = (Page) getControllerContext()
+                    currentPage  = (Page) this.getControllerContext()
                             .getController()
                             .getPortalObjectContainer()
                             .getObject(
                                     currentPageId);
                 }
                 Page topCurrentPage = currentPage;
-                
-                if( currentPage.getParent() instanceof Portal)
+
+                if( currentPage.getParent() instanceof Portal) {
                     topCurrentPage = currentPage;
-                else
+                } else {
                     topCurrentPage = (Page) currentPage.getParent();
-                
+                }
+
                 Page topDeletedPage = null;
-                if( page.getParent() instanceof Portal)
+                if( page.getParent() instanceof Portal) {
                     topDeletedPage = page;
-                else
+                } else {
                     topDeletedPage = (Page) page.getParent();
-                
-                
+                }
+
+
                 // Remove public state of dynamic child
-                NavigationalStateContext nsContext = (NavigationalStateContext) this.context
-                        .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                NavigationalStateContext nsContext = (NavigationalStateContext) this.context.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
-                nsContext.setPageNavigationalState(poid.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + CMSTemplatePage.PAGE_NAME,null);
- 				
-				
+                nsContext.setPageNavigationalState(poid.toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + CMSTemplatePage.PAGE_NAME, null);
 
-				IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class,
-						"osivia:service=DynamicPortalObjectContainer");
 
-				dynamicCOntainer.removeDynamicPage(pageId);
-				
-				
-                // Remove other pages from same domain 
-                if( domainDeleted != null){
-                    
-                
-                    List<String> domainPageIDs = new ArrayList<String>();
-                    
-                    Collection<PortalObject> sisters = parent.getChildren(PortalObject.PAGE_MASK);
-                    for (PortalObject sister: sisters){
-                        String sisterDomain = TabsCustomizerInterceptor.getInheritedPageDomain( (Page) sister);
-                        if( domainDeleted.equals(sisterDomain))
-                            domainPageIDs.add(sister.getId().toString( PortalObjectPath.SAFEST_FORMAT));
+                boolean hiddenPage = false;
+                if (page instanceof ITemplatePortalObject) {
+                    ITemplatePortalObject cmsPage = (ITemplatePortalObject) page;
+                    hiddenPage = !cmsPage.isClosable();
+                }
+
+                if (hiddenPage) {
+                    String pageId = page.getId().toString();
+
+                    // Update page state
+                    PageNavigationalState state = nsContext.getPageNavigationalState(pageId);
+                    Map<QName, String[]> parameters;
+                    if (state != null) {
+                        parameters = new HashMap<QName, String[]>(state.getParameters());
+                    } else {
+                        parameters = new HashMap<QName, String[]>();
                     }
-                    
-                    for (String domainPageID: domainPageIDs)  {
-                        dynamicCOntainer.removeDynamicPage(domainPageID);                       
+                    parameters.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"), new String[]{String.valueOf(false)});
+                    nsContext.setPageNavigationalState(pageId, new PageNavigationalState(parameters));
+
+                    // Update user tabs
+                    UserPortal userPortal = (UserPortal) this.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                            "osivia.tabbedNavUserPortal");
+                    UserPage currentUserPage = null;
+                    if (userPortal != null) {
+                        for (UserPage userPage : userPortal.getUserPages()) {
+                            if (pageId.equals(userPage.getId())) {
+                                currentUserPage = userPage;
+                                break;
+                            }
+                        }
+                    }
+                    if ((currentUserPage != null) && (currentUserPage.getGroup() != null)) {
+                        UserPagesGroup group = userPortal.getGroup(currentUserPage.getGroup());
+                        boolean removed = group.getDisplayedPages().remove(currentUserPage);
+                        if (removed) {
+                            userPortal.setDisplayedPagesCount(userPortal.getDisplayedPagesCount() - 1);
+                            group.getHiddenPages().add(currentUserPage);
+                        }
+                    }
+                } else {
+                    IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
+
+                    dynamicCOntainer.removeDynamicPage(this.pageId);
+
+                    // Remove other pages from same domain
+                    if (domainDeleted != null) {
+
+
+                        List<String> domainPageIDs = new ArrayList<String>();
+
+                        Collection<PortalObject> sisters = parent.getChildren(PortalObject.PAGE_MASK);
+                        for (PortalObject sister : sisters) {
+                            String sisterDomain = TabsCustomizerInterceptor.getInheritedPageDomain((Page) sister);
+                            if (domainDeleted.equals(sisterDomain)) {
+                                domainPageIDs.add(sister.getId().toString(PortalObjectPath.SAFEST_FORMAT));
+                            }
+                        }
+
+                        for (String domainPageID : domainPageIDs) {
+                            dynamicCOntainer.removeDynamicPage(domainPageID);
+                        }
                     }
                 }
-                
 
-				
-				
-				
+
 				/* Check if current page deleted */
-				
+
                 boolean currentPageDeleted = false;
-				
+
 				if( domainDeleted != null)  {
 				    if( currentPage != null)    {
 				        String curDomain = TabsCustomizerInterceptor.getInheritedPageDomain( currentPage);
-				        if( domainDeleted.equals(curDomain))
-				            currentPageDeleted = true;
+				        if( domainDeleted.equals(curDomain)) {
+                            currentPageDeleted = true;
+                        }
 				    }
 				}   else    {
 				    if( currentPage != null)    {
                          currentPageDeleted = topDeletedPage.getId().equals(topCurrentPage.getId() );
 				    }
 				}
-		
 
-				
+
+
 				/* Compute the url */
-				
+
 				if( ! currentPageDeleted){
 				    pageToRefresh = currentPage;
-	    
+
 				}   else    {
-				
-				    UserPortal tabbedNavUserPortal = (UserPortal) getControllerContext().getAttribute(
+
+				    UserPortal tabbedNavUserPortal = (UserPortal) this.getControllerContext().getAttribute(
                             ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
-				    
+
                     // On cherche l'item courant
                     int indiceCurrentPage = -1;
                     for (int i = 0; i < tabbedNavUserPortal.getUserPages().size(); i++) {
-                        if(  ( domainDeleted != null && (  tabbedNavUserPortal.getUserPages().get(i).getId().equals(domainDeleted)))
+                        if(  ( (domainDeleted != null) && (  tabbedNavUserPortal.getUserPages().get(i).getId().equals(domainDeleted)))
                                 ||
                                 (tabbedNavUserPortal.getUserPages().get(i).getId().equals(poid))
                                 )   {
@@ -223,57 +256,60 @@ public class StopDynamicPageCommand extends DynamicCommand {
                             break;
                         }
                     }
-                            
-                    
+
+
 
                     if (indiceCurrentPage != -1) {
-                        
+
                         // Si c'est le dernier item, on prend le précédent
                         // sinon le suivant
 
-                        if (indiceCurrentPage == tabbedNavUserPortal.getUserPages().size() - 1)
+                        if (indiceCurrentPage == (tabbedNavUserPortal.getUserPages().size() - 1)) {
                             indiceCurrentPage = indiceCurrentPage - 1;
-                        
-                        
+                        }
+
+
                         Object redirectID = tabbedNavUserPortal.getUserPages().get(indiceCurrentPage).getId();
                         if( redirectID instanceof PortalObjectId) {
-                            redirectPage = (Page) getControllerContext()
+                            redirectPage = (Page) this.getControllerContext()
                                     .getController()
                                     .getPortalObjectContainer()
                                     .getObject((PortalObjectId) redirectID);
-                            
-                            
+
+
                         }   else    {
                             // Domaine
-                            redirectUrl = getUrlFactory().getCMSUrl(new PortalControllerContext(getControllerContext()), null, "/" + (String) redirectID + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
+                            redirectUrl = this.getUrlFactory().getCMSUrl(new PortalControllerContext(this.getControllerContext()), null, "/" + (String) redirectID + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, null, null,
                                     null, null, null);
                         }
                       }
-				}	
+				}
 			}
-			
+
 
 	         // rafaichir la bandeau
-            getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1"); 
-            
-            
-            if( pageToRefresh != null)
+            this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh", "1");
+
+
+            if( pageToRefresh != null) {
                 return new UpdatePageResponse(pageToRefresh.getId());
-            
+            }
+
             if( redirectUrl == null)    {
-                if( redirectPage == null)
-                    redirectPage = (Page) ((Portal) page.getParent()).getDefaultPage();
+                if( redirectPage == null) {
+                    redirectPage = ((Portal) page.getParent()).getDefaultPage();
+                }
 
                 if( redirectPage != null)   {
                     ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
-                    PortalURL url = new PortalURLImpl(pageCmd,getControllerContext(), null, null);
+                    PortalURL url = new PortalURLImpl(pageCmd,this.getControllerContext(), null, null);
                     redirectUrl = url.toString() + "?init-state=true";
                 }
 
-                    
+
             }
 
-			
+
 			return new RedirectionResponse(redirectUrl);
 
 

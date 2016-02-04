@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,6 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -152,8 +151,7 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
 
         UserPortal siteMap = new UserPortal();
         siteMap.setName(portal.getName());
-        List<UserPage> mainPages = new ArrayList<UserPage>();
-        siteMap.setUserPages(mainPages);
+        List<UserPage> mainPages = siteMap.getUserPages();
 
         SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
@@ -172,20 +170,16 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
                         }
                     } else {
                         // Page statique sans espace de publication
-                        UserPage userPage = new UserPage();
+                        UserPage userPage = new UserPage(page.getId().toString());
                         mainPages.add(userPage);
 
                         ViewPageCommand showSubPage = new ViewPageCommand(page.getId());
 
-                        userPage.setId(page.getId());
                         String subName = page.getDisplayName().getString(locale, true);
                         if (subName == null) {
                             subName = page.getName();
                         }
                         userPage.setName(subName);
-
-                        List<UserPage> childrens = new ArrayList<UserPage>(10);
-                        userPage.setChildren(childrens);
 
                         String url = new PortalURLImpl(showSubPage, controllerContext, null, null).toString();
                         userPage.setUrl(url + "?init-state=true");
@@ -215,17 +209,15 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
         // CMS base path
         String basePath = page.getDeclaredProperty("osivia.cms.basePath");
 
-        UserPage userPage = new UserPage();
+        UserPage userPage = new UserPage(navItem.getPath());
         userPage.setName(navItem.getProperties().get("displayName"));
-        userPage.setId(navItem.getPath());
         Map<String, String> pageParams = new HashMap<String, String>();
         String url = this.urlFactory.getCMSUrl(portalControllerContext, page.getId().toString(PortalObjectPath.CANONICAL_FORMAT), navItem.getPath(),
                 pageParams, null, null,
                 null, null, null, null);
         userPage.setUrl(url);
 
-        List<UserPage> subPages = new ArrayList<UserPage>(10);
-        userPage.setChildren(subPages);
+        List<UserPage> subPages = userPage.getChildren();
 
         List<CMSItem> navItems = this.cmsServiceLocator.getCMSService().getPortalNavigationSubitems(cmsServiceContext, basePath, navItem.getPath());
         if (navItems.size() > 0) {

@@ -24,7 +24,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -38,6 +43,8 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
+import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
@@ -48,6 +55,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.UserPage;
+import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -205,14 +213,16 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
 
             // Preselection domain
-            Object selectedPageID = mainPage.getId();
+            String selectedPageId = mainPage.getId().toString();
             String domain = TabsCustomizerInterceptor.getInheritedPageDomain(renderPageCommand.getPage());
             if (domain != null) {
-                selectedPageID = domain;
+                selectedPageId = domain;
             }
 
             // Current page URL
-            String currentPageURL = null;
+            String currentPageUrl = null;
+            // Current page tab group
+            String currentPageGroup = null;
 
             // Update menu page markers
             Iterator<UserPage> mainPages = tabbedNavUserPortal.getUserPages().iterator();
@@ -233,8 +243,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     }
                 }
 
-                if (selectedPageID.equals(userPage.getId())) {
-                    currentPageURL = userPage.getUrl();
+                if (selectedPageId.equals(userPage.getId())) {
+                    currentPageUrl = userPage.getUrl();
+                    currentPageGroup = userPage.getGroup();
                 }
             }
 
@@ -242,11 +253,15 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             // User portal
             attributes.put(Constants.ATTR_USER_PORTAL, tabbedNavUserPortal);
 
-            // Page identifier
-            attributes.put(Constants.ATTR_PAGE_ID, selectedPageID);
-            // Page URL
-            attributes.put(CURRENT_PAGE_URL, currentPageURL);
-            // Page name
+            // Current page identifier
+            attributes.put(Constants.ATTR_PAGE_ID, selectedPageId);
+            // Current page URL
+            attributes.put(CURRENT_PAGE_URL, currentPageUrl);
+            // Current page group name
+            attributes.put("osivia.tab.currentGroup", currentPageGroup);
+            // Displayed pages count
+            attributes.put("osivia.tab.displayedCount", tabbedNavUserPortal.getDisplayedPagesCount());
+            // Current page name
             attributes.put(Constants.ATTR_PAGE_NAME, PortalObjectUtils.getDisplayName(mainPage, request.getLocales()));
             // First tab
             attributes.put(Constants.ATTR_FIRST_TAB, controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_FIRST_TAB));
@@ -282,8 +297,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         PortalAuthorizationManager portalAuthorizationManager = this.portalAuthorizationManagerFactory.getManager();
 
         // Main pages
-        List<UserPage> mainPages = new ArrayList<UserPage>();
-        userPortal.setUserPages(mainPages);
+        List<UserPage> mainPages = userPortal.getUserPages();
 
         // Sorted pages
         SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
@@ -303,6 +317,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         }
 
         List<String> domains = new ArrayList<String>();
+
+        // Displayed pages count
+        int displayedPagesCount = 0;
 
         for (Page child : sortedPages) {
             // Page name
@@ -350,27 +367,50 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
 
             if (permissionCheck && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
-                UserPage userPage = new UserPage();
+                String id;
+                String url;
+                if (curDomain != null) {
+                    id = curDomain;
+                    url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null,
+                            "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, "tabs", null, null, null, null);
+                } else {
+                    id = child.getId().toString();
+                    // View page command
+                    ViewPageCommand showPage = new ViewPageCommand(child.getId());
+                    url = new PortalURLImpl(showPage, controllerContext, null, null).toString() + "?init-state=true";
+                }
+
+                UserPage userPage = new UserPage(id);
+                userPage.setUrl(url);
                 mainPages.add(userPage);
+
+                // Tab group
+                String groupName = child.getDeclaredProperty("osivia.tab.group");
+                if (StringUtils.isEmpty(groupName)) {
+                    displayedPagesCount++;
+                } else {
+                    // Displayed indicator
+                    boolean displayed = false;
+                    NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
+                            .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                    PageNavigationalState state = nsContext.getPageNavigationalState(child.getId().toString());
+                    if (state != null) {
+                        String[] displayedParameter = state.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"));
+                        displayed = ArrayUtils.isNotEmpty(displayedParameter) && BooleanUtils.toBoolean(displayedParameter[0]);
+                    }
+
+                    UserPagesGroup group = userPortal.getGroup(groupName);
+                    group.add(userPage, displayed);
+
+                    userPage.setGroup(groupName);
+
+                    if (displayed) {
+                        displayedPagesCount++;
+                    }
+                }
 
                 if (isDefaultPage) {
                     userPortal.setDefaultPage(userPage);
-                }
-
-                // View page command
-                ViewPageCommand showPage = new ViewPageCommand(child.getId());
-
-
-                if (curDomain != null) {
-                    userPage.setId(curDomain);
-                    String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null, "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, "tabs", null,
-                            null, null, null);
-                    userPage.setUrl(url);
-
-                } else {
-                    userPage.setId(child.getId());
-                    String url = new PortalURLImpl(showPage, controllerContext, null, null).toString();
-                    userPage.setUrl(url + "?init-state=true");
                 }
 
 
@@ -379,7 +419,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 userPage.setDefaultPage(isDefaultPage);
 
 
-                if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {
+                if (((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) || StringUtils.isNotEmpty(groupName)) {
                     try {
                         String parentId = URLEncoder.encode(child.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
                         String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
@@ -392,8 +432,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
 
 
-                List<UserPage> subPages = new ArrayList<UserPage>();
-                userPage.setChildren(subPages);
+                List<UserPage> subPages = userPage.getChildren();
 
                 SortedSet<Page> sortedSubPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
                 for (PortalObject po : child.getChildren(PortalObject.PAGE_MASK)) {
@@ -411,12 +450,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                     PortalObjectPermission permSubPage = new PortalObjectPermission(subpageIdToControl, PortalObjectPermission.VIEW_MASK);
                     if (portalAuthorizationManager.checkPermission(permSubPage) && ((pageToHide == null) || (!childChild.getName().equals(pageToHide)))) {
-                        UserPage userSubPage = new UserPage();
+                        UserPage userSubPage = new UserPage(childChild.getId().toString());
 
                         // View sub page command
                         ViewPageCommand showSubPage = new ViewPageCommand(childChild.getId());
-
-                        userSubPage.setId(childChild.getId());
 
                         String subName = PortalObjectUtils.getDisplayName(childChild, request.getLocales());
                         userSubPage.setName(subName);
@@ -430,6 +467,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
             }
         }
+
+        userPortal.setDisplayedPagesCount(displayedPagesCount);
 
         return userPortal;
     }

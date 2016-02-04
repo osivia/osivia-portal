@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.api.theming;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,21 +26,66 @@ public class UserPage {
     private String name;
     /** Page URL. */
     private String url;
-    /** Page identifier. */
-    private Object id;
     /** Close page URL. */
     private String closePageUrl;
     /** Default page indicator. */
     private boolean defaultPage;
+    /** Tab group name. */
+    private String group;
+
+    /** Page identifier. */
+    private final String id;
     /** Page children. */
-    private List<UserPage> children;
+    private final List<UserPage> children;
 
 
     /**
      * Constructor.
+     * 
+     * @param id page identifier
      */
-    public UserPage() {
+    public UserPage(String id) {
         super();
+        this.id = id;
+        this.children = new ArrayList<UserPage>();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
+        return result;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        UserPage other = (UserPage) obj;
+        if (this.id == null) {
+            if (other.id != null) {
+                return false;
+            }
+        } else if (!this.id.equals(other.id)) {
+            return false;
+        }
+        return true;
     }
 
 
@@ -105,17 +151,8 @@ public class UserPage {
      *
      * @return the id
      */
-    public Object getId() {
+    public String getId() {
         return this.id;
-    }
-
-    /**
-     * Setter for id.
-     *
-     * @param id the id to set
-     */
-    public void setId(Object id) {
-        this.id = id;
     }
 
     /**
@@ -155,21 +192,30 @@ public class UserPage {
     }
 
     /**
+     * Getter for group.
+     *
+     * @return the group
+     */
+    public String getGroup() {
+        return this.group;
+    }
+
+    /**
+     * Setter for group.
+     *
+     * @param group the group to set
+     */
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    /**
      * Getter for children.
      *
      * @return the children
      */
     public List<UserPage> getChildren() {
         return this.children;
-    }
-
-    /**
-     * Setter for children.
-     *
-     * @param children the children to set
-     */
-    public void setChildren(List<UserPage> children) {
-        this.children = children;
     }
 
 }

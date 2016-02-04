@@ -169,6 +169,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
+                props.put("osivia.tab.group", publishSpace.getProperties().get("tab.group"));
 
                 String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName,
                         PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT),
