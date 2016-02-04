@@ -24,10 +24,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
@@ -43,8 +39,6 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
@@ -155,6 +149,21 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
         if (popupWindowId == null) {
+            // Get first level page
+            Page mainPage = renderPageCommand.getPage();
+            PortalObject parent = mainPage.getParent();
+            while (parent instanceof Page) {
+                mainPage = (Page) parent;
+                parent = mainPage.getParent();
+            }
+
+            // Preselection domain
+            String selectedPageId = mainPage.getId().toString();
+            String domain = TabsCustomizerInterceptor.getInheritedPageDomain(renderPageCommand.getPage());
+            if (domain != null) {
+                selectedPageId = domain;
+            }
+
             // User
             User user = (User) controllerContext.getServerInvocation().getAttribute(Scope.PRINCIPAL_SCOPE, UserInterceptor.USER_KEY);
 
@@ -181,15 +190,34 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     } while (headerCount.longValue() > this.globalCacheService.getHeaderCount());
                 }
 
-                if( refreshUserPortal == false){
-                    if( "1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh"))) {
+                if (refreshUserPortal == false) {
+                    if ("1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh"))) {
                         refreshUserPortal = true;
+                    } else {
+                        // Check if current page is a new displayed page
+                        if (!selectedPageId.equals(tabbedNavUserPortal.getDefaultPage().getId())) {
+                            // Search user page
+                            UserPage currentUserPage = null;
+                            for (UserPage userPage : tabbedNavUserPortal.getUserPages()) {
+                                if (selectedPageId.equals(userPage.getId())) {
+                                    currentUserPage = userPage;
+                                    break;
+                                }
+                            }
+                            if ((currentUserPage != null) && (currentUserPage.getGroup() != null)) {
+                                UserPagesGroup group = tabbedNavUserPortal.getGroup(currentUserPage.getGroup());
+                                if (!group.getDisplayedPages().contains(currentUserPage) && group.getHiddenPages().contains(currentUserPage)) {
+                                    refreshUserPortal = true;
+                                }
+                            }
+                        }
                     }
                 }
+
             }
 
             if (refreshUserPortal) {
-                tabbedNavUserPortal = this.getPageBean(renderPageCommand);
+                tabbedNavUserPortal = this.getPageBean(renderPageCommand, tabbedNavUserPortal, selectedPageId);
 
                 controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavRefresh");
 
@@ -202,21 +230,6 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
 
                 controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.cmsTimeStamp", System.currentTimeMillis());
-            }
-
-            // Get first level page
-            Page mainPage = renderPageCommand.getPage();
-            PortalObject parent = mainPage.getParent();
-            while (parent instanceof Page) {
-                mainPage = (Page) parent;
-                parent = mainPage.getParent();
-            }
-
-            // Preselection domain
-            String selectedPageId = mainPage.getId().toString();
-            String domain = TabsCustomizerInterceptor.getInheritedPageDomain(renderPageCommand.getPage());
-            if (domain != null) {
-                selectedPageId = domain;
             }
 
             // Current page URL
@@ -273,10 +286,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
      * Utility method used to get user portal pages.
      *
      * @param renderPageCommand render page command
+     * @param previousUserPortal previous user portal
+     * @param selectedPageId selected page identifier
      * @return user portal pages
      * @throws ControllerException
      */
-    private UserPortal getPageBean(RenderPageCommand renderPageCommand) throws ControllerException {
+    private UserPortal getPageBean(RenderPageCommand renderPageCommand, UserPortal previousUserPortal, String selectedPageId) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         // Server request
@@ -320,6 +335,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         // Displayed pages count
         int displayedPagesCount = 0;
+
+        // Hide page identifier
+        String hidePageId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.tab.hide");
 
         for (Page child : sortedPages) {
             // Page name
@@ -389,16 +407,17 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if (StringUtils.isEmpty(groupName)) {
                     displayedPagesCount++;
                 } else {
-                    // Displayed indicator
-                    boolean displayed = false;
-                    NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
-                            .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-                    PageNavigationalState state = nsContext.getPageNavigationalState(child.getId().toString());
-                    if (state != null) {
-                        String[] displayedParameter = state.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"));
-                        displayed = ArrayUtils.isNotEmpty(displayedParameter) && BooleanUtils.toBoolean(displayedParameter[0]);
+                    // Previous displayed pages
+                    Set<UserPage> previousDisplayedPages = null;
+                    if (previousUserPortal != null) {
+                        previousDisplayedPages = previousUserPortal.getGroup(groupName).getDisplayedPages();
                     }
 
+                    // Displayed indicator
+                    boolean displayed = id.equals(selectedPageId)
+                            || ((previousDisplayedPages != null) && previousDisplayedPages.contains(userPage) && !id.equals(hidePageId));
+
+                    // Add to group
                     UserPagesGroup group = userPortal.getGroup(groupName);
                     group.add(userPage, displayed);
 

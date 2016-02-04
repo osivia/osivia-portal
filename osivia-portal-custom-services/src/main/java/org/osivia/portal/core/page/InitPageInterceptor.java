@@ -1,18 +1,13 @@
 package org.osivia.portal.core.page;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
@@ -34,9 +29,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -48,16 +41,12 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.panels.IPanelsService;
-import org.osivia.portal.api.theming.UserPage;
-import org.osivia.portal.api.theming.UserPagesGroup;
-import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.notifications.NotificationsUtils;
-import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.web.IWebIdService;
 
 /**
@@ -123,53 +112,6 @@ public class InitPageInterceptor extends ControllerInterceptor {
                 if (BooleanUtils.isNotTrue(initialRedirection)) {
                     defaultPage = true;
                     controllerContext.setAttribute(Scope.SESSION_SCOPE, "initialRedirection", true);
-                }
-            }
-
-
-            // Add displayed page indicator
-            String pageId;
-            if (page instanceof CMSTemplatePage) {
-                pageId = page.getParent().getId().toString();
-            } else {
-                pageId = page.getId().toString();
-            }
-            NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-            PageNavigationalState state = nsContext.getPageNavigationalState(pageId.toString());
-            boolean displayed = false;
-            if (state != null) {
-                String[] displayedParameter = state.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"));
-                displayed = ArrayUtils.isNotEmpty(displayedParameter) && BooleanUtils.toBoolean(displayedParameter[0]);
-            }
-            if (!displayed) {
-                // Update page state
-                Map<QName, String[]> parameters;
-                if (state != null) {
-                    parameters = new HashMap<QName, String[]>(state.getParameters());
-                } else {
-                    parameters = new HashMap<QName, String[]>();
-                }
-                parameters.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"), new String[]{String.valueOf(true)});
-                nsContext.setPageNavigationalState(pageId.toString(), new PageNavigationalState(parameters));
-
-                // Update user tabs
-                UserPortal userPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
-                UserPage currentUserPage = null;
-                if (userPortal != null) {
-                    for (UserPage userPage : userPortal.getUserPages()) {
-                        if (pageId.equals(userPage.getId())) {
-                            currentUserPage = userPage;
-                            break;
-                        }
-                    }
-                }
-                if ((currentUserPage != null) && (currentUserPage.getGroup() != null)) {
-                    UserPagesGroup group = userPortal.getGroup(currentUserPage.getGroup());
-                    boolean added = group.getDisplayedPages().add(currentUserPage);
-                    if (added) {
-                        userPortal.setDisplayedPagesCount(userPortal.getDisplayedPagesCount() + 1);
-                        group.getHiddenPages().remove(currentUserPage);
-                    }
                 }
             }
 

@@ -18,16 +18,12 @@ package org.osivia.portal.core.dynamic;
 //import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.api.PortalURL;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -41,13 +37,10 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.theming.UserPage;
-import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.page.PortalURLImpl;
@@ -158,38 +151,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
                 if (hiddenPage) {
                     String pageId = page.getId().toString();
-
-                    // Update page state
-                    PageNavigationalState state = nsContext.getPageNavigationalState(pageId);
-                    Map<QName, String[]> parameters;
-                    if (state != null) {
-                        parameters = new HashMap<QName, String[]>(state.getParameters());
-                    } else {
-                        parameters = new HashMap<QName, String[]>();
-                    }
-                    parameters.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.tab.displayed"), new String[]{String.valueOf(false)});
-                    nsContext.setPageNavigationalState(pageId, new PageNavigationalState(parameters));
-
-                    // Update user tabs
-                    UserPortal userPortal = (UserPortal) this.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                            "osivia.tabbedNavUserPortal");
-                    UserPage currentUserPage = null;
-                    if (userPortal != null) {
-                        for (UserPage userPage : userPortal.getUserPages()) {
-                            if (pageId.equals(userPage.getId())) {
-                                currentUserPage = userPage;
-                                break;
-                            }
-                        }
-                    }
-                    if ((currentUserPage != null) && (currentUserPage.getGroup() != null)) {
-                        UserPagesGroup group = userPortal.getGroup(currentUserPage.getGroup());
-                        boolean removed = group.getDisplayedPages().remove(currentUserPage);
-                        if (removed) {
-                            userPortal.setDisplayedPagesCount(userPortal.getDisplayedPagesCount() - 1);
-                            group.getHiddenPages().add(currentUserPage);
-                        }
-                    }
+                    this.context.setAttribute(Scope.REQUEST_SCOPE, "osivia.tab.hide", pageId);
                 } else {
                     IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
 
