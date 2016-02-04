@@ -337,7 +337,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         int displayedPagesCount = 0;
 
         // Hide page identifier
-        String hidePageId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.tab.hide");
+        String hidePageId = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, "osivia.tab.hide");
+        if (hidePageId != null) {
+            controllerContext.removeAttribute(Scope.SESSION_SCOPE, "osivia.tab.hide");
+        }
 
         for (Page child : sortedPages) {
             // Page name

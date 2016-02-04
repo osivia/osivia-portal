@@ -151,7 +151,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
                 if (hiddenPage) {
                     String pageId = page.getId().toString();
-                    this.context.setAttribute(Scope.REQUEST_SCOPE, "osivia.tab.hide", pageId);
+                    this.context.setAttribute(Scope.SESSION_SCOPE, "osivia.tab.hide", pageId);
                 } else {
                     IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
 
