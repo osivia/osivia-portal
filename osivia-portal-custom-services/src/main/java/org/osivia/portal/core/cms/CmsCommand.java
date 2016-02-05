@@ -433,6 +433,7 @@ public class CmsCommand extends DynamicCommand {
              */
             props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
             props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
+            props.put("osivia.tab.group", portalSite.getProperties().get("tab.group"));
 
 
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -578,13 +579,15 @@ public class CmsCommand extends DynamicCommand {
                     boolean forceReload = false;
                     if (hasWebId) {
                         forceReload = cmsReadItemContext.isForceReload();
-                        if (!forceReload)
+                        if (!forceReload) {
                             cmsReadItemContext.setForceReload(true);
+                        }
                     }
                     pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
                     if (hasWebId) {
-                        if (!forceReload)
+                        if (!forceReload) {
                             cmsReadItemContext.setForceReload(false);
+                        }
                     }
 
 
@@ -608,7 +611,7 @@ public class CmsCommand extends DynamicCommand {
 
                     throw e;
                     // TODO : gerer les cas d'erreurs
-                } 
+                }
 
             }
 
