@@ -48,10 +48,14 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.theming.UserPage;
 import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
@@ -89,6 +93,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
     private final IProfilManager profileManager;
     /** Portal URL factory. */
     private final IPortalUrlFactory urlFactory;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -103,13 +109,16 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         // Global cache service
         this.globalCacheService = Locator.findMBean(org.osivia.portal.core.cache.global.ICacheService.class, "osivia:service=Cache");
         // Services cache service
-        this.servicesCacheService = Locator.findMBean(org.osivia.portal.api.cache.services.ICacheService.class, "osivia:service=CacheServices");
+        this.servicesCacheService = Locator.findMBean(org.osivia.portal.api.cache.services.ICacheService.class,
+                org.osivia.portal.api.cache.services.ICacheService.MBEAN_NAME);
         // Portal authorization manager factory
         this.portalAuthorizationManagerFactory = Locator.findMBean(PortalAuthorizationManagerFactory.class, "portal:service=PortalAuthorizationManagerFactory");
         // Profile manager
         this.profileManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
         // URL factory
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_USER_PORTAL);
@@ -206,7 +215,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                             }
                             if ((currentUserPage != null) && (currentUserPage.getGroup() != null)) {
                                 UserPagesGroup group = tabbedNavUserPortal.getGroup(currentUserPage.getGroup());
-                                if (!group.getDisplayedPages().contains(currentUserPage) && group.getHiddenPages().contains(currentUserPage)) {
+                                if ((group == null)
+                                        || (!group.getDisplayedPages().contains(currentUserPage) && group.getHiddenPages().contains(currentUserPage))) {
                                     refreshUserPortal = true;
                                 }
                             }
@@ -272,8 +282,6 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             attributes.put(CURRENT_PAGE_URL, currentPageUrl);
             // Current page group name
             attributes.put("osivia.tab.currentGroup", currentPageGroup);
-            // Displayed pages count
-            attributes.put("osivia.tab.displayedCount", tabbedNavUserPortal.getDisplayedPagesCount());
             // Current page name
             attributes.put(Constants.ATTR_PAGE_NAME, PortalObjectUtils.getDisplayName(mainPage, request.getLocales()));
             // First tab
@@ -298,6 +306,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         ServerRequest request = controllerContext.getServerInvocation().getRequest();
         // Portal
         Portal portal = renderPageCommand.getPortal();
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
 
         // Hide default page indicator
         boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
@@ -410,18 +424,43 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if (StringUtils.isEmpty(groupName)) {
                     displayedPagesCount++;
                 } else {
-                    // Previous displayed pages
-                    Set<UserPage> previousDisplayedPages = null;
-                    if (previousUserPortal != null) {
-                        previousDisplayedPages = previousUserPortal.getGroup(groupName).getDisplayedPages();
-                    }
+                    // Maintains visible indicator
+                    boolean maintains = BooleanUtils.toBoolean(child.getDeclaredProperty("osivia.tab.maintains"));
+                    userPage.setMaintains(maintains);
 
                     // Displayed indicator
-                    boolean displayed = id.equals(selectedPageId)
-                            || ((previousDisplayedPages != null) && previousDisplayedPages.contains(userPage) && !id.equals(hidePageId));
+                    boolean displayed;
+                    if (maintains) {
+                        displayed = true;
+                    } else {
+                        // Previous displayed pages
+                        Set<UserPage> previousDisplayedPages = null;
+                        if (previousUserPortal != null) {
+                            UserPagesGroup previousGroup = previousUserPortal.getGroup(groupName);
+                            if (previousGroup != null) {
+                                previousDisplayedPages = previousGroup.getDisplayedPages();
+                            }
+                        }
+
+                        displayed = id.equals(selectedPageId)
+                                || ((previousDisplayedPages != null) && previousDisplayedPages.contains(userPage) && !id.equals(hidePageId));
+                    }
 
                     // Add to group
                     UserPagesGroup group = userPortal.getGroup(groupName);
+                    if (group == null) {
+                        group = new UserPagesGroup(groupName);
+
+                        // Tab group
+                        Map<String, TabGroup> tabGroups = cmsService.getTabGroups(cmsContext);
+                        TabGroup tabGroup = tabGroups.get(groupName);
+                        if (tabGroup != null) {
+                            group.setIcon(tabGroup.getIcon());
+                            group.setLabelKey(tabGroup.getLabelKey());
+                        }
+
+                        userPortal.addGroup(group);
+                    }
                     group.add(userPage, displayed);
 
                     userPage.setGroup(groupName);

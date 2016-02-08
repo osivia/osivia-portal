@@ -32,6 +32,8 @@ public class UserPage {
     private boolean defaultPage;
     /** Tab group name. */
     private String group;
+    /** Maintains visible indicator. */
+    private boolean maintains;
 
     /** Page identifier. */
     private final String id;
@@ -41,7 +43,7 @@ public class UserPage {
 
     /**
      * Constructor.
-     * 
+     *
      * @param id page identifier
      */
     public UserPage(String id) {
@@ -147,15 +149,6 @@ public class UserPage {
     }
 
     /**
-     * Getter for id.
-     *
-     * @return the id
-     */
-    public String getId() {
-        return this.id;
-    }
-
-    /**
      * Getter for closePageUrl.
      *
      * @return the closePageUrl
@@ -207,6 +200,33 @@ public class UserPage {
      */
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    /**
+     * Getter for maintains.
+     *
+     * @return the maintains
+     */
+    public boolean isMaintains() {
+        return this.maintains;
+    }
+
+    /**
+     * Setter for maintains.
+     *
+     * @param maintains the maintains to set
+     */
+    public void setMaintains(boolean maintains) {
+        this.maintains = maintains;
+    }
+
+    /**
+     * Getter for id.
+     *
+     * @return the id
+     */
+    public String getId() {
+        return this.id;
     }
 
     /**

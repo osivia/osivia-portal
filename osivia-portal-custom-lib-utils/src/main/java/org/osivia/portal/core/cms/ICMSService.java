@@ -23,6 +23,7 @@ import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.urls.Link;
 
 /**
@@ -481,5 +482,13 @@ public interface ICMSService {
      * @throws CMSException
      */
     DocumentsMetadata getDocumentsMetadata(CMSServiceCtx cmsContext, String basePath, Long timestamp) throws CMSException;
+
+
+    /**
+     * Get tab groups.
+     *
+     * @return tab groups
+     */
+    Map<String, TabGroup> getTabGroups(CMSServiceCtx cmsContext);
 
 }

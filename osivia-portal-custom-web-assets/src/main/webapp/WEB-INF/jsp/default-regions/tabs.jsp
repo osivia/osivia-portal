@@ -4,8 +4,7 @@
 
 <c:set var="userPortal" value="${requestScope['osivia.userPortal']}" />
 <c:set var="userPages" value="${userPortal.userPages}" />
-<c:set var="tabGroups" value="${requestScope['osivia.tab.groups']}" />
-<c:set var="count" value="${osivia.tab.displayedCount}" />
+<c:set var="count" value="${userPortal.displayedPagesCount}" />
 <c:set var="currentId" value="${requestScope['osivia.currentPageId']}" />
 <c:set var="currentGroup" value="${requestScope['osivia.tab.currentGroup']}" />
 
@@ -57,19 +56,18 @@
                         <c:if test="${group.name eq currentGroup}">class="current"</c:if>
                     >
                         <ul>
-                            <c:set var="tabGroup" value="${tabGroups[group.name]}" />
-                            <c:set var="label"><op:translate key="${tabGroup.labelKey}" /></c:set>
+                            <c:if test="${not empty group.icon and not empty group.labelKey}">
+                                <c:set var="label"><op:translate key="${group.labelKey}" /></c:set>
                             
-                            <c:if test="${not empty tabGroup}">
                                 <li class="group-title" role="presentation">
                                     <c:choose>
                                         <c:when test="${empty group.displayedPages}">
-                                            <i class="${tabGroup.icon}"></i>
+                                            <i class="${group.icon}"></i>
                                             <span class="text-muted">${label}</span>
                                         </c:when>
                                         
                                         <c:otherwise>
-                                            <i class="${tabGroup.icon}" title="${label}" data-toggle="tooltip" data-placement="bottom"></i>
+                                            <i class="${group.icon}" title="${label}" data-toggle="tooltip" data-placement="bottom"></i>
                                             <span class="sr-only">${label}</span>
                                         </c:otherwise>
                                     </c:choose>
@@ -85,7 +83,7 @@
                                     </a>
                                     
                                     <!-- Close -->
-                                    <c:if test="${not empty userPage.closePageUrl}">
+                                    <c:if test="${not userPage.maintains and not empty userPage.closePageUrl}">
                                         <a href="${userPage.closePageUrl}" class="page-close">
                                             <i class="glyphicons glyphicons-remove-2"></i>
                                             <span class="sr-only"><op:translate key="CLOSE" /></span>

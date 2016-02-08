@@ -54,12 +54,17 @@ public class UserPortal {
      * @return group
      */
     public UserPagesGroup getGroup(String name) {
-        UserPagesGroup group = this.groups.get(name);
-        if (group == null) {
-            group = new UserPagesGroup(name);
-            this.groups.put(name, group);
-        }
-        return group;
+        return this.groups.get(name);
+    }
+
+
+    /**
+     * Add user pages group.
+     * 
+     * @param group group
+     */
+    public void addGroup(UserPagesGroup group) {
+        this.groups.put(group.getName(), group);
     }
 
 

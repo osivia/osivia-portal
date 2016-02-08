@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -13,131 +13,139 @@
  */
 package org.osivia.portal.core.dynamic;
 
-// import org.apache.commons.logging.Log;
-// import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.WindowState;
-import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
-import org.jboss.portal.core.impl.api.node.PageURL;
-import org.jboss.portal.core.model.instance.InstanceDefinition;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
-import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.theme.ThemeConstants;
-import org.osivia.portal.api.contribution.IContributionService.EditionState;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.theming.Breadcrumb;
-import org.osivia.portal.api.theming.BreadcrumbItem;
-import org.osivia.portal.core.assistantpage.AssistantCommand;
-import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.contribution.ContributionService;
-import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.pagemarker.PageMarkerInfo;
-import org.osivia.portal.core.pagemarker.PageMarkerUtils;
-import org.osivia.portal.core.pagemarker.PortalCommandFactory;
-import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.api.theming.TabGroup;
 
-
+/**
+ * Start dynamic window in new dynamic page command.
+ *
+ * @see DynamicCommand
+ */
 public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
 
-    private static final CommandInfo info = new ActionCommandInfo(false);
-    protected static final Log logger = LogFactory.getLog(AssistantCommand.class);
-
-    @Override
-    public CommandInfo getInfo() {
-        return info;
-    }
-    private String parentId ;
+    /** Parent identifier. */
+    private String parentId;
+    /** Page name. */
     private String pageName;
+    /** Page display name. */
     private String displayName;
+    /** Window portlet instance identifier. */
     private String instanceId;
+    /** Window properties. */
     private Map<String, String> dynaProps;
+    /** Window parameters. */
     private Map<String, String> params;
 
 
+    /** Command info. */
+    private final CommandInfo info;
 
 
+    /**
+     * Constructor.
+     */
     public StartDynamicWindowInNewPageCommand() {
+        super();
+        this.info = new ActionCommandInfo(false);
     }
 
-    public StartDynamicWindowInNewPageCommand(String parentId,  String pageName, String displayName, String portletInstance,  Map<String, String> props,
+
+    /**
+     * Constructor.
+     *
+     * @param parentId parent identifier
+     * @param pageName page name
+     * @param displayName page display name
+     * @param portletInstance window portlet instance identifier
+     * @param props window properties
+     * @param params window parameters
+     */
+    public StartDynamicWindowInNewPageCommand(String parentId, String pageName, String displayName, String portletInstance, Map<String, String> props,
             Map<String, String> params) {
+        this();
         this.parentId = parentId;
         this.pageName = pageName;
-        this.displayName = displayName;        
+        this.displayName = displayName;
         this.instanceId = portletInstance;
         this.dynaProps = props;
         this.params = params;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CommandInfo getInfo() {
+        return this.info;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ControllerResponse execute() throws ControllerException {
-
         try {
-
-            /* Create page */
-
-            Map<String, String> props = new HashMap<String, String>();
-
-            Map displayNames = new HashMap();
-            if( displayName != null) {
-                displayNames.put(Locale.FRENCH, displayName);
-            }
+            // Generic template name
             String genericTemplateName = System.getProperty("template.generic.name");
-            if( genericTemplateName == null)
+            if (genericTemplateName == null) {
                 throw new ControllerException("template.generic.name undefined. Cannot instantiate this page");
-            
+            }
+
+            // Generic template region name
             String genericTemplateRegion = System.getProperty("template.generic.region");
-            if( genericTemplateRegion == null)
+            if (genericTemplateRegion == null) {
                 throw new ControllerException("template.generic.region undefined. Cannot instantiate this page");
+            }
 
-            props.put("osivia.genericPage", "1");
 
-            StartDynamicPageCommand pageCmd = new StartDynamicPageCommand(parentId, pageName, displayNames, PortalObjectId.parse(
-                            genericTemplateName, PortalObjectPath.CANONICAL_FORMAT).toString(
-                                    PortalObjectPath.SAFEST_FORMAT), props, new HashMap<String, String>());
+            // Page display names
+            Map<Locale, String> displayNames = new HashMap<Locale, String>();
+            if (this.displayName != null) {
+                displayNames.put(Locale.FRENCH, this.displayName);
+            }
 
-            PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(pageCmd)).getPageId();
-            
-            /* Create window */
-            
+            // Template identifier
+            String templateId = PortalObjectId.parse(genericTemplateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+
+            // Page properties
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put("osivia.genericPage", "1");
+            properties.put(TabGroup.TYPE_PROPERTY, this.dynaProps.get(TabGroup.TYPE_PROPERTY));
+
+            // Start dynamic page command
+            StartDynamicPageCommand pageCommand = new StartDynamicPageCommand(this.parentId, this.pageName, displayNames, templateId, properties,
+                    new HashMap<String, String>());
+            UpdatePageResponse response = (UpdatePageResponse) this.context.execute(pageCommand);
+
+
+            // New page identifier
+            PortalObjectId pageId = response.getPageId();
+
+            // Window properties
             Map<String, String> windowProps = new HashMap<String, String>();
-            windowProps.putAll(dynaProps);
-            //windowProps.put("osivia.windowState", "normal");
-            windowProps.put("osivia.dynamic.disable.close","1");
-            
-         
-            StartDynamicWindowCommand windowCmd = new StartDynamicWindowCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT), genericTemplateRegion,
-                    instanceId, "virtual", windowProps, params, "0", null);
+            windowProps.putAll(this.dynaProps);
+            windowProps.put("osivia.dynamic.disable.close", "1");
 
+            // Start dynamic window command
+            StartDynamicWindowCommand windowCommand = new StartDynamicWindowCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT), genericTemplateRegion,
+                    this.instanceId, "virtual", windowProps, this.params, "0", null);
 
-            return this.context.execute(windowCmd);
-
-            
-        
+            return this.context.execute(windowCommand);
         } catch (Exception e) {
             throw new ControllerException(e);
         }
-
     }
 
 }

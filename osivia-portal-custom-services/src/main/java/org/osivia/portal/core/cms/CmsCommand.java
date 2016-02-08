@@ -53,6 +53,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -433,7 +434,8 @@ public class CmsCommand extends DynamicCommand {
              */
             props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
             props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
-            props.put("osivia.tab.group", portalSite.getProperties().get("tab.group"));
+            props.put(TabGroup.NAME_PROPERTY, portalSite.getProperties().get(TabGroup.NAME_PROPERTY));
+            props.put(TabGroup.MAINTAINS_PROPERTY, portalSite.getProperties().get(TabGroup.MAINTAINS_PROPERTY));
 
 
             Map<Locale, String> displayNames = new HashMap<Locale, String>();
@@ -448,7 +450,7 @@ public class CmsCommand extends DynamicCommand {
                     PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), props,
                     new HashMap<String, String>());
 
-            cmd.setCmsParams(this.pageParams);
+            cmd.setCmsParameters(this.pageParams);
 
 
             PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(cmd)).getPageId();

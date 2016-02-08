@@ -46,6 +46,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.Notifications;
+import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
@@ -169,7 +170,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
-                props.put("osivia.tab.group", publishSpace.getProperties().get("tab.group"));
+                props.put(TabGroup.NAME_PROPERTY, publishSpace.getProperties().get(TabGroup.NAME_PROPERTY));
+                props.put(TabGroup.MAINTAINS_PROPERTY, publishSpace.getProperties().get(TabGroup.MAINTAINS_PROPERTY));
 
                 String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName,
                         PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT),

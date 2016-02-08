@@ -107,9 +107,9 @@
                 }
                 
                 &:first-of-type {
-                    padding-right: @padding-horizontal + 14px;
+                    padding-right: @padding-horizontal + 15;
                 }
-                
+
                 &:last-of-type {
                     padding-right: @padding-horizontal;
                 }
@@ -183,14 +183,18 @@
                     
                     &:not(:first-child) {
                         > a {
-                            padding-left: floor(@padding-horizontal / 2);    
+                            padding-left: floor(@padding-horizontal / 2);
+                            
+                            border-top-left-radius: 0;
                         }
                     }
                     
                     &:not(:last-child) {
                         > a {
+                            border-top-right-radius: 0;
+                            
                             &:first-of-type {
-                                padding-right: @padding-horizontal + 14px;
+                                padding-right: @padding-horizontal + 15;
                             }
                             
                             &:last-of-type {

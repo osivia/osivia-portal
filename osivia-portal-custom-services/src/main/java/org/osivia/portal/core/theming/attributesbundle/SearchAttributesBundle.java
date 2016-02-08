@@ -28,6 +28,7 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.web.IWebIdService;
 
@@ -97,6 +98,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         // Properties
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("osivia.cms.uri", "/");
+        properties.put(TabGroup.TYPE_PROPERTY, "search");
 
         // Parameters
         Map<String, String> parameters = new HashMap<String, String>();
@@ -104,8 +106,7 @@ public final class SearchAttributesBundle implements IAttributesBundle {
 
         try {
             // v1.0.13 : always open the same page
-            String searchUrl = this.portalURLFactory
-                    .getStartPageUrl(portalControllerContext, portalId, "search", "/default/templates/search", properties,
+            String searchUrl = this.portalURLFactory.getStartPageUrl(portalControllerContext, portalId, "search", "/default/templates/search", properties,
                     parameters);
             attributes.put(Constants.ATTR_SEARCH_URL, searchUrl);
         } catch (Exception e) {
