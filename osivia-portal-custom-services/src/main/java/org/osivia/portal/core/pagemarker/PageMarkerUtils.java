@@ -204,11 +204,17 @@ public class PageMarkerUtils {
         List<PageBackCacheInfo> pageCacheBackInfos = new ArrayList<PageBackCacheInfo>();
         
         
+        /* Back cache optimized for immediate back
+         * We store only the cache for the current historic
+         * The cache is cleared each time we have no back action,  
+         * (2/3 instance max per session)
+         */
+        
         // Get old back cache values
         if( backCachePageMarker != null){
             List<PageBackCacheInfo> oldPageCacheBackInfos = (List<PageBackCacheInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos");
             if (oldPageCacheBackInfos != null) {
-                // Fin caches to replace
+                // Find caches to replace in the historic
                 int current = -1;
                 for (int i = oldPageCacheBackInfos.size() - 1; i >= 0; i--) {
                     if (StringUtils.equals(backCachePageMarker, oldPageCacheBackInfos.get(i).getBackPageMarker())) {
@@ -259,6 +265,7 @@ public class PageMarkerUtils {
                         addParams, portletPath));
                 
 
+                // Add the entry to the current back cache instance
                 String scopeKey = "cached_markup." + window.getId();
                 CacheEntry cacheEntry = (CacheEntry) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, scopeKey);
                 if( cacheEntry != null)
@@ -266,6 +273,7 @@ public class PageMarkerUtils {
                     
             }
             
+            // Add the back cache
             pageCacheBackInfos.add(currentBackCache);
             
             controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos", pageCacheBackInfos);
@@ -664,9 +672,8 @@ public class PageMarkerUtils {
                         Page page = restorePageState(controllerContext, restorePageInfo);
                         
                         
-                        // Restore backCache
-     
-
+                        /* Restore backCache */
+                        
                         if (restorePageInfo != null) {
                             String restoreCachePM = restorePageInfo.getPageMarker();
 
@@ -675,12 +682,14 @@ public class PageMarkerUtils {
                             PageBackCacheInfo pageCacheToRestore = null;
 
                             if (pageCacheBackInfos != null) {
+                                // Search for pagemarker
                                 for (int i = 0; i < pageCacheBackInfos.size(); i++) {
                                     if (StringUtils.equals(restoreCachePM, pageCacheBackInfos.get(i).getPageMarker())) {
                                         pageCacheToRestore = pageCacheBackInfos.get(i);
                                         break;
                                     }
                                 }
+                                // restore portlets cache
                                 if (pageCacheToRestore != null) {
                                     Map<String, CacheEntry> backCackes = pageCacheToRestore.getBackCache();
                                     if( backCackes != null) {
