@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
@@ -49,6 +50,7 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
+import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -65,6 +67,7 @@ import org.osivia.portal.core.attributes.StorageScope;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
+import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
@@ -186,11 +189,22 @@ public class PageMarkerUtils {
          */
 
         String pageMarker = getCurrentPageMarker(controllerCtx);
+        
+        
 
         dumpPageState(controllerCtx, page, "AVANT savePageState " + pageMarker);
 
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
+        
+        boolean saveBackCache = false;
+        String backCachePageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
+        if( backCachePageMarker == null)
+            saveBackCache = true;
+        else
+            saveBackCache = false;        
+        
+        Map<String, CacheEntry> backCache = new ConcurrentHashMap<String, CacheEntry>(20);
 
         if (page != null) {
             markerInfo.setPageId(page.getId());
@@ -221,7 +235,21 @@ public class PageMarkerUtils {
 
                 windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(),
                         addParams, portletPath));
+                
+                if( saveBackCache){
+                    String scopeKey = "cached_markup." + window.getId();
+                    CacheEntry cacheEntry = (CacheEntry) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, scopeKey);
+                    if( cacheEntry != null)
+                        backCache.put(scopeKey, cacheEntry);
+                    }
             }
+            
+            if( saveBackCache){
+                controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCache", backCache);
+                controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCachePageMarker", pageMarker);
+            }
+            
+            
 
             // Sauvegarde etat page
             NavigationalStateContext ctx = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
@@ -599,6 +627,18 @@ public class PageMarkerUtils {
                             if (restorePageInfo != null) {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
                             }
+                            
+                            // Restore backCache
+                            String backCachePM = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, "osivia.backCachePageMarker");
+                            if( StringUtils.equals( backCachePM, backPageMarker)) {
+                                Map<String, CacheEntry> backCackes =  (Map<String, CacheEntry>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "osivia.backCache");
+                                for(String key:backCackes.keySet()) {
+                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, key, backCackes.get(key));
+                                }
+                                
+                            }
+
+                            
                         }
 
                         // Restauration des pages dynamiques
