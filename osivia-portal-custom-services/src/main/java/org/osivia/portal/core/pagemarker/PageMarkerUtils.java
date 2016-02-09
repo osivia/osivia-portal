@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -50,11 +51,11 @@ import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
-import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
+import org.osivia.portal.api.panels.Panel;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.portlet.IPortletStatusService;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -70,6 +71,7 @@ import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.panels.PanelStatus;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portlet.PortletStatusContainer;
@@ -197,14 +199,34 @@ public class PageMarkerUtils {
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
         
-        boolean saveBackCache = false;
         String backCachePageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
-        if( backCachePageMarker == null)
-            saveBackCache = true;
-        else
-            saveBackCache = false;        
         
-        Map<String, CacheEntry> backCache = new ConcurrentHashMap<String, CacheEntry>(20);
+        List<PageBackCacheInfo> pageCacheBackInfos = new ArrayList<PageBackCacheInfo>();
+        
+        
+        // Get old back cache values
+        if( backCachePageMarker != null){
+            List<PageBackCacheInfo> oldPageCacheBackInfos = (List<PageBackCacheInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos");
+            if (oldPageCacheBackInfos != null) {
+                // Fin caches to replace
+                int current = -1;
+                for (int i = oldPageCacheBackInfos.size() - 1; i >= 0; i--) {
+                    if (StringUtils.equals(backCachePageMarker, oldPageCacheBackInfos.get(i).getBackPageMarker())) {
+                        current = i;
+                        break;
+                    }
+                }
+                // If none, recopy all caches
+                if (current == -1)
+                    current = oldPageCacheBackInfos.size();
+
+                for (int i = 0; i < current; i++) {
+                    pageCacheBackInfos.add(oldPageCacheBackInfos.get(i));
+                }
+            }
+       }
+        
+        PageBackCacheInfo currentBackCache = new PageBackCacheInfo(backCachePageMarker, pageMarker, new ConcurrentHashMap<String, CacheEntry>());
 
         if (page != null) {
             markerInfo.setPageId(page.getId());
@@ -236,18 +258,19 @@ public class PageMarkerUtils {
                 windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(),
                         addParams, portletPath));
                 
-                if( saveBackCache){
-                    String scopeKey = "cached_markup." + window.getId();
-                    CacheEntry cacheEntry = (CacheEntry) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, scopeKey);
-                    if( cacheEntry != null)
-                        backCache.put(scopeKey, cacheEntry);
-                    }
+
+                String scopeKey = "cached_markup." + window.getId();
+                CacheEntry cacheEntry = (CacheEntry) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, scopeKey);
+                if( cacheEntry != null)
+                    currentBackCache.getBackCache().put(scopeKey, cacheEntry);
+                    
             }
             
-            if( saveBackCache){
-                controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCache", backCache);
-                controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCachePageMarker", pageMarker);
-            }
+            pageCacheBackInfos.add(currentBackCache);
+            
+            controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos", pageCacheBackInfos);
+            
+    
             
             
 
@@ -356,6 +379,7 @@ public class PageMarkerUtils {
             PortletStatusContainer portletStatusContainer = (PortletStatusContainer) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE,
                     IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE);
             markerInfo.setPortletStatusContainer(portletStatusContainer);
+            
 
 
             // Notifications list
@@ -628,18 +652,7 @@ public class PageMarkerUtils {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
                             }
                             
-                            // Restore backCache
-                            String backCachePM = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, "osivia.backCachePageMarker");
-                            if( StringUtils.equals( backCachePM, backPageMarker)) {
-                                Map<String, CacheEntry> backCackes =  (Map<String, CacheEntry>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "osivia.backCache");
-                                for(String key:backCackes.keySet()) {
-                                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, key, backCackes.get(key));
-                                }
-                                
-                            }
-
-                            
-                        }
+                         }
 
                         // Restauration des pages dynamiques
                         if (markerInfo.getDynamicPages() != null) {
@@ -649,6 +662,36 @@ public class PageMarkerUtils {
                         }
 
                         Page page = restorePageState(controllerContext, restorePageInfo);
+                        
+                        
+                        // Restore backCache
+     
+
+                        if (restorePageInfo != null) {
+                            String restoreCachePM = restorePageInfo.getPageMarker();
+
+                            List<PageBackCacheInfo> pageCacheBackInfos = (List<PageBackCacheInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE,
+                                    "osivia.backCacheInfos");
+                            PageBackCacheInfo pageCacheToRestore = null;
+
+                            if (pageCacheBackInfos != null) {
+                                for (int i = 0; i < pageCacheBackInfos.size(); i++) {
+                                    if (StringUtils.equals(restoreCachePM, pageCacheBackInfos.get(i).getPageMarker())) {
+                                        pageCacheToRestore = pageCacheBackInfos.get(i);
+                                        break;
+                                    }
+                                }
+                                if (pageCacheToRestore != null) {
+                                    Map<String, CacheEntry> backCackes = pageCacheToRestore.getBackCache();
+                                    if( backCackes != null) {
+                                        for (String key : backCackes.keySet()) {
+                                            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, key, backCackes.get(key));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+        
 
 
                         // restauration menu
@@ -724,12 +767,7 @@ public class PageMarkerUtils {
                         }
 
 
-                        // Portlet status container
-                        PortletStatusContainer portletStatusContainer = markerInfo.getPortletStatusContainer();
-                        if (portletStatusContainer != null) {
-                            PortletStatusContainer clone = portletStatusContainer.clone();
-                            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE, clone);
-                        }
+   
 
 
                         if (CollectionUtils.isNotEmpty(markerInfo.getNotificationsList())) {
@@ -860,6 +898,20 @@ public class PageMarkerUtils {
         if (markerInfo.getCurrentPageId() != null) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
         }
+        
+        
+        
+        
+        // Portlet status container
+        PortletStatusContainer portletStatusContainer = markerInfo.getPortletStatusContainer();
+        if (portletStatusContainer != null) {
+            PortletStatusContainer clone = portletStatusContainer.clone();
+
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE, clone);
+        }
+        
+        
+        
 
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
 
