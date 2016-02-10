@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,12 +69,6 @@ import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
 import org.osivia.portal.core.profils.ProfilManager;
 
-/**
- * Tabs attributes bundle.
- *
- * @author Cédric Krommenhoek
- * @see IAttributesBundle
- */
 public final class TabsAttributesBundle implements IAttributesBundle {
 
     /** Current page URL attribute name. */
@@ -204,7 +199,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         refreshUserPortal = true;
                     } else {
                         // Check if current page is a new displayed page
-                        if (!selectedPageId.equals(tabbedNavUserPortal.getDefaultPage().getId())) {
+                        if ((tabbedNavUserPortal.getDefaultPage() == null) || !selectedPageId.equals(tabbedNavUserPortal.getDefaultPage().getId())) {
                             // Search user page
                             UserPage currentUserPage = null;
                             for (UserPage userPage : tabbedNavUserPortal.getUserPages()) {
@@ -347,7 +342,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         List<String> domains = new ArrayList<String>();
 
-        // Displayed pages count
+        // Displayed pages
+        Map<String, UserPage> displayedPages = new LinkedHashMap<String, UserPage>();
         int displayedPagesCount = 0;
 
         // Hide page identifier
@@ -420,12 +416,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 mainPages.add(userPage);
 
                 // Tab group
-                String groupName = child.getDeclaredProperty("osivia.tab.group");
+                String groupName = child.getDeclaredProperty(TabGroup.NAME_PROPERTY);
                 if (StringUtils.isEmpty(groupName)) {
                     displayedPagesCount++;
                 } else {
                     // Maintains visible indicator
-                    boolean maintains = BooleanUtils.toBoolean(child.getDeclaredProperty("osivia.tab.maintains"));
+                    boolean maintains = BooleanUtils.toBoolean(child.getDeclaredProperty(TabGroup.MAINTAINS_PROPERTY));
                     userPage.setMaintains(maintains);
 
                     // Displayed indicator
@@ -461,7 +457,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                         userPortal.addGroup(group);
                     }
-                    group.add(userPage, displayed);
+
+                    if (displayed) {
+                        displayedPages.put(userPage.getId(), userPage);
+                    } else {
+                        group.add(userPage, displayed);
+                    }
 
                     userPage.setGroup(groupName);
 
@@ -527,6 +528,34 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                     }
                 }
             }
+        }
+
+        // Add displayed pages
+        for (UserPagesGroup group : userPortal.getGroups()) {
+            // Previous displayed pages
+            Set<UserPage> previousDisplayedPages = null;
+            if (previousUserPortal != null) {
+                UserPagesGroup previousGroup = previousUserPortal.getGroup(group.getName());
+                if (previousGroup != null) {
+                    previousDisplayedPages = previousGroup.getDisplayedPages();
+                }
+            }
+
+            if (previousDisplayedPages != null) {
+                for (UserPage previousDisplayedPage : previousDisplayedPages) {
+                    String id = previousDisplayedPage.getId();
+                    UserPage displayedPage = displayedPages.get(id);
+                    if (displayedPage != null) {
+                        group.add(displayedPage, true);
+                    }
+                    displayedPages.remove(id);
+                }
+            }
+        }
+        for (UserPage displayedPage : displayedPages.values()) {
+            // Added displayed page
+            UserPagesGroup group = userPortal.getGroup(displayedPage.getGroup());
+            group.add(displayedPage, true);
         }
 
         userPortal.setDisplayedPagesCount(displayedPagesCount);

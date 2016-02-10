@@ -149,9 +149,15 @@
             }
         }
         
+        &.home {
+            > li {
+                margin-right: @padding-horizontal;
+            }
+        }
+        
         &.groups {
             > li {
-                margin-left: @padding-horizontal;
+                margin-right: @padding-horizontal;
                 
                 border-style: solid;
                 border-bottom-style: none;
@@ -159,10 +165,6 @@
                 border-color: tint(@border-color);
                 
                 .border-top-radius(@radius: @border-radius);
-                
-                &:last-child {
-                    margin-right: @padding-horizontal;
-                }
                 
                 &.current {
                     background-color: #fff;
