@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
@@ -122,7 +123,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             // Page properties
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("osivia.genericPage", "1");
-            properties.put(TabGroup.TYPE_PROPERTY, this.dynaProps.get(TabGroup.TYPE_PROPERTY));
+            properties.put(TabGroup.TYPE_PROPERTY, StringUtils.trimToEmpty(this.dynaProps.get(TabGroup.TYPE_PROPERTY)));
 
             // Start dynamic page command
             StartDynamicPageCommand pageCommand = new StartDynamicPageCommand(this.parentId, this.pageName, displayNames, templateId, properties,
