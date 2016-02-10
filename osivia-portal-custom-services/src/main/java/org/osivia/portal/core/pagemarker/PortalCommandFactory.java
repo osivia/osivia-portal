@@ -42,6 +42,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
@@ -119,8 +120,12 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
 
     private void createPages(ControllerContext controllerContext, List<CMSPage> preloadedPages) {
-        CMSServiceCtx userCtx = new CMSServiceCtx();
-        userCtx.setControllerContext(controllerContext);
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
 
         int order = DynamicPageBean.DYNAMIC_PRELOADEDPAGES_FIRST_ORDER;
 
@@ -147,7 +152,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 String pubDomain = TabsCustomizerInterceptor.getDomain(publishSpace.getPath());
 
                 if (pubDomain != null) {
-                    CMSItem domain = getCMSService().getContent(userCtx, "/" + pubDomain);
+                    CMSItem domain = getCMSService().getContent(cmsContext, "/" + pubDomain);
                     if (domain != null) {
                         displayNames.put(Locale.FRENCH, domain.getProperties().get("displayName"));
                     }
@@ -170,8 +175,21 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 props.put("osivia.cms.layoutType", "1");
                 props.put("osivia.cms.layoutRules", "return ECMPageTemplate;");
-                props.put(TabGroup.NAME_PROPERTY, publishSpace.getProperties().get(TabGroup.NAME_PROPERTY));
-                props.put(TabGroup.MAINTAINS_PROPERTY, publishSpace.getProperties().get(TabGroup.MAINTAINS_PROPERTY));
+
+
+                // Tab group
+                EcmDocument document = (EcmDocument) publishSpace.getNativeItem();
+                Map<String, TabGroup> tabGroups = getCMSService().getTabGroups(cmsContext);
+                for (TabGroup tabGroup : tabGroups.values()) {
+                    if (tabGroup.contains(portalControllerContext, document, null, props)) {
+                        props.put(TabGroup.NAME_PROPERTY, tabGroup.getName());
+                        if (tabGroup.maintains(portalControllerContext, document, null, props)) {
+                            props.put(TabGroup.MAINTAINS_PROPERTY, String.valueOf(true));
+                        }
+                        break;
+                    }
+                }
+
 
                 String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName,
                         PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT),

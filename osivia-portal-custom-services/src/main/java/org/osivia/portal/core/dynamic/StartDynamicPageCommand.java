@@ -32,9 +32,11 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.TabGroup;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -178,12 +180,22 @@ public class StartDynamicPageCommand extends DynamicCommand {
             Map<String, String> properties = new HashMap<String, String>(this.properties);
 
             // Tab group
+            EcmDocument document;
+            if (cmsPath != null) {
+                CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, cmsPath);
+                document = (EcmDocument) spaceConfig.getNativeItem();
+            } else {
+                document = null;
+            }
             String tabType = properties.get(TabGroup.TYPE_PROPERTY);
-            if (tabType != null) {
+            if ((document != null) || (tabType != null)) {
                 Map<String, TabGroup> tabGroups = cmsService.getTabGroups(cmsContext);
                 for (TabGroup tabGroup : tabGroups.values()) {
-                    if (tabGroup.contains(portalControllerContext, tabType, properties)) {
+                    if (tabGroup.contains(portalControllerContext, document, tabType, properties)) {
                         properties.put(TabGroup.NAME_PROPERTY, tabGroup.getName());
+                        if (tabGroup.maintains(portalControllerContext, document, tabType, properties)) {
+                            properties.put(TabGroup.MAINTAINS_PROPERTY, String.valueOf(true));
+                        }
                         break;
                     }
                 }
@@ -198,7 +210,6 @@ public class StartDynamicPageCommand extends DynamicCommand {
                     properties.put("osivia.dynamic.close_page_path", markerInfo.getPageId().toString());
                 }
             }
-
 
             DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageUniqueName, this.displayNames, potemplateid, properties);
 

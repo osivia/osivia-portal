@@ -49,20 +49,11 @@ public interface TabGroup {
      *
      * @param portalControllerContext portal controller context
      * @param document document
-     * @return true if this group contains this document, false otherwise
-     */
-    boolean contains(PortalControllerContext portalControllerContext, EcmDocument document);
-
-
-    /**
-     * Check if this group contains this page.
-     *
-     * @param portalControllerContext portal controller context
      * @param type tab type
      * @param pageProperties page properties
-     * @return true if this group contains this page, false otherwise
+     * @return true if this group contains this document, false otherwise
      */
-    boolean contains(PortalControllerContext portalControllerContext, String type, Map<String, String> pageProperties);
+    boolean contains(PortalControllerContext portalControllerContext, EcmDocument document, String type, Map<String, String> pageProperties);
 
 
     /**
@@ -70,8 +61,10 @@ public interface TabGroup {
      *
      * @param portalControllerContext portal controller context
      * @param document document
+     * @param type tab type
+     * @param pageProperties page properties
      * @return true if this group maintains visible this document, false otherwise
      */
-    boolean maintains(PortalControllerContext portalControllerContext, EcmDocument document);
+    boolean maintains(PortalControllerContext portalControllerContext, EcmDocument document, String type, Map<String, String> pageProperties);
 
 }

@@ -17,6 +17,11 @@ package org.osivia.portal.api.context;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
+import javax.servlet.http.HttpServletRequest;
+
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.server.ServerInvocation;
+import org.jboss.portal.server.ServerInvocationContext;
 
 /**
  * The Class PortalControllerContext.
@@ -26,16 +31,16 @@ import javax.portlet.PortletResponse;
 public class PortalControllerContext {
 	
     /** The controller ctx. */
-    Object controllerCtx;
+    private ControllerContext controllerCtx;
 	
 	/** The request. */
-	PortletRequest request;
+    private PortletRequest request;
 	
 	/** The response. */
-	PortletResponse response;
+    private PortletResponse response;
 	
 	/** The portlet ctx. */
-	PortletContext portletCtx;
+    private PortletContext portletCtx;
 	
 
 	/**
@@ -47,12 +52,17 @@ public class PortalControllerContext {
 	 */
 	public PortalControllerContext(PortletContext portletCtx, PortletRequest request, PortletResponse response) {
 		super();
-    	this.controllerCtx = request.getAttribute("osivia.controller");
 		this.request = request;
 		this.response = response;
 		this.portletCtx = portletCtx;
 
+        // Controller context
+        Object controller = request.getAttribute("osivia.controller");
+        if (controller instanceof ControllerContext) {
+            this.controllerCtx = (ControllerContext) controller;
+        }
 	}
+
 
 	/**
 	 * Instantiates a new portal controller context.
@@ -62,8 +72,30 @@ public class PortalControllerContext {
 	 * @param controllerCtx the controller ctx
 	 */
 	public PortalControllerContext(Object controllerCtx) {
-		this.controllerCtx = controllerCtx;	
+        if (controllerCtx instanceof ControllerContext) {
+            this.controllerCtx = (ControllerContext) controllerCtx;
+        }
 	}
+
+
+    /**
+     * Get HTTP servlet request.
+     * 
+     * @return HTTP servlet request
+     */
+    public HttpServletRequest getHttpServletRequest() {
+        HttpServletRequest request = null;
+        if (this.controllerCtx != null) {
+            ServerInvocation serverInvocation = this.controllerCtx.getServerInvocation();
+            if (serverInvocation != null) {
+                ServerInvocationContext serverContext = serverInvocation.getServerContext();
+                if (serverContext != null) {
+                    request = serverContext.getClientRequest();
+                }
+            }
+        }
+        return request;
+    }
 
 
 	/**
