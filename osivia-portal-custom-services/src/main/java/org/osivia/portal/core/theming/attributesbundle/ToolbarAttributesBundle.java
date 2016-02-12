@@ -31,6 +31,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.SignOutCommand;
+import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -145,6 +146,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IDirectoryServiceLocator directoryServiceLocator;
     /** Menubar service. */
     private final IMenubarService menubarService;
+    
+    private final InstanceContainer instanceContainer;
 
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
@@ -171,6 +174,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
         // Menubar service
         this.menubarService = MenubarUtils.getMenubarService();
+        // Instance locator
+        this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
@@ -416,62 +422,79 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Identity administration
+        boolean identityDivider = false;
 
         // users
         Map<String, String> properties = new HashMap<String, String>();
         Map<String, String> parameters = new HashMap<String, String>();
 
         try {
-
-            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-            properties.put("osivia.ajaxLink", "1");
-            properties.put("osivia.hideTitle", "1");
-
-            String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
-            properties.put("osivia.title", usersAdministrationTitle);
-
-            String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
-                    bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties, parameters);
-
-            Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
-                    "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
+        	
+        	if (instanceContainer.getDefinition("directory-person-management-instance") != null) {
+        	
+	            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+	            properties.put("osivia.ajaxLink", "1");
+	            properties.put("osivia.hideTitle", "1");
+	
+	            String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
+	            properties.put("osivia.title", usersAdministrationTitle);
+	
+	            String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
+	                    bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties, parameters);
+	
+	            Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
+	                    "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
+	            this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
+	            
+	            identityDivider = true;
+	        	
+        	}
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
         try {
-            String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
-            properties.put("osivia.title", groupsAdministrationTitle);
-
-            String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
-                    bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance", properties, parameters);
-
-            Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
-                    "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
+        	
+        	if (instanceContainer.getDefinition("directory-group-management-instance") != null) {
+	            String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
+	            properties.put("osivia.title", groupsAdministrationTitle);
+	
+	            String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
+	                    bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance", properties, parameters);
+	
+	            Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
+	                    "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
+	            this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
+	            
+	            identityDivider = true;
+        	}
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
         try {
-
-            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
-            properties.put("osivia.title", workspacesAdministrationTitle);
-
-            String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
-                    bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance", properties,
-                    parameters);
-
-            Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
-                    "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
+        	if (instanceContainer.getDefinition("directory-workspace-management-instance") != null) {
+	            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
+	            properties.put("osivia.title", workspacesAdministrationTitle);
+	
+	            String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
+	                    bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance", properties,
+	                    parameters);
+	
+	            Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
+	                    "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
+	            this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
+	            
+	            identityDivider = true;
+        	}
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
-        // Divider
-        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        if(identityDivider) {
+        	// Divider
+        	this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        }
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
