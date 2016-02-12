@@ -302,7 +302,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
             }
 
             if (!"1".equals(this.addTobreadcrumb)) {
-                breadcrumb.getChilds().clear();
+                breadcrumb.getChildren().clear();
             }
 
             // Ajout du nouvel item
@@ -324,7 +324,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
                 item.setTaskId(taskId);
             }
 
-            breadcrumb.getChilds().add(item);
+            breadcrumb.getChildren().add(item);
 
             this.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumb);
 

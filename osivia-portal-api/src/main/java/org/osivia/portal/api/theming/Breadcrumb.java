@@ -17,23 +17,45 @@ package org.osivia.portal.api.theming;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.osivia.portal.api.menubar.MenubarItem;
 
 /**
- * The Class Breadcrumb.
+ * Breadcrumb java-bean.
  */
 public class Breadcrumb {
 	
-	/** The childs. */
-	private List<BreadcrumbItem> childs = new ArrayList<BreadcrumbItem>();
+    /** Breadcrumb children. */
+    private final List<BreadcrumbItem> children;
+    /** Breadcrumb associated edition menubar items. */
+    private final List<MenubarItem> menubarItems;
 
-	/**
-	 * Gets the childs.
-	 *
-	 * @return the childs
-	 */
-	public List<BreadcrumbItem> getChilds() {
-		return childs;
-	}
 
+    /**
+     * Constructor.
+     */
+    public Breadcrumb() {
+        super();
+        this.children = new ArrayList<BreadcrumbItem>();
+        this.menubarItems = new ArrayList<MenubarItem>();
+    }
+
+
+    /**
+     * Getter for children.
+     * 
+     * @return the children
+     */
+    public List<BreadcrumbItem> getChildren() {
+        return children;
+    }
+
+    /**
+     * Getter for menubarItems.
+     * 
+     * @return the menubarItems
+     */
+    public List<MenubarItem> getMenubarItems() {
+        return menubarItems;
+    }
 
 }

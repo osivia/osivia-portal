@@ -110,7 +110,7 @@ public class TaskbarService implements ITaskbarService {
                 if (activeId == null) {
                     // Breadcrumb
                     Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
-                    List<BreadcrumbItem> breadcrumbItems = breadcrumb.getChilds();
+                    List<BreadcrumbItem> breadcrumbItems = breadcrumb.getChildren();
                     if (CollectionUtils.isNotEmpty(breadcrumbItems)) {
                         for (int i = breadcrumbItems.size() - 1; i >= 0; i--) {
                             BreadcrumbItem breadcrumbItem = breadcrumbItems.get(i);

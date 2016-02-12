@@ -171,22 +171,7 @@ public class MenubarService implements IMenubarService {
     /**
      * {@inheritDoc}
      */
-    public String generatePortletContent(PortalControllerContext portalControllerContext, List<MenubarItem> items) {
-        // Get menubar items, sorted by groups
-        Map<MenubarGroup, Set<MenubarItem>> sortedItems = this.getPortletSortedItems(items);
-
-        Element toolbar = this.generateToolbar(portalControllerContext, sortedItems);
-        return DOM4JUtils.write(toolbar);
-    }
-
-
-    /**
-     * Get navbar menubar items, sorted by groups.
-     *
-     * @param portalControllerContext portal controller context
-     * @return sorted menubar items
-     */
-    private Map<MenubarGroup, Set<MenubarItem>> getNavbarSortedItems(PortalControllerContext portalControllerContext) {
+    public Map<MenubarGroup, Set<MenubarItem>> getNavbarSortedItems(PortalControllerContext portalControllerContext) {
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Items map
@@ -209,12 +194,21 @@ public class MenubarService implements IMenubarService {
 
 
     /**
-     * Get portlet menubar items, sorted by groups.
-     *
-     * @param items menubar items
-     * @return sorted menubar items
+     * {@inheritDoc}
      */
-    private Map<MenubarGroup, Set<MenubarItem>> getPortletSortedItems(List<MenubarItem> items) {
+    public String generatePortletContent(PortalControllerContext portalControllerContext, List<MenubarItem> items) {
+        // Get menubar items, sorted by groups
+        Map<MenubarGroup, Set<MenubarItem>> sortedItems = this.getPortletSortedItems(items);
+
+        Element toolbar = this.generateToolbar(portalControllerContext, sortedItems);
+        return DOM4JUtils.write(toolbar);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public Map<MenubarGroup, Set<MenubarItem>> getPortletSortedItems(List<MenubarItem> items) {
         // Items map
         Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<MenubarGroup, Set<MenubarItem>>(this.groupComparator);
 
@@ -411,7 +405,10 @@ public class MenubarService implements IMenubarService {
      * @return DOM element
      */
     private Element generateDropdownElement(MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
-        Element dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+        // HTML classes
+        String htmlClasses = "dropdown " + StringUtils.trimToEmpty(dropdown.getHtmlClasses());
+
+        Element dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, null);
 
         // Dropdown button
         Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());

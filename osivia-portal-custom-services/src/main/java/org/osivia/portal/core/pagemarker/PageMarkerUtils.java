@@ -55,7 +55,6 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.notifications.Notifications;
-import org.osivia.portal.api.panels.Panel;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.portlet.IPortletStatusService;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -71,7 +70,6 @@ import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
-import org.osivia.portal.core.panels.PanelStatus;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portlet.PortletStatusContainer;
@@ -141,7 +139,7 @@ public class PageMarkerUtils {
 
         Breadcrumb breadcrumb = (Breadcrumb) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
         if (breadcrumb != null) {
-            for (BreadcrumbItem bi : breadcrumb.getChilds()) {
+            for (BreadcrumbItem bi : breadcrumb.getChildren()) {
                 windowlogger.debug("      " + bi.getName() + " :" + bi.getId());
             }
         }
@@ -298,8 +296,8 @@ public class PageMarkerUtils {
             Breadcrumb breadcrumb = (Breadcrumb) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
             if (breadcrumb != null) {
                 Breadcrumb savedBreadcrum = new Breadcrumb();
-                for (BreadcrumbItem bi : breadcrumb.getChilds()) {
-                    savedBreadcrum.getChilds().add(bi);
+                for (BreadcrumbItem bi : breadcrumb.getChildren()) {
+                    savedBreadcrum.getChildren().add(bi);
 
                 }
                 markerInfo.setBreadcrumb(savedBreadcrum);
@@ -897,8 +895,8 @@ public class PageMarkerUtils {
         Breadcrumb savedBreadcrum = markerInfo.getBreadcrumb();
         if (savedBreadcrum != null) {
             Breadcrumb breadcrumb = new Breadcrumb();
-            for (BreadcrumbItem bi : savedBreadcrum.getChilds()) {
-                breadcrumb.getChilds().add(bi);
+            for (BreadcrumbItem bi : savedBreadcrum.getChildren()) {
+                breadcrumb.getChildren().add(bi);
             }
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb", breadcrumb);
         }

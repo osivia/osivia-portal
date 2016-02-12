@@ -16,51 +16,22 @@ package org.osivia.portal.core.dynamic;
 
 // import org.apache.commons.logging.Log;
 // import org.apache.commons.logging.LogFactory;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
-import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
-import org.jboss.portal.core.controller.NoSuchResourceException;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
-import org.jboss.portal.core.impl.api.node.PageURL;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
-import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
-import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
-import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
-import org.jboss.portal.core.navstate.NavigationalStateContext;
-import org.jboss.portal.core.navstate.NavigationalStateKey;
-import org.jboss.portal.portlet.ParametersStateString;
-import org.jboss.portal.theme.LayoutService;
-import org.jboss.portal.theme.PageService;
-import org.jboss.portal.theme.ThemeConstants;
-import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
-import org.osivia.portal.core.assistantpage.AssistantCommand;
-import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
-import org.osivia.portal.core.portalobjects.DynamicWindow;
-import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
 public class StopDynamicWindowCommand extends DynamicCommand {
@@ -110,9 +81,9 @@ public class StopDynamicWindowCommand extends DynamicCommand {
 
                 // Si plusieurs items, renvoi vers l'item précédent (enchainement d'actions)
 
-                if (breadcrumb.getChilds().size() > 1) {
+                if (breadcrumb.getChildren().size() > 1) {
                     // Renvoi vers l'item precedent
-                    BreadcrumbItem lastItem = breadcrumb.getChilds().get(breadcrumb.getChilds().size() - 2);
+                    BreadcrumbItem lastItem = breadcrumb.getChildren().get(breadcrumb.getChildren().size() - 2);
                     return new RedirectionResponse(lastItem.getUrl());
                 }
             }

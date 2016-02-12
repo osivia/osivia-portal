@@ -14,6 +14,8 @@
 package org.osivia.portal.api.menubar;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -62,6 +64,15 @@ public interface IMenubarService {
 
 
     /**
+     * Get navbar menubar items, sorted by groups.
+     *
+     * @param portalControllerContext portal controller context
+     * @return sorted menubar items
+     */
+    Map<MenubarGroup, Set<MenubarItem>> getNavbarSortedItems(PortalControllerContext portalControllerContext);
+
+
+    /**
      * Generate portlet menubar HTML content.
      *
      * @param portalControllerContext portal controller context
@@ -69,6 +80,15 @@ public interface IMenubarService {
      * @return HTML content
      */
     String generatePortletContent(PortalControllerContext portalControllerContext, List<MenubarItem> items);
+
+
+    /**
+     * Get portlet menubar items, sorted by groups.
+     *
+     * @param items menubar items
+     * @return sorted menubar items
+     */
+    Map<MenubarGroup, Set<MenubarItem>> getPortletSortedItems(List<MenubarItem> items);
 
 
     /**

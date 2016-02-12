@@ -1226,7 +1226,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param htmlClass HTML class, may be null
      */
     private void addSubMenuElement(Element ul, Element element, String htmlClass) {
-        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClass, null, null, AccessibilityRoles.PRESENTATION);
+        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClass, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
         if (element != null) {
             li.add(element);
         }

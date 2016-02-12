@@ -182,7 +182,7 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         // Maximized window context
         WindowContext maximizedWindowContext = null;
         Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
-        if ((breadcrumb != null) && CollectionUtils.isNotEmpty(breadcrumb.getChilds())) {
+        if ((breadcrumb != null) && CollectionUtils.isNotEmpty(breadcrumb.getChildren())) {
             Map<?, ?> windowContextMap = pageRendition.getPageResult().getWindowContextMap();
             for (Object value : windowContextMap.values()) {
                 WindowContext windowContext = (WindowContext) value;

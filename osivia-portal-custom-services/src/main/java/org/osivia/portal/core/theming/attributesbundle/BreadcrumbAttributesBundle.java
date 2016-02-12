@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -50,6 +50,11 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.menubar.MenubarContainer;
+import org.osivia.portal.api.menubar.MenubarDropdown;
+import org.osivia.portal.api.menubar.MenubarGroup;
+import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.path.PortletPathItem;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -84,10 +89,12 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-    /** WebId service. */
-    private final IWebIdService webIdService;
     /** Portal object container. */
     private final PortalObjectContainer portalObjectContainer;
+    /** WebId service. */
+    private final IWebIdService webIdService;
+    /** Menubar service. */
+    private final IMenubarService menubarService;
 
     /** Attributes names. */
     private final Set<String> names;
@@ -100,13 +107,15 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         super();
 
         // URL Factory
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
         // CMS service locator
-        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Portal object container
         this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
         // Webid service
-        this.webIdService = Locator.findMBean(IWebIdService.class, "osivia:service=webIdService");
+        this.webIdService = Locator.findMBean(IWebIdService.class, IWebIdService.MBEAN_NAME);
+        // Menubar service
+        this.menubarService = Locator.findMBean(IMenubarService.class, IMenubarService.MBEAN_NAME);
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_BREADCRUMB);
@@ -136,23 +145,28 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     }
 
 
-
-    private CMSItem computeContent(ControllerContext controllerContext, String contentPath)	{
-
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
-        cmsCtx.setControllerContext(controllerContext);
+    /**
+     * Compute CMS content.
+     * 
+     * @param controllerContext controller context
+     * @param contentPath CMS content path
+     * @return CMS item
+     */
+    private CMSItem computeContent(ControllerContext controllerContext, String contentPath) {
+        CMSServiceCtx cmsContent = new CMSServiceCtx();
+        cmsContent.setServerInvocation(controllerContext.getServerInvocation());
+        cmsContent.setControllerContext(controllerContext);
 
         // Get ECM object
         CMSItem document = null;
         if (contentPath != null) {
             try {
-                Boolean pageInEditionMode =  (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
-                if( pageInEditionMode)  {
-                    cmsCtx.setDisplayLiveVersion("1");
+                Boolean pageInEditionMode = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                if (pageInEditionMode) {
+                    cmsContent.setDisplayLiveVersion("1");
                 }
 
-                document = this.cmsServiceLocator.getCMSService().getContent(cmsCtx, contentPath);
+                document = this.cmsServiceLocator.getCMSService().getContent(cmsContent, contentPath);
             } catch (CMSException e) {
                 // Do nothing
             }
@@ -162,9 +176,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     }
 
 
-
     /**
-     * Utility method used to compute breadcrumb value.
+     * Compute breadcrumb.
      *
      * @param renderPageCommand render page command
      * @param pageRendition page rendition
@@ -222,7 +235,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 displayPage = false;
             }
 
-            if( "1".equals(page.getProperty("osivia.genericPage"))) {
+            if ("1".equals(page.getProperty("osivia.genericPage"))) {
                 displayPage = false;
             }
 
@@ -233,7 +246,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                 String url = new PortalURLImpl(viewPageCommand, controllerContext, null, null).toString() + "?init-state=true";
                 BreadcrumbItem item = new BreadcrumbItem(pageName, url.toString(), page.getId(), false);
-                breadcrumb.getChilds().add(0, item);
+                breadcrumb.getChildren().add(0, item);
             }
 
             // Continue loop on parent page
@@ -283,13 +296,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     Map<String, String> pageParams = new HashMap<String, String>();
 
                     try {
-                    	CMSItem cmsItem = null;
-                    	if( currentLevel == 0)	{
-                    		// First navigation item must be fetched directly (not in navigation)
-                    		// to get the correct edition state
-                    		//title = document.getMetaProperties().get(Constants.HEADER_TITLE);
-                    		cmsItem = this.computeContent(controllerContext, publicationPath);
-                    	} else {
+                        CMSItem cmsItem = null;
+                        if (currentLevel == 0) {
+                            // First navigation item must be fetched directly (not in navigation) to get the correct edition state
+                            cmsItem = this.computeContent(controllerContext, publicationPath);
+                        } else {
                             cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         }
 
@@ -310,7 +321,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         if (cmsItem != null) {
                             // Cannot add live navigation item
                             BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
-                            breadcrumb.getChilds().add(0, breadcrumbItem);
+                            breadcrumb.getChildren().add(0, breadcrumbItem);
                         }
 
                         currentLevel++;
@@ -345,11 +356,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                     portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
                                     "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL,  "breadcrumb",null, null, null, null);
+                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "breadcrumb", null, null, null, null);
 
 
                             BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);
-                            breadcrumb.getChilds().add(0, item);
+                            breadcrumb.getChildren().add(0, item);
                         }
                     } catch (CMSException e) {
                         throw new ControllerException(e);
@@ -361,7 +372,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         // Find first non navigation portlet index
         int firstPortletIndex = -1;
         int i = 0;
-        for (BreadcrumbItem item : breadcrumbMemo.getChilds()) {
+        for (BreadcrumbItem item : breadcrumbMemo.getChildren()) {
             if (!item.isNavigationPlayer()) {
                 firstPortletIndex = i;
                 break;
@@ -383,8 +394,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     if (!"1".equals(window.getDeclaredProperty("osivia.cms.contextualization"))) {
                         // Delete current item
                         if (firstPortletIndex != -1) {
-                            while (breadcrumbMemo.getChilds().size() > firstPortletIndex) {
-                                breadcrumbMemo.getChilds().remove(firstPortletIndex);
+                            while (breadcrumbMemo.getChildren().size() > firstPortletIndex) {
+                                breadcrumbMemo.getChildren().remove(firstPortletIndex);
                             }
                         }
 
@@ -404,7 +415,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                         BreadcrumbItem newItem = new BreadcrumbItem(title, url, windowContext.getId(), true);
                         newItem.setTaskId(taskId);
-                        breadcrumbMemo.getChilds().add(newItem);
+                        breadcrumbMemo.getChildren().add(newItem);
                     }
                 }
             }
@@ -422,19 +433,19 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
             }
 
             if (!isWindowMaximized) {
-                while (breadcrumbMemo.getChilds().size() > firstPortletIndex) {
-                    breadcrumbMemo.getChilds().remove(firstPortletIndex);
+                while (breadcrumbMemo.getChildren().size() > firstPortletIndex) {
+                    breadcrumbMemo.getChildren().remove(firstPortletIndex);
                 }
             }
         }
 
         // Update current item
-        if (breadcrumbMemo.getChilds().size() > 0) {
+        if (breadcrumbMemo.getChildren().size() > 0) {
             for (Object value : windowContextMap.values()) {
                 WindowContext windowContext = (WindowContext) value;
 
                 if (WindowState.MAXIMIZED.equals(windowContext.getWindowState())) {
-                    BreadcrumbItem last = breadcrumbMemo.getChilds().get(breadcrumbMemo.getChilds().size() - 1);
+                    BreadcrumbItem last = breadcrumbMemo.getChildren().get(breadcrumbMemo.getChildren().size() - 1);
 
                     // Update path
                     List<PortletPathItem> portletPath = (List<PortletPathItem>) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
@@ -503,28 +514,33 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         }
 
         // Add memorized items
-        for (BreadcrumbItem itemMemo : breadcrumbMemo.getChilds()) {
+        for (BreadcrumbItem itemMemo : breadcrumbMemo.getChildren()) {
 
             if (!itemMemo.isNavigationPlayer()) {
                 if (itemMemo.getPortletPath() != null) {
                     // Add corresponding item to portlet path
                     for (PortletPathItem pathItem : itemMemo.getPortletPath()) {
                         BreadcrumbItem pathDisplayItem = new BreadcrumbItem(pathItem.getLabel(), pathItem.getUrl(), itemMemo.getId(), true);
-                        breadcrumb.getChilds().add(pathDisplayItem);
+                        breadcrumb.getChildren().add(pathDisplayItem);
                     }
                 } else {
                     // No portlet path : add corresponding item to portlet title
-                    breadcrumb.getChilds().add(itemMemo);
+                    breadcrumb.getChildren().add(itemMemo);
                 }
             }
         }
+
+
+        // Add edition menubar items
+        this.addEditionMenubarItems(controllerContext, breadcrumb);
+
 
         return breadcrumb;
     }
 
 
     /**
-     * Utility method used to get publication path.
+     * Get publication path.
      *
      * @param pageState page navigational state
      * @param page current page
@@ -541,6 +557,31 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
             publicationPath = sPath[0];
         }
         return publicationPath;
+    }
+
+
+    private void addEditionMenubarItems(ControllerContext controllerContext, Breadcrumb breadcrumb) {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+        
+        // Edition menubar items
+        Set<MenubarItem> menubarItems = null;
+        Map<MenubarGroup, Set<MenubarItem>> sortedItems = menubarService.getNavbarSortedItems(portalControllerContext);
+        if (sortedItems != null) {
+            menubarItems = sortedItems.get(MenubarGroup.CMS);
+        }
+
+        if (menubarItems != null) {
+            for (MenubarItem menubarItem : menubarItems) {
+                MenubarContainer parent = menubarItem.getParent();
+                if (parent instanceof MenubarDropdown) {
+                    MenubarDropdown dropdown = (MenubarDropdown) parent;
+                    if (MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID.equals(dropdown.getId())) {
+                        breadcrumb.getMenubarItems().add(menubarItem);
+                    }
+                }
+            }
+        }
     }
 
 
