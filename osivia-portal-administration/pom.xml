@@ -41,51 +41,6 @@
         <module>ear</module>
     </modules>
 
-    <repositories>
-        <repository>
-            <id>jboss</id>
-            <name>JBoss Repository</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>jboss-thirdparty</id>
-            <name>JBoss Repository</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-
-    </repositories>
-
-
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>codehaus.org</id>
-            <name>CodeHaus Plugin Snapshots</name>
-            <url>http://snapshots.repository.codehaus.org</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
