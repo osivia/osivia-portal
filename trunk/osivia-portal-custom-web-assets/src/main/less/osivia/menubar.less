@@ -1,0 +1,239 @@
+//
+// OSIVIA Portal - Menubar component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+
+.breadcrumb, .menubar {
+    .dropdown-menu {
+        i {
+            display: inline-block;
+        }
+    }
+}
+
+
+.menubar {
+    white-space: nowrap;
+    text-align: right;
+    
+    :not(.dropdown-menu) > .disabled > a {
+        cursor: not-allowed;
+        pointer-events: none;
+        
+        .opacity(@opacity: .65);
+        .box-shadow(@shadow: none);
+    }
+}
+
+
+
+// Affix container
+.content-navbar-affix-container {
+    min-height: 1px;
+}
+
+
+// Affix
+.content-navbar-affix {
+    @media screen and (max-width: @screen-xs-max) {
+        .container, .container-fluid {
+            padding: 0;
+        }
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        left: 0;
+        right: 0;
+        z-index: 20;
+        
+        &.affix-top {
+            position: absolute;
+        }
+        
+        &.affix {
+            top: 0;
+        }
+        
+        &:not(.affix-top):not(.affix) {
+            .container, .container-fluid {
+                padding: 0;
+            }
+        }
+    }
+}
+
+
+.content-navbar {
+    @media screen and (min-width: @screen-sm-min) {
+        .box-shadow(@shadow: 0 1px 1px fade(#000, 5%));
+    }
+}
+
+
+.content-navbar-breadcrumb, .content-navbar-actions {
+    display: table-cell;
+    vertical-align: top;
+}
+
+
+.content-navbar-breadcrumb {
+    width: 100%;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        display: none;
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        border-style: none;
+        border-radius: 0;
+        margin: 0;
+        
+        > li {
+            vertical-align: top;
+            
+            &.active > * {
+                font-weight: bold;
+            }
+            
+            > * {
+                display: inline-block;
+            }
+            
+            + li::before {
+                padding-left: 3px;
+                padding-right: 0;
+            }
+            
+            > .dropdown > .dropdown-menu {
+                margin-top: 0;
+                
+                .border-top-radius(0);
+            }
+        }
+    }
+}
+
+
+.content-navbar-actions {
+    @media screen and (max-width: @screen-xs-max) {
+        display: block;
+        
+        .clearfix;
+    }
+    
+    .menubar {
+        @media screen and (max-width: @screen-xs-max) {
+            .toolbar-menubar();
+            
+            .fixDropdownMenus();
+        }
+        
+        @media screen and (min-width: @screen-sm-min) {
+            .navbar-menubar();
+        }
+    }
+}
+
+
+.simple-menubar {
+    .menubar {
+        .toolbar-menubar();
+        
+        @media screen and (max-width: @screen-xs-max) {
+            .fixDropdownMenus();
+        }
+    }
+}
+
+
+.portlet-container {
+    .menubar {
+        .toolbar-menubar();
+    }
+}
+
+
+
+.toolbar-menubar() {
+    &, > li > ul {
+        padding-left: 0;
+    }
+    
+    > li {       
+        &, > ul, > ul > li, > ul > li > a {
+            display: inline-block;
+        }
+        
+        > ul > li {
+            float: left;
+
+            + li > a {
+                margin-left: -1px;
+            }
+            
+            &:not(:first-of-type):not(:last-of-type) > a {
+                border-radius: 0;
+            }
+            
+            &:first-of-type:not(:last-of-type) > a {
+                .border-right-radius(0);
+            }
+            
+            &:last-of-type:not(:first-of-type) > a {
+                .border-left-radius(0);
+            }
+        } 
+    }
+}
+
+.navbar-menubar() {
+    &, > li > ul {
+        margin-bottom: 0;
+        padding-left: 0;
+    }
+    
+    > li {
+        &, > ul, > ul > li, > ul > li > a {
+            display: inline-block;
+            float: none;
+        }
+        
+        > ul > li {
+            &.dropdown > .dropdown-menu {
+                margin-top: 0;
+                
+                .border-top-radius(0);
+            }
+            
+            &.content-navbar-hidden {
+                display: none;
+            }
+        }
+    }
+}
+
+
+.fixDropdownMenus() {
+    position: relative;
+    
+    .dropdown {
+        position: static;
+        
+        .dropdown-menu {
+            &, &.dropdown-menu-right {
+                left: -1px;
+                right: -1px;
+                
+                margin-top: -3px;
+            }
+        }
+    }
+}

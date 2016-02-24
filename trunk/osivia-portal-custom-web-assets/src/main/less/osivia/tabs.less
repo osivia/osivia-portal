@@ -1,0 +1,270 @@
+//
+// OSIVIA Portal - Tabs component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+@border-width: 1px;
+@border-color: #ddd;
+@border-radius: 4px;
+@gutter-width: 16px;
+@padding-vertical: 8px;
+@padding-horizontal: 12px;
+@active-tab-fixed-min-width: 8%;
+@max-tabs: 20;
+
+
+.tabs {
+    .clearfix;
+    
+    ul {
+        margin: 0 floor(@gutter-width / -2);
+        padding-left: 0;
+        
+        list-style: none;
+        
+        li {
+            display: block;
+            float: left;
+            
+            padding: 0 floor(@gutter-width / 2);
+            
+            a {
+                display: inline-block;
+                position: relative;
+            }
+            
+            &.active {
+                a {
+                    font-weight: bold;
+                }
+            }
+        }
+        
+        &.home, &.groups {
+            margin-right: @gutter-width;
+        }
+    }
+    
+    .fixed-tabs-container {
+        overflow: hidden;
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .make-fixed-tabs(@class: lg);    
+    }
+    
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-md-max) {
+        .make-fixed-tabs(@class: md);
+    }
+    
+    @media screen and (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+        .make-fixed-tabs(@class: sm);
+    }   
+}
+
+
+.tabs-default {
+    border-bottom-style: solid;
+    border-width: @border-width;
+    border-color: @border-color;
+    
+    > * {
+        margin-bottom: -@border-width;
+    }
+    
+    .container-fluid & {
+        margin: 0 -20px;
+        padding: 0 20px;
+    }
+    
+    ul {
+        &, &.home, &.groups {
+            margin: 0;    
+        }
+        
+        li {
+            position: relative;
+            
+            padding: 0;
+
+            a {
+                padding: @padding-vertical @padding-horizontal;
+                
+                border-style: solid;
+                border-width: @border-width;
+                border-color: transparent;
+                
+                .border-top-radius(@radius: @border-radius);
+
+                &:hover, &:focus {
+                    text-decoration: none;
+                }
+                
+                &:first-of-type {
+                    padding-right: @padding-horizontal + 15;
+                }
+
+                &:last-of-type {
+                    padding-right: @padding-horizontal;
+                }
+                
+                &.page-close {
+                    position: absolute;
+                    top: @border-width + 1;
+                    bottom: 0;
+                    right: @border-width;
+                    z-index: 1;
+                    
+                    padding-top: @padding-vertical - @border-width;
+                    padding-left: floor(@padding-horizontal / 4);
+                    padding-right: floor(@padding-horizontal / 2) - @border-width;
+                }
+            }
+        
+            &.active {
+                > a {
+                    background-color: #fff;
+                    border-color: @border-color @border-color transparent;
+
+                    &.page-close {
+                        border-color: transparent;
+                    }
+                }   
+            }
+            
+            &:not(.active) {
+                > a {
+                    color: #555;
+                    
+                    &:hover, &:focus {
+                        color: #222;
+                    }
+                }
+            }
+        }
+        
+        &.home {
+            > li {
+                margin-right: @padding-horizontal;
+            }
+        }
+        
+        &.groups {
+            > li {
+                margin-right: @padding-horizontal;
+                
+                border-style: solid;
+                border-bottom-style: none;
+                border-width: 1px;
+                border-color: tint(@border-color);
+                
+                .border-top-radius(@radius: @border-radius);
+                
+                &.current {
+                    background-color: #fff;
+                    border-bottom-style: solid;
+                    border-color: @border-color @border-color transparent;
+                }
+
+                li {
+                    &.group-title {
+                        padding: @padding-vertical floor(@padding-horizontal / 2) @padding-vertical @padding-horizontal;  
+                    }
+                    
+                    &, &.active {
+                        > a {
+                            border-style: none;
+                        }
+                    }
+                    
+                    &:not(:first-child) {
+                        > a {
+                            padding-left: floor(@padding-horizontal / 2);
+                            
+                            border-top-left-radius: 0;
+                        }
+                    }
+                    
+                    &:not(:last-child) {
+                        > a {
+                            border-top-right-radius: 0;
+                            
+                            &:first-of-type {
+                                padding-right: @padding-horizontal + 15;
+                            }
+                            
+                            &:last-of-type {
+                                padding-right: floor(@padding-horizontal / 2);
+                            }     
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// Make fixed tabs function
+.make-fixed-tabs(@class) {
+    ul.fixed-@{class} {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        
+        li {
+            display: table-cell;
+            
+            text-align: center;
+            
+            .make-fixed-tab-width(@count: @max-tabs);
+            
+            a {
+                display: block;
+                
+                .text-overflow;
+            }
+            
+            &:not(.active) {
+                a.page-close {
+                    display: none;
+                }
+            }
+        }
+    }
+    
+    &.tabs-default {
+        ul.fixed-@{class} {
+            li {
+                &:not(.active) {
+                    a {
+                        padding-left: floor(@padding-horizontal / 2);
+                        padding-right: floor(@padding-horizontal / 2);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Make fixed tab width function
+.make-fixed-tab-width(@count) when (isnumber(@count)) and (@count > 0) {
+    &:first-child:nth-last-child(@{count}) {
+        &, & ~ * {
+            width: (100% - @active-tab-fixed-min-width) / @count;
+            
+            &.active {
+                width: ((100% - @active-tab-fixed-min-width) / @count) + @active-tab-fixed-min-width;
+            }
+        }
+    }
+    
+    // Loop
+    .make-fixed-tab-width(@count: @count - 1);
+}

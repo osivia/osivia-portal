@@ -1,0 +1,137 @@
+//
+// OSIVIA Bootstrap customization
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+
+
+body {
+    @media screen and (min-width: @screen-sm-min) {
+        position: relative;
+    }
+}
+
+
+// Button group
+.btn-group {
+    > .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: inherit);
+    }
+    
+    > .btn:not(.hidden) ~ .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: 0);
+    }
+}
+
+
+// Button toolbar
+.btn-toolbar {
+    margin-bottom: 5px;
+
+    .panel-heading & {
+        margin-bottom: 0;
+    }
+}
+
+
+// Form group
+.form-group {
+    .form-inline & .input-group {
+        width: 220px;
+    }
+}
+
+
+// Panel
+.panel {
+    .form-group &:last-child {
+        margin-bottom: 0;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+    }
+}
+
+
+// Dropdown menu
+.dropdown-menu > li > .form {
+    padding: 3px 20px;
+}
+
+
+// Nav
+.nav.nav-tabs {
+    margin-bottom: 10px;
+}
+
+
+// Table
+.table-responsive {
+    margin-bottom: 10px;
+    
+    > .table {
+        margin-bottom: 10px;
+    }
+    
+    .pagination {
+        margin: 0;
+    }
+}
+
+
+// Media
+.media > .pull-left {
+    ~ * {
+        overflow: hidden;
+    }
+}
+
+.media-heading {
+    display: block;
+}
+
+
+// Thumbnail
+.thumbnail {
+    position: relative;
+    
+    .thumbnail-legend {
+        position: absolute;
+        bottom: 4px; 
+        left: 4px;
+        right: 4px;
+        
+        padding: 1px 5px;
+        
+        color: #fff;
+        background-color: fade(#000, 60%);
+    }
+}
+
+
+// Caption
+caption {
+    @media screen and (max-width: @screen-xs-max) {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+
+// Placeholder
+[placeholder] {
+    text-overflow: ellipsis;
+}
+
+
+// Modal backdrop
+.modal-open .modal-backdrop {
+    position: fixed;
+    bottom: 0;
+    z-index: 1039;
+}

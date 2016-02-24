@@ -1,0 +1,8 @@
+#page d'erreur par défaut
+error.defaultPageUri=/toutatice-portail-demo-charte/error/errorPage.jsp
+
+#forcer le cache des portlets (UNIQUEMENT EN DEBUG !!!!)
+#portlets.expirationSecs=0
+
+#active les gestionnaire de statut
+status.active=true
