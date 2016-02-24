@@ -113,7 +113,15 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     public void renderHeader(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
         IRegionRendererContext irrc = (IRegionRendererContext) rrc;
 
-        Locale locale = LocaleUtils.toLocale(rrc.getProperty(InternalConstants.LOCALE_PROPERTY));
+        // Locale
+        Locale locale = null;
+        String currentWindowId = PageProperties.getProperties().getCurrentWindowId();
+        if (currentWindowId != null) {
+            locale = LocaleUtils.toLocale(PageProperties.getProperties().getWindowProperty(currentWindowId, InternalConstants.LOCALE_PROPERTY));
+        }
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
         Bundle bundle = this.bundleFactory.getBundle(locale);
 
         // Wizard mode indicator
