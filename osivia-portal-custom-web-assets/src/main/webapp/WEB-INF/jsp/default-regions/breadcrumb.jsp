@@ -45,8 +45,8 @@
                                             
                                             <c:otherwise>
                                                 <a href="${menubarItem.url}" class="${menubarItem.htmlClasses}" role="menuitem"
-                                                    <c:if test="${not empty menubarItem.target}">target="${menubar.target}"</c:if>
-                                                    <c:if test="${not empty menubarItem.onclick}">onclick="${menubar.onclick}"</c:if>
+                                                    <c:if test="${not empty menubarItem.target}">target="${menubarItem.target}"</c:if>
+                                                    <c:if test="${not empty menubarItem.onclick}">onclick="${menubarItem.onclick}"</c:if>
                                                 >
                                                     <i class="${menubarItem.glyphicon}"></i>
                                                     <span>${menubarItem.title}</span>
