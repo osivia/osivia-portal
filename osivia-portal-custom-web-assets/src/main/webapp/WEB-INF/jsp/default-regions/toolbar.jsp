@@ -82,8 +82,18 @@
                             <!-- User bar -->
                             <li>
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" alt="" />
-                                    <span>${requestScope['osivia.toolbar.person'].displayName}</span>
+                                    <c:choose>
+                                        <c:when test="${empty requestScope['osivia.toolbar.person']}">
+                                            <i class="glyphicons glyphicons-user"></i>
+                                            <span>${requestScope['osivia.toolbar.principal']}</span>
+                                        </c:when>
+                                        
+                                        <c:otherwise>
+                                            <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" alt="" />
+                                            <span>${requestScope['osivia.toolbar.person'].displayName}</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
                                     <span class="caret"></span>
                                 </a>
                                 
