@@ -69,12 +69,20 @@
                             <c:otherwise>
                                 <div class="btn-group dropdown">
                                     <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown">
-                                        <img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" />
+                                        <c:choose>
+                                            <c:when test="${empty requestScope['osivia.toolbar.person']}"><i class="halflings halflings-user"></i></c:when>
+                                            <c:otherwise><img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" /></c:otherwise>
+                                        </c:choose>
                                         <small><i class="halflings halflings-triangle-bottom"></i></small>
                                     </button>
     
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li class="dropdown-header" role="presentation">${requestScope['osivia.toolbar.person'].displayName}</li>
+                                        <li class="dropdown-header" role="presentation">
+                                            <c:choose>
+                                                <c:when test="${empty requestScope['osivia.toolbar.person']}">${requestScope['osivia.toolbar.principal']}</c:when>
+                                                <c:otherwise>${requestScope['osivia.toolbar.person'].displayName}</c:otherwise>
+                                            </c:choose>
+                                        </li>
                                     
                                         <li role="presentation">
                                             <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">

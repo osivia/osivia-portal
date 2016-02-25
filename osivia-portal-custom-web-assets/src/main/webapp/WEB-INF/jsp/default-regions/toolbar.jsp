@@ -84,7 +84,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <c:choose>
                                         <c:when test="${empty requestScope['osivia.toolbar.person']}">
-                                            <i class="glyphicons glyphicons-user"></i>
+                                            <i class="halflings halflings-user"></i>
                                             <span>${requestScope['osivia.toolbar.principal']}</span>
                                         </c:when>
                                         
