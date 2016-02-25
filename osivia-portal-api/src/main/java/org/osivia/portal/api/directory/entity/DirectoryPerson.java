@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -14,7 +14,9 @@
 package org.osivia.portal.api.directory.entity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.osivia.portal.api.urls.Link;
 
@@ -93,6 +95,9 @@ public class DirectoryPerson {
     /** Avatar */
     private Link avatar = new Link("", false);
 
+    /** Map de propriétées ldap supplémentaires */
+    private Map<String, Object> extraProperties;
+
 
 
     // ------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +107,7 @@ public class DirectoryPerson {
 
     /**
      * Getter de l'identifiant de la personne
-     * 
+     *
      * @return
      */
     public String getUid() {
@@ -111,7 +116,7 @@ public class DirectoryPerson {
 
     /**
      * Setter de l'identifiant de la personne
-     * 
+     *
      * @param uid
      */
     public void setUid(String uid) {
@@ -121,7 +126,7 @@ public class DirectoryPerson {
     /**
      * Getter du DN (distinguished Name) de la personne
      * Ramène le DN complet de l'objet (avec le base DN du type dc=ent-bretagne,dc=fr)
-     * 
+     *
      * @return
      */
     // public String getDn() {
@@ -130,7 +135,7 @@ public class DirectoryPerson {
 
     /**
      * Getter du display name (sous la forme "Prénom Nom")
-     * 
+     *
      * @return
      */
     public String getDisplayName() {
@@ -139,7 +144,7 @@ public class DirectoryPerson {
 
     /**
      * Setter du displayName (sous la forme "Prénom Nom")
-     * 
+     *
      * @param displayName
      */
     public void setDisplayName(String displayName) {
@@ -148,7 +153,7 @@ public class DirectoryPerson {
 
     /**
      * Getter du GivenName (Prénom)
-     * 
+     *
      * @return
      */
     public String getGivenName() {
@@ -157,7 +162,7 @@ public class DirectoryPerson {
 
     /**
      * Setter du GivenName (Prénom)
-     * 
+     *
      * @param givenName
      */
     public void setGivenName(String givenName) {
@@ -166,7 +171,7 @@ public class DirectoryPerson {
 
     /**
      * Getter du Sn (Nom de famille)
-     * 
+     *
      * @return
      */
     public String getSn() {
@@ -175,7 +180,7 @@ public class DirectoryPerson {
 
     /**
      * Setter du Sn (Nom de famille)
-     * 
+     *
      * @param sn
      */
     public void setSn(String sn) {
@@ -184,7 +189,7 @@ public class DirectoryPerson {
 
     /**
      * Getter du Cn (sous la forme "Nom Prenom")
-     * 
+     *
      * @return
      */
     public String getCn() {
@@ -193,7 +198,7 @@ public class DirectoryPerson {
 
     /**
      * Setter du Cn (sous la forme "Nom Prenom")
-     * 
+     *
      * @param cn
      */
     public void setCn(String cn) {
@@ -202,7 +207,7 @@ public class DirectoryPerson {
 
     /**
      * Getter de l'alias de la personne (pseudo)
-     * 
+     *
      * @return
      */
     public String getAlias() {
@@ -211,7 +216,7 @@ public class DirectoryPerson {
 
     /**
      * Setter de l'alias de la personne (pseudo)
-     * 
+     *
      * @return
      */
     public void setAlias(String alias) {
@@ -268,7 +273,7 @@ public class DirectoryPerson {
 
     /**
      * Récupération du TITLE de la personne
-     * 
+     *
      * @return ELE pour élève, ENS pour enseignant, EDU, DOC, DIR,...
      */
     public String getTitle() {
@@ -277,7 +282,7 @@ public class DirectoryPerson {
 
     /**
      * Setter du TITLE de la personne
-     * 
+     *
      * @param title ELE pour élève, ENS pour enseignant, EDU, DOC, DIR,...
      */
     public void setTitle(String title) {
@@ -286,7 +291,7 @@ public class DirectoryPerson {
 
     /**
      * Récupération de l'adresse email de la personne
-     * 
+     *
      * @return
      */
     public String getEmail() {
@@ -295,7 +300,7 @@ public class DirectoryPerson {
 
     /**
      * Setter de l'adresse email de la personne
-     * 
+     *
      * @param email
      */
     public void setEmail(String email) {
@@ -316,6 +321,25 @@ public class DirectoryPerson {
      */
     public void setAvatar(Link avatar) {
         this.avatar = avatar;
+    }
+
+    /**
+     * Getter for extraProperties.
+     * @return the extraProperties
+     */
+    public Map<String, Object> getExtraProperties() {
+        if (extraProperties == null) {
+            extraProperties = new HashMap<String, Object>();
+        }
+        return extraProperties;
+    }
+
+    /**
+     * Setter for extraProperties.
+     * @param extraProperties the extraProperties to set
+     */
+    public void setExtraProperties(Map<String, Object> extraProperties) {
+        this.extraProperties = extraProperties;
     }
 
 
