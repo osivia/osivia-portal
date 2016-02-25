@@ -560,6 +560,12 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     }
 
 
+    /**
+     * Add edition menubar items.
+     * 
+     * @param controllerContext controller context
+     * @param breadcrumb breadcrumb
+     */
     private void addEditionMenubarItems(ControllerContext controllerContext, Breadcrumb breadcrumb) {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
@@ -577,6 +583,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 if (parent instanceof MenubarDropdown) {
                     MenubarDropdown dropdown = (MenubarDropdown) parent;
                     if (MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID.equals(dropdown.getId())) {
+                        if (!dropdown.isBreadcrumb()) {
+                            // Do not display menu in breadcrumb
+                            break;
+                        }
+
                         breadcrumb.getMenubarItems().add(menubarItem);
                     }
                 }

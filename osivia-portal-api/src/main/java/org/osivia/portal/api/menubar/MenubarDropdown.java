@@ -34,8 +34,8 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
 	
     /** Menubar dropdown menu reducible indicator. Default value: true. */
     private boolean reducible;
-    /** Menubar dropdown menu extra HTML classes. */
-    private String htmlClasses;
+    /** Breadcrumb dropdown menu indicator. */
+    private boolean breadcrumb;
 
 
     /** Menubar dropdown menu parent group. */
@@ -113,21 +113,21 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
     }
 
     /**
-     * Getter for htmlClasses.
+     * Getter for breadcrumb.
      * 
-     * @return the htmlClasses
+     * @return the breadcrumb
      */
-    public String getHtmlClasses() {
-        return htmlClasses;
+    public boolean isBreadcrumb() {
+        return breadcrumb;
     }
 
     /**
-     * Setter for htmlClasses.
+     * Setter for breadcrumb.
      * 
-     * @param htmlClasses the htmlClasses to set
+     * @param breadcrumb the breadcrumb to set
      */
-    public void setHtmlClasses(String htmlClasses) {
-        this.htmlClasses = htmlClasses;
+    public void setBreadcrumb(boolean breadcrumb) {
+        this.breadcrumb = breadcrumb;
     }
 
 }

@@ -405,10 +405,13 @@ public class MenubarService implements IMenubarService {
      * @return DOM element
      */
     private Element generateDropdownElement(MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
-        // HTML classes
-        String htmlClasses = "dropdown " + StringUtils.trimToEmpty(dropdown.getHtmlClasses());
-
-        Element dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, null);
+        // Dropdown LI
+        Element dropdownLI;
+        if (dropdown.isBreadcrumb()) {
+            dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown content-navbar-hidden", null);
+        } else {
+            dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+        }
 
         // Dropdown button
         Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());
