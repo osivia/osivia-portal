@@ -39,103 +39,63 @@ $JQry(document).ready(function() {
 	});
 	
 	
-	// Fancytree with links
-	$JQry(".fancytree.fancytree-selector").fancytree({
-		activeVisible : true,
-		autoActivate : false,
-		clickFolderMode : 1,
-		extensions : ["filter", "glyph"],
-		tabbable : false,
-		titlesTabbable : true,
-		toggleEffect : false,
-		
-		filter : {
-			mode : "hide"
-		},
-		
-		glyph : {
-			map : {
-				doc : "glyphicons glyphicons-file",
-				docOpen: "glyphicons glyphicons-file",
-				error: "halflings halflings-exclamation-sign text-error",
-				expanderClosed: "glyphicons glyphicons-collapse",
-				expanderLazy: "glyphicons glyphicons-collapse",
-				expanderOpen: "glyphicons glyphicons-expand",
-				folder: "glyphicons glyphicons-folder-closed",
-				folderOpen: "glyphicons glyphicons-folder-open",
-				loading: "halflings halflings-hourglass text-info"
-			}
-		},
-		
-		activate : function(event, data) {
-			var $selector = data.tree.$div.closest(".selector"),
-				$input = $selector.find("input.selector-value"),
-				path = data.node.data.path;
-			
-			$input.val(path);
-		},
-		
-		click : function(event, data) {
-			if (data.targetType == "expander") {
-				return true;
-			} else {
-				return data.node.data.acceptable;
-			}
-		}
-	});
-	
-	
-	// Fancytree selector with lazy loading
-	$JQry(".fancytree.fancytree-selector-lazy").each(function() {
+	// Fancytree with selector with optional lazy loading
+	$JQry(".fancytree.fancytree-selector").each(function() {
 		var $this = $JQry(this),
-			url = $this.data("lazyloadingurl");
-
-		// Fancytree
-		$this.fancytree({
-			activeVisible : true,
-			autoActivate : false,
-			clickFolderMode : 1,
-			extensions : ["glyph"],
-			tabbable : false,
-			titlesTabbable : false,
-			toggleEffect : false,
-
-			source : {
+			url = $this.data("lazyloadingurl"),
+			options = {
+				activeVisible : true,
+				autoActivate : false,
+				clickFolderMode : 1,
+				extensions : ["filter", "glyph"],
+				tabbable : false,
+				titlesTabbable : false,
+				toggleEffect : false,
+				
+				filter : {
+					mode : "hide"
+				},
+				
+				glyph : {
+					map : {
+						doc : "glyphicons glyphicons-file",
+						docOpen: "glyphicons glyphicons-file",
+						error: "halflings halflings-exclamation-sign text-error",
+						expanderClosed: "glyphicons glyphicons-collapse",
+						expanderLazy: "glyphicons glyphicons-collapse",
+						expanderOpen: "glyphicons glyphicons-expand",
+						folder: "glyphicons glyphicons-folder-closed",
+						folderOpen: "glyphicons glyphicons-folder-open",
+						loading: "halflings halflings-hourglass text-info"
+					}
+				},
+				
+				activate : function(event, data) {
+					var $selector = data.tree.$div.closest(".selector"),
+						$input = $selector.find("input.selector-value"),
+						path = data.node.data.path;
+					
+					$input.val(path);
+				},
+				
+				click : function(event, data) {
+					if (data.targetType == "expander") {
+						return true;
+					} else {
+						return data.node.data.acceptable;
+					}
+				}
+			};
+		
+		if (url !== undefined) {
+			// Source URL
+			options["source"] = {
 				url : url,
 				cache : false
-			},
+			};
 			
-			glyph : {
-				map : {
-					doc : "glyphicons glyphicons-file",
-					docOpen: "glyphicons glyphicons-file",
-					error: "halflings halflings-exclamation-sign text-error",
-					expanderClosed: "glyphicons glyphicons-collapse",
-					expanderLazy: "glyphicons glyphicons-collapse",
-					expanderOpen: "glyphicons glyphicons-expand",
-					folder: "glyphicons glyphicons-folder-closed",
-					folderOpen: "glyphicons glyphicons-folder-open",
-					loading: "halflings halflings-hourglass text-info"
-				}
-			},
-			
-			activate : function(event, data) {
-				var $selector = data.tree.$div.closest(".selector"),
-					$input = $selector.find("input.selector-value"),
-					path = data.node.data.path;
-				
-				$input.val(path);
-			},
-			
-			click : function(event, data) {
-				if (data.targetType == "expander") {
-					return true;
-				} else {
-					return data.node.data.acceptable;
-				}
-			},
-			
-			lazyLoad : function(event, data) {
+			// Lazy loading
+			options["lazyLoad"] = function(event, data) {
 				var node = data.node;
 
 				data.result = {
@@ -146,7 +106,10 @@ $JQry(document).ready(function() {
 					cache : false
 				};
 			}
-		});
+		}
+
+		// Fancytree
+		$this.fancytree(options);
 	});
 	
 	
@@ -214,6 +177,7 @@ $JQry(document).ready(function() {
 			}
 		});
 	});
+	
 	
 	$JQry(".fancytree input[type=text]").keyup(filterTree);
 	// Mobile virtual event

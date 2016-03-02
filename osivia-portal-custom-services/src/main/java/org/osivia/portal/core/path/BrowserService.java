@@ -361,6 +361,9 @@ public class BrowserService implements IBrowserService {
             expanded = StringUtils.startsWith(options.getCmsNavigationPath() + "/", path + "/");
         }
 
+        // Full load indicator
+        boolean fullLoad = options.isFullLoad();
+
         // URL
         String url = null;
         if (options.isLink()) {
@@ -381,7 +384,7 @@ public class BrowserService implements IBrowserService {
         object.put("folder", browsable);
 
         // Lazy indicator
-        object.put("lazy", !expanded && browsable);
+        object.put("lazy", !expanded && browsable && !fullLoad);
 
         // Expanded indicator
         object.put("expanded", expanded);
@@ -416,7 +419,7 @@ public class BrowserService implements IBrowserService {
         object.put("extraClasses", extraClasses.toString());
 
         // Children
-        if (!root && expanded) {
+        if ((!root && expanded) || fullLoad) {
             BrowserOptions childrenOptions = new BrowserOptions(options, path);
             JSONArray childrenJSONArray = this.generateLazyJSONArray(portalControllerContext, childrenOptions);
             object.put("children", childrenJSONArray);

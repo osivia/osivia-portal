@@ -45,6 +45,8 @@ public class BrowserOptions {
     private final boolean popup;
     /** Highlight indicator. */
     private final boolean highlight;
+    /** Full load indicator. */
+    private final boolean fullLoad;
 
 
     /**
@@ -69,6 +71,7 @@ public class BrowserOptions {
         this.forceReload = BooleanUtils.toBoolean(request.getParameter("forceReload"));
         this.popup = BooleanUtils.toBoolean(request.getParameter("popup"));
         this.highlight = BooleanUtils.toBoolean(request.getParameter("highlight"));
+        this.fullLoad = BooleanUtils.toBoolean(request.getParameter("fullLoad"));
 
         // Ignored paths
         String[] ignoredPaths = StringUtils.split(request.getParameter("ignoredPaths"), ",");
@@ -127,6 +130,7 @@ public class BrowserOptions {
         this.forceReload = options.forceReload;
         this.popup = options.popup;
         this.highlight = options.highlight;
+        this.fullLoad = options.fullLoad;
     }
 
 
@@ -254,6 +258,15 @@ public class BrowserOptions {
      */
     public boolean isHighlight() {
         return this.highlight;
+    }
+
+    /**
+     * Getter for fullLoad.
+     * 
+     * @return the fullLoad
+     */
+    public boolean isFullLoad() {
+        return fullLoad;
     }
 
 }
