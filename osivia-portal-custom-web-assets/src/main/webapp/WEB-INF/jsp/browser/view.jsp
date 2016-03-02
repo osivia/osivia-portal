@@ -28,7 +28,7 @@
 
 <div>
     <p class="lead">
-        <i class="glyphicons glyphicons-search"></i>
+        <i class="glyphicons glyphicons-book-open"></i>
         <span><op:translate key="BROWSE_PORTLET_TITLE" /></span>
     </p>
     

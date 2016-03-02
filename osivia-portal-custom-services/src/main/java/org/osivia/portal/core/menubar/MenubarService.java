@@ -128,17 +128,8 @@ public class MenubarService implements IMenubarService {
         // Refresh
         String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
         if (refreshURL != null) {
-            // Parent
-            MenubarDropdown parent = this.getDropdown(portalControllerContext, "OTHER_OPTIONS");
-
-            if (parent == null) {
-                parent = new MenubarDropdown(MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID,
-                        this.internationalizationService.getString("OTHER_OPTIONS", locale), "glyphicons glyphicons-option-vertical", MenubarGroup.GENERIC, 40);
-                parent.setReducible(true);
-                this.addDropdown(portalControllerContext, parent);
-            }
-
-            MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "halflings halflings-repeat", parent, 1, refreshURL, null, null, null);
+            MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "halflings halflings-repeat", MenubarGroup.GENERIC, 100, refreshURL,
+                    null, null, null);
             this.addSortedItem(sortedItems, MenubarGroup.GENERIC, item);
         }
 

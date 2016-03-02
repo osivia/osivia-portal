@@ -99,8 +99,12 @@
         > li {
             vertical-align: top;
             
-            &.active > * {
+            &.active {
                 font-weight: bold;
+                
+                .dropdown-menu {
+                    font-weight: normal;
+                }
             }
             
             > * {
