@@ -1,0 +1,74 @@
+//
+// OSIVIA Portal - Select2 component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Variables
+@import "../bootstrap/variables.less";
+
+
+@hierarchy-indentation: @padding-large-horizontal;
+
+
+.select2-container {
+    .make-select2-hierarchy(@count: 5);
+    
+    .select2-results {
+        .optgroup {
+            font-weight: bold;
+        }
+    }
+}
+
+
+// Hierarchy recursive function
+.make-select2-hierarchy(@count) when (isnumber(@count)) and (@count > 0) {
+    .select2-results {
+        .level-@{count} {
+            display: inline-block;
+            
+            margin-left: (@count - 1) * @hierarchy-indentation;
+        }
+    }
+    
+    // Loop
+    .make-select2-hierarchy(@count: @count - 1);
+}
+
+
+// Bootstrap customization
+.select2-container--bootstrap {
+    .select2-selection--multiple {
+        .select2-selection__choice {
+            position: relative;
+            
+            .user-select(@select: none);
+            
+            .transition-property(@transition-property: "color, background-color, border-color");
+            .transition-duration(@transition-duration: 200ms);
+            .transition-timing-function(@timing-function: ease);
+            
+            &:hover {
+                color: @btn-danger-color;
+                background-color: darken(@btn-danger-bg, 10%);
+                border-color: darken(@btn-danger-border, 12%);
+            }
+            
+            .select2-selection__choice__remove {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                
+                margin: 0;
+                
+                &, &:hover {
+                    color: transparent;    
+                }
+            }
+        }
+    }
+}
