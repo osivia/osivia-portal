@@ -240,18 +240,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Collect the dirty window id
                         dirtyWindowIds.add(key.getId());
                     }   else   if (type == PageNavigationalState.class) {
-
-                        PageNavigationalState oldNS = (PageNavigationalState) update.getOldValue();
-                        Object updateOld = update.getOldValue();
-
-
-                        // Get new window state
-                        PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();
-                        Object updateNew = update.getNewValue();
-
-                        if( ! updateOld.equals(updateOld)) {
-                            fullRefresh = true;
-                        }
                         break;
                     }
                     /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */

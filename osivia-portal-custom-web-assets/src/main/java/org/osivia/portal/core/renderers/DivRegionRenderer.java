@@ -645,51 +645,36 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
 
-        // Toolbar
-        Element toolbar = DOM4JUtils.generateElement(HTMLConstants.DIV, "btn-toolbar clearfix hidden-xs", null, null, AccessibilityRoles.TOOLBAR);
+        // Page header
+        Element pageHeader = DOM4JUtils.generateDivElement("page-header hidden-xs");
 
-        // Back
+
         String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);
         if (backURL != null) {
+            // Toolbar
+            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.DIV, "btn-toolbar pull-left", null, null, AccessibilityRoles.TOOLBAR);
+            pageHeader.add(toolbar);
+
+            // Back
             Element backButton = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-primary", null, "halflings halflings-arrow-left");
             DOM4JUtils.addTooltip(backButton, bundle.getString("BACK"));
             toolbar.add(backButton);
         }
 
+
         // Title
         if (windowTitle != null) {
             Element title = DOM4JUtils.generateElement(HTMLConstants.DIV, "h2", windowTitle);
-            toolbar.add(title);
+            pageHeader.add(title);
         }
-
-        // Taskbar state toggle
-        // FIXME
-        // TaskbarState state = this.taskbarService.getTaskbarState(portalControllerContext);
-        // boolean taskbarPlayer = (state != null) && (state.getTask() != null) && (state.getTask().getAdditionalPlayer() != null);
-        // if (taskbarPlayer) {
-        // boolean hideToggle = state.isHideToggle();
-        // if (!hideToggle) {
-        // boolean closed = state.isClosed();
-        // Element button = DOM4JUtils.generateElement(HTMLConstants.A, "btn btn-default pull-right", null);
-        // DOM4JUtils.addDataAttribute(button, "service", "toggle-taskbar");
-        // if (closed) {
-        // DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-small", null);
-        // DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_SMALL"));
-        // } else {
-        // DOM4JUtils.addGlyphiconText(button, "halflings halflings-resize-full", null);
-        // DOM4JUtils.addTooltip(button, bundle.getString("RESIZE_FULL"));
-        // }
-        // toolbar.add(button);
-        // }
-        // }
 
 
         // HTML writer
-        if (toolbar.hasContent()) {
+        if (pageHeader.hasContent()) {
             HTMLWriter htmlWriter = new HTMLWriter(rendererContext.getWriter());
             htmlWriter.setEscapeText(false);
             try {
-                htmlWriter.write(toolbar);
+                htmlWriter.write(pageHeader);
             } catch (IOException e) {
                 throw new RenderException(e);
             }

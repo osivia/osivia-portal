@@ -201,3 +201,42 @@
         }
     }
 }
+
+
+
+// Fancytree input selector
+
+.form-group-fancytree {
+    // Input
+    input {
+        &[readonly] {
+            background-color: #fff;
+            
+            cursor: default;
+        }
+    }
+    
+    // Dropdown menu
+    .dropdown-menu {
+        width: 100%;
+        
+        margin-top: 0;
+        
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+    }
+    
+    // Fancytree
+    .fancytree {
+        .input-group {
+            padding: 0 10px;
+        }
+    }
+    
+    // Form control feedback
+    &:not(.has-success):not(.has-warning):not(.has-error) {
+        .form-control-feedback {
+            color: #ccc;
+        }
+    }
+}
