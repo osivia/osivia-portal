@@ -25,7 +25,7 @@ import org.osivia.portal.api.cache.services.ICacheDataListener;
  *
  * @see ICacheDataListener
  */
-public class CMSBinaryContent implements ICacheDataListener {
+public class CMSBinaryContent implements ICacheDataListener, IContentStreamingSupport {
 
     /** Default generated id. */
     private static final long serialVersionUID = 1L;
