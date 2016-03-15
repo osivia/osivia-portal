@@ -24,8 +24,9 @@ import org.osivia.portal.api.cache.services.ICacheDataListener;
  * CMS binary content.
  *
  * @see ICacheDataListener
+ * @see IContentStreamingSupport
  */
-public class CMSBinaryContent implements ICacheDataListener {
+public class CMSBinaryContent implements ICacheDataListener, IContentStreamingSupport {
 
     /** Default generated id. */
     private static final long serialVersionUID = 1L;
@@ -87,6 +88,20 @@ public class CMSBinaryContent implements ICacheDataListener {
 
 
     /**
+     * {@inheritDoc}
+     */
+    public InputStream getStream() {
+        return this.stream;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setStream(InputStream stream) {
+        this.stream = stream;
+    }
+
+    /**
      * Getter for name.
      *
      * @return the name
@@ -120,24 +135,6 @@ public class CMSBinaryContent implements ICacheDataListener {
      */
     public void setLongLiveSession(Object longLiveSession) {
         this.longLiveSession = longLiveSession;
-    }
-
-    /**
-     * Getter for stream.
-     *
-     * @return the stream
-     */
-    public InputStream getStream() {
-        return this.stream;
-    }
-
-    /**
-     * Setter for stream.
-     *
-     * @param stream the stream to set
-     */
-    public void setStream(InputStream stream) {
-        this.stream = stream;
     }
 
     /**

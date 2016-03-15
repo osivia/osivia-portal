@@ -123,7 +123,7 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 
 		// réinitialisation des propriétes des windows
-		PageProperties.getProperties().init();
+        PageProperties.init();
 
 
 	    DynamicPortalObjectContainer.clearCache();
