@@ -114,7 +114,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         String remoteUser = invocation.getServerContext().getClientRequest().getRemoteUser();
 
         /* Traitement spécifique pour utilisateurs non connectés
-         * A déléguer dans un customizer
+         * TODO A déléguer dans un customizer
          */
 
         if (remoteUser != null && user == null) {
