@@ -148,6 +148,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Server request
         ServerRequest request = controllerContext.getServerInvocation().getRequest();
 
@@ -177,13 +179,23 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             String domainPath = "/" + domainName;
             DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
 
+            // Default site
+            String defaultSite;
+            if (domainContextualization == null) {
+                defaultSite = null;
+            } else {
+                defaultSite = domainContextualization.getDefaultSite(portalControllerContext);
+            }
+            
             // Selected page identifier
             String selectedPageId = mainPage.getId().toString();
             if (domainContextualization == null) {
                 selectedPageId = mainPage.getId().toString();
-            } else {
+            } else if (defaultSite == null) {
                 String site = StringUtils.substringAfterLast(basePath, "/");
                 selectedPageId = domainName + "/" + site;
+            } else {
+                selectedPageId = domainName + "/" + defaultSite;
             }
 
             // User
