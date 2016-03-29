@@ -159,7 +159,15 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                     List<String> sites = domainContextualization.getSites(portalControllerContext);
                     
                     if ((sites != null) && sites.contains(site)) {
-                        CMSItem domain = cmsService.getContent(cmsContext, domainPath);
+                        // Domain
+                        CMSItem domain;
+                        try {
+                            cmsContext.setForcePublicationInfosScope("superuser_context");
+                            domain = cmsService.getContent(cmsContext, domainPath);
+                        } finally {
+                            cmsContext.setForcePublicationInfosScope(null);
+                        }
+
                         if (domain != null) {
                             displayNames.put(Locale.FRENCH, domain.getProperties().get("displayName"));
                         }

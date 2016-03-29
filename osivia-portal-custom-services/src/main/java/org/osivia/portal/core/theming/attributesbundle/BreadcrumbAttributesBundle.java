@@ -369,7 +369,14 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     try {
                         if ((defaultSite != null) || contextualized) {
                             // Domain
-                            CMSItem domain = cmsService.getContent(cmsContext, domainPath);
+                            CMSItem domain;
+                            try {
+                                cmsContext.setForcePublicationInfosScope("superuser_context");
+                                domain = cmsService.getContent(cmsContext, domainPath);
+                            } finally {
+                                cmsContext.setForcePublicationInfosScope(null);
+                            }
+
                             if (domain != null) {
                                 // URL
                                 String path = domainPath + "/" + defaultSite;
