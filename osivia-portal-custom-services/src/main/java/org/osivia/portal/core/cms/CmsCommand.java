@@ -64,7 +64,6 @@ import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
@@ -866,12 +865,15 @@ public class CmsCommand extends DynamicCommand {
                         }
 
                         if (publishSpace != null) {
-                            // Lecture du domaine pour affichage du nom
-                            String pubDomain = TabsCustomizerInterceptor.getDomain(publishSpace.getPath());
-                            String domainDisplayName = null;
+                            // Domain contextualization
+                            String domainName = StringUtils.substringBefore(StringUtils.removeStart(publishSpace.getPath(), "/"), "/");
+                            String domainPath = "/" + domainName;
+                            DomainContextualization domainContextualization = cmsService.getDomainContextualization(userCtx, domainPath);
 
-                            if (pubDomain != null) {
-                                CMSItem domain = cmsService.getContent(userCtx, "/" + pubDomain);
+                            // Domain display name
+                            String domainDisplayName = null;
+                            if (domainContextualization != null) {
+                                CMSItem domain = cmsService.getContent(userCtx, domainPath);
                                 if (domain != null) {
                                     domainDisplayName = domain.getProperties().get("displayName");
                                 }

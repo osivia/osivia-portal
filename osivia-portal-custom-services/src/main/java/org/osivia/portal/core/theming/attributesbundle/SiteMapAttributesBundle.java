@@ -170,7 +170,7 @@ public class SiteMapAttributesBundle implements IAttributesBundle {
                         }
                     } else {
                         // Page statique sans espace de publication
-                        UserPage userPage = new UserPage(page.getId().toString());
+                        UserPage userPage = new UserPage(page.getId());
                         mainPages.add(userPage);
 
                         ViewPageCommand showSubPage = new ViewPageCommand(page.getId());

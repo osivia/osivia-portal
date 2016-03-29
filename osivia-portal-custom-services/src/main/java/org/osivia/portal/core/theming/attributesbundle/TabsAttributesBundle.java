@@ -16,7 +16,6 @@ package org.osivia.portal.core.theming.attributesbundle;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +54,7 @@ import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -62,7 +62,6 @@ import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
@@ -146,26 +145,45 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             attributes.put(attributeName, null);
         }
 
+
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         // Server request
         ServerRequest request = controllerContext.getServerInvocation().getRequest();
 
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
+
         PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID");
         if (popupWindowId == null) {
+            Page page = renderPageCommand.getPage();
+
+            // CMS base path
+            String basePath = page.getProperty("osivia.cms.basePath");
+
             // Get first level page
-            Page mainPage = renderPageCommand.getPage();
+            Page mainPage = page;
             PortalObject parent = mainPage.getParent();
             while (parent instanceof Page) {
                 mainPage = (Page) parent;
                 parent = mainPage.getParent();
             }
 
-            // Preselection domain
+            // Domain contextualization
+            String domainName = StringUtils.substringBefore(StringUtils.removeStart(basePath, "/"), "/");
+            String domainPath = "/" + domainName;
+            DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
+
+            // Selected page identifier
             String selectedPageId = mainPage.getId().toString();
-            String domain = TabsCustomizerInterceptor.getInheritedPageDomain(renderPageCommand.getPage());
-            if (domain != null) {
-                selectedPageId = domain;
+            if (domainContextualization == null) {
+                selectedPageId = mainPage.getId().toString();
+            } else {
+                String site = StringUtils.substringAfterLast(basePath, "/");
+                selectedPageId = domainName + "/" + site;
             }
 
             // User
@@ -297,6 +315,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
     private UserPortal getPageBean(RenderPageCommand renderPageCommand, UserPortal previousUserPortal, String selectedPageId) throws ControllerException {
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Server request
         ServerRequest request = controllerContext.getServerInvocation().getRequest();
         // Portal
@@ -340,7 +360,6 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
         }
 
-        List<String> domains = new ArrayList<String>();
 
         // Displayed pages
         Map<String, UserPage> displayedPages = new LinkedHashMap<String, UserPage>();
@@ -362,30 +381,39 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             if ("templates".equalsIgnoreCase(name)) {
                 continue;
             }
-
-            // Get domain
-            String curDomain = TabsCustomizerInterceptor.getDomain(child.getDeclaredProperty("osivia.cms.basePath"));
-            if (curDomain != null) {
-                if (domains.contains(curDomain)) {
-                    continue;
-                }
-                domains.add(curDomain);
-            }
-
+            
             // Check if default page must be hidden
             if (hideDefaultPage && isDefaultPage) {
                 continue;
             }
 
+
+            // CMS base path
+            String basePath = child.getDeclaredProperty("osivia.cms.basePath");
+
+            // Domain contextualization
+            String domainName = StringUtils.substringBefore(StringUtils.removeStart(basePath, "/"), "/");
+            String domainPath = "/" + domainName;
+            DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
+
+            // Default site
+            String defaultSite;
+            if (domainContextualization == null) {
+                defaultSite = null;
+            } else {
+                defaultSite = domainContextualization.getDefaultSite(portalControllerContext);
+            }
+            
+            // Current site
+            String currentSite = StringUtils.substringAfterLast(basePath, "/");
+            
+            if ((defaultSite != null) && !defaultSite.equals(currentSite)) {
+                continue;
+            }
+            
+
             PortalObjectId pageIdToControl = child.getId();
 
-
-            /*
-            if (child instanceof ITemplatePortalObject) {
-                // In case of template, check original template rights ; moreover, there is no customization
-                pageIdToControl = ((ITemplatePortalObject) child).getTemplate().getId();
-            }
-            */
             boolean permissionCheck = true;
 
             // Don't check template permission
@@ -398,22 +426,25 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
 
             if (permissionCheck && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
-                String id;
-                String url;
-                if (curDomain != null) {
-                    id = curDomain;
-                    url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), null,
-                            "/" + curDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), null, null, "tabs", null, null, null, null);
+                UserPage userPage;
+
+                if (domainContextualization != null) {
+                    userPage = new UserPage(domainName + "/" + currentSite);
+
+                    // CMS URL
+                    String url = this.urlFactory.getCMSUrl(portalControllerContext, null, basePath, null, null, "tabs", null, null, null, null);
+                    userPage.setUrl(url);
                 } else {
-                    id = child.getId().toString();
+                    userPage = new UserPage(child.getId());
+                    
                     // View page command
                     ViewPageCommand showPage = new ViewPageCommand(child.getId());
-                    url = new PortalURLImpl(showPage, controllerContext, null, null).toString() + "?init-state=true";
+                    String url = new PortalURLImpl(showPage, controllerContext, null, null).toString() + "?init-state=true";
+                    userPage.setUrl(url);
                 }
-
-                UserPage userPage = new UserPage(id);
-                userPage.setUrl(url);
                 mainPages.add(userPage);
+
+                String id = userPage.getId();
 
                 // Tab group
                 String groupName = child.getDeclaredProperty(TabGroup.NAME_PROPERTY);

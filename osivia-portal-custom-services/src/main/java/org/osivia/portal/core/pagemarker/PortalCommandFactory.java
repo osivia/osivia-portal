@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -53,6 +53,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -63,7 +64,6 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RefreshPageCommand;
-import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.osivia.portal.core.web.WebCommand;
@@ -92,11 +92,10 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     private static ICMSServiceLocator cmsServiceLocator;
 
 
-    public static ICMSService getCMSService() throws Exception {
+    public static ICMSService getCMSService() {
         if (cmsServiceLocator == null) {
             cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
-
         return cmsServiceLocator.getCMSService();
     }
 
@@ -105,7 +104,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if (this.dynamicCOntainer == null) {
             this.dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
         }
-
         return this.dynamicCOntainer;
     }
 
@@ -114,7 +112,6 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         if (this.portalObjectContainer == null) {
             this.portalObjectContainer = Locator.findMBean(PortalObjectContainer.class, "portal:container=PortalObject");
         }
-
         return this.portalObjectContainer;
     }
 
@@ -123,6 +120,8 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
+        // CMS service
+        ICMSService cmsService = getCMSService();
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
@@ -131,6 +130,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         for (CMSPage page : preloadedPages) {
             CMSItem publishSpace = page.getPublishSpace();
+            String path = publishSpace.getPath();
 
             PortalObject parent;
 
@@ -148,22 +148,30 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 displayNames.put(Locale.FRENCH, publishSpace.getProperties().get("displayName"));
 
 
-                /* Ajout nom domaine */
-                String pubDomain = TabsCustomizerInterceptor.getDomain(publishSpace.getPath());
+                // Domain contextualization
+                String domainName = StringUtils.substringBefore(StringUtils.removeStart(path, "/"), "/");
+                String domainPath = "/" + domainName;
+                DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
 
-                if (pubDomain != null) {
-                    CMSItem domain = getCMSService().getContent(cmsContext, "/" + pubDomain);
-                    if (domain != null) {
-                        displayNames.put(Locale.FRENCH, domain.getProperties().get("displayName"));
+                if (domainContextualization != null) {
+                    // Sites
+                    String site = StringUtils.substringAfterLast(path, "/");
+                    List<String> sites = domainContextualization.getSites(portalControllerContext);
+                    
+                    if ((sites != null) && sites.contains(site)) {
+                        CMSItem domain = cmsService.getContent(cmsContext, domainPath);
+                        if (domain != null) {
+                            displayNames.put(Locale.FRENCH, domain.getProperties().get("displayName"));
+                        }
                     }
                 }
 
                 Map<String, String> props = new HashMap<String, String>();
 
                 String pageName = "portalSite"
-                        + (new CMSObjectPath(publishSpace.getPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
+                        + (new CMSObjectPath(path, CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
 
-                props.put("osivia.cms.basePath", publishSpace.getPath());
+                props.put("osivia.cms.basePath", path);
 
                 // v2.0-rc7
 
@@ -179,7 +187,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 // Tab group
                 EcmDocument document = (EcmDocument) publishSpace.getNativeItem();
-                Map<String, TabGroup> tabGroups = getCMSService().getTabGroups(cmsContext);
+                Map<String, TabGroup> tabGroups = cmsService.getTabGroups(cmsContext);
                 for (TabGroup tabGroup : tabGroups.values()) {
                     if (tabGroup.contains(portalControllerContext, document, null, props)) {
                         props.put(TabGroup.NAME_PROPERTY, tabGroup.getName());
@@ -193,7 +201,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
                 String restorablePageName = RestorablePageUtils.createRestorableName(controllerContext, pageName,
                         PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.CANONICAL_FORMAT),
-                        publishSpace.getPath(), null, null, null, null);
+                        path, null, null, null, null);
 
 
                 DynamicPageBean dynaPage = new DynamicPageBean(parent, restorablePageName, pageName, displayNames, PortalObjectId.parse(
@@ -291,7 +299,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         /*
          * Synchronisation des pages préchargées
-         *
+         * 
          * A faire après le restorePageState
          */
         List<CMSPage> preloadedPages = (List<CMSPage>) invocation.getAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages");
@@ -303,14 +311,14 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         ControllerCommand cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
 
 
-		if( popupClosed){
+        if (popupClosed) {
             // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
             // The cause: the close associated command is executed twice (during the close and the closed phase)
-        	// The only use case is the mapsite portlet in web site
-        	if( cmd instanceof CmsCommand)	{
-        		PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-        		NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext, new ArrayList<Notifications>());
-        	}
+            // The only use case is the mapsite portlet in web site
+            if (cmd instanceof CmsCommand) {
+                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext, new ArrayList<Notifications>());
+            }
 
         }
 

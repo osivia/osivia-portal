@@ -16,6 +16,8 @@ package org.osivia.portal.api.theming;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.portal.core.model.portal.PortalObjectId;
+
 
 /**
  * User page java-bean.
@@ -37,6 +39,8 @@ public class UserPage {
 
     /** Page identifier. */
     private final String id;
+    /** Page portal object identifier, may be null. */
+    private final PortalObjectId portalObjectId;
     /** Page children. */
     private final List<UserPage> children;
 
@@ -49,6 +53,20 @@ public class UserPage {
     public UserPage(String id) {
         super();
         this.id = id;
+        this.portalObjectId = null;
+        this.children = new ArrayList<UserPage>();
+    }
+
+
+    /**
+     * Constructor.
+     * 
+     * @param portalObjectId portal object identifier
+     */
+    public UserPage(PortalObjectId portalObjectId) {
+        super();
+        this.id = portalObjectId.toString();
+        this.portalObjectId = portalObjectId;
         this.children = new ArrayList<UserPage>();
     }
 
@@ -227,6 +245,15 @@ public class UserPage {
      */
     public String getId() {
         return this.id;
+    }
+
+    /**
+     * Getter for portalObjectId.
+     * 
+     * @return the portalObjectId
+     */
+    public PortalObjectId getPortalObjectId() {
+        return portalObjectId;
     }
 
     /**

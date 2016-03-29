@@ -463,6 +463,16 @@ public interface ICMSService {
 
 
     /**
+     * Get domain contextualization.
+     * 
+     * @param cmsContext CMS context
+     * @param domainPath domain path
+     * @return domain contextualization
+     */
+    DomainContextualization getDomainContextualization(CMSServiceCtx cmsContext, String domainPath);
+
+
+    /**
      * Get document metadata.
      *
      * @param cmsContext CMS context

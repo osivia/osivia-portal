@@ -65,10 +65,11 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.DomainContextualization;
+import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.page.TabsCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
@@ -193,6 +194,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
         // Controller context
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // State context
         NavigationalStateContext stateContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
         // Window context map
@@ -201,6 +204,12 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
         // Edition mode
         String mode = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
 
         // Current page state
         PageNavigationalState pageState = stateContext.getPageNavigationalState(page.getId().toString());
@@ -211,6 +220,28 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
         // Publication indicator
         boolean publication = ((basePath != null) && StringUtils.startsWith(publicationPath, basePath));
+
+
+        // Domain contextualization
+        String domainName = StringUtils.substringBefore(StringUtils.removeStart(basePath, "/"), "/");
+        String domainPath = "/" + domainName;
+        DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
+
+        // Sites & default site
+        List<String> sites;
+        String defaultSite;
+        if (domainContextualization == null) {
+            sites = null;
+            defaultSite = null;
+        } else {
+            sites = domainContextualization.getSites(portalControllerContext);
+            defaultSite = domainContextualization.getDefaultSite(portalControllerContext);
+        }
+
+        // Current site name
+        String site = StringUtils.substringAfterLast(basePath, "/");
+        boolean contextualized = (sites != null) && sites.contains(site);
+
 
         // Breadcrumb memo
         Breadcrumb breadcrumbMemo = (Breadcrumb) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "breadcrumb");
@@ -268,6 +299,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 portalObject = portalObject.getParent();
             }
 
+            String portalObjectId = portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+
             if (publication) {
                 String navigationScope = page.getProperty("osivia.cms.navigationScope");
 
@@ -284,11 +317,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 int currentLevel = 0;
 
                 while (StringUtils.contains(publicationPath, basePath)) {
-                    // Exclude root publish Site for domain
-                    // (will be computed later, the same as others spaces)
-                    if (publicationPath.equals(basePath) && (TabsCustomizerInterceptor.getDomain(basePath) != null)) {
-                        String baseName = basePath.substring(basePath.lastIndexOf('/') + 1);
-                        if (baseName.equals(TabsCustomizerInterceptor.getDomainPublishSiteName())) {
+                    // Exclude root publish Site for domain (will be computed later, the same as others spaces)
+                    if (publicationPath.equals(basePath) && contextualized) {
+                        if ((defaultSite == null) || (defaultSite.equals(site))) {
                             break;
                         }
                     }
@@ -309,12 +340,10 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
                             String webPath = this.webIdService.webIdToCmsPath(cmsItem.getWebId());
 
-                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
-                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), webPath, pageParams,
+                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), portalObjectId, webPath, pageParams,
                                     IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "breadcrumb", null, null, null, null);
                         } else {
-                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
-                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT), publicationPath, pageParams,
+                            url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext), portalObjectId, publicationPath, pageParams,
                                     IPortalUrlFactory.CONTEXTUALIZATION_PAGE, "breadcrumb", null, null, null, null);
                         }
 
@@ -336,31 +365,24 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 }
 
 
-                // Add domain site item
-                String pubDomain = TabsCustomizerInterceptor.getDomain(basePath);
-
-                if (pubDomain != null) {
-
+                if (domainContextualization != null) {
                     try {
-                        CMSServiceCtx userCtx = new CMSServiceCtx();
-                        userCtx.setControllerContext(controllerContext);
+                        if ((defaultSite != null) || contextualized) {
+                            // Domain
+                            CMSItem domain = cmsService.getContent(cmsContext, domainPath);
+                            if (domain != null) {
+                                // URL
+                                String path = domainPath + "/" + defaultSite;
+                                Map<String, String> pageParams = new HashMap<String, String>();
+                                String url = this.urlFactory.getCMSUrl(portalControllerContext, portalObjectId, path, pageParams,
+                                        IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "breadcrumb", null, null, null, null);
 
-                        CMSItem domain = this.cmsServiceLocator.getCMSService().getContent(userCtx, "/" + pubDomain);
-                        if (domain != null) {
-                            String domainDisplayName = null;
-                            domainDisplayName = domain.getProperties().get("displayName");
+                                // Display name
+                                String domainDisplayName = domain.getProperties().get("displayName");
 
-                            Map<String, String> pageParams = new HashMap<String, String>();
-
-
-                            String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
-                                    portalObject.getId().toString(PortalObjectPath.CANONICAL_FORMAT),
-                                    "/" + pubDomain + "/" + TabsCustomizerInterceptor.getDomainPublishSiteName(), pageParams,
-                                    IPortalUrlFactory.CONTEXTUALIZATION_PORTAL, "breadcrumb", null, null, null, null);
-
-
-                            BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);
-                            breadcrumb.getChildren().add(0, item);
+                                BreadcrumbItem item = new BreadcrumbItem(domainDisplayName, url, null, false);
+                                breadcrumb.getChildren().add(0, item);
+                            }
                         }
                     } catch (CMSException e) {
                         throw new ControllerException(e);
@@ -569,7 +591,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
     private void addEditionMenubarItems(ControllerContext controllerContext, Breadcrumb breadcrumb) {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-        
+
         // Edition menubar items
         Set<MenubarItem> menubarItems = null;
         Map<MenubarGroup, Set<MenubarItem>> sortedItems = menubarService.getNavbarSortedItems(portalControllerContext);

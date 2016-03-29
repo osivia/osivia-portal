@@ -58,64 +58,6 @@ public class TabsCustomizerInterceptor extends ControllerInterceptor {
         super();
     }
 
-
-    /**
-     * get domain prefix
-     * 
-     * @return
-     */
-    public static String getDomainPrefix() {
-        return "e-";
-    }
-    
-    /**
-     * Gets the domain publish site name.
-     *
-     * @return the domain publish site name
-     */
-    public static String getDomainPublishSiteName() {
-        return "site";
-    }
-
-
-     /**
-      * Gets the domain.
-      *
-      * @param path the path
-      * @return the domain
-      */
-     public static String getDomain(String path) {
-         String domainName = null;
-         String pagePath = path;
-         
- 
-         if (pagePath != null) {
-             
-             int iSlash = pagePath.indexOf('/', 1);
-             if (iSlash > 0) {
-                 
-                 String nuxeoDomain = pagePath.substring(1, iSlash);
-                 
-                 if (nuxeoDomain.startsWith(getDomainPrefix())) {
-                     domainName = nuxeoDomain;
-                     
-                 }
-             }
-         }
-         return domainName;
-    }
-    
-    /**
-     * Gets the inherited page domain.
-     *
-     * @param page the page
-     * @return the inherited page domain
-     */
-    public static String getInheritedPageDomain(Page page) {
-        return getDomain( page.getProperty("osivia.cms.basePath"));
-    }
-
-    
     
     /**
      * {@inheritDoc}
