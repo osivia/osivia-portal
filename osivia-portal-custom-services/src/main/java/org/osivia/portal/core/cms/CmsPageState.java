@@ -3,6 +3,7 @@ package org.osivia.portal.core.cms;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -29,6 +30,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -436,6 +438,27 @@ public class CmsPageState {
                         nsContext.setPageNavigationalState(this.pageIdToDiplay.toString(), new PageNavigationalState(pageState));
                     }
                 }
+            }
+            
+            // #1160 - Propagate cmsItem selectors to portal selectors if exists
+            if(cmsNav.getProperties().containsKey("selectors")) {
+            	
+            	
+            	String cmsSelector = cmsNav.getProperties().get("selectors");
+            	Map<String, List<String>> decodeCmsProperties = PageParametersEncoder.decodeProperties(cmsSelector);
+            	
+            	String[] pageSelectors = pageState.get(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+            	if(pageSelectors != null && pageSelectors.length > 0) {
+            		
+            		Map<String, List<String>> decodePageProperties = PageParametersEncoder.decodeProperties(pageSelectors[0]);
+            		decodeCmsProperties.putAll(decodePageProperties);
+            	}
+            	
+            	String encodeProperties = PageParametersEncoder.encodeProperties(decodeCmsProperties);
+
+				pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), new String[] {encodeProperties} );
+                nsContext.setPageNavigationalState(this.pageIdToDiplay.toString(), new PageNavigationalState(pageState));
+
             }
 
 
