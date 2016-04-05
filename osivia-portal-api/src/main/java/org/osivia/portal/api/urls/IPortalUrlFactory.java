@@ -91,7 +91,7 @@ public interface IPortalUrlFactory {
      */
     String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
             String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference);
-    
+
     /**
      * Get CMS URL with additional parameters.
      *
@@ -125,7 +125,7 @@ public interface IPortalUrlFactory {
      */
     String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
             throws PortalException;
-    
+
     /**
      * Get permalink URL with addintional parameters.
      *
@@ -182,6 +182,14 @@ public interface IPortalUrlFactory {
      * @return destroy page URL
      */
     String getDestroyPageUrl(PortalControllerContext portalControllerContext, String parentId, String pageId);
+
+    /**
+     * Get destroy current page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return destroy current page URL
+     */
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
 
     /**
@@ -301,14 +309,14 @@ public interface IPortalUrlFactory {
 
     /**
      * Get refresh page URL and notify creation of new content.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param newContentNotify set to true for enable notifications after this command
      * @return refresh page URL
      */
 	String getRefreshPageUrl(PortalControllerContext portalControllerContext,
 			boolean newContentNotify);
-    
+
     /**
      * Get put document in trash URL.
      *
@@ -376,7 +384,7 @@ public interface IPortalUrlFactory {
 	 */
 	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
 			String path, EcmCommonCommands commandName) throws PortalException ;
-	 
+
 	/**
 	 * Return an url who fire the ECM
 	 * @param portalControllerContext
