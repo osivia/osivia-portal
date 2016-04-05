@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,6 +16,7 @@ package org.osivia.portal.core.share;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -26,6 +27,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.cms.CmsExtendedParameters;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
 /**
@@ -33,10 +35,10 @@ import org.osivia.portal.core.cms.CmsExtendedParameters;
  *
  */
 public class ShareURLFactory extends URLFactoryDelegate {
-    
+
     /** Configured path. */
     private String path;
-    
+
     /**
      * @return the path
      */
@@ -55,47 +57,56 @@ public class ShareURLFactory extends URLFactoryDelegate {
      * {@inheritDoc}
      */
     public ServerURL doMapping(ControllerContext controllerContext, ServerInvocation invocation, ControllerCommand cmd) {
-        
+
         if (cmd == null) {
             throw new IllegalArgumentException("No null command accepted");
         }
-        
+
         if(cmd instanceof ShareCommand){
-            
-            ShareCommand shareCmd = (ShareCommand) cmd;
-            AbstractServerURL asu = new AbstractServerURL();
-            
+
+            final ShareCommand shareCmd = (ShareCommand) cmd;
+            final AbstractServerURL asu = new AbstractServerURL();
+
             String portalRequestPath = this.path;
-            
-            String webId = shareCmd.getWebId();
+
+            final String webId = shareCmd.getWebId();
             if(StringUtils.isNotBlank(webId)){
                 portalRequestPath = portalRequestPath.concat(webId);
             }
-            
+
             asu.setPortalRequestPath(portalRequestPath);
-            
-            ExtendedParameters extendedParameters = shareCmd.getExtendedParameters();
+
+            final ExtendedParameters extendedParameters = shareCmd.getExtendedParameters();
             if (extendedParameters != null) {
 
-                String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-                String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
+                final String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
+                final String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
                 try {
                     if (StringUtils.isNotBlank(parentId)) {
                         asu.setParameterValue(CmsExtendedParameters.parentId.name(), URLEncoder.encode(parentId, "UTF-8"));
                     } else if (StringUtils.isNotBlank(parentPath)) {
                         asu.setParameterValue(CmsExtendedParameters.parentPath.name(), URLEncoder.encode(parentId, "UTF-8"));
                     }
-                } catch (UnsupportedEncodingException e) {
+                } catch (final UnsupportedEncodingException e) {
                     // Ignore
                 }
 
             }
-            
+
+            final Map<String, String> pageParams = shareCmd.getParams();
+            if (pageParams != null) {
+                try {
+                    asu.setParameterValue("pageParams", URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams), "UTF-8"));
+                } catch (final Exception e) {
+                    // ignore
+                }
+            }
+
             return asu;
-            
+
         }
         return null;
-        
+
     }
 
 }

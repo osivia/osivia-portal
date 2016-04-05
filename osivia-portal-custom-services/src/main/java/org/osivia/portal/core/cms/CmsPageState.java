@@ -148,7 +148,7 @@ public class CmsPageState {
             String computedPageScope = null;
 
             String portalSiteScope = null;
-            CMSServiceCtx cmsReadNavContext = new CMSServiceCtx();
+            final CMSServiceCtx cmsReadNavContext = new CMSServiceCtx();
 
             if (this.baseCMSPublicationPage != null) {
                 portalSiteScope = this.baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
@@ -171,7 +171,7 @@ public class CmsPageState {
 
                     do {
                         try {
-                            CMSItem cmsItemNav = this.getCMSService().getPortalNavigationItem(cmsReadNavContext, this.basePublishPath, pathToCheck);
+                            final CMSItem cmsItemNav = this.getCMSService().getPortalNavigationItem(cmsReadNavContext, this.basePublishPath, pathToCheck);
 
                             if (cmsItemNav == null) {
                                 // Pb de droits, on coupe la branche
@@ -181,7 +181,7 @@ public class CmsPageState {
                             } else {
                                 boolean isNavigationElement = false;
 
-                                String navigationElement = cmsItemNav.getProperties().get("navigationElement");
+                                final String navigationElement = cmsItemNav.getProperties().get("navigationElement");
 
                                 if ((pathToCheck.equals(this.basePublishPath) || "1".equals(navigationElement))) {
                                     isNavigationElement = true;
@@ -207,10 +207,10 @@ public class CmsPageState {
                                 }
 
                                 if (ecmPageTemplate == null) {
-                                    boolean isChildPath = (this.itemPublicationPath.contains(pathToCheck))
+                                    final boolean isChildPath = (this.itemPublicationPath.contains(pathToCheck))
                                             && !(this.itemPublicationPath.equalsIgnoreCase(pathToCheck));
                                     if (isChildPath) {
-                                        String childrenPageTemplate = cmsItemNav.getProperties().get("childrenPageTemplate");
+                                        final String childrenPageTemplate = cmsItemNav.getProperties().get("childrenPageTemplate");
                                         if (StringUtils.isNotEmpty(childrenPageTemplate)) {
                                             ecmPageTemplate = childrenPageTemplate;
                                         }
@@ -239,9 +239,9 @@ public class CmsPageState {
                             }
 
                             // One level up
-                            CMSObjectPath parentPath = CMSObjectPath.parse(pathToCheck).getParent();
+                            final CMSObjectPath parentPath = CMSObjectPath.parse(pathToCheck).getParent();
                             pathToCheck = parentPath.toString();
-                        } catch (CMSException e) {
+                        } catch (final CMSException e) {
                             // Probleme d'acces aux items de navigation de niveau supérieur ; on decontextualise
                             errorDuringCheck = true;
                         }
@@ -296,7 +296,7 @@ public class CmsPageState {
                 if (CmsCommand.LAYOUT_TYPE_SCRIPT.equals(layoutType)) {
                     if (layoutRules != null) {
                         // Evaluation beanshell
-                        Interpreter i = new Interpreter();
+                        final Interpreter i = new Interpreter();
                         i.set("doc", this.cmsNav.getNativeItem());
 
                         i.set("ECMPageTemplate", ecmPageTemplate);
@@ -339,17 +339,17 @@ public class CmsPageState {
             // Préparation des paramètres de la page
             PageNavigationalState previousPNS = null;
 
-            NavigationalStateContext nsContext = (NavigationalStateContext) this.controllerContext
+            final NavigationalStateContext nsContext = (NavigationalStateContext) this.controllerContext
                     .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
-            Map<QName, String[]> pageState = new HashMap<QName, String[]>();
+            final Map<QName, String[]> pageState = new HashMap<QName, String[]>();
 
             if (this.cmsNav != null) {
                 // Mise à jour paramètre public page courante
                 previousPNS = nsContext.getPageNavigationalState(this.pageIdToDiplay.toString());
 
                 if (this.pageParams != null) {
-                    for (Map.Entry<String, String> entry : this.pageParams.entrySet()) {
+                    for (final Map.Entry<String, String> entry : this.pageParams.entrySet()) {
                         pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, entry.getKey()), new String[]{entry.getValue()});
                     }
                 }
@@ -357,13 +357,13 @@ public class CmsPageState {
                 // Mise à jour du path de navigation
                 if (this.itemPublicationPath.startsWith(this.basePublishPath) && !disableCMSLocationInPage) {
                     // String relPath = computeNavPath(cmsPath.substring(basePublishPath.length()));
-                    String relPath = this.itemPublicationPath.substring(this.basePublishPath.length());
+                    final String relPath = this.itemPublicationPath.substring(this.basePublishPath.length());
                     pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.itemRelPath"), new String[]{relPath});
                 }
 
                 pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"), new String[]{this.cmsNav.getPath()});
 
-                String webId = this.cmsNav.getWebId();
+                final String webId = this.cmsNav.getWebId();
 
                 if (webId != null) {
                     pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.webid"), new String[]{this.cmsNav.getWebId()});
@@ -378,7 +378,7 @@ public class CmsPageState {
 
 
                 // Parameterized template
-                Object parameterizedTemplate = this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
+                final Object parameterizedTemplate = this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_TEMPLATE_ATTRIBUTE);
                 if (parameterizedTemplate != null) {
                     layoutPath = "/default/templates/" + parameterizedTemplate.toString();
                 }
@@ -397,7 +397,7 @@ public class CmsPageState {
                 }
 
 
-                EditionState editionState = this.getEditionState(this.pageIdToDiplay, this.pubInfos, this.contextualizedInCurrentPage);
+                final EditionState editionState = this.getEditionState(this.pageIdToDiplay, this.pubInfos, this.contextualizedInCurrentPage);
                 ContributionService.updateNavigationalState(this.controllerContext, pageState, editionState);
 
 
@@ -427,10 +427,10 @@ public class CmsPageState {
             }
 
 
-            // Propagation des selecteurs
-            if (previousPNS != null) {
+            // Propagation des selecteurs si les paramètres ne sont pas explicites
+            if ((previousPNS != null) && ((this.pageParams == null) || (pageParams.size() == 0))) {
                 if ("1".equals(this.page.getProperty("osivia.cms.propagateSelectors"))) {
-                    String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+                    final String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
 
                     if (selectors != null) {
                         previousPNS = nsContext.getPageNavigationalState(this.pageIdToDiplay.toString());
@@ -439,22 +439,22 @@ public class CmsPageState {
                     }
                 }
             }
-            
+
             // #1160 - Propagate cmsItem selectors to portal selectors if exists
             if(cmsNav.getProperties().containsKey("selectors")) {
-            	
-            	
-            	String cmsSelector = cmsNav.getProperties().get("selectors");
-            	Map<String, List<String>> decodeCmsProperties = PageParametersEncoder.decodeProperties(cmsSelector);
-            	
-            	String[] pageSelectors = pageState.get(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
-            	if(pageSelectors != null && pageSelectors.length > 0) {
-            		
-            		Map<String, List<String>> decodePageProperties = PageParametersEncoder.decodeProperties(pageSelectors[0]);
+
+
+            	final String cmsSelector = cmsNav.getProperties().get("selectors");
+            	final Map<String, List<String>> decodeCmsProperties = PageParametersEncoder.decodeProperties(cmsSelector);
+
+            	final String[] pageSelectors = pageState.get(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+            	if((pageSelectors != null) && (pageSelectors.length > 0)) {
+
+            		final Map<String, List<String>> decodePageProperties = PageParametersEncoder.decodeProperties(pageSelectors[0]);
             		decodeCmsProperties.putAll(decodePageProperties);
             	}
-            	
-            	String encodeProperties = PageParametersEncoder.encodeProperties(decodeCmsProperties);
+
+            	final String encodeProperties = PageParametersEncoder.encodeProperties(decodeCmsProperties);
 
 				pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), new String[] {encodeProperties} );
                 nsContext.setPageNavigationalState(this.pageIdToDiplay.toString(), new PageNavigationalState(pageState));
@@ -476,27 +476,27 @@ public class CmsPageState {
             if ((((this.cmsNav != null) || this.isPageToDisplayUncontextualized)) && !this.skipPortletInitialisation) {
 
                 // Reinitialisation des renders parameters et de l'état
-                Iterator<PortalObject> i = this.page.getChildren(Page.WINDOW_MASK).iterator();
+                final Iterator<PortalObject> i = this.page.getChildren(Page.WINDOW_MASK).iterator();
                 while (i.hasNext()) {
-                    Window window = (Window) i.next();
+                    final Window window = (Window) i.next();
 
-                    NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+                    final NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
 
-                    WindowNavigationalState windowNavState = WindowNavigationalState.create();
+                    final WindowNavigationalState windowNavState = WindowNavigationalState.create();
 
                     // On la force en vue NORMAL
-                    WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                    final WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
                             ParametersStateString.create());
                     this.controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
                 }
 
                 // Réinitialisation des états des fenêtres
-                Collection<PortalObject> windows = this.page.getChildren(PortalObject.WINDOW_MASK);
+                final Collection<PortalObject> windows = this.page.getChildren(PortalObject.WINDOW_MASK);
 
                 // et des anciens caches
                 // (si 2 pages P1 et P2 ont des templates différents dans une même page dynamique,
                 // les caches de P1 sont conservés quand va sur P2 et on revient sur P1
-                for (PortalObject po : this.page.getChildren(PortalObject.WINDOW_MASK)) {
+                for (final PortalObject po : this.page.getChildren(PortalObject.WINDOW_MASK)) {
                     this.controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, po.getId().toString());
                     this.controllerContext.removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, "cached_markup." + po.getId().toString());
                 }
@@ -505,7 +505,7 @@ public class CmsPageState {
                 PageCustomizerInterceptor.unsetMaxMode(windows, this.controllerContext);
 
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ControllerException(e);
         }
 
@@ -552,7 +552,7 @@ public class CmsPageState {
 
 
         // Modified indicator
-        boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext)
+        final boolean fancyBox = InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext)
                 || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext);
 
         if (fancyBox) {
@@ -571,10 +571,10 @@ public class CmsPageState {
                 if (!contextualizedInCurrentPage) {
                     // Except in mobile mode
                     PageCustomizerInterceptor.initPageBackInfos(this.controllerContext, false);
-                    String backPageMarker = (String) this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                    final String backPageMarker = (String) this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
                     this.controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
                 } else {
-                    String backPageMarker = (String) this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                    final String backPageMarker = (String) this.controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
                     this.controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", backPageMarker);
                     this.controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backMobilePageMarker", backPageMarker);
 

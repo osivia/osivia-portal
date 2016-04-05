@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,8 @@
  *
  */
 package org.osivia.portal.core.share;
+
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
@@ -35,33 +37,47 @@ import org.osivia.portal.core.web.IWebIdService;
  *
  */
 public class ShareCommand extends DynamicCommand {
-    
+
     private static final CommandInfo info = new ActionCommandInfo(false);
-    
+
     /** WebId. */
     private String webId;
     /** Extended parameters: parentId or parentPath for the moment. */
     private ExtendedParameters extendedParameters;
-    
+
     /** Prefixed webId. */
     private String prefixedWebId;
-    
+
+    /** Page parameters. */
+    private Map<String, String> params;
+
     /**
      * Default constructor.
      */
     public ShareCommand() {
     }
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param webId
      */
-    public ShareCommand(String webId){
+    public ShareCommand(String webId) {
         this.webId = webId;
         this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
-    } 
-    
+    }
+
+    /**
+     * Constructor
+     *
+     * @param webId
+     */
+    public ShareCommand(String webId, Map<String, String> params) {
+        this.webId = webId;
+        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
+        this.params = params;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -69,7 +85,7 @@ public class ShareCommand extends DynamicCommand {
     public CommandInfo getInfo() {
         return info;
     }
-    
+
     /**
      * @return the webId
      */
@@ -90,7 +106,7 @@ public class ShareCommand extends DynamicCommand {
     public ExtendedParameters getExtendedParameters() {
         return extendedParameters;
     }
-    
+
     /**
      * @param extendedParameters the extendedParameters to set
      */
@@ -111,17 +127,17 @@ public class ShareCommand extends DynamicCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         // Delegation to cmsCommand.
-        
-        ControllerContext controllerContext = this.getControllerContext(); 
-        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-        
+
+        final ControllerContext controllerContext = this.getControllerContext();
+        final PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
         String portalPersistentName = null;
 
         // Extract current portal
         if (portalControllerContext.getControllerCtx() != null) {
-            String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
+            final String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
 
-            Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer().getContext()
+            final Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer().getContext()
                     .getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
@@ -130,14 +146,34 @@ public class ShareCommand extends DynamicCommand {
                 }
             }
         }
-        
-        CmsCommand cmsCommand = new CmsCommand(null, this.prefixedWebId, null, null, null, null, null, null, null, null, portalPersistentName);
+
+        final CmsCommand cmsCommand = new CmsCommand(null, this.prefixedWebId, params, null, null, null, null, null, null, null, portalPersistentName);
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
         cmsCommand.setExtendedParameters(this.extendedParameters);
-        
+
         return this.context.execute(cmsCommand);
+    }
+
+
+    /**
+     * Getter for params.
+     *
+     * @return the params
+     */
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+
+    /**
+     * Setter for params.
+     *
+     * @param params the params to set
+     */
+    public void setParams(Map<String, String> params) {
+        this.params = params;
     }
 
 }
