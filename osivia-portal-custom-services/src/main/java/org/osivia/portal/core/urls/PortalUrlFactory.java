@@ -48,7 +48,6 @@ import org.osivia.portal.api.ecm.EcmCommonCommands;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
@@ -77,7 +76,6 @@ import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.share.ShareCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
-import org.osivia.portal.core.web.WebCommand;
 import org.osivia.portal.core.web.WebIdService;
 
 /**
@@ -184,16 +182,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
             String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
-        return this.getCMSUrl(portalControllerContext, pagePath, cmsPath, pageParams, contextualization, displayContext, hideMetaDatas, scope,
-                displayLiveVersion, windowPermReference, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
-            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference,
-            ExtendedParameters extendedParameters) {
 
         String portalPersistentName = null;
 
@@ -218,7 +206,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         final CmsCommand cmd = new CmsCommand(pagePath, cmsPath, pageParams, contextualization, displayContext, hideMetaDatas, scope, displayLiveVersion,
                 windowPermReference, this.addToBreadcrumb(portalControllerContext.getRequest()), portalPersistentName);
-        cmd.setExtendedParameters(extendedParameters);
 
 
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
@@ -338,57 +325,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             urlContext = urlContext.withAuthenticated(false);
 
             return ControllerContextAdapter.getControllerContext(ctx).renderURL(linkCmd, urlContext, URLFormat.newInstance(false, true));
-
-        } catch (final Exception e) {
-            throw new PortalException(e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath,
-            String permLinkType, ExtendedParameters extendedParameters) throws PortalException {
-
-        try {
-            if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
-
-                final String portalPersistentName = this.getPortalPersistentName(portalControllerContext);
-
-                final Portal portal = PortalObjectUtils.getPortal(ControllerContextAdapter.getControllerContext(portalControllerContext));
-                final boolean isWebMode = PortalObjectUtils.isSpaceSite(portal);
-
-                ControllerCommand cmd = null;
-                if (isWebMode) {
-
-                    cmd = new WebCommand(cmsPath);
-                    final WebCommand webCmd = (WebCommand) cmd;
-                    webCmd.setExtendedParameters(extendedParameters);
-
-                } else {
-
-                    cmd = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
-                    final CmsCommand cmsCommand = (CmsCommand) cmd;
-
-                    // Remove default initialisation
-                    cmsCommand.setItemScope(null);
-                    cmsCommand.setInsertPageMarker(false);
-
-                    cmsCommand.setExtendedParameters(extendedParameters);
-
-                }
-
-                URLContext urlContext = ControllerContextAdapter.getControllerContext(portalControllerContext).getServerInvocation().getServerContext()
-                        .getURLContext();
-                urlContext = urlContext.withAuthenticated(false);
-                final String permLinkUrl = ControllerContextAdapter.getControllerContext(portalControllerContext).renderURL(cmd, urlContext,
-                        URLFormat.newInstance(false, true));
-
-                return permLinkUrl;
-
-            }
-
-            return null;
 
         } catch (final Exception e) {
             throw new PortalException(e);

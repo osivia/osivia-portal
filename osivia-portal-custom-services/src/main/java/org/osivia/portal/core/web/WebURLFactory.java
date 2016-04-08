@@ -45,11 +45,9 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.cms.CmsExtendedParameters;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -156,30 +154,17 @@ public class WebURLFactory extends URLFactoryDelegate {
      *
      * @param controllerContext controller context
      * @param webPath web path
-     * @param extendedParameters extended parameters
      * @param reload reload indicator
      * @return CMS path
      * @throws ControllerException
      */
-    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, ExtendedParameters extendedParameters, boolean reload)
+    public static String adaptWebURLToCMSPath(ControllerContext controllerContext, String webPath, boolean reload)
             throws Exception {
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
         if (CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW)) {
             cmsContext.setDisplayLiveVersion("1");
-        }
-
-        if (extendedParameters != null) {
-            String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-            if (StringUtils.isNotBlank(parentId)) {
-                cmsContext.setParentId(parentId);
-            } else {
-                String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
-                if (StringUtils.isNotBlank(parentPath)) {
-                    cmsContext.setParentPath(parentPath);
-                }
-            }
         }
 
         // Base path
@@ -245,7 +230,6 @@ public class WebURLFactory extends URLFactoryDelegate {
                 // Web command
                 WebCommand webCommand = new WebCommand(webPath);
                 webCommand.setSupportingPageMarker(false);
-                webCommand.setExtendedParameters(cmsCommand.getExtendedParameters());
 
                 return controllerContext.getController().getURLFactory().doMapping(controllerContext, invocation, webCommand);
             }
@@ -334,30 +318,6 @@ public class WebURLFactory extends URLFactoryDelegate {
             }
 
             asu.setPortalRequestPath(portalRequestPath);
-
-            ExtendedParameters extendedParameters = webCommand.getExtendedParameters();
-            if (extendedParameters != null) {
-
-                String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-
-                if (StringUtils.isNotBlank(parentId)) {
-                    try {
-                        asu.setParameterValue("parentId", URLEncoder.encode(parentId, "UTF-8"));
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                } else {
-                    String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
-
-                    if (StringUtils.isNotBlank(parentPath)) {
-                        try {
-                            asu.setParameterValue("parentPath", URLEncoder.encode(parentPath, "UTF-8"));
-                        } catch (Exception e) {
-                            // ignore
-                        }
-                    }
-                }
-            }
 
 
             String windowName = webCommand.getWindowName();

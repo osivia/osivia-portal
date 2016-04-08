@@ -27,7 +27,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -69,9 +68,6 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
 	 String draft = null;
 
 	 String toAnalize = requestPath;
-	 
-	 ExtendedParameters extendedParameters = null;
-
 
 	 ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
 
@@ -286,33 +282,10 @@ public class CmsCommandFactoryService extends AbstractCommandFactory implements 
          {
             // ignore
          }
-         
-         try
-         {
-            if (parameterMap.get(CmsExtendedParameters.parentId.name()) != null)
-            {
-                String parentId = URLDecoder.decode(parameterMap.get(CmsExtendedParameters.parentId.name())[0], "UTF-8");
-                extendedParameters = new ExtendedParameters();
-                extendedParameters.addParameter(CmsExtendedParameters.parentId.name(), parentId);
-                
-            } else if(parameterMap.get(CmsExtendedParameters.parentPath.name()) != null) {
-                
-                String parentPath = URLDecoder.decode(parameterMap.get(CmsExtendedParameters.parentPath.name())[0], "UTF-8");
-                extendedParameters = new ExtendedParameters();
-                extendedParameters.addParameter(CmsExtendedParameters.parentPath.name(), parentPath);
-                
-            }
-         }
-         catch (UnsupportedEncodingException e)
-         {
-            // ignore
-         }
       }
 
 
          CmsCommand cmsCommand =  new CmsCommand( pagePath, cmsPath, pageParams, contextualization,  displayContext, hideMetaDatas, scope, displayLiveVersion, windowPermReference, addToBreadcrumb, portalPersistentName);
-         cmsCommand.setExtendedParameters(extendedParameters);
-
 
          try
          {

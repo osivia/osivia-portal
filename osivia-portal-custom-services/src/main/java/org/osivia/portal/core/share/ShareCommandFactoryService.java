@@ -17,15 +17,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.api.urls.ExtendedParameters;
-import org.osivia.portal.core.cms.CmsExtendedParameters;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -43,20 +39,7 @@ public class ShareCommandFactoryService extends AbstractCommandFactory {
         final ShareCommand shareCmd = new ShareCommand(requestPath);
         final ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
         if (parameterMap != null) {
-            final String[] parentIdParameters = parameterMap.get(CmsExtendedParameters.parentId.name());
-            final String[] parentPathParameters = parameterMap.get(CmsExtendedParameters.parentPath.name());
             try {
-                if (ArrayUtils.isNotEmpty(parentIdParameters)) {
-                    final String parentId = parentIdParameters[0];
-                    if (StringUtils.isNotBlank(parentId)) {
-                        setShareCmdParametres(shareCmd, CmsExtendedParameters.parentId.name(), parentId);
-                    }
-                } else if (ArrayUtils.isNotEmpty(parentPathParameters)) {
-                    final String parentPath = parentPathParameters[0];
-                    if(StringUtils.isNotBlank(parentPath)){
-                        setShareCmdParametres(shareCmd, CmsExtendedParameters.parentPath.name(), parentPath);
-                    }
-                }
                 if (parameterMap.get("pageParams") != null) {
                     final String sPageParms = URLDecoder.decode(parameterMap.get("pageParams")[0], "UTF-8");
                     final Map<String, String> pageParams = WindowPropertiesEncoder.decodeProperties(sPageParms);
@@ -68,20 +51,6 @@ public class ShareCommandFactoryService extends AbstractCommandFactory {
         }
 
         return shareCmd;
-    }
-
-    /**
-     * Set extended parameters.
-     *
-     * @param shareCmd
-     * @param paramKey
-     * @param param
-     * @throws UnsupportedEncodingException
-     */
-    private void setShareCmdParametres(ShareCommand shareCmd, String paramKey, String param) throws UnsupportedEncodingException {
-        final ExtendedParameters extendedParameters = new ExtendedParameters();
-        extendedParameters.addParameter(paramKey, URLDecoder.decode(param, "UTF-8"));
-        shareCmd.setExtendedParameters(extendedParameters);
     }
 
 }

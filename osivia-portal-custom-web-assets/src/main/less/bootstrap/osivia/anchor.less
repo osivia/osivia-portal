@@ -1,0 +1,14 @@
+//
+// OSIVIA Bootstrap extensions - Anchor
+// --------------------------------------------------
+
+
+@anchor-height: @navbar-height + floor(@line-height-computed / 2);
+
+
+[id].anchor {
+    display: block;
+    position: relative;
+    top: -@anchor-height;
+    visibility: hidden;
+}

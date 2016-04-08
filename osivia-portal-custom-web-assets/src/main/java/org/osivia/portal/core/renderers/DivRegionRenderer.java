@@ -646,7 +646,13 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Page header
-        Element pageHeader = DOM4JUtils.generateDivElement("page-header hidden-xs");
+        String pageHeaderClass;
+        if (windowTitle == null) {
+            pageHeaderClass = "clearfix hidden-xs";
+        } else {
+            pageHeaderClass = "page-header hidden-xs";
+        }
+        Element pageHeader = DOM4JUtils.generateDivElement(pageHeaderClass);
 
 
         String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);

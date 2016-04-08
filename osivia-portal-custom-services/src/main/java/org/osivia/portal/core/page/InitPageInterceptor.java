@@ -133,9 +133,10 @@ public class InitPageInterceptor extends ControllerInterceptor {
                         || ("1".equals(page.getDeclaredProperty("osivia.cms.directContentPublisher")))) {
                     if (!BooleanUtils.toBoolean(request.getParameter("edit-template-mode"))) {
                         // CMS redirection
-                        String path = page.getDeclaredProperty("osivia.cms.basePath");
-
-                        if (StringUtils.isNotEmpty(pagePublishSpaceConfig.getWebId())) {
+                        String path;
+                        if (StringUtils.isEmpty(pagePublishSpaceConfig.getWebId())) {
+                            path = page.getDeclaredProperty("osivia.cms.basePath");
+                        } else {
                             path = this.webIdService.webIdToCmsPath(pagePublishSpaceConfig.getWebId());
                         }
 

@@ -54,7 +54,6 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.theming.TabGroup;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
@@ -114,8 +113,6 @@ public class CmsCommand extends DynamicCommand {
 
     /** Page parameters. */
     private Map<String, String> pageParams;
-    /** Additional parameters. */
-    private ExtendedParameters extendedParameters;
 
     private IProfilManager profilManager;
 
@@ -556,21 +553,6 @@ public class CmsCommand extends DynamicCommand {
             // Lecture des informations de publication
             if (this.cmsPath != null) {
                 try {
-                    // Get parentId if any for resolution: case of webid
-                    if (this.extendedParameters != null) {
-                        String parentId = this.extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-                        if (StringUtils.isNotBlank(parentId)) {
-                            cmsReadItemContext.setParentId(parentId);
-                        } else {
-                            String parentPath = this.extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
-                            if (StringUtils.isNotBlank(parentPath)) {
-                                cmsReadItemContext.setParentPath(parentPath);
-                            }
-                        }
-
-                    }
-
-
                     // Attention, cet appel peut modifier si nécessaire le
                     // scope de cmsReadItemContext
 
@@ -1159,20 +1141,6 @@ public class CmsCommand extends DynamicCommand {
 
     public void setEcmActionReturn(String ecmActionReturn) {
         this.ecmActionReturn = ecmActionReturn;
-    }
-
-    /**
-     * @return the extendedParameters
-     */
-    public ExtendedParameters getExtendedParameters() {
-        return this.extendedParameters;
-    }
-
-    /**
-     * @param extendedParameters the extendedParameters to set
-     */
-    public void setExtendedParameters(ExtendedParameters extendedParameters) {
-        this.extendedParameters = extendedParameters;
     }
 
     public String getItemScope() {

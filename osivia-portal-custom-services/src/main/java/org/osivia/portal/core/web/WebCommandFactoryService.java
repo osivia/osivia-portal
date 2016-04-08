@@ -26,8 +26,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.urls.ExtendedParameters;
-import org.osivia.portal.core.cms.CmsExtendedParameters;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -70,26 +68,6 @@ public class WebCommandFactoryService extends AbstractCommandFactory  {
                     if (parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW) != null) {
                         cmsCommand.setWindowName(URLDecoder.decode(parameterMap.get(InternalConstants.PORTAL_WEB_URL_PARAM_WINDOW)[0], "UTF-8"));
                     }
-
-                    try {
-                        ExtendedParameters extendedParameters = null;
-                        if (parameterMap.get(CmsExtendedParameters.parentId.name()) != null) {
-                            String parentId = URLDecoder.decode(parameterMap.get(CmsExtendedParameters.parentId.name())[0], "UTF-8");
-                            extendedParameters = new ExtendedParameters();
-                            extendedParameters.addParameter(CmsExtendedParameters.parentId.name(), parentId);
-
-                        } else if (parameterMap.get(CmsExtendedParameters.parentPath.name()) != null) {
-
-                            String parentPath = URLDecoder.decode(parameterMap.get(CmsExtendedParameters.parentPath.name())[0], "UTF-8");
-                            extendedParameters = new ExtendedParameters();
-                            extendedParameters.addParameter(CmsExtendedParameters.parentPath.name(), parentPath);
-
-                        }
-                        cmsCommand.setExtendedParameters(extendedParameters);
-                    } catch (UnsupportedEncodingException e) {
-                        // ignore
-                    }
-
 
                     if( parameterMap.size() == 0)   {
                         // pas de paramètre : partage en mode anonyme

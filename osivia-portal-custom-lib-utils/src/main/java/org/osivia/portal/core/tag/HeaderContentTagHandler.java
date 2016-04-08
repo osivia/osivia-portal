@@ -153,10 +153,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/fancytree-integration.min.js'></script>");
 
-        // JSTree
-        // this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/jstree/jquery.jstree.min.js'></script>");
-        // this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/jstree-integration.min.js'></script>");
-
         // bxSlider
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bxslider/jquery.bxslider.min.js'></script>");
@@ -171,10 +167,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/logout.min.js'></script>");
 
         // Glyphicons
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons.min.css'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons-halflings.min.css'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons-filetypes.min.css'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/glyphicons/css/glyphicons-social.min.css'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.min.css'>");
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons-1.8.min.css'>");
 
         // No JavaScript CSS styles

@@ -49,11 +49,6 @@ public class CMSServiceCtx {
 
     private String forcedLivePath;
 
-    /** The parent identifier (webid). */
-    private String parentId;
-    /** The parent path. */
-    private String parentPath;
-
 
     /**
      * {@inheritDoc}
@@ -71,8 +66,6 @@ public class CMSServiceCtx {
         result = (prime * result) + ((this.forcedLivePath == null) ? 0 : this.forcedLivePath.hashCode());
         result = (prime * result) + ((this.hideMetaDatas == null) ? 0 : this.hideMetaDatas.hashCode());
         result = (prime * result) + (this.isAsyncCacheRefreshing ? 1231 : 1237);
-        result = (prime * result) + ((this.parentId == null) ? 0 : this.parentId.hashCode());
-        result = (prime * result) + ((this.parentPath == null) ? 0 : this.parentPath.hashCode());
         result = (prime * result) + ((this.scope == null) ? 0 : this.scope.hashCode());
         return result;
     }
@@ -151,20 +144,6 @@ public class CMSServiceCtx {
         if (this.isAsyncCacheRefreshing != other.isAsyncCacheRefreshing) {
             return false;
         }
-        if (this.parentId == null) {
-            if (other.parentId != null) {
-                return false;
-            }
-        } else if (!this.parentId.equals(other.parentId)) {
-            return false;
-        }
-        if (this.parentPath == null) {
-            if (other.parentPath != null) {
-                return false;
-            }
-        } else if (!this.parentPath.equals(other.parentPath)) {
-            return false;
-        }
         if (this.scope == null) {
             if (other.scope != null) {
                 return false;
@@ -173,34 +152,6 @@ public class CMSServiceCtx {
             return false;
         }
         return true;
-    }
-
-    /**
-     * @return the parentId
-     */
-    public String getParentId() {
-        return this.parentId;
-    }
-
-    /**
-     * @param parentId the parentId to set
-     */
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
-    }
-
-    /**
-     * @return the parentPath
-     */
-    public String getParentPath() {
-        return this.parentPath;
-    }
-
-    /**
-     * @param parentPath the parentPath to set
-     */
-    public void setParentPath(String parentPath) {
-        this.parentPath = parentPath;
     }
 
     public String getForcedLivePath() {

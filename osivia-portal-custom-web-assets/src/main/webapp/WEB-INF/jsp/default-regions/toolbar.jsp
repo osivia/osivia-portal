@@ -98,12 +98,17 @@
                                 </a>
                                 
                                 <ul class="dropdown-menu" role="menu">
-                                    <li role="presentation">
-                                        <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
-                                            <i class="glyphicons glyphicons-nameplate"></i>
-                                            <span><op:translate key="MY_PROFILE" /></span>
-                                        </a>
-                                    </li>
+                                    <!-- User profile -->
+                                    <c:if test="${not empty requestScope['osivia.toolbar.myprofile']}">
+                                        <li role="presentation">
+                                            <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
+                                                <i class="glyphicons glyphicons-nameplate"></i>
+                                                <span><op:translate key="MY_PROFILE" /></span>
+                                            </a>
+                                        </li>
+                                    </c:if>
+                                    
+                                    <!-- Logout -->
                                     <li role="presentation">
                                         <a href="#" onclick="logout()" role="menuitem">
                                             <i class="halflings halflings-log-out"></i>

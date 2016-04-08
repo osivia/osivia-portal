@@ -26,14 +26,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -219,39 +217,6 @@ public class CmsURLFactory extends URLFactoryDelegate
                // ignore
             }
          }
-
-         ExtendedParameters extendedParameters = cmsCommand.getExtendedParameters();
-         if(extendedParameters != null){
-             
-             String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-             
-             if(StringUtils.isNotBlank(parentId)){
-                 try
-                 {
-                    asu.setParameterValue("parentId",  URLEncoder.encode(parentId, "UTF-8"));
-                 }
-                 catch (Exception e)
-                 {
-                    // ignore
-                 }
-             } else {
-                 String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentPath.name());
-                 
-                 if(StringUtils.isNotBlank(parentPath)){
-                     try
-                     {
-                        asu.setParameterValue("parentPath",  URLEncoder.encode(parentPath, "UTF-8"));
-                     }
-                     catch (Exception e)
-                     {
-                        // ignore
-                     }
-                 }
-             }
-             
-             
-         }
-
 
          return asu;
       }

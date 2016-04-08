@@ -14,7 +14,6 @@
  */
 package org.osivia.portal.core.share;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
@@ -25,8 +24,6 @@ import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
-import org.osivia.portal.api.urls.ExtendedParameters;
-import org.osivia.portal.core.cms.CmsExtendedParameters;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -75,23 +72,6 @@ public class ShareURLFactory extends URLFactoryDelegate {
             }
 
             asu.setPortalRequestPath(portalRequestPath);
-
-            final ExtendedParameters extendedParameters = shareCmd.getExtendedParameters();
-            if (extendedParameters != null) {
-
-                final String parentId = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-                final String parentPath = extendedParameters.getParameter(CmsExtendedParameters.parentId.name());
-                try {
-                    if (StringUtils.isNotBlank(parentId)) {
-                        asu.setParameterValue(CmsExtendedParameters.parentId.name(), URLEncoder.encode(parentId, "UTF-8"));
-                    } else if (StringUtils.isNotBlank(parentPath)) {
-                        asu.setParameterValue(CmsExtendedParameters.parentPath.name(), URLEncoder.encode(parentId, "UTF-8"));
-                    }
-                } catch (final UnsupportedEncodingException e) {
-                    // Ignore
-                }
-
-            }
 
             final Map<String, String> pageParams = shareCmd.getParams();
             if (pageParams != null) {

@@ -41,7 +41,6 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -76,8 +75,6 @@ public class WebCommand extends DynamicCommand {
     private String windowName;
     /** Supporting page marker. */
     private boolean supportingPageMarker;
-    /** Extended parameters. */
-    private ExtendedParameters extendedParameters;
     /** Page response. */
     private ControllerResponse pageResponse;
 
@@ -121,11 +118,10 @@ public class WebCommand extends DynamicCommand {
         if (this.pageResponse == null) {
             // Transformation du requestpath
             CmsCommand cmsCommand = new CmsCommand();
-            cmsCommand.setExtendedParameters(this.extendedParameters);
 
             // CMS path
             // Must reload (webId may have be moved, so cms path might be false)
-            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerContext, this.webPath, this.extendedParameters, true);
+            String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerContext, this.webPath, true);
             cmsCommand.setCmsPath(cmsPath);
 
 
@@ -200,9 +196,8 @@ public class WebCommand extends DynamicCommand {
 
         // Transformation du requestpath
         CmsCommand cmsCmd = new CmsCommand();
-        cmsCmd.setExtendedParameters(this.extendedParameters);
 
-        String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, this.extendedParameters, false);
+        String cmsPath = WebURLFactory.adaptWebURLToCMSPath(controllerCtx, this.webPath, false);
         cmsCmd.setCmsPath(cmsPath);
 
 
@@ -340,24 +335,6 @@ public class WebCommand extends DynamicCommand {
      */
     public void setSupportingPageMarker(boolean supportingPageMarker) {
         this.supportingPageMarker = supportingPageMarker;
-    }
-
-    /**
-     * Getter for extendedParameters.
-     *
-     * @return the extendedParameters
-     */
-    public ExtendedParameters getExtendedParameters() {
-        return this.extendedParameters;
-    }
-
-    /**
-     * Setter for extendedParameters.
-     *
-     * @param extendedParameters the extendedParameters to set
-     */
-    public void setExtendedParameters(ExtendedParameters extendedParameters) {
-        this.extendedParameters = extendedParameters;
     }
 
     /**

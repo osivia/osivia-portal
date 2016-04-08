@@ -25,7 +25,6 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.portal.Portal;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.urls.ExtendedParameters;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.DynamicCommand;
@@ -42,8 +41,6 @@ public class ShareCommand extends DynamicCommand {
 
     /** WebId. */
     private String webId;
-    /** Extended parameters: parentId or parentPath for the moment. */
-    private ExtendedParameters extendedParameters;
 
     /** Prefixed webId. */
     private String prefixedWebId;
@@ -101,20 +98,6 @@ public class ShareCommand extends DynamicCommand {
     }
 
     /**
-     * @return the extendedParameters
-     */
-    public ExtendedParameters getExtendedParameters() {
-        return extendedParameters;
-    }
-
-    /**
-     * @param extendedParameters the extendedParameters to set
-     */
-    public void setExtendedParameters(ExtendedParameters extendedParameters) {
-        this.extendedParameters = extendedParameters;
-    }
-
-    /**
      * @return prefixed webId.
      */
     public String getPrefixedWebId(){
@@ -151,7 +134,6 @@ public class ShareCommand extends DynamicCommand {
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
-        cmsCommand.setExtendedParameters(this.extendedParameters);
 
         return this.context.execute(cmsCommand);
     }
