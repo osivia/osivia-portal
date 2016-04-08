@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -105,6 +107,8 @@ public class MenubarService implements IMenubarService {
     public String generateNavbarContent(PortalControllerContext portalControllerContext) {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // HTTP servlet request
+        HttpServletRequest httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
         // Locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
         // Bundle
@@ -126,11 +130,13 @@ public class MenubarService implements IMenubarService {
 
 
         // Refresh
-        String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
-        if (refreshURL != null) {
-            MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "halflings halflings-repeat", MenubarGroup.GENERIC, 100, refreshURL,
-                    null, null, null);
-            this.addSortedItem(sortedItems, MenubarGroup.GENERIC, item);
+        if (httpServletRequest.getUserPrincipal() != null) {
+            String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
+            if (refreshURL != null) {
+                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "halflings halflings-repeat", MenubarGroup.GENERIC, 100, refreshURL,
+                        null, null, null);
+                this.addSortedItem(sortedItems, MenubarGroup.GENERIC, item);
+            }
         }
 
 
