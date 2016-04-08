@@ -92,8 +92,9 @@
                                 </a>
 
                                 <ul class="dropdown-menu" role="menu">
-                                     <li role="presentation">
-                                        <a href="#" onclick="callLogout()" role="menuitem">
+                                    <!-- Logout -->
+                                    <li role="presentation">
+                                        <a href="#" onclick="logout()" role="menuitem">
                                             <i class="halflings halflings-log-out"></i>
                                             <span><op:translate key="LOGOUT" /></span>
                                         </a>
