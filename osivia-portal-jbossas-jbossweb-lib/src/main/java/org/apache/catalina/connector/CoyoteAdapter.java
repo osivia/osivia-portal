@@ -349,7 +349,7 @@ return false;
 /* 455 */       String query = request.getQueryString();
 /* 456 */       if (request.isRequestedSessionIdFromURL())
 /*     */       {
-/* 459 */         redirectPath = redirectPath + ";portalsessionid=" + request.getRequestedSessionId();
+/* 459 */         //redirectPath = redirectPath + ";portalsessionid=" + request.getRequestedSessionId();
 /*     */       }
 /*     */ 
 /* 462 */       if (query != null)
