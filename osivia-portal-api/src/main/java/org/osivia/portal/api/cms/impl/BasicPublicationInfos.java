@@ -83,9 +83,6 @@ public class BasicPublicationInfos implements PublicationInfos {
 	/** true if this document is displayed in his navigation context */
 	private boolean contextualized = false;
 	
-	/** true if has children */
-	private boolean hasSubItems = false;	
-	
 	/** ???? */
 	private String scope;
 	
@@ -220,20 +217,6 @@ public class BasicPublicationInfos implements PublicationInfos {
 	 */
 	public void setContextualized(boolean contextualized) {
 		this.contextualized = contextualized;
-	}
-
-	/**
-	 * @return the hasSubItems
-	 */
-	public boolean isHasSubItems() {
-		return hasSubItems;
-	}
-
-	/**
-	 * @param hasSubItems the hasSubItems to set
-	 */
-	public void setHasSubItems(boolean hasSubItems) {
-		this.hasSubItems = hasSubItems;
 	}
 
 	/**
