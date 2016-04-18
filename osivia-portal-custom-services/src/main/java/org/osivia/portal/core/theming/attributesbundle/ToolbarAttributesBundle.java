@@ -1104,8 +1104,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         if (beingModified) {
             // Current modification indicator
-            final Element modificationIndicator = DOM4JUtils.generateElement("span", "btn disabled", bundle.getString("MODIFICATION_MESSAGE"),
-                    "halflings halflings-alert", AccessibilityRoles.PRESENTATION);
+            final Element modificationIndicator = DOM4JUtils.generateElement("span", "label label-default", bundle.getString("MODIFICATION_MESSAGE"),
+                    "halflings halflings-asterisk", AccessibilityRoles.PRESENTATION);
+            ((Element) modificationIndicator.elements().get(1)).addAttribute(HTMLConstants.CLASS, "hidden-sm");
             li.add(modificationIndicator);
         }
     }
@@ -1167,7 +1168,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     }
 
     /**
-     * Fancybox for delete page.
+     * Generate erase confirmation fancybox.
      *
      * @param bundle bundle
      * @param urlDelete the command for delete
