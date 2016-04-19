@@ -15,6 +15,8 @@ public abstract class MenubarObject {
     private int order;
     /** Disabled menubar object indicator. */
     private boolean disabled;
+    /** Breadcrumb item indicator. */
+    private boolean breadcrumb;
 
     /** Menubar object identifier. */
     private final String id;
@@ -148,6 +150,23 @@ public abstract class MenubarObject {
         this.disabled = disabled;
     }
 
+    /**
+     * Getter for breadcrumb.
+     * 
+     * @return the breadcrumb
+     */
+    public boolean isBreadcrumb() {
+        return breadcrumb;
+    }
+
+    /**
+     * Setter for breadcrumb.
+     * 
+     * @param breadcrumb the breadcrumb to set
+     */
+    public void setBreadcrumb(boolean breadcrumb) {
+        this.breadcrumb = breadcrumb;
+    }
 
     /**
      * Getter for id.

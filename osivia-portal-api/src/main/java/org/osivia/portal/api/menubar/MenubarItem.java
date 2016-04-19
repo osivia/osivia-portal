@@ -188,6 +188,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         MenubarItem clone = new MenubarItem(this.getId(), this.getTitle(), this.getGlyphicon(), this.parent, this.getOrder(), this.url, this.target,
                 this.onclick, this.htmlClasses);
         clone.setDisabled(this.isDisabled());
+        clone.setBreadcrumb(this.isBreadcrumb());
         clone.associatedHTML = this.associatedHTML;
         clone.ajaxDisabled = this.ajaxDisabled;
         clone.state = this.state;

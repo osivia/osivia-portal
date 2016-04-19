@@ -34,8 +34,6 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
 	
     /** Menubar dropdown menu reducible indicator. Default value: true. */
     private boolean reducible;
-    /** Breadcrumb dropdown menu indicator. */
-    private boolean breadcrumb;
 
 
     /** Menubar dropdown menu parent group. */
@@ -110,24 +108,6 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
      */
     public void setReducible(boolean reducible) {
         this.reducible = reducible;
-    }
-
-    /**
-     * Getter for breadcrumb.
-     * 
-     * @return the breadcrumb
-     */
-    public boolean isBreadcrumb() {
-        return breadcrumb;
-    }
-
-    /**
-     * Setter for breadcrumb.
-     * 
-     * @param breadcrumb the breadcrumb to set
-     */
-    public void setBreadcrumb(boolean breadcrumb) {
-        this.breadcrumb = breadcrumb;
     }
 
 }

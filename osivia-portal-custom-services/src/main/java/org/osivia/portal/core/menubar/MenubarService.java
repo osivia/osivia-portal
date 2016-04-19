@@ -436,7 +436,12 @@ public class MenubarService implements IMenubarService {
         for (MenubarItem dropdownMenuItem : dropdownMenuItems) {
             // Dropdown menu divider
             if (dropdownMenuItem.isDivider() && !first) {
-                Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
+                String htmlClasses = "divider";
+                if (dropdownMenuItem.isBreadcrumb()) {
+                    htmlClasses += " content-navbar-hidden";
+                }
+
+                Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
                 dropdownUL.add(dividerLI);
             }
 
@@ -480,6 +485,9 @@ public class MenubarService implements IMenubarService {
         }
         if (item.isDisabled()) {
             htmlClasses.append("disabled ");
+        }
+        if (item.isBreadcrumb()) {
+            htmlClasses.append("content-navbar-hidden ");
         }
 
         // Role

@@ -3,6 +3,9 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
 
+<c:set var="stateItems" value="${requestScope['osivia.toolbar.menubar.stateItems']}" />
+
+
 <div class="toolbar">
     <div class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
@@ -15,12 +18,17 @@
                             <i class="halflings halflings-arrow-right"></i>
                         </span>
                     </button>
-                    
+
                     <!-- State items -->
-                    <c:forEach var="stateItem" items="${requestScope['osivia.toolbar.menubar.stateItems']}">
+                    <c:forEach begin="1" end="${fn:length(stateItems)}" var="count">
+                        <c:set var="stateItem" value="${stateItems[fn:length(stateItems) - count]}" />
+                    
                         <div class="pull-right">
                             <p class="navbar-text"
-                                <c:if test="${not empty stateItem.title}">title="${stateItem.title}" data-toggle="tooltip" data-placement="bottom"</c:if>
+                                <c:choose>
+                                    <c:when test="${not empty stateItem.tooltip}">title="${stateItem.tooltip}" data-toggle="tooltip" data-placement="bottom"</c:when>
+                                    <c:when test="${not empty stateItem.title}">title="${stateItem.title}" data-toggle="tooltip" data-placement="bottom"</c:when>
+                                </c:choose>
                             >
                                 <span class="${stateItem.htmlClasses}">
                                     <i class="${stateItem.glyphicon}"></i>
@@ -28,7 +36,7 @@
                             </p>
                         </div>
                     </c:forEach>
-
+                    
                     <!-- AJAX waiter-->
                     <div class="pull-right">
                         <p class="navbar-text ajax-waiter">

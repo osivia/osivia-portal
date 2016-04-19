@@ -611,12 +611,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 MenubarContainer parent = menubarItem.getParent();
                 if (parent instanceof MenubarDropdown) {
                     MenubarDropdown dropdown = (MenubarDropdown) parent;
-                    if (MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID.equals(dropdown.getId())) {
-                        if (!dropdown.isBreadcrumb()) {
-                            // Do not display menu in breadcrumb
-                            break;
-                        }
-
+                    if (MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID.equals(dropdown.getId()) && (dropdown.isBreadcrumb() || menubarItem.isBreadcrumb())) {
                         breadcrumb.getMenubarItems().add(menubarItem);
                     }
                 }

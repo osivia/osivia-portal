@@ -50,8 +50,8 @@ public class DocumentType {
     /** CMS item live editable indicator. */
     private final boolean liveEditable;    
 
-
-
+    /** CMS item editorial content indicator, may be null. */
+    private Boolean editorialContent;
 
 
     /**
@@ -308,7 +308,6 @@ public class DocumentType {
 	public boolean isRootType() {
 		return this.isRootType;
 	}
-
     
     /**
      * Checks if is movable.
@@ -319,7 +318,6 @@ public class DocumentType {
         return movable;
     }
 
-
     /**
      * Checks if is live editable.
      *
@@ -329,5 +327,22 @@ public class DocumentType {
         return liveEditable;
     }
 
+    /**
+     * Getter for editorialContent.
+     * 
+     * @return the editorialContent
+     */
+    public Boolean getEditorialContent() {
+        return editorialContent;
+    }
+
+    /**
+     * Setter for editorialContent.
+     * 
+     * @param editorialContent the editorialContent to set
+     */
+    public void setEditorialContent(Boolean editorialContent) {
+        this.editorialContent = editorialContent;
+    }
 	
 }
