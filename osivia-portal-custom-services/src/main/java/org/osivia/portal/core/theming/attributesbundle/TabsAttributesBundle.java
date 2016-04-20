@@ -188,7 +188,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             }
             
             // Selected page identifier
-            String selectedPageId = mainPage.getId().toString();
+            String selectedPageId;
             if (domainContextualization == null) {
                 selectedPageId = mainPage.getId().toString();
             } else if (defaultSite == null) {
@@ -456,8 +456,6 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
                 mainPages.add(userPage);
 
-                String id = userPage.getId();
-
                 // Tab group
                 String groupName = child.getDeclaredProperty(TabGroup.NAME_PROPERTY);
                 if (StringUtils.isEmpty(groupName)) {
@@ -481,8 +479,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                             }
                         }
 
-                        displayed = id.equals(selectedPageId)
-                                || ((previousDisplayedPages != null) && previousDisplayedPages.contains(userPage) && !id.equals(hidePageId));
+                        displayed = userPage.getId().equals(selectedPageId)
+                                || ((previousDisplayedPages != null) && previousDisplayedPages.contains(userPage) && !child.getId().toString()
+                                        .equals(hidePageId));
                     }
 
                     // Add to group

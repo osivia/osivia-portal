@@ -17,7 +17,6 @@ package org.osivia.portal.core.dynamic;
 // import org.apache.commons.logging.LogFactory;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,9 +40,6 @@ import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.theming.UserPage;
-import org.osivia.portal.api.theming.UserPortal;
-import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
@@ -59,8 +55,6 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
     /** Command info. */
     private final CommandInfo info;
-    /** Portal URL factory. */
-    private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
 
@@ -74,7 +68,6 @@ public class StopDynamicPageCommand extends DynamicCommand {
     public StopDynamicPageCommand() {
         super();
         this.info = new ActionCommandInfo(false);
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
     }
 
@@ -225,34 +218,40 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 if (!currentPageDeleted) {
                     pageToRefresh = currentPage;
                 } else {
-                    UserPortal tabbedNavUserPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                            "osivia.tabbedNavUserPortal");
+                    // TODO
+                    // L'accès à la page précédente des onglets peut renvoyer un résultat incohérent dans le cas des onglets groupés :
+                    // la page précédente peut très bien être un onglet masqué, ce qui le ferait apparaître.
+                    // Il n'est pas non plus possible de tester l'affichage des groupes, puisqu'elle dépend de la charte graphique.
+                    // Idéalement, il faudrait remonter au dernier onglet accédé par l'utilisateur et qui n'a pas été fermé depuis (via l'historique).
 
-                    // On cherche l'item courant
-                    int indiceCurrentPage = -1;
-                    List<UserPage> userPages = tabbedNavUserPortal.getUserPages();
-                    for (int i = 0; i < userPages.size(); i++) {
-                        UserPage userPage = userPages.get(i);
-                        if ((domainContextualization != null) && userPage.getId().equals(domainName) || pageObjectId.equals(userPage.getPortalObjectId())) {
-                            indiceCurrentPage = i;
-                            break;
-                        }
-                    }
-
-
-                    if (indiceCurrentPage != -1) {
-                        // Si c'est le dernier item, on prend le précédent, sinon le suivant
-                        if (indiceCurrentPage == (userPages.size() - 1)) {
-                            indiceCurrentPage = indiceCurrentPage - 1;
-                        }
-                        
-                        UserPage userPage = userPages.get(indiceCurrentPage);
-                        
-                        PortalObjectId portalObjectId = userPage.getPortalObjectId();
-                        if (portalObjectId != null) {
-                            redirectPage = portalObjectContainer.getObject(portalObjectId, Page.class);
-                        }
-                    }
+                    // UserPortal tabbedNavUserPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                    // "osivia.tabbedNavUserPortal");
+                    //
+                    // // On cherche l'item courant
+                    // int indiceCurrentPage = -1;
+                    // List<UserPage> userPages = tabbedNavUserPortal.getUserPages();
+                    // for (int i = 0; i < userPages.size(); i++) {
+                    // UserPage userPage = userPages.get(i);
+                    // if ((domainContextualization != null) && userPage.getId().equals(domainName) || pageObjectId.equals(userPage.getPortalObjectId())) {
+                    // indiceCurrentPage = i;
+                    // break;
+                    // }
+                    // }
+                    //
+                    //
+                    // if (indiceCurrentPage != -1) {
+                    // // Si c'est le dernier item, on prend le précédent, sinon le suivant
+                    // if (indiceCurrentPage == (userPages.size() - 1)) {
+                    // indiceCurrentPage = indiceCurrentPage - 1;
+                    // }
+                    //
+                    // UserPage userPage = userPages.get(indiceCurrentPage);
+                    //
+                    // PortalObjectId portalObjectId = userPage.getPortalObjectId();
+                    // if (portalObjectId != null) {
+                    // redirectPage = portalObjectContainer.getObject(portalObjectId, Page.class);
+                    // }
+                    // }
                 }
             }
 
@@ -266,14 +265,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
             if (redirectUrl == null) {
                 if (redirectPage == null) {
-                    redirectPage = ((Portal) page.getParent()).getDefaultPage();
+                    redirectPage = page.getPortal().getDefaultPage();
                 }
 
-                if (redirectPage != null) {
-                    ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
-                    PortalURL url = new PortalURLImpl(pageCmd, controllerContext, null, null);
-                    redirectUrl = url.toString() + "?init-state=true";
-                }
+                ViewPageCommand pageCmd = new ViewPageCommand(redirectPage.getId());
+                PortalURL url = new PortalURLImpl(pageCmd, controllerContext, null, null);
+                redirectUrl = url.toString() + "?init-state=true";
             }
 
 
