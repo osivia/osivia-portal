@@ -22,7 +22,7 @@
                     </div>
                 
                     <div class="media-body">
-                        <form onsubmit="return onsubmitGlobalSearch(this);" method="post" role="search">
+                        <form action="${requestScope['osivia.search.url']}" method="post" role="search">
                             <div class="input-group">
                                 <input type="text" name="keywords" class="form-control" placeholder="${searchPlaceholder}">
                                 
