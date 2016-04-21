@@ -15,8 +15,10 @@ package org.osivia.portal.core.dynamic;
 
 // import org.apache.commons.logging.Log;
 // import org.apache.commons.logging.LogFactory;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,11 +42,15 @@ import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.theming.UserPage;
+import org.osivia.portal.api.theming.UserPagesGroup;
+import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
@@ -224,34 +230,66 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     // Il n'est pas non plus possible de tester l'affichage des groupes, puisqu'elle dépend de la charte graphique.
                     // Idéalement, il faudrait remonter au dernier onglet accédé par l'utilisateur et qui n'a pas été fermé depuis (via l'historique).
 
-                    // UserPortal tabbedNavUserPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                    // "osivia.tabbedNavUserPortal");
-                    //
-                    // // On cherche l'item courant
-                    // int indiceCurrentPage = -1;
-                    // List<UserPage> userPages = tabbedNavUserPortal.getUserPages();
-                    // for (int i = 0; i < userPages.size(); i++) {
-                    // UserPage userPage = userPages.get(i);
-                    // if ((domainContextualization != null) && userPage.getId().equals(domainName) || pageObjectId.equals(userPage.getPortalObjectId())) {
-                    // indiceCurrentPage = i;
-                    // break;
-                    // }
-                    // }
-                    //
-                    //
-                    // if (indiceCurrentPage != -1) {
-                    // // Si c'est le dernier item, on prend le précédent, sinon le suivant
-                    // if (indiceCurrentPage == (userPages.size() - 1)) {
-                    // indiceCurrentPage = indiceCurrentPage - 1;
-                    // }
-                    //
-                    // UserPage userPage = userPages.get(indiceCurrentPage);
-                    //
-                    // PortalObjectId portalObjectId = userPage.getPortalObjectId();
-                    // if (portalObjectId != null) {
-                    // redirectPage = portalObjectContainer.getObject(portalObjectId, Page.class);
-                    // }
-                    // }
+
+                    // User pages
+                    UserPortal userPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
+                    List<UserPage> userPages = new ArrayList<UserPage>(userPortal.getDisplayedPagesCount());
+                    for (UserPagesGroup group : userPortal.getGroups()) {
+                        for (UserPage userPage : group.getDisplayedPages()) {
+                            userPages.add(userPage);
+                        }
+                    }
+                    for (UserPage userPage : userPortal.getUserPages()) {
+                        if ((userPage.getGroup() == null) && !userPage.equals(userPortal.getDefaultPage())) {
+                            userPages.add(userPage);
+                        }
+                    }
+
+
+                    // Current user page index
+                    Integer index = null;
+                    for (int i = 0; i < userPages.size(); i++) {
+                        UserPage userPage = userPages.get(i);
+
+                        // Identifier
+                        String id;
+                        if (domainContextualization != null) {
+                            // Site
+                            String site = StringUtils.substringAfterLast(basePath, "/");
+                            id = domainName + "/" + site;
+                        } else {
+                            id = pageObjectId.toString();
+                        }
+
+                        if (userPage.getId().equals(id)) {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index != null) {
+                        // Search next or previous index
+                        if (index == userPages.size() - 1) {
+                            // Previous
+                            index--;
+                        } else {
+                            // Next
+                            index++;
+                        }
+
+
+                        // Redirection
+                        UserPage userPage = userPages.get(index);
+                        if (userPage.getPortalObjectId() != null) {
+                            redirectPage = portalObjectContainer.getObject(userPage.getPortalObjectId(), Page.class);
+                        } else {
+                            redirectUrl = userPage.getUrl();
+
+                            // Update page marker
+                            String pageMarker = PageMarkerUtils.getCurrentPageMarker(controllerContext);
+                            redirectUrl = redirectUrl.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/");
+                        }
+                    }
                 }
             }
 
