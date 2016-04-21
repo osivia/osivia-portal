@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -379,14 +380,24 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }
 
         if (cmd instanceof InvokePortletWindowRenderCommand) {
-            StateString navigationalState = ((InvokePortletWindowRenderCommand) cmd).getNavigationalState();
+            InvokePortletWindowRenderCommand windowRenderCommand = (InvokePortletWindowRenderCommand) cmd;
+            StateString navigationalState = windowRenderCommand.getNavigationalState();
             if (navigationalState instanceof ParametersStateString) {
+                PortalObjectId windowId = windowRenderCommand.getTargetId();
                 Map<String, String[]> params = ((ParametersStateString) navigationalState).getParameters();
-                String editionPath[] = params.get(Constants.PORTLET_PARAM_EDITION_PATH);
-                if ((editionPath != null) && (editionPath.length > 0)) {
 
+                // Online path
+                String onlinePath[] = params.get(Constants.PORTLET_PARAM_ONLINE_PATH);
+                if (ArrayUtils.isNotEmpty(onlinePath)) {
+                    EditionState editionState = new EditionState(EditionState.CONTRIBUTION_MODE_ONLINE, onlinePath[0]);
+                    ContributionService.setWindowEditionState(controllerContext, windowId, editionState);
+                }
+
+                // Edition path
+                String editionPath[] = params.get(Constants.PORTLET_PARAM_EDITION_PATH);
+                if (ArrayUtils.isNotEmpty(editionPath)) {
                     EditionState editionState = new EditionState(EditionState.CONTRIBUTION_MODE_EDITION, editionPath[0]);
-                    ContributionService.setWindowEditionState(controllerContext, ((InvokePortletWindowRenderCommand) cmd).getTargetId(), editionState);
+                    ContributionService.setWindowEditionState(controllerContext, windowId, editionState);
                 }
             }
         }

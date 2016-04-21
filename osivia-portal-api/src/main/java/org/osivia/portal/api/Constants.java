@@ -161,6 +161,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_SPACE_CONFIG =  "osivia.spaceConfig";
     /** Redirection URL  */
     public static final String PORTLET_ATTR_REDIRECTION_URL =  "osivia.redirection.url";
+    /** Online path. */
+    public static final String PORTLET_PARAM_ONLINE_PATH = "osivia.cms.onlinePath";
     /** Edition path  */
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
 
