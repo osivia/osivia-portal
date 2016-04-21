@@ -54,6 +54,8 @@ import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.theming.TabGroup;
+import org.osivia.portal.api.trace.ITraceServiceLocator;
+import org.osivia.portal.api.trace.Trace;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
@@ -85,6 +87,10 @@ public class CmsCommand extends DynamicCommand {
     public static final String LAYOUT_TYPE_CURRENT_PAGE = "0";
     public static final String LAYOUT_TYPE_SCRIPT = "1";
 
+    /**
+	 * Id of action (for stats)
+	 */
+	private static final String TRACE_CMS = "CMS";
 
     private static IInternationalizationService itlzService = InternationalizationUtils.getInternationalizationService();
 
@@ -951,6 +957,15 @@ public class CmsCommand extends DynamicCommand {
                 String notification = itlzService.getString(ecmActionReturn, this.getControllerContext().getServerInvocation().getRequest().getLocale());
                 notifService.addSimpleNotification(portalCtx, notification, NotificationsType.SUCCESS);
             }
+            
+            
+            // Tracking service, #1150
+            ITraceServiceLocator findMBean = Locator.findMBean(ITraceServiceLocator.class, ITraceServiceLocator.MBEAN_NAME);
+            if(findMBean.getService() != null && findMBean.getService().enabled()) {
+            	Trace t = new Trace(controllerContext.getServerInvocation().getServerContext().getClientRequest(), TRACE_CMS, cmsItem.getNativeItem());
+            	findMBean.getService().trace(t);
+            }
+            
 
             // Doit-on afficher le contenu en mode MAXIMIZED ?
             boolean displayContent = false;

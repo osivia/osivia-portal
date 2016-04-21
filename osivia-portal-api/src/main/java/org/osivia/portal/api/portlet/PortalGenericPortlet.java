@@ -26,6 +26,8 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.trace.ITraceService;
+import org.osivia.portal.api.trace.ITraceServiceLocator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 
 /**
@@ -47,6 +49,8 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	private final IDirectoryServiceLocator directoryServiceLocator;
 	
 	private final IMenubarService menubarService;
+	
+	private final ITraceServiceLocator traceServiceLocator;
 
 	public PortalGenericPortlet() {
 		super();
@@ -63,10 +67,19 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 		this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
 		
 		this.menubarService = Locator.findMBean(IMenubarService.class, IMenubarService.MBEAN_NAME);
+		
+		this.traceServiceLocator = Locator.findMBean(ITraceServiceLocator.class, ITraceServiceLocator.MBEAN_NAME);
 	}
 
 	public IDirectoryService getDirectoryService() {
 		return this.directoryServiceLocator.getDirectoryService();
+	}
+	
+	/**
+	 * @return the traceService via the locator
+	 */
+	public ITraceService getTraceService() {
+		return this.traceServiceLocator.getService();
 	}
 
 	/**

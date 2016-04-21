@@ -759,6 +759,15 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
     </mbean>
+    
+	<!-- Trace service -->
+    <mbean
+        code="org.osivia.portal.core.trace.TraceServiceLocator"
+        name="osivia:service=TraceServiceLocator"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
 
     <!-- Selection service -->
     <mbean
