@@ -267,7 +267,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                         }
                     }
 
-                    if (index != null) {
+                    if ((index != null) && (userPages.size() > 1)) {
                         // Search next or previous index
                         if (index == userPages.size() - 1) {
                             // Previous
