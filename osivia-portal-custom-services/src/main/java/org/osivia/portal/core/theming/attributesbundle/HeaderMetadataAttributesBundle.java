@@ -14,6 +14,7 @@
 package org.osivia.portal.core.theming.attributesbundle;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +44,7 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DocumentMetadata;
+import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -134,20 +136,52 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         cmsContext.setServerInvocation(controllerContext.getServerInvocation());
         cmsContext.setControllerContext(controllerContext);
 
-        // Get content path
+        // CMS content path
         String contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
 
         // Get ECM object
         CMSItem document = null;
+        // Domain display name
+        String domainDisplayName = null;
+
         if (contentPath != null) {
             try {
-                Boolean pageInEditionMode =  (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
-                if( pageInEditionMode)  {
+                Boolean pageInEditionMode = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                if (pageInEditionMode) {
                     cmsContext.setDisplayLiveVersion("1");
                 }
 
                 document = cmsService.getContent(cmsContext, contentPath);
                 cmsContext.setDoc(document.getNativeItem());
+
+                // CMS base path
+                String basePath = page.getProperty("osivia.cms.basePath");
+                if (contentPath.equals(basePath)) {
+                    // Domain contextualization
+                    String domainName = StringUtils.substringBefore(StringUtils.removeStart(basePath, "/"), "/");
+                    String domainPath = "/" + domainName;
+                    DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
+
+                    // Sites
+                    List<String> sites = null;
+                    if (domainContextualization != null) {
+                        sites = domainContextualization.getSites(portalControllerContext);
+                    }
+
+                    // Current site
+                    String site = StringUtils.substringAfterLast(basePath, "/");
+
+                    if ((sites != null) && sites.contains(site)) {
+                        // Domain
+                        try {
+                            cmsContext.setForcePublicationInfosScope("superuser_context");
+                            CMSItem domain = cmsService.getContent(cmsContext, domainPath);
+                            domainDisplayName = domain.getProperties().get("displayName");
+                        } finally {
+                            cmsContext.setForcePublicationInfosScope(null);
+                        }
+                    }
+                }
             } catch (CMSException e) {
                 // Do nothing
             }
@@ -222,7 +256,11 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 DocumentMetadata documentMetadata = cmsService.getDocumentMetadata(cmsContext);
 
                 // Title
-                title = documentMetadata.getTitle();
+                if (domainDisplayName != null) {
+                    title = domainDisplayName;
+                } else {
+                    title = documentMetadata.getTitle();
+                }
 
                 // SEO properties
                 for (Entry<String, String> property : documentMetadata.getSeo().entrySet()) {
