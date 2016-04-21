@@ -441,26 +441,23 @@ public class CmsPageState {
             }
 
             // #1160 - Propagate cmsItem selectors to portal selectors if exists
-            if(cmsNav.getProperties().containsKey("selectors")) {
+            // #1160 - Check if this.cmsNav is not null
+            if ((this.cmsNav != null) && this.cmsNav.getProperties().containsKey("selectors")) {
+                final String cmsSelector = this.cmsNav.getProperties().get("selectors");
+                final Map<String, List<String>> decodeCmsProperties = PageParametersEncoder.decodeProperties(cmsSelector);
 
+                final String[] pageSelectors = pageState.get(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
+                if ((pageSelectors != null) && (pageSelectors.length > 0)) {
 
-            	final String cmsSelector = cmsNav.getProperties().get("selectors");
-            	final Map<String, List<String>> decodeCmsProperties = PageParametersEncoder.decodeProperties(cmsSelector);
+                    final Map<String, List<String>> decodePageProperties = PageParametersEncoder.decodeProperties(pageSelectors[0]);
+                    decodeCmsProperties.putAll(decodePageProperties);
+                }
 
-            	final String[] pageSelectors = pageState.get(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
-            	if((pageSelectors != null) && (pageSelectors.length > 0)) {
+                final String encodeProperties = PageParametersEncoder.encodeProperties(decodeCmsProperties);
 
-            		final Map<String, List<String>> decodePageProperties = PageParametersEncoder.decodeProperties(pageSelectors[0]);
-            		decodeCmsProperties.putAll(decodePageProperties);
-            	}
-
-            	final String encodeProperties = PageParametersEncoder.encodeProperties(decodeCmsProperties);
-
-				pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), new String[] {encodeProperties} );
+                pageState.put(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"), new String[]{encodeProperties});
                 nsContext.setPageNavigationalState(this.pageIdToDiplay.toString(), new PageNavigationalState(pageState));
-
             }
-
 
             this.isPageToDisplayUncontextualized = false;
 
