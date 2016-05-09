@@ -85,7 +85,7 @@
                                     <!-- Close -->
                                     <c:if test="${not userPage.maintains and not empty userPage.closePageUrl}">
                                         <a href="${userPage.closePageUrl}" class="page-close">
-                                            <i class="glyphicons glyphicons-remove-2"></i>
+                                            <i class="glyphicons glyphicons-remove"></i>
                                             <span class="sr-only"><op:translate key="CLOSE" /></span>
                                         </a>
                                     </c:if>
@@ -167,7 +167,7 @@
                         <!-- Close -->
                         <c:if test="${not empty userPage.closePageUrl}">
                             <a href="${userPage.closePageUrl}" class="page-close">
-                                <i class="glyphicons glyphicons-remove-2"></i>
+                                <i class="glyphicons glyphicons-remove"></i>
                                 <span class="sr-only"><op:translate key="CLOSE" /></span>
                             </a>
                         </c:if>

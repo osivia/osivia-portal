@@ -171,7 +171,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Glyphicons
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.min.css'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons-1.8.min.css'>");
 
         // No JavaScript CSS styles
         out.write("<noscript>");

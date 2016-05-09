@@ -22,7 +22,7 @@
 
 <div>
     <p class="lead">
-        <i class="glyphicons glyphicons-google-maps"></i>
+        <i class="glyphicons glyphicons-map-marker"></i>
         <span><op:translate key="SITEMAP_PORTLET_TITLE" /></span>
     </p>
 

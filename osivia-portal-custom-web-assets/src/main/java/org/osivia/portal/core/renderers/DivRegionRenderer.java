@@ -164,7 +164,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 markup.print(irrc.getId());
                 markup.print("</span>");
                 if (locked) {
-                    markup.print(" <i class='halflings halflings-glyph-lock'></i>");
+                    markup.print(" <i class='halflings halflings-lock'></i>");
                 }
                 markup.println("</p>");
             }
@@ -435,7 +435,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Dropdown menu button
         Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
-                "halflings halflings-glyph-wrench", null);
+                "halflings halflings-wrench", null);
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         dropdownButton.add(caret);

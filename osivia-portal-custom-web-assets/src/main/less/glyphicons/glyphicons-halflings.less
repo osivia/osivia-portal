@@ -87,7 +87,7 @@
 
 .halflings-envelope {
     &:before {
-        content: "\2709";
+        content: "\E004";
     }
 }
 
@@ -259,7 +259,7 @@
     }
 }
 
-.halflings-glyph-lock {
+.halflings-lock {
     &:before {
         content: "\E033";
     }
@@ -325,7 +325,7 @@
     }
 }
 
-.halflings-glyph-bookmark {
+.halflings-bookmark {
     &:before {
         content: "\E044";
     }
@@ -337,7 +337,7 @@
     }
 }
 
-.halflings-glyph-camera {
+.halflings-camera {
     &:before {
         content: "\E046";
     }
@@ -429,7 +429,7 @@
 
 .halflings-pencil {
     &:before {
-        content: "\270F";
+        content: "\E061";
     }
 }
 
@@ -651,19 +651,19 @@
 
 .halflings-plus {
     &:before {
-        content: "\002B";
+        content: "\E098";
     }
 }
 
 .halflings-minus {
     &:before {
-        content: "\2212";
+        content: "\E099";
     }
 }
 
 .halflings-asterisk {
     &:before {
-        content: "\002A";
+        content: "\E100";
     }
 }
 
@@ -685,7 +685,7 @@
     }
 }
 
-.halflings-glyph-fire {
+.halflings-fire {
     &:before {
         content: "\E104";
     }
@@ -715,7 +715,7 @@
     }
 }
 
-.halflings-glyph-calendar {
+.halflings-calendar {
     &:before {
         content: "\E109";
     }
@@ -799,7 +799,7 @@
     }
 }
 
-.halflings-glyph-bell {
+.halflings-bell {
     &:before {
         content: "\E123";
     }
@@ -877,7 +877,7 @@
     }
 }
 
-.halflings-glyph-wrench {
+.halflings-wrench {
     &:before {
         content: "\E136";
     }
@@ -895,7 +895,7 @@
     }
 }
 
-.halflings-glyph-briefcase {
+.halflings-briefcase {
     &:before {
         content: "\E139";
     }
@@ -913,7 +913,7 @@
     }
 }
 
-.halflings-glyph-paperclip {
+.halflings-paperclip {
     &:before {
         content: "\E142";
     }
@@ -937,7 +937,7 @@
     }
 }
 
-.halflings-glyph-pushpin {
+.halflings-pushpin {
     &:before {
         content: "\E146";
     }
@@ -945,7 +945,7 @@
 
 .halflings-euro {
     &:before {
-        content: "\20AC";
+        content: "\E147";
     }
 }
 
@@ -1239,7 +1239,7 @@
 
 .halflings-cloud {
     &:before {
-        content: "\2601";
+        content: "\E196";
     }
 }
 
@@ -1305,13 +1305,13 @@
 
 .halflings-door {
     &:before {
-        content: "\1F6AA";
+        content: "\E207";
     }
 }
 
 .halflings-key {
     &:before {
-        content: "\1F511";
+        content: "\E208";
     }
 }
 
@@ -1365,7 +1365,7 @@
 
 .halflings-tent {
     &:before {
-        content: "\26FA";
+        content: "\E217";
     }
 }
 
@@ -1383,7 +1383,7 @@
 
 .halflings-apple {
     &:before {
-        content: "\F8FF";
+        content: "\E220";
     }
 }
 
@@ -1395,7 +1395,7 @@
 
 .halflings-hourglass {
     &:before {
-        content: "\231B";
+        content: "\E222";
     }
 }
 
@@ -1431,13 +1431,13 @@
 
 .halflings-yen {
     &:before {
-        content: "\00A5";
+        content: "\E228";
     }
 }
 
 .halflings-ruble {
     &:before {
-        content: "\20BD";
+        content: "\E229";
     }
 }
 
@@ -1627,137 +1627,243 @@
     }
 }
 
-.animated {
-    -webkit-animation-duration: 1s;
-    animation-duration: 1s;
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-    -webkit-animation-timing-function: ease-in-out;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    -webkit-animation-iteration-count: infinite;
-}
-
-@-webkit-keyframes pulse {
-    0% {
-        -webkit-transform: scale(1);
-    }
-
-    50% {
-        -webkit-transform: scale(1.1);
-    }
-
-    100% {
-        -webkit-transform: scale(1);
+.halflings-building {
+    &:before {
+        content: "\E261";
     }
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
-
-    100% {
-        transform: scale(1);
+.halflings-tick {
+    &:before {
+        content: "\E262";
     }
 }
 
-.pulse {
-    -webkit-animation-name: pulse;
-    animation-name: pulse;
-}
-
-@-webkit-keyframes rotateIn {
-    0% {
-        -webkit-transform-origin: center center;
-        -webkit-transform: rotate(-200deg);
-        opacity: 0;
-    }
-
-    100% {
-        -webkit-transform-origin: center center;
-        -webkit-transform: rotate(0);
-        opacity: 1;
+.halflings-star-half {
+    &:before {
+        content: "\E263";
     }
 }
 
-@keyframes rotateIn {
-    0% {
-        transform-origin: center center;
-        transform: rotate(-200deg);
-        opacity: 0;
-    }
-
-    100% {
-        transform-origin: center center;
-        transform: rotate(0);
-        opacity: 1;
+.halflings-hash {
+    &:before {
+        content: "\E264";
     }
 }
 
-.rotateIn {
-    -webkit-animation-name: rotateIn;
-    animation-name: rotateIn;
+.halflings-directions {
+    &:before {
+        content: "\E265";
+    }
 }
 
-@-webkit-keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);} 
-  40% {-webkit-transform: translateY(-30px);} 
-  60% {-webkit-transform: translateY(-15px);} 
-} 
-
-@keyframes bounce { 
-  0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 
-  40% {transform: translateY(-30px);} 
-  60% {transform: translateY(-15px);} 
-} 
-
-.bounce { 
-  -webkit-animation-name: bounce; 
-  animation-name: bounce; 
+.halflings-gas {
+    &:before {
+        content: "\E266";
+    }
 }
 
-@-webkit-keyframes swing { 
-  20%, 40%, 60%, 80%, 100% { -webkit-transform-origin: top center; } 
-  20% { -webkit-transform: rotate(15deg); } 
-  40% { -webkit-transform: rotate(-10deg); } 
-  60% { -webkit-transform: rotate(5deg); } 
-  80% { -webkit-transform: rotate(-5deg); } 
-  100% { -webkit-transform: rotate(0deg); } 
-} 
-@keyframes swing { 
-  20% { transform: rotate(15deg); } 
-  40% { transform: rotate(-10deg); } 
-  60% { transform: rotate(5deg); } 
-  80% { transform: rotate(-5deg); } 
-  100% { transform: rotate(0deg); } 
-} 
-.swing { 
-  -webkit-transform-origin: top center; 
-  transform-origin: top center; 
-  -webkit-animation-name: swing; 
-  animation-name: swing; 
+.halflings-snowflake {
+    &:before {
+        content: "\E267";
+    }
 }
 
-@-webkit-keyframes tada { 
-  0% {-webkit-transform: scale(1);} 
-  10%, 20% {-webkit-transform: scale(0.9) rotate(-3deg);} 
-  30%, 50%, 70%, 90% {-webkit-transform: scale(1.1) rotate(3deg);} 
-  40%, 60%, 80% {-webkit-transform: scale(1.1) rotate(-3deg);} 
-  100% {-webkit-transform: scale(1) rotate(0);} 
-} 
-@keyframes tada { 
-  0% {transform: scale(1);} 
-  10%, 20% {transform: scale(0.9) rotate(-3deg);} 
-  30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);} 
-  40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);} 
-  100% {transform: scale(1) rotate(0);} 
-} 
-.tada { 
-  -webkit-animation-name: tada; 
-  animation-name: tada; 
+.halflings-sunlight {
+    &:before {
+        content: "\E268";
+    }
 }
+
+.halflings-selectbox {
+    &:before {
+        content: "\E269";
+    }
+}
+
+.halflings-sortable {
+    &:before {
+        content: "\E270";
+    }
+}
+
+.halflings-note-empty {
+    &:before {
+        content: "\E271";
+    }
+}
+
+.halflings-note {
+    &:before {
+        content: "\E272";
+    }
+}
+
+.halflings-direction-right {
+    &:before {
+        content: "\E273";
+    }
+}
+
+.halflings-direction-left {
+    &:before {
+        content: "\E274";
+    }
+}
+
+.halflings-direction-down {
+    &:before {
+        content: "\E275";
+    }
+}
+
+.halflings-direction-up {
+    &:before {
+        content: "\E276";
+    }
+}
+
+.halflings-parking {
+    &:before {
+        content: "\E277";
+    }
+}
+
+.halflings-coffee-cup {
+    &:before {
+        content: "\E278";
+    }
+}
+
+.halflings-record-empty {
+    &:before {
+        content: "\E279";
+    }
+}
+
+.halflings-move-square {
+    &:before {
+        content: "\E280";
+    }
+}
+
+.halflings-bug {
+    &:before {
+        content: "\E281";
+    }
+}
+
+.halflings-display {
+    &:before {
+        content: "\E282";
+    }
+}
+
+.halflings-direction {
+    &:before {
+        content: "\E283";
+    }
+}
+
+.halflings-group {
+    &:before {
+        content: "\E284";
+    }
+}
+
+.halflings-reflect-y {
+    &:before {
+        content: "\E285";
+    }
+}
+
+.halflings-reflect-x {
+    &:before {
+        content: "\E286";
+    }
+}
+
+.halflings-battery-charging {
+    &:before {
+        content: "\E287";
+    }
+}
+
+.halflings-battery-full {
+    &:before {
+        content: "\E288";
+    }
+}
+
+.halflings-battery-75 {
+    &:before {
+        content: "\E289";
+    }
+}
+
+.halflings-battery-50 {
+    &:before {
+        content: "\E290";
+    }
+}
+
+.halflings-battery-25 {
+    &:before {
+        content: "\E291";
+    }
+}
+
+.halflings-battery-10 {
+    &:before {
+        content: "\E292";
+    }
+}
+
+.halflings-paired {
+    &:before {
+        content: "\E293";
+    }
+}
+
+.halflings-rotate-right {
+    &:before {
+        content: "\E294";
+    }
+}
+
+.halflings-rotate-left {
+    &:before {
+        content: "\E295";
+    }
+}
+
+.halflings-list-numbered {
+    &:before {
+        content: "\E296";
+    }
+}
+
+.halflings-paragraph {
+    &:before {
+        content: "\E297";
+    }
+}
+
+.halflings-list-plus {
+    &:before {
+        content: "\E298";
+    }
+}
+
+.halflings-synchronization {
+    &:before {
+        content: "\E299";
+    }
+}
+
+.halflings-cube-black {
+    &:before {
+        content: "\E300";
+    }
+}
+

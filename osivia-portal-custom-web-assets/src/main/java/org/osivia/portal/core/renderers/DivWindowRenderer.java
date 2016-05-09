@@ -449,7 +449,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Window settings display command
         String displaySettingsURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
         String displaySettingsTitle = bundle.getString("WINDOW_GENERIC_PARAMETERS", windowTitle);
-        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsURL, onclickAction, "halflings halflings-glyph-wrench",
+        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsURL, onclickAction, "halflings halflings-wrench",
                 CLASS_FANCYBOX_INLINE_TITLE, displaySettingsTitle);
         settingsGroup.add(displaySettingsLink);
 

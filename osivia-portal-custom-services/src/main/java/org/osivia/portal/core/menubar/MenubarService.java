@@ -133,8 +133,8 @@ public class MenubarService implements IMenubarService {
         if (httpServletRequest.getUserPrincipal() != null) {
             String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
             if (refreshURL != null) {
-                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "halflings halflings-repeat", MenubarGroup.GENERIC, 100, refreshURL,
-                        null, null, null);
+                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat", MenubarGroup.GENERIC, 100,
+                        refreshURL, null, null, null);
                 this.addSortedItem(sortedItems, MenubarGroup.GENERIC, item);
             }
         }

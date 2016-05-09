@@ -356,7 +356,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Configuration menu title
         String menuTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
         Element configurationMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, menuTitle,
-                "halflings halflings-glyph-wrench");
+                "halflings halflings-wrench");
         DOM4JUtils.addAttribute(configurationMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
         configurationMenuTitle.add(caret);

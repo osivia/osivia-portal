@@ -329,7 +329,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                     if (parent == null) {
                                         parent = new MenubarDropdown(MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID,
                                                 this.internationalizationService.getString("OTHER_OPTIONS", locale), "glyphicons glyphicons-option-vertical",
-                                                MenubarGroup.GENERIC, 40);
+                                                MenubarGroup.GENERIC, 40, false, false);
                                         this.menubarService.addDropdown(portalControllerContext, parent);
                                     }
 
