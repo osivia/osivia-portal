@@ -1,5 +1,9 @@
 package org.osivia.portal.core.cms;
 
+import java.util.List;
+
+import org.osivia.portal.api.cms.EcmDocument;
+
 /**
  * Documents metadata interface.
  *
@@ -23,6 +27,14 @@ public interface DocumentsMetadata {
      * @return webId
      */
     String getWebId(String webPath);
+
+
+    /**
+     * Get documents.
+     * 
+     * @return documents
+     */
+    List<EcmDocument> getDocuments();
 
 
     /**
