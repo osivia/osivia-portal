@@ -327,7 +327,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
                 // Glyph
                 Element glyph = new DOMElement(QName.get(HTMLConstants.I));
-                glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons halflings plus");
+                glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons glyphicons-plus");
                 glyph.setText(StringUtils.EMPTY);
                 button.add(glyph);
                 button.addText(" ");
