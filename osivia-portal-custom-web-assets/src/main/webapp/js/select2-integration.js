@@ -1,33 +1,33 @@
 $JQry(function() {
 	
-	$JQry("select.select2").each(function(index, element) {
+	$JQry("select.select2.select2-default").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("url");
 			loadingLabel = $element.data("loading-label");
 			options = {
-				theme: "bootstrap",
-				width: "resolve"
-			};
+					theme : "bootstrap",
+					width : "resolve"
+				};
 		
 		if (url !== undefined) {
 			options["ajax"] = {
 				url : url,
-				dataType: "json",
-				delay: 250,
-				data: function(params) {
+				dataType : "json",
+				delay : 250,
+				data : function(params) {
 					return {
-						filter: params.term,
+						filter : params.term,
 					};
 				},
-				processResults: function(data, params) {
+				processResults : function(data, params) {
 					return {
-						results: data
+						results : data
 					};
 				},
-				cache: true
+				cache : true
 			};
 			
-			options["escapeMarkup"] = function(markup){
+			options["escapeMarkup"] = function(markup) {
 				return markup;
 			};
 			
@@ -61,7 +61,7 @@ $JQry(function() {
 		}
 		
 		$element.css({
-			width: "100%"
+			width : "100%"
 		});
 		
 		$element.select2(options);
