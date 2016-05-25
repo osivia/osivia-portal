@@ -903,8 +903,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Erase modifications
         String cmsEraseTitle = bundle.getString("SUBMENU_CMS_PAGE_ERASE");
         if (beingModified && modePreview && published) {
-
-
             String cmsEraseModificationURL = urlFactory.getEcmCommandUrl(portalControllerContext, path, EcmCommonCommands.eraseModifications);
 
             cmsEditionMenu.add(generateEraseFancyBox(bundle, cmsEraseModificationURL));

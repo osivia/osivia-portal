@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -27,6 +27,7 @@ import java.util.TreeSet;
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -79,7 +80,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     /**
      * Setter for customizationService.
-     * 
+     *
      * @param customizationService the customizationService to set
      */
     public void setCustomizationService(ICustomizationService customizationService) {
@@ -106,6 +107,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
@@ -117,7 +119,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
          * A déléguer dans un customizer
          */
 
-        if (remoteUser != null && user == null) {
+        if ((remoteUser != null) && (user == null)) {
             if (remoteUser.endsWith("@ATEN")) {
                 HttpSession session = invocation.getServerContext().getClientRequest().getSession();
 
@@ -210,14 +212,21 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         Map<String, Object> contextDatas = new Hashtable<String, Object>();
         DirectoryPerson person = null;
 
+        HttpServletRequest httpRequest = invocation.getServerContext().getClientRequest();
         for (UserDatasModuleMetadatas module : sortedModules) {
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
-            person = module.getModule().computeLoggedUser(invocation.getServerContext().getClientRequest());
+
+            List<String> excludedFeederNames = (List<String>) httpRequest.getAttribute("osivia.valve.feeder");
+            if ((excludedFeederNames == null) || !excludedFeederNames.contains(module.getName())) {
+                // exclusion du module si déjà appelé par valve
+                person = module.getModule().computeLoggedUser(httpRequest);
+            }
         }
 
         // add person in session
-        if (person != null)
+        if (person != null) {
             contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
+        }
 
         Map<String, Object> userDatas = new Hashtable<String, Object>();
         contextDatas.put("osivia.userDatas", userDatas);
