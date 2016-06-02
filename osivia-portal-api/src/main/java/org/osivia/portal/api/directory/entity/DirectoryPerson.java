@@ -22,7 +22,9 @@ import org.osivia.portal.api.urls.Link;
 
 /**
  * Person from LDAP directory
- */
+ * @deprecated replaced by org.osivia.portal.api.directory.v2.model.Person
+  */
+@Deprecated
 public class DirectoryPerson {
 
 

@@ -55,6 +55,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarDropdown;
@@ -215,6 +216,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (person != null) {
                 attributes.put(Constants.ATTR_LOGGED_PERSON, person);
             }
+            // v4.4 : new user object
+            Person p2 = (Person) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2);
+            if (p2 != null) {
+                attributes.put(Constants.ATTR_LOGGED_PERSON_2, p2);
+            }
+
 
             // user datas timestamp
             Long userDatasTs = (Long) controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp");

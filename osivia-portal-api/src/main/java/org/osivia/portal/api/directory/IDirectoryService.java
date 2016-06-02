@@ -26,16 +26,20 @@ public interface IDirectoryService {
 	 * get a person
 	 * @param username (uid)
 	 * @return a person
+	 * @deprecated use org.osivia.portal.api.directory.v2.service.PersonService.getPersonWithNuxeoProfile(String)
 	 */
-    DirectoryPerson getPerson(String username);
+    @Deprecated
+	DirectoryPerson getPerson(String username);
 
     /**
      * Get a bean (for advanced portlets usage)
      * @param name name of a bean
      * @param requiredType type of the bean 
      * @return bean
+     * @deprecated use org.osivia.portal.api.directory.v2.IDirDelegate.getDirectoryService(Class<D>)
      */
-    <T extends DirectoryBean> T getDirectoryBean(String name, Class<T> requiredType);
+    @Deprecated
+	<T extends DirectoryBean> T getDirectoryBean(String name, Class<T> requiredType);
     
     /**
      * clear all entries in all caches registered in the service.

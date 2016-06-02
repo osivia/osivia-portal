@@ -42,6 +42,9 @@ import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.login.IUserDatasModule;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
@@ -208,11 +211,12 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     private void loadUserDatas(ServerInvocation invocation) {
         Map<String, Object> contextDatas = new Hashtable<String, Object>();
+        String userPrincipal = invocation.getServerContext().getClientRequest().getUserPrincipal().getName();
         DirectoryPerson person = null;
 
         for (UserDatasModuleMetadatas module : sortedModules) {
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
-            person = module.getModule().computeLoggedUser(invocation.getServerContext().getClientRequest());
+            person = module.getModule().computeUser(userPrincipal);
         }
 
         // add person in session
@@ -229,6 +233,16 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
+        
+        
+        // @since v4.4, new person object
+        PersonService service = DirServiceFactory.getService(PersonService.class);
+        if(service != null) {
+        	Person p = service.getPerson(userPrincipal);
+        	contextDatas.put(Constants.ATTR_LOGGED_PERSON_2, p);
+        	invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2, p);
+        }
+        
     }
 
     public void register(UserDatasModuleMetadatas moduleMetadatas) {

@@ -751,13 +751,22 @@
         <xmbean />
     </mbean>
 
-	<!-- Directory service -->
+	<!-- Directory service (deprecated, see directory provider) -->
     <mbean
         code="org.osivia.portal.core.directory.DirectoryServiceLocator"
         name="osivia:service=DirectoryServiceLocator"
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
+    </mbean>
+    
+    <!-- Directory provider -->
+    <mbean
+        code="org.osivia.portal.core.directory.v2.DirProvider"
+        name="osivia:service=DirectoryProvider"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />	
     </mbean>
     
 	<!-- Trace service -->

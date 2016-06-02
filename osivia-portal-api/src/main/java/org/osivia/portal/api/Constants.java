@@ -68,9 +68,13 @@ public final class Constants {
     public static final String ATTR_PAGE_NAME = "osivia.currentPageName";
     /** First tab attribute name. */
     public static final String ATTR_FIRST_TAB = "osivia.firstTab";
+    
+    /** Logged person. 
+     * @deprecated please use ATTR_LOGGED_PERSON_2 */
+    @Deprecated
+	public static final String ATTR_LOGGED_PERSON = "osivia.loggedPerson";
     /** Logged person. */
-    public static final String ATTR_LOGGED_PERSON = "osivia.loggedPerson";
-
+    public static final String ATTR_LOGGED_PERSON_2 = "osivia.directory.v2.loggedPerson";
 
     // Generic
 

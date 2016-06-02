@@ -45,9 +45,10 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.IDirectoryService;
 import org.osivia.portal.api.directory.IDirectoryServiceLocator;
-import org.osivia.portal.api.directory.entity.DirectoryPerson;
+import org.osivia.portal.api.directory.v2.IDirProvider;
+import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.directory.v2.service.PersonService;
 import org.osivia.portal.api.ecm.EcmCommonCommands;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.html.AccessibilityRoles;
@@ -143,8 +144,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-    /** Directory service locator. */
+    
+    /** Directory service locator. (older versions) */
     private final IDirectoryServiceLocator directoryServiceLocator;
+    /** Directory service locator. */
+    private final IDirProvider directoryProvider;
+    
     /** Menubar service. */
     private final IMenubarService menubarService;
 
@@ -172,7 +177,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // CMS service locator
         cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         // Directory service locator
+        // Directory service locator
         directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
+        directoryProvider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
         // Menubar service
         menubarService = MenubarUtils.getMenubarService();
         // Instance locator
@@ -227,15 +234,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_PRINCIPAL, principal);
 
         // Person
-        DirectoryPerson person = null;
+        Person person = null;
         if (principal != null) {
-            IDirectoryService directoryService = directoryServiceLocator.getDirectoryService();
-            if (directoryService != null) {
-                person = directoryService.getPerson(principal.getName());
-                attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
-            }
+        	PersonService personService = directoryProvider.getDirService(PersonService.class);
+                person = personService.getPersonWithEcmProfile(principal.getName());
+            attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
+                   
         }
-
+        
         // My space
         MonEspaceCommand mySpaceCommand = new MonEspaceCommand();
         PortalURL mySpacePortalUrl = new PortalURLImpl(mySpaceCommand, controllerContext, true, null);
@@ -1215,7 +1221,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @return HTML data
      * @throws Exception
      */
-    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, DirectoryPerson person, String mySpaceURL,
+    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, Person person, String mySpaceURL,
             String myProfileUrl, String signOutURL) {
         // Bundle
         Bundle bundle = bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
