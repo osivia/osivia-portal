@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
@@ -82,7 +83,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     /**
      * Setter for customizationService.
-     * 
+     *
      * @param customizationService the customizationService to set
      */
     public void setCustomizationService(ICustomizationService customizationService) {
@@ -101,14 +102,15 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     private void synchronizeSortedModules() {
 
-        sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
+        this.sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
 
-        for (UserDatasModuleMetadatas module : userModules.values()) {
-            sortedModules.add(module);
+        for (UserDatasModuleMetadatas module : this.userModules.values()) {
+            this.sortedModules.add(module);
         }
 
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
@@ -190,7 +192,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                 }
                 /* Appel module userdatas */
 
-                loadUserDatas(invocation);
+                this.loadUserDatas(invocation);
 
                 // Job is marked as done
 
@@ -205,7 +207,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     public void reload(PortletRequest portletRequest) {
         ControllerContext ctx = (ControllerContext) portletRequest.getAttribute("osivia.controller");
 
-        loadUserDatas(ctx.getServerInvocation());
+        this.loadUserDatas(ctx.getServerInvocation());
 
     }
 
@@ -214,16 +216,17 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         String userPrincipal = invocation.getServerContext().getClientRequest().getUserPrincipal().getName();
         DirectoryPerson person = null;
 
-        for (UserDatasModuleMetadatas module : sortedModules) {
+        for (UserDatasModuleMetadatas module : this.sortedModules) {
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
             person = module.getModule().computeUser(userPrincipal);
         }
 
         // add person in session
-        if (person != null)
+        if (person != null) {
             contextDatas.put(Constants.ATTR_LOGGED_PERSON, person);
+        }
 
-        Map<String, Object> userDatas = new Hashtable<String, Object>();
+        Map<String, Object> userDatas = new ConcurrentHashMap<String, Object>();
         contextDatas.put("osivia.userDatas", userDatas);
 
         // call customizer to populate userDatas
@@ -233,31 +236,33 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
-        
-        
+
+
         // @since v4.4, new person object
         PersonService service = DirServiceFactory.getService(PersonService.class);
         if(service != null) {
         	Person p = service.getPerson(userPrincipal);
-        	contextDatas.put(Constants.ATTR_LOGGED_PERSON_2, p);
-        	invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2, p);
+            if (p != null) {
+                contextDatas.put(Constants.ATTR_LOGGED_PERSON_2, p);
+                invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2, p);
+            }
         }
-        
+
     }
 
     public void register(UserDatasModuleMetadatas moduleMetadatas) {
-        userModules.put(moduleMetadatas.getName(), moduleMetadatas);
-        synchronizeSortedModules();
+        this.userModules.put(moduleMetadatas.getName(), moduleMetadatas);
+        this.synchronizeSortedModules();
 
     }
 
     public void unregister(UserDatasModuleMetadatas moduleMetadatas) {
-        userModules.remove(moduleMetadatas.getName());
-        synchronizeSortedModules();
+        this.userModules.remove(moduleMetadatas.getName());
+        this.synchronizeSortedModules();
 
     }
 
 	public UserDatasModuleMetadatas getModule(String name) {
-		return userModules.get(name);
+		return this.userModules.get(name);
 	}
 }
