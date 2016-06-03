@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 
+<%@ page contentType="text/html" isELIgnored="false"%>
+
 
 <c:set var="title" value="${requestScope['osivia.header.title']}" />
 <c:if test="${not empty title}"><c:set var="title" value="${title} - " /></c:if>

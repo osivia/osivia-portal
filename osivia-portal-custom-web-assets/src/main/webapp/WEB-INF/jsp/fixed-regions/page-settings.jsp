@@ -2,6 +2,8 @@
 <%@ taglib uri="http://www.osivia.org/jsp/taglib/osivia-portal" prefix="op" %>
 <%@ taglib uri="/WEB-INF/tld/formatter.tld" prefix="formatter" %>
 
+<%@ page contentType="text/html" isELIgnored="false"%>
+
 
 <c:set var="commandUrl" value="${requestScope['osivia.toolbarSettings.commandURL']}" />
 <c:set var="currentPage" value="${requestScope['osivia.toolbarSettings.page']}" />

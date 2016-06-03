@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -33,13 +33,16 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 /**
  * Abstract portlet class used to access basic services such as notification,
  * directories, etc.
- * 
+ *
  * @author lbillon
- * 
+ *
  */
 public abstract class PortalGenericPortlet extends GenericPortlet {
 
-	
+    /** Class loader context. */
+    public static final ThreadLocal<ClassLoader> CLASS_LOADER_CONTEXT = new ThreadLocal<ClassLoader>();
+
+
 	private final INotificationsService notificationsService;
 
 	private final IBundleFactory bundleFactory;
@@ -47,9 +50,9 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	private final IPortalUrlFactory portalUrlFactory;
 
 	private final IDirectoryServiceLocator directoryServiceLocator;
-	
+
 	private final IMenubarService menubarService;
-	
+
 	private final ITraceServiceLocator traceServiceLocator;
 
 	public PortalGenericPortlet() {
@@ -65,16 +68,16 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 		this.portalUrlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
 
 		this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
-		
+
 		this.menubarService = Locator.findMBean(IMenubarService.class, IMenubarService.MBEAN_NAME);
-		
+
 		this.traceServiceLocator = Locator.findMBean(ITraceServiceLocator.class, ITraceServiceLocator.MBEAN_NAME);
 	}
 
 	public IDirectoryService getDirectoryService() {
 		return this.directoryServiceLocator.getDirectoryService();
 	}
-	
+
 	/**
 	 * @return the traceService via the locator
 	 */
@@ -86,30 +89,30 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 * @return the notificationsService
 	 */
 	public INotificationsService getNotificationsService() {
-		return notificationsService;
+		return this.notificationsService;
 	}
 
 	/**
 	 * @return the bundleFactory
 	 */
 	public IBundleFactory getBundleFactory() {
-		return bundleFactory;
+		return this.bundleFactory;
 	}
 
 	/**
 	 * @return the portalUrlFactory
 	 */
 	public IPortalUrlFactory getPortalUrlFactory() {
-		return portalUrlFactory;
+		return this.portalUrlFactory;
 	}
-	
-	
+
+
 
 	/**
 	 * @return the menubarService
 	 */
 	public IMenubarService getMenubarService() {
-		return menubarService;
+		return this.menubarService;
 	}
 
 	/**
@@ -119,10 +122,10 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 * @return the label translated
 	 */
 	protected String getMessage(PortalControllerContext pcc, String label) {
-		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
+		Bundle bundle = this.getBundleFactory().getBundle(pcc.getRequest().getLocale());
 		return bundle.getString(label);
-	}	
-	
+	}
+
 	/**
 	 * Return a label in resources files
 	 * @param pcc
@@ -131,13 +134,13 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 * @return the label translated
 	 */
 	protected String getMessage(PortalControllerContext pcc, String label, Object... args) {
-		Bundle bundle = getBundleFactory().getBundle(pcc.getRequest().getLocale());
+		Bundle bundle = this.getBundleFactory().getBundle(pcc.getRequest().getLocale());
 		return bundle.getString(label, args);
 	}
-	
+
 	/**
 	 * Display a notification with a key label
-	 * 
+	 *
 	 * @param pcc
 	 * @param label
 	 *            the key in resources bundle
@@ -145,13 +148,13 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 *            the notification type
 	 */
 	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType) {
-		String string = getMessage(pcc, label);
-		getNotificationsService().addSimpleNotification(pcc, string, notificationType);
+		String string = this.getMessage(pcc, label);
+		this.getNotificationsService().addSimpleNotification(pcc, string, notificationType);
 	}
 
 	/**
 	 * Display a notification with a key label and variables
-	 * 
+	 *
 	 * @param pcc
 	 * @param label
 	 *            the key in resources bundle
@@ -161,7 +164,7 @@ public abstract class PortalGenericPortlet extends GenericPortlet {
 	 *            variables
 	 */
 	protected void addNotification(PortalControllerContext pcc, String label, NotificationsType notificationType, Object... args) {
-		String string = getMessage(pcc, label, args);
-		getNotificationsService().addSimpleNotification(pcc, string, notificationType);
+		String string = this.getMessage(pcc, label, args);
+		this.getNotificationsService().addSimpleNotification(pcc, string, notificationType);
 	}
 }

@@ -9,6 +9,9 @@
 [id].anchor {
     display: block;
     position: relative;
-    top: -@anchor-height;
     visibility: hidden;
+    
+    @media screen and (min-width: @screen-sm-min) {
+        top: -@anchor-height;
+    }
 }

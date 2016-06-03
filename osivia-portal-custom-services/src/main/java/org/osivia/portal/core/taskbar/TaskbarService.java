@@ -15,6 +15,8 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.Breadcrumb;
 import org.osivia.portal.api.theming.BreadcrumbItem;
@@ -37,12 +39,46 @@ public class TaskbarService implements ITaskbarService {
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
 
+    /** Taskbar item factory. */
+    private final TaskbarFactory factory;
+
 
     /**
      * Constructor.
      */
     public TaskbarService() {
         super();
+        this.factory = new TaskbarFactoryImpl();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public TaskbarFactory getFactory() {
+        return this.factory;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public TaskbarItems getItems(PortalControllerContext portalControllerContext) throws PortalException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+
+        // Taskbar items
+        TaskbarItems taskbarItems;
+        try {
+            taskbarItems = cmsService.getTaskbarItems(cmsContext);
+        } catch (CMSException e) {
+            throw new PortalException(e);
+        }
+
+        return taskbarItems;
     }
 
 
@@ -56,31 +92,15 @@ public class TaskbarService implements ITaskbarService {
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setPortalControllerContext(portalControllerContext);
 
-
-        // Navigation tasks
-        List<TaskbarTask> navigationTasks;
+        // Tasks
+        List<TaskbarTask> tasks;
         try {
-            navigationTasks = cmsService.getTaskbarNavigationTasks(cmsContext, basePath);
+            tasks = cmsService.getTaskbarTasks(cmsContext, basePath);
         } catch (CMSException e) {
             throw new PortalException(e);
         }
 
-        return navigationTasks;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<TaskbarTask> getCustomTasks(PortalControllerContext portalControllerContext) {
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(portalControllerContext);
-
-        // Custom tasks
-        return cmsService.getTaskbarCustomTasks(cmsContext);
+        return tasks;
     }
 
 

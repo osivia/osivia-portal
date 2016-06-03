@@ -22,6 +22,7 @@ import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.urls.Link;
@@ -404,23 +405,24 @@ public interface ICMSService {
 
 
     /**
-     * Get taskbar navigation tasks.
+     * Get taskbar items.
+     *
+     * @param cmsContext CMS context
+     * @return taskbar items
+     * @throws CMSException
+     */
+    TaskbarItems getTaskbarItems(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get taskbar tasks.
      *
      * @param cmsContext CMS context
      * @param basePath CMS base path
      * @return tasks
      * @throws CMSException
      */
-    List<TaskbarTask> getTaskbarNavigationTasks(CMSServiceCtx cmsContext, String basePath) throws CMSException;
-
-
-    /**
-     * Get taskbar custom tasks.
-     *
-     * @param cmsContext CMS context
-     * @return tasks
-     */
-    List<TaskbarTask> getTaskbarCustomTasks(CMSServiceCtx cmsContext);
+    List<TaskbarTask> getTaskbarTasks(CMSServiceCtx cmsContext, String basePath) throws CMSException;
 
 
     /**
@@ -464,7 +466,7 @@ public interface ICMSService {
 
     /**
      * Get domain contextualization.
-     * 
+     *
      * @param cmsContext CMS context
      * @param domainPath domain path
      * @return domain contextualization

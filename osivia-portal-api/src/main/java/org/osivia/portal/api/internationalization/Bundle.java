@@ -73,8 +73,21 @@ public class Bundle {
 
 
     /**
+     * Access to a localized bundle property, which can be customized.
+     *
+     * @param key bundle property key
+     * @param customizedClassLoader customized class loader
+     * @param args property arguments
+     * @return bundle property value
+     */
+    public final String getString(String key, ClassLoader customizedClassLoader, Object... args) {
+        return this.internationalizationService.getString(key, this.locale, this.classLoader, customizedClassLoader, args);
+    }
+
+
+    /**
      * Getter for classLoader.
-     * 
+     *
      * @return the classLoader
      */
     public ClassLoader getClassLoader() {
@@ -83,7 +96,7 @@ public class Bundle {
 
     /**
      * Getter for locale.
-     * 
+     *
      * @return the locale
      */
     public Locale getLocale() {

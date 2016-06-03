@@ -16,6 +16,8 @@ package org.osivia.portal.api.cms;
 
 import java.util.List;
 
+import org.osivia.portal.api.portlet.PortalGenericPortlet;
+
 /**
  * CMS item type java-bean.
  *
@@ -32,7 +34,7 @@ public class DocumentType {
     /** CMS item browsable indicator. */
     private final boolean browsable;
     /** CMS item movable indicator. */
-    private final boolean movable;    
+    private final boolean movable;
     /** CMS item type ordered indicator. */
     private final boolean ordered;
     /** CMS item force portal contextualization indicator. */
@@ -48,7 +50,10 @@ public class DocumentType {
     /** CMS item is root type */
     private final boolean isRootType;
     /** CMS item live editable indicator. */
-    private final boolean liveEditable;    
+    private final boolean liveEditable;
+
+    /** CMS item customized class loader. */
+    private final ClassLoader customizedClassLoader;
 
     /** CMS item editorial content indicator, may be null. */
     private Boolean editorialContent;
@@ -92,7 +97,7 @@ public class DocumentType {
     	this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, false, true);
     }
 
-    
+
     /**
      * Constructor.
      *
@@ -113,7 +118,7 @@ public class DocumentType {
         this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType, true);
     }
 
-    
+
     /**
      * @param name
      * @param folderish
@@ -132,7 +137,7 @@ public class DocumentType {
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable)   {
         this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType,moveable, false);
     }
-    
+
     /**
      * Constructor.
      *
@@ -163,6 +168,9 @@ public class DocumentType {
         this.isRootType = isRootType;
         this.movable = moveable;
         this.liveEditable = liveEditable;
+
+        // Customized class loader
+        this.customizedClassLoader = PortalGenericPortlet.CLASS_LOADER_CONTEXT.get();
     }
 
     /**
@@ -308,14 +316,14 @@ public class DocumentType {
 	public boolean isRootType() {
 		return this.isRootType;
 	}
-    
+
     /**
      * Checks if is movable.
      *
      * @return true, if is movable
      */
     public boolean isMovable() {
-        return movable;
+        return this.movable;
     }
 
     /**
@@ -324,25 +332,34 @@ public class DocumentType {
      * @return true, if is live editable
      */
     public boolean isLiveEditable() {
-        return liveEditable;
+        return this.liveEditable;
+    }
+
+    /**
+     * Getter for customizedClassLoader.
+     *
+     * @return the customizedClassLoader
+     */
+    public ClassLoader getCustomizedClassLoader() {
+        return this.customizedClassLoader;
     }
 
     /**
      * Getter for editorialContent.
-     * 
+     *
      * @return the editorialContent
      */
     public Boolean getEditorialContent() {
-        return editorialContent;
+        return this.editorialContent;
     }
 
     /**
      * Setter for editorialContent.
-     * 
+     *
      * @param editorialContent the editorialContent to set
      */
     public void setEditorialContent(Boolean editorialContent) {
         this.editorialContent = editorialContent;
     }
-	
+
 }

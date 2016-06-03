@@ -26,7 +26,25 @@ public interface ITaskbarService {
 
 
     /**
-     * Get taskbar navigation tasks.
+     * Get taskbar item factory.
+     *
+     * @return taskbar item factory
+     */
+    TaskbarFactory getFactory();
+
+
+    /**
+     * Get taskbar items.
+     *
+     * @param portalControllerContext portal controller context
+     * @return taskbar items
+     * @throws PortalException
+     */
+    TaskbarItems getItems(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get navigation tasks.
      *
      * @param portalControllerContext portal controller context
      * @param basePath CMS base path
@@ -34,16 +52,6 @@ public interface ITaskbarService {
      * @throws PortalException
      */
     List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath) throws PortalException;
-
-
-    /**
-     * Get taskbar custom tasks.
-     *
-     * @param portalControllerContext portal controller context
-     * @return tasks
-     * @throws PortalException
-     */
-    List<TaskbarTask> getCustomTasks(PortalControllerContext portalControllerContext) throws PortalException;
 
 
     /**
