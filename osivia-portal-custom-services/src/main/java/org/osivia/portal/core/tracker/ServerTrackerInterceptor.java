@@ -35,6 +35,7 @@ import org.jboss.portal.server.ServerInvocationContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.directory.IDirectoryService;
 import org.osivia.portal.api.directory.IDirectoryServiceLocator;
+import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.cms.CMSException;
@@ -233,6 +234,10 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
             if(directoryService != null) {
             	directoryService.clearCaches();
             }
+            
+            // V4.4 directory
+            IDirProvider dirProvider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
+            dirProvider.clearCaches();
         	
             portalParametersCount = newCacheCount;
         }

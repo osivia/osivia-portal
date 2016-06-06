@@ -31,5 +31,10 @@ public interface IDirDelegate {
 	 * @return implementation of the service
 	 * @throws InvocationTargetException 
 	 */
-    <D extends IDirService> D getDirectoryService(Class<D> requiredType) throws InvocationTargetException;
+    public <D extends IDirService> D getDirectoryService(Class<D> requiredType) throws InvocationTargetException;
+    
+    /**
+     * clear all entries in all caches registered in the service.
+     */
+    public void clearCaches();
 }

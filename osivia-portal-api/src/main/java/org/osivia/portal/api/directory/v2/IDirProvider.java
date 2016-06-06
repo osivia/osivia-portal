@@ -44,4 +44,9 @@ public interface IDirProvider {
 	 * @param delegate the portlet delegate
 	 */
 	void unregisterDelegate(IDirDelegate delegate);
+
+	/**
+	 * Clear all directory caches
+	 */
+	void clearCaches();
 }

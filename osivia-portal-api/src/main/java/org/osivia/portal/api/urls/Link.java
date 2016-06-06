@@ -13,13 +13,21 @@
  */
 package org.osivia.portal.api.urls;
 
+import java.io.Serializable;
+
 
 /**
  * Link java-bean.
  */
-public class Link {
+public class Link implements Serializable {
 
-    /** Link URL. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7595217766599298663L;
+	
+	
+	/** Link URL. */
     private final String url;
     /** External link indicator. */
     private final boolean external;

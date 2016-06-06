@@ -14,8 +14,8 @@
 package org.osivia.portal.core.directory.v2;
 
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.osivia.portal.api.directory.v2.IDirDelegate;
 import org.osivia.portal.api.directory.v2.IDirProvider;
@@ -31,9 +31,12 @@ public class DirProvider implements IDirProvider {
 	
 	/** the handler */
 	private DirHandler handler = new DirHandler();
+	
+	/** the delegate */
+	private IDirDelegate delegate;
 
 	/** Map of requested services identified by their types, and dynamic proxies in front of implementation */
-	private Map<Class<? extends IDirService>, IDirService> proxies = new HashMap<Class<? extends IDirService>, IDirService>();
+	private Map<Class<? extends IDirService>, IDirService> proxies = new ConcurrentHashMap<Class<? extends IDirService>, IDirService>();
 
 	/* (non-Javadoc)
 	 * @see org.osivia.portal.api.directory.v2.IDirServiceProvider#getDirService(java.lang.Class)
@@ -56,12 +59,22 @@ public class DirProvider implements IDirProvider {
 	
 	
 	public void registerDelegate(IDirDelegate delegate) {
+		this.delegate = delegate;
 		handler.setDelegate(delegate);
 	}
 	
 	public void unregisterDelegate(IDirDelegate delegate) {
 		if(handler.getDelegate().equals(delegate)) {
 			handler.setDelegate(null);
+			
+			this.delegate = null;
+		}
+	}
+	
+	
+	public void clearCaches() {
+		if(delegate != null) {
+			delegate.clearCaches();
 		}
 	}
 }
