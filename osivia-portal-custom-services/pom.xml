@@ -48,6 +48,19 @@
         </dependency>
 
     </dependencies>
+    
+    
+    <build>
+        <plugins>
+        
+            <!-- SAR -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jboss-packaging-maven-plugin</artifactId>
+            </plugin>
+                
+        </plugins>
+    </build>
 
 
     <profiles>

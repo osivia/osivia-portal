@@ -17,21 +17,18 @@
     <dependencies>
 
         <!-- OSIVIA Portal API -->
-        
         <dependency>
             <groupId>org.osivia.portal</groupId>
             <artifactId>osivia-portal-api</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.osivia.portal</groupId>
             <artifactId>osivia-portal-taglib</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-custom-lib-utils</artifactId>
@@ -39,13 +36,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- JBoss -->
         <dependency>
             <groupId>org.jboss.portal</groupId>
             <artifactId>portal-theme-lib</artifactId>
             <version>${jboss.portal.version}</version>
              <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.jboss.portal</groupId>
             <artifactId>portal-api-lib</artifactId>
@@ -53,96 +50,91 @@
             <scope>compile</scope>
         </dependency>
 
-
         <!-- Commons -->
-
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>compile</scope>
         </dependency>
 
+        <!-- Spring framework -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Other provided libs -->
-
         <dependency>
             <groupId>dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.portlet</groupId>
             <artifactId>portlet-api</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jsp-api</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>displaytag</groupId>
             <artifactId>displaytag</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>displaytag</groupId>
             <artifactId>displaytag-portlet</artifactId>
