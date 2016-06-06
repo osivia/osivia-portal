@@ -206,7 +206,8 @@
                                 <configuration>
                                     <includeGroupIds>
                                         commons,
-                                        org.springframework
+                                        org.springframework,
+                                        aopalliance
                                     </includeGroupIds>
                                 </configuration>
                             </execution>
