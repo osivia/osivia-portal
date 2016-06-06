@@ -1,6 +1,7 @@
 package org.osivia.portal.api.taskbar;
 
 import java.util.List;
+import java.util.SortedSet;
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -41,6 +42,16 @@ public interface ITaskbarService {
      * @throws PortalException
      */
     TaskbarItems getItems(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get default items, sorted by order.
+     *
+     * @param portalControllerContext portal controller context
+     * @return taskbar items
+     * @throws PortalException
+     */
+    SortedSet<TaskbarItem> getDefaultItems(PortalControllerContext portalControllerContext) throws PortalException;
 
 
     /**

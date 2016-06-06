@@ -1,6 +1,9 @@
 package org.osivia.portal.core.taskbar;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.portlet.PortletRequest;
 
@@ -16,6 +19,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.panels.IPanelsService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
+import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.Breadcrumb;
@@ -79,6 +83,27 @@ public class TaskbarService implements ITaskbarService {
         }
 
         return taskbarItems;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public SortedSet<TaskbarItem> getDefaultItems(PortalControllerContext portalControllerContext) throws PortalException {
+        // Comparator
+        Comparator<? super TaskbarItem> comparator = new TaskbarItemComparator();
+        // Default items
+        SortedSet<TaskbarItem> defaultItems = new TreeSet<TaskbarItem>(comparator);
+
+        // Items
+        List<TaskbarItem> items = this.getItems(portalControllerContext).getAll();
+        for (TaskbarItem item : items) {
+            if (item.isDefault()) {
+                defaultItems.add(item);
+            }
+        }
+
+        return defaultItems;
     }
 
 

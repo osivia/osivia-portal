@@ -46,7 +46,8 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
      * {@inheritDoc}
      */
     public TaskbarItem createStapledTaskbarItem(String id, String key, String icon) {
-        return this.createTaskbarItem(id, TaskbarItemType.STAPLED, key, icon);
+        TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.STAPLED, key, icon);
+        return item;
     }
 
 
@@ -56,6 +57,17 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     public TaskbarItem createCmsTaskbarItem(String id, String key, String icon, String documentType) {
         TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.CMS, key, icon);
         item.setDocumentType(documentType);
+        return item;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public TaskbarItem createDefaultCmsTaskbarItem(String id, String key, String icon, String documentType, int order) {
+        TaskbarItemImpl item = (TaskbarItemImpl) this.createCmsTaskbarItem(id, key, icon, documentType);
+        item.setDefaultItem(true);
+        item.setOrder(order);
         return item;
     }
 

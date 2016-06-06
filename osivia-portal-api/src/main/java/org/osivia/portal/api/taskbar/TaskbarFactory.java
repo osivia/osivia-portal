@@ -53,6 +53,18 @@ public interface TaskbarFactory {
 
 
     /**
+     * Create default CMS taskbar item.
+     * 
+     * @param id
+     * @param key
+     * @param icon
+     * @param documentType
+     * @return
+     */
+    TaskbarItem createDefaultCmsTaskbarItem(String id, String key, String icon, String documentType, int order);
+
+
+    /**
      * Create taskbar task.
      *
      * @param item taskbar item

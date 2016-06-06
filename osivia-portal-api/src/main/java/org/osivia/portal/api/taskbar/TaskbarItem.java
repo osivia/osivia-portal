@@ -35,7 +35,7 @@ public interface TaskbarItem {
 
     /**
      * Get customized class loader.
-     * 
+     *
      * @return class loader
      */
     ClassLoader getCustomizedClassLoader();
@@ -63,5 +63,21 @@ public interface TaskbarItem {
      * @return document type
      */
     String getDocumentType();
+
+
+    /**
+     * Check if default.
+     *
+     * @return true if default
+     */
+    boolean isDefault();
+
+
+    /**
+     * Get order.
+     * 
+     * @return order
+     */
+    int getOrder();
 
 }

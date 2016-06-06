@@ -145,3 +145,21 @@ caption {
 audio {
     max-width: 100%;
 }
+
+
+// Required form group
+.form-group.required {
+    label {
+        &::after {
+            content: " *";
+        }
+    }
+    
+    &:not(.has-error):not(.has-warning):not(.has-success) {
+        label {
+            &::after {
+                color: red;
+            }
+        }
+    }
+}

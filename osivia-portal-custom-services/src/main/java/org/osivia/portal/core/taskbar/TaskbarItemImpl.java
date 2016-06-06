@@ -12,6 +12,10 @@ import org.osivia.portal.api.taskbar.TaskbarItemType;
  */
 public class TaskbarItemImpl implements TaskbarItem {
 
+    /** Default order. */
+    private static final int DEFAULT_ORDER = 100;
+
+
     /** Identifier. */
     private String id;
     /** Type. */
@@ -29,12 +33,19 @@ public class TaskbarItemImpl implements TaskbarItem {
     /** Document type. */
     private String documentType;
 
+    /** Default indicator. */
+    private boolean defaultItem;
+    /** Order. */
+    private int order;
+
 
     /**
      * Constructor.
      */
     public TaskbarItemImpl() {
         super();
+
+        this.order = DEFAULT_ORDER;
     }
 
 
@@ -91,6 +102,22 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public String getDocumentType() {
         return this.documentType;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean isDefault() {
+        return this.defaultItem;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public int getOrder() {
+        return this.order;
     }
 
 
@@ -160,7 +187,7 @@ public class TaskbarItemImpl implements TaskbarItem {
 
     /**
      * Setter for customizedClassLoader.
-     * 
+     *
      * @param customizedClassLoader the customizedClassLoader to set
      */
     public void setCustomizedClassLoader(ClassLoader customizedClassLoader) {
@@ -192,6 +219,24 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    /**
+     * Setter for defaultItem.
+     *
+     * @param defaultItem the defaultItem to set
+     */
+    public void setDefaultItem(boolean defaultItem) {
+        this.defaultItem = defaultItem;
+    }
+
+    /**
+     * Setter for order.
+     *
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
     }
 
 }
