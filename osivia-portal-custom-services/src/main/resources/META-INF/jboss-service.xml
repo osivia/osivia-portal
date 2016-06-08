@@ -839,6 +839,9 @@
         <depends
             optional-attribute-name="InternationalizationService"
             proxy-type="attribute">osivia:service=InternationalizationService</depends>
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
 
     <!-- Manage AJAX actions -->

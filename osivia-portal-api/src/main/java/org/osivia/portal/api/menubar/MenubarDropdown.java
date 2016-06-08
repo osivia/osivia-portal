@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -28,10 +28,12 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
     public static final String CMS_EDITION_DROPDOWN_MENU_ID = "CMS_EDITION";
     /** Menubar share dropdown menu identifier. */
     public static final String SHARE_DROPDOWN_MENU_ID = "SHARE";
+    /** Menubar configuration dropdown menu identifier. */
+    public static final String CONFIGURATION_DROPDOWN_MENU_ID = "CONFIGURATION";
     /** Menubar other options dropdown menu identifier. */
     public static final String OTHER_OPTIONS_DROPDOWN_MENU_ID = "OTHER_OPTIONS";
 
-	
+
     /** Menubar dropdown menu reducible indicator. Default value: true. */
     private boolean reducible;
 
@@ -42,7 +44,7 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
 
     /**
      * Constructor.
-     * 
+     *
      * @param id menubar dropdown identifier
      * @param title menubar dropdown title
      * @param glyphicon menubar dropdown glyphicon

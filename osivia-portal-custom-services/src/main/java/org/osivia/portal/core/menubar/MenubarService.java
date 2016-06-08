@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -22,7 +21,11 @@ import org.dom4j.Element;
 import org.dom4j.dom.DOMCDATA;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -35,9 +38,15 @@ import org.osivia.portal.api.menubar.MenubarContainer;
 import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.menubar.MenubarObject;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Menubar service implementation.
@@ -54,6 +63,8 @@ public class MenubarService implements IMenubarService {
     private IPortalUrlFactory urlFactory;
     /** Internationalization service. */
     private IInternationalizationService internationalizationService;
+    /** CMS service locator. */
+    private ICMSServiceLocator cmsServiceLocator;
 
     /** Menubar group comparator. */
     private final Comparator<MenubarGroup> groupComparator;
@@ -105,15 +116,11 @@ public class MenubarService implements IMenubarService {
      * {@inheritDoc}
      */
     public String generateNavbarContent(PortalControllerContext portalControllerContext) {
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // HTTP servlet request
-        HttpServletRequest httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
-        // Locale
-        Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
+        HttpServletRequest httpServletRequest = portalControllerContext.getHttpServletRequest();
         // Bundle
         IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(this.getClass().getClassLoader());
-        Bundle bundle = bundleFactory.getBundle(locale);
+        Bundle bundle = bundleFactory.getBundle(httpServletRequest.getLocale());
 
 
         // Get menubar items, sorted by groups
@@ -166,27 +173,108 @@ public class MenubarService implements IMenubarService {
 
 
     /**
+     * Add customized menubar items.
+     *
+     * @param portalControllerContext portal controller context
+     * @param menubar menubar
+     */
+    private void addCustomizedMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setPortalControllerContext(portalControllerContext);
+
+        // Current page
+        Page page = PortalObjectUtils.getPage(controllerContext);
+        // Base path
+        String basePath = page.getProperty("osivia.cms.basePath");
+
+        // Document context
+        DocumentContext<? extends EcmDocument> documentContext;
+        try {
+            documentContext = cmsService.getDocumentContext(cmsContext, basePath);
+        } catch (CMSException e) {
+            documentContext = null;
+        }
+
+
+        // Menubar modules
+        List<MenubarModule> modules = cmsService.getMenubarModules(cmsContext);
+        for (MenubarModule module : modules) {
+            try {
+                module.customizeMenubar(portalControllerContext, menubar, documentContext);
+            } catch (PortalException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     public Map<MenubarGroup, Set<MenubarItem>> getNavbarSortedItems(PortalControllerContext portalControllerContext) {
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
         // Items map
         Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<MenubarGroup, Set<MenubarItem>>(this.groupComparator);
 
+        // Customized menubar
+        List<MenubarItem> customizedMenubar = this.getCustomizedMenubar(portalControllerContext);
+        for (MenubarItem item : customizedMenubar) {
+            MenubarGroup group = item.getParent().getGroup();
+            this.addSortedItem(sortedItems, group, item);
+        }
+
+        return sortedItems;
+    }
+
+
+    /**
+     * Get customized menubar.
+     *
+     * @param portalControllerContext portal controller context
+     * @return customized menubar
+     */
+    private List<MenubarItem> getCustomizedMenubar(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // HTTP servlet request
+        HttpServletRequest httpServletRequest = portalControllerContext.getHttpServletRequest();
+        // Bundle
+        IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        Bundle bundle = bundleFactory.getBundle(httpServletRequest.getLocale());
+
         // Items list
         List<?> list = (List<?>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
-        if (list != null) {
+
+        // Menubar items
+        List<MenubarItem> menubar;
+        if (list == null) {
+            menubar = new ArrayList<MenubarItem>();
+        } else {
+            menubar = new ArrayList<MenubarItem>(list.size());
             for (Object object : list) {
                 if (object instanceof MenubarItem) {
                     MenubarItem item = (MenubarItem) object;
-                    MenubarGroup group = item.getParent().getGroup();
-                    this.addSortedItem(sortedItems, group, item);
+                    menubar.add(item);
                 }
             }
         }
 
-        return sortedItems;
+
+        // Configuration dropdown menu
+        MenubarDropdown configurationDropdown = new MenubarDropdown(MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID, bundle.getString("CONFIGURATION"),
+                "glyphicons glyphicons-cogwheel", MenubarGroup.GENERIC, 50, false, false);
+        this.addDropdown(portalControllerContext, configurationDropdown);
+
+
+        // Customized menubar items
+        this.addCustomizedMenubarItems(portalControllerContext, menubar);
+
+        return menubar;
     }
 
 
@@ -607,6 +695,15 @@ public class MenubarService implements IMenubarService {
      */
     public void setInternationalizationService(IInternationalizationService internationalizationService) {
         this.internationalizationService = internationalizationService;
+    }
+
+    /**
+     * Setter for cmsServiceLocator.
+     *
+     * @param cmsServiceLocator the cmsServiceLocator to set
+     */
+    public void setCmsServiceLocator(ICMSServiceLocator cmsServiceLocator) {
+        this.cmsServiceLocator = cmsServiceLocator;
     }
 
 }

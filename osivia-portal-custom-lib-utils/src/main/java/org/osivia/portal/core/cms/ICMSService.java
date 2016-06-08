@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.osivia.portal.api.cms.DocumentContext;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.taskbar.TaskbarItems;
@@ -499,8 +502,29 @@ public interface ICMSService {
     /**
      * Get tab groups.
      *
+     * @param cmsContext CMS context
      * @return tab groups
      */
     Map<String, TabGroup> getTabGroups(CMSServiceCtx cmsContext);
+
+
+    /**
+     * Get menubar modules.
+     * 
+     * @param cmsContext CMS context
+     * @return menubar modules
+     */
+    List<MenubarModule> getMenubarModules(CMSServiceCtx cmsContext);
+
+
+    /**
+     * Get document context.
+     *
+     * @param cmsContext CMS context
+     * @param path document path
+     * @return document context
+     * @throws CMSException
+     */
+    DocumentContext<? extends EcmDocument> getDocumentContext(CMSServiceCtx cmsContext, String path) throws CMSException;
 
 }
