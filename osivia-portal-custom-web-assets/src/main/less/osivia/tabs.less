@@ -88,38 +88,40 @@
             
             padding: 0;
 
-            a {
-                padding: @padding-vertical @padding-horizontal;
+            a{
+				&:not(.btn){
+                	padding: @padding-vertical @padding-horizontal;
                 
-                border-style: solid;
-                border-width: @border-width;
-                border-color: transparent;
+               		border-style: solid;
+                	border-width: @border-width;
+                	border-color: transparent;
                 
-                .border-top-radius(@radius: @border-radius);
+                	.border-top-radius(@radius: @border-radius);
 
-                &:hover, &:focus {
-                    text-decoration: none;
-                }
+                	&:hover, &:focus {
+                	    text-decoration: none;
+                	}
                 
-                &:first-of-type {
-                    padding-right: @padding-horizontal + 15;
-                }
+                	&:first-of-type {
+                	    padding-right: @padding-horizontal + 15;
+                	}
 
-                &:last-of-type {
-                    padding-right: @padding-horizontal;
-                }
+                	&:last-of-type {
+                	    padding-right: @padding-horizontal;
+                	}
                 
-                &.page-close {
-                    position: absolute;
-                    top: @border-width + 1;
-                    bottom: 0;
-                    right: @border-width;
-                    z-index: 1;
+                	&.page-close {
+                    	position: absolute;
+                    	top: @border-width + 1;
+                    	bottom: 0;
+                    	right: @border-width;
+                    	z-index: 1;
                     
-                    padding-top: @padding-vertical - @border-width;
-                    padding-left: floor(@padding-horizontal / 4);
-                    padding-right: floor(@padding-horizontal / 2) - @border-width;
-                }
+                    	padding-top: @padding-vertical - @border-width;
+                    	padding-left: floor(@padding-horizontal / 4);
+                    	padding-right: floor(@padding-horizontal / 2) - @border-width;
+                	}
+				}
             }
         
             &.active {
