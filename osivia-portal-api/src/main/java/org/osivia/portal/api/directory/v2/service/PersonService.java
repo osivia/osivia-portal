@@ -29,6 +29,12 @@ public interface PersonService extends IDirService {
 
 
 	/**
+	 * Get a person with no valued fields (for search)
+	 * @return empty object person
+	 */
+	public Person getEmptyPerson();
+	
+	/**
 	 * Get a person by it's full DN
 	 * @param dn
 	 * @return the person
@@ -89,6 +95,9 @@ public interface PersonService extends IDirService {
 	 * @param newPassword 
 	 */
 	public void updatePassword(Person p, String newPassword);
+
+
+
 
 
 }
