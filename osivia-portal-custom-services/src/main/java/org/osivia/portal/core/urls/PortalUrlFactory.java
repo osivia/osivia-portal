@@ -667,11 +667,17 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     public String getRefreshPageUrl(PortalControllerContext portalControllerContext, boolean newContentNotify) {
 
+          
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                 Constants.ATTR_PAGE_ID);
+        
+        // NPE is session has expired
+        if( currentPageId == null)
+            return "";
+           
 
         // URL context
         URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();

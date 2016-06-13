@@ -16,6 +16,7 @@ import java.security.Principal;
 
 import javax.naming.InitialContext;
 import javax.portlet.GenericPortlet;
+import javax.portlet.PortletException;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
 import javax.servlet.http.HttpServletRequest;
@@ -227,7 +228,19 @@ public class ServiceThread implements Runnable {
 				logger.error(e2);
 			}
 
-			logger.error(e);
+			boolean shouldLog = true;
+			
+			// Illegal State are due to session expiration
+			// Should be catched at a pportlet level
+			if (e instanceof IllegalStateException)    {
+			    shouldLog = false;
+			}
+	        if (e instanceof PortletException)    {
+               if( e.getCause() instanceof IllegalStateException)
+                   shouldLog = false;
+	        }
+	        if(shouldLog)
+	            logger.error(e);
 
 		}
 		
