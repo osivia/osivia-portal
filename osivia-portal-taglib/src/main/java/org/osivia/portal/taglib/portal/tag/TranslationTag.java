@@ -30,6 +30,8 @@ public class TranslationTag extends SimpleTagSupport {
 
     /** Internationalization resource property key. */
     private String key;
+    /** Internationalization resource class loader. */
+    private ClassLoader classLoader;
     /** Internationalization resource property arguments, separated by commas. */
     private String args;
 
@@ -52,10 +54,16 @@ public class TranslationTag extends SimpleTagSupport {
 
         // Internationalization service
         IInternationalizationService internationalizationService = this.getInternationalizationService(pageContext);
-        // Current class loader
+
+        // Current class loaders
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         // Customized class loader
-        ClassLoader customizedClassLoader = this.getCustomizedClassLoader(pageContext);
+        ClassLoader customizedClassLoader;
+        if (this.classLoader == null) {
+            customizedClassLoader = this.getCustomizedClassLoader(pageContext);
+        } else {
+            customizedClassLoader = this.classLoader;
+        }
 
         // Property arguments
         Object[] arguments = StringUtils.split(this.args, SEPARATOR);
@@ -88,7 +96,7 @@ public class TranslationTag extends SimpleTagSupport {
 
     /**
      * Get customized class loader.
-     * 
+     *
      * @param pageContext page context
      * @return class loader
      */
@@ -110,6 +118,15 @@ public class TranslationTag extends SimpleTagSupport {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+
+    /**
+     * Setter for classLoader.
+     * 
+     * @param classLoader the classLoader to set
+     */
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     /**

@@ -30,6 +30,14 @@
         </attribute>
         
         <attribute>
+            <description>Internationalization resource property class loader.</description>
+            <name>classLoader</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.ClassLoader</type>
+        </attribute>
+        
+        <attribute>
             <description>Internationalization resource property attributes, separated by commas.</description>
             <name>args</name>
             <required>false</required>
