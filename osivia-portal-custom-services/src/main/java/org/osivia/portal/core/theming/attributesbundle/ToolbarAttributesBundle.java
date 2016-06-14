@@ -237,7 +237,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Person person = null;
         if (principal != null) {
         	PersonService personService = directoryProvider.getDirService(PersonService.class);
-                person = personService.getPersonWithEcmProfile(principal.getName());
+                person = personService.getPerson(principal.getName());
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
                    
         }
@@ -1226,33 +1226,34 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Bundle
         Bundle bundle = bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
         // CMS service
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+//        ICMSService cmsService = cmsServiceLocator.getCMSService();
         // CMS context
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
-        cmsCtx.setControllerContext(controllerContext);
+//        CMSServiceCtx cmsCtx = new CMSServiceCtx();
+//        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+//        cmsCtx.setControllerContext(controllerContext);
 
 
         // User informations
         String userName;
-        String userAvatarSrc;
+        String userAvatarSrc = null;
         if (person != null) {
             userName = person.getDisplayName();
             userAvatarSrc = person.getAvatar().getUrl();
-        } else if (principal != null) {
+        } 
+        else if (principal != null) {
             userName = principal.getName();
-            try {
-                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, userName).getUrl();
-            } catch (CMSException e) {
-                userAvatarSrc = null;
-            }
+//            try {
+//                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, userName).getUrl();
+//            } catch (CMSException e) {
+//                userAvatarSrc = null;
+//            }
         } else {
             userName = bundle.getString(InternationalizationConstants.KEY_USER_GUEST);
-            try {
-                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, "nobody").getUrl();
-            } catch (CMSException e) {
-                userAvatarSrc = null;
-            }
+//            try {
+//                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, "nobody").getUrl();
+//            } catch (CMSException e) {
+//                userAvatarSrc = null;
+//            }
         }
 
 

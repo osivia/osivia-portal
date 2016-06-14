@@ -347,17 +347,8 @@ public interface ICMSService {
 
 
     /**
-     * Get user avatar.
-     *
-     * @param cmsCtx CMS context
-     * @param username user identifier
-     * @return user avatar
-     */
-    Link getUserAvatar(CMSServiceCtx cmsCtx, String username) throws CMSException;
-
-
-    /**
      * Refresh the user avatar.
+     * TODO : déplacer dans person service
      *
      * @param cmsCtx cms context
      * @param username username

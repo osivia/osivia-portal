@@ -48,20 +48,6 @@ public interface PersonService extends IDirService {
 	 * @return the person
 	 */
 	public Person getPerson(String uid);
-	
-	/**
-	 * Get a person by it's full DN with his nuxeo informations
-	 * @param dn
-	 * @return the person
-	 */
-	public Person getPersonWithEcmProfile(Name dn);
-	
-	/**
-	 * Get a person by it's uid with his nuxeo informations
-	 * @param uid
-	 * @return the person
-	 */
-	public Person getPersonWithEcmProfile(String uid);
 
 	/**
 	 * Get a person by criteria represented by a person vith filled fields
@@ -95,9 +81,6 @@ public interface PersonService extends IDirService {
 	 * @param newPassword 
 	 */
 	public void updatePassword(Person p, String newPassword);
-
-
-
 
 
 }
