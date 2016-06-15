@@ -36,6 +36,7 @@ import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItems;
+import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -173,6 +174,10 @@ public class CmsPageState {
             }
 
             if ((this.baseCMSPublicationPage != null) && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
+                // Space config
+                CMSItem spaceConfig = this.getCMSService().getSpaceConfig(cmsReadNavContext, this.basePublishPath);
+                String spaceTemplate = spaceConfig.getProperties().get("pageTemplate");
+
                 if ("1".equals(this.baseCMSPublicationPage.getProperty("osivia.cms.directContentPublisher"))) {
                     /* publication directe d'un contenu sans le publishsite */
                     this.cmsNav = this.cmsItem;
@@ -253,7 +258,15 @@ public class CmsPageState {
                                         }
 
                                         if (template != null) {
-                                            // TODO workspace template
+                                            // Apply template adapters
+                                            List<TemplateAdapter> templateAdapters = this.getCMSService().getTemplateAdapters(cmsReadNavContext);
+                                            for (TemplateAdapter adapter : templateAdapters) {
+                                                String adaptedTemplate = adapter.adapt(spaceTemplate, template);
+                                                if (adaptedTemplate != null) {
+                                                    template = adaptedTemplate;
+                                                    break;
+                                                }
+                                            }
 
                                             ecmPageTemplate = template;
                                         }

@@ -110,17 +110,18 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
-    public List<TaskbarTask> getNavigationTasks(PortalControllerContext portalControllerContext, String basePath) throws PortalException {
+    public List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath, boolean navigation) throws PortalException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setPortalControllerContext(portalControllerContext);
+        cmsContext.setDisplayLiveVersion("1");
 
         // Tasks
         List<TaskbarTask> tasks;
         try {
-            tasks = cmsService.getTaskbarTasks(cmsContext, basePath);
+            tasks = cmsService.getTaskbarTasks(cmsContext, basePath, navigation);
         } catch (CMSException e) {
             throw new PortalException(e);
         }
@@ -185,7 +186,7 @@ public class TaskbarService implements ITaskbarService {
                     String protectedContentPath = contentPath + "/";
 
                     // Navigation tasks
-                    List<TaskbarTask> navigationTasks = this.getNavigationTasks(portalControllerContext, basePath);
+                    List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
 
                     for (TaskbarTask navigationTask : navigationTasks) {
                         String protectedPath = navigationTask.getPath() + "/";

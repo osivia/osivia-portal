@@ -28,6 +28,7 @@ import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
+import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.Link;
 
 /**
@@ -413,10 +414,11 @@ public interface ICMSService {
      *
      * @param cmsContext CMS context
      * @param basePath CMS base path
+     * @param navigation navigation usage indicator
      * @return tasks
      * @throws CMSException
      */
-    List<TaskbarTask> getTaskbarTasks(CMSServiceCtx cmsContext, String basePath) throws CMSException;
+    List<TaskbarTask> getTaskbarTasks(CMSServiceCtx cmsContext, String basePath, boolean navigation) throws CMSException;
 
 
     /**
@@ -501,7 +503,7 @@ public interface ICMSService {
 
     /**
      * Get menubar modules.
-     * 
+     *
      * @param cmsContext CMS context
      * @return menubar modules
      */
@@ -517,5 +519,14 @@ public interface ICMSService {
      * @throws CMSException
      */
     DocumentContext<? extends EcmDocument> getDocumentContext(CMSServiceCtx cmsContext, String path) throws CMSException;
+
+
+    /**
+     * Get template adapters.
+     * 
+     * @param cmsContext CMS context
+     * @return template adapters
+     */
+    List<TemplateAdapter> getTemplateAdapters(CMSServiceCtx cmsContext);
 
 }
