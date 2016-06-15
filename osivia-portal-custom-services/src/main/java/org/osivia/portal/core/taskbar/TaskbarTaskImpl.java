@@ -35,9 +35,13 @@ public class TaskbarTaskImpl extends TaskbarItemImpl implements TaskbarTask {
      * @param item taskbar item
      * @throws ReflectiveOperationException
      */
-    public TaskbarTaskImpl(TaskbarItem item) throws ReflectiveOperationException {
+    public TaskbarTaskImpl(TaskbarItem item) {
         super();
-        BeanUtils.copyProperties(this, item);
+        try {
+            BeanUtils.copyProperties(this, item);
+        } catch (Exception e) {
+            // Do nothing
+        }
     }
 
 

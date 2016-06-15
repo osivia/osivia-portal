@@ -95,7 +95,7 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) throws ReflectiveOperationException {
+    public TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) {
         TaskbarTaskImpl task = new TaskbarTaskImpl(item);
         task.setPath(path);
         task.setDisabled(disabled);
@@ -106,8 +106,7 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarTask createTaskbarTask(String id, String title, String icon, String path, String documentType, boolean disabled)
-            throws ReflectiveOperationException {
+    public TaskbarTask createTaskbarTask(String id, String title, String icon, String path, String documentType, boolean disabled) {
         TaskbarItem item = this.createCmsTaskbarItem(id, null, icon, documentType);
         TaskbarTaskImpl task = new TaskbarTaskImpl(item);
         task.setTitle(title);

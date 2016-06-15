@@ -72,9 +72,8 @@ public interface TaskbarFactory {
      * @param path CMS path
      * @param disabled disabled indicator
      * @return taskbar task
-     * @throws ReflectiveOperationException
      */
-    TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) throws ReflectiveOperationException;
+    TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled);
 
 
     /**
@@ -87,9 +86,7 @@ public interface TaskbarFactory {
      * @param documentType document type
      * @param disabled disabled indicator
      * @return taskbar task
-     * @throws ReflectiveOperationException
      */
-    TaskbarTask createTaskbarTask(String id, String title, String icon, String path, String documentType, boolean disabled)
-            throws ReflectiveOperationException;
+    TaskbarTask createTaskbarTask(String id, String title, String icon, String path, String documentType, boolean disabled);
 
 }
