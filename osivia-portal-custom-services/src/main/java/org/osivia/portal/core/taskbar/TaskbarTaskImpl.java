@@ -66,6 +66,19 @@ public class TaskbarTaskImpl extends TaskbarItemImpl implements TaskbarTask {
 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("TaskbarTaskImpl [id=");
+        builder.append(this.getId());
+        builder.append("]");
+        return builder.toString();
+    }
+
+
+    /**
      * Setter for title.
      *
      * @param title the title to set

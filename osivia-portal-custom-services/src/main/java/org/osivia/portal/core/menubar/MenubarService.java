@@ -206,7 +206,7 @@ public class MenubarService implements IMenubarService {
         List<MenubarModule> modules = cmsService.getMenubarModules(cmsContext);
         for (MenubarModule module : modules) {
             try {
-                module.customizeMenubar(portalControllerContext, menubar, documentContext);
+                module.customizeSpace(portalControllerContext, menubar, documentContext);
             } catch (PortalException e) {
                 throw new RuntimeException(e);
             }

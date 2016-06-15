@@ -35,9 +35,22 @@ public interface TaskbarFactory {
      * @param id taskbar item identifier
      * @param key taskbar item internationalization key
      * @param icon taskbar item icon
+     * @param player player
      * @return taskbar item
      */
-    TaskbarItem createStapledTaskbarItem(String id, String key, String icon);
+    TaskbarItem createStapledTaskbarItem(String id, String key, String icon, PanelPlayer player);
+
+
+    /**
+     * Create stapled taskbar item.
+     *
+     * @param id taskbar item identifier
+     * @param key taskbar item internationalization key
+     * @param icon taskbar item icon
+     * @param template template
+     * @return taskbar item
+     */
+    TaskbarItem createStapledTaskbarItem(String id, String key, String icon, String template);
 
 
     /**
@@ -50,18 +63,6 @@ public interface TaskbarFactory {
      * @return taskbar item
      */
     TaskbarItem createCmsTaskbarItem(String id, String key, String icon, String documentType);
-
-
-    /**
-     * Create default CMS taskbar item.
-     * 
-     * @param id
-     * @param key
-     * @param icon
-     * @param documentType
-     * @return
-     */
-    TaskbarItem createDefaultCmsTaskbarItem(String id, String key, String icon, String documentType, int order);
 
 
     /**

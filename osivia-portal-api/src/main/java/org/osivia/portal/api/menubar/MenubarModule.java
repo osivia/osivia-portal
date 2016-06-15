@@ -15,14 +15,26 @@ import org.osivia.portal.api.context.PortalControllerContext;
 public interface MenubarModule {
 
     /**
-     * Customize menubar.
+     * Customize space.
      *
      * @param portalControllerContext portal controller context
      * @param menubar menubar
      * @param spaceDocumentContext space document context
      * @throws PortalException
      */
-    void customizeMenubar(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
+    void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
             DocumentContext<? extends EcmDocument> spaceDocumentContext) throws PortalException;
+
+
+    /**
+     * Customize document.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param menubar menubar
+     * @param documentContext document context
+     * @throws PortalException
+     */
+    void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext<? extends EcmDocument> documentContext)
+            throws PortalException;
 
 }

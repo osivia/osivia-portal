@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +29,13 @@ import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.portlet.ParametersStateString;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
@@ -51,7 +56,9 @@ import bsh.Interpreter;
 public class CmsPageState {
 
     /** CMS service locator. */
-    private static ICMSServiceLocator cmsServiceLocator;
+    private final ICMSServiceLocator cmsServiceLocator;
+    /** Taskbar service. */
+    private final ITaskbarService taskbarService;
 
 
     private Page page;
@@ -121,6 +128,11 @@ public class CmsPageState {
         this.cmsPath = cmsPath;
         this.displayContext = displayContext;
         this.skipPortletInitialisation = skipPortletInitialisation;
+
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        // Taskbar service
+        this.taskbarService = Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
     }
 
 
@@ -149,6 +161,7 @@ public class CmsPageState {
 
             String portalSiteScope = null;
             final CMSServiceCtx cmsReadNavContext = new CMSServiceCtx();
+
 
             if (this.baseCMSPublicationPage != null) {
                 portalSiteScope = this.baseCMSPublicationPage.getProperty("osivia.cms.navigationScope");
@@ -218,22 +231,46 @@ public class CmsPageState {
                                 }
 
                                 if (computePageTemplate) {
-                                    if (cmsItemNav.getProperties().get("pageTemplate") != null) {
-                                        if (ecmPageTemplate == null) {
-                                            ecmPageTemplate = cmsItemNav.getProperties().get("pageTemplate");
+                                    if (ecmPageTemplate == null) {
+                                        // Template
+                                        String template = cmsItemNav.getProperties().get("pageTemplate");
+                                        if (template == null) {
+                                            // Staple taskbar item indicator
+                                            boolean staple = BooleanUtils.toBoolean(cmsItemNav.getProperties().get("staple"));
+                                            if (staple) {
+                                                // Portal controller context
+                                                PortalControllerContext portalControllerContext = new PortalControllerContext(this.controllerContext);
+                                                // Taskbar items
+                                                TaskbarItems items = this.taskbarService.getItems(portalControllerContext);
+                                                // Taskbar item identifier
+                                                String id = StringUtils.upperCase(StringUtils.substringAfter(cmsItemNav.getWebId(), "_"));
+                                                // Taskbar item
+                                                TaskbarItem item = items.get(id);
+                                                if (item != null) {
+                                                    template = item.getTemplate();
+                                                }
+                                            }
+                                        }
+
+                                        if (template != null) {
+                                            // TODO workspace template
+
+                                            ecmPageTemplate = template;
                                         }
                                     }
 
-                                    if (cmsItemNav.getProperties().get("theme") != null) {
-                                        if (ecmPageTheme == null) {
-                                            ecmPageTheme = cmsItemNav.getProperties().get("theme");
+                                    if (ecmPageTheme == null) {
+                                        String theme = cmsItemNav.getProperties().get("theme");
+                                        if (theme != null) {
+                                            ecmPageTheme = theme;
                                         }
                                     }
                                 }
 
                                 if (computedPageScope == null) {
-                                    if (cmsItemNav.getProperties().get("pageScope") != null) {
-                                        computedPageScope = cmsItemNav.getProperties().get("pageScope");
+                                    String scope = cmsItemNav.getProperties().get("pageScope");
+                                    if (scope != null) {
+                                        computedPageScope = scope;
                                     }
                                 }
                             }
@@ -428,7 +465,7 @@ public class CmsPageState {
 
 
             // Propagation des selecteurs si les paramètres ne sont pas explicites
-            if ((previousPNS != null) && ((this.pageParams == null) || (pageParams.size() == 0))) {
+            if ((previousPNS != null) && ((this.pageParams == null) || (this.pageParams.size() == 0))) {
                 if ("1".equals(this.page.getProperty("osivia.cms.propagateSelectors"))) {
                     final String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
 
@@ -511,19 +548,6 @@ public class CmsPageState {
 
 
     /**
-     * Get CMS service.
-     *
-     * @return CMS service
-     */
-    private ICMSService getCMSService() {
-        if (cmsServiceLocator == null) {
-            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
-        }
-        return cmsServiceLocator.getCMSService();
-    }
-
-
-    /**
      * compute edition state relevantly to cms command
      *
      * @param poid
@@ -581,6 +605,16 @@ public class CmsPageState {
         }
 
         return editionState;
+    }
+
+
+    /**
+     * Get CMS service.
+     *
+     * @return CMS service
+     */
+    private ICMSService getCMSService() {
+        return this.cmsServiceLocator.getCMSService();
     }
 
 

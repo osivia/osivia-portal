@@ -58,6 +58,14 @@ public interface TaskbarItem {
 
 
     /**
+     * Get template.
+     *
+     * @return template
+     */
+    String getTemplate();
+
+
+    /**
      * Get document type.
      *
      * @return document type
@@ -75,9 +83,17 @@ public interface TaskbarItem {
 
     /**
      * Get order.
-     * 
+     *
      * @return order
      */
     int getOrder();
+
+
+    /**
+     * Set to default.
+     * 
+     * @param order order
+     */
+    void setToDefault(int order);
 
 }

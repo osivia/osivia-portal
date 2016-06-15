@@ -18,10 +18,18 @@
     }
     
     .table-header {
-        &.row {
+        &.row, > .row {
             border-width: 2px;
             
             font-weight: bold;
+            
+            a {
+                color: @text-color;
+                
+                &:hover, &:focus {
+                    color: darken(@text-color, 15%);
+                }
+            }
         }
     }
 }

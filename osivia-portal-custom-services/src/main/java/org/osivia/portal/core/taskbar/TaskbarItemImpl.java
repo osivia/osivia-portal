@@ -29,6 +29,8 @@ public class TaskbarItemImpl implements TaskbarItem {
 
     /** Player. */
     private PanelPlayer player;
+    /** Template. */
+    private String template;
 
     /** Document type. */
     private String documentType;
@@ -100,6 +102,14 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    public String getTemplate() {
+        return this.template;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     public String getDocumentType() {
         return this.documentType;
     }
@@ -124,11 +134,20 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    public void setToDefault(int order) {
+        this.defaultItem = true;
+        this.order = order;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
     }
 
@@ -143,15 +162,15 @@ public class TaskbarItemImpl implements TaskbarItem {
         if (obj == null) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
+        if (!(obj instanceof TaskbarItem)) {
             return false;
         }
-        TaskbarItemImpl other = (TaskbarItemImpl) obj;
+        TaskbarItem other = (TaskbarItem) obj;
         if (this.id == null) {
-            if (other.id != null) {
+            if (other.getId() != null) {
                 return false;
             }
-        } else if (!this.id.equals(other.id)) {
+        } else if (!this.id.equals(other.getId())) {
             return false;
         }
         return true;
@@ -213,30 +232,21 @@ public class TaskbarItemImpl implements TaskbarItem {
     }
 
     /**
+     * Setter for template.
+     *
+     * @param template the template to set
+     */
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    /**
      * Setter for documentType.
      *
      * @param documentType the documentType to set
      */
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
-    }
-
-    /**
-     * Setter for defaultItem.
-     *
-     * @param defaultItem the defaultItem to set
-     */
-    public void setDefaultItem(boolean defaultItem) {
-        this.defaultItem = defaultItem;
-    }
-
-    /**
-     * Setter for order.
-     *
-     * @param order the order to set
-     */
-    public void setOrder(int order) {
-        this.order = order;
     }
 
 }
