@@ -4,21 +4,14 @@
 
 
 .table {
-    .row {
-        margin: 0;
-        padding: @table-cell-padding 0;
+    .table-row {
+        padding: @table-cell-padding;
         
         border-bottom-style: solid;
         border-width: 1px;
         border-color: @table-border-color;
         
-        [class|="col"] {
-            padding: 0 @table-cell-padding;
-        }
-    }
-    
-    .table-header {
-        &.row, > .row {
+        &.table-header {
             border-width: 2px;
             
             font-weight: bold;
@@ -30,6 +23,20 @@
                     color: darken(@text-color, 15%);
                 }
             }
+        }
+        
+        fieldset[disabled] {
+            opacity: 0.3;
+        }
+    }
+    
+    .row {
+        margin-left: -@table-cell-padding;
+        margin-right: -@table-cell-padding;
+        
+        [class|="col"] {
+            padding-left: @table-cell-padding;
+            padding-right: @table-cell-padding;
         }
     }
 }

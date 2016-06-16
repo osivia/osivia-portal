@@ -1,0 +1,107 @@
+//
+// OSIVIA Bootstrap extensions - Person
+// --------------------------------------------------
+
+
+.person {
+    .clearfix;
+    
+    // Avatar
+    .person-avatar {
+        .pull-left;
+        .text-center;
+        
+        height: @input-height-base;
+        width: @input-height-base;
+        
+        margin-right: @padding-base-horizontal;
+        
+        img, i {
+            .translate(@x: 0, @y: -50%);
+            
+            position: relative;
+            top: 50%;
+        }
+                
+        img {
+            .img-responsive;
+            .center-block;
+            
+            max-height: 100%;
+        }
+        
+        i {
+            font-size: @line-height-computed;
+        }
+    }
+    
+    // Title
+    .person-title {
+        .text-overflow;
+        
+        &:last-child {
+            .form-control-static;
+        }
+    }
+    
+    // Extra
+    .person-extra {
+        .small;
+        .text-muted;
+        .text-overflow;
+        
+        line-height: @input-height-base - @line-height-computed;
+    }
+    
+    
+    // Table
+    .table & {
+        @media screen and (max-width: @screen-xs-max) {
+            margin-bottom: @padding-small-vertical;
+        }
+    }
+    
+    
+    // Select2 highlighted option
+    .select2-results__option--highlighted & {
+        .person-extra {
+            color: inherit;
+        }
+    }
+    
+    // Select2 selection
+    .select2-selection__choice & {
+        .person-avatar, .person-title {
+            display: inline;
+        }
+        
+        .person-avatar {
+            overflow: hidden;
+            
+            height: @line-height-computed;
+            width: @line-height-computed;
+            
+            margin-right: @padding-xs-horizontal;
+            
+            img, i {
+                position: static;
+                transform: none;
+            }
+            
+            img {
+                height: 100%;
+                max-width: inherit;
+            }
+            
+            i {
+                font-size: inherit;
+            }
+        }
+        
+        .person-title {
+            &, &:last-child {
+                padding: 0;
+            }
+        }
+    }
+}
