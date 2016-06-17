@@ -149,14 +149,14 @@ audio {
 
 // Required form group
 .form-group.required {
-    label {
+    label.control-label {
         &::after {
             content: " *";
         }
     }
     
     &:not(.has-error):not(.has-warning):not(.has-success) {
-        label {
+        label.control-label {
             &::after {
                 color: red;
             }

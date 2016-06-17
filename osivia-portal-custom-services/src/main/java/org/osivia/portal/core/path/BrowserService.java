@@ -340,7 +340,7 @@ public class BrowserService implements IBrowserService {
         }
 
         // Acceptable indicator
-        boolean acceptable = this.isAcceptable(cmsItem, options);
+        boolean acceptable = !root && this.isAcceptable(cmsItem, options);
 
         if (acceptable && (options.getAcceptedTypes() != null) && (options.getIgnoredPaths() != null)) {
             String currentPath = cmsItem.getPath();

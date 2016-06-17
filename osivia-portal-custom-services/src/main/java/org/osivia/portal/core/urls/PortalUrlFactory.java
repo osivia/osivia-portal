@@ -71,6 +71,7 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.share.ShareCommand;
@@ -904,20 +905,23 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	}
 
 
+    /**
+     * {@inheritDoc}
+     */
     public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        String pageId;
-        String parentId;
-        try {
-            pageId = URLEncoder.encode(
-                    PortalObjectUtils.getPageId((ControllerContext) portalControllerContext.getControllerCtx()).toString(PortalObjectPath.SAFEST_FORMAT),
-                    "UTF-8");
-            parentId = URLEncoder.encode(
-                    PortalObjectUtils.getPortal((ControllerContext) portalControllerContext.getControllerCtx()).getId()
-                            .toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-        } catch (final Exception e) {
-            throw new PortalException(e);
+        // Current page
+        Page page = PortalObjectUtils.getPage(controllerContext);
+        if (page instanceof CMSTemplatePage) {
+            page = (Page) page.getParent();
         }
+        String pageId = PortalObjectUtils.getHTMLSafeId(page.getId());
+
+        // Parent portal object
+        PortalObject parent = page.getParent();
+        String parentId = PortalObjectUtils.getHTMLSafeId(parent.getId());
 
         return getDestroyPageUrl(portalControllerContext, parentId, pageId);
     }
