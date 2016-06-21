@@ -106,7 +106,9 @@ public class BrowserService implements IBrowserService {
         List<CMSItem> userWorkspaces = cmsService.getWorkspaces(cmsContext, true, administrator);
         for (CMSItem userWorkspace : userWorkspaces) {
             JSONObject jsonObject = this.generateJSONObject(portalControllerContext, userWorkspace, true, options);
-            jsonArray.put(jsonObject);
+            if (jsonObject != null) {
+                jsonArray.put(jsonObject);
+            }
         }
 
         // Workspaces
@@ -238,8 +240,11 @@ public class BrowserService implements IBrowserService {
 
             JSONObject jsonObject = this.generateJSONObject(portalControllerContext, cmsItem, true, options);
             childrenJSONArray = new JSONArray();
-            jsonObject.put("children", childrenJSONArray);
-            jsonArray.put(jsonObject);
+
+            if (jsonObject != null) {
+                jsonObject.put("children", childrenJSONArray);
+                jsonArray.put(jsonObject);
+            }
 
             parentPath = cmsItem.getPath();
         } else {
@@ -260,7 +265,10 @@ public class BrowserService implements IBrowserService {
                 }
 
                 if (add) {
-                    childrenJSONArray.put(this.generateJSONObject(portalControllerContext, cmsSubItem, false, options));
+                    JSONObject jsonObject = this.generateJSONObject(portalControllerContext, cmsSubItem, false, options);
+                    if (jsonObject != null) {
+                        childrenJSONArray.put(jsonObject);
+                    }
                 }
             }
         }
@@ -340,7 +348,7 @@ public class BrowserService implements IBrowserService {
         }
 
         // Acceptable indicator
-        boolean acceptable = !root && this.isAcceptable(cmsItem, options);
+        boolean acceptable = this.isAcceptable(cmsItem, options);
 
         if (acceptable && (options.getAcceptedTypes() != null) && (options.getIgnoredPaths() != null)) {
             String currentPath = cmsItem.getPath();
@@ -355,74 +363,78 @@ public class BrowserService implements IBrowserService {
             }
         }
 
-        // Expanded indicator
-        boolean expanded = root;
-        if (!expanded && (options.getCmsNavigationPath() != null)) {
-            expanded = StringUtils.startsWith(options.getCmsNavigationPath() + "/", path + "/");
-        }
+        JSONObject object;
+        if (!acceptable && options.isHideUnavailable()) {
+            object = null;
+        } else {
+            object = new JSONObject();
 
-        // Full load indicator
-        boolean fullLoad = options.isFullLoad();
+            // Full load indicator
+            boolean fullLoad = options.isFullLoad();
 
-        // URL
-        String url = null;
-        if (options.isLink()) {
-            url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, cmsItem.getPath(), null, null, options.getDisplayContext(), null, null,
-                    null, null);
-            if (options.isPopup()) {
-                url = this.portalURLFactory.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+            // Expanded indicator
+            boolean expanded = root || fullLoad;
+            if (!expanded && (options.getCmsNavigationPath() != null)) {
+                expanded = StringUtils.startsWith(options.getCmsNavigationPath() + "/", path + "/");
             }
-        }
 
+            // URL
+            String url = null;
+            if (options.isLink()) {
+                url = this.portalURLFactory.getCMSUrl(portalControllerContext, null, cmsItem.getPath(), null, null, options.getDisplayContext(), null, null,
+                        null, null);
+                if (options.isPopup()) {
+                    url = this.portalURLFactory.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
+                }
+            }
 
-        JSONObject object = new JSONObject();
+            // Title
+            object.put("title", cmsItem.getProperties().get("displayName"));
 
-        // Title
-        object.put("title", cmsItem.getProperties().get("displayName"));
+            // Folder indicator
+            object.put("folder", browsable);
 
-        // Folder indicator
-        object.put("folder", browsable);
+            // Lazy indicator
+            object.put("lazy", !expanded && browsable);
 
-        // Lazy indicator
-        object.put("lazy", !expanded && browsable && !fullLoad);
+            // Expanded indicator
+            object.put("expanded", expanded);
 
-        // Expanded indicator
-        object.put("expanded", expanded);
+            // Path
+            object.put("path", cmsItem.getPath());
 
-        // Path
-        object.put("path", cmsItem.getPath());
+            // URL
+            if (url != null) {
+                object.put("href", url);
+            }
 
-        // URL
-        if (url != null) {
-            object.put("href", url);
-        }
+            // Acceptable
+            object.put("acceptable", acceptable);
 
-        // Acceptable
-        object.put("acceptable", acceptable);
+            // Icon
+            if ((glyph != null) && (!glyph.contains("folder"))) {
+                object.put("iconclass", glyph);
+            }
 
-        // Icon
-        if ((glyph != null) && (!glyph.contains("folder"))) {
-            object.put("iconclass", glyph);
-        }
+            // Extra-classes
+            StringBuilder extraClasses = new StringBuilder();
+            if (!acceptable) {
+                extraClasses.append("text-muted not-allowed ");
+            } else if (options.isHighlight() && (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified()))) {
+                extraClasses.append("text-warning ");
+            }
+            if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
+                extraClasses.append("current ");
+            }
 
-        // Extra-classes
-        StringBuilder extraClasses = new StringBuilder();
-        if (!acceptable) {
-            extraClasses.append("text-muted not-allowed ");
-        } else if (options.isHighlight() && (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified()))) {
-            extraClasses.append("text-warning ");
-        }
-        if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
-            extraClasses.append("current ");
-        }
+            object.put("extraClasses", extraClasses.toString());
 
-        object.put("extraClasses", extraClasses.toString());
-
-        // Children
-        if ((!root && expanded) || fullLoad) {
-            BrowserOptions childrenOptions = new BrowserOptions(options, path);
-            JSONArray childrenJSONArray = this.generateLazyJSONArray(portalControllerContext, childrenOptions);
-            object.put("children", childrenJSONArray);
+            // Children
+            if ((!root && expanded) || fullLoad) {
+                BrowserOptions childrenOptions = new BrowserOptions(options, path);
+                JSONArray childrenJSONArray = this.generateLazyJSONArray(portalControllerContext, childrenOptions);
+                object.put("children", childrenJSONArray);
+            }
         }
 
         return object;

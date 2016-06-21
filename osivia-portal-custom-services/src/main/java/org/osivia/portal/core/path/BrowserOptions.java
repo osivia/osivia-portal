@@ -47,6 +47,8 @@ public class BrowserOptions {
     private final boolean highlight;
     /** Full load indicator. */
     private final boolean fullLoad;
+    /** Hide unavailable indicator. */
+    private final boolean hideUnavailable;
 
 
     /**
@@ -72,6 +74,7 @@ public class BrowserOptions {
         this.popup = BooleanUtils.toBoolean(request.getParameter("popup"));
         this.highlight = BooleanUtils.toBoolean(request.getParameter("highlight"));
         this.fullLoad = BooleanUtils.toBoolean(request.getParameter("fullLoad"));
+        this.hideUnavailable = BooleanUtils.toBoolean(request.getParameter("hideUnavailable"));
 
         // Ignored paths
         String[] ignoredPaths = StringUtils.split(request.getParameter("ignoredPaths"), ",");
@@ -131,6 +134,7 @@ public class BrowserOptions {
         this.popup = options.popup;
         this.highlight = options.highlight;
         this.fullLoad = options.fullLoad;
+        this.hideUnavailable = options.hideUnavailable;
     }
 
 
@@ -267,6 +271,15 @@ public class BrowserOptions {
      */
     public boolean isFullLoad() {
         return fullLoad;
+    }
+
+    /**
+     * Getter for hideUnavailable.
+     * 
+     * @return the hideUnavailable
+     */
+    public boolean isHideUnavailable() {
+        return hideUnavailable;
     }
 
 }
