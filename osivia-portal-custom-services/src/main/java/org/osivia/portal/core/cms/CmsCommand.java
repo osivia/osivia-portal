@@ -1457,8 +1457,9 @@ public class CmsCommand extends DynamicCommand {
 
             /* Propagation des selecteurs */
 
-
-            if( previousPNS != null){
+               
+                // Propagation des selecteurs si les paramètres ne sont pas explicites
+            if ((previousPNS != null) && ((this.pageParams == null) || (this.pageParams.size() == 0))) {                
                 if ("1".equals(page.getProperty("osivia.cms.propagateSelectors"))) {
                     String[] selectors = previousPNS.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "selectors"));
 
