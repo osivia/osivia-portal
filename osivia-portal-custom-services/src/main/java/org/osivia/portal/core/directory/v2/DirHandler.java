@@ -50,14 +50,24 @@ public class DirHandler implements InvocationHandler {
 				.getDeclaringClass();
 
 		if (delegate != null) {
-			IDirService directoryService = delegate
-					.getDirectoryService(declaringClass);
-
-			if (directoryService != null) {
-				return method.invoke(directoryService, args);
-			} else {
-				throw new InvocationException("No directory service registered with signature "
-						+ method.toString());
+			
+			ClassLoader currentCl = Thread.currentThread().getContextClassLoader();
+			
+			try {
+				// Call service with the delegate classloader (avoid ClassNotFoundException)
+				Thread.currentThread().setContextClassLoader(delegate.getClassLoader());
+				
+				IDirService directoryService = delegate
+						.getDirectoryService(declaringClass);
+	
+				if (directoryService != null) {
+					return method.invoke(directoryService, args);
+				} else {
+					throw new InvocationException("No directory service registered with signature "
+							+ method.toString());
+			}
+			}finally{
+				Thread.currentThread().setContextClassLoader(currentCl);
 			}
 
 		} else {

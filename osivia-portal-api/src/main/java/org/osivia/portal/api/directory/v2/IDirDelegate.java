@@ -37,4 +37,11 @@ public interface IDirDelegate {
      * clear all entries in all caches registered in the service.
      */
     public void clearCaches();
+    
+    
+    /**
+     * Class loader used by the delegate
+     * @return
+     */
+    public ClassLoader getClassLoader();
 }
