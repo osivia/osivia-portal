@@ -22,17 +22,19 @@ package org.osivia.portal.api.notifications;
 public enum NotificationsType {
 
     /** Information notifications type. */
-    INFO("alert-info", 1),
+    INFO("alert-info", "glyphicons glyphicons-info-sign", 1),
     /** Success notifications type. */
-    SUCCESS("alert-success", 2),
+    SUCCESS("alert-success", "glyphicons glyphicons-ok-sign", 2),
     /** Warning notifications type. */
-    WARNING("alert-warning", 3),
+    WARNING("alert-warning", "glyphicons glyphicons-alert", 3),
     /** Error notifications type. */
-    ERROR("alert-danger", 4);
+    ERROR("alert-danger", "glyphicons glyphicons-remove-sign", 4);
 
 
     /** HTML class. */
     private final String htmlClass;
+    /** Icon. */
+    private final String icon;
     /** Priority. */
     private final int priority;
 
@@ -41,10 +43,12 @@ public enum NotificationsType {
      * Constructor.
      *
      * @param htmlClass HTML class
+     * @param icon icon
      * @param priority priority
      */
-    private NotificationsType(String htmlClass, int priority) {
+    private NotificationsType(String htmlClass, String icon, int priority) {
         this.htmlClass = htmlClass;
+        this.icon = icon;
         this.priority = priority;
     }
 
@@ -56,6 +60,15 @@ public enum NotificationsType {
      */
     public String getHtmlClass() {
         return this.htmlClass;
+    }
+
+    /**
+     * Getter for icon.
+     * 
+     * @return the icon
+     */
+    public String getIcon() {
+        return icon;
     }
 
     /**

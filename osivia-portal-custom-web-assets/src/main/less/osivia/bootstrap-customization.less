@@ -165,7 +165,20 @@ audio {
 }
 
 
+// Fieldset
 fieldset {
     display: table-cell;
     vertical-align: middle;
+}
+
+
+// Alert
+.alert {
+    &.alert-dismissable {
+        button.close {
+            + .media {
+                margin-top: 0;
+            }
+        }
+    }
 }

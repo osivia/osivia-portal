@@ -42,6 +42,7 @@ import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
+import org.osivia.portal.api.notifications.NotificationsType;
 
 
 /**
@@ -137,26 +138,28 @@ public class NotificationsUtils {
      * @throws IOException
      */
     private static String generateNotificationsHTMLContent(List<Notifications> notificationsList) {
-        // HTML "div" #1
-        Element div1 = DOM4JUtils.generateDivElement("dyna-window");
+        // Dyna window
+        Element dynaWindow = DOM4JUtils.generateDivElement("dyna-window");
 
-        // HTML "div" #2
-        Element div2 = DOM4JUtils.generateDivElement(null);
-        DOM4JUtils.addAttribute(div2, HTMLConstants.ID, WINDOW_ID);
-        div1.add(div2);
+        // Window identifier
+        Element windowId = DOM4JUtils.generateDivElement(null);
+        DOM4JUtils.addAttribute(windowId, HTMLConstants.ID, WINDOW_ID);
+        dynaWindow.add(windowId);
 
-        // HTML "div" #3
-        Element div3 = DOM4JUtils.generateDivElement("dyna-window-content");
-        div2.add(div3);
+        // Dyna window content
+        Element dynaWindowContent = DOM4JUtils.generateDivElement("dyna-window-content");
+        windowId.add(dynaWindowContent);
 
         if (notificationsList != null) {
             for (Notifications notifications : notificationsList) {
-                // Notifications
-                Element divNotifications = DOM4JUtils.generateDivElement("alert alert-dismissable " + notifications.getType().getHtmlClass());
-                div3.add(divNotifications);
+                NotificationsType type = notifications.getType();
+
+                // Alert
+                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable " + type.getHtmlClass());
+                dynaWindowContent.add(alert);
 
                 if (notifications.getErrorCode() != null) {
-                    divNotifications.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
+                    alert.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
                 }
 
                 // Close button
@@ -164,20 +167,35 @@ public class NotificationsUtils {
                 DOM4JUtils.addAttribute(button, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
                 DOM4JUtils.addAttribute(button, HTMLConstants.DATA_DISMISS, "alert");
                 DOM4JUtils.addAttribute(button, HTMLConstants.ARIA_HIDDEN, "true");
-                divNotifications.add(button);
+                alert.add(button);
 
+                // Media
+                Element media = DOM4JUtils.generateDivElement("media");
+                alert.add(media);
+
+                // Media left
+                if (type.getIcon() != null) {
+                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "media-left media-middle", null, type.getIcon(), null);
+                    media.add(mediaLeft);
+                }
+
+                // Media body
+                Element mediaBody = DOM4JUtils.generateDivElement("media-body");
+                media.add(mediaBody);
+
+                // Messages
                 List<String> messages = notifications.getMessages();
                 if (CollectionUtils.isNotEmpty(messages)) {
                     if (messages.size() == 1) {
                         // Single message
                         String message = messages.get(0);
-                        Element p = DOM4JUtils.generateElement(HTMLConstants.P, null, null);
-                        messageHandling(p, message);
-                        divNotifications.add(p);
+                        Element text = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, null);
+                        messageHandling(text, message);
+                        mediaBody.add(text);
                     } else {
                         // Multiple messages
                         Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-                        divNotifications.add(ul);
+                        mediaBody.add(ul);
 
                         for (String message : messages) {
                             Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
@@ -190,7 +208,7 @@ public class NotificationsUtils {
         }
 
         // Write HTML content
-        return DOM4JUtils.write(div1);
+        return DOM4JUtils.write(dynaWindow);
     }
 
 
@@ -223,7 +241,7 @@ public class NotificationsUtils {
             } else {
                 text = split[0];
             }
-            Element a = DOM4JUtils.generateLinkElement(split[0], null, null, null, text);
+            Element a = DOM4JUtils.generateLinkElement(split[0], null, null, "alert-link", text);
             parent.add(a);
 
             matcher = MESSAGE_LINKS_PATTERN.matcher(continuation);
