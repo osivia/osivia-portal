@@ -1023,3 +1023,32 @@ rightCellToggle.add(example);
     
     </div>
 </c:if>
+
+
+<!-- Modal -->
+<div id="osivia-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="dyna-region">
+                    <div id="modal-region">
+                        <div class="dyna-window">
+                            <div id="modal-window" class="partial-refresh-window">
+                                <div class="dyna-window-content">
+                                    <div class="text-center text-muted modal-waiter">
+                                        <i class="halflings halflings-refresh"></i>
+                                        <span><op:translate key="AJAX_REFRESH" /></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="hidden">
+    
+    </div>
+</div>

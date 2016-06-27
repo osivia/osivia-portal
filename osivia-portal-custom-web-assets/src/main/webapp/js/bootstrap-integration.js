@@ -53,6 +53,67 @@ $JQry(document).ready(function() {
 		$JQry(".comments .collapse.in").not(event.target).collapse("hide");
 	});
 	
+	
+	// Modal
+	$JQry("#osivia-modal").each(function(index, element) {
+		var $element = $JQry(element),
+			loaded = $element.data("loaded");
+		
+		if (!loaded) {
+			$element.on("show.bs.modal", function(event) {
+				var $target = $JQry(event.target),
+					$hidden = $target.children(".hidden"),
+					$window = $target.find(".dyna-window"),
+					url = $target.data("load-url") + " .partial-refresh-window";
+				
+				$window.children().clone().appendTo($hidden);
+				$window.load(url);
+			});
+			
+			$element.on("hide.bs.modal", function(event) {
+				var $target = $JQry(event.target),
+					callbackFunction = $target.data("callback-function"),
+					callbackFunctionArgs = $target.data("callback-function-args");
+					callbackUrl = $target.data("callback-url");
+				
+				if (callbackFunction) {
+					window[callbackFunction](callbackFunctionArgs);
+				}
+				
+				if (callbackUrl) {
+					container = null,
+					options = {
+						requestHeaders : [ "ajax", "true", "bilto" ],
+						method : "post",
+						onSuccess : function(t) {
+							onAjaxSuccess(t, null);
+						}
+					},
+					eventToStop = null,
+					callerId = null;
+				
+					directAjaxCall(container, options, callbackUrl, eventToStop, callerId);
+				}
+				
+				$target.removeData("load-url");
+				$target.removeData("callback-function");
+				$target.removeData("callback-function-args");
+				$target.removeData("callback-url");
+			});
+			
+			$element.on("hidden.bs.modal", function(event) {
+				var $target = $JQry(event.target),
+					$hidden = $target.children(".hidden"),
+					$window = $target.find(".dyna-window");
+				
+				$window.empty();
+				$hidden.children().appendTo($window);
+			});
+			
+			$element.data("loaded", true);
+		}
+	});
+	
 });
 
 

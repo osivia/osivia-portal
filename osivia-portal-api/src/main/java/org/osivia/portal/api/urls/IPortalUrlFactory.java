@@ -179,26 +179,6 @@ public interface IPortalUrlFactory {
      */
     String adaptPortalUrlToPopup(PortalControllerContext portalControllerContext, String orginalUrl, int adapter);
 
-	/**
-	 * Get start portlet URL.
-	 *
-	 * @param portalControllerContext
-	 *            portal controller context
-	 * @param portletInstance
-	 *            portlet instance
-	 * @param windowProperties
-	 *            window properties
-	 * @param params
-	 *            window parameters
-	 * @param popup
-	 *            popup indicator
-	 * @return start portlet URL
-	 * @throws PortalException
-	 * @deprecated see getStartPortletUrl without params window parameters
-	 */
-	@Deprecated
-	String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
-			Map<String, String> params, boolean popup) throws PortalException;
 
     /**
      * Get start portlet URL.
@@ -209,9 +189,38 @@ public interface IPortalUrlFactory {
      * @param popup popup indicator
      * @return start portlet URL
      * @throws PortalException
+     * @deprecated see
      */
+    @Deprecated
     String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
             boolean popup) throws PortalException;
+
+
+    /**
+     * Get start portlet URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param portletInstance portlet instance
+     * @param windowProperties window properties
+     * @return URL
+     * @throws PortalException
+     */
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties)
+            throws PortalException;
+
+
+    /**
+     * Get start portlet URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param portletInstance portlet instance
+     * @param windowProperties window properties
+     * @param type portal URL type
+     * @return URL
+     * @throws PortalException
+     */
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, PortalUrlType type)
+            throws PortalException;
 
 
     /**

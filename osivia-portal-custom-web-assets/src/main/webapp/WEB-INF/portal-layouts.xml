@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layouts>
 	
+    <!-- Popup -->
 	<layout>
 		<name>osivia-popup</name>
 		<uri>/WEB-INF/layout/popup/index.jsp</uri>
@@ -11,5 +12,15 @@
 			<region name="popup"/>
 		</regions>
 	</layout>
+    
+    <!-- Modal -->
+    <layout>
+        <name>osivia-modal</name>
+        <uri>/WEB-INF/layout/modal/index.jsp</uri>
+        <uri state="maximized">/WEB-INF/layout/modal/maximized.jsp</uri>
+        <regions>
+            <region name="modal"/>
+        </regions>
+    </layout>
 
 </layouts>
