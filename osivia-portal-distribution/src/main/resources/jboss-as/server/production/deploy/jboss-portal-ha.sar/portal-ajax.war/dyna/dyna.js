@@ -51,7 +51,7 @@ function onAjaxSuccess(t, callerId) {
 						var markup = resp.fragments[id];
 						
 						// Exclude ajax refresh incompatible portlets
-						if( !markup.contains('bxslider-container'))    { 
+						if( markup.indexOf('bxslider-container') == -1)    { 
 
 							// Create a temporary element and paste the innerHTML in it
 							var srcContainer = document.createElement("div");
