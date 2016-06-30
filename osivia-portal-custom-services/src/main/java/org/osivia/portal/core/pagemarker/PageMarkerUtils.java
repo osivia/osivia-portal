@@ -31,6 +31,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -978,5 +979,23 @@ public class PageMarkerUtils {
         return markerInfo;
     }
 
+    
+    /**
+     * Check if current page marker.
+     * @param controllerContext controller context
+     * @return
+     */
+    public static boolean isCurrentPageMarker(ControllerContext controllerContext) {
+    	// Current page marker
+    	String currentPageMarker = String.valueOf(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker"));
+    	int current = NumberUtils.toInt(currentPageMarker);
+    	
+    	// Last page marker
+    	PageMarkerInfo lastPageState = getLastPageState(controllerContext);
+    	String lastPageMarker = lastPageState.getPageMarker();
+    	int last = NumberUtils.toInt(lastPageMarker);
+    	
+		return ((current - last) <= 1);
+    }
 
 }
