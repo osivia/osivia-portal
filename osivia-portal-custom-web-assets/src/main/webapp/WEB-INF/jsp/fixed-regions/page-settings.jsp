@@ -1029,6 +1029,15 @@ rightCellToggle.add(example);
 <div id="osivia-modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header hidden">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="h4 modal-title"></h3>
+            </div>
+            
+            <!-- Body -->
             <div class="modal-body">
                 <div class="dyna-region">
                     <div id="modal-region">
@@ -1045,10 +1054,17 @@ rightCellToggle.add(example);
                     </div>
                 </div>
             </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer hidden">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <span><op:translate key="CLOSE" /></span>
+                </button>
+            </div>
         </div>
     </div>
     
-    <div class="hidden">
+    <div class="modal-clone hidden">
     
     </div>
 </div>

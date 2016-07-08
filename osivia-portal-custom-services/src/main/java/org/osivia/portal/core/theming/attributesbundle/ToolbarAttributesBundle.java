@@ -45,7 +45,6 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.directory.IDirectoryServiceLocator;
 import org.osivia.portal.api.directory.v2.IDirProvider;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.directory.v2.service.PersonService;
@@ -62,6 +61,7 @@ import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
@@ -144,12 +144,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-    
-    /** Directory service locator. (older versions) */
-    private final IDirectoryServiceLocator directoryServiceLocator;
+
     /** Directory service locator. */
     private final IDirProvider directoryProvider;
-    
+
     /** Menubar service. */
     private final IMenubarService menubarService;
 
@@ -171,33 +169,32 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Internationalization service
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
-        bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         // URL factory
-        urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
         // CMS service locator
-        cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         // Directory service locator
-        // Directory service locator
-        directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
-        directoryProvider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
+        this.directoryProvider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
         // Menubar service
-        menubarService = MenubarUtils.getMenubarService();
+        this.menubarService = MenubarUtils.getMenubarService();
         // Instance locator
-        instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
 
 
-        adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
+        this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
-        names = new TreeSet<String>();
-        names.add(Constants.ATTR_TOOLBAR_PRINCIPAL);
-        names.add(Constants.ATTR_TOOLBAR_PERSON);
-        names.add(Constants.ATTR_TOOLBAR_LOGIN_URL);
-        names.add(Constants.ATTR_TOOLBAR_MY_SPACE_URL);
-        names.add(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL);
-        names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
-        names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
-        names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
-        names.add(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE);
+        this.names = new TreeSet<String>();
+        this.names.add(Constants.ATTR_TOOLBAR_PRINCIPAL);
+        this.names.add(Constants.ATTR_TOOLBAR_PERSON);
+        this.names.add(Constants.ATTR_TOOLBAR_LOGIN_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_MY_SPACE_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
+        this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
+        this.names.add(Constants.ATTR_TOOLBAR_TASKS);
+        this.names.add(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE);
     }
 
 
@@ -227,7 +224,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Current page
         Page page = renderPageCommand.getPage();
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
 
         // Principal
         Principal principal = serverContext.getClientRequest().getUserPrincipal();
@@ -236,12 +233,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Person
         Person person = null;
         if (principal != null) {
-        	PersonService personService = directoryProvider.getDirService(PersonService.class);
-                person = personService.getPerson(principal.getName());
+            PersonService personService = this.directoryProvider.getDirService(PersonService.class);
+            person = personService.getPerson(principal.getName());
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
-                   
+
         }
-        
+
         // My space
         MonEspaceCommand mySpaceCommand = new MonEspaceCommand();
         PortalURL mySpacePortalUrl = new PortalURLImpl(mySpaceCommand, controllerContext, true, null);
@@ -262,7 +259,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
                 Map<String, String> parameters = new HashMap<String, String>();
 
-                myProfileUrl = urlFactory.getStartPortletInNewPage(portalControllerContext, "myprofile",
+                myProfileUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "myprofile",
                         bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "directory-person-card-instance", properties, parameters);
 
             } catch (PortalException e) {
@@ -272,7 +269,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
 
         // Refresh page
-        String refreshPageURL = urlFactory.getRefreshPageUrl(portalControllerContext);
+        String refreshPageURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
         attributes.put(Constants.ATTR_TOOLBAR_REFRESH_PAGE_URL, refreshPageURL);
 
         // Logout
@@ -281,16 +278,27 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_SIGN_OUT_URL, signOutPortalUrl.toString());
 
         // Administration content
-        String administrationContent = formatHTMLAdministration(controllerContext, page);
+        String administrationContent = this.formatHTMLAdministration(controllerContext, page);
         attributes.put(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT, administrationContent);
 
         // Userbar content
-        String userbarContent = formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), myProfileUrl,
+        String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), myProfileUrl,
                 signOutPortalUrl.toString());
         attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
 
+        // Tasks
+        String tasksUrl = null;
+        if (this.instanceContainer.getDefinition("osivia-services-tasks-instance") != null) {
+            try {
+                tasksUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-tasks-instance", null, PortalUrlType.MODAL);
+            } catch (PortalException e) {
+                // Do nothing
+            }
+        }
+        attributes.put(Constants.ATTR_TOOLBAR_TASKS, tasksUrl);
+
         // Mobile state items
-        List<MenubarItem> stateItems = menubarService.getStateItems(portalControllerContext);
+        List<MenubarItem> stateItems = this.menubarService.getStateItems(portalControllerContext);
         attributes.put(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE, stateItems);
     }
 
@@ -311,11 +319,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         if (PageCustomizerInterceptor.isAdministrator(context)) {
             // Configuration menu
-            generateAdministrationConfigurationMenu(context, page, administration);
+            this.generateAdministrationConfigurationMenu(context, page, administration);
 
             if (!(PageType.DYNAMIC_PAGE.equals(pageType) || (PortalObjectUtils.isSpaceSite(page) && !PortalObjectUtils.isTemplate(page)))) {
                 // Edition menu
-                generateAdministrationEditionMenu(context, page, administration);
+                this.generateAdministrationEditionMenu(context, page, administration);
             }
         }
 
@@ -326,8 +334,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             if (spaceSite && BooleanUtils.isTrue(layoutCMS) && CMSEditionPageCustomizerInterceptor.checkWritePermission(context, page)
                     && CMSEditionPageCustomizerInterceptor.checkWebPagePermission(context, page)) {
                 // Web page menu
-                generateAdministrationWebPageMenu(context, page, administration);
-                generateAdministrationToggleVersion(context, page, administration);
+                this.generateAdministrationWebPageMenu(context, page, administration);
+                this.generateAdministrationToggleVersion(context, page, administration);
             }
         } catch (Exception e) {
             // Do nothing
@@ -349,7 +357,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
         // Page type
         PageType pageType = PageType.getPageType(page, context);
         // Portal name
@@ -376,30 +384,30 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String homeURL = context.getServerInvocation().getServerContext().getPortalContextPath();
         String homeTitle = bundle.getString(InternationalizationConstants.KEY_HOME);
         Element home = DOM4JUtils.generateLinkElement(homeURL, null, null, null, homeTitle, "halflings halflings-home", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(configurationMenuUL, home, null);
+        this.addSubMenuElement(configurationMenuUL, home, null);
 
         // OSIVIA Portal administration
         String osiviaAdministrationURL = StringUtils.EMPTY;
         try {
-            osiviaAdministrationURL = urlFactory.getStartPortletUrl(portalControllerContext, InternalConstants.PORTLET_ADMINISTRATION_INSTANCE_NAME, null,
-                    true);
+            osiviaAdministrationURL = this.urlFactory.getStartPortletUrl(portalControllerContext, InternalConstants.PORTLET_ADMINISTRATION_INSTANCE_NAME, null,
+                    PortalUrlType.POPUP);
         } catch (Exception e) {
             // Do nothing
         }
         String osiviaAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION);
         Element osiviaAdministration = DOM4JUtils.generateLinkElement(osiviaAdministrationURL, null, null, HTML_CLASS_FANCYFRAME_REFRESH,
                 osiviaAdministrationTitle, "halflings halflings-cog", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(configurationMenuUL, osiviaAdministration, null);
+        this.addSubMenuElement(configurationMenuUL, osiviaAdministration, null);
 
         // JBoss administration
-        ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(adminPortalId);
+        ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(this.adminPortalId);
         String jbossAdministrationURL = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
         Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, "jboss", null, null, jbossAdministrationTitle,
                 "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
         Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
-        addSubMenuElement(configurationMenuUL, jbossAdministration, null);
+        this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
 
 
         // ECM administration
@@ -408,7 +416,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         cmsCtx.setControllerContext(context);
         Map<String, String> requestParameters = new HashMap<String, String>();
 
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         String ecmAdminUrl;
         try {
             ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
@@ -419,14 +427,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
             ecmAdministation.add(ecmAdministrationNewWindowGlyph);
 
-            addSubMenuElement(configurationMenuUL, ecmAdministation, null);
+            this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);
         } catch (CMSException e1) {
             // do nothing
         }
 
 
         // Divider
-        addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Identity administration
         boolean identityDivider = false;
@@ -437,94 +445,96 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         try {
 
-        	if (instanceContainer.getDefinition("directory-person-management-instance") != null) {
+            if (this.instanceContainer.getDefinition("directory-person-management-instance") != null) {
 
-	            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-	            properties.put("osivia.ajaxLink", "1");
-	            properties.put("osivia.hideTitle", "1");
+                properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
+                properties.put("osivia.ajaxLink", "1");
+                properties.put("osivia.hideTitle", "1");
 
-	            String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
-	            properties.put("osivia.title", usersAdministrationTitle);
+                String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
+                properties.put("osivia.title", usersAdministrationTitle);
 
-	            String usersAdministrationURL = urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
-	                    bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties, parameters);
+                String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
+                        bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties,
+                        parameters);
 
-	            Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
-	                    "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
-	            addSubMenuElement(configurationMenuUL, usersAdministration, null);
+                Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
+                        "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
+                this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
 
-	            identityDivider = true;
+                identityDivider = true;
 
-        	}
+            }
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
         try {
 
-        	if (instanceContainer.getDefinition("directory-group-management-instance") != null) {
-	            String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
-	            properties.put("osivia.title", groupsAdministrationTitle);
+            if (this.instanceContainer.getDefinition("directory-group-management-instance") != null) {
+                String groupsAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION);
+                properties.put("osivia.title", groupsAdministrationTitle);
 
-	            String groupsAdministrationURL = urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
-	                    bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance", properties, parameters);
+                String groupsAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "groupmanagement",
+                        bundle.getString(InternationalizationConstants.KEY_GROUPS_ADMINISTRATION), "directory-group-management-instance", properties,
+                        parameters);
 
-	            Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
-	                    "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
-	            addSubMenuElement(configurationMenuUL, groupsAdministration, null);
+                Element groupsAdministration = DOM4JUtils.generateLinkElement(groupsAdministrationURL, null, null, null, groupsAdministrationTitle,
+                        "glyphicons glyphicons-group", AccessibilityRoles.MENU_ITEM);
+                this.addSubMenuElement(configurationMenuUL, groupsAdministration, null);
 
-	            identityDivider = true;
-        	}
+                identityDivider = true;
+            }
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
         try {
-        	if (instanceContainer.getDefinition("directory-workspace-management-instance") != null) {
-	            String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
-	            properties.put("osivia.title", workspacesAdministrationTitle);
+            if (this.instanceContainer.getDefinition("directory-workspace-management-instance") != null) {
+                String workspacesAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION);
+                properties.put("osivia.title", workspacesAdministrationTitle);
 
-	            String workspacesAdministrationURL = urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
-	                    bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance", properties,
-	                    parameters);
+                String workspacesAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "workspacemanagement",
+                        bundle.getString(InternationalizationConstants.KEY_WORKSPACES_ADMINISTRATION), "directory-workspace-management-instance", properties,
+                        parameters);
 
-	            Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
-	                    "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
-	            addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
+                Element workspacesAdministration = DOM4JUtils.generateLinkElement(workspacesAdministrationURL, null, null, null, workspacesAdministrationTitle,
+                        "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
+                this.addSubMenuElement(configurationMenuUL, workspacesAdministration, null);
 
-	            identityDivider = true;
-        	}
+                identityDivider = true;
+            }
         } catch (PortalException e) {
             // no item if portlet is not present
         }
 
-        if(identityDivider) {
-        	// Divider
-        	addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        if (identityDivider) {
+            // Divider
+            this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
         }
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
         Element pagesList = DOM4JUtils.generateLinkElement(URL_PAGES_LIST, null, null, HTML_CLASS_FANCYBOX_INLINE, pagesListTitle,
                 "halflings halflings-sort-by-alphabet", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(configurationMenuUL, pagesList, null);
+        this.addSubMenuElement(configurationMenuUL, pagesList, null);
 
         // Divider
-        addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation
             String pageCreationTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_CREATION);
             Element pageCreation = DOM4JUtils.generateLinkElement(URL_PAGE_CREATION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageCreationTitle,
                     "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(configurationMenuUL, pageCreation, null);
+            this.addSubMenuElement(configurationMenuUL, pageCreation, null);
         }
 
         // Template creation
         String templateCreationTitle = bundle.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION);
         Element templateCreation = DOM4JUtils.generateLinkElement(URL_TEMPLATE_CREATION, null, null, HTML_CLASS_FANCYBOX_INLINE, templateCreationTitle,
                 "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(configurationMenuUL, templateCreation, null);
+        this.addSubMenuElement(configurationMenuUL, templateCreation, null);
 
         // Page template access
         String pageTemplateAccessTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS);
@@ -538,16 +548,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Link
             Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(pageTemplateAccessURL, null, null, null, pageTemplateAccessTitle,
                     "glyphicons glyphicons-construction-cone", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, null);
+            this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, null);
         } else {
             // Link
             Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, pageTemplateAccessTitle,
                     "glyphicons glyphicons-construction-cone", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, "disabled");
+            this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, "disabled");
         }
 
         // Divider
-        addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Caches initialization
         ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
@@ -556,7 +566,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String cachesInitializationTitle = bundle.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION);
         Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, null, cachesInitializationTitle,
                 "glyphicons glyphicons-restart", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(configurationMenuUL, cachesInitialization, null);
+        this.addSubMenuElement(configurationMenuUL, cachesInitialization, null);
     }
 
 
@@ -569,7 +579,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      */
     private void generateAdministrationEditionMenu(ControllerContext context, Page page, Element administration) {
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
         // Page type
         PageType pageType = PageType.getPageType(page, context);
 
@@ -613,12 +623,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String changeModeURL = new PortalURLImpl(changeModeCommand, context, null, null).toString();
             String changeModeTitle = bundle.getString(InternationalizationConstants.KEY_ICONS_DISPLAY);
 
-            Element iconsDisplay = DOM4JUtils
-                    .generateLinkElement(changeModeURL, null, null, null, changeModeTitle, modeHtmlClass, AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(editionMenuUL, iconsDisplay, null);
+            Element iconsDisplay = DOM4JUtils.generateLinkElement(changeModeURL, null, null, null, changeModeTitle, modeHtmlClass,
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(editionMenuUL, iconsDisplay, null);
 
             // Divider
-            addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+            this.addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
         }
 
         // Page suppression
@@ -626,39 +636,39 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (PortalObjectUtils.isPortalDefaultPage(page)) {
             Element pageSuppression = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, pageSuppressionTitle,
                     "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(editionMenuUL, pageSuppression, "disabled");
+            this.addSubMenuElement(editionMenuUL, pageSuppression, "disabled");
         } else {
             Element pageSuppression = DOM4JUtils.generateLinkElement(URL_PAGE_SUPPRESSION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageSuppressionTitle,
                     "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(editionMenuUL, pageSuppression, null);
+            this.addSubMenuElement(editionMenuUL, pageSuppression, null);
         }
 
         // Page location
         String pageLocationTitle = bundle.getString(InternationalizationConstants.KEY_LOCATION);
         Element pageLocation = DOM4JUtils.generateLinkElement(URL_PAGE_LOCATION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageLocationTitle,
                 "halflings halflings-move", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(editionMenuUL, pageLocation, null);
+        this.addSubMenuElement(editionMenuUL, pageLocation, null);
 
         // Divider
-        addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // Page properties
         String pagePropertiesTitle = bundle.getString(InternationalizationConstants.KEY_PROPERTIES);
         Element pageProperties = DOM4JUtils.generateLinkElement(URL_PAGE_PROPERTIES, null, null, HTML_CLASS_FANCYBOX_INLINE, pagePropertiesTitle,
                 "halflings halflings-cog", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(editionMenuUL, pageProperties, null);
+        this.addSubMenuElement(editionMenuUL, pageProperties, null);
 
         // Page CMS configuration
         String pageCMSTitle = bundle.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION);
         Element pageCMS = DOM4JUtils.generateLinkElement(URL_PAGE_CMS, null, null, HTML_CLASS_FANCYBOX_INLINE, pageCMSTitle, "halflings halflings-cog",
                 AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(editionMenuUL, pageCMS, null);
+        this.addSubMenuElement(editionMenuUL, pageCMS, null);
 
         // Page rights
         String pageRightsTitle = bundle.getString(InternationalizationConstants.KEY_RIGHTS);
-        Element pageRights = DOM4JUtils.generateLinkElement(URL_PAGE_RIGHTS, null, null, HTML_CLASS_FANCYBOX_INLINE, pageRightsTitle,
-                "halflings halflings-cog", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(editionMenuUL, pageRights, null);
+        Element pageRights = DOM4JUtils.generateLinkElement(URL_PAGE_RIGHTS, null, null, HTML_CLASS_FANCYBOX_INLINE, pageRightsTitle, "halflings halflings-cog",
+                AccessibilityRoles.MENU_ITEM);
+        this.addSubMenuElement(editionMenuUL, pageRights, null);
     }
 
 
@@ -674,9 +684,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(context);
         // CMS service
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
         // URL context
         URLContext urlContext = context.getServerInvocation().getServerContext().getURLContext();
 
@@ -709,7 +719,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         cmsCtx.setDoc(content.getNativeItem());
 
         // Close URL
-        String closeUrl = urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
+        String closeUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, "_NEWID_", null, null, IPortalUrlFactory.DISPLAYCTX_REFRESH, null, null,
                 null, null);
         // ECM base URL
         String ecmBaseUrl = cmsService.getEcmDomain(cmsCtx);
@@ -747,8 +757,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         // Toggle avanced CMS tools
-        boolean showAdvancedTools = BooleanUtils.toBoolean((Boolean) context.getAttribute(Scope.SESSION_SCOPE,
-                InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+        boolean showAdvancedTools = BooleanUtils
+                .toBoolean((Boolean) context.getAttribute(Scope.SESSION_SCOPE, InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
         String toggleAdvancedToolsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_TOGGLE_ADVANCED_TOOLS);
         String toggleAdvancedToolsGlyphicon;
         if (showAdvancedTools) {
@@ -765,18 +775,18 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Link
             Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(toggleAdvancedToolsURL, null, null, null, toggleAdvancedToolsTitle,
                     toggleAdvancedToolsGlyphicon, AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, null);
         } else {
             // Link
             Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, toggleAdvancedToolsTitle,
                     toggleAdvancedToolsGlyphicon, AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(toggleAdvancedToolsLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, "disabled");
         }
 
 
         // Divider
-        addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
         // CMS create page
         String cmsCreatePageTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE);
@@ -788,13 +798,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(cmsCreatePageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
                     cmsCreatePageTitle, "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsCreatePageLink, HTMLConstants.ACCESSKEY, "n");
-            addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, null);
         } else {
             // Link
             Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsCreatePageTitle,
                     "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsCreatePageLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, "disabled");
         }
 
 
@@ -807,12 +817,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH, cmsEditPageTitle,
                     "halflings halflings-pencil", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsEditPageLink, HTMLConstants.ACCESSKEY, "e");
-            addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
         } else {
             Element cmsEditPageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEditPageTitle,
                     "halflings halflings-pencil", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsEditPageLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, "disabled");
         }
 
 
@@ -822,19 +832,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
                     AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_MOVE"));
-            addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
         } else if (modePreview) {
             // URL
             String url = cmsService.getMoveUrl(cmsCtx);
 
             Element moveLink = DOM4JUtils.generateLinkElement(url, null, null, "fancyframe_refresh", moveTitle, "halflings halflings-move",
                     AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, moveLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, null);
         } else {
             Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
                     AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
         }
 
 
@@ -845,12 +855,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             if (modePreview) {
                 Element reorderLink = DOM4JUtils.generateLinkElement(reorderUrl, null, null, "fancyframe_refresh", reorderTitle, "halflings halflings-sort",
                         AccessibilityRoles.MENU_ITEM);
-                addSubMenuElement(cmsEditionMenuUL, reorderLink, null);
+                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, null);
             } else {
                 Element reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, reorderTitle, "halflings halflings-sort",
                         AccessibilityRoles.MENU_ITEM);
                 DOM4JUtils.addAttribute(reorderLink, HTMLConstants.TITLE, previewRequired);
-                addSubMenuElement(cmsEditionMenuUL, reorderLink, "disabled");
+                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, "disabled");
             }
         }
 
@@ -866,13 +876,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Link
             Element cmsPublishLink = DOM4JUtils.generateLinkElement(cmsPublishURL, null, null, null, cmsPublishTitle, "halflings halflings-ok-circle",
                     AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, null);
         } else {
             // Link
             Element cmsPublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsPublishTitle,
                     "halflings halflings-ok-circle", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsPublishLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, "disabled");
         }
 
 
@@ -882,7 +892,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsUnpublishTitle,
                     "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_UNPUBLISH"));
-            addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
         } else if (modePreview && published) {
             // URL
             CMSPublishDocumentCommand cmsUnpublishCommand = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
@@ -890,9 +900,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String cmsUnpublishURL = context.renderURL(cmsUnpublishCommand, urlContext, URLFormat.newInstance(true, true));
 
             // Link
-            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(cmsUnpublishURL, null, null, null, cmsUnpublishTitle,
-                    "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, null);
+            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(cmsUnpublishURL, null, null, null, cmsUnpublishTitle, "halflings halflings-remove-circle",
+                    AccessibilityRoles.MENU_ITEM);
+            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, null);
         } else {
             // Link
             Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsUnpublishTitle,
@@ -903,7 +913,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 String publishRequired = bundle.getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED);
                 DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, publishRequired);
             }
-            addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
         }
 
         // Erase modifications
@@ -911,17 +921,17 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (beingModified && modePreview && published) {
 
 
-            String cmsEraseModificationURL = urlFactory.getEcmCommandUrl(portalControllerContext, path, EcmCommonCommands.eraseModifications);
+            String cmsEraseModificationURL = this.urlFactory.getEcmCommandUrl(portalControllerContext, path, EcmCommonCommands.eraseModifications);
 
-            cmsEditionMenu.add(generateEraseFancyBox(bundle, cmsEraseModificationURL));
+            cmsEditionMenu.add(this.generateEraseFancyBox(bundle, cmsEraseModificationURL));
 
             Element cmsEraseModificationLink = DOM4JUtils.generateLinkElement("#erase_cms_page", null, null, HTML_CLASS_FANCYBOX_INLINE, cmsEraseTitle,
                     "halflings halflings-erase", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, cmsEraseModificationLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, cmsEraseModificationLink, null);
         } else {
             Element eraseLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEraseTitle, "halflings halflings-erase",
                     AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, eraseLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, eraseLink, "disabled");
         }
 
         // CMS delete document
@@ -931,7 +941,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle, "halflings halflings-trash",
                     AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_SUPPRESSION"));
-            addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
         } else if (modePreview) {
             // User can only delete a document which its parent is editable.
             CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
@@ -945,43 +955,44 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 String cmsDeleteURL = context.renderURL(cmsDeleteCommand, urlContext, URLFormat.newInstance(true, true));
 
                 // Inline fancybox
-                Element divDeleteFancyBox = generateDeleteFancyBox(bundle, cmsDeleteURL);
+                Element divDeleteFancyBox = this.generateDeleteFancyBox(bundle, cmsDeleteURL);
                 cmsEditionMenu.add(divDeleteFancyBox);
 
                 // Link
                 Element cmsDeleteLink = DOM4JUtils.generateLinkElement("#delete_cms_page", null, null, HTML_CLASS_FANCYBOX_INLINE, cmsDeleteTitle,
                         "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
-                addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, null);
+                this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, null);
             } else {
                 // Link
                 Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle,
                         "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
                 String deleteForbidden = bundle.getString(InternationalizationConstants.KEY_PTITLE_DELETE_FORBIDDEN);
                 DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, deleteForbidden);
-                addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+                this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
             }
         } else {
             // Link
             Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle, "halflings halflings-trash",
                     AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
         }
 
 
         // Divider
-        addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
 
 
         // URL
         Map<String, String> sitemapProperties = new HashMap<String, String>();
         sitemapProperties.put("osivia.cms.path", path);
         sitemapProperties.put("osivia.cms.basePath", basePath);
-        String sitemapUrl = urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties, true);
+        String sitemapUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties,
+                PortalUrlType.POPUP);
         // Link
         Element sitemapLink = DOM4JUtils.generateLinkElement(sitemapUrl, null, null, HTML_CLASS_FANCYFRAME_REFRESH,
                 bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "halflings halflings-map-marker", AccessibilityRoles.MENU_ITEM);
-        addSubMenuElement(cmsEditionMenuUL, sitemapLink, null);
+        this.addSubMenuElement(cmsEditionMenuUL, sitemapLink, null);
 
 
         // Media library
@@ -991,14 +1002,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Link
             Element mediaLibraryLink = DOM4JUtils.generateLinkElement(mediaLibraryURL, HTMLConstants.TARGET_NEW_WINDOW, null, null, mediaLibraryTitle,
                     "halflings halflings-picture", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, null);
+            this.addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, null);
         } else {
             // Link
             Element mediaLibraryLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, mediaLibraryTitle,
                     "halflings halflings-picture", AccessibilityRoles.MENU_ITEM);
             String noMediaLib = bundle.getString(InternationalizationConstants.KEY_PTITLE_NO_MEDIA_LIB);
             DOM4JUtils.addAttribute(mediaLibraryLink, HTMLConstants.TITLE, noMediaLib);
-            addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, "disabled");
+            this.addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, "disabled");
         }
     }
 
@@ -1012,9 +1023,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      */
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws CMSException {
         // CMS service
-        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(context.getServerInvocation().getRequest().getLocale());
         // Edition mode
         String editionMode = CmsPermissionHelper.getCurrentCmsEditionMode(context);
 
@@ -1159,8 +1170,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         // OK button
-        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning", bundle.getString("YES"),
-                "halflings halflings-alert", null);
+        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning", bundle.getString("YES"), "halflings halflings-alert",
+                null);
         DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         form.add(okButton);
 
@@ -1221,16 +1232,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @return HTML data
      * @throws Exception
      */
-    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, Person person, String mySpaceURL,
-            String myProfileUrl, String signOutURL) {
+    private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, Person person, String mySpaceURL, String myProfileUrl,
+            String signOutURL) {
         // Bundle
-        Bundle bundle = bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
+        Bundle bundle = this.bundleFactory.getBundle(controllerContext.getServerInvocation().getRequest().getLocale());
         // CMS service
-//        ICMSService cmsService = cmsServiceLocator.getCMSService();
+        // ICMSService cmsService = cmsServiceLocator.getCMSService();
         // CMS context
-//        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-//        cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
-//        cmsCtx.setControllerContext(controllerContext);
+        // CMSServiceCtx cmsCtx = new CMSServiceCtx();
+        // cmsCtx.setServerInvocation(controllerContext.getServerInvocation());
+        // cmsCtx.setControllerContext(controllerContext);
 
 
         // User informations
@@ -1239,21 +1250,20 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (person != null) {
             userName = person.getDisplayName();
             userAvatarSrc = person.getAvatar().getUrl();
-        } 
-        else if (principal != null) {
+        } else if (principal != null) {
             userName = principal.getName();
-//            try {
-//                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, userName).getUrl();
-//            } catch (CMSException e) {
-//                userAvatarSrc = null;
-//            }
+            // try {
+            // userAvatarSrc = cmsService.getUserAvatar(cmsCtx, userName).getUrl();
+            // } catch (CMSException e) {
+            // userAvatarSrc = null;
+            // }
         } else {
             userName = bundle.getString(InternationalizationConstants.KEY_USER_GUEST);
-//            try {
-//                userAvatarSrc = cmsService.getUserAvatar(cmsCtx, "nobody").getUrl();
-//            } catch (CMSException e) {
-//                userAvatarSrc = null;
-//            }
+            // try {
+            // userAvatarSrc = cmsService.getUserAvatar(cmsCtx, "nobody").getUrl();
+            // } catch (CMSException e) {
+            // userAvatarSrc = null;
+            // }
         }
 
 
@@ -1291,7 +1301,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
                 Element viewProfile = DOM4JUtils.generateLinkElement(myProfileUrl, null, null, null,
                         bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "halflings halflings-user", AccessibilityRoles.MENU_ITEM);
-                addSubMenuElement(userbarMenuUl, viewProfile, null);
+                this.addSubMenuElement(userbarMenuUl, viewProfile, null);
 
             }
 
@@ -1299,12 +1309,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Logout
             Element signOut = DOM4JUtils.generateLinkElement(signOutURL, null, null, null, bundle.getString(InternationalizationConstants.KEY_LOGOUT),
                     "halflings halflings-log-out", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(userbarMenuUl, signOut, null);
+            this.addSubMenuElement(userbarMenuUl, signOut, null);
         } else {
             // Login
             Element login = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null, bundle.getString(InternationalizationConstants.KEY_LOGIN),
                     "halflings halflings-log-in", AccessibilityRoles.MENU_ITEM);
-            addSubMenuElement(userbarMenuUl, login, null);
+            this.addSubMenuElement(userbarMenuUl, login, null);
         }
 
 
@@ -1333,7 +1343,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * {@inheritDoc}
      */
     public Set<String> getAttributeNames() {
-        return names;
+        return this.names;
     }
 
 }

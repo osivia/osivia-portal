@@ -62,20 +62,39 @@ $JQry(document).ready(function() {
 		if (!loaded) {
 			$element.on("show.bs.modal", function(event) {
 				var $target = $JQry(event.target),
-					$hidden = $target.children(".hidden"),
+					$header = $target.find(".modal-header"),
+					$footer = $target.find(".modal-footer"),
+					$clone = $target.children(".modal-clone"),
 					$window = $target.find(".dyna-window"),
-					url = $target.data("load-url") + " .partial-refresh-window";
+					url = $target.data("load-url") + " .partial-refresh-window",
+					title = $target.data("title"),
+					footer = $target.data("footer");
 				
-				$window.children().clone().appendTo($hidden);
+				// Header
+				if (title) {
+					$header.find(".modal-title").text(title);
+					$header.removeClass("hidden");
+				}
+				
+				// Footer
+				if (footer) {
+					$footer.removeClass("hidden");
+				}
+				
+				// Body
+				$window.children().clone().appendTo($clone);
 				$window.load(url);
 			});
 			
 			$element.on("hide.bs.modal", function(event) {
 				var $target = $JQry(event.target),
+					$window = $target.find(".dyna-window"),
 					callbackFunction = $target.data("callback-function"),
 					callbackFunctionArgs = $target.data("callback-function-args");
 					callbackUrl = $target.data("callback-url");
 				
+				$window.unbind("load");	
+					
 				if (callbackFunction) {
 					window[callbackFunction](callbackFunctionArgs);
 				}
@@ -99,15 +118,51 @@ $JQry(document).ready(function() {
 				$target.removeData("callback-function");
 				$target.removeData("callback-function-args");
 				$target.removeData("callback-url");
+				$target.removeData("title");
+				$target.removeData("footer");
 			});
 			
 			$element.on("hidden.bs.modal", function(event) {
 				var $target = $JQry(event.target),
-					$hidden = $target.children(".hidden"),
+					$header = $target.find(".modal-header"),
+					$footer = $target.find(".modal-footer"),
+					$clone = $target.children(".modal-clone"),
 					$window = $target.find(".dyna-window");
 				
+				// Header
+				$header.addClass("hidden");
+				$header.find(".modal-title").empty();
+				
+				// Footer
+				$footer.addClass("hidden");
+				
+				// Body
 				$window.empty();
-				$hidden.children().appendTo($window);
+				$clone.children().appendTo($window);
+			});
+			
+			$element.data("loaded", true);
+		}
+	});
+	
+	
+	// Open tasks modal
+	$JQry("button[name='open-tasks']").each(function(index, element) {
+		var $element = $JQry(element),
+			loaded = $element.data("loaded");
+		
+		if (!loaded) {
+			$element.click(function(event) {
+				var $target = $JQry(event.target),
+					loadUrl = $target.data("load-url"),
+					title = $target.data("title"),
+					$modal = $JQry("#osivia-modal");
+	
+				$modal.data("load-url", loadUrl);
+				$modal.data("title", title);
+				$modal.data("footer", true);
+				
+				$modal.modal("show");
 			});
 			
 			$element.data("loaded", true);

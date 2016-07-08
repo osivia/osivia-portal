@@ -80,12 +80,23 @@
                         <!-- User links -->
                         <ul class="nav navbar-nav navbar-right">
                             <!-- Help -->
-                            <c:if test="${requestScope['osivia.toolbar.helpURL'] != null}">
+                            <c:if test="${not empty requestScope['osivia.toolbar.helpURL']}">
                                 <li>
                                     <a href="${requestScope['osivia.toolbar.helpURL']}" class="navbar-link">
                                         <i class="halflings halflings-question-sign"></i>
                                         <span class="hidden-sm"><op:translate key="HELP" /></span>
                                     </a>
+                                </li>
+                            </c:if>
+                            
+                            <!-- Tasks -->
+                            <c:if test="${not empty requestScope['osivia.toolbar.tasks']}">
+                                <c:set var="title"><op:translate key="NOTIFICATION_TASKS" /></c:set>
+                                <li>
+                                    <button type="button" name="open-tasks" class="btn btn-link navbar-btn" data-load-url="${requestScope['osivia.toolbar.tasks']}" data-title="${title}">
+                                        <i class="glyphicons glyphicons-light-beacon"></i>
+                                        <span class="sr-only">${title}</span>
+                                    </button>
                                 </li>
                             </c:if>
                             

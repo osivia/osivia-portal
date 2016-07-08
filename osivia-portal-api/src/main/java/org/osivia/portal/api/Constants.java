@@ -130,7 +130,7 @@ public final class Constants {
     public static final String ATTR_TOOLBAR_PERSON = "osivia.toolbar.person";
     /** Principal attribute name. */
     public static final String ATTR_TOOLBAR_PRINCIPAL = "osivia.toolbar.principal";
-
+    /** User content. */
     public static final String ATTR_TOOLBAR_USER_CONTENT = "osivia.toolbar.userContent";
     /** My space URL attribute name. */
     public static final String ATTR_TOOLBAR_MY_SPACE_URL = "osivia.toolbar.mySpaceURL";
@@ -138,9 +138,10 @@ public final class Constants {
     public static final String ATTR_TOOLBAR_REFRESH_PAGE_URL = "osivia.toolbar.refreshPageURL";
     /** Administration HTML content attribute name. */
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
-
     /** User's profile */
     public static final String ATTR_TOOLBAR_MY_PROFILE = "osivia.toolbar.myprofile";
+    /** Toolbar tasks. */
+    public static final String ATTR_TOOLBAR_TASKS = "osivia.toolbar.tasks";
 
 
     // SEO

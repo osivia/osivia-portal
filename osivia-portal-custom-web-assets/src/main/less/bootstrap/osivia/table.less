@@ -39,4 +39,22 @@
             padding-right: @table-cell-padding;
         }
     }
+    
+    
+    &.table-striped {
+        .table-row:not(.table-header) {
+            &:nth-child(odd) {
+                background-color: @table-bg-accent;
+            }
+        }
+    }
+    
+    
+    &.table-hover {
+        .table-row:not(.table-header) {
+            &:hover {
+                background-color: @table-bg-hover;
+            }
+        }
+    }
 }
