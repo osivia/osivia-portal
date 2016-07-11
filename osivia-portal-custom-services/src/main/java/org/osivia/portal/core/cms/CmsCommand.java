@@ -602,6 +602,8 @@ public class CmsCommand extends DynamicCommand {
             if( this.cmsPath != null)  {
                 controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.profiler.cmsPath", this.cmsPath);
             }
+            
+            String originalPath = this.cmsPath;
 
 
             Page currentPage = null;
@@ -724,6 +726,9 @@ public class CmsCommand extends DynamicCommand {
                 } catch (CMSException e) {
 
                     if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN) {
+                    	// Path may have been modified, which causes wrong redirection
+                    	this.cmsPath = originalPath;
+                    	
                         return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
                     }
 
