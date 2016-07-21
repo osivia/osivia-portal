@@ -63,7 +63,9 @@ public abstract class ForeignBeanProvider {
 	 * @param type
 	 *            classType of the bean
 	 * @return
+	 * @deprecated use org.osivia.portal.api.directory.v2.DirServiceFactory.getService(Class<D>)
 	 */
+	@Deprecated
 	public synchronized <T extends DirectoryBean> T getForeignBean(String name, Class<T> type) {
 		T directoryBean = null;
 

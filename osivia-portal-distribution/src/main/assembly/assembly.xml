@@ -104,7 +104,7 @@
             </includes>
             <excludes>
                 <exclude>jboss-as/bin/run.sh</exclude>
-                <exclude>jboss-as/server/production/lib/commons-collections.jar</exclude>
+                <exclude>jboss-as/server/production/lib/commons-*.jar</exclude>
                 <exclude>jboss-as/server/production/conf/jboss-service.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/jbossweb.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/server.xml</exclude>
@@ -157,6 +157,11 @@
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget.war/WEB-INF/portlet-instances.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget-netvibes.war/WEB-INF/portlet-instances.xml</exclude>
             </excludes>
+        </fileSet>
+        
+        <fileSet>
+            <outputDirectory>/jboss-as/server/production/lib</outputDirectory>
+            <directory>target/dependency</directory>
         </fileSet>
 
         <fileSet>

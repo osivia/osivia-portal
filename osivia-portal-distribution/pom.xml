@@ -5,12 +5,19 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.0.21</version>
+        <version>4.0.22-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.portal</groupId>
     <artifactId>osivia-portal-distribution</artifactId>
     <name>OSIVIA Portal - Distribution</name>
+
+
+    <properties>
+        <!-- Spring framework -->
+        <org.springframework.ldap.version>2.1.0.RELEASE</org.springframework.ldap.version>
+        <org.springframework.data.version>1.12.1.RELEASE</org.springframework.data.version>
+    </properties>
 
 
     <prerequisites>
@@ -97,6 +104,49 @@
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
+        
+        <!-- Commons -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <!-- Spring framework -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${org.springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ldap</groupId>
+            <artifactId>spring-ldap-core</artifactId>
+            <version>${org.springframework.ldap.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>${org.springframework.data.version}</version>
+        </dependency>
 
     </dependencies>
     
@@ -148,6 +198,21 @@
                                     <outputDirectory>${project.build.directory}</outputDirectory> 
                                     <overWriteReleases>false</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>import-dependencies</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeGroupIds>
+                                        commons,
+                                        org.springframework,
+                                        aopalliance
+                                    </includeGroupIds>
                                 </configuration>
                             </execution>
                         </executions>
