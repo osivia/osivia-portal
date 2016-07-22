@@ -108,14 +108,14 @@ public interface Person {
 	public void setUid(String uid);
 
 	/**
-	 * @return the portalPersonProfile
+	 * @return the profiles
 	 */
-	public List<Name> getPortalPersonProfile();
+	public List<Name> getProfiles();
 
 	/**
-	 * @param portalPersonProfile the portalPersonProfile to set
+	 * @param profiles the profiles to set
 	 */
-	public void setPortalPersonProfile(List<Name> portalPersonProfile);
+	public void setProfiles(List<Name> profiles);
 	
 	/**
 	 * @return the avatar
