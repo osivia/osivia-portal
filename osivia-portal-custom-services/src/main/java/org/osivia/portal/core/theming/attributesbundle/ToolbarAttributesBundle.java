@@ -193,7 +193,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
         this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
         this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
-        this.names.add(Constants.ATTR_TOOLBAR_TASKS);
+        this.names.add(Constants.ATTR_TOOLBAR_TASKS_URL);
+        this.names.add(Constants.ATTR_TOOLBAR_TASKS_COUNT);
         this.names.add(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE);
     }
 
@@ -221,6 +222,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
+
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
+        
         // Current page
         Page page = renderPageCommand.getPage();
         // Bundle
@@ -287,15 +295,27 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
 
         // Tasks
-        String tasksUrl = null;
-        if (this.instanceContainer.getDefinition("osivia-services-tasks-instance") != null) {
-            try {
-                tasksUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-tasks-instance", null, PortalUrlType.MODAL);
-            } catch (PortalException e) {
-                // Do nothing
+        if (principal != null) {
+            // Tasks URL
+            String tasksUrl = null;
+            if (this.instanceContainer.getDefinition("osivia-services-tasks-instance") != null) {
+                try {
+                    tasksUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-tasks-instance", null, PortalUrlType.MODAL);
+                } catch (PortalException e) {
+                    // Do nothing
+                }
             }
+            attributes.put(Constants.ATTR_TOOLBAR_TASKS_URL, tasksUrl);
+
+            // Tasks count
+            int tasksCount;
+            try {
+                tasksCount = cmsService.getTasksCount(cmsContext, principal.getName());
+            } catch (CMSException e) {
+                tasksCount = 0;
+            }
+            attributes.put(Constants.ATTR_TOOLBAR_TASKS_COUNT, tasksCount);
         }
-        attributes.put(Constants.ATTR_TOOLBAR_TASKS, tasksUrl);
 
         // Mobile state items
         List<MenubarItem> stateItems = this.menubarService.getStateItems(portalControllerContext);

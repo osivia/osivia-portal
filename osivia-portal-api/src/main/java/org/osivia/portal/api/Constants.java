@@ -140,8 +140,10 @@ public final class Constants {
     public static final String ATTR_TOOLBAR_ADMINISTRATION_CONTENT = "osivia.toolbar.administrationContent";
     /** User's profile */
     public static final String ATTR_TOOLBAR_MY_PROFILE = "osivia.toolbar.myprofile";
-    /** Toolbar tasks. */
-    public static final String ATTR_TOOLBAR_TASKS = "osivia.toolbar.tasks";
+    /** Toolbar tasks URL. */
+    public static final String ATTR_TOOLBAR_TASKS_URL = "osivia.toolbar.tasks.url";
+    /** Toolbar tasks count. */
+    public static final String ATTR_TOOLBAR_TASKS_COUNT = "osivia.toolbar.tasks.count";
 
 
     // SEO

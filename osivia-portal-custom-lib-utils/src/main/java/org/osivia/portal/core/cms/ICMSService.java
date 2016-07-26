@@ -529,4 +529,15 @@ public interface ICMSService {
      */
     List<TemplateAdapter> getTemplateAdapters(CMSServiceCtx cmsContext);
 
+
+    /**
+     * Get user tasks count.
+     * 
+     * @param cmsContext CMS context
+     * @param user user UID
+     * @return tasks count
+     * @throws CMSException
+     */
+    int getTasksCount(CMSServiceCtx cmsContext, String user) throws CMSException;
+
 }
