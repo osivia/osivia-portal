@@ -50,43 +50,6 @@
     }
     
     
-    .counter-btn {
-        position: relative;
-        
-        .counter {
-            position: absolute;
-            top: floor((@navbar-height - @input-height-base) / -2);
-            right: 0;
-        }
-        
-        &:hover, &:focus {
-            .label-default {
-                .label-variant(darken(@label-default-bg, 10%));
-            }
-            
-            .label-primary {
-                .label-variant(darken(@label-primary-bg, 10%));
-            }
-            
-            .label-success {
-                .label-variant(darken(@label-success-bg, 10%));
-            }
-            
-            .label-info {
-                .label-variant(darken(@label-info-bg, 10%));
-            }
-            
-            .label-warning {
-                .label-variant(darken(@label-warning-bg, 10%));
-            }
-            
-            .label-danger {
-                .label-variant(darken(@label-danger-bg, 10%));
-            }
-        }
-    }
-    
-    
     @media screen and (min-width: @screen-sm-min) {
         .navbar-fixed-top {
             position: absolute;
