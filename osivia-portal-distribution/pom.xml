@@ -204,8 +204,7 @@
                                     <includeGroupIds>
                                         commons,
                                         org.springframework,
-                                        aopalliance,
-                                        de.odysseus.juel
+                                        aopalliance
                                     </includeGroupIds>
                                 </configuration>
                             </execution>

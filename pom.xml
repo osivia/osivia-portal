@@ -40,9 +40,9 @@
         <jstl.version>1.2</jstl.version>
         <log4j.version>1.2.14</log4j.version>
         <portlet-api.version>2.0</portlet-api.version>
+        <el-api.version>1.0</el-api.version>
         <servlet-api.version>2.5</servlet-api.version>
         <displaytag.version>1.2</displaytag.version>
-        <juel.version>2.2.7</juel.version>
         
         <!-- Various libs -->
         <jsf-api.version>1.2</jsf-api.version>
@@ -423,6 +423,12 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>el-api</artifactId>
+                <version>${el-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
@@ -444,24 +450,6 @@
                 <groupId>displaytag</groupId>
                 <artifactId>displaytag-portlet</artifactId>
                 <version>${displaytag.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>de.odysseus.juel</groupId>
-                <artifactId>juel-api</artifactId>
-                <version>${juel.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>de.odysseus.juel</groupId>
-                <artifactId>juel-impl</artifactId>
-                <version>${juel.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>de.odysseus.juel</groupId>
-                <artifactId>juel-spi</artifactId>
-                <version>${juel.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -671,6 +659,10 @@
             <artifactId>jsp-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
         </dependency>
@@ -681,18 +673,6 @@
         <dependency>
             <groupId>displaytag</groupId>
             <artifactId>displaytag-portlet</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.odysseus.juel</groupId>
-            <artifactId>juel-spi</artifactId>
         </dependency>
 
         <!-- Test -->
