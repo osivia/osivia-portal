@@ -169,6 +169,9 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // Logout
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/logout.min.js'></script>");
 
+        // Tasks
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/tasks.min.js'></script>");
+
         // Glyphicons
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.min.css'>");
 

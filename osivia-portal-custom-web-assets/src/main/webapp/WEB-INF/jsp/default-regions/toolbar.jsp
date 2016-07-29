@@ -93,7 +93,7 @@
                             <c:if test="${not empty requestScope['osivia.toolbar.tasks.url']}">
                                 <c:set var="title"><op:translate key="NOTIFICATION_TASKS" /></c:set>
                                 <li>
-                                    <button type="button" name="open-tasks" class="btn btn-link navbar-btn counter-btn" data-load-url="${requestScope['osivia.toolbar.tasks.url']}" data-title="${title}">
+                                    <button type="button" name="open-tasks" class="btn btn-link navbar-btn" data-load-url="${requestScope['osivia.toolbar.tasks.url']}" data-title="${title}">
                                         <i class="glyphicons glyphicons-bell"></i>
                                         <span class="sr-only">${title}</span>
                                         
@@ -107,16 +107,7 @@
                                                     <span class="label label-default">0</span>
                                                 </c:otherwise>
                                             </c:choose>
-                                            
-                                            
                                         </span>
-                                        
-                                        
-                                        <c:if test="${requestScope['osivia.toolbar.tasks.count'] gt 0}">
-                                            <span class="counter">
-                                                
-                                            </span>
-                                        </c:if>
                                     </button>
                                 </li>
                             </c:if>

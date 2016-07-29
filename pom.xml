@@ -26,6 +26,7 @@
         <commons-io.version>2.2</commons-io.version>
 
         <!-- Spring framework -->
+        <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
 
         <!-- Other provided libs -->
         <beanshell.version>1.3.0</beanshell.version>
@@ -40,8 +41,8 @@
         <log4j.version>1.2.14</log4j.version>
         <portlet-api.version>2.0</portlet-api.version>
         <servlet-api.version>2.5</servlet-api.version>
-        <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
         <displaytag.version>1.2</displaytag.version>
+        <juel.version>2.2.7</juel.version>
         
         <!-- Various libs -->
         <jsf-api.version>1.2</jsf-api.version>
@@ -51,7 +52,7 @@
         <!-- Test -->
         <junit.version>4.11</junit.version>
         <easymock.version>3.1</easymock.version>
-        <powermock.version>1.5</powermock.version>
+        <powermock.version>1.6.5</powermock.version>
 
 
         <!-- Deployment directories -->
@@ -445,6 +446,24 @@
                 <version>${displaytag.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-api</artifactId>
+                <version>${juel.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-impl</artifactId>
+                <version>${juel.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-spi</artifactId>
+                <version>${juel.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
             <!-- Various libs -->
             <dependency>
@@ -662,6 +681,18 @@
         <dependency>
             <groupId>displaytag</groupId>
             <artifactId>displaytag-portlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.odysseus.juel</groupId>
+            <artifactId>juel-spi</artifactId>
         </dependency>
 
         <!-- Test -->

@@ -1,5 +1,4 @@
-
-$JQry(document).ready(function() {
+$JQry(function() {
 	
 	// Accessible dropdown menu without Javascript
 	$JQry(".accessible-dropdown-menu").removeClass("accessible-dropdown-menu");
@@ -144,31 +143,7 @@ $JQry(document).ready(function() {
 			$element.data("loaded", true);
 		}
 	});
-	
-	
-	// Open tasks modal
-	$JQry("button[name='open-tasks']").each(function(index, element) {
-		var $element = $JQry(element),
-			loaded = $element.data("loaded");
-		
-		if (!loaded) {
-			$element.click(function(event) {
-				var $target = $JQry(event.target),
-					loadUrl = $target.data("load-url"),
-					title = $target.data("title"),
-					$modal = $JQry("#osivia-modal");
-	
-				$modal.data("load-url", loadUrl);
-				$modal.data("title", title);
-				$modal.data("footer", true);
-				
-				$modal.modal("show");
-			});
-			
-			$element.data("loaded", true);
-		}
-	});
-	
+
 });
 
 
