@@ -622,7 +622,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             boolean initState = "true".equals(request.getParameter("init-state"));
             
-            if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
+            if(request.getParameter("InterceptedURL") == null && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
                     initState = false;
             
             if( "1".equals(rpc.getPage().getProperty("osivia.genericPage")))
