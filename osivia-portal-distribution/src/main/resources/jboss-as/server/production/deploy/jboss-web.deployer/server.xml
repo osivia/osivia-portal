@@ -37,8 +37,8 @@
     -->
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
-     <Connector port="8009" address="${jboss.bind.address}" protocol="AJP/1.3"
-         emptySessionPath="true" enableLookups="false" redirectPort="8443" acceptCount="100" keepAliveTimeout="60000" maxThreads="250" connectionTimeout="60000" />
+     <!-- <Connector port="8009" address="${jboss.bind.address}" protocol="AJP/1.3"
+         emptySessionPath="true" enableLookups="false" redirectPort="8443" acceptCount="100" keepAliveTimeout="60000" maxThreads="250" connectionTimeout="60000" /> -->
 
       <Engine name="jboss.web" defaultHost="localhost" jvmRoute="${jvmroute}">
 
