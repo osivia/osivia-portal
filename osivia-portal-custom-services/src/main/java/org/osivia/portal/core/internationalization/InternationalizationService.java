@@ -45,18 +45,15 @@ public class InternationalizationService implements IInternationalizationService
     private ICustomizationService customizationService;
 
     /** Class loader. */
-    private ClassLoader cl;
-
+    private final ClassLoader classLoader;
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public InternationalizationService() {
-
         super();
-
-        this.cl = Thread.currentThread().getContextClassLoader();
+        this.classLoader = Thread.currentThread().getContextClassLoader();
     }
 
 
@@ -64,8 +61,7 @@ public class InternationalizationService implements IInternationalizationService
      * {@inheritDoc}
      */
     public IBundleFactory getBundleFactory(ClassLoader classLoader) {
-        IInternationalizationService mbean = InternationalizationUtils.getInternationalizationService();
-        return new BundleFactory(mbean, classLoader);
+        return new BundleFactory(this, classLoader);
     }
 
 
@@ -81,6 +77,14 @@ public class InternationalizationService implements IInternationalizationService
      * {@inheritDoc}
      */
     public String getString(String key, Locale locale, ClassLoader classLoader, Object... args) {
+        return this.getString(key, locale, classLoader, null, args);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_KEY, key);
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_LOCALE, locale);
@@ -96,7 +100,21 @@ public class InternationalizationService implements IInternationalizationService
         } else {
             // Get resource bundle
             ResourceBundle resourceBundle = null;
-            if (classLoader != null) {
+
+            if (customizedClassLoader != null) {
+                // Customized class loader resource bundle
+                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, customizedClassLoader);
+                if (resourceBundle != null) {
+                    try {
+                        pattern = resourceBundle.getString(key);
+                    } catch (MissingResourceException e) {
+                        // Do nothing
+                    }
+                }
+            }
+
+            if ((pattern == null) && (classLoader != null)) {
+                // Current class loader resource bundle
                 resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
                 if (resourceBundle != null) {
                     try {
@@ -108,10 +126,11 @@ public class InternationalizationService implements IInternationalizationService
             }
 
             if (pattern == null) {
-                ClassLoader originalCL = Thread.currentThread().getContextClassLoader();
+                // Saved class loader
+                ClassLoader savedClassLoader = Thread.currentThread().getContextClassLoader();
 
                 // Portal default result
-                Thread.currentThread().setContextClassLoader(this.cl);
+                Thread.currentThread().setContextClassLoader(this.classLoader);
 
                 try {
                     resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
@@ -119,7 +138,7 @@ public class InternationalizationService implements IInternationalizationService
                 } catch (MissingResourceException e) {
                     return "[Missing resource: " + key + "]";
                 } finally {
-                    Thread.currentThread().setContextClassLoader(originalCL);
+                    Thread.currentThread().setContextClassLoader(savedClassLoader);
                 }
             }
         }
@@ -143,19 +162,21 @@ public class InternationalizationService implements IInternationalizationService
 
         List<Object> formattedArguments = new ArrayList<Object>(args.length);
         for (Object arg : args) {
-            if (NumberUtils.isNumber(arg.toString()) && !NumberUtils.isDigits(args.toString())) {
-                // Decimal number
-                double value = NumberUtils.createDouble(arg.toString());
-                String display = NumberFormat.getNumberInstance(locale).format(value);
-                formattedArguments.add(display);
-            } else if (arg instanceof Date) {
-                // Date
-                String date = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(arg);
-                formattedArguments.add(date);
-            } else {
-                // Default : text
-                formattedArguments.add(arg);
-            }
+        	if(arg != null) {
+	            if (NumberUtils.isNumber(arg.toString()) && !NumberUtils.isDigits(args.toString())) {
+	                // Decimal number
+	                double value = NumberUtils.createDouble(arg.toString());
+	                String display = NumberFormat.getNumberInstance(locale).format(value);
+	                formattedArguments.add(display);
+	            } else if (arg instanceof Date) {
+	                // Date
+	                String date = DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(arg);
+	                formattedArguments.add(date);
+	            } else {
+	                // Default : text
+	                formattedArguments.add(arg);
+	            }
+        	}
         }
 
         return formattedArguments.toArray();

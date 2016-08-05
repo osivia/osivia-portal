@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,8 +14,13 @@
  */
 package org.osivia.portal.core.internationalization;
 
+import java.util.Locale;
+
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 /**
  * Utility class with null-safe methods for internationalization.
@@ -39,6 +44,28 @@ public class InternationalizationUtils {
      */
     public static final IInternationalizationService getInternationalizationService() {
         return Locator.findMBean(IInternationalizationService.class, IInternationalizationService.MBEAN_NAME);
+    }
+
+
+    /**
+     * Get application name.
+     * 
+     * @param portalObject portal object
+     * @param locale user locale
+     * @return application name
+     */
+    public static final String getApplicationName(PortalObject portalObject, Locale locale) {
+        // Internationalization service
+        IInternationalizationService service = getInternationalizationService();
+        // Portal
+        Portal portal = PortalObjectUtils.getPortal(portalObject);
+        // Brand name internationalization key
+        String key = portal.getDeclaredProperty("osivia.brand.key");
+        if (key == null) {
+            key = "BRAND";
+        }
+        // Application name
+        return service.getString(key, locale);
     }
 
 }

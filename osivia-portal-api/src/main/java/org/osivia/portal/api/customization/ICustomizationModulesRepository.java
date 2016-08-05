@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.api.customization;
 
+import java.util.Locale;
+
 
 /**
  * The Interface ICustomizationModulesRepository.
@@ -24,6 +26,8 @@ package org.osivia.portal.api.customization;
  */
 
 public interface ICustomizationModulesRepository {
+    
+    public static long NOT_DEPLOYED = 0;
 	
 	/**
 	 * Register.
@@ -39,4 +43,5 @@ public interface ICustomizationModulesRepository {
 	 */
 	public void unregister (CustomizationModuleMetadatas moduleMetadatas);
 	
+
 }

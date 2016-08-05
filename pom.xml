@@ -37,6 +37,7 @@
         <jstl.version>1.2</jstl.version>
         <log4j.version>1.2.14</log4j.version>
         <portlet-api.version>2.0</portlet-api.version>
+        <el-api.version>1.0</el-api.version>
         <servlet-api.version>2.5</servlet-api.version>
         <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
         <displaytag.version>1.2</displaytag.version>
@@ -74,7 +75,8 @@
         <module>osivia-portal-jbossas-jbossweb-lib</module>
         <module>osivia-portal-dependencies</module>
         <module>osivia-portal-dependencies-test</module>
-        <module>osivia-portal-distribution</module>        
+        <module>osivia-portal-distribution</module>
+        <module>osivia-portal-taglib</module>        
     </modules>
 
 
@@ -454,6 +456,12 @@
             </dependency>
 
             <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>el-api</artifactId>
+                <version>${el-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
                 <version>${servlet-api.version}</version>
@@ -733,6 +741,10 @@
             <artifactId>jsp-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>

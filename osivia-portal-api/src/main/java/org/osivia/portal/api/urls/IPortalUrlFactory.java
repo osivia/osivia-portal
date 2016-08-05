@@ -204,6 +204,19 @@ public interface IPortalUrlFactory {
 
 
     /**
+     * Get start portlet URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param portletInstance portlet instance
+     * @param windowProperties window properties
+     * @param type portal URL type
+     * @return URL
+     * @throws PortalException
+     */
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, PortalUrlType type)
+            throws PortalException;    
+    
+    /**
      * Gets the start portlet URL in new page.
      *
      * @param portalCtx the portal ctx

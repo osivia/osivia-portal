@@ -35,8 +35,16 @@ public final class HTMLConstants {
     public static final String A = "a";
     /** HTML "button" nodes. */
     public static final String BUTTON = "button";
+    /** HTML "code" nodes. */
+    public static final String CODE = "code";
     /** HTML "div" nodes. */
     public static final String DIV = "div";
+    /** HTML "dd" nodes. */
+    public static final String DD = "dd";
+    /** HTML "dl" nodes. */
+    public static final String DL = "dl";
+    /** HTML "dt" nodes. */
+    public static final String DT = "dt";
     /** HTML "fieldset" nodes. */
     public static final String FIELDSET = "fieldset";
     /** HTML "figcaption" nodes. */
@@ -71,6 +79,8 @@ public final class HTMLConstants {
     public static final String LI = "li";
     /** HTML "meta" nodes. */
     public static final String META = "meta";
+    /** HTML "nav" nodes. */
+    public static final String NAV = "nav";
     /** HTML "ol" nodes. */
     public static final String OL = "ol";
     /** HTML "option" nodes. */
@@ -87,6 +97,10 @@ public final class HTMLConstants {
     public static final String SPAN = "span";
     /** HTML "table" nodes. */
     public static final String TABLE = "table";
+    /** HTML "tbody" nodes. */
+    public static final String TBODY = "tbody";
+    /** HTML "thead" nodes. */
+    public static final String THEAD = "thead";
     /** HTML "textarea" nodes. */
     public static final String TEXTAREA = "textarea";
     /** HTML "td" nodes. */
@@ -192,6 +206,8 @@ public final class HTMLConstants {
     public static final String ROLE_MENU = "menu";
     /** HTML role "menuitem" value. */
     public static final String ROLE_MENU_ITEM = "menuitem";
+    /** HTML role "navigation" value. */
+    public static final String ROLE_NAVIGATION = "navigation";
     /** HTML role "presentation" value. */
     public static final String ROLE_PRESENTATION = "presentation";
     /** HTML role "toolbar" value. */

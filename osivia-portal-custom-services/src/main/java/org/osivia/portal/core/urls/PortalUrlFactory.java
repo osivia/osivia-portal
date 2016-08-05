@@ -23,6 +23,7 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
@@ -41,6 +42,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
+import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -48,6 +50,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.EcmFilesCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.assistantpage.EcmFilesManagementCommand;
 import org.osivia.portal.core.assistantpage.SubscriptionCommand;
 import org.osivia.portal.core.cms.CMSException;
@@ -71,6 +74,7 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
@@ -491,7 +495,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return url;
     }
 
-
     /**
      * Utility method used to simplify calls to portlet within an other portlet.
      *
@@ -535,6 +538,106 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 		return this.getStartPortletUrl(portalCtx, portletInstance, windowProperties, null, popup);
 
 	}
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
+            PortalUrlType type) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Window properties
+        if (windowProperties == null) {
+            windowProperties = new HashMap<String, String>();
+        }
+
+        // URL
+        String url;
+        try {
+            // Page identifier
+            String pageId;
+            // Region
+            String regionId;
+            // Window
+            String windowName;
+
+            if (PortalUrlType.POPUP.equals(type)) {
+                // Popup
+                PortalObjectPath pageObjectPath = PortalObjectPath.parse("/osivia-util/popup", PortalObjectPath.CANONICAL_FORMAT);
+                pageId = URLEncoder.encode(pageObjectPath.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+                regionId = "popup";
+                windowName = "popupWindow";
+                
+                // Default window properties
+                if (windowProperties.get("osivia.hideDecorators") == null) {
+                    windowProperties.put("osivia.hideDecorators", "1");
+                }
+                if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
+                    windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+                }
+            } else if (PortalUrlType.MODAL.equals(type)) {
+                // Modal
+                PortalObjectPath pageObjectPath = PortalObjectPath.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
+                pageId = URLEncoder.encode(pageObjectPath.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+                regionId = "modal-region";
+                windowName = "modal-window";
+                
+                // Default window properties
+                windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+                windowProperties.put("osivia.ajaxLink", "1");
+                
+            } else {
+                // Default
+                PortalObjectId pageObjectId = PortalObjectUtils.getPageId(controllerContext);
+                pageId = URLEncoder.encode(pageObjectId.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+                regionId = "virtual";
+                windowName = "dynamicPortlet";
+                
+                // Default window properties
+                if (windowProperties.get("osivia.hideDecorators") == null) {
+                    windowProperties.put("osivia.hideDecorators", "1");
+                }
+                if (windowProperties.get("theme.dyna.partial_refresh_enabled") == null) {
+                    windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
+                }
+            }
+            
+            
+            // Start dynamic window command
+            ControllerCommand command = new StartDynamicWindowCommand();
+
+            // Portal URL
+            PortalURLImpl portalUrl = new PortalURLImpl(command, controllerContext, null, null);
+
+            // URL
+            StringBuilder builder = new StringBuilder();
+            builder.append(portalUrl.toString());
+            builder.append("&pageId=").append(pageId);
+            builder.append("&regionId=").append(regionId);
+            builder.append("&windowName=").append(windowName);
+            builder.append("&instanceId=").append(portletInstance);
+            builder.append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties));
+            builder.append("&params=");
+            builder.append("&addToBreadcrumb=").append(this.addToBreadcrumb(portalControllerContext.getRequest()));
+
+            if (PortalUrlType.POPUP.equals(type)) {
+                url = this.adaptPortalUrlToPopup(portalControllerContext, builder.toString(), IPortalUrlFactory.POPUP_URL_ADAPTER_OPEN);
+            } else {
+                url = builder.toString();
+            }
+        } catch (Exception e) {
+            throw new PortalException(e);
+        }
+
+        return url;
+    }
+
+
+
+
 
     /**
      * {@inheritDoc}

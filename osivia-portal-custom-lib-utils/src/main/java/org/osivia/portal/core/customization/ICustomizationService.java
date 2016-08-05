@@ -18,6 +18,24 @@ import org.osivia.portal.api.customization.CustomizationContext;
 
 public interface ICustomizationService {
 	
+    /** MBean name. */
+    String MBEAN_NAME = "osivia:service=CustomizationService";
+    
+	/**
+	 * Calls the customizers for the specified id
+	 *
+	 * @param customizationID the customization id
+	 * @param ctx the ctx
+	 */
 	public void customize ( String customizationID, CustomizationContext ctx);
+	
+    
+    
+    /**
+     * Set The CMS Observer.
+     *
+     * @param observer the observer
+     */
+    public void setCMSObserver(ICMSCustomizationObserver observer);
 
 }

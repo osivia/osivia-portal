@@ -36,7 +36,10 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
  */
 public abstract class PortalGenericPortlet extends GenericPortlet {
 
-	
+    /** Class loader context. */
+    public static final ThreadLocal<ClassLoader> CLASS_LOADER_CONTEXT = new ThreadLocal<ClassLoader>();
+
+
 	private final INotificationsService notificationsService;
 
 	private final IBundleFactory bundleFactory;

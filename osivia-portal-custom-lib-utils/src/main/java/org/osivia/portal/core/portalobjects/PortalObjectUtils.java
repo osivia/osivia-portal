@@ -6,6 +6,7 @@ package org.osivia.portal.core.portalobjects;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -13,8 +14,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.WindowState;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
@@ -23,6 +26,8 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
+import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.page.PageProperties;
@@ -43,6 +48,49 @@ public class PortalObjectUtils {
      */
     public PortalObjectUtils() {
         super();
+    }
+
+
+    /**
+     * Get current page portal object identifier.
+     *
+     * @param controllerContext controller context
+     * @return current page portal object identifier
+     */
+    public static final PortalObjectId getPageId(ControllerContext controllerContext) {
+        PortalObjectId pageId = null;
+
+        if (controllerContext != null) {
+            // Page identifier
+            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+        }
+
+        return pageId;
+    }
+
+
+    /**
+     * Get current page.
+     *
+     * @param controllerContext controller context
+     * @return current page
+     */
+    public static final Page getPage(ControllerContext controllerContext) {
+        Page page = null;
+
+        if (controllerContext != null) {
+            // Page identifier
+            PortalObjectId pageId = getPageId(controllerContext);
+
+            if (pageId != null) {
+                // Portal object container
+                PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+
+                page = portalObjectContainer.getObject(pageId, Page.class);
+            }
+        }
+
+        return page;
     }
 
 
@@ -350,6 +398,33 @@ public class PortalObjectUtils {
         }
 
         return false;
+    }
+
+
+    /**
+     * Get maximized window.
+     * 
+     * @param controllerContext controller context
+     * @param page page
+     * @return maximized window
+     */
+    public static Window getMaximizedWindow(ControllerContext controllerContext, Page page) {
+        Window maximizedWindow = null;
+        if ((controllerContext != null) && (page != null)) {
+            Collection<PortalObject> portalObjects = page.getChildren(PortalObject.WINDOW_MASK);
+            for (PortalObject portalObject : portalObjects) {
+                Window window = (Window) portalObject;
+                NavigationalStateKey navigationalStateKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+                WindowNavigationalState windowNavigationalState = (WindowNavigationalState) controllerContext.getAttribute(
+                        ControllerCommand.NAVIGATIONAL_STATE_SCOPE, navigationalStateKey);
+
+                if ((windowNavigationalState != null) && WindowState.MAXIMIZED.equals(windowNavigationalState.getWindowState())) {
+                    maximizedWindow = window;
+                    break;
+                }
+            }
+        }
+        return maximizedWindow;
     }
 
 }
