@@ -623,6 +623,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             boolean initState = "true".equals(request.getParameter("init-state"));
             
+            
+            /* JSS 20160808
+             * In case of interception (ie CGU)
+             * 1 - the tab of the intercepted url is considered as already viewed (also to restore) which is false ...
+             * 2 - page are /CMS_LAYOUT (why ???)
+             */
+            
             if(request.getParameter("InterceptedURL") == null)  {
                 if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))   
                     initState = false;

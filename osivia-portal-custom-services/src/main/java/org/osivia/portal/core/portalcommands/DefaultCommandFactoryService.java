@@ -514,7 +514,13 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        return new StopDynamicPageCommand(pageId);
+                        
+                        StopDynamicPageCommand stopCmd =  new StopDynamicPageCommand(pageId);
+                        if(parameterMap.get("location") != null)
+                            stopCmd.setLocation(URLDecoder.decode(parameterMap.get("location")[0], CharEncoding.UTF_8));
+                        
+                        return stopCmd;
+
                     }
                 }
 

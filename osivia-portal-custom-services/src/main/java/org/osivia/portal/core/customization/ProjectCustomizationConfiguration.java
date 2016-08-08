@@ -235,20 +235,6 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         redirectionURL +=  "&InterceptedURL=true";
 
 
-        // pagemarker of current url is associated with target page
-        // So if target is a tab, it is considered as 'RestoreTab' action (cf. PageCustomizerInterceptor)
-        // and the tab is not redirected into cms url
-        // So we decrement pagemarker
-
-        if (redirectionURL.contains(PageMarkerUtils.PAGE_MARKER_PATH)) {
-            int beginMarker = redirectionURL.indexOf(PageMarkerUtils.PAGE_MARKER_PATH) + PageMarkerUtils.PAGE_MARKER_PATH.length();
-            int endMarker = redirectionURL.indexOf('/', beginMarker);
-            String pageMarker = redirectionURL.substring(beginMarker, endMarker);
-            int oldPageMarker = Integer.parseInt(pageMarker) - 1;
-            redirectionURL = redirectionURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + oldPageMarker + "/");
-        }
-
-
         return redirectionURL;
 
 

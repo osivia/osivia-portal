@@ -71,6 +71,13 @@ public class StopDynamicPageCommand extends DynamicCommand {
 	private static final CommandInfo info = new ActionCommandInfo(false);
 	protected static final Log logger = LogFactory.getLog(StopDynamicPageCommand.class);
 	
+	private String location;
+	
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     IPortalUrlFactory urlFactory;
 	
     public IPortalUrlFactory getUrlFactory()throws Exception {
@@ -273,6 +280,9 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     
             }
 
+            
+            if( location != null)
+                redirectUrl = location;
 			
 			return new RedirectionResponse(redirectUrl);
 
