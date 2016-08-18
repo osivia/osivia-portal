@@ -17,8 +17,11 @@ import java.util.List;
 
 import javax.naming.Name;
 
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.IDirService;
 import org.osivia.portal.api.directory.v2.model.Person;
+import org.osivia.portal.api.urls.Link;
 
 /**
  * Service to request, create, update persons, aggregated between nuxeo and ldap
@@ -81,6 +84,16 @@ public interface PersonService extends IDirService {
 	 * @param newPassword 
 	 */
 	public void updatePassword(Person p, String newPassword);
+
+	/**
+	 * Get a link to the card person portlet
+	 * @param portalControllerContext
+	 * @param p the person
+	 * @return a link to the card person portlet
+	 * @throws PortalException
+	 */
+	Link getCardUrl(PortalControllerContext portalControllerContext, Person p)
+			throws PortalException;
 
 
 }
