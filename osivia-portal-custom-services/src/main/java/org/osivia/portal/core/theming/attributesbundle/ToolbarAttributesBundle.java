@@ -59,6 +59,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
@@ -225,6 +226,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
             if (directoryService != null) {
                 person = directoryService.getPerson(principal.getName());
+                
+                
+                String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
+                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+                	person.setAvatar(new Link("/toutatice-portail-cms-nuxeo/img/guest.png", false));
+                }
+                
+                
                 attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
             }
         }
