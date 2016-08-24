@@ -49,4 +49,10 @@ public interface IDirProvider {
 	 * Clear all directory caches
 	 */
 	void clearCaches();
+
+	/**
+	 * Get current transaction manager delegate (for composite transactions management)
+	 * @return 
+	 */
+	public Object getDirectoryTxManagerDelegate();
 }

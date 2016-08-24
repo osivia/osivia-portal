@@ -77,4 +77,12 @@ public class DirProvider implements IDirProvider {
 			delegate.clearCaches();
 		}
 	}
+
+
+	public Object getDirectoryTxManagerDelegate() {
+		if(delegate != null) {
+			return delegate.getDirectoryTxManagerDelegate();
+		}
+		else return null;
+	}
 }

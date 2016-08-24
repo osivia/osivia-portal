@@ -44,4 +44,10 @@ public interface IDirDelegate {
      * @return
      */
     public ClassLoader getClassLoader();
+
+    /**
+     * Get current transaction manager delegate (for composite transactions management)
+     * @return
+     */
+	public Object getDirectoryTxManagerDelegate();
 }
