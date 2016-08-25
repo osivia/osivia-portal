@@ -33,9 +33,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
@@ -50,6 +52,7 @@ import org.jboss.portal.portlet.spi.ServerContext;
 import org.jboss.portal.web.RequestDispatchCallback;
 import org.jboss.portal.web.ServletContainer;
 import org.jboss.portal.web.ServletContainerFactory;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.portlets.interceptors.ParametresPortletInterceptor;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -221,11 +224,28 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 						
 					}
 					
+					
+					
+
+					
 					// Save current window ID
 					req.getSession().setAttribute(currentUIDName, windowUniqueID);
 
 				}
 
+				// TODO A GENERALISER AUX PORTLETS SPRING
+				
+				Boolean refresh = (Boolean) invocation.getRequestAttributes().get(Constants.PORTLET_ATTR_PAGE_REFRESH);
+				
+				if( BooleanUtils.isTrue(refresh))   {
+				    
+                    Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
+                    String attributePrefix = "javax.portlet.p." + window.getId() + "?";
+                    
+                    req.getSession().removeAttribute(attributePrefix + "testSession");
+				}
+
+				
 				//
 				wrappedRequest.setAttribute(REQ_ATT_COMPONENT_INVOCATION, invocation);
 

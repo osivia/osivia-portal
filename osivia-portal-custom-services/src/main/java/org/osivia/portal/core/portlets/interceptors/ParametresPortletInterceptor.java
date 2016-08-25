@@ -67,6 +67,7 @@ import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
@@ -250,6 +251,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             }
 
             attributes.put("customizationService", this.customizationService);
+            
+            
+            boolean refresh = PageProperties.getProperties().isRefreshingPage();
+            if( refresh)
+                attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, true);
+
 
 
             // Set attributes

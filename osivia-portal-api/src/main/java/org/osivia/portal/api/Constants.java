@@ -172,6 +172,8 @@ public final class Constants {
     public static final String PORTLET_PARAM_ONLINE_PATH = "osivia.cms.onlinePath";
     /** Edition path  */
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
+    /** refresh indicator. */
+    public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";    
 
 
 
