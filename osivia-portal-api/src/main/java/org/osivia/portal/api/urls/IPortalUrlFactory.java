@@ -146,6 +146,16 @@ public interface IPortalUrlFactory {
      */
     String getDestroyPageUrl(PortalControllerContext portalControllerContext, String parentId, String pageId);
 
+    
+    /**
+     * Get destroy current page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return destroy current page URL
+     */
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String location) throws PortalException;
+
+
 
     /**
      * Adapt portal URL to navigation.

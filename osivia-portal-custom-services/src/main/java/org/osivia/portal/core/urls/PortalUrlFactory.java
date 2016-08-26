@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.urls;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,6 +75,7 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.tracker.ITracker;
@@ -951,5 +953,57 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public void setProfilManager(IProfilManager profilManager) {
         this.profilManager = profilManager;
     }
+    
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        return getDestroyCurrentPageUrl(portalControllerContext, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String location) throws PortalException {
+        
+          // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Current page
+        Page page = PortalObjectUtils.getPage(controllerContext);
+        if (page instanceof CMSTemplatePage) {
+            page = (Page) page.getParent();
+        }
+        String pageId = PortalObjectUtils.getHTMLSafeId(page.getId());
+
+        // Parent portal object
+        PortalObject parent = page.getParent();
+        String parentId = PortalObjectUtils.getHTMLSafeId(parent.getId());
+
+        String url =  getDestroyPageUrl(portalControllerContext, parentId, pageId);
+        
+        if( location != null)   {
+            // ne sense to have a pagemarker since redirection is operated
+            // juste after dynamic page destruction
+            location = location.replaceAll("/pagemarker/([0-9]*)/", "/");
+            try {
+                url = url +"&location=" + URLEncoder.encode(location, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new PortalException(e);
+            }
+        }
+
+        return url;
+        
+   
+        
+        
+        
+        
+        
+    }
+
 
 }

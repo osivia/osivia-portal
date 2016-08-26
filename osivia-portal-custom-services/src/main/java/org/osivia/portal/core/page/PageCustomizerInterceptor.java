@@ -114,6 +114,7 @@ import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
+import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -622,8 +623,24 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             boolean initState = "true".equals(request.getParameter("init-state"));
             
-            if(request.getParameter("InterceptedURL") == null && "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))
+            
+            /* JSS 20160808
+             * In case of interception (ie CGU)
+             * 1 - the tab of the intercepted url is considered as already viewed (also to restore) which is false ...
+             * 2 - page are /CMS_LAYOUT (why ???)
+             */
+            
+            if(request.getParameter("InterceptedURL") == null)  {
+                if( "1".equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.RestoreTab")))   
                     initState = false;
+            }   else    {
+                //CMS page is alreadey created
+                if( rpc.getPage() instanceof CMSTemplatePage)
+                    initState = false;
+            }
+            
+            
+            
             
             if( "1".equals(rpc.getPage().getProperty("osivia.genericPage")))
                 initState = false;

@@ -68,7 +68,6 @@ public class PortalObjectUtils {
         return pageId;
     }
 
-
     /**
      * Get current page.
      *
@@ -93,7 +92,7 @@ public class PortalObjectUtils {
         return page;
     }
 
-
+    
     /**
      * Get current portal from controller context.
      *
