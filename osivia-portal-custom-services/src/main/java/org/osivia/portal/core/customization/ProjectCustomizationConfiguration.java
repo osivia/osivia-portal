@@ -5,6 +5,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
@@ -24,6 +25,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 /**
  * Project customization configuration implementation.
@@ -210,6 +212,32 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      */
     public String getRedirectionURL() {
         return this.redirectionURL;
+    }
+
+    
+    
+    /**
+     * get URL to replay once redirection is done
+     *
+     * @param redirectionURL redirection URL
+     */
+   
+
+    public String buildRestorableURL() {
+        
+        String redirectionURL = null;
+
+        redirectionURL = getHttpServletRequest().getRequestURL().toString();
+        redirectionURL += "?";
+        if (StringUtils.isNotBlank(getHttpServletRequest().getQueryString()))
+            redirectionURL +=  getHttpServletRequest().getQueryString();
+        redirectionURL +=  "&InterceptedURL=true";
+
+
+        return redirectionURL;
+
+
+        
     }
 
 }

@@ -149,6 +149,7 @@ public interface IPortalUrlFactory {
      */
     String getDestroyPageUrl(PortalControllerContext portalControllerContext, String parentId, String pageId);
 
+
     /**
      * Get destroy current page URL.
      *
@@ -156,6 +157,15 @@ public interface IPortalUrlFactory {
      * @return destroy current page URL
      */
     String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
+    /**
+     * Get destroy current page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param location url to redirect      * 
+     * @return destroy current page URL
+     */
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String location) throws PortalException;
 
 
     /**

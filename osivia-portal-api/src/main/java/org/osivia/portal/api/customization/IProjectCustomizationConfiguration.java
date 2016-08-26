@@ -79,5 +79,16 @@ public interface IProjectCustomizationConfiguration {
      * @param redirectionURL redirection URL
      */
     void setRedirectionURL(String redirectionURL);
+    
+    
+    /**
+     * get URL to replay once redirection is done
+     *
+     * @param redirectionURL redirection URL
+     */
+   
+    String buildRestorableURL();
+   
+    
 
 }

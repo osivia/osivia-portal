@@ -45,6 +45,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.UserPage;
 import org.osivia.portal.api.theming.UserPagesGroup;
 import org.osivia.portal.api.theming.UserPortal;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
@@ -61,8 +62,28 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
     /** Command info. */
     private final CommandInfo info;
+    
+    
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    
+    private String location;
+    
+    
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    IPortalUrlFactory urlFactory;
+    
+    public IPortalUrlFactory getUrlFactory()throws Exception {
+
+        if (this.urlFactory == null) {
+            this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        }
+
+        return this.urlFactory;
+    }
 
     /** Page identifier. */
     private String pageId;
@@ -300,6 +321,11 @@ public class StopDynamicPageCommand extends DynamicCommand {
             if (pageToRefresh != null) {
                 return new UpdatePageResponse(pageToRefresh.getId());
             }
+
+            
+            if( location != null)
+                redirectUrl = location;
+			
 
             if (redirectUrl == null) {
                 if (redirectPage == null) {

@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.urls;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -903,7 +904,6 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         this.profilManager = profilManager;
     }
 
-
 	/* (non-Javadoc)
 	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#getEcmCommandUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String, org.osivia.portal.api.urls.EcmDocumentCommand)
 	 */
@@ -937,11 +937,22 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 	}
 
 
+   
+    
+
     /**
      * {@inheritDoc}
      */
     public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException {
-        // Controller context
+        return getDestroyCurrentPageUrl(portalControllerContext, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String location) throws PortalException {
+        
+          // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Current page
@@ -955,7 +966,19 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         PortalObject parent = page.getParent();
         String parentId = PortalObjectUtils.getHTMLSafeId(parent.getId());
 
-        return getDestroyPageUrl(portalControllerContext, parentId, pageId);
-    }
+        String url =  getDestroyPageUrl(portalControllerContext, parentId, pageId);
+        
+        if( location != null)   {
+            // ne sense to have a pagemarker since redirection is operated
+            // juste after dynamic page destruction
+            location = location.replaceAll("/pagemarker/([0-9]*)/", "/");
+            try {
+                url = url +"&location=" + URLEncoder.encode(location, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new PortalException(e);
+            }
+        }
 
+        return url;
+    }
 }
