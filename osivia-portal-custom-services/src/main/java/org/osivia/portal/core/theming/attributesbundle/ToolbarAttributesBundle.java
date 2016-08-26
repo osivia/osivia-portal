@@ -230,7 +230,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 
                 String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
                 if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
-                	person.setAvatar(new Link("/toutatice-portail-cms-nuxeo/img/guest.png", false));
+                	person.setAvatar(null);
                 }
                 
                 
@@ -1064,7 +1064,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userAvatarSrc;
         if (person != null) {
             userName = person.getDisplayName();
-            userAvatarSrc = person.getAvatar().getUrl();
+            if(person.getAvatar() != null) {
+            	userAvatarSrc = person.getAvatar().getUrl();
+            }
+            else {
+            	userAvatarSrc = null;
+            }
         } else if (principal != null) {
             userName = principal.getName();
             try {
