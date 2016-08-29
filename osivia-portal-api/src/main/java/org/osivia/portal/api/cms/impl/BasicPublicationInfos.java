@@ -83,6 +83,9 @@ public class BasicPublicationInfos implements PublicationInfos {
 	/** true if this document is displayed in his navigation context */
 	private boolean contextualized = false;
 	
+	/** true if this document is displayed in his navigation context */
+	private boolean draft = false;	
+	
 	/** ???? */
 	private String scope;
 	
@@ -245,6 +248,20 @@ public class BasicPublicationInfos implements PublicationInfos {
 	 */
 	public void setDisplayContext(String displayContext) {
 		this.displayContext = displayContext;
+	}
+
+	/**
+	 * @return the draft
+	 */
+	public boolean isDraft() {
+		return draft;
+	}
+
+	/**
+	 * @param draft the draft to set
+	 */
+	public void setDraft(boolean draft) {
+		this.draft = draft;
 	}
 
 	

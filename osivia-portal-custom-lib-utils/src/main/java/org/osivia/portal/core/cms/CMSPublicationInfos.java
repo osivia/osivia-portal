@@ -66,6 +66,10 @@ public class CMSPublicationInfos {
 
 	private boolean isLiveSpace = false;
 	
+	public boolean isDraft = false;
+	
+	public String draftContentPath;
+	
 	private List<Integer> errorCodes = new ArrayList<Integer>();
 
 
@@ -271,4 +275,34 @@ public class CMSPublicationInfos {
 		this.liveId = liveId;
 	}
 
+	/**
+	 * @return the isDraft
+	 */
+	public boolean isDraft() {
+		return isDraft;
+	}
+
+	/**
+	 * @param isDraft the isDraft to set
+	 */
+	public void setDraft(boolean isDraft) {
+		this.isDraft = isDraft;
+	}
+
+	/**
+	 * @return the draftContentPath
+	 */
+	public String getDraftContentPath() {
+		return draftContentPath;
+	}
+
+	/**
+	 * @param draftContentPath the draftContentPath to set
+	 */
+	public void setDraftContentPath(String draftContentPath) {
+		this.draftContentPath = draftContentPath;
+	}
+
+	
+	
 }
