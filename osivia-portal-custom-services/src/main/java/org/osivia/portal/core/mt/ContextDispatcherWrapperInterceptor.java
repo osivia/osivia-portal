@@ -32,29 +32,28 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
-import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
 import org.jboss.portal.portlet.container.ContainerPortletInvoker;
 import org.jboss.portal.portlet.container.PortletApplication;
 import org.jboss.portal.portlet.container.PortletContainer;
-
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
-import org.jboss.portal.portlet.spi.RequestContext;
 import org.jboss.portal.portlet.spi.ServerContext;
 import org.jboss.portal.web.RequestDispatchCallback;
 import org.jboss.portal.web.ServletContainer;
 import org.jboss.portal.web.ServletContainerFactory;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.core.portlets.interceptors.ParametresPortletInterceptor;
+import org.osivia.portal.api.portlet.Refreshable;
 import org.osivia.portal.core.tracker.ITracker;
+import org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 /**
  * Cette requete permet d'associer une requete à chaque thread sans risque
@@ -128,6 +127,8 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
 			//
 			try {
+                // HTTP session
+                HttpSession session = req.getSession();
 
                 // On met le bean du thread parent pour gérer la synchronisation
                 Object parentBean = getTracker().getParentBean();
@@ -154,7 +155,8 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
 				String windowUniqueID = (String) invocation.getAttribute("osivia.window.uniqueID");
 
-				if (windowUniqueID != null) {
+
+                if (windowUniqueID != null) {
 					
 					//logger.info("windowUniqueID =" + windowUniqueID);
 
@@ -164,7 +166,7 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
 					String currentUIDName = osiviaPrefix + ".currentUniqueUID";
 
-					String oldUID = (String) req.getSession().getAttribute(currentUIDName);
+					String oldUID = (String) session.getAttribute(currentUIDName);
 					
 
 
@@ -186,13 +188,13 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 						String portletName = "javax.portlet.p." + windowPath;
 
 						List<String> toRemove = new ArrayList<String>();
-						Enumeration attrs = req.getSession().getAttributeNames();
+						Enumeration attrs = session.getAttributeNames();
 						while (attrs.hasMoreElements()) {
 							String attName = (String) attrs.nextElement();
 							if (attName.startsWith(portletName)) {
 								
 								// Sauve parameters
-								req.getSession().setAttribute(saveOldPrefix+ attName, req.getSession().getAttribute(attName) );
+								session.setAttribute(saveOldPrefix+ attName, session.getAttribute(attName) );
 
 								toRemove.add(attName);
 							}
@@ -202,12 +204,12 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 						
 						for (String name : toRemove) {
 							//logger.info("remove data" + name);
-							req.getSession().setAttribute(name, null);
+							session.setAttribute(name, null);
 						}
 						
 						/* Restore values */
 						
-						attrs = req.getSession().getAttributeNames();
+						attrs = session.getAttributeNames();
 						while (attrs.hasMoreElements()) {
 							String attName = (String) attrs.nextElement();
 							if (attName.startsWith(saveNewPrefix)) {
@@ -217,7 +219,7 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 								//logger.info("restore data " + attName );
 								
 								// restore parameters
-								req.getSession().setAttribute(restoreName, req.getSession().getAttribute(attName) );
+								session.setAttribute(restoreName, session.getAttribute(attName) );
 							}
 						}
 				
@@ -229,20 +231,32 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
 					
 					// Save current window ID
-					req.getSession().setAttribute(currentUIDName, windowUniqueID);
+					session.setAttribute(currentUIDName, windowUniqueID);
 
 				}
 
-				// TODO A GENERALISER AUX PORTLETS SPRING
-				
+
+                // Refresh indicator
 				Boolean refresh = (Boolean) invocation.getRequestAttributes().get(Constants.PORTLET_ATTR_PAGE_REFRESH);
 				
 				if( BooleanUtils.isTrue(refresh))   {
-				    
                     Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
                     String attributePrefix = "javax.portlet.p." + window.getId() + "?";
                     
-                    req.getSession().removeAttribute(attributePrefix + "testSession");
+                    // Remove Spring Framework implicit model
+                    session.removeAttribute(attributePrefix + AnnotationMethodHandlerAdapter.IMPLICIT_MODEL_SESSION_ATTRIBUTE);
+
+                    Enumeration<?> attributeNames = session.getAttributeNames();
+                    while (attributeNames.hasMoreElements()) {
+                        String attributeName = (String) attributeNames.nextElement();
+                        if (StringUtils.startsWith(attributeName, attributePrefix)) {
+                            Object attribute = session.getAttribute(attributeName);
+                            if (attribute.getClass().isAnnotationPresent(Refreshable.class)) {
+                                // Remove portlet session attribute with @Refreshable annotation
+                                session.removeAttribute(attributeName);
+                            }
+                        }
+                    }
 				}
 
 				
