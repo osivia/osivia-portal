@@ -66,6 +66,8 @@ $JQry(function() {
 					$clone = $target.children(".modal-clone"),
 					$window = $target.find(".dyna-window"),
 					url = $target.data("load-url") + " .partial-refresh-window",
+					callbackFunction = $target.data("load-callback-function"),
+					callbackFunctionArgs = $target.data("load-callback-function-args"),
 					title = $target.data("title"),
 					footer = $target.data("footer");
 				
@@ -82,7 +84,11 @@ $JQry(function() {
 				
 				// Body
 				$window.children().clone().appendTo($clone);
-				$window.load(url);
+				$window.load(url, function() {
+					if (callbackFunction) {
+						window[callbackFunction](callbackFunctionArgs);
+					}
+				});
 			});
 			
 			$element.on("hide.bs.modal", function(event) {
@@ -114,6 +120,8 @@ $JQry(function() {
 				}
 				
 				$target.removeData("load-url");
+				$target.removeData("load-callback-function");
+				$target.removeData("load-callback-function-args");
 				$target.removeData("callback-function");
 				$target.removeData("callback-function-args");
 				$target.removeData("callback-url");

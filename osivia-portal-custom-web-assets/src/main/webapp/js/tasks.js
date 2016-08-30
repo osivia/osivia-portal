@@ -25,10 +25,12 @@ $JQry(function() {
 			$element.click(function(event) {
 				var $target = $JQry(event.target).closest("button"),
 					loadUrl = $target.data("load-url"),
+					callbackFunction = $target.data("load-callback-function"),
 					title = $target.data("title"),
 					$modal = $JQry("#osivia-modal");
 	
 				$modal.data("load-url", loadUrl);
+				$modal.data("load-callback-function", callbackFunction);
 				$modal.data("title", title);
 				$modal.data("footer", true);
 				
@@ -59,5 +61,18 @@ function updateTasksCounter(count) {
 		$label.removeClass("label-danger");
 		$label.addClass("label-default");
 		$label.text(0);
+	}
+}
+
+
+/**
+ * Tasks modal callback.
+ */
+function tasksModalCallback() {
+	var $tasks = $JQry(".tasks").first(),
+		tasksCount = $tasks.data("tasks-count");
+
+	if (tasksCount !== undefined) {
+		updateTasksCounter(tasksCount);
 	}
 }

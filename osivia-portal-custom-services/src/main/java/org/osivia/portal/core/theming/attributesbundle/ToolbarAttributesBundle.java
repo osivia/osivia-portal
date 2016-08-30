@@ -59,6 +59,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
@@ -144,13 +145,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
-
     /** Directory service locator. */
     private final IDirProvider directoryProvider;
-
     /** Menubar service. */
     private final IMenubarService menubarService;
-
+    /** Tasks service. */
+    private final ITasksService tasksService;
+    /** Instance container. */
     private final InstanceContainer instanceContainer;
 
     /** Administration portal identifier. */
@@ -171,14 +172,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         // URL factory
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
         // CMS service locator
-        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Directory service locator
         this.directoryProvider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
         // Menubar service
         this.menubarService = MenubarUtils.getMenubarService();
-        // Instance locator
+        // Tasks service
+        this.tasksService = Locator.findMBean(ITasksService.class, ITasksService.MBEAN_NAME);
+        // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
 
 
@@ -223,12 +226,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Server context
         ServerInvocationContext serverContext = controllerContext.getServerInvocation().getServerContext();
 
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setControllerContext(controllerContext);
-        
         // Current page
         Page page = renderPageCommand.getPage();
         // Bundle
@@ -310,8 +307,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Tasks count
             int tasksCount;
             try {
-                tasksCount = cmsService.getTasksCount(cmsContext, principal.getName());
-            } catch (CMSException e) {
+                tasksCount = this.tasksService.getTasksCount(portalControllerContext);
+            } catch (PortalException e) {
                 tasksCount = 0;
             }
             attributes.put(Constants.ATTR_TOOLBAR_TASKS_COUNT, tasksCount);
