@@ -251,11 +251,11 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                 bodyClass = "portlet-content-center";
             }
             if (WindowState.MAXIMIZED.equals(wrc.getWindowState()) || !"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
-                headerClass += " hidden";
+                headerClass += " sr-only";
             }
 
             // Header
-            out.print("<div class='" + headerClass + " clearfix'>");
+            out.print("<div class='" + headerClass + "'>");
             rendererContext.render(wrc.getDecoration());
             out.print("</div>");
 
