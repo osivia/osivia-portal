@@ -1,61 +1,71 @@
 <deployments>
- <deployment>
-      <parent-ref/>
-      <if-exists>overwrite</if-exists>
-      <portal>
-         <portal-name>osivia-util</portal-name>
-         <supported-modes>
-            <mode>view</mode>
-            <mode>edit</mode>
-            <mode>help</mode>
-            <mode>admin</mode>
-         </supported-modes>
-         <supported-window-states>
-            <window-state>normal</window-state>
-            <window-state>minimized</window-state>
-            <window-state>maximized</window-state>
-         </supported-window-states>
-         <security-constraint>
-            <policy-permission>
-               <action-name>viewrecursive</action-name>
-               <unchecked/>
-            </policy-permission>
-         </security-constraint>
-      <page>
-         <page-name>popup</page-name>
-         <display-name xml:lang="en">popup</display-name>
+    <deployment>
+        <parent-ref />
+        <if-exists>overwrite</if-exists>
+        <portal>
+            <portal-name>osivia-util</portal-name>
+            <supported-modes>
+                <mode>view</mode>
+            </supported-modes>
+            <supported-window-states>
+                <window-state>normal</window-state>
+                <window-state>minimized</window-state>
+                <window-state>maximized</window-state>
+            </supported-window-states>
+            <security-constraint>
+                <policy-permission>
+                    <action-name>viewrecursive</action-name>
+                    <unchecked />
+                </policy-permission>
+            </security-constraint>
+            
+            <!-- Popup -->
+            <page>
+                <page-name>popup</page-name>
 
-         <supported-locale>fr</supported-locale>
-         <supported-locale>en</supported-locale>
-         <supported-locale>it</supported-locale>
-         <supported-locale>pt_BR</supported-locale>
+                <properties>
+                    <property>
+                        <name>layout.id</name>
+                        <value>osivia-popup</value>
+                    </property>
+                    <property>
+                        <name>theme.id</name>
+                        <value>osivia-popup</value>
+                    </property>
+                    <property>
+                        <name>theme.renderSetId</name>
+                        <value>OsiviaDefaultRenderer</value>
+                    </property>
+                    <property>
+                        <name>theme.dyna.partial_refresh_enabled</name>
+                        <value>true</value>
+                    </property>
+                    <property>
+                        <name>osivia.profils</name>
+                        <value>&lt;profils/&gt;</value>
+                    </property>
+                </properties>
+            </page>
+            
+            <!-- Modal -->
+            <page>
+                <page-name>modal</page-name>
 
-         <properties>
-            <property>
-               <name>layout.id</name>
-               <value>osivia-popup</value>
-            </property>
-            <property>
-               <name>theme.id</name>
-               <value>osivia-popup</value>
-            </property>            
-       		<property>
-         		 <name>theme.renderSetId</name>
-          		<value>OsiviaDefaultRenderer</value>
-        	</property>
-        	<property>
-         		 <name>theme.dyna.partial_refresh_enabled</name>
-         		 <value>true</value>
-        	</property>
-
-	        <property>
-	          <name>osivia.profils</name>
-	          <value>&lt;profils/&gt;</value>
-	        </property>
-       	
-              
-         </properties>
-      </page>
-      </portal>
-   </deployment>
+                <properties>
+                    <property>
+                        <name>layout.id</name>
+                        <value>osivia-modal</value>
+                    </property>
+                    <property>
+                        <name>theme.renderSetId</name>
+                        <value>OsiviaDefaultRenderer</value>
+                    </property>
+                    <property>
+                        <name>theme.dyna.partial_refresh_enabled</name>
+                        <value>true</value>
+                    </property>
+                </properties>
+            </page>
+        </portal>
+    </deployment>
 </deployments>

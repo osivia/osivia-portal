@@ -20,6 +20,7 @@ import java.util.Map;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
 import org.osivia.portal.api.customization.CustomizationContext;
@@ -65,7 +66,7 @@ public class RegionsCustomizerInterceptor extends ControllerInterceptor {
             RenderPageCommand renderPageCommand = (RenderPageCommand) command;
 
             if (!PortalObjectUtils.isJBossPortalAdministration(renderPageCommand.getPortal()) && (renderPageCommand.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-            "osivia.popupModeWindowID") == null) ) {
+            "osivia.popupModeWindowID") == null) && !"/osivia-util/modal".equals(renderPageCommand.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT)) ) {
                 // Page rendition
                 PageRendition pageRendition = (PageRendition) response;
 

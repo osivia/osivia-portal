@@ -860,5 +860,16 @@
             proxy-type="attribute">osivia:service=CustomizationService</depends>
     </mbean>
     
+    <!-- Tasks service -->
+    <mbean
+        code="org.osivia.portal.core.tasks.TasksService"
+        name="osivia:service=TasksService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>    
 </server>
    

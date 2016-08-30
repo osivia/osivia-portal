@@ -31,6 +31,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.SignOutCommand;
+import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
@@ -56,9 +57,11 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarItem;
+import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.EcmCommand;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
@@ -145,7 +148,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private final IDirectoryServiceLocator directoryServiceLocator;
     /** Menubar service. */
     private final IMenubarService menubarService;
-
+    /** Tasks service. */
+    private final ITasksService tasksService;
+    /** Instance container. */
     /** Administration portal identifier. */
     private final PortalObjectId adminPortalId;
 
@@ -164,13 +169,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         // URL factory
-        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");
+        this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
         // CMS service locator
-        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Directory service locator
         this.directoryServiceLocator = Locator.findMBean(IDirectoryServiceLocator.class, IDirectoryServiceLocator.MBEAN_NAME);
         // Menubar service
         this.menubarService = MenubarUtils.getMenubarService();
+
+        // Tasks service
+        this.tasksService = Locator.findMBean(ITasksService.class, ITasksService.MBEAN_NAME);
+        // Instance container
+        //this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
@@ -276,6 +287,30 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userbarContent = this.formatHTMLUserbar(controllerContext, page, principal, person, mySpacePortalUrl.toString(), myProfileUrl,
                 signOutPortalUrl.toString());
         attributes.put(Constants.ATTR_TOOLBAR_USER_CONTENT, userbarContent);
+
+
+        // Tasks
+        if (principal != null) {
+            // Tasks URL
+            String tasksUrl = null;
+//            if (this.instanceContainer.getDefinition("osivia-services-tasks-instance") != null) {
+                try {
+                    tasksUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-tasks-instance", null, PortalUrlType.MODAL);
+                } catch (PortalException e) {
+                    // Do nothing
+                }
+//            }
+            attributes.put(Constants.ATTR_TOOLBAR_TASKS_URL, tasksUrl);
+
+            // Tasks count
+            int tasksCount;
+            try {
+                tasksCount = this.tasksService.getTasksCount(portalControllerContext);
+            } catch (PortalException e) {
+                tasksCount = 0;
+            }
+            attributes.put(Constants.ATTR_TOOLBAR_TASKS_COUNT, tasksCount);
+        }
 
         // Mobile state items
         List<MenubarItem> stateItems = this.menubarService.getStateItems(portalControllerContext);

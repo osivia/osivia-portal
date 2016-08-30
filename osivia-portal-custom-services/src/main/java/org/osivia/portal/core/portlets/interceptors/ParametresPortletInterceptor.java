@@ -66,6 +66,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
@@ -241,6 +242,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             if (permalinks != null) {
                 attributes.put(InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE, permalinks);
             }
+
+            
+            
+            boolean refresh = PageProperties.getProperties().isRefreshingPage();
+            if( refresh)
+                attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, true);
 
 
             // Set attributes

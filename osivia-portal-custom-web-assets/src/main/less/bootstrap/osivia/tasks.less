@@ -1,0 +1,55 @@
+//
+// OSIVIA Bootstrap extensions - Tasks
+// --------------------------------------------------
+
+
+button[name='open-tasks'] {
+    position: relative;
+    
+    .counter {
+        position: absolute;
+        top: 0;
+        right: 0;
+        
+        .toolbar & {
+            top: floor((@navbar-height - @input-height-base) / -2);
+        }
+    }
+    
+    &:hover, &:focus {
+        .label-default {
+            .label-variant(darken(@label-default-bg, 10%));
+        }
+        
+        .label-primary {
+            .label-variant(darken(@label-primary-bg, 10%));
+        }
+        
+        .label-success {
+            .label-variant(darken(@label-success-bg, 10%));
+        }
+        
+        .label-info {
+            .label-variant(darken(@label-info-bg, 10%));
+        }
+        
+        .label-warning {
+            .label-variant(darken(@label-warning-bg, 10%));
+        }
+        
+        .label-danger {
+            .label-variant(darken(@label-danger-bg, 10%));
+        }
+    }
+}
+
+
+.tasks {
+    .btn-group {
+        margin-top: floor((@line-height-computed - @input-height-base) / 2) + 1;
+        
+        &.btn-group-sm {
+            margin-top: floor((@line-height-computed - @input-height-small) / 2) + 1;
+        }
+    }
+}

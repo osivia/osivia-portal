@@ -1,0 +1,23 @@
+//
+// OSIVIA Modal
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+#osivia-modal {
+    .modal-waiter {
+        i {
+            .animation-name(@name: waiter);
+            .animation-duration(@duration: 1s);
+            .animation-timing-function(@timing-function: linear);
+            .animation-iteration-count(@iteration-count: infinite);
+        }
+    }
+    
+    .portlet-container {
+        margin-bottom: 0;
+    }
+}

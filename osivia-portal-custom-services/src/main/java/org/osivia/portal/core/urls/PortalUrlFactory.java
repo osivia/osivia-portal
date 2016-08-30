@@ -590,6 +590,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 // Default window properties
                 windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 windowProperties.put("osivia.ajaxLink", "1");
+                windowProperties.put("osivia.hideTitle", "1");
                 
             } else {
                 // Default

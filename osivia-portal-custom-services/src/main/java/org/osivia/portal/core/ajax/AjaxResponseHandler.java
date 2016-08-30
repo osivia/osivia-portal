@@ -44,6 +44,7 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
@@ -415,17 +416,21 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Notifications & menubar refresh
                 if (!fullRefresh) {
                     try {
-                        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                        // Check if current page is a modal
+                        PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
+                        if (!modalId.equals(page.getId())) {
+                            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
-                        // Notifications window context
-                        WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
-                        res.addWindowContext(notificationsWindowContext);
-                        this.refreshWindowContext(controllerContext, layout, updatePage, res, notificationsWindowContext);
+                            // Notifications window context
+                            WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
+                            res.addWindowContext(notificationsWindowContext);
+                            this.refreshWindowContext(controllerContext, layout, updatePage, res, notificationsWindowContext);
 
-                        // Menubar window context
-                        WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
-                        res.addWindowContext(menubarWindowContext);
-                        this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
+                            // Menubar window context
+                            WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
+                            res.addWindowContext(menubarWindowContext);
+                            this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
+                        }
                     } catch (Exception e) {
                         log.error("An error occured during the computation of window markup", e);
 

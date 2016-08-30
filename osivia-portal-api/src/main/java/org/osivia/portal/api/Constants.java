@@ -137,6 +137,10 @@ public final class Constants {
 
     /** User's profile */
     public static final String ATTR_TOOLBAR_MY_PROFILE = "osivia.toolbar.myprofile";
+    /** Toolbar tasks URL. */
+    public static final String ATTR_TOOLBAR_TASKS_URL = "osivia.toolbar.tasks.url";
+    /** Toolbar tasks count. */
+    public static final String ATTR_TOOLBAR_TASKS_COUNT = "osivia.toolbar.tasks.count";
 
 
     // SEO
@@ -163,6 +167,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_REDIRECTION_URL =  "osivia.redirection.url";    
     /** Edition path  */
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
+    /** refresh indicator. */
+    public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";    
 
 
 

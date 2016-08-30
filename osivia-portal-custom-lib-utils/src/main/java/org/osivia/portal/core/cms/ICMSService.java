@@ -396,6 +396,16 @@ public interface ICMSService {
 	 * @throws CMSException
 	 */
 	void subscribe(CMSServiceCtx cmsCtx, String cmsPath, boolean unsubscribe) throws CMSException;
+
     
+    /**
+     * Get user tasks count.
+     * 
+     * @param cmsContext CMS context
+     * @param user user UID
+     * @return tasks count
+     * @throws CMSException
+     */
+    int getTasksCount(CMSServiceCtx cmsContext, String user) throws CMSException;
 
 }

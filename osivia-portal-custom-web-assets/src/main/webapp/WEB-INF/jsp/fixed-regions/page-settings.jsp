@@ -807,3 +807,48 @@ rightCellToggle.add(example);
     
     </div>
 </c:if>
+
+
+<!-- Modal -->
+<div id="osivia-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header hidden">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="h4 modal-title"></h3>
+            </div>
+            
+            <!-- Body -->
+            <div class="modal-body">
+                <div class="dyna-region">
+                    <div id="modal-region">
+                        <div class="dyna-window">
+                            <div id="modal-window" class="partial-refresh-window">
+                                <div class="dyna-window-content">
+                                    <div class="text-center text-muted modal-waiter">
+                                        <i class="halflings halflings-refresh"></i>
+                                        <span><is:getProperty key="AJAX_REFRESH" /></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer hidden">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <span><is:getProperty key="CLOSE" /></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-clone hidden">
+    
+    </div>
+</div>
