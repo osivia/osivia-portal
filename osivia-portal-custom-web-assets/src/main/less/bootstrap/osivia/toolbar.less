@@ -2,10 +2,11 @@
 // OSIVIA Bootstrap extensions - Toolbar
 // --------------------------------------------------
 
+
 .toolbar {
     padding-bottom: @navbar-height;
-    
-    *[data-toggle="drawer"] {
+
+    [data-toggle="drawer"] {
         .transition-property(@transition-property: transform);
         .transition-duration(@transition-duration: 300ms);
 
@@ -46,5 +47,19 @@
         ~ * {
             margin-left: 3px;
         }
+    }
+    
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .navbar-fixed-top {
+            position: absolute;
+        }
+    }
+}
+
+
+@media screen and (max-width: @screen-xs-max) {
+    .wrapper-outer {
+        padding-top: @navbar-height;
     }
 }

@@ -3,8 +3,29 @@
 // --------------------------------------------------
 
 
+// Mixins
+@import "../bootstrap/mixins.less";
 // Media queries breakpoints
 @import "media-queries-breakpoints.less";
+
+
+body {
+    @media screen and (min-width: @screen-sm-min) {
+        position: relative;
+    }
+}
+
+
+// Button group
+.btn-group {
+    > .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: inherit);
+    }
+    
+    > .btn:not(.hidden) ~ .btn.hidden + .btn:not(.hidden):not(:first-child):not(.dropdown-toggle) {
+        .border-left-radius(@radius: 0);
+    }
+}
 
 
 // Button toolbar
@@ -13,6 +34,10 @@
 
     .panel-heading & {
         margin-bottom: 0;
+    }
+    
+    .page-header &.pull-left {
+        margin-right: 16px;
     }
 }
 
@@ -25,18 +50,6 @@
 }
 
 
-// Panel
-.panel {
-    .form-group & {
-        margin-bottom: 0;
-    }
-    
-    pre {
-        white-space: pre-wrap;
-    }
-}
-
-
 // Dropdown menu
 .dropdown-menu > li > .form {
     padding: 3px 20px;
@@ -44,15 +57,10 @@
 
 
 // Nav
-.nav.nav-tabs {
-    margin-bottom: 10px;
-}
-
-
-
-// Media
-.media-body {
-    width: 100%;
+.nav {
+    &.nav-tabs, &.nav-pills {
+        margin-bottom: 10px;
+    }   
 }
 
 
@@ -70,11 +78,97 @@
 }
 
 
-// Caption
+// Media
+.media > .pull-left {
+    ~ * {
+        overflow: hidden;
+    }
+}
 
+.media-heading {
+    display: block;
+}
+
+
+// Thumbnail
+.thumbnail {
+    position: relative;
+    
+    .thumbnail-legend {
+        position: absolute;
+        bottom: 4px; 
+        left: 4px;
+        right: 4px;
+        
+        padding: 1px 5px;
+        
+        color: #fff;
+        background-color: fade(#000, 60%);
+    }
+}
+
+
+// Caption
 caption {
     @media screen and (max-width: @screen-xs-max) {
         padding-left: 10px;
         padding-right: 10px;
+    }
+}
+
+
+// Placeholder
+[placeholder] {
+    text-overflow: ellipsis;
+}
+
+
+// Modal backdrop
+.modal-open .modal-backdrop {
+    position: fixed;
+    bottom: 0;
+    z-index: 1039;
+}
+
+
+// Audio
+audio {
+    max-width: 100%;
+}
+
+
+// Required form group
+.form-group.required {
+    label.control-label {
+        &::after {
+            content: " *";
+        }
+    }
+    
+    &:not(.has-error):not(.has-warning):not(.has-success) {
+        label.control-label {
+            &::after {
+                color: red;
+            }
+        }
+    }
+}
+
+
+// Fieldset
+fieldset {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+
+// Alert
+.alert {
+    &.alert-dismissable {
+        button.close {
+            + .media {
+                margin-top: 0;
+            }
+        }
     }
 }

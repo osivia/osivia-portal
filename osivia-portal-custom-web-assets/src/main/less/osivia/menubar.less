@@ -9,15 +9,19 @@
 @import "media-queries-breakpoints.less";
 
 
-.menubar {
-    white-space: nowrap;
-    text-align: right;
-    
+
+.breadcrumb, .menubar {
     .dropdown-menu {
         i {
             display: inline-block;
         }
     }
+}
+
+
+.menubar {
+    white-space: nowrap;
+    text-align: right;
     
     :not(.dropdown-menu) > .disabled > a {
         cursor: not-allowed;
@@ -25,6 +29,50 @@
         
         .opacity(@opacity: .65);
         .box-shadow(@shadow: none);
+    }
+}
+
+
+
+// Affix container
+.content-navbar-affix-container {
+    min-height: 1px;
+}
+
+
+// Affix
+.content-navbar-affix {
+    @media screen and (max-width: @screen-xs-max) {
+        .container, .container-fluid {
+            padding: 0;
+        }
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        left: 0;
+        right: 0;
+        z-index: 20;
+        
+        &.affix-top {
+            position: absolute;
+        }
+        
+        &.affix {
+            top: 0;
+        }
+        
+        &:not(.affix-top):not(.affix) {
+            .container, .container-fluid {
+                padding: 0;
+            }
+        }
+    }
+}
+
+
+.content-navbar {
+    @media screen and (min-width: @screen-sm-min) {
+        .box-shadow(@shadow: 0 1px 1px fade(#000, 5%));
     }
 }
 
@@ -49,7 +97,17 @@
         margin: 0;
         
         > li {
-            > a {
+            vertical-align: top;
+            
+            &.active {
+                font-weight: bold;
+                
+                .dropdown-menu {
+                    font-weight: normal;
+                }
+            }
+            
+            > * {
                 display: inline-block;
             }
             
@@ -58,9 +116,10 @@
                 padding-right: 0;
             }
             
-            &:last-of-type > a {
-                font-weight: bold;
-                margin-bottom: -1px;
+            > .dropdown > .dropdown-menu {
+                margin-top: 0;
+                
+                .border-top-radius(0);
             }
         }
     }
@@ -154,7 +213,14 @@
         > ul > li {
             &.dropdown > .dropdown-menu {
                 margin-top: 0;
+                
                 .border-top-radius(0);
+            }
+            
+            &, li {
+                &.content-navbar-hidden {
+                    display: none;
+                }
             }
         }
     }
