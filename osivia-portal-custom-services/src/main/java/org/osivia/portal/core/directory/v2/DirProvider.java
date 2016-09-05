@@ -63,6 +63,7 @@ public class DirProvider implements IDirProvider {
 		handler.setDelegate(delegate);
 	}
 	
+
 	public void unregisterDelegate(IDirDelegate delegate) {
 		if(handler.getDelegate().equals(delegate)) {
 			handler.setDelegate(null);
@@ -77,4 +78,13 @@ public class DirProvider implements IDirProvider {
 			delegate.clearCaches();
 		}
 	}
+
+
+    public Object getDirectoryTxManagerDelegate() {
+        if (delegate != null) {
+            return delegate.getDirectoryTxManagerDelegate();
+        } else
+            return null;
+    }
+
 }

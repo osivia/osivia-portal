@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
  * @see org.osivia.services.directory.DirDelegate in osivia-directory project
  */
 public interface IDirDelegate {
-
 	
 	/**
 	 * Call the directory context and return an implementation of a service
@@ -31,17 +30,27 @@ public interface IDirDelegate {
 	 * @return implementation of the service
 	 * @throws InvocationTargetException 
 	 */
-    public <D extends IDirService> D getDirectoryService(Class<D> requiredType) throws InvocationTargetException;
+    <D extends IDirService> D getDirectoryService(Class<D> requiredType) throws InvocationTargetException;
+
     
     /**
      * clear all entries in all caches registered in the service.
      */
-    public void clearCaches();
+    void clearCaches();
     
     
     /**
      * Class loader used by the delegate
      * @return
      */
-    public ClassLoader getClassLoader();
+    ClassLoader getClassLoader();
+
+
+    /**
+     * Get current transaction manager delegate (for composite transactions management)
+     * 
+     * @return
+     */
+    Object getDirectoryTxManagerDelegate();
+
 }

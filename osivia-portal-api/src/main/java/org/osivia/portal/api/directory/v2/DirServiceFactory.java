@@ -22,7 +22,6 @@ import org.osivia.portal.api.locator.Locator;
  *
  */
 public class DirServiceFactory {
-	
 
 	/**
 	 * Factory method of a service
@@ -35,4 +34,18 @@ public class DirServiceFactory {
 		
 		return provider.getDirService(clazz);
 	}
+
+
+    /**
+     * Get current transaction manager delegate (for composite transactions management)
+     * 
+     * @return txManagerDelegate
+     */
+    public static Object getDirectoryTxManagerDelegate() {
+
+        IDirProvider provider = Locator.findMBean(IDirProvider.class, IDirProvider.MBEAN_NAME);
+
+        return provider.getDirectoryTxManagerDelegate();
+    }
+
 }

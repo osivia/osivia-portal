@@ -22,16 +22,16 @@ package org.osivia.portal.api.directory.v2;
  */
 public interface IDirProvider {
 
-
     /** MBean name. */
-    static final String MBEAN_NAME = "osivia:service=DirectoryProvider";
+    String MBEAN_NAME = "osivia:service=DirectoryProvider";
     
     /**
      * Get an implementation of a service by its class
 	 * @param clazz the type of service (IDirService)
 	 * @return an instance of a service
      */
-    public <D extends IDirService> D getDirService(Class<D> clazz);
+    <D extends IDirService> D getDirService(Class<D> clazz);
+
 
 	/**
 	 * Register the delegate (when deploy the directory connector)
@@ -39,14 +39,25 @@ public interface IDirProvider {
 	 */
 	void registerDelegate(IDirDelegate delegate);
 
+
 	/**
 	 * Unregister the delegate (when undeploy the directory connector)
 	 * @param delegate the portlet delegate
 	 */
 	void unregisterDelegate(IDirDelegate delegate);
 
+
 	/**
 	 * Clear all directory caches
 	 */
 	void clearCaches();
+
+
+    /**
+     * Get current transaction manager delegate (for composite transactions management)
+     * 
+     * @return
+     */
+    Object getDirectoryTxManagerDelegate();
+
 }
