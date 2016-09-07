@@ -88,7 +88,5 @@ public interface IProjectCustomizationConfiguration {
      */
    
     String buildRestorableURL();
-   
-    
 
 }

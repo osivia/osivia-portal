@@ -25,7 +25,6 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
-import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 /**
  * Project customization configuration implementation.
@@ -213,18 +212,14 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     public String getRedirectionURL() {
         return this.redirectionURL;
     }
-
     
     
     /**
-     * get URL to replay once redirection is done
+     * Get URL to replay once redirection is done.
      *
      * @param redirectionURL redirection URL
      */
-   
-
     public String buildRestorableURL() {
-        
         String redirectionURL = null;
 
         redirectionURL = getHttpServletRequest().getRequestURL().toString();
@@ -235,9 +230,6 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
 
 
         return redirectionURL;
-
-
-        
     }
 
 }
