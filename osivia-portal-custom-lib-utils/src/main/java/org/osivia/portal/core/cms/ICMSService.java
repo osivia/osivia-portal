@@ -540,4 +540,16 @@ public interface ICMSService {
      */
     int getTasksCount(CMSServiceCtx cmsContext, String user) throws CMSException;
 
+
+    /**
+     * Update task.
+     * 
+     * @param cmsContext CMS context
+     * @param path task path
+     * @param actionId action identifier
+     * @param variables task variables
+     * @throws CMSException
+     */
+    void updateTask(CMSServiceCtx cmsContext, String path, String actionId, Map<String, String> variables) throws CMSException;
+
 }

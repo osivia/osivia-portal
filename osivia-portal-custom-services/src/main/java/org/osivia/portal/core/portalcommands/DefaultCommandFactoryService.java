@@ -21,8 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -62,6 +65,7 @@ import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
+import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 /**
@@ -809,7 +813,46 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
 
+                // Update task command
+                if (UpdateTaskCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] pathParameter = parameterMap.get(UpdateTaskCommand.PATH_PARAMETER);
+                    String[] actionIdParameter = parameterMap.get(UpdateTaskCommand.ACTION_ID_PARAMETER);
+                    String[] variablesParameter = parameterMap.get(UpdateTaskCommand.VARIABLES_PARAMETER);
+                    String[] redirectionUrlParameter = parameterMap.get(UpdateTaskCommand.REDIRECTION_URL_PARAMETER);
 
+                    if (ArrayUtils.isNotEmpty(pathParameter) && ArrayUtils.isNotEmpty(actionIdParameter)) {
+                        // Path
+                        String path = URLDecoder.decode(pathParameter[0], CharEncoding.UTF_8);
+                        // Action identifier
+                        String actionId = URLDecoder.decode(actionIdParameter[0], CharEncoding.UTF_8);
+                        // Variables
+                        Map<String, String> variables;
+                        if (ArrayUtils.isEmpty(variablesParameter)) {
+                            variables = null;
+                        } else {
+                            String[] properties = StringUtils.split(URLDecoder.decode(variablesParameter[0], CharEncoding.UTF_8), "&");
+                            variables = new HashMap<String, String>(properties.length);
+                            for (String property : properties) {
+                                String[] entry = StringUtils.split(property, "=");
+                                if (entry.length == 2) {
+                                    String key = StringEscapeUtils.unescapeHtml(entry[0]);
+                                    String value = StringEscapeUtils.unescapeHtml(entry[1]);
+                                    variables.put(key, value);
+                                }
+                            }
+                        }
+                        // Redirection URL
+                        String redirectionUrl;
+                        if (ArrayUtils.isEmpty(redirectionUrlParameter)) {
+                            redirectionUrl = null;
+                        } else {
+                            redirectionUrl = URLDecoder.decode(redirectionUrlParameter[0], CharEncoding.UTF_8);
+                        }
+
+                        return new UpdateTaskCommand(path, actionId, variables, redirectionUrl);
+                    }
+                }
             }
         } catch (Exception e) {
             // DO NOTHING
