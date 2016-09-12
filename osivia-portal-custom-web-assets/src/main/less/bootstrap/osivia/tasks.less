@@ -48,6 +48,10 @@ button[name='open-tasks'] {
 
 
 .tasks {
+    > ul {
+        margin-bottom: 0;
+    }
+    
     .media-object {
         width: @task-avatar-size;
         height: @task-avatar-size;
@@ -67,7 +71,7 @@ button[name='open-tasks'] {
     }
     
     hr {
-        margin-top: floor(@line-height-computed / 2);
+        margin-top: 0;
         margin-bottom: floor(@line-height-computed / 2);
     }
 }
