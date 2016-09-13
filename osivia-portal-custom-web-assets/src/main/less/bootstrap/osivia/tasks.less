@@ -3,6 +3,9 @@
 // --------------------------------------------------
 
 
+@task-avatar-size: @line-height-computed * 3;
+
+
 button[name='open-tasks'] {
     position: relative;
     
@@ -45,11 +48,30 @@ button[name='open-tasks'] {
 
 
 .tasks {
-    .btn-group {
-        margin-top: floor((@line-height-computed - @input-height-base) / 2) + 1;
+    > ul {
+        margin-bottom: 0;
+    }
+    
+    .media-object {
+        width: @task-avatar-size;
+        height: @task-avatar-size;
         
-        &.btn-group-sm {
-            margin-top: floor((@line-height-computed - @input-height-small) / 2) + 1;
+        img {
+            position: relative;
+            top: 50%;
+            display: block;
+            max-height: 100%;
+            max-width: 100%;
+            
+            margin-left: auto;
+            margin-right: auto;
+            
+            .translate(@x: 0, @y: -50%);
         }
+    }
+    
+    hr {
+        margin-top: 0;
+        margin-bottom: floor(@line-height-computed / 2);
     }
 }

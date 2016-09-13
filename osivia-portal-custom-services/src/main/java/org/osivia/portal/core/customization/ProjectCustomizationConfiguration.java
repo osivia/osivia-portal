@@ -90,8 +90,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     /**
      * {@inheritDoc}
      */
-    public String[] getDomainAndWebId() {
-        String[] result = null;
+    public String getWebId() {
+        String result = null;
 
         // Current CMS base path
         String basePath = this.page.getProperty("osivia.cms.basePath");
@@ -107,10 +107,9 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         try {
             CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
             if (cmsItem != null) {
-                String domainId = cmsItem.getDomainId();
                 String webId = cmsItem.getWebId();
 
-                result = new String[]{domainId, webId};
+                result = webId;
             }
         } catch (CMSException e) {
             // Do nothing
@@ -222,6 +221,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      *
      * @param redirectionURL redirection URL
      */
+   
+
     public String buildRestorableURL() {
         
         String redirectionURL = null;
@@ -232,8 +233,11 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
             redirectionURL +=  getHttpServletRequest().getQueryString();
         redirectionURL +=  "&InterceptedURL=true";
 
+
         return redirectionURL;
 
+
+        
     }
 
 }

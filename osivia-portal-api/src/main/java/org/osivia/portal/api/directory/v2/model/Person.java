@@ -20,117 +20,178 @@ import javax.naming.Name;
 import org.osivia.portal.api.urls.Link;
 
 /**
- * Representation of a person which exists in the LDAP directory
+ * Representation of a person which exists in the LDAP directory.
+ * 
  * @author Loïc Billon
  * @since 4.4
  */
 public interface Person {
 
+    /**
+     * Get DN.
+     * 
+     * @return DN
+     */
+    Name getDn();
 
-	/**
-	 * @return the dn
-	 */
-	public Name getDn();
 
-	/**
-	 * @param dn the dn to set
-	 */
-	public void setDn(Name dn);
+    /**
+     * Set DN.
+     * 
+     * @param dn DN
+     */
+    void setDn(Name dn);
 
-	/**
-	 * @return the cn
-	 */
-	public String getCn();
 
-	/**
-	 * @param cn the cn to set
-	 */
-	public void setCn(String cn);
+    /**
+     * Get CN.
+     * 
+     * @return CN
+     */
+    String getCn();
 
-	/**
-	 * @return the sn
-	 */
-	public String getSn();
 
-	/**
-	 * @param sn the sn to set
-	 */
-	public void setSn(String sn);
+    /**
+     * Set CN.
+     * 
+     * @param cn CN
+     */
+    void setCn(String cn);
 
-	/**
-	 * @return the displayName
-	 */
-	public String getDisplayName();
 
-	/**
-	 * @param displayName the displayName to set
-	 */
-	public void setDisplayName(String displayName);
+    /**
+     * Get SN.
+     * 
+     * @return SN
+     */
+    String getSn();
 
-	/**
-	 * @return the givenName
-	 */
-	public String getGivenName();
 
-	/**
-	 * @param givenName the givenName to set
-	 */
-	public void setGivenName(String givenName);
+    /**
+     * Set SN
+     * 
+     * @param sn SN
+     */
+    void setSn(String sn);
 
-	/**
-	 * @return the mail
-	 */
-	public String getMail();
 
-	/**
-	 * @param mail the mail to set
-	 */
-	public void setMail(String mail);
+    /**
+     * Get display name.
+     * 
+     * @return display name
+     */
+    String getDisplayName();
 
-	/**
-	 * @return the title
-	 */
-	public String getTitle();
 
-	/**
-	 * @param title the title to set
-	 */
-	public void setTitle(String title);
+    /**
+     * Set display name
+     * 
+     * @param displayName display name
+     */
+    void setDisplayName(String displayName);
 
-	/**
-	 * @return the uid
-	 */
-	public String getUid();
 
-	/**
-	 * @param uid the uid to set
-	 */
-	public void setUid(String uid);
+    /**
+     * Get given name.
+     * 
+     * @return given name
+     */
+    String getGivenName();
 
-	/**
-	 * @return the profiles
-	 */
-	public List<Name> getProfiles();
 
-	/**
-	 * @param profiles the profiles to set
-	 */
-	public void setProfiles(List<Name> profiles);
-	
-	/**
-	 * @return the avatar
-	 */
-	public Link getAvatar();
-	
-	/**
-	 * @param avatar the avatar to set
-	 */
-	public void setAvatar(Link avatar);
+    /**
+     * Set given name.
+     * 
+     * @param givenName given name
+     */
+    void setGivenName(String givenName);
 
-	/**
-	 * Build the DN using the ldap base and organizational units
-	 * @param uid the person uid
-	 */
-	public Name buildDn(String uid);
+
+    /**
+     * Get email.
+     * 
+     * @return email
+     */
+    String getMail();
+
+
+    /**
+     * Set email.
+     * 
+     * @param mail email
+     */
+    void setMail(String mail);
+
+
+    /**
+     * Get title.
+     * 
+     * @return title
+     */
+    String getTitle();
+
+
+    /**
+     * Set title.
+     * 
+     * @param title title
+     */
+    void setTitle(String title);
+
+
+    /**
+     * Get UID.
+     * 
+     * @return UID
+     */
+    String getUid();
+
+
+    /**
+     * Set UID.
+     * 
+     * @param uid UID
+     */
+    void setUid(String uid);
+
+
+    /**
+     * Get profiles.
+     * 
+     * @return profiles
+     */
+    List<Name> getProfiles();
+
+
+    /**
+     * Set profiles.
+     * 
+     * @param profiles profiles
+     */
+    void setProfiles(List<Name> profiles);
+
+
+    /**
+     * Get avatar link.
+     * 
+     * @return avatar link
+     */
+    Link getAvatar();
+
+
+    /**
+     * Set avatar link.
+     * 
+     * @param avatar avatar link
+     */
+    void setAvatar(Link avatar);
+
+
+    /**
+     * Build the DN using the ldap base and organizational units.
+     * 
+     * @param uid UID
+     */
+    Name buildDn(String uid);
 
 }

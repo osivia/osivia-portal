@@ -30,7 +30,7 @@ public interface IProjectCustomizationConfiguration {
      *
      * @return domain and web identifiers, eg. [domainId, webId]
      */
-    String[] getDomainAndWebId();
+    String getWebId();
 
 
     /**
@@ -88,7 +88,5 @@ public interface IProjectCustomizationConfiguration {
      */
    
     String buildRestorableURL();
-   
-    
 
 }

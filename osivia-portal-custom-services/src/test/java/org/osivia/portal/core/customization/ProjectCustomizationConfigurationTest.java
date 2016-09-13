@@ -166,7 +166,6 @@ public class ProjectCustomizationConfigurationTest {
 
     @Test
     public final void testEqualsWebId() throws CMSException {
-        String domainId = "domain";
         String webId = "page-to-redirect";
 
         // CMS item
@@ -183,65 +182,32 @@ public class ProjectCustomizationConfigurationTest {
         // Test 1 : equals
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        String[] domainAndWebId1 = this.configuration.getDomainAndWebId();
-        boolean result1 = StringUtils.equals(domainId, domainAndWebId1[0]);
-        assertTrue(result1);
-        boolean result1bis = StringUtils.equals(webId, domainAndWebId1[1]);
+        String webId1 = this.configuration.getWebId();
+        boolean result1bis = StringUtils.equals(webId, webId1);
         assertTrue(result1bis);
 
 
         // Test 2 : not equals
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn("other-page").anyTimes();
-        EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        String[] domainAndWebId2 = this.configuration.getDomainAndWebId();
-        boolean result2 = StringUtils.equals(domainId, domainAndWebId2[0]);
-        assertFalse(result2);
-        boolean result2bis = StringUtils.equals(webId, domainAndWebId2[1]);
+        String webId2 = this.configuration.getWebId();
+        boolean result2bis = StringUtils.equals(webId, webId2);
         assertFalse(result2bis);
-
-
-        // Test 3 : empty domain
-        EasyMock.reset(cmsItemMock);
-        EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(null).anyTimes();
-        EasyMock.replay(cmsItemMock);
-
-        String[] domainAndWebId3 = this.configuration.getDomainAndWebId();
-        assertNull(domainAndWebId3[0]);
-        boolean result3bis = StringUtils.equals(webId, domainAndWebId3[1]);
-        assertTrue(result3bis);
 
 
         // Test 4 : wrong web identifier
         EasyMock.reset(cmsItemMock);
         EasyMock.expect(cmsItemMock.getWebId()).andReturn("other-page").anyTimes();
-        EasyMock.expect(cmsItemMock.getDomainId()).andReturn(domainId).anyTimes();
         EasyMock.replay(cmsItemMock);
 
-        String[] domainAndWebId4 = this.configuration.getDomainAndWebId();
-        boolean result4 = StringUtils.equals(domainId, domainAndWebId4[0]);
-        assertTrue(result4);
-        boolean result4bis = StringUtils.equals(webId, domainAndWebId4[1]);
+        String webId4 = this.configuration.getWebId();
+        boolean result4bis = StringUtils.equals(webId, webId4);
         assertFalse(result4bis);
 
-
-        // Test 5 : wrong domain
-        EasyMock.reset(cmsItemMock);
-        EasyMock.expect(cmsItemMock.getWebId()).andReturn(webId).anyTimes();
-        EasyMock.expect(cmsItemMock.getDomainId()).andReturn("other-domain").anyTimes();
-        EasyMock.replay(cmsItemMock);
-
-        String[] domainAndWebId5 = this.configuration.getDomainAndWebId();
-        boolean result5 = StringUtils.equals(domainId, domainAndWebId5[0]);
-        assertFalse(result5);
-        boolean result5bis = StringUtils.equals(webId, domainAndWebId5[1]);
-        assertTrue(result5bis);
     }
 
 

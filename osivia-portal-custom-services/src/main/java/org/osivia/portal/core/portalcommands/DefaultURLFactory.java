@@ -16,8 +16,13 @@ package org.osivia.portal.core.portalcommands;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -50,6 +55,7 @@ import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
+import org.osivia.portal.core.tasks.UpdateTaskCommand;
 
 
 /**
@@ -603,6 +609,37 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 			}
 			return asu;
 		}
+
+        // Update task command
+        if (cmd instanceof UpdateTaskCommand) {
+            UpdateTaskCommand command = (UpdateTaskCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            // Command parameters
+            try {
+                asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, UpdateTaskCommand.ACTION);
+
+                asu.setParameterValue(UpdateTaskCommand.PATH_PARAMETER, URLEncoder.encode(command.getPath(), CharEncoding.UTF_8));
+                asu.setParameterValue(UpdateTaskCommand.ACTION_ID_PARAMETER, URLEncoder.encode(command.getActionId(), CharEncoding.UTF_8));
+                if (MapUtils.isNotEmpty(command.getVariables())) {
+                    List<String> variables = new ArrayList<String>(command.getVariables().size());
+                    for (Entry<String, String> entry : command.getVariables().entrySet()) {
+                        variables.add(StringEscapeUtils.escapeHtml(entry.getKey()) + "=" + StringEscapeUtils.escapeHtml(entry.getValue()));
+                    }
+                    asu.setParameterValue(UpdateTaskCommand.VARIABLES_PARAMETER, URLEncoder.encode(StringUtils.join(variables, "&"), CharEncoding.UTF_8));
+                }
+                if (StringUtils.isNotEmpty(command.getRedirectionUrl())) {
+                    asu.setParameterValue(UpdateTaskCommand.REDIRECTION_URL_PARAMETER, URLEncoder.encode(command.getRedirectionUrl(), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
 
         return null;
     }
