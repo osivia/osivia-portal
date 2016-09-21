@@ -801,14 +801,6 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <excludes>
-                            <exclude>**/*.min.css</exclude>
-                            <exclude>**/*.min.js</exclude>
-                        </excludes>
-                        <jswarn>false</jswarn>
-                        <suffix>.min</suffix>
-                    </configuration>
                 </plugin>
                 
                 <!-- AntRun -->

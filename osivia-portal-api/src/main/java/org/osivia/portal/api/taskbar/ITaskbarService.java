@@ -16,13 +16,16 @@ public interface ITaskbarService {
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=TaskbarService";
 
+    /** Taskbar task webId prefix. */
+    String WEBID_PREFIX = "workspace_";
+
     /** Taskbar window instance. */
     String WINDOW_INSTANCE = "osivia-services-taskbar-instance";
 
     /** Taskbar home task identifier. */
     String HOME_TASK_ID = "HOME";
 
-    /** Task identifier window property name. */
+    /** Taskbar task identifier window property name. */
     String TASK_ID_WINDOW_PROPERTY = "osivia.taskbar.id";
 
 

@@ -93,7 +93,7 @@
                             <c:if test="${not empty requestScope['osivia.toolbar.tasks.url']}">
                                 <c:set var="title"><op:translate key="NOTIFICATION_TASKS" /></c:set>
                                 <li>
-                                    <button type="button" name="open-tasks" class="btn btn-link navbar-btn" data-load-url="${requestScope['osivia.toolbar.tasks.url']}" data-load-callback-function="tasksModalCallback" data-title="${title}">
+                                    <button type="button" name="open-tasks" class="btn btn-link navbar-btn" data-target="#osivia-modal" data-load-url="${requestScope['osivia.toolbar.tasks.url']}" data-load-callback-function="tasksModalCallback" data-title="${title}" data-footer="true">
                                         <i class="glyphicons glyphicons-bell"></i>
                                         <span class="sr-only">${title}</span>
                                         

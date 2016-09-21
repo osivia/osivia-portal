@@ -15,32 +15,6 @@ $JQry(function() {
 		updateTasksCounter(tasksCount);
 	}
 	
-	
-	// Open tasks modal
-	$JQry("button[name='open-tasks']").each(function(index, element) {
-		var $element = $JQry(element),
-			loaded = $element.data("loaded");
-		
-		if (!loaded) {
-			$element.click(function(event) {
-				var $target = $JQry(event.target).closest("button"),
-					loadUrl = $target.data("load-url"),
-					callbackFunction = $target.data("load-callback-function"),
-					title = $target.data("title"),
-					$modal = $JQry("#osivia-modal");
-	
-				$modal.data("load-url", loadUrl);
-				$modal.data("load-callback-function", callbackFunction);
-				$modal.data("title", title);
-				$modal.data("footer", true);
-				
-				$modal.modal("show");
-			});
-			
-			$element.data("loaded", true);
-		}
-	});
-	
 });
 
 

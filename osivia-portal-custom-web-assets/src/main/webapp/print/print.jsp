@@ -16,7 +16,7 @@
 
 <script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery/jquery-1.8.3.min.js"></script>
 <script type="text/javascript" src="/osivia-portal-custom-web-assets/js/jquery-integration.min.js"></script>
-<script type="text/javascript" src="/osivia-portal-custom-web-assets/js/print.js"></script>
+<script type="text/javascript" src="/osivia-portal-custom-web-assets/print/js/print.min.js"></script>
 </head>
 
 

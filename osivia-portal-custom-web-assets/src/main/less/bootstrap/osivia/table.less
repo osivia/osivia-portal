@@ -39,9 +39,13 @@
         margin-left: -@table-cell-padding;
         margin-right: -@table-cell-padding;
         
-        [class|="col"] {
+        [class*="col-"] {
             padding-left: @table-cell-padding;
             padding-right: @table-cell-padding;
+        }
+        
+        [class*="visible-"] {
+            margin-bottom: @padding-base-vertical;
         }
     }
     

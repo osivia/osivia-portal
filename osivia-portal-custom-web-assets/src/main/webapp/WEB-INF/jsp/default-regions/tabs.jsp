@@ -29,7 +29,7 @@
 
 <nav class="tabs tabs-default" role="navigation">
     <!-- Title -->
-    <h2 class="hidden"><op:translate key="TABS_TITLE" /></h2>
+    <h2 class="sr-only"><op:translate key="TABS_TITLE" /></h2>
     
     
     <!-- Home -->

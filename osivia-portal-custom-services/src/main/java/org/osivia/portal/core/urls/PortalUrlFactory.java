@@ -567,6 +567,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // URL
         String url;
         try {
+            // Current portal name
+            String currentPortal = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+
             // Page identifier
             String pageId;
             // Region
@@ -582,6 +585,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowName = "popupWindow";
                 
                 // Default window properties
+                windowProperties.put("osivia.currentPortal", currentPortal);
                 if (windowProperties.get("osivia.hideDecorators") == null) {
                     windowProperties.put("osivia.hideDecorators", "1");
                 }
@@ -594,10 +598,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 pageId = URLEncoder.encode(pageObjectPath.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
                 regionId = "modal-region";
                 windowName = "modal-window";
-                
+
                 // Default window properties
                 windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 windowProperties.put("osivia.ajaxLink", "1");
+                windowProperties.put("osivia.currentPortal", currentPortal);
                 
             } else {
                 // Default
@@ -649,15 +654,38 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties,
-            Map<String, String> params) throws PortalException {
-
+    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
+            Map<String, String> windowProperties, Map<String, String> params) throws PortalException {
         try {
-            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
-            // if (portalName == null)
-            // portalName = "default";
+            // Controller context
+            ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
 
-            portalName = "/" + portalName;
+            // Portal name
+            String portalName = PageProperties.getProperties().getPagePropertiesMap().get(Constants.PORTAL_NAME);
+
+            if ("osivia-util".equals(portalName)) {
+                Page page = PortalObjectUtils.getPage(controllerContext);
+
+                // Window
+                Window window;
+                if ("popup".equals(page.getName())) {
+                    // Popup
+                    window = page.getChild("popupWindow", Window.class);
+                } else if ("modal".equals(page.getName())) {
+                    // Modal
+                    window = page.getChild("modal-window", Window.class);
+                } else {
+                    // Unknown case
+                    window = null;
+                }
+
+                if (window != null) {
+                    portalName = window.getDeclaredProperty("osivia.currentPortal");
+                }
+            }
+
+            // Portal path
+            String portalPath = PortalObjectId.parse("/" + portalName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 
 
             // Maps initialization
@@ -669,7 +697,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             }
 
             final ControllerCommand cmd = new StartDynamicWindowInNewPageCommand();
-            final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalCtx), null, null);
+            final PortalURL portalURL = new PortalURLImpl(cmd, controllerContext, null, null);
 
             // Valeurs par défaut
             if (windowProperties.get("osivia.hideDecorators") == null) {
@@ -680,25 +708,22 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             }
 
 
-            final String parentId = URLEncoder.encode(PortalObjectId.parse(portalName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT),
-                    "UTF-8");
+            final String parentId = URLEncoder.encode(portalPath, "UTF-8");
 
+            final StringBuilder url = new StringBuilder(portalURL.toString());
+            url.append("&parentId=").append(parentId);
 
-            final StringBuffer url = new StringBuffer(portalURL.toString());
-            url.append("&parentId="+parentId);
-
-            if( pageName != null) {
-                url.append("&pageName="+URLEncoder.encode(pageName,"UTF-8"));
+            if (pageName != null) {
+                url.append("&pageName=").append(URLEncoder.encode(pageName, "UTF-8"));
             }
-            if( pageDisplayName != null) {
-                url.append("&pageDisplayName="+URLEncoder.encode(pageDisplayName,"UTF-8"));
+            if (pageDisplayName != null) {
+                url.append("&pageDisplayName=").append(URLEncoder.encode(pageDisplayName, "UTF-8"));
             }
 
-            url.append("&instanceId=" + portletInstance +  "&props="
-                    + WindowPropertiesEncoder.encodeProperties(windowProperties) + "&params=" + WindowPropertiesEncoder.encodeProperties(params));
+            url.append("&instanceId=").append(portletInstance).append("&props=").append(WindowPropertiesEncoder.encodeProperties(windowProperties))
+                    .append("&params=").append(WindowPropertiesEncoder.encodeProperties(params));
 
             return url.toString();
-
         } catch (final Exception e) {
             throw new PortalException(e);
         }

@@ -81,6 +81,27 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
+                <configuration>
+                    <aggregations>
+                        <aggregation>
+                            <includes>
+                                <include>**/*.min.js</include>
+                            </includes>
+                            <insertNewLine>true</insertNewLine>
+                            <excludes>
+                                <exclude>jquery-integration.min.js</exclude>
+                            </excludes>
+                            <output>${project.build.directory}/${project.build.finalName}/js/socle.min.js</output>
+                            <removeIncluded>true</removeIncluded>
+                        </aggregation>
+                    </aggregations>
+                    <excludes>
+                        <exclude>**/*.min.css</exclude>
+                        <exclude>**/*.min.js</exclude>
+                    </excludes>
+                    <jswarn>false</jswarn>
+                    <suffix>.min</suffix>
+                </configuration>
             </plugin>
 
             <plugin>
