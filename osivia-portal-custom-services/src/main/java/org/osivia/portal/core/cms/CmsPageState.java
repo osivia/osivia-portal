@@ -102,6 +102,8 @@ public class CmsPageState {
     private final String displayContext;
 
     private final boolean skipPortletInitialisation;
+    
+    private final boolean isVirtualNavigation;
 
 
     /**
@@ -111,7 +113,7 @@ public class CmsPageState {
      */
     public CmsPageState(ControllerContext controllerContext, Page baseCMSPublicationPage, Level level, String contextualization, CMSItem cmsItem,
             String itemPublicationPath, String basePublishPath, Page currentPage, Map<String, String> pageParams, String contentPath,
-            CMSPublicationInfos pubInfos, boolean contextualizedInCurrentPage, String cmsPath, String displayContext, boolean skipPortletInitialisation) {
+            CMSPublicationInfos pubInfos, boolean contextualizedInCurrentPage, String cmsPath, String displayContext, boolean skipPortletInitialisation, boolean isVirtualNavigation) {
         super();
         this.logger = LogFactory.getLog(this.getClass());
         this.controllerContext = controllerContext;
@@ -129,6 +131,7 @@ public class CmsPageState {
         this.cmsPath = cmsPath;
         this.displayContext = displayContext;
         this.skipPortletInitialisation = skipPortletInitialisation;
+        this.isVirtualNavigation = isVirtualNavigation;
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
@@ -186,6 +189,11 @@ public class CmsPageState {
                 } else {
                     boolean errorDuringCheck = false;
                     String pathToCheck = this.itemPublicationPath;
+                    
+                    if(isVirtualNavigation){
+                        // l'item n'existe pas
+                        pathToCheck = CMSObjectPath.parse(pathToCheck).getParent().toString();
+                    }
 
                     do {
                         try {

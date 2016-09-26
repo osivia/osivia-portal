@@ -14,12 +14,14 @@
  */
 package org.osivia.portal.core.ecm;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
@@ -57,7 +59,6 @@ public class EcmCommandDelegate extends ControllerCommand  {
 
 	/** cms path used by the ECM */
 	private String cmsPath;
-
 	
 	private EcmCommand command;
 	
@@ -101,17 +102,16 @@ public class EcmCommandDelegate extends ControllerCommand  {
 
 			CMSServiceCtx cmsCtx = new CMSServiceCtx();
 			cmsCtx.setControllerContext(getControllerContext());
-
+			
 			getCMSService().executeEcmCommand(cmsCtx, command, cmsPath);
-
+			
 			command.notifyAfterCommand(getControllerContext());
-
+			
 			return redirectAfterCommand();
 
 		} catch (CMSException e) {
-
-			throw new ControllerException(e);
-		}
+            throw new ControllerException(e);
+        }
 
 	}
 
@@ -123,15 +123,18 @@ public class EcmCommandDelegate extends ControllerCommand  {
 		
 		if(command.getStrategy().equals(EcmCommand.ReloadAfterCommandStrategy.refreshNavigation)) {
 		
-			// relaod navigation tree
+			// reload navigation tree
 			PageProperties.getProperties().setRefreshingPage(true);
+			
+			// Redirection path
+			String redirectCmsPath = EcmCommand.ReloadAfterCommandStrategy.refreshNavigation.getRedirectionPathPath();
 	
-			CmsCommand redirect = new CmsCommand(null, cmsPath, null, null, null,
+			CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, null,
 					null, null, null, null, null, null);
 			execute = context.execute(redirect);
 	
 		
-		}
+		} 
 		else {
 			CmsCommand redirect = new CmsCommand(null, cmsPath, null, null, null,
 					null, null, null, null, null, null);

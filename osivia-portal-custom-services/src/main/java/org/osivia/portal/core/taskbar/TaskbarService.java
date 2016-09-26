@@ -172,18 +172,26 @@ public class TaskbarService implements ITaskbarService {
                 // Base path
                 String basePath = page.getProperty("osivia.cms.basePath");
                 // Content path
-                String contentPath;
+//                String contentPath;
+//                if (request != null) {
+//                    contentPath = request.getParameter("osivia.cms.contentPath");
+//                } else {
+//                    contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+//                }
+                
+                String navigationPath;
+                
                 if (request != null) {
-                    contentPath = request.getParameter("osivia.cms.contentPath");
+                    navigationPath = request.getParameter("osivia.cms.path");
                 } else {
-                    contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+                    navigationPath = PagePathUtils.getNavigationPath(controllerContext, page.getId());
                 }
 
-                if (StringUtils.equals(contentPath, basePath)) {
+                if (StringUtils.equals(navigationPath, basePath)) {
                     activeId = ITaskbarService.HOME_TASK_ID;
                 } else {
                     // Protected content path
-                    String protectedContentPath = contentPath + "/";
+                    String protectedContentPath = navigationPath + "/";
 
                     // Navigation tasks
                     List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);

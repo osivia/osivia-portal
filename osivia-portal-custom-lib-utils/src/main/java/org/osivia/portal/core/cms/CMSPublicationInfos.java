@@ -66,9 +66,19 @@ public class CMSPublicationInfos {
 
 	private boolean isLiveSpace = false;
 	
-	public boolean isDraft = false;
-	
-	public String draftContentPath;
+	/** Indicates if document is draft. */
+	private boolean isDraft = false;
+	/** Indicates if document has draft. */
+	private boolean hasDraft = false;
+	/** 
+	 * Indicates if document (which is draft) has "published" document
+	 * (in collaborative space way).
+	 */
+	private boolean isNotOrphanDraft = true;
+	/** Draft path. */
+	private String draftPath;
+	/** Path of draft (portal) contextualization. */
+	private String draftContextualizationPath;
 	
 	private List<Integer> errorCodes = new ArrayList<Integer>();
 
@@ -289,20 +299,68 @@ public class CMSPublicationInfos {
 		this.isDraft = isDraft;
 	}
 
-	/**
-	 * @return the draftContentPath
-	 */
-	public String getDraftContentPath() {
-		return draftContentPath;
-	}
+    
+    /**
+     * @return the draftPath
+     */
+    public String getDraftPath() {
+        return draftPath;
+    }
 
-	/**
-	 * @param draftContentPath the draftContentPath to set
-	 */
-	public void setDraftContentPath(String draftContentPath) {
-		this.draftContentPath = draftContentPath;
-	}
+    
+    /**
+     * @param draftPath the draftPath to set
+     */
+    public void setDraftPath(String draftPath) {
+        this.draftPath = draftPath;
+    }
 
-	
-	
+    
+    /**
+     * @return the draftContextualizationPath
+     */
+    public String getDraftContextualizationPath() {
+        return draftContextualizationPath;
+    }
+
+    
+    /**
+     * @param draftContextualizationPath the draftContextualizationPath to set
+     */
+    public void setDraftContextualizationPath(String draftContextualizationPath) {
+        this.draftContextualizationPath = draftContextualizationPath;
+    }
+
+    
+    /**
+     * @return the hasDraft
+     */
+    public boolean hasDraft() {
+        return hasDraft;
+    }
+
+    
+    /**
+     * @param hasDraft the hasDraft to set
+     */
+    public void setHasDraft(boolean hasDraft) {
+        this.hasDraft = hasDraft;
+    }
+
+    
+    /**
+     * @return the isNotOrphanDraft
+     */
+    public boolean isNotOrphanDraft() {
+        return isNotOrphanDraft;
+    }
+
+    
+    /**
+     * @param isNotOrphanDraft the isNotOrphanDraft to set
+     */
+    public void setNotOrphanDraft(boolean isNotOrphanDraft) {
+        this.isNotOrphanDraft = isNotOrphanDraft;
+    }
+
 }

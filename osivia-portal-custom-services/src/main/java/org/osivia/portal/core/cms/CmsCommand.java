@@ -46,6 +46,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -57,6 +58,7 @@ import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.trace.ITraceServiceLocator;
 import org.osivia.portal.api.trace.Trace;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -565,20 +567,11 @@ public class CmsCommand extends DynamicCommand {
                     // Content may have change ( for example, Content with webid may have been moved,)
                     // In any case we recheck the main content of the page
                     // No extra-cost because getPublicationInfos is optimized for performance
-                    boolean forceReload = false;
-                    if (hasWebId) {
-                        forceReload = cmsReadItemContext.isForceReload();
-                        if (!forceReload) {
-                            cmsReadItemContext.setForceReload(true);
-                        }
-                    }
+                    boolean forceReload = cmsReadItemContext.isForceReload();
+                    
+                    cmsReadItemContext.setForceReload(true);
                     pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
-                    if (hasWebId) {
-                        if (!forceReload) {
-                            cmsReadItemContext.setForceReload(false);
-                        }
-                    }
-
+                    cmsReadItemContext.setForceReload(forceReload);
 
                     // Le path eventuellement en ID a été retranscrit en chemin
                     this.cmsPath = pubInfos.getDocumentPath();
@@ -603,8 +596,23 @@ public class CmsCommand extends DynamicCommand {
                 }
 
             }
-
-
+            
+            // Case of document saved as Draft:
+            // its state must be updated
+            // (no need to catch ERROR_FORBIDDEN and ERROR_NOTFOUND CMSException
+            if(InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)){
+                if(pubInfos.isDraft() && pubInfos.isNotOrphanDraft()){
+                    String docHavingDraftName = StringUtils.substringAfterLast(this.cmsPath, "/");
+                    String docHavingDraftPath = pubInfos.getDraftContextualizationPath().concat("/").concat(docHavingDraftName);
+                    
+                    boolean forceReload = cmsReadItemContext.isForceReload();
+                    cmsReadItemContext.setForceReload(true);
+                    getCMSService().getContent(cmsReadItemContext, docHavingDraftPath);
+                    cmsReadItemContext.setForceReload(forceReload);
+                    
+                }
+            }
+            
             // Les liens applicativement posés en LIVE sont interprétés en mode PROXY_PREVIEW
             // Requete vers des documents LIVE alors qu'ils sont dans un espace de publication
             if ("1".equals(this.displayLiveVersion)) {
@@ -649,7 +657,6 @@ public class CmsCommand extends DynamicCommand {
                     }
                 }
             }
-
 
             // Adapatation des paths à la navigation pilotée par le contenu
 
@@ -896,11 +903,12 @@ public class CmsCommand extends DynamicCommand {
                 basePublishPath = baseCMSPublicationPage.getDeclaredProperty("osivia.cms.basePath");
             }
 
-
+            boolean isVirtualNavigation = (virtualNavigationPath != null);
+            
             // Page state
             CmsPageState pageState = new CmsPageState(controllerContext, baseCMSPublicationPage, level, this.contextualization, cmsItem, itemPublicationPath,
                     basePublishPath, currentPage, this.pageParams, this.contentPath, pubInfos, contextualizedInCurrentPage, this.cmsPath, this.displayContext,
-                    this.skipPortletInitialisation);
+                    this.skipPortletInitialisation, isVirtualNavigation);
             UnavailableResourceResponse response = pageState.initState();
             if (response != null) {
                 return response;

@@ -243,8 +243,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return ret;
 
     }
-
-
+    
     /**
      * {@inheritDoc}
      */
@@ -928,21 +927,53 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     public void setProfilManager(IProfilManager profilManager) {
         this.profilManager = profilManager;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getEcmCommandUrl(
+            PortalControllerContext ctx, String path,
+            EcmCommonCommands command) throws PortalException  {
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#getEcmCommandUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String, org.osivia.portal.api.urls.EcmDocumentCommand)
-	 */
-	public String getEcmCommandUrl(
-			PortalControllerContext ctx, String path,
-			EcmCommonCommands command) throws PortalException  {
+        return this.getEcmCommandUrl(ctx, path, command.name(), path);
+    }
 
-		return this.getEcmCommandUrl(ctx, path, command.name());
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getEcmCommandUrl(
+            PortalControllerContext ctx, String path,
+            EcmCommonCommands command, String redirectionPath) throws PortalException  {
+
+        return this.getEcmCommandUrl(ctx, path, command.name(), redirectionPath);
+    }
 
 
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.urls.IPortalUrlFactory#getEcmCommandUrl(org.osivia.portal.api.context.PortalControllerContext, java.lang.String, java.lang.String)
-	 */
+    /**
+     * {@inheritDoc}
+     */
+    public String getEcmCommandUrl(
+            PortalControllerContext portalControllerContext, String path,
+            String commandName, String redirectionPath) throws PortalException  {
+
+        final IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
+        final org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(commandName);
+
+        if(initialCommand == null) {
+            throw new PortalException("command "+commandName+" not found");
+        }
+        
+        initialCommand.getStrategy().setRedirectionPathPath(redirectionPath);
+        final ControllerCommand cmd = new EcmCommandDelegate(initialCommand, path);
+
+        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+        return portalURL.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
 	public String getEcmCommandUrl(
 			PortalControllerContext portalControllerContext, String path,
 			String commandName) throws PortalException  {

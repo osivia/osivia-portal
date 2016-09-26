@@ -359,26 +359,37 @@ public interface IPortalUrlFactory {
     String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState,
             Boolean permalinks);
 
+    /**
+     * Return an url who fire the ECM
+     * @param portalControllerContext
+     * @param path
+     * @param commandName
+     * @return the url
+     */
+     String getEcmCommandUrl(PortalControllerContext portalControllerContext,
+            String path, EcmCommonCommands commandName) throws PortalException ;
 
 	/**
 	 * Return an url who fire the ECM
 	 * @param portalControllerContext
 	 * @param path
+	 * @param redirectionPath
 	 * @param commandName
 	 * @return the url
 	 */
 	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
-			String path, EcmCommonCommands commandName) throws PortalException ;
+			String path, EcmCommonCommands commandName, String redirectionPath) throws PortalException ;
 
 	/**
 	 * Return an url who fire the ECM
 	 * @param portalControllerContext
 	 * @param path
+	 * @param param redirectionPath
 	 * @param commandName
 	 * @return the url
 	 */
 	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
-			String path, String commandName) throws PortalException ;
+			String path, String commandName, String redirectionPath) throws PortalException ;
 
 
 

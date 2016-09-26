@@ -16,7 +16,9 @@ package org.osivia.portal.api.ecm;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.osivia.portal.api.PortalException;
 
 
 /**
@@ -29,19 +31,38 @@ public abstract class EcmCommand  {
 	
 	public enum ReloadAfterCommandStrategy {
 		/** do nothing after the command- Not implemented ! */
-		nothing,
+		nothing(""),
 		
 		/** refresh page */
-		refreshPage,
+		refreshPage(""),
 		
 		/** refresh page and all navigation tree */
-		refreshNavigation,
+		refreshNavigation(""),
 		
 		/** redirect to parent and refresh navigation tree. Not implemented !  */
-		moveToParent,
+		moveToParent(""),
 		
 		/** redirect to child and refresh navigation tree. Not implemented !  */
-		moveToChild
+		moveToChild("");
+		
+		/** Redirection path after command. */
+		private String redirectionPath;
+		
+		/** Contructor. */
+		private ReloadAfterCommandStrategy(String redirectionPath){
+		    this.redirectionPath = redirectionPath;
+		}
+
+        /** Getter for redirection path after command. */
+		public String getRedirectionPathPath(){
+		    return this.redirectionPath;
+		}
+		
+		/** Setter for redirection path after command. */
+		public void setRedirectionPathPath(String redirectionPath){
+		    this.redirectionPath = redirectionPath;
+		}
+		
 	}
 	
 	/** the command ID, can be an EcmCommonCommand */
@@ -56,9 +77,6 @@ public abstract class EcmCommand  {
 	/** Additional static parameters for the command */
 	private final Map<String, Object> realCommandParameters;
 
-
-	
-	
 	/**
 	 * @param commandName
 	 * @param strategy
@@ -73,8 +91,6 @@ public abstract class EcmCommand  {
 		this.realCommand = realCommand;
 		this.realCommandParameters = realCommandParameters;
 	}
-
-	
 	
 	/**
 	 * @return the commandName
@@ -92,8 +108,6 @@ public abstract class EcmCommand  {
 		return strategy;
 	}
 
-
-
 	/**
 	 * @return the realCommand
 	 */
@@ -108,9 +122,7 @@ public abstract class EcmCommand  {
 		return realCommandParameters;
 	}
 
-
-
-	public abstract void notifyAfterCommand(ControllerContext controllerContext);
+    public abstract void notifyAfterCommand(ControllerContext controllerContext);
 
 	
 	public EcmCommonCommands getCommonCommandName() {

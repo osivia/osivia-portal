@@ -763,14 +763,17 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 				if (EcmCommandDelegate.class.getSimpleName().equals(action)) {
 
                     String cmsPath = null;
+                    String cmsRedirectionPath = null;
                     String command = null;
 
                     if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
                         cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
                         command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
+                        cmsRedirectionPath = URLDecoder.decode(parameterMap.get("cmsRedirectionPath")[0], "UTF-8");
 
                 		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
                 		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
+                		initialCommand.getStrategy().setRedirectionPathPath(cmsRedirectionPath);
 
                 		return new EcmCommandDelegate(initialCommand, cmsPath);
 

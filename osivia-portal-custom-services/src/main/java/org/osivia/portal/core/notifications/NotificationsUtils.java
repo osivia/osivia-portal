@@ -59,6 +59,8 @@ public class NotificationsUtils {
 
     /** Message links pattern. */
     private static final Pattern MESSAGE_LINKS_PATTERN = Pattern.compile("^(.*)\\[\\[(.*)\\]\\](.*)$");
+    /** Popup type link indicator with associated link class. */
+    private static final String[] POPUP_TYPE_LINK_INDICATOR = {"[POPUP]","fancyframe_refresh"};
     /** Message beginning regex group number. */
     private static final int REGEX_GROUP_BEGINNING = 1;
     /** Message link regex group number. */
@@ -236,12 +238,16 @@ public class NotificationsUtils {
             // Link
             String[] split = StringUtils.split(link, "|");
             String text;
+            String linkClass = StringUtils.EMPTY;
             if (split.length > 1) {
                 text = split[1];
+                if(split.length > 2){
+                    linkClass = StringUtils.equalsIgnoreCase(POPUP_TYPE_LINK_INDICATOR[0], split[2]) ? POPUP_TYPE_LINK_INDICATOR[1] : linkClass;
+                }
             } else {
                 text = split[0];
             }
-            Element a = DOM4JUtils.generateLinkElement(split[0], null, null, "alert-link", text);
+            Element a = DOM4JUtils.generateLinkElement(split[0], null, null, "alert-link ".concat(linkClass), text);
             parent.add(a);
 
             matcher = MESSAGE_LINKS_PATTERN.matcher(continuation);

@@ -355,7 +355,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             CmsPageState pageState = new CmsPageState(this.getControllerContext(), parent, null, IPortalUrlFactory.CONTEXTUALIZATION_PAGE, navItem, basePath,
                     basePath, page,
-                    null, basePath, pubInfos, true, basePath, null, false);
+                    null, basePath, pubInfos, true, basePath, null, false, false);
             pageState.initState();
         }
     }

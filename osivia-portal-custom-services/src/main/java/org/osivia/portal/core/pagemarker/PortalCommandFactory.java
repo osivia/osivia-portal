@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +47,7 @@ import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
@@ -59,6 +61,7 @@ import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.RefreshPageCommand;
@@ -364,6 +367,19 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                         cmd = new ViewPageCommand(((ViewPageCommand) cmd).getTargetId());
                     }
                 }
+            }
+        }
+
+        
+        if( popupClosed){
+
+            // Remove notifications from the close phase (displayed twice in case of CMS deny exception)
+            // The cause: the close associated command is executed twice (during the close and the closed phase)
+            // The only use case is the mapsite portlet in web site AND drafts explorer
+
+            if( cmd instanceof CmsCommand)  {
+                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+                NotificationsUtils.getNotificationsService().setNotificationsList(portalControllerContext, new ArrayList<Notifications>());
             }
         }
 

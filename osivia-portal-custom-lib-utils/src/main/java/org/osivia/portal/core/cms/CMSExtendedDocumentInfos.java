@@ -33,16 +33,19 @@ public class CMSExtendedDocumentInfos {
     private String taskName = StringUtils.EMPTY;
     
     /** Indicates if a task of name taskName is pending on document */
-    private Boolean isOnlineTaskPending = false;
+    private Boolean isOnlineTaskPending = Boolean.FALSE;
     
     /** Indicates if current user can manage pending task on document. */
-    private Boolean canUserValidateOnlineTask = false;
+    private Boolean canUserValidateOnlineTask = Boolean.FALSE;
     
     /** Indicates if current user is the task's initiator. */
-    private Boolean isUserOnlineTaskInitiator = false;
+    private Boolean isUserOnlineTaskInitiator = Boolean.FALSE;
     
     /** Indicates if a validation workflow is running on a given document. */
-    private Boolean isValidationWorkflowRunning = false;
+    private Boolean isValidationWorkflowRunning = Boolean.FALSE;
+    
+    /** Indicates if Folderish has Drfats. */
+    private Boolean hasDrafts = Boolean.FALSE;
     
     /**
      * A document has a state depending of the user who is browsing it
@@ -286,4 +289,19 @@ public class CMSExtendedDocumentInfos {
     }
 
     
+    /**
+     * @return the hasDrafts
+     */
+    public Boolean hasDrafts() {
+        return hasDrafts;
+    }
+
+    
+    /**
+     * @param hasDrafts the hasDrafts to set
+     */
+    public void setHasDrafts(Boolean hasDrafts) {
+        this.hasDrafts = hasDrafts;
+    }
+
 }

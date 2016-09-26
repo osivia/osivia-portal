@@ -147,10 +147,18 @@ public class CMSPutDocumentInTrashCommand extends ControllerCommand {
             cmsCtx.setControllerContext(getControllerContext());
  
             PortalControllerContext pcc = new PortalControllerContext(getControllerContext());
-
+            
+            CMSPublicationInfos beforePutInTrashPubInfos = getCMSService().getPublicationInfos(cmsCtx, docPath);
 
             getCMSService().putDocumentInTrash(cmsCtx, docId);
-
+            
+            // Case of document having Draft:
+            // Draft is put in trash too
+            if(beforePutInTrashPubInfos.hasDraft()){
+                String draftPath = beforePutInTrashPubInfos.getDraftPath();
+                getCMSService().putDocumentInTrash(cmsCtx, draftPath);
+            }
+            
             String success = itlzService.getString(SUCCESS_MESSAGE_DELETE, getControllerContext().getServerInvocation().getRequest().getLocale());
             notifService.addSimpleNotification(pcc, success, NotificationsType.SUCCESS);
             

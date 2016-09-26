@@ -620,6 +620,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
                 asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
                 asu.setParameterValue("command", URLEncoder.encode(command.getCommand().getCommandName(), "UTF-8"));
+                asu.setParameterValue("cmsRedirectionPath", URLEncoder.encode(command.getCommand().getStrategy().getRedirectionPathPath(), "UTF-8"));
 
             } catch (UnsupportedEncodingException e) {
                 // ignore
