@@ -64,6 +64,9 @@ public enum EcmViews {
     validateRemotePublishing,
     
     /** Global administration */
-    globalAdministration;
+    globalAdministration,
+
+    /** Reload. */
+    RELOAD;
     
 }

@@ -211,6 +211,12 @@ public final class Constants {
     public static final String REQUEST_ATTR_URI = WINDOW_PROP_URI;
 
 
+    // SESSION
+
+    /** Reload session attribute name. */
+    public static final String SESSION_RELOAD_ATTRIBUTE = "osivia.session.reload";
+
+
     /**
      * Private constructor : prevent instantiation.
      */

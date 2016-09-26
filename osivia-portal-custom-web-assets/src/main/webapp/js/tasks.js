@@ -1,15 +1,6 @@
 $JQry(function() {
 	var $tasks = $JQry(".tasks").first(),
-		reloadUrl = $tasks.data("reload-url"),
 		tasksCount = $tasks.data("tasks-count");
-
-	if ($tasks.data("reload")) {
-		$JQry.ajax({
-			url: reloadUrl
-		});
-		
-		$tasks.data("reload", false);
-	}
 	
 	if (tasksCount !== undefined) {
 		updateTasksCounter(tasksCount);

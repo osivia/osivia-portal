@@ -1064,7 +1064,12 @@ rightCellToggle.add(example);
         </div>
     </div>
     
-    <div class="modal-clone hidden">
-    
-    </div>
+    <div class="modal-clone hidden"></div>
 </div>
+
+
+<!-- Reload -->
+<c:set var="url" value="${requestScope['osivia.session.reload.url']}" />
+<c:if test="${not empty url}">
+    <div id="session-reload" data-reload="true" data-url="${url}"></div>
+</c:if>

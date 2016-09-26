@@ -32,6 +32,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -75,6 +78,7 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -85,7 +89,10 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
 import org.osivia.portal.core.assistantpage.PortalThemeComparator;
+import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -130,6 +137,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
+    /** CMS service locator. */
+    private final ICMSServiceLocator cmsServiceLocator;
     /** Bundle factory. */
     private final IBundleFactory bundleFactory;
 
@@ -159,6 +168,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.portalAuthorizationManagerFactory = Locator.findMBean(PortalAuthorizationManagerFactory.class, "portal:service=PortalAuthorizationManagerFactory");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        // CMS service locator
+        this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Bundle factory
         IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
                 IInternationalizationService.MBEAN_NAME);
@@ -184,6 +195,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
         this.names.add("osivia.settings.elements");
+        this.names.add("osivia.session.reload.url");
     }
 
 
@@ -219,6 +231,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Fill page attributes
             this.fillPageAttributes(renderPageCommand, pageRendition, attributes);
         }
+
+        // Reload session URL
+        this.fillSessionReloadUrl(controllerContext, attributes);
     }
 
 
@@ -1036,6 +1051,35 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         }
 
         return windowSettings;
+    }
+
+
+    private void fillSessionReloadUrl(ControllerContext controllerContext, Map<String, Object> attributes) {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(controllerContext);
+        
+        // HTTP servlet request
+        HttpServletRequest servletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        // HTTP session
+        HttpSession session = servletRequest.getSession();
+        
+        // Reload session indicator
+        Boolean reload = (Boolean) session.getAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
+        if (BooleanUtils.isTrue(reload)) {
+            // URL
+            String url;
+            try {
+                url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+            } catch (CMSException e) {
+                url = null;
+            }
+
+            attributes.put("osivia.session.reload.url", url);
+        }
+        session.removeAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
     }
 
 
