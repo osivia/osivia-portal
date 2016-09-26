@@ -33,6 +33,8 @@ public enum EcmCommonCommands {
 
     unsubscribe,
 
-    eraseModifications
+    eraseModifications,
+    
+    deleteDocument
 
 }
