@@ -17,6 +17,7 @@ package org.osivia.portal.core.cms;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
@@ -545,11 +546,11 @@ public interface ICMSService {
      * Update task.
      * 
      * @param cmsContext CMS context
-     * @param path task path
+     * @param uuid UUID
      * @param actionId action identifier
      * @param variables task variables
      * @throws CMSException
      */
-    void updateTask(CMSServiceCtx cmsContext, String path, String actionId, Map<String, String> variables) throws CMSException;
+    void updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
 
 }

@@ -1,5 +1,7 @@
 package org.osivia.portal.api.tasks;
 
+import java.util.UUID;
+
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -31,5 +33,18 @@ public interface ITasksService {
      * @throws PortalException
      */
     void resetTasksCount(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get update task command URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param uuid UUID
+     * @param actionId action identifier
+     * @param redirectionUrl redirection URL
+     * @return URL
+     * @throws PortalException
+     */
+    String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException;
 
 }
