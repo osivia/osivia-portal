@@ -1,9 +1,12 @@
 package org.osivia.portal.core.tasks;
 
 import java.security.Principal;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -14,6 +17,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.PortalURLImpl;
 
 /**
  * Tasks service implementation.
@@ -119,6 +123,23 @@ public class TasksService implements ITasksService {
 
         controllerContext.removeAttribute(Scope.PRINCIPAL_SCOPE, COUNT_ATTRIBUTE);
         controllerContext.removeAttribute(Scope.PRINCIPAL_SCOPE, TIMESTAMP_ATTRIBUTE);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Command
+        ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
+
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+        
+        return portalUrl.toString();
     }
 
 

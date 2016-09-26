@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -819,14 +820,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 // Update task command
                 if (UpdateTaskCommand.ACTION.equals(action)) {
                     // Parameters
-                    String[] pathParameter = parameterMap.get(UpdateTaskCommand.PATH_PARAMETER);
+                    String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
                     String[] actionIdParameter = parameterMap.get(UpdateTaskCommand.ACTION_ID_PARAMETER);
                     String[] variablesParameter = parameterMap.get(UpdateTaskCommand.VARIABLES_PARAMETER);
                     String[] redirectionUrlParameter = parameterMap.get(UpdateTaskCommand.REDIRECTION_URL_PARAMETER);
 
-                    if (ArrayUtils.isNotEmpty(pathParameter) && ArrayUtils.isNotEmpty(actionIdParameter)) {
-                        // Path
-                        String path = URLDecoder.decode(pathParameter[0], CharEncoding.UTF_8);
+                    if (ArrayUtils.isNotEmpty(uuidParameter) && ArrayUtils.isNotEmpty(actionIdParameter)) {
+                        // UUID
+                        UUID uuid = UUID.fromString(URLDecoder.decode(uuidParameter[0], CharEncoding.UTF_8));
                         // Action identifier
                         String actionId = URLDecoder.decode(actionIdParameter[0], CharEncoding.UTF_8);
                         // Variables
@@ -853,7 +854,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             redirectionUrl = URLDecoder.decode(redirectionUrlParameter[0], CharEncoding.UTF_8);
                         }
 
-                        return new UpdateTaskCommand(path, actionId, variables, redirectionUrl);
+                        return new UpdateTaskCommand(uuid, actionId, variables, redirectionUrl);
                     }
                 }
             }

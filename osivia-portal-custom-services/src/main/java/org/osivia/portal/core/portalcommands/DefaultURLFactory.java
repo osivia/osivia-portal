@@ -640,7 +640,7 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             try {
                 asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, UpdateTaskCommand.ACTION);
 
-                asu.setParameterValue(UpdateTaskCommand.PATH_PARAMETER, URLEncoder.encode(command.getPath(), CharEncoding.UTF_8));
+                asu.setParameterValue(UpdateTaskCommand.UUID_PARAMETER, URLEncoder.encode(command.getUuid().toString(), CharEncoding.UTF_8));
                 asu.setParameterValue(UpdateTaskCommand.ACTION_ID_PARAMETER, URLEncoder.encode(command.getActionId(), CharEncoding.UTF_8));
                 if (MapUtils.isNotEmpty(command.getVariables())) {
                     List<String> variables = new ArrayList<String>(command.getVariables().size());

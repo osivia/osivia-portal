@@ -1,6 +1,7 @@
 package org.osivia.portal.core.tasks;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -31,8 +32,8 @@ public class UpdateTaskCommand extends ControllerCommand {
     /** Command action name. */
     public static final String ACTION = "updateTask";
 
-    /** Task path parameter name. */
-    public static final String PATH_PARAMETER = "path";
+    /** UUID parameter name. */
+    public static final String UUID_PARAMETER = "uuid";
     /** Action identifier parameter name. */
     public static final String ACTION_ID_PARAMETER = "actionId";
     /** Task variables parameter name. */
@@ -41,8 +42,8 @@ public class UpdateTaskCommand extends ControllerCommand {
     public static final String REDIRECTION_URL_PARAMETER = "redirectionUrl";
 
 
-    /** Task path. */
-    private final String path;
+    /** UUID. */
+    private final UUID uuid;
     /** Action identifier. */
     private final String actionId;
     /** Task variables. */
@@ -60,14 +61,14 @@ public class UpdateTaskCommand extends ControllerCommand {
     /**
      * Constructor.
      *
-     * @param path task path
+     * @param uuid UUID
      * @param actionId action identifier
      * @param variables task variables
      * @param redirectionUrl redirection URL
      */
-    public UpdateTaskCommand(String path, String actionId, Map<String, String> variables, String redirectionUrl) {
+    public UpdateTaskCommand(UUID uuid, String actionId, Map<String, String> variables, String redirectionUrl) {
         super();
-        this.path = path;
+        this.uuid = uuid;
         this.actionId = actionId;
         this.variables = variables;
         this.redirectionUrl = redirectionUrl;
@@ -112,7 +113,7 @@ public class UpdateTaskCommand extends ControllerCommand {
         ControllerResponse response;
 
         try {
-            cmsService.updateTask(cmsContext, this.path, this.actionId, this.variables);
+            cmsService.updateTask(cmsContext, this.uuid, this.actionId, this.variables);
 
             // Redirection
             if (StringUtils.isEmpty(this.redirectionUrl)) {
@@ -134,12 +135,12 @@ public class UpdateTaskCommand extends ControllerCommand {
 
 
     /**
-     * Getter for path.
+     * Getter for uuid.
      *
-     * @return the path
+     * @return the uuid
      */
-    public String getPath() {
-        return this.path;
+    public UUID getUuid() {
+        return this.uuid;
     }
 
     /**
