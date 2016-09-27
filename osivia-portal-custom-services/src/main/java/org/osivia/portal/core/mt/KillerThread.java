@@ -47,7 +47,7 @@ public class KillerThread implements Runnable {
 	}
 
 	public void notifyEndThread() {
-		logger.info("Supervisor thread notified from " + threadToSurvey);
+		//logger.info("Supervisor thread notified from " + threadToSurvey);
 		
 		threadEnded = true;
 	}
@@ -67,12 +67,14 @@ public class KillerThread implements Runnable {
 
 		try {
 			
-			logger.info("Supervisor thread launched : "+ windowName + " . " );
+	          String sStack = printStack(threadToSurvey) ;
+	            
+	     
+	         if( !sStack.contains("sun.misc.Unsafe"))  {  
+	             logger.warn("Supervisor thread launched : "+ windowName + " . " +  sStack);
+	         }
 			
-			logger.info(" Thread stack dump : " + printStack(threadToSurvey) );
-			
-			
-
+	
 			
 			// Stop the thread
 
@@ -88,12 +90,11 @@ public class KillerThread implements Runnable {
 				
 				// JSS 20120306 v1.0.8 : ajout de la stacktrace du thread qui boucle
 				
-				
-				
-				logger.error("!!! NON-ENDING THREAD WINDOW "+ windowName + " . LOGGING IT !!! " );
-				
-				
-				logger.info(" Thread stack dump : " + printStack(threadToSurvey) );						
+			     sStack = printStack(threadToSurvey) ;
+			    
+		          if( !sStack.contains("sun.misc.Unsafe"))  {  
+		              logger.error("!!! NON-ENDING THREAD WINDOW "+ windowName  + sStack);
+		          }
 
 				
 				// v.1.0.22 : suppression du kill de thread (ne marche pas sans recyclage)

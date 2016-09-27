@@ -86,6 +86,18 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 		String userId = getUserId(controllerCtx.getUser());
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId);
 
+
+
+        if (errDescriptor != null) {
+            try {
+                controllerCtx.getRequestDispatcher(getPortalCharteCtx(controlContext), "/error/errorDiv.jsp");
+            } catch (Exception e) {
+                // Request is not operationnal (timeout)
+                // Cant log
+                errDescriptor = null;
+            }
+        }
+		
 		if (errDescriptor != null) {
 			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 			boolean affichage = false;
@@ -95,6 +107,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 				ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getPortalCharteCtx(controlContext),
 						"/error/errorDiv.jsp?err=" + errId);
 
+ 				
 				if (rd != null) {
 					rd.include();
 					String markup = rd.getMarkup();
