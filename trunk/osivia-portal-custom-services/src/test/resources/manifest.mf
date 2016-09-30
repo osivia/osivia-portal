@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: ckrommenhoek
-Build-Jdk: 1.6.0_45
-Implementation-Title: OSIVIA Portal - Custom Services
-Implementation-Version: 3.2.0-SNAPSHOT
-Implementation-Vendor-Id: org.osivia.portal.core
