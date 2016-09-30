@@ -1,0 +1,29 @@
+//
+// OSIVIA Fancybox properties
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+@bottom-navbar-height: 50px;
+
+.fancybox-bottom-controls {
+    position: relative;
+    height: 100%;
+    padding-bottom: @bottom-navbar-height + 1px;
+    
+    > .container, > .container-fluid {
+        height: 100%;
+        overflow: auto;
+    }
+    
+    .navbar-default {
+        background-color: transparent;
+    }
+    
+    .navbar-fixed-bottom {
+        position: absolute;
+    }
+}

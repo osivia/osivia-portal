@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.osivia.portal.core.admin</groupId>
+        <artifactId>osivia-portal-administration-parent</artifactId>
+        <version>4.4.0-RC4</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>osivia-portal-administration</artifactId>
+    <packaging>ear</packaging>
+    <name>${name}</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                        <ejbModule>
+                            <groupId>org.jboss.seam</groupId>
+                            <artifactId>jboss-seam</artifactId>
+                            <!--
+                                <includeInApplicationXml>
+                                true
+                                </includeInApplicationXml>
+                            -->
+                            <bundleDir>/</bundleDir>
+                        </ejbModule>
+                        <jarModule>
+                            <groupId>org.jboss.portletbridge</groupId>
+                            <artifactId>portletbridge-api</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>org.jboss.portletbridge</groupId>
+                            <artifactId>portletbridge-impl</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>com.sun.facelets</groupId>
+                            <artifactId>jsf-facelets</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>org.richfaces.ui</groupId>
+                            <artifactId>richfaces-ui</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>org.richfaces.framework</groupId>
+                            <artifactId>richfaces-api</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>org.richfaces.framework</groupId>
+                            <artifactId>richfaces-impl</artifactId>
+                            <includeInApplicationXml>
+                                true
+                            </includeInApplicationXml>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <ejbModule>
+                            <groupId>
+                                org.osivia.portal.core.admin
+                            </groupId>
+                            <artifactId>osivia-portal-administration-ejb</artifactId>
+                            <bundleDir>/</bundleDir>
+                        </ejbModule>
+                        <webModule>
+                            <groupId>org.osivia.portal.core.admin</groupId>
+                            <artifactId>osivia-portal-administration-web</artifactId>
+                            <contextRoot>
+                                /osivia-portal-administration
+                            </contextRoot>
+                        </webModule>
+                    </modules>
+                    <artifactTypeMappings>
+                        <artifactTypeMapping type="jar" mapping="ejb" />
+                    </artifactTypeMappings>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <jboss>
+                        <version>4.2</version>
+                        <loader-repository>
+                            seam.jboss.org:loader=osivia-portal-administration
+                        </loader-repository>
+                    </jboss>
+                    <version>5</version>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus.org</id>
+            <name>CodeHaus Plugin Snapshots</name>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam</artifactId>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.seam</groupId>
+            <artifactId>jboss-seam-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.el</groupId>
+            <artifactId>jboss-el</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.portletbridge</groupId>
+            <artifactId>portletbridge-api</artifactId>
+            <version>${portletbridge.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.portletbridge</groupId>
+            <artifactId>portletbridge-impl</artifactId>
+            <version>${portletbridge.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces.ui</groupId>
+            <artifactId>richfaces-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces.framework</groupId>
+            <artifactId>richfaces-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.richfaces.framework</groupId>
+            <artifactId>richfaces-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.facelets</groupId>
+            <artifactId>jsf-facelets</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.el</groupId>
+            <artifactId>jboss-el</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.portal.core.admin</groupId>
+            <artifactId>osivia-portal-administration-ejb</artifactId>
+            <type>jar</type>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osivia.portal.core.admin</groupId>
+            <artifactId>osivia-portal-administration-web</artifactId>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <name>JBoss Portlet Bridge - Seam Portlet Ear</name>
+        <cargo.container>jboss4x</cargo.container>
+
+        <cargo.jvmargs>-Xms128m -Xmx512m -XX:MaxPermSize=256m</cargo.jvmargs>
+        <cargo.host>localhost</cargo.host>
+        <cargo.port>8085</cargo.port>
+        <cargo.wait>true</cargo.wait>
+
+
+        <installDir>${java.io.tmpdir}/cargo-installs</installDir>
+
+        <ear.name>admin-portlet-${project.version}</ear.name>
+
+        <remoteServer>localhost</remoteServer>
+        <remotePort>8085</remotePort>
+        <remoteUsername>admin</remoteUsername>
+        <remotePassword />
+    </properties>
+
+
+    <profiles>
+        <profile>
+            <id>deploy-osivia-modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-jar</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy file="${basedir}/target/${project.build.finalName}.ear" todir="${deploy.socle.dir}" />
+                                    </tasks>
+                                </configuration>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

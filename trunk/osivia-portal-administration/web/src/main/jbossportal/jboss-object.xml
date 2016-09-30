@@ -1,0 +1,34 @@
+<deployments>
+   <deployment>
+      <parent-ref>admin</parent-ref>
+      <if-exists>overwrite</if-exists>
+      <page>
+         <page-name>osivia-admin</page-name>
+         <display-name xml:lang="en">OSIVIA Portal</display-name>
+
+         <supported-locale>fr</supported-locale>
+         <supported-locale>en</supported-locale>
+         <supported-locale>it</supported-locale>
+         <supported-locale>pt_BR</supported-locale>
+
+        <window>
+            <window-name>osivia-portal-administration-windows</window-name>
+            <instance-ref>osivia-portal-administration-portletInstance</instance-ref>
+            <region>center</region>
+            <height>0</height>
+            <properties>
+               <property>
+                  <name>theme.renderSetId</name>
+                  <value>emptyRenderer</value>
+               </property>
+            </properties>
+         </window>
+         <properties>
+            <property>
+               <name>layout.id</name>
+               <value>1column</value>
+            </property>
+         </properties>
+      </page>
+   </deployment>
+</deployments>

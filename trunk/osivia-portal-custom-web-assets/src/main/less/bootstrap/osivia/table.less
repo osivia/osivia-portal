@@ -1,0 +1,77 @@
+//
+// OSIVIA Bootstrap extensions - Table
+// --------------------------------------------------
+
+
+.table {
+    .table-row {
+        padding: @table-cell-padding;
+        
+        border-bottom-style: solid;
+        border-width: 1px;
+        border-color: @table-border-color;
+        
+        &.table-header {
+            border-width: 2px;
+            
+            font-weight: bold;
+            
+            a {
+                color: @text-color;
+                
+                &:hover, &:focus {
+                    color: darken(@text-color, 15%);
+                }
+            }
+        }
+        
+        &.muted {
+            color: @accessible-gray-light;
+            background-color: #fcfcfc;
+        }
+        
+        fieldset[disabled] {
+            opacity: 0.3;
+        }
+    }
+    
+    .row {
+        margin-left: -@table-cell-padding;
+        margin-right: -@table-cell-padding;
+        
+        [class*="col-"] {
+            padding-left: @table-cell-padding;
+            padding-right: @table-cell-padding;
+        }
+        
+        [class*="visible-"] {
+            margin-bottom: @padding-base-vertical;
+        }
+    }
+    
+    
+    &.table-striped {
+        .table-row:not(.table-header) {
+            &:nth-child(odd) {
+                background-color: @table-bg-accent;
+            }
+        }
+    }
+    
+    
+    &.table-hover {
+        .table-row:not(.table-header) {
+            &:hover {
+                background-color: @table-bg-hover;
+            }
+        }
+    }
+    
+    
+    @media screen and (min-width: @screen-sm-min) {
+        .table-body-wrapper {
+            max-height: 5 * (@input-height-base + 2 * @table-cell-padding);
+            overflow: auto;
+        }
+    }
+}

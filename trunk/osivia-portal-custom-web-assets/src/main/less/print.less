@@ -1,0 +1,36 @@
+//
+// OSIVIA Portal - Print properties
+// --------------------------------------------------
+
+
+// Bootstrap
+@import "bootstrap/bootstrap.less";
+
+
+@page {
+    size: auto;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+body {
+    margin: 0;
+    width: 100%;
+}
+
+
+.hidden-print {
+    .hidden;
+}
+
+
+@media print {
+    a[href*="/portal/"]::after {
+        content: none;
+    }
+    
+    a[href*="/toutatice-portail-cms-nuxeo/binary"]::after {
+        content: none;
+    }
+}
