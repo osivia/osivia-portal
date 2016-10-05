@@ -261,6 +261,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             try {
                 Map<String, String> properties = new HashMap<String, String>();
                 properties.put("osivia.hideTitle", "1");
+                properties.put("osivia.title", bundle.getString(InternationalizationConstants.KEY_MY_PROFILE));
 
                 Map<String, String> parameters = new HashMap<String, String>();
 
