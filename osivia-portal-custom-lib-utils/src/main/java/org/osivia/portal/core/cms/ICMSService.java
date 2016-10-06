@@ -553,4 +553,13 @@ public interface ICMSService {
      */
     void updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
 
+
+    /**
+     * Reload CMS session.
+     * 
+     * @param cmsContext CMS context
+     * @throws CMSException
+     */
+    void reloadSession(CMSServiceCtx cmsContext) throws CMSException;
+
 }
