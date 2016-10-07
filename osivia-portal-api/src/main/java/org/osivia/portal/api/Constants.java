@@ -197,6 +197,10 @@ public final class Constants {
     /** The scope of the request. */
     public static final String WINDOW_PROP_SCOPE = "osivia.cms.scope";
 
+    // SESSION
+
+    /** Reload session attribute name. */
+    public static final String SESSION_RELOAD_ATTRIBUTE = "osivia.session.reload";
 
 
     /**
