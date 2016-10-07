@@ -91,7 +91,7 @@ public class PageMarkerUtils {
     }
 
     public static void dumpPageState(ControllerContext controllerCtx, Page page, String label) {
-        if (!windowlogger.isDebugEnabled() && (page == null)) {
+        if (!windowlogger.isDebugEnabled() || (page == null)) {
             return;
         }
 
