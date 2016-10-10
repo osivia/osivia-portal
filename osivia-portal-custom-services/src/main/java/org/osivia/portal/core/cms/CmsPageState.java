@@ -256,7 +256,7 @@ public class CmsPageState {
                                                 // Taskbar items
                                                 TaskbarItems items = this.taskbarService.getItems(portalControllerContext);
                                                 // Taskbar item identifier
-                                                String id = StringUtils.upperCase(StringUtils.substringAfter(cmsItemNav.getWebId(), "_"));
+                                                String id = StringUtils.upperCase(StringUtils.substringAfterLast(cmsItemNav.getWebId(), "_"));
                                                 // Taskbar item
                                                 TaskbarItem item = items.get(id);
                                                 if (item != null) {
