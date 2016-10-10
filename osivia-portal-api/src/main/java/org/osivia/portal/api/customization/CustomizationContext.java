@@ -61,16 +61,6 @@ public class CustomizationContext {
 
     /**
      * Constructor.
-     *
-     * @param attributes customization attributes
-     * @param portalControllerContext portal controller context
-     */
-    public CustomizationContext(Map<String, Object> attributes, PortalControllerContext portalControllerContext) {
-        this(attributes, portalControllerContext, null);
-    }
-
-    /**
-     * Constructor.
      * 
      * @param attributes customization attributes
      * @param locale locale

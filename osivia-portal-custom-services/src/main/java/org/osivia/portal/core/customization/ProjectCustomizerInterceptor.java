@@ -1,6 +1,7 @@
 package org.osivia.portal.core.customization;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +51,8 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             ControllerContext controllerContext = renderPageCommand.getControllerContext();
             // Portal controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+            // Locale
+            Locale locale = portalControllerContext.getHttpServletRequest().getLocale();
 
             // Project customization configuration
             ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, renderPageCommand);
@@ -59,7 +62,7 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
             Map<String, Object> customizerAttributes = new HashMap<String, Object>();
             customizerAttributes.put(IProjectCustomizationConfiguration.CUSTOMIZER_ATTRIBUTE_CONFIGURATION, configuration);
             // Customizer context
-            CustomizationContext context = new CustomizationContext(customizerAttributes, portalControllerContext);
+            CustomizationContext context = new CustomizationContext(customizerAttributes, portalControllerContext, locale);
 
 
             // Customization call #1
