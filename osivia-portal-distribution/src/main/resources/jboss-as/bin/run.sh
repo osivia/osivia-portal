@@ -77,8 +77,8 @@ case "`uname`" in
 esac
 
 #Read custom portal configuration if exists
-if [  -r "/home/portal/run.conf" ]; then
-    RUN_CONF="/home/portal/run.conf"
+if [  -r "$HOME/run.conf" ]; then
+    RUN_CONF="$HOME/run.conf"
 fi
 
 
