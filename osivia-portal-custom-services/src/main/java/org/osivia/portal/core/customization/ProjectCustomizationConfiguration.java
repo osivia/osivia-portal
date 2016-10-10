@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.theme.PortalTheme;
@@ -38,12 +37,10 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     private final ICMSServiceLocator cmsServiceLocator;
     /** Portal controller context. */
     private final PortalControllerContext portalControllerContext;
-    /** Render page command. */
-    private final RenderPageCommand renderPageCommand;
+    /** Controller context. */
+    private final ControllerContext controllerContext;
     /** Page. */
     private final Page page;
-    /** HTTP servlet request. */
-    private final HttpServletRequest httpServletRequest;
     /** Administrator indicator. */
     private final boolean administrator;
 
@@ -57,18 +54,15 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * Constructor.
      *
      * @param portalControllerContext portal controller context
-     * @param renderPageCommand render page command
+     * @param page page
      */
-    public ProjectCustomizationConfiguration(PortalControllerContext portalControllerContext, RenderPageCommand renderPageCommand) {
+    public ProjectCustomizationConfiguration(PortalControllerContext portalControllerContext, Page page) {
         super();
         this.portalControllerContext = portalControllerContext;
-        this.renderPageCommand = renderPageCommand;
-        this.page = renderPageCommand.getPage();
+        this.page = page;
 
         // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-        // HTTP client request
-        this.httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        this.controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
@@ -90,31 +84,36 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * {@inheritDoc}
      */
     public String getWebId() {
-        String result = null;
+        // WebId
+        String webId;
 
-        // Current CMS base path
-        String basePath = this.page.getProperty("osivia.cms.basePath");
-        // Current publication path
-        String publicationPath = this.getPublicationPath();
+        if (this.page == null) {
+            webId = null;
+        } else {
+            // Current CMS base path
+            String basePath = this.page.getProperty("osivia.cms.basePath");
+            // Current publication path
+            String publicationPath = this.getPublicationPath();
 
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setPortalControllerContext(this.portalControllerContext);
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(this.portalControllerContext);
 
-        try {
-            CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
-            if (cmsItem != null) {
-                String webId = cmsItem.getWebId();
-
-                result = webId;
+            try {
+                CMSItem cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, publicationPath);
+                if (cmsItem == null) {
+                    webId = null;
+                } else {
+                    webId = cmsItem.getWebId();
+                }
+            } catch (CMSException e) {
+                webId = null;
             }
-        } catch (CMSException e) {
-            // Do nothing
         }
 
-        return result;
+        return webId;
     }
 
 
@@ -124,22 +123,31 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * @return publication path
      */
     private String getPublicationPath() {
-        // Controller context
-        ControllerContext controllerContext = (ControllerContext) this.portalControllerContext.getControllerCtx();
-        // State context
-        NavigationalStateContext stateContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-        // Current page state
-        PageNavigationalState pageState = stateContext.getPageNavigationalState(this.page.getId().toString());
+        // Publication path
+        String publicationPath;
 
-        String[] sPath = null;
-        if (pageState != null) {
-            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+        if (this.page == null) {
+            publicationPath = null;
+        } else {
+            // State context
+            NavigationalStateContext stateContext = (NavigationalStateContext) this.controllerContext
+                    .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            // Current page state
+            PageNavigationalState pageState = stateContext.getPageNavigationalState(this.page.getId().toString());
+
+            String[] sPath = null;
+            if (pageState != null) {
+                sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+            }
+
+            if (ArrayUtils.isEmpty(sPath)) {
+                publicationPath = null;
+            } else {
+                publicationPath = sPath[0];
+            }
         }
 
-        String publicationPath = null;
-        if (ArrayUtils.isNotEmpty(sPath)) {
-            publicationPath = sPath[0];
-        }
+
         return publicationPath;
     }
 
@@ -164,7 +172,7 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * {@inheritDoc}
      */
     public HttpServletRequest getHttpServletRequest() {
-        return this.httpServletRequest;
+        return this.controllerContext.getServerInvocation().getServerContext().getClientRequest();
     }
 
 
@@ -172,10 +180,19 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      * {@inheritDoc}
      */
     public String getThemeName() {
-        ThemeService themeService = this.renderPageCommand.getControllerContext().getController().getPageService().getThemeService();
-        String themeId = this.page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
-        PortalTheme theme = themeService.getThemeById(themeId);
-        return theme.getThemeInfo().getName();
+        // Theme name
+        String themeName;
+
+        if (this.page == null) {
+            themeName = null;
+        } else {
+            ThemeService themeService = this.controllerContext.getController().getPageService().getThemeService();
+            String themeId = this.page.getProperty(ThemeConstants.PORTAL_PROP_THEME);
+            PortalTheme theme = themeService.getThemeById(themeId);
+            themeName = theme.getThemeInfo().getName();
+        }
+
+        return themeName;
     }
 
 

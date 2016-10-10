@@ -110,10 +110,6 @@ public class ProjectCustomizationConfigurationTest {
         EasyMock.expect(pageMock.getProperty("osivia.cms.basePath")).andReturn(path).anyTimes();
         EasyMock.replay(pageMock);
 
-        // Render page command
-        RenderPageCommand renderPageCommandMock = PowerMock.createNiceMock(RenderPageCommand.class);
-        EasyMock.expect(renderPageCommandMock.getPage()).andStubReturn(pageMock);
-
         // Page customizer interceptor
         PowerMock.mockStaticNice(PageCustomizerInterceptor.class);
 
@@ -122,7 +118,7 @@ public class ProjectCustomizationConfigurationTest {
 
 
         // Object under test
-        this.configuration = new ProjectCustomizationConfiguration(this.portalControllerContextMock, renderPageCommandMock);
+        this.configuration = new ProjectCustomizationConfiguration(this.portalControllerContextMock, pageMock);
     }
 
 

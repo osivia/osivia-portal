@@ -11,10 +11,12 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
+import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
+import org.osivia.portal.core.tasks.UpdateTaskCommand;
 
 /**
  * Project customizer interceptor.
@@ -44,18 +46,26 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
         // Response
         ControllerResponse response = null;
 
-        if (controllerCommand instanceof RenderPageCommand) {
-            // Render page command
-            RenderPageCommand renderPageCommand = (RenderPageCommand) controllerCommand;
+        if ((controllerCommand instanceof RenderPageCommand) || (controllerCommand instanceof UpdateTaskCommand)) {
             // Controller context
-            ControllerContext controllerContext = renderPageCommand.getControllerContext();
+            ControllerContext controllerContext = controllerCommand.getControllerContext();
             // Portal controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
             // Locale
             Locale locale = portalControllerContext.getHttpServletRequest().getLocale();
 
+            // Page
+            Page page;
+
+            if (controllerCommand instanceof RenderPageCommand) {
+                RenderPageCommand renderPageCommand = (RenderPageCommand) controllerCommand;
+                page = renderPageCommand.getPage();
+            } else {
+                page = null;
+            }
+
             // Project customization configuration
-            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, renderPageCommand);
+            ProjectCustomizationConfiguration configuration = new ProjectCustomizationConfiguration(portalControllerContext, page);
             configuration.setBeforeInvocation(true);
 
             // Customizer attributes
