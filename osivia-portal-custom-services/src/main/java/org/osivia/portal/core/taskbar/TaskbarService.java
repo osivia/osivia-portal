@@ -40,6 +40,10 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
  */
 public class TaskbarService implements ITaskbarService {
 
+    /** Taskbar active task identifier attribute name. */
+    private static final String ACTIVE_ID_ATTRIBUTE = "osivia.taskbar.active.id";
+
+
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
 
@@ -136,75 +140,88 @@ public class TaskbarService implements ITaskbarService {
     public String getActiveId(PortalControllerContext portalControllerContext) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-        // Request
-        PortletRequest request = portalControllerContext.getRequest();
 
-        // Active task identifier
-        String activeId = null;
+        // Get active task identifier in request scope
+        String activeId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, ACTIVE_ID_ATTRIBUTE);
 
-        // Page
-        Page page = (Page) controllerContext.getAttribute(Scope.REQUEST_SCOPE, IPanelsService.PAGE_REQUEST_ATTRIBUTE);
-        if (page == null) {
-            page = PortalObjectUtils.getPage(controllerContext);
-        }
-        if (page != null) {
-            // Maximized window
-            Window maximizedWindow = PortalObjectUtils.getMaximizedWindow(controllerContext, page);
+        if (activeId == null) {
+            // Request
+            PortletRequest request = portalControllerContext.getRequest();
 
-            if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
-                activeId = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
-                if (activeId == null) {
-                    // Breadcrumb
-                    Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
-                    List<BreadcrumbItem> breadcrumbItems = breadcrumb.getChildren();
-                    if (CollectionUtils.isNotEmpty(breadcrumbItems)) {
-                        for (int i = breadcrumbItems.size() - 1; i >= 0; i--) {
-                            BreadcrumbItem breadcrumbItem = breadcrumbItems.get(i);
-                            activeId = breadcrumbItem.getTaskId();
+            // Page
+            Page page = (Page) controllerContext.getAttribute(Scope.REQUEST_SCOPE, IPanelsService.PAGE_REQUEST_ATTRIBUTE);
+            if (page == null) {
+                page = PortalObjectUtils.getPage(controllerContext);
+            }
+            if (page != null) {
+                // Maximized window
+                Window maximizedWindow = PortalObjectUtils.getMaximizedWindow(controllerContext, page);
 
-                            if (activeId != null) {
+                if ((maximizedWindow != null) && !"1".equals(maximizedWindow.getDeclaredProperty("osivia.cms.contextualization"))) {
+                    activeId = maximizedWindow.getDeclaredProperty(ITaskbarService.TASK_ID_WINDOW_PROPERTY);
+                    if (activeId == null) {
+                        // Breadcrumb
+                        Breadcrumb breadcrumb = (Breadcrumb) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "breadcrumb");
+                        List<BreadcrumbItem> breadcrumbItems = breadcrumb.getChildren();
+                        if (CollectionUtils.isNotEmpty(breadcrumbItems)) {
+                            for (int i = breadcrumbItems.size() - 1; i >= 0; i--) {
+                                BreadcrumbItem breadcrumbItem = breadcrumbItems.get(i);
+                                activeId = breadcrumbItem.getTaskId();
+
+                                if (activeId != null) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Base path
+                    String basePath = page.getProperty("osivia.cms.basePath");
+                    // Content path
+                    String contentPath;
+                    if (request != null) {
+                        contentPath = request.getParameter("osivia.cms.contentPath");
+                    } else {
+                        contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+                    }
+                    // Navigation path
+                    String navigationPath;
+                    if (request != null) {
+                        navigationPath = request.getParameter("osivia.cms.path");
+                    } else {
+                        navigationPath = PagePathUtils.getNavigationPath(controllerContext, page.getId());
+                    }
+                    // Task path
+                    String taskPath;
+                    if (StringUtils.startsWith(contentPath, basePath)) {
+                        taskPath = contentPath;
+                    } else {
+                        // Virtual navigation path
+                        taskPath = navigationPath;
+                    }
+
+                    if (StringUtils.equals(taskPath, basePath)) {
+                        activeId = ITaskbarService.HOME_TASK_ID;
+                    } else {
+                        // Protected task path
+                        String protectedTaskPath = taskPath + "/";
+
+                        // Navigation tasks
+                        List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
+
+                        for (TaskbarTask navigationTask : navigationTasks) {
+                            String protectedPath = navigationTask.getPath() + "/";
+                            if (StringUtils.startsWith(protectedTaskPath, protectedPath)) {
+                                activeId = navigationTask.getId();
                                 break;
                             }
                         }
                     }
                 }
-            } else {
-                // Base path
-                String basePath = page.getProperty("osivia.cms.basePath");
-                // Content path
-//                String contentPath;
-//                if (request != null) {
-//                    contentPath = request.getParameter("osivia.cms.contentPath");
-//                } else {
-//                    contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
-//                }
-                
-                String navigationPath;
-                
-                if (request != null) {
-                    navigationPath = request.getParameter("osivia.cms.path");
-                } else {
-                    navigationPath = PagePathUtils.getNavigationPath(controllerContext, page.getId());
-                }
-
-                if (StringUtils.equals(navigationPath, basePath)) {
-                    activeId = ITaskbarService.HOME_TASK_ID;
-                } else {
-                    // Protected content path
-                    String protectedContentPath = navigationPath + "/";
-
-                    // Navigation tasks
-                    List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
-
-                    for (TaskbarTask navigationTask : navigationTasks) {
-                        String protectedPath = navigationTask.getPath() + "/";
-                        if (StringUtils.startsWith(protectedContentPath, protectedPath)) {
-                            activeId = navigationTask.getId();
-                            break;
-                        }
-                    }
-                }
             }
+
+            // Save active task identifier in request scope
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, ACTIVE_ID_ATTRIBUTE, activeId);
         }
 
         return activeId;
