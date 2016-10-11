@@ -14,8 +14,9 @@
  */
 package org.osivia.portal.core.page;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -28,7 +29,6 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
-import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
@@ -127,8 +127,8 @@ public class RefreshPageCommand extends ControllerCommand {
 
         // HTTP servlet request
         HttpServletRequest servletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
-        // HTTP session
-        HttpSession session = servletRequest.getSession();
+        // Locale
+        Locale locale = servletRequest.getLocale();
 
         // Page identifier
         PortalObjectId poid = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
@@ -144,13 +144,12 @@ public class RefreshPageCommand extends ControllerCommand {
         if (StringUtils.isNotBlank(ecmActionReturn)) {
             String newDocLiveUrl = null;
             if (this.getNewDocId() != null) {
-                newDocLiveUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, this.newDocId, null, null,
-                        InternalConstants.FANCYBOX_LIVE_CALLBACK, null, null, null, null);
+                newDocLiveUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, this.newDocId, null, null, InternalConstants.FANCYBOX_LIVE_CALLBACK,
+                        null, null, null, null);
             }
 
             // Notification
-            String notification = this.itlzService.getString(ecmActionReturn, servletRequest.getLocale(),
-                    newDocLiveUrl);
+            String notification = this.itlzService.getString(ecmActionReturn, locale, newDocLiveUrl);
             this.notifService.addSimpleNotification(portalControllerContext, notification, NotificationsType.SUCCESS);
         }
 
@@ -161,7 +160,6 @@ public class RefreshPageCommand extends ControllerCommand {
         } catch (CMSException e) {
             throw new ControllerException(e);
         }
-        session.setAttribute(Constants.SESSION_RELOAD_ATTRIBUTE, true);
 
         return new UpdatePageResponse(page.getId());
     }

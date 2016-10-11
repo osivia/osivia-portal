@@ -46,7 +46,6 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.Constants;
-import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
@@ -58,7 +57,6 @@ import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.trace.ITraceServiceLocator;
 import org.osivia.portal.api.trace.Trace;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
-import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
@@ -180,7 +178,7 @@ public class CmsCommand extends DynamicCommand {
     }
 
 
-    public static ICMSService getCMSService() throws Exception {
+    public static ICMSService getCMSService() {
         if (cmsServiceLocator == null) {
             cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
         }
@@ -523,9 +521,7 @@ public class CmsCommand extends DynamicCommand {
             }
 
             // Decode webid paths if given
-            boolean hasWebId = false;
             if (this.cmsPath.startsWith(IWebIdService.CMS_PATH_PREFIX)) {
-                hasWebId = true;
                 this.cmsPath = this.getWebIdService().cmsPathToFetchPath(this.cmsPath);
             }
 
@@ -561,17 +557,8 @@ public class CmsCommand extends DynamicCommand {
             // Lecture des informations de publication
             if (this.cmsPath != null) {
                 try {
-                    // Attention, cet appel peut modifier si nécessaire le
-                    // scope de cmsReadItemContext
-
-                    // Content may have change ( for example, Content with webid may have been moved,)
-                    // In any case we recheck the main content of the page
-                    // No extra-cost because getPublicationInfos is optimized for performance
-                    boolean forceReload = cmsReadItemContext.isForceReload();
-                    
-                    cmsReadItemContext.setForceReload(true);
-                    pubInfos = getCMSService().getPublicationInfos(cmsReadItemContext, this.cmsPath.toString());
-                    cmsReadItemContext.setForceReload(forceReload);
+                    // Publication infos
+                    pubInfos = getPublicationInfos(cmsReadItemContext, false);
 
                     // Le path eventuellement en ID a été retranscrit en chemin
                     this.cmsPath = pubInfos.getDocumentPath();
@@ -1095,6 +1082,49 @@ public class CmsCommand extends DynamicCommand {
         } catch (Exception e) {
             throw new ControllerException(e);
         }
+    }
+
+
+    /**
+     * Get publication infos.
+     * 
+     * @param cmsContext CMS context
+     * @param retry retry indicator
+     * @return publication infos
+     * @throws CMSException
+     */
+    private CMSPublicationInfos getPublicationInfos(CMSServiceCtx cmsContext, boolean retry) throws CMSException {
+        // CMS service
+        ICMSService cmsService = getCMSService();
+
+        // Saved force reload indicator
+        boolean forceReload = cmsContext.isForceReload();
+
+        // Publication infos
+        CMSPublicationInfos publicationInfos;
+
+        try {
+            // Content may have change ( for example, Content with webid may have been moved,)
+            // In any case we recheck the main content of the page
+            // No extra-cost because getPublicationInfos is optimized for performance
+            cmsContext.setForceReload(true);
+
+            publicationInfos = cmsService.getPublicationInfos(cmsContext, this.cmsPath);
+        } catch (CMSException e) {
+            if (!retry && (e.getErrorCode() == CMSException.ERROR_FORBIDDEN)) {
+                // Reload session
+                cmsService.reloadSession(cmsContext);
+
+                // Retry
+                publicationInfos = getPublicationInfos(cmsContext, true);
+            } else {
+                throw e;
+            }
+        } finally {
+            cmsContext.setForceReload(forceReload);
+        }
+
+        return publicationInfos;
     }
 
 
