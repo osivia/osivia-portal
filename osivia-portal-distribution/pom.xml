@@ -17,6 +17,7 @@
         <!-- Spring framework -->
         <org.springframework.ldap.version>2.1.0.RELEASE</org.springframework.ldap.version>
         <org.springframework.data.version>1.12.1.RELEASE</org.springframework.data.version>
+        <commons-pool>1.6</commons-pool>
     </properties>
 
 
@@ -117,6 +118,11 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<version>${commons-pool}</version>
         </dependency>
 
         <!-- Spring framework -->
