@@ -9,6 +9,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
 import org.dom4j.io.HTMLWriter;
+import org.dom4j.io.OutputFormat;
 
 /**
  * Utility class with null-safe methods for DOM4J usage.
@@ -261,13 +262,31 @@ public final class DOM4JUtils {
             StringWriter stringWriter = new StringWriter();
             HTMLWriter htmlWriter = new HTMLWriter(stringWriter);
             htmlWriter.setEscapeText(false);
-            try {
-                htmlWriter.write(element);
-                html = stringWriter.toString();
-            } finally {
-                stringWriter.close();
-                htmlWriter.close();
-            }
+            htmlWriter.write(element);
+            htmlWriter.flush();
+            html = stringWriter.toString();
+        } catch (IOException e) {
+            html = StringUtils.EMPTY;
+        }
+        return html;
+    }
+
+
+    /**
+     * Write compact HTML content.
+     *
+     * @param element element
+     * @return HTML content
+     */
+    public static String writeCompact(Element element) {
+        String html;
+        try {
+            StringWriter stringWriter = new StringWriter();
+            HTMLWriter htmlWriter = new HTMLWriter(stringWriter, OutputFormat.createCompactFormat());
+            htmlWriter.setEscapeText(false);
+            htmlWriter.write(element);
+            htmlWriter.flush();
+            html = stringWriter.toString();
         } catch (IOException e) {
             html = StringUtils.EMPTY;
         }

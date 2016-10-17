@@ -23,7 +23,6 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.core.tracker.RequestContextUtil;
 
 /**
  * CMS service context.
@@ -56,24 +55,6 @@ public class CMSServiceCtx {
      */
     public CMSServiceCtx() {
         super();
-    }
-
-
-    /**
-     * Get decontextualized CMS context.
-     * SHOULD NOT BE USED IN MOST CASES.
-     * 
-     * @return CMS context
-     */
-    public static CMSServiceCtx getDecontextualizedContext() {
-        // Controller context
-        ControllerContext controllerContext = RequestContextUtil.getControllerContext();
-
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setControllerContext(controllerContext);
-
-        return cmsContext;
     }
 
 
