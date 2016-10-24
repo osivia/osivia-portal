@@ -88,6 +88,8 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
@@ -107,7 +109,6 @@ import org.osivia.portal.core.portalobjects.DynamicWindow;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
-import org.osivia.portal.core.web.IWebIdService;
 
 
 /**
@@ -142,12 +143,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     private transient IProfilerService profiler;
     /** CMS service locator. */
     private static ICMSServiceLocator cmsServiceLocator;
-    /** WebId service. */
-    private IWebIdService webIdService;
+    /** Taskbar service. */
+    private ITaskbarService taskbarService;
 
 
     /**
-     * Default constructor.
+     * Constructor.
      */
     public PageCustomizerInterceptor() {
         super();
@@ -355,6 +356,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse invoke(ControllerCommand cmd) throws Exception {
+        // Controller context
+        ControllerContext controllerContext = cmd.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
 
         // v1.0.16 : lock during import
         if (isImportRunning == true) {
@@ -401,7 +407,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     if (basePath != null) {
                         CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
-                        cmsReadItemContext.setControllerContext(cmd.getControllerContext());
+                        cmsReadItemContext.setControllerContext(controllerContext);
 
                         CMSItem spaceConfig = getCMSService().getSpaceConfig(cmsReadItemContext, basePath);
 
@@ -441,7 +447,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 if( "1".equals(disablePageMarker)){
 
-                    HttpServletRequest request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+                    HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
                      if (request.getUserPrincipal() == null) {
                           PageProperties.getProperties().getPagePropertiesMap().put("osivia.portal.disablePageMarker", "1");
@@ -465,7 +471,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Only concerns player window
             if ("CMSPlayerWindow".equals(window.getName()) &&  "1".equals( window.getProperties().get("osivia.cms.contextualization"))) {
-                if (PageProperties.getProperties().isRefreshingPage() || "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
+                if (PageProperties.getProperties().isRefreshingPage()
+                        || "1".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.changeContributionMode"))) {
 
                     // original window path
                     String cmsPath = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
@@ -473,7 +480,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                     CMSServiceCtx cmsReadItemContext = new CMSServiceCtx();
-                    cmsReadItemContext.setControllerContext(cmd.getControllerContext());
+                    cmsReadItemContext.setControllerContext(controllerContext);
 
 
 
@@ -481,7 +488,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                     // Force live version in EDITION mode
-                    EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), window.getId());
+                    EditionState state = ContributionService.getWindowEditionState(controllerContext, window.getId());
                     if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
                         cmsPath = state.getDocPath();
                         forcedLivePath = state.getDocPath();
@@ -499,7 +506,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSItem cmsItem = getCMSService().getContent(cmsReadItemContext, cmsPath);
 
                     CMSServiceCtx handlerCtx = new CMSServiceCtx();
-                    handlerCtx.setControllerContext(cmd.getControllerContext());
+                    handlerCtx.setControllerContext(controllerContext);
                     handlerCtx.setDoc(cmsItem.getNativeItem());
 
 
@@ -536,16 +543,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
         // v2.0.22-RC6 Force to reload resources
-        if ((cmd instanceof RenderPageCommand) || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType())))    {
+        if ((cmd instanceof RenderPageCommand) || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == controllerContext.getType()))) {
 
             //if window is closing, refresh information must be preserved for next output
 
-            if (!"1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+            if (!"1".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
 
-                if( "true".equals(  cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))){
+                if ("true".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents"))) {
                     PageProperties.getProperties().setRefreshingPage(true);
 
-                    cmd.getControllerContext().removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
+                    controllerContext.removeAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents");
                 }
 
              }
@@ -557,7 +564,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
-            ControllerContext controllerCtx = cmd.getControllerContext();
+
             HttpServletRequest request = rpc.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
 
 			// Set page properties into request
@@ -566,18 +573,18 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             /* Controle du host */
             String host = portal.getDeclaredProperty("osivia.site.hostName");
-            String reqHost = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getServerName();
+            String reqHost = controllerContext.getServerInvocation().getServerContext().getClientRequest().getServerName();
 
             if ((host != null) && !reqHost.equals(host)) {
                 ViewPageCommand viewCmd = new ViewPageCommand(((RenderPageCommand) cmd).getPage().getId());
-                String url = new PortalURLImpl(viewCmd, cmd.getControllerContext(), null, null).toString();
+                String url = new PortalURLImpl(viewCmd, controllerContext, null, null).toString();
                 url = url.replaceFirst(reqHost, host);
                 url += "?init-state=true";
                 return new RedirectionResponse(url.toString());
             }
 
 
-            controlDefaultPageCache(this.portalObjectContainer, cmd, controllerCtx);
+            controlDefaultPageCache(this.portalObjectContainer, cmd, controllerContext);
 
 
             if (rpc.getPage().getName().startsWith("exception")) {
@@ -585,17 +592,17 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
             if ("true".equals(request.getParameter("init-cache"))) {
-                if(isAdministrator(controllerCtx)) {
+                if (isAdministrator(controllerContext)) {
                     this.servicesCacheService.initPortalParameters();
                 }
             }
 
 
-            controllerCtx.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, rpc.getPage().getId());
+            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, rpc.getPage().getId());
 
 
             // Force la valorisation dans le contexte
-           isAdministrator(controllerCtx);
+            isAdministrator(controllerContext);
 
 
 
@@ -611,15 +618,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, cmsWindow.getId());
 
-                WindowNavigationalState windowNavState = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
+                WindowNavigationalState windowNavState = (WindowNavigationalState) controllerContext.getAttribute(
                         ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
                 // On regarde si la fenêtre est en vue MAXIMIZED
                 if ((windowNavState != null) && WindowState.MAXIMIZED.equals(windowNavState.getWindowState())) {
 
-                    EditionState state = ContributionService.getWindowEditionState(cmd.getControllerContext(), cmsWindow.getId());
+                    EditionState state = ContributionService.getWindowEditionState(controllerContext, cmsWindow.getId());
 
                     if( (state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode()) ) {
-                       controllerCtx.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT,  state.getDocPath());
+                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LIVE_DOCUMENT, state.getDocPath());
                     }
                 }
             }
@@ -636,17 +643,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         if (cmd instanceof CmsCommand) {
             // Permet de savoir si on est déjà dans le cas d'une CMSCommand qui appelle une RenderPageCommand
-            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "cmsCommand", "1");
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "cmsCommand", "1");
         }
 
 
         Boolean maximized = null;
         if ((cmd instanceof RenderPageCommand)
-                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
+                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == controllerContext.getType()))) {
             PageCommand pageCommand = (PageCommand) cmd;
             Page page = pageCommand.getPage();
-
-            ControllerContext controllerContext = cmd.getControllerContext();
 
             maximized = false;
             for (PortalObject portalObject : page.getChildren(PortalObject.WINDOW_MASK)) {
@@ -676,12 +681,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         String pathPublication = null;
 
         if ((cmd instanceof RenderPageCommand)
-                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
+                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == controllerContext.getType()))) {
 
             boolean onlinePage = true;
 
-
-            ControllerContext controllerCtx = cmd.getControllerContext();
 
             Page page = null;
 
@@ -694,18 +697,18 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // Online mode indicator
 
-            pathPublication = PagePathUtils.getNavigationPath(controllerCtx, page.getId());
+            pathPublication = PagePathUtils.getNavigationPath(controllerContext, page.getId());
 
             if ((pathPublication != null) && !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
                 if (PortalObjectUtils.isSpaceSite(page)) {
-                    onlinePage = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerCtx, page.getId()));
+                    onlinePage = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId()));
                 } else {
-                    NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx
+                    NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
                             .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                     PageNavigationalState ns = nsContext.getPageNavigationalState(page.getId().getPath().toString());
                     if (ns != null) {
-                        EditionState editionState = ContributionService.getNavigationalState(controllerCtx, ns);
+                        EditionState editionState = ContributionService.getNavigationalState(controllerContext, ns);
                         onlinePage = (editionState == null) || EditionState.CONTRIBUTION_MODE_ONLINE.equals(editionState.getContributionMode()) || (!pathPublication.equals(editionState.getDocPath()));
                     } else {
                         onlinePage = true;
@@ -714,16 +717,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode", onlinePage ? Boolean.FALSE : Boolean.TRUE);
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode", onlinePage ? Boolean.FALSE : Boolean.TRUE);
        }
 
 
         /* Redirection si page display mode */
 
         if (cmd instanceof RenderPageCommand) {
-
             RenderPageCommand rpc = (RenderPageCommand) cmd;
-            ControllerContext controllerCtx = cmd.getControllerContext();
 
             Page page = rpc.getPage();
 
@@ -731,16 +732,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 // On est déja dans une cmscommand, auquel cas l'affichage est bon
 
-                if (!"1".equals(cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "cmsCommand"))) {
+                if (!"1".equals(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "cmsCommand"))) {
 
                     String navigationScope = page.getProperty("osivia.cms.navigationScope");
                     String basePath = page.getProperty("osivia.cms.basePath");
 
                     CMSServiceCtx cmxCtx = new CMSServiceCtx();
-                    cmxCtx.setControllerContext(controllerCtx);
+                    cmxCtx.setControllerContext(controllerContext);
                     cmxCtx.setScope(navigationScope);
 
-                    Boolean pageInEditionMode =  (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                    Boolean pageInEditionMode = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
 
                     if( BooleanUtils.isTrue(pageInEditionMode)) {
                         cmxCtx.setDisplayLiveVersion("1");
@@ -755,14 +756,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     if ( !basePath.equals(pathPublication) && ((navItem == null) || !"1".equals(navItem.getProperties().get("pageDisplayMode")))) {
 
-                        CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(cmd.getControllerContext(), rpc.getPage());
+                        CMSItem pagePublishSpaceConfig = CmsCommand.getPagePublishSpaceConfig(controllerContext, rpc.getPage());
 
                         if ((pagePublishSpaceConfig != null) && "1".equals(pagePublishSpaceConfig.getProperties().get("contextualizeInternalContents"))) {
                             if (BooleanUtils.isFalse(maximized)) {
                                 // Redirection en mode CMS
-                                HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+                                HttpServletRequest request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
 
-                                String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerCtx),
+                                String url = this.urlFactory.getCMSUrl(new PortalControllerContext(controllerContext),
                                         rpc.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT), pathPublication, null,
                                         IPortalUrlFactory.CONTEXTUALIZATION_PAGE, null, null, null, null, null);
 
@@ -784,16 +785,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         /* Injection du webPagePath et webPageEditionPath */
 
         if ((cmd instanceof RenderPageCommand)
-                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == cmd.getControllerContext().getType()))) {
-            initShowMenuBarItem(cmd.getControllerContext(), ((PortalCommand) cmd).getPortal());
-            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
-            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath", getTargetContextPath((PortalCommand) cmd));
+                || ((cmd instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == controllerContext.getType()))) {
+            initShowMenuBarItem(controllerContext, ((PortalCommand) cmd).getPortal());
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName", ((PortalCommand) cmd).getPortal().getName());
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.themePath", getTargetContextPath((PortalCommand) cmd));
 
 
             /* Inject cms Path */
-
-            ControllerContext controllerCtx = cmd.getControllerContext();
-            NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             Page page = null;
             if (cmd instanceof RenderPageCommand) {
@@ -811,28 +810,28 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
             if ((sPath != null) && (sPath.length > 0)) {
-                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[0]);
+                controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[0]);
 
 
                 /* Inject path web page edition */
 
                 CMSServiceCtx cmxCtx = new CMSServiceCtx();
-                cmxCtx.setControllerContext(controllerCtx);
+                cmxCtx.setControllerContext(controllerContext);
 
 
-                Boolean pageInEditionMode =  (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
+                Boolean pageInEditionMode = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.isPageInEditionMode");
 
                 if( BooleanUtils.isTrue(pageInEditionMode)) {
                     cmxCtx.setDisplayLiveVersion("1");
                 }
 
 
-                Boolean layoutCMS = (Boolean) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
+                Boolean layoutCMS = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
                 if (BooleanUtils.isTrue(layoutCMS)) {
                    if (getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
-                        cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
+                        controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
                         if (pageInEditionMode) {
-                            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);
+                            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);
                         }
                     }
                 }
@@ -840,26 +839,26 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
             /* Inject space config */
-            CMSItem pageConfig = CmsCommand.getPagePublishSpaceConfig(controllerCtx, page);
+            CMSItem pageConfig = CmsCommand.getPagePublishSpaceConfig(controllerContext, page);
 
-            cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.spaceConfig", pageConfig);
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.spaceConfig", pageConfig);
         }
 
 
         // v2.1 Entering and exiting the admin popup mode
         if (cmd instanceof InvokePortletWindowRenderCommand) {
-            if ("admin".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode"))) {
+            if ("admin".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode"))) {
                 if (!Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode())) {
                     // Exiting admin mode
                     // Store in session because of redirection in AJAX MODE
-                    cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", "1");
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", "1");
 
                 }
             } else {
                 if (Mode.ADMIN.equals(((InvokePortletWindowRenderCommand) cmd).getMode())) {
                     // Entering admin mode
-                    cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "admin");
-                    cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID",
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", "admin");
+                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID",
                             ((InvokePortletWindowRenderCommand) cmd).getTargetId());
                 }
             }
@@ -870,9 +869,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
         if (cmd instanceof RenderPageCommand) {
-
-            ControllerContext controllerCtx = cmd.getControllerContext();
-            NavigationalStateContext nsContext = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+            NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             Page page = ((RenderPageCommand) cmd).getPage();
 
@@ -896,13 +893,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     }
                 }
                 if (hideAdvancedSearchLink) {
-                    cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
                 }
             }
 
             /* Masquage de la region advanced search */
 
-            if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
+            if (!"wizzard".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))) {
 
 
                 boolean hideAdvancedSearchFilters = false;
@@ -925,7 +922,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                 if (hideAdvancedSearchFilters) {
-                    cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearchFilters", "off");
+                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearchFilters", "off");
                 }
             }
 
@@ -1010,7 +1007,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         if (cmd instanceof RenderPageCommand) {
 
-            PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+            PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                     "osivia.popupModeWindowID");
 
             if (popupWindowId != null) {
@@ -1021,7 +1018,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
                     // Fermeture applicative
-                    ControllerCommand endPopupCMD = (ControllerCommand) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE,
+                    ControllerCommand endPopupCMD = (ControllerCommand) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
                             "osivia.popupModeCloseCmd");
 
                     if( endPopupCMD instanceof InvokePortletWindowRenderCommand)    {
@@ -1033,15 +1030,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     String callbackId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
 
 
-                    if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage"))) {
+                    if ("true".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage"))) {
 
                         // Remove AJAX from current request
 
-                        PortalObjectId pageID =    (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID");
+                        PortalObjectId pageID = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+                                "osivia.popupModeOriginalPageID");
                         endPopupCMD = new ViewPageCommand(pageID);
                         callbackId = null;
 
-                        cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", null);
+                        controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", null);
 
                     }
 
@@ -1056,7 +1054,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                          endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, null);
                     }
 
-                    String url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+                    String url = new PortalURLImpl(endPopupCMD, controllerContext, null, null).toString();
                     int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
                     if (pageMarkerIndex != -1) {
                         url = url.substring(0, pageMarkerIndex) + PortalCommandFactory.POPUP_CLOSED_PATH + url.substring(pageMarkerIndex + 1);
@@ -1068,13 +1066,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     popupContent.append(" <script type=\"text/javascript\">");
 
 
-                    if( "1".equals(cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode"))) {
-                        cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", null);
-                        cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
+                    if ("1".equals(controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode"))) {
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.exitPopupAdminMode", null);
+                        controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", "1");
                     }
 
 
-                    if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                    if ("1".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
                         popupContent.append("  parent.setCallbackParams(  '" + callbackId + "',    '" + url + "');");
                         popupContent.append("  parent.jQuery.fancybox.close();");
                     }
@@ -1100,16 +1098,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     DynaRenderOptions.AJAX.setOptions(region.getProperties());
 
 
-                    if ("1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                    if ("1".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
 
-                        cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
-                        cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
-                        cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", null);
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode", null);
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeClosing", null);
+                        controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.popupModeClosing", null);
 
-                        cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
+                        controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeWindowID", null);
 
 
-                        cmd.getControllerContext().setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupIgnoreNotifications", "1");
+                        controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupIgnoreNotifications", "1");
 
                     }
                 }
@@ -1124,12 +1122,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             // In session because closing popup generates a redirection and attributes are lost
 
-            if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction"))) {
-                cmd.getControllerContext().setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.closePopupOnAction", "1");
+            if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction"))) {
+                controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.closePopupOnAction", "1");
 
-                if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
+                if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
 
-                    cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", "true");
+                    controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.refreshClosePopupPage", "true");
                 }
             }
 
@@ -1142,29 +1140,27 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             // Current window
             Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
 
-            ControllerContext controllerCtx = cmd.getControllerContext();
-
-            if ("true".equals(controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode"))) {
+            if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.unsetMaxMode"))) {
                 Collection<PortalObject> windows = new ArrayList<PortalObject>(window.getPage().getChildren(PortalObject.WINDOW_MASK));
 
-                unsetMaxMode(windows, controllerCtx);
+                unsetMaxMode(windows, controllerContext);
             }
 
 
             // v2.0.22-RC6 Force to reload resources
-            if ("true".equals(cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents"))) {
-                cmd.getControllerContext().setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
+            if ("true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents"))) {
+                controllerContext.setAttribute(ControllerCommand.SESSION_SCOPE, "osivia.updateContents", "true");
             }
 
             // Redirection driven at portlet level
-            String url =  (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url");
+            String url = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url");
             if( url != null) {
                 return new RedirectionResponse(url);
             }
 
 
             // Display collapse window content
-            controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId", window.getId());
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId", window.getId());
         }
 
 
@@ -1182,7 +1178,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Window window = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
 
             // On regarde les changements de navigation
-            NavigationalStateContext stateCtx = (NavigationalStateContext) cmd.getControllerContext().getAttributeResolver(
+            NavigationalStateContext stateCtx = (NavigationalStateContext) controllerContext.getAttributeResolver(
                     ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             if (stateCtx.getChanges() != null) {
@@ -1220,7 +1216,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                                         NavigationalStateKey nsKey2 = new NavigationalStateKey(WindowNavigationalState.class, po.getId());
 
-                                        WindowNavigationalState windowNavState2 = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
+                                        WindowNavigationalState windowNavState2 = (WindowNavigationalState) controllerContext.getAttribute(
                                                 ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2);
                                         // On regarde si la fenêtre est en vue MAXIMIZED
 
@@ -1249,13 +1245,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     NavigationalStateKey nsKey2 = new NavigationalStateKey(WindowNavigationalState.class, windowToUpdate.getId());
 
-                    WindowNavigationalState windowNavState2 = (WindowNavigationalState) cmd.getControllerContext().getAttribute(
+                    WindowNavigationalState windowNavState2 = (WindowNavigationalState) controllerContext.getAttribute(
                             ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2);
 
                     // On la force en vue NORMAL
                     WindowNavigationalState newNS2 = WindowNavigationalState.bilto(windowNavState2, WindowState.NORMAL, windowNavState2.getMode(),
                             windowNavState2.getContentState());
-                    cmd.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2, newNS2);
+                    controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey2, newNS2);
 
                 }
             }
@@ -1268,8 +1264,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             RenderWindowCommand rwc = (RenderWindowCommand) cmd;
 
-            ControllerContext controllerCtx = cmd.getControllerContext();
-
             // logger.debug("render window apres"+ rwc.getWindow().getName());
 
             PageProperties properties = PageProperties.getProperties();
@@ -1277,28 +1271,51 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Window window = rwc.getWindow();
             String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
-            Map<String,String> windowProperties = (Map<String, String>) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE,  "osivia.windowProperties."+windowId);
+            Map<String, String> windowProperties = (Map<String, String>) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE,
+                    "osivia.windowProperties." + windowId);
 
 
             // Should we hide the portlet (empty response + hideEmptyPortlet positionned)
-            String emptyResponse = (String) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse." + windowId);
+            boolean hidePortlet = false;
+            String emptyResponse = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.emptyResponse." + windowId);
             if ("1".equals(emptyResponse)) {
-
                 if ("1".equals(window.getDeclaredProperty("osivia.hideEmptyPortlet"))) {
+                    hidePortlet = true;
+                }
+            }
+            if (!hidePortlet) {
+                // Linked taskbar item
+                String taskbarItemId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);
+                if (StringUtils.isNotEmpty(taskbarItemId)) {
+                    hidePortlet = true;
 
-                    // En mode normal (non édition de la page)
-                    if (!"wizzard".equals(controllerCtx.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))
-                            || (((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject)) {
-                        properties.setWindowProperty(windowId, "osivia.hidePortlet", "1");
+                    // Page
+                    Page page = (Page) window.getParent();
+                    // Content path
+                    String contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+
+                    if (StringUtils.isNotEmpty(contentPath)) {
+                        // Taskbar tasks
+                        List<TaskbarTask> tasks = this.taskbarService.getTasks(portalControllerContext, contentPath, true);
+
+                        for (TaskbarTask task : tasks) {
+                            if (taskbarItemId.equals(task.getId())) {
+                                hidePortlet = task.isDisabled();
+                                break;
+                            }
+                        }
                     }
                 }
-
+            }
+            if (hidePortlet && (!"wizzard".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))
+                            || (((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject))) {
+                properties.setWindowProperty(windowId, "osivia.hidePortlet", "1");
             }
 
 
             // Inject popup display
-            if (controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode") != null) {
-                PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+            if (controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode") != null) {
+                PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                         "osivia.popupModeWindowID");
                 if (window.getId().equals(popupWindowId)) {
                     properties.setWindowProperty(windowId, "osivia.popupDisplay", "1");
@@ -1306,7 +1323,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            PortalObjectId popupWindowId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
+            PortalObjectId popupWindowId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
                     "osivia.popupModeWindowID");
 
 
@@ -1315,7 +1332,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
             // Display collapse window content
-            if (window.getId().equals(controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId"))) {
+            if (window.getId().equals(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.collapse.currentWindowId"))) {
                 properties.setWindowProperty(windowId, "osivia.collapse.forceDisplay", String.valueOf(true));
             }
 
@@ -1342,7 +1359,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
 
                 // Dynamic styles
-
                 if( windowProperties != null)   {
                     String dynamicStyles = windowProperties.get( "osivia.dynamicCSSClasses");
 
@@ -1354,14 +1370,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 }
             }
 
+            // Ajax
+            String ajax = window.getDeclaredProperty("osivia.ajaxLink");
+            properties.setWindowProperty(windowId, "osivia.ajaxLink", ajax);
 
-            properties.setWindowProperty(windowId, "osivia.ajaxLink", window.getDeclaredProperty("osivia.ajaxLink"));
+            // Decorators
+            String decorators = "1".equals(window.getDeclaredProperty("osivia.hideDecorators")) ? null : "1";
+            properties.setWindowProperty(windowId, "osivia.displayDecorators", decorators);
 
-            properties.setWindowProperty(windowId, "osivia.displayDecorators", "1".equals(window.getDeclaredProperty("osivia.hideDecorators")) ? null
-                    : "1");
-
-            // Portal controller context
-            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
 
             if (((RenderWindowCommand) cmd).getTarget() instanceof DynamicWindow) {
                 DynamicWindow dynaWIndow = (DynamicWindow) ((RenderWindowCommand) cmd).getTarget();
@@ -1381,7 +1397,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 builder.append(".");
                 builder.append(windowId);
 
-                String cmsPath = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, builder.toString());
+                String cmsPath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, builder.toString());
                 if (cmsPath != null) {
                     String cmsUrl = this.urlFactory.getCMSUrl(portalControllerContext, null, cmsPath, null, null, null, null, null, null, null);
                     properties.setWindowProperty(windowId, Constants.WINDOW_PROP_MAXIMIZED_CMS_URL, cmsUrl);
@@ -1390,7 +1406,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
             // Set current locale in window properties
-            Locale locale = controllerCtx.getServerInvocation().getServerContext().getClientRequest().getLocale();
+            Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
             properties.setWindowProperty(windowId, InternalConstants.LOCALE_PROPERTY, locale.toString());
 
 
@@ -1399,7 +1415,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if ((popupWindowId != null) && (popupWindowId.equals(((RenderWindowCommand) cmd).getTargetId()))) {
 
 
-                    if (!"1".equals(cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
+                if (!"1".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.popupModeClosing"))) {
 
 
                     String popupId = popupWindowId.toString(PortalObjectPath.SAFEST_FORMAT);
@@ -1417,7 +1433,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                         callbackId = null;
                     } else {
                         InvokePortletWindowRenderCommand endPopupCMD = new InvokePortletWindowRenderCommand(popupWindowId, Mode.VIEW, WindowState.NORMAL);
-                        url = new PortalURLImpl(endPopupCMD, cmd.getControllerContext(), null, null).toString();
+                        url = new PortalURLImpl(endPopupCMD, controllerContext, null, null).toString();
                     }
 
                     int pageMarkerIndex = url.indexOf(PageMarkerUtils.PAGE_MARKER_PATH);
@@ -1427,7 +1443,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                     /* URL de callback forcée par le portlet */
 
-                    String callbackURL = (String) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl" + popupId);
+                    String callbackURL = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupCallbackUrl" + popupId);
                     if (callbackURL != null) {
                         url = callbackURL;
                     }
@@ -1462,10 +1478,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if (PortalObjectUtils.isJBossPortalAdministration(rpc.getPortal())) {
                 this.injectAdminHeaders(rpc, rendition);
             }
-
-
-            // Portal controller context
-            PortalControllerContext portalControllerContext = new PortalControllerContext(cmd.getControllerContext());
 
 
             // Inject notifications region
@@ -1610,30 +1622,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
 
     /**
-     * Getter for config.
-     *
-     * @return the config
-     */
-    public ServerConfig getConfig() {
-        return this.config;
-    }
-
-    /**
      * Setter for config.
      *
      * @param config the config to set
      */
     public void setConfig(ServerConfig config) {
         this.config = config;
-    }
-
-    /**
-     * Getter for portalObjectContainer.
-     *
-     * @return the portalObjectContainer
-     */
-    public PortalObjectContainer getPortalObjectContainer() {
-        return this.portalObjectContainer;
     }
 
     /**
@@ -1646,30 +1640,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
     /**
-     * Getter for urlFactory.
-     *
-     * @return the urlFactory
-     */
-    public IPortalUrlFactory getUrlFactory() {
-        return this.urlFactory;
-    }
-
-    /**
      * Setter for urlFactory.
      *
      * @param urlFactory the urlFactory to set
      */
     public void setUrlFactory(IPortalUrlFactory urlFactory) {
         this.urlFactory = urlFactory;
-    }
-
-    /**
-     * Getter for servicesCacheService.
-     *
-     * @return the servicesCacheService
-     */
-    public ICacheService getServicesCacheService() {
-        return this.servicesCacheService;
     }
 
     /**
@@ -1682,15 +1658,6 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
     /**
-     * Getter for profiler.
-     *
-     * @return the profiler
-     */
-    public IProfilerService getProfiler() {
-        return this.profiler;
-    }
-
-    /**
      * Setter for profiler.
      *
      * @param profiler the profiler to set
@@ -1700,21 +1667,12 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     }
 
     /**
-     * Getter for webIdService.
-     *
-     * @return the webIdService
+     * Setter for taskbarService.
+     * 
+     * @param taskbarService the taskbarService to set
      */
-    public IWebIdService getWebIdService() {
-        return this.webIdService;
-    }
-
-    /**
-     * Setter for webIdService.
-     *
-     * @param webIdService the webIdService to set
-     */
-    public void setWebIdService(IWebIdService webIdService) {
-        this.webIdService = webIdService;
+    public void setTaskbarService(ITaskbarService taskbarService) {
+        this.taskbarService = taskbarService;
     }
 
 }

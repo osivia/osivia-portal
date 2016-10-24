@@ -92,19 +92,23 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
             ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
 
             if (parameterMap != null) {
+                // Action name
                 String action = parameterMap.getValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);
 
-                if ("deleteWindow".equals(action)) {
-                    String windowId = null;
+                // Window identifier
+                String windowId;
+                String[] windowIdParameters = parameterMap.get("windowId");
+                if (windowIdParameters == null) {
+                    windowId = null;
+                } else {
+                    windowId = URLDecoder.decode(windowIdParameters[0], CharEncoding.UTF_8);
+                }
 
-                    if (parameterMap.get("windowId") != null) {
-                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], CharEncoding.UTF_8);
-                        return new DeleteWindowCommand(windowId);
-                    }
+                if ("deleteWindow".equals(action)) {
+                    return new DeleteWindowCommand(windowId);
                 }
 
                 if ("changeWindowSettings".equals(action)) {
-                    String windowId = null;
                     List<String> style = null;
                     String mobileCollapse = null;
                     String displayTitle = null;
@@ -123,8 +127,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String priority;
 
 
-                    if (parameterMap.get("windowId") != null) {
-                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], CharEncoding.UTF_8);
+                    if (windowIdParameters != null) {
+                        windowId = URLDecoder.decode(windowIdParameters[0], CharEncoding.UTF_8);
 
                         style = new ArrayList<String>();
                         if (parameterMap.getValues("style") != null) {
@@ -189,6 +193,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             conditionalScope = URLDecoder.decode(parameterMap.get("conditionalScope")[0], CharEncoding.UTF_8);
                         }
 
+                        // Linked taskbar item identifier
+                        String taskbarItemId = parameterMap.getValue("taskbarItemId");
+
                         if (parameterMap.get("bshActivation") != null) {
                             bshActivation = URLDecoder.decode(parameterMap.get("bshActivation")[0], CharEncoding.UTF_8);
                         } else {
@@ -213,16 +220,19 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             selectionDep = "";
                         }
 
-                        
+
                         if (parameterMap.get("priority") != null) {
                             priority = URLDecoder.decode(parameterMap.get("priority")[0], CharEncoding.UTF_8);
                         } else {
                             priority = "";
                         }
-                        
-                        return new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title, displayDecorators, maximizedToCms,
-                                bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope, bshActivation, bshScript, cacheID,
-                                selectionDep, priority);
+
+                        // Change window settings command
+                        ChangeWindowSettingsCommand command = new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title,
+                                displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope,
+                                bshActivation, bshScript, cacheID, selectionDep, priority);
+                        command.setTaskbarItemId(taskbarItemId);
+                        return command;
                     }
                 }
 
@@ -303,12 +313,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         RefreshPageCommand refreshPageCommand = new RefreshPageCommand(pageId);
 
                         if (parameterMap.get("ecmActionReturn") != null) {
-                        	String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
-                        	refreshPageCommand.setEcmActionReturn(ecmActionReturn);
+                            String ecmActionReturn = URLDecoder.decode(parameterMap.get("ecmActionReturn")[0], "UTF-8");
+                            refreshPageCommand.setEcmActionReturn(ecmActionReturn);
                         }
                         if (parameterMap.get("newDocId") != null) {
-                        	String newDocId = URLDecoder.decode(parameterMap.get("newDocId")[0], "UTF-8");
-                        	refreshPageCommand.setNewDocId(newDocId);
+                            String newDocId = URLDecoder.decode(parameterMap.get("newDocId")[0], "UTF-8");
+                            refreshPageCommand.setNewDocId(newDocId);
                         }
 
                         return refreshPageCommand;
@@ -387,7 +397,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             pageContextualizationSupport = URLDecoder.decode(parameterMap.get("pageContextualizationSupport")[0], CharEncoding.UTF_8);
                         }
                         if (parameterMap.get("outgoingRecontextualizationSupport") != null) {
-                            outgoingRecontextualizationSupport = URLDecoder.decode(parameterMap.get("outgoingRecontextualizationSupport")[0], CharEncoding.UTF_8);
+                            outgoingRecontextualizationSupport = URLDecoder.decode(parameterMap.get("outgoingRecontextualizationSupport")[0],
+                                    CharEncoding.UTF_8);
                         }
                         if (parameterMap.get("displayLiveVersion") != null) {
                             displayLiveVersion = URLDecoder.decode(parameterMap.get("displayLiveVersion")[0], CharEncoding.UTF_8);
@@ -465,7 +476,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String params = null;
 
 
-
                     if ((parameterMap.get("parentId") != null) && (parameterMap.get("instanceId") != null)) {
 
                         parentId = URLDecoder.decode(parameterMap.get("parentId")[0], CharEncoding.UTF_8);
@@ -476,19 +486,16 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         params = URLDecoder.decode(parameterMap.get("params")[0], CharEncoding.UTF_8);
 
 
-                        return new StartDynamicWindowInNewPageCommand(parentId, pageName, pageDisplayName, instanceId, WindowPropertiesEncoder.decodeProperties(windowProps),
-                                WindowPropertiesEncoder.decodeProperties(params));
+                        return new StartDynamicWindowInNewPageCommand(parentId, pageName, pageDisplayName, instanceId,
+                                WindowPropertiesEncoder.decodeProperties(windowProps), WindowPropertiesEncoder.decodeProperties(params));
                     }
                 }
 
 
                 if ("destroyDynamicWindow".equals(action)) {
-
-                    String windowId = null;
                     String pageId = null;
 
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("windowId") != null)) {
-                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], CharEncoding.UTF_8);
+                    if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
                         return new StopDynamicWindowCommand(pageId, windowId);
                     }
@@ -518,23 +525,20 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     if (parameterMap.get("pageId") != null) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
-                        
-                        StopDynamicPageCommand stopCmd =  new StopDynamicPageCommand(pageId);
-                        if(parameterMap.get("location") != null)
+
+                        StopDynamicPageCommand stopCmd = new StopDynamicPageCommand(pageId);
+                        if (parameterMap.get("location") != null)
                             stopCmd.setLocation(URLDecoder.decode(parameterMap.get("location")[0], CharEncoding.UTF_8));
-                        
+
                         return stopCmd;
 
                     }
                 }
 
                 if ("moveWindow".equals(action)) {
-
-                    String windowId = null;
                     String moveAction = null;
 
-                    if ((parameterMap.get("windowId") != null) && (parameterMap.get("moveAction") != null)) {
-                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], CharEncoding.UTF_8);
+                    if (parameterMap.get("moveAction") != null) {
                         moveAction = URLDecoder.decode(parameterMap.get("moveAction")[0], CharEncoding.UTF_8);
 
                         return new MoveWindowCommand(windowId, moveAction);
@@ -646,11 +650,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String pagePath = null;
                     String refURI = null;
 
-                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null) ) {
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null)) {
                         pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
                         pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
                         refURI = URLDecoder.decode(parameterMap.get("refURI")[0], "UTF-8");
-                        return new CMSDeleteFragmentCommand(pageId, pagePath, refURI) ;
+                        return new CMSDeleteFragmentCommand(pageId, pagePath, refURI);
                     }
                 }
 
@@ -687,12 +691,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                     String docId = null;
                     String docPath = null;
-                    String backCMSPageMarker  = null;
+                    String backCMSPageMarker = null;
 
                     if ((parameterMap.get("docId") != null) && (parameterMap.get("docPath") != null)) {
                         docId = URLDecoder.decode(parameterMap.get("docId")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
-                        if( parameterMap.get("backCMSPageMarker") != null) {
+                        if (parameterMap.get("backCMSPageMarker") != null) {
                             backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
                         }
 
@@ -706,7 +710,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String contributionMode = null;
                     String docPath = null;
 
-                    if ((parameterMap.get("windowID") != null) && (parameterMap.get("contributionMode") != null)&& (parameterMap.get("docPath") != null)) {
+                    if ((parameterMap.get("windowID") != null) && (parameterMap.get("contributionMode") != null) && (parameterMap.get("docPath") != null)) {
                         windowID = URLDecoder.decode(parameterMap.get("windowID")[0], "UTF-8");
                         contributionMode = URLDecoder.decode(parameterMap.get("contributionMode")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
@@ -715,17 +719,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("PublishContribution".equals(action)) {
-
-                    String windowId = null;
                     String docPath = null;
                     String actionCms = null;
-                    String backCMSPageMarker  = null;
+                    String backCMSPageMarker = null;
 
-                    if ((parameterMap.get("windowId") != null) && (parameterMap.get("docPath") != null)) {
-                        windowId = URLDecoder.decode(parameterMap.get("windowId")[0], "UTF-8");
+                    if (parameterMap.get("docPath") != null) {
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
                         actionCms = URLDecoder.decode(parameterMap.get("actionCms")[0], "UTF-8");
-                        if( parameterMap.get("backCMSPageMarker") != null) {
+                        if (parameterMap.get("backCMSPageMarker") != null) {
                             backCMSPageMarker = URLDecoder.decode(parameterMap.get("backCMSPageMarker")[0], "UTF-8");
                         }
 
@@ -733,35 +734,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
                 }
 
-//                if ("EcmFilesManagementCommand".equals(action)) {
-//
-//                    String cmsPath = null;
-//                    String command = null;
-//
-//                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
-//                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
-//                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
-//
-//                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
-//                        return new EcmFilesManagementCommand(cmsPath, ecmCOmmand);
-//                    }
-//                }
-//
-//				if ("SubscriptionCommand".equals(action)) {
-//
-//                    String cmsPath = null;
-//                    String command = null;
-//
-//                    if ((parameterMap.get("cmsPath") != null) && (parameterMap.get("command") != null)) {
-//                        cmsPath = URLDecoder.decode(parameterMap.get("cmsPath")[0], "UTF-8");
-//                        command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
-//
-//                        EcmOperations ecmCOmmand = EcmOperations.valueOf(command);
-//                        return new SubscriptionCommand(cmsPath, ecmCOmmand);
-//                    }
-//				}
 
-				if (EcmCommandDelegate.class.getSimpleName().equals(action)) {
+                if (EcmCommandDelegate.class.getSimpleName().equals(action)) {
 
                     String cmsPath = null;
                     String cmsRedirectionPath = null;
@@ -772,14 +746,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         command = URLDecoder.decode(parameterMap.get("command")[0], "UTF-8");
                         cmsRedirectionPath = URLDecoder.decode(parameterMap.get("cmsRedirectionPath")[0], "UTF-8");
 
-                		IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
-                		org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
-                		initialCommand.getStrategy().setRedirectionPathPath(cmsRedirectionPath);
+                        IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
+                        org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
+                        initialCommand.getStrategy().setRedirectionPathPath(cmsRedirectionPath);
 
-                		return new EcmCommandDelegate(initialCommand, cmsPath);
+                        return new EcmCommandDelegate(initialCommand, cmsPath);
 
                     }
-				}
+                }
 
 
                 // Toggle advanced CMS tools command

@@ -78,6 +78,8 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
 import org.jboss.portal.theme.render.renderer.WindowRendererContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
@@ -85,6 +87,10 @@ import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemType;
+import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
@@ -137,6 +143,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
     /** Instance container. */
     private final InstanceContainer instanceContainer;
+    /** Taskbar service. */
+    private final ITaskbarService taskbarService;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
     /** Bundle factory. */
@@ -168,6 +176,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.portalAuthorizationManagerFactory = Locator.findMBean(PortalAuthorizationManagerFactory.class, "portal:service=PortalAuthorizationManagerFactory");
         // Instance container
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
+        // Taskbar service
+        this.taskbarService = Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Bundle factory
@@ -565,7 +575,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
 
             // Window settings
-            List<WindowSettings> windowSettings = this.getWindowSettings(bundle, page.getPortal(), windows);
+            List<WindowSettings> windowSettings = this.getWindowSettings(controllerContext, bundle, page.getPortal(), windows);
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS, windowSettings);
         }
 
@@ -962,7 +972,23 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * @param windows windows
      * @return window settings
      */
-    private List<WindowSettings> getWindowSettings(Bundle bundle, Portal portal, List<Window> windows) {
+    private List<WindowSettings> getWindowSettings(ControllerContext controllerContext, Bundle bundle, Portal portal, List<Window> windows) {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+        // Profiles
+        List<ProfilBean> profiles = this.profileManager.getListeProfils();
+
+        // Taskbar items
+        TaskbarItems taskbarItems;
+        try {
+            taskbarItems = this.taskbarService.getItems(portalControllerContext);
+        } catch (PortalException e) {
+            taskbarItems = null;
+        }
+
+
+        // Window settings
         List<WindowSettings> windowSettings = new ArrayList<WindowSettings>(windows.size());
 
         for (Window window : windows) {
@@ -1013,7 +1039,6 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Scopes
             String selectedScope = window.getProperty("osivia.conditionalScope");
             Map<String, String> scopes = settings.getScopes();
-            List<ProfilBean> profiles = this.profileManager.getListeProfils();
             if (CollectionUtils.isNotEmpty(profiles)) {
                 for (ProfilBean profile : profiles) {
                     StringBuilder builder = new StringBuilder();
@@ -1025,6 +1050,18 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 }
             }
             settings.setSelectedScope(selectedScope);
+
+            // Linked taskbar item
+            String taskId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);
+            settings.setTaskbarItemId(taskId);
+            if (taskbarItems != null) {
+                for (TaskbarItem item : taskbarItems.getAll()) {
+                    if (!TaskbarItemType.TRANSVERSAL.equals(item.getType())) {
+                        String label = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
+                        settings.getTaskbarItems().put(label, item.getId());
+                    }
+                }
+            }
 
             // Customization identifier
             String customizationId = window.getDeclaredProperty("osivia.idPerso");
@@ -1054,6 +1091,12 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     }
 
 
+    /**
+     * Fill session reload URL.
+     * 
+     * @param controllerContext controller context
+     * @param attributes attributes
+     */
     private void fillSessionReloadUrl(ControllerContext controllerContext, Map<String, Object> attributes) {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();

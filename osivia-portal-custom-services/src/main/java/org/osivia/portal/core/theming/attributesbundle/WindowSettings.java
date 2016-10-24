@@ -2,6 +2,8 @@ package org.osivia.portal.core.theming.attributesbundle;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 
 /**
@@ -9,7 +11,6 @@ import java.util.Map;
  *
  * @author Cédric Krommenhoek
  */
-
 public class WindowSettings {
 
     /** Window title. */
@@ -20,43 +21,32 @@ public class WindowSettings {
     private boolean displayTitleDecorators;
     /** Maximized to CMS indicator. */
     private boolean maximizedToCms;
-
     /** Display panel indicator. */
     private boolean displayPanel;
     /** Panel collapse indicator. */
     private boolean panelCollapse;
-
     /** Ajax indicator. */
     private boolean ajax;
-
     /** Hide empty portlet indicator. */
     private boolean hideEmpty;
-
     /** Print indicator. */
     private boolean print;
-
     /** Selected scope. */
     private String selectedScope;
-
+    /** Linked taskbar item identifier. */
+    private String taskbarItemId;
     /** Customization identifier. */
     private String customizationId;
-
     /** Shared cache identifier. */
     private String sharedCacheId;
-
     /** BeanShell indicator. */
     private boolean beanShell;
     /** BeanShell content. */
     private String beanShellContent;
-
     /** Selection dependency indicator. */
     private boolean selectionDependency;
-    
     /** The priority. */
     private String priority;
-
-
-    
 
 
     /** Window identifier. */
@@ -66,6 +56,8 @@ public class WindowSettings {
     private final Map<String, Boolean> styles;
     /** Scopes. */
     private final Map<String, String> scopes;
+    /** Taskbar items. */
+    private final SortedMap<String, String> taskbarItems;
 
 
     /**
@@ -78,6 +70,7 @@ public class WindowSettings {
         this.id = id;
         this.styles = new LinkedHashMap<String, Boolean>();
         this.scopes = new LinkedHashMap<String, String>();
+        this.taskbarItems = new TreeMap<String, String>();
     }
 
 
@@ -262,6 +255,24 @@ public class WindowSettings {
     }
 
     /**
+     * Getter for taskbarItemId.
+     * 
+     * @return the taskbarItemId
+     */
+    public String getTaskbarItemId() {
+        return taskbarItemId;
+    }
+
+    /**
+     * Setter for taskbarItemId.
+     * 
+     * @param taskbarItemId the taskbarItemId to set
+     */
+    public void setTaskbarItemId(String taskbarItemId) {
+        this.taskbarItemId = taskbarItemId;
+    }
+
+    /**
      * Getter for customizationId.
      *
      * @return the customizationId
@@ -378,7 +389,16 @@ public class WindowSettings {
     public Map<String, String> getScopes() {
         return this.scopes;
     }
-    
+
+    /**
+     * Getter for taskbarItems.
+     * 
+     * @return the taskbarItems
+     */
+    public SortedMap<String, String> getTaskbarItems() {
+        return taskbarItems;
+    }
+
     /**
      * Getter for priority.
      *
@@ -387,8 +407,6 @@ public class WindowSettings {
     public String getPriority() {
         return priority;
     }
-
-
     
     /**
      * Setter for priority.

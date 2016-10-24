@@ -28,6 +28,9 @@ public interface ITaskbarService {
     /** Taskbar task identifier window property name. */
     String TASK_ID_WINDOW_PROPERTY = "osivia.taskbar.id";
 
+    /** Linked taskbar task identifier window property name. */
+    String LINKED_TASK_ID_WINDOW_PROPERTY = "osivia.taskbar.linked.id";
+
 
     /**
      * Get taskbar item factory.

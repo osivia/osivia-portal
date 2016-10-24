@@ -870,6 +870,12 @@ var currentPageId = '${currentPageId}';
                                             </div>
                                         </c:forEach>
                                     </div>
+                                    
+                                    <c:if test="${empty window.styles}">
+                                        <p class="form-control-static">
+                                            <span class="text-muted"><op:translate key="WINDOW_PROPERTIES_NO_STYLE" /></span>
+                                        </p>
+                                    </c:if>
                                 </div>
                             </div>
                             
@@ -894,6 +900,24 @@ var currentPageId = '${currentPageId}';
                                             <option value="${scope.key}"
                                                 <c:if test="${window.selectedScope eq scope.key}">selected="selected"</c:if>
                                             >${scope.value}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Linked taskbar item -->
+                            <div class="form-group">
+                                <label for="${window.id}-linked-taskbar-item" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM" /></label>
+                                <div class="col-sm-9">
+                                    <select id="${window.id}-linked-taskbar-item" name="taskbarItemId" class="form-control">
+                                        <option value=""
+                                            <c:if test="${empty window.taskbarItemId}">selected="selected"</c:if>
+                                        ><op:translate key="WINDOW_PROPERTIES_NO_LINKED_TASKBAR_ITEM" /></option>
+                                        
+                                        <c:forEach var="item" items="${window.taskbarItems}">
+                                            <option value="${item.value}"
+                                                <c:if test="${item.value eq window.taskbarItemId}">selected="selected"</c:if>
+                                            >${item.key}</option>
                                         </c:forEach>
                                     </select>
                                 </div>

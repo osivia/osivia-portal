@@ -17,6 +17,7 @@ package org.osivia.portal.core.assistantpage;
 import java.util.List;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.AttributeResolver;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -25,6 +26,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.taskbar.ITaskbarService;
 
 /**
  * Change window settings command.
@@ -62,6 +64,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String cacheID;
 	private String selectionDep;
 	private String priority;
+
+    // Linked taskbar item identifier
+    private String taskbarItemId;
 
 
     /**
@@ -211,6 +216,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         }
 
 
+        // Linked taskbar item identifier
+        window.setDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY, StringUtils.trimToNull(this.taskbarItemId));
+
 
 		if ("1".equals(this.bshActivation)) {
             window.setDeclaredProperty("osivia.bshActivation", "1");
@@ -244,7 +252,16 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         }
 
 		return new UpdatePageResponse(page.getId());
-
 	}
+
+
+    /**
+     * Setter for taskbarItemId.
+     * 
+     * @param taskbarItemId the taskbarItemId to set
+     */
+    public void setTaskbarItemId(String taskbarItemId) {
+        this.taskbarItemId = taskbarItemId;
+    }
 
 }
