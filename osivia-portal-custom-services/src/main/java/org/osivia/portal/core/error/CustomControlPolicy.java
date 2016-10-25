@@ -36,7 +36,7 @@ import org.osivia.portal.core.error.ErrorDescriptor;
  */
 public abstract class CustomControlPolicy {
 	
-	protected ErrorDescriptor getErrorDescriptor(ControllerResponse response, String userId) {		
+	protected ErrorDescriptor getErrorDescriptor(ControllerResponse response, String userId, String context) {		
 		ErrorDescriptor errDescriptor = null;
 		int httpErrorCode = -1;
 		Throwable cause = null;
@@ -52,15 +52,18 @@ public abstract class CustomControlPolicy {
 				SecurityErrorResponse ser = (SecurityErrorResponse) response;
 				if (ser.getStatus() == SecurityErrorResponse.NOT_AUTHORIZED) {
 					httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
+					cause = null;
 				}
-			}
+			}    
 		} else if (response instanceof UnavailableResourceResponse) {
 			UnavailableResourceResponse unavailable = (UnavailableResourceResponse) response;
 			httpErrorCode = HttpServletResponse.SC_NOT_FOUND;
-			message = "Resource " + unavailable.getRef() + " not found (error 404).";
+			message =  unavailable.getRef() + " not found ";
 		}
 
 		if (httpErrorCode > 0) {
+		    if( context != null && message != null)
+		        message = context+ " : " + message;
 			errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, null);
 		}
 		return errDescriptor;

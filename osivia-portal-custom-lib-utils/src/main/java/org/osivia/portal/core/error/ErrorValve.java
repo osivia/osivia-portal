@@ -15,6 +15,7 @@
 package org.osivia.portal.core.error;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,29 +67,53 @@ public class ErrorValve extends ValveBase {
 
         if (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
             httpErrorCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            message = "No Stack Trace. Check server.log";
+            message =  "Resource "+request.getDecodedRequestURI()+ " not available";
         }
 
         if (response.getStatus() == HttpServletResponse.SC_NOT_FOUND) {
             httpErrorCode = HttpServletResponse.SC_NOT_FOUND;
-            message = "Resource " + request.getDecodedRequestURI() + " not found (error 404).";
+            message =  "Resource "+request.getDecodedRequestURI()+ " not found";
         }
 
         if (response.getStatus() == HttpServletResponse.SC_FORBIDDEN) {
             httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
-            message = "Resource " + request.getDecodedRequestURI() + " forbidden (error 403).";
+            message =  "Resource "+request.getDecodedRequestURI()+ " forbidden";
+                        
         }
 
         if (httpErrorCode > 0) {
             // On récupère l'exception transmise par le portail
             cause = (Exception) request.getAttribute("osivia.error_exception");
+            if( cause == null)  {
+                cause = (Exception) request.getAttribute("javax.servlet.error.exception");
 
-            String userId = request.getRemoteUser();
+                try {
+                if( cause.getMessage() != null)
+                    message = cause.getMessage();
+                } catch(Exception e)    {
+                    // NOT FOUND, forbidden
+                }
+            }
+            
 
-            ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, null);
+            Principal principal = request.getPrincipal();
+            String userId = null;
+            if(principal != null)
+                userId = principal.getName();
+            
+            
+            Map<String, Object> properties = new HashMap<String, Object>(); 
+            properties.put("osivia.url", request.getDecodedRequestURI());
+            properties.put("osivia.header.userAgent", request.getHeader("User-Agent"));
+
+
+            ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, properties);
 
             if ((response.getStatus() == 500 || response.getStatus() == 404 )  && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
-                long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
+                Long errId = (Long) request.getAttribute("osivia.loggedError");    
+                
+                if( errId == null)
+                     errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
 
                 Map<String, String> parameters = new HashMap<String, String>(2);
                 parameters.put("err", String.valueOf(errId));

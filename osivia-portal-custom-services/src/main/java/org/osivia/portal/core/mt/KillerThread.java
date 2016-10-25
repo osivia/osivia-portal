@@ -17,11 +17,20 @@ package org.osivia.portal.core.mt;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Future;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.portal.common.http.HttpResponse;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.osivia.portal.core.error.ErrorDescriptor;
+import org.osivia.portal.core.error.GlobalErrorHandler;
 
 /**
  * 
@@ -32,18 +41,29 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
  */
 public class KillerThread implements Runnable {
 	
-	protected static final Log logger = LogFactory.getLog(KillerThread.class);	
+	protected static final Log logger = LogFactory.getLog("PORTAL");	
 
 	Future futureToSurvey;
 	ServiceThread threadToSurvey;
 	boolean threadEnded = false;
 	String windowName;
+	String userName;
 
-	public KillerThread(String windowName, Future futureToSurvey, ServiceThread threadToSurvey) {
+	String portletName;
+    String url;
+    String userAgent;
+
+	
+	public KillerThread(String windowName, Future futureToSurvey, ServiceThread threadToSurvey, String userName, String portletName, String url, String userAgent) {
 		super();
 		this.windowName = windowName;
 		this.futureToSurvey = futureToSurvey;
 		this.threadToSurvey = threadToSurvey;
+		this.userName = userName;
+		this.url = url;
+		this.portletName = portletName;
+		this.userAgent = userAgent;
+
 	}
 
 	public void notifyEndThread() {
@@ -67,11 +87,24 @@ public class KillerThread implements Runnable {
 
 		try {
 			
-	          String sStack = printStack(threadToSurvey) ;
+		    String sStack = printStack(threadToSurvey) ;
+	          
 	            
 	     
 	         if( !sStack.contains("sun.misc.Unsafe"))  {  
-	             logger.warn("Supervisor thread launched : "+ windowName + " . " +  sStack);
+	             
+	             Map<String,Object> properties = new HashMap<String, Object>();
+	             properties.put("stack", sStack);
+	             
+
+	             
+	             properties.put("osivia.url", url);
+	             properties.put("osivia.header.userAgent", userAgent);
+	             
+	             
+	             ErrorDescriptor errDescriptor = new ErrorDescriptor(HttpServletResponse.SC_REQUEST_TIMEOUT, null, portletName + " : timeout", this.userName, properties);
+	             GlobalErrorHandler.getInstance().logError(errDescriptor);
+	             
 	         }
 			
 	

@@ -14,7 +14,9 @@
  */
 package org.osivia.portal.core.tracker;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -42,6 +44,7 @@ import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.error.UserAction;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 
@@ -120,8 +123,44 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 	@Override
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
+	    
+	    
+    /* For trace and profiling */
+        
+        String request = invocation.getServerContext().getClientRequest().getPathInfo();
+        String qs = invocation.getServerContext().getClientRequest().getQueryString();
+        if (qs != null)
+            request += "?" + qs;
+
+        try {
+            invocation.getServerContext().getClientRequest().setAttribute("osivia.trace.url", request);
+
+            HttpSession session = invocation.getServerContext().getClientRequest().getSession();
+            List<UserAction> historic = (List<UserAction>) session.getAttribute("osivia.trace.historic");
+            if (historic == null) {
+                historic = new ArrayList();
+                session.setAttribute("osivia.trace.historic", historic);
+            }
+
+            if (historic.size() > 20) {
+                historic.remove(19);
+            }
 
 
+            historic.add(0, new UserAction(System.currentTimeMillis(), request));
+
+        } catch (Exception e) {
+            // No log during error management
+        }
+
+
+	    
+	    
+
+
+//	    if(true)
+//	        throw new Exception("eeee");
+	    
 		// réinitialisation des propriétes des windows
 		PageProperties.getProperties().init();
 

@@ -59,6 +59,7 @@ import org.jboss.portal.theme.page.PageResult;
 import org.jboss.security.SecurityAssociation;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.core.constants.InternalConstants;
+import org.osivia.portal.core.error.CustomPageControlPolicy;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -367,9 +368,16 @@ public class ServicesInvoker {
                 if (renderCmd != null) {
                     try {
 
+                        String portletName = CustomPageControlPolicy.getPortletName(this.context, timeOutWindow.getId());
+                        String url = request.getPathInfo();
+                        String qs = request.getQueryString();
+                        if (qs != null)
+                            url += "?" + qs;
+                        
+                        
                         // Stop the thread
                         KillerThread thread = new KillerThread(timeOutWindow.getId().toString(), pageFutures.get(timeOutWindow.getId()),
-                                this.currentThreads.get(timeOutWindow.getId()));
+                                this.currentThreads.get(timeOutWindow.getId()), request.getRemoteUser(),portletName, url, request.getHeader("User-Agent"));
                         KillersThreadsPool.getInstance().execute(thread);
 
 
@@ -384,7 +392,7 @@ public class ServicesInvoker {
                 }
 
 
-                logger.error("timeout window " + timeOutWindow.getName());
+                //logger.error("timeout window " + timeOutWindow.getName());
             }
         }
 

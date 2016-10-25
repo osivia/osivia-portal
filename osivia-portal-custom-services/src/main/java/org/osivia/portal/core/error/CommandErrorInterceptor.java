@@ -155,10 +155,12 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                 // User identifier
                 String userId = clientRequest.getRemoteUser();
                 // Error descriptor
-                ErrorDescriptor errorDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, e.getMessage(), userId, null);
+                ErrorDescriptor errorDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, null, userId, null);
 
                 // Print stack in server.log and portal_user_error.log
                 long errId = GlobalErrorHandler.getInstance().logError(errorDescriptor);
+                command.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.loggedError", errId);
+                
                 if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
                     // Error response
                     response = this.displayError(command, null, errId);

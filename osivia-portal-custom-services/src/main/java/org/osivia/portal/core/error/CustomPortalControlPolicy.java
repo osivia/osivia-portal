@@ -67,7 +67,7 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 	public void doControl(PortalControlContext controlContext) {
 		ControllerResponse response = controlContext.getResponse();
 		String userId = getUserId(controlContext.getControllerContext().getUser());
-		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId);
+		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, null);
 		
 		if( errDescriptor != null) {			
 			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);

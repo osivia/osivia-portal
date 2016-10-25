@@ -15,12 +15,19 @@
 package org.osivia.portal.core.error;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.impl.model.content.portlet.PortletContent;
+import org.jboss.portal.core.model.content.Content;
+import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -43,6 +50,7 @@ import org.osivia.portal.core.error.GlobalErrorHandler;
 public class CustomPageControlPolicy extends CustomControlPolicy implements PageControlPolicy {
 
 	private static final Logger log = Logger.getLogger(CustomPageControlPolicy.class);
+	private static final Logger portalLog = Logger.getLogger("PORTAL");
 
 	private ServerConfig serverConfig;
 	private PortalObjectContainer portalObjectContainer;
@@ -76,6 +84,22 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
         return theme.getThemeInfo().getContextPath();
 
 	}
+	
+	public static String getPortletName ( ControllerContext controllerCtx, PortalObjectId poid){
+        String portletName = null;
+        try {
+            Window window = (Window) controllerCtx.getController().getPortalObjectContainer().getObject(poid);
+            Content content = window.getContent();
+            String instanceId = ((PortletContent) content).getInstanceRef();
+            InstanceDefinition instance = controllerCtx.getController().getInstanceContainer().getDefinition(instanceId);
+            portletName = instance.getPortlet().getInfo().getName();
+        } catch (Exception e) {
+            //
+        }
+
+        return portletName;
+	}
+	
 
 	public void doControl(PageControlContext controlContext) {
 		
@@ -84,7 +108,12 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 		ControllerResponse response = rendition.getControllerResponse();
 		ControllerContext controllerCtx = controlContext.getControllerContext();
 		String userId = getUserId(controllerCtx.getUser());
-		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId);
+		
+		
+		String portletName=getPortletName(controllerCtx, controlContext.getWindowId());
+		
+
+		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, portletName);
 
 
 
@@ -95,8 +124,11 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
                 // Request is not operationnal (timeout)
                 // Cant log
                 errDescriptor = null;
-            }
+                portalLog.warn("timeout error dump", e);
+           }
         }
+        
+        
 		
 		if (errDescriptor != null) {
 			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
