@@ -48,6 +48,7 @@ import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.theme.page.WindowContext;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
@@ -314,7 +315,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     cmxCtx.setDisplayLiveVersion("1");
                 }
 
-                int currentLevel = 0;
+
+                // Current item indicator
+                boolean currentItem = true;
 
                 while (StringUtils.contains(publicationPath, basePath)) {
                     // Exclude root publish Site for domain (will be computed later, the same as others spaces)
@@ -326,16 +329,30 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                     Map<String, String> pageParams = new HashMap<String, String>();
 
+                    // Display parent indicator
+                    boolean displayParent = false;
+
                     try {
+                        // CMS item
                         CMSItem cmsItem = null;
-                        if (currentLevel == 0) {
+                        if (currentItem) {
                             // First navigation item must be fetched directly (not in navigation) to get the correct edition state
                             cmsItem = this.computeContent(controllerContext, publicationPath);
+                            currentItem = false;
                         } else {
-                            cmsItem = this.cmsServiceLocator.getCMSService().getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                            cmsItem = cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                        }
+                        
+                        
+                        if (StringUtils.equals(publicationPath, basePath) && (cmsItem != null)) {
+                            // Document type
+                            DocumentType type = cmsItem.getType();
+
+                            displayParent = (type != null) && !type.isRootType();
                         }
 
 
+                        // URL
                         String url;
                         if (PortalObjectUtils.isSpaceSite(portal) && (cmsItem != null) && StringUtils.isNotEmpty(cmsItem.getWebId())) {
                             String webPath = this.webIdService.webIdToCmsPath(cmsItem.getWebId());
@@ -353,15 +370,18 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             breadcrumb.getChildren().add(0, breadcrumbItem);
                         }
 
-                        currentLevel++;
-
                     } catch (CMSException e) {
                         throw new ControllerException(e);
                     }
 
+                    
                     // Get the navigation parent
                     CMSObjectPath parent = CMSObjectPath.parse(publicationPath).getParent();
                     publicationPath = parent.toString();
+
+                    if (displayParent) {
+                        basePath = publicationPath;
+                    }
                 }
 
 
