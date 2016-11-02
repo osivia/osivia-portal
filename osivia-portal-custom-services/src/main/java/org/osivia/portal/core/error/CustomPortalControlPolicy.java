@@ -24,6 +24,7 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.control.page.PageControlContext;
 import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
@@ -67,7 +68,10 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 	public void doControl(PortalControlContext controlContext) {
 		ControllerResponse response = controlContext.getResponse();
 		String userId = getUserId(controlContext.getControllerContext().getUser());
-		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, null);
+		
+		String portalId = controlContext.getPortalId().toString(PortalObjectPath.CANONICAL_FORMAT);
+		
+		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, null, portalId);
 		
 		if( errDescriptor != null) {			
 			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);

@@ -48,7 +48,6 @@ public class ErrorValve extends ValveBase {
         int httpErrorCode = 0;
         Throwable cause = null;
 
-        String message = null;
 
         HttpServletRequest httpRequest = request.getRequest();
 
@@ -67,18 +66,14 @@ public class ErrorValve extends ValveBase {
 
         if (response.getStatus() == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) {
             httpErrorCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            message =  "Resource "+request.getDecodedRequestURI()+ " not available";
         }
 
         if (response.getStatus() == HttpServletResponse.SC_NOT_FOUND) {
             httpErrorCode = HttpServletResponse.SC_NOT_FOUND;
-            message =  "Resource "+request.getDecodedRequestURI()+ " not found";
         }
 
         if (response.getStatus() == HttpServletResponse.SC_FORBIDDEN) {
             httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
-            message =  "Resource "+request.getDecodedRequestURI()+ " forbidden";
-                        
         }
 
         if (httpErrorCode > 0) {
@@ -86,13 +81,6 @@ public class ErrorValve extends ValveBase {
             cause = (Exception) request.getAttribute("osivia.error_exception");
             if( cause == null)  {
                 cause = (Exception) request.getAttribute("javax.servlet.error.exception");
-
-                try {
-                if( cause.getMessage() != null)
-                    message = cause.getMessage();
-                } catch(Exception e)    {
-                    // NOT FOUND, forbidden
-                }
             }
             
 
@@ -107,7 +95,7 @@ public class ErrorValve extends ValveBase {
             properties.put("osivia.header.userAgent", request.getHeader("User-Agent"));
 
 
-            ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, properties);
+            ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, null, userId, properties);
 
             if ((response.getStatus() == 500 || response.getStatus() == 404 )  && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
                 Long errId = (Long) request.getAttribute("osivia.loggedError");    

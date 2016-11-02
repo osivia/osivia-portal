@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -63,7 +64,7 @@ public class GlobalErrorHandler {
         int errorCode = error.getHttpErrCode();
 
 
-        Map<String,Object> properties = new HashMap<String, Object>();
+        Map<String,Object> properties = error.getProperties();
 
         
         String url = null;
@@ -100,17 +101,58 @@ public class GlobalErrorHandler {
 
         String msg = "#" + currentErrorId + "# ";
 
-        if (errorCode != ErrorDescriptor.NO_HTTP_ERR_CODE)
-            msg += "[HTTP/" + errorCode + "] ";
         
         
-        if (error.getMessage() != null)
-            msg += error.getMessage();
-        else if( error.getException() != null)  {
-            if( error.getException().getMessage() != null)
-            msg += error.getException().getMessage();
-        }
+        
+        String displayContext = (String) properties.get("osivia.cms.target");
+        if( displayContext != null){
+            displayContext = "nx:"+displayContext;
+        } else  {
 
+            displayContext = (String) properties.get("osivia.portal.portalObject");
+            if (displayContext != null)
+                displayContext = "portal:"+displayContext;
+            else    {
+            
+                displayContext = (String) properties.get("osivia.portal.portlet");
+                if (displayContext != null)
+                    displayContext = "porlet:"+displayContext;
+                else
+                    displayContext = url;
+            }
+        }
+        
+        if( displayContext != null) {
+            msg += " ["+displayContext+"]";
+        }
+         
+        String applicativeMessage = null;
+        
+        
+        if (error.getMessage() != null) {
+            applicativeMessage = error.getMessage();
+        }   else    {
+            if (errorCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR)  {
+                applicativeMessage = "Technical error";
+            }
+            if (errorCode == HttpServletResponse.SC_NOT_FOUND)  {
+                applicativeMessage = "Not found";
+            }
+            if (errorCode == HttpServletResponse.SC_FORBIDDEN)  {
+                applicativeMessage = "Forbidden";
+            }
+            if (errorCode == HttpServletResponse.SC_REQUEST_TIMEOUT)  {
+                applicativeMessage = "Timeout expired";
+            }
+        }
+        
+        
+        if( applicativeMessage != null) {
+            msg += " " + applicativeMessage;
+        }
+      
+        
+        
         logger.error(msg);
 
 
@@ -198,10 +240,10 @@ public class GlobalErrorHandler {
                     sb.append("historic: ");
                     String display = "";
                     for(UserAction userAction: historic)    {
-                        display += "[" + formatTime( new Date(userAction.getTimestamp()))+" "+userAction.getCommand()+"] ";
+                        display += "\n  " + formatTime( new Date(userAction.getTimestamp()))+" : "+userAction.getCommand()+" ";
                     }
                     sb.append(display);
-                    sb.append("\n");
+                    sb.append("\n\n");
 
                 }}
                 catch( Exception e) {

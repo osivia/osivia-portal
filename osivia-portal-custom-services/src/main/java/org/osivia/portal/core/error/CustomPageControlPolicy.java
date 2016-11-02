@@ -113,7 +113,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 		String portletName=getPortletName(controllerCtx, controlContext.getWindowId());
 		
 
-		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, portletName);
+		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, portletName, null);
 
 
 

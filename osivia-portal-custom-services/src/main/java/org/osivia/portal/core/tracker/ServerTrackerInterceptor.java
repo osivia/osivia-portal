@@ -142,8 +142,8 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
                 session.setAttribute("osivia.trace.historic", historic);
             }
 
-            if (historic.size() > 20) {
-                historic.remove(19);
+            if (historic.size() > 50) {
+                historic.remove(49);
             }
 
 

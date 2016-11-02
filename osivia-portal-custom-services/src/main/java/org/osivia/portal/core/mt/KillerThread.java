@@ -96,13 +96,11 @@ public class KillerThread implements Runnable {
 	             Map<String,Object> properties = new HashMap<String, Object>();
 	             properties.put("stack", sStack);
 	             
-
-	             
 	             properties.put("osivia.url", url);
 	             properties.put("osivia.header.userAgent", userAgent);
+	             properties.put("osivia.portal.portlet", portletName);
 	             
-	             
-	             ErrorDescriptor errDescriptor = new ErrorDescriptor(HttpServletResponse.SC_REQUEST_TIMEOUT, null, portletName + " : timeout", this.userName, properties);
+	             ErrorDescriptor errDescriptor = new ErrorDescriptor(HttpServletResponse.SC_REQUEST_TIMEOUT, null, null, this.userName, properties);
 	             GlobalErrorHandler.getInstance().logError(errDescriptor);
 	             
 	         }
