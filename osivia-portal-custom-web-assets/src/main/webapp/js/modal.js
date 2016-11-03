@@ -105,7 +105,7 @@ $JQry(function() {
 		
 		if (!loaded) {
 			$element.click(function(event) {
-				var $target = $JQry(event.target).closest("button"),
+				var $target = $JQry(event.target).closest("a, button"),
 					loadUrl = $target.data("load-url"),
 					loadCallbackFunction = $target.data("load-callback-function"),
 					loadCallbackFunctionArgs = $target.data("load-callback-function-args"),

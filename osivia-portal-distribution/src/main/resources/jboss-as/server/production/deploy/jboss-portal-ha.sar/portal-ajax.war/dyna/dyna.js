@@ -26,62 +26,63 @@ var currentSubmit;
 var fancyContainerDivId = null;
 
 
-function onAjaxSuccess(t, callerId) {
-	var resp = "";
+function onAjaxSuccess(t, callerId, multipart) {
+	var resp;
 
-	if (t.responseText != "") {
-
+	if (multipart) {
+		resp = t;
+	} else if (t.responseText != "") {
 		try {
 			eval("resp =" + t.responseText + ";");
 		} catch (e) {
 			window.location.reload();
 			return;
 		}
+	}
+	
+	if (resp.type == "update_markup") {
+		// Iterate all changes
+		for (var id in resp.fragments) {
+			var matchingElt = document.getElementById(id);
 
-		if (resp.type == "update_markup") {
-			// Iterate all changes
-			for (var id in resp.fragments) {
-				var matchingElt = document.getElementById(id);
+			// Different than 1 is not good
+			if ((matchingElt != null) && (id != callerId)) {
+				var dstContainer = document.getElementById(id);
+				if (dstContainer != null) {
+					// Get markup fragment
+					var markup = resp.fragments[id];
 
-				// Different than 1 is not good
-				if ((matchingElt != null) && (id != callerId)) {
-					var dstContainer = document.getElementById(id);
-					if (dstContainer != null) {
-						// Get markup fragment
-						var markup = resp.fragments[id];
+					// Create a temporary element and paste the innerHTML in it
+					var srcContainer = document.createElement("div");
 
-						// Create a temporary element and paste the innerHTML in it
-						var srcContainer = document.createElement("div");
+					// Insert the markup in the div
+					new Insertion.Bottom(srcContainer, markup);
 
-						// Insert the markup in the div
-						new Insertion.Bottom(srcContainer, markup);
-
-						// Copy the region content
-						copyInnerHTML(srcContainer, dstContainer,
-								"dyna-window-content")
-					} else {
-						// Should log that somewhere
-					}
+					// Copy the region content
+					copyInnerHTML(srcContainer, dstContainer,
+							"dyna-window-content")
 				} else {
 					// Should log that somewhere
 				}
-			}
-
-			// update view state
-			if (resp.view_state != null) {
-				view_state = resp.view_state;
 			} else {
-				alert("No view state");
+				// Should log that somewhere
 			}
-			
-			
-			// Call jQuery.ready() events
-			$JQry(document).ready();
 		}
 
-		if (resp.type == "update_page") {
-			document.location = resp.location;
+		// update view state
+		if (resp.view_state != null) {
+			view_state = resp.view_state;
+		} else {
+			alert("No view state");
 		}
+		
+		
+		// Call jQuery.ready() events
+		$JQry(document).ready();
+	}
+
+	if (resp.type == "update_page") {
+		document.location = resp.location;
 	}
 }
 
@@ -348,6 +349,32 @@ function bilto(event) {
 							});
 						}
 					}
+				} else {
+			        event.preventDefault();
+			 
+			        var $form = $JQry(current);
+			        var formdata = (window.FormData) ? new FormData($form[0]) : null;
+			        var data;
+			        if (formdata != null) {
+			        	formdata.append("hash", false);
+			        	formdata.append(event.findElement().name, event.findElement().value);
+			        	data = formdata;
+			        } else {
+			        	data = $form.serialize();
+			        }
+			 
+			        $JQry.ajax({
+			            url: current.action,
+			            method: "post",
+			            headers: {"ajax": true},
+			            contentType: false, // obligatoire pour de l'upload
+			            processData: false, // obligatoire pour de l'upload
+			            dataType: "json",
+			            data: formdata,
+			            success: function(data, status, xhr) {
+			            	onAjaxSuccess(data, null, true);
+			            }
+			        });
 				}
 			}
 		}

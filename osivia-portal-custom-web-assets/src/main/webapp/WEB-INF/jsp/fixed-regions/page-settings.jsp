@@ -920,6 +920,7 @@ var currentPageId = '${currentPageId}';
                                             >${item.key}</option>
                                         </c:forEach>
                                     </select>
+                                    <p class="help-block"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM_HELP" /></p>
                                 </div>
                             </div>
                             
