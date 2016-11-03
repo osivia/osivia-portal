@@ -749,6 +749,15 @@
         <xmbean />
     </mbean>
     
+    <!-- Errors service -->
+    <mbean
+        code="org.osivia.portal.core.errors.ErrorsService"
+        name="osivia:service=ErrorsService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>    
+    
     <!-- Menubar service -->
     <mbean
         code="org.osivia.portal.core.menubar.MenubarService"

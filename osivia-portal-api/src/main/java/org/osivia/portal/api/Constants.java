@@ -43,6 +43,8 @@ public final class Constants {
     public static final String CONTRIBUTION_SERVICE_NAME = "ContributionService";
     /** Directory locator service name. */
     public static final String DIRECTORY_SERVICE_LOCATOR_NAME = "DirctoryServiceLocator";
+    /** Notifications service name. */
+    public static final String ERRORS_SERVICE_NAME = "ErrorsService";
 
     // JBoss portal objects
 
