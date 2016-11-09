@@ -23,7 +23,7 @@ package org.osivia.portal.api.menubar;
 public enum MenubarGroup implements MenubarContainer {
 
     /** Back menubar group. */
-    BACK(1, "pull-left visible-xs"),
+    BACK(1, "visible-xs-inline"),
     /** Specific menubar group. */
     SPECIFIC(2, null),
     /** CMS menubar group. */

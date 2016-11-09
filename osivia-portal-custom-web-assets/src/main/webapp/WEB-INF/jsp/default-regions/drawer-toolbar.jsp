@@ -75,7 +75,7 @@
                                             <c:when test="${empty requestScope['osivia.toolbar.person']}"><i class="halflings halflings-user"></i></c:when>
                                             <c:otherwise><img class="avatar" src="${requestScope['osivia.toolbar.person'].avatar.url}" /></c:otherwise>
                                         </c:choose>
-                                        <small><i class="halflings halflings-triangle-bottom"></i></small>
+                                        <span class="caret"></span>
                                     </button>
     
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
@@ -113,7 +113,7 @@
         <div class="col-xs-12 drawer-toolbar-tabs">
             <div class="dropdown">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    <span class="pull-right"><small><i class="halflings halflings-triangle-bottom"></i></small></span>
+                    <span class="pull-right"><span class="caret"></span></span>
                     <span class="text-overflow">${requestScope['osivia.currentPageName']}</span>
                 </button>
                 

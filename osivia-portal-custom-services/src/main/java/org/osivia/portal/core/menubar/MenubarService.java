@@ -501,7 +501,7 @@ public class MenubarService implements IMenubarService {
         // Dropdown button
         Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
-        if (dropdown.getTitle() != null) {
+        if (StringUtils.isNotBlank(dropdown.getTitle())) {
             Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", dropdown.getTitle());
             dropdownButton.add(srOnly);
         }

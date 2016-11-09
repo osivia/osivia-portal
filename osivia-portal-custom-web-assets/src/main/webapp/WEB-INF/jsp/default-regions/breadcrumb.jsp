@@ -17,9 +17,7 @@
                         <div class="dropdown">
                             <a href="#" data-toggle="dropdown">
                                 <span>${child.name}</span>
-                                <small>
-                                    <i class="halflings halflings-triangle-bottom"></i>
-                                </small>    
+                                <span class="caret"></span>    
                             </a>
                             
                             <ul class="dropdown-menu" role="menu">

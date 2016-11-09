@@ -107,8 +107,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     private static final String HTML_CLASS_DROPDOWN_TOGGLE = "dropdown-toggle";
     /** HTML class "dropdown-menu". */
     private static final String HTML_CLASS_DROPDOWN_MENU = "dropdown-menu";
-    /** HTML class "caret". */
-    private static final String HTML_CLASS_DROPDOWN_CARET = "caret";
     /** HTML class "divider". */
     private static final String HTML_CLASS_DROPDOWN_DIVIDER = "divider";
 
@@ -387,16 +385,22 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Configuration menu title
         String menuTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
-        Element configurationMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, menuTitle,
-                "halflings halflings-wrench");
+        Element configurationMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
+                "glyphicons glyphicons-wrench");
         DOM4JUtils.addAttribute(configurationMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
+        configurationMenuTitle.add(title);
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         configurationMenuTitle.add(caret);
         configurationMenu.add(configurationMenuTitle);
 
         // Configuration menu "ul" node
         Element configurationMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
         configurationMenu.add(configurationMenuUL);
+
+        // Menu header
+        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
+        configurationMenuUL.add(header);
 
         // Home
         String homeURL = context.getServerInvocation().getServerContext().getPortalContextPath();
@@ -614,16 +618,22 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         } else {
             menuTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE);
         }
-        Element editionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, menuTitle,
-                "halflings halflings-pencil");
+        Element editionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
+                "glyphicons glyphicons-pencil");
         DOM4JUtils.addAttribute(editionMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
+        editionMenuTitle.add(title);
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         editionMenuTitle.add(caret);
         editionMenu.add(editionMenuTitle);
 
         // Edition menu "ul" node
         Element editionMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
         editionMenu.add(editionMenuUL);
+
+        // Menu header
+        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
+        editionMenuUL.add(header);
 
         if (!pageType.isTemplated()) {
             // Icons display
@@ -757,11 +767,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         administration.add(cmsEditionMenu);
 
         // CMS edition menu title
-        String title = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE);
-        Element cmsEditionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, title,
-                "halflings halflings-pencil");
+        String menuTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE);
+        Element cmsEditionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
+                "glyphicons glyphicons-pencil");
         DOM4JUtils.addAttribute(cmsEditionMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
+        cmsEditionMenuTitle.add(title);
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         cmsEditionMenuTitle.add(caret);
         cmsEditionMenu.add(cmsEditionMenuTitle);
 
@@ -769,10 +781,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element cmsEditionMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
         cmsEditionMenu.add(cmsEditionMenuUL);
 
+        // Menu header
+        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
+        cmsEditionMenuUL.add(header);
 
         // Preview required message
         String previewRequired = bundle.getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED);
-
 
         // Toggle avanced CMS tools
         boolean showAdvancedTools = BooleanUtils
@@ -1298,7 +1312,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
         Element displayName = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, userName);
         userbarMenuTitle.add(displayName);
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, HTML_CLASS_DROPDOWN_CARET, StringUtils.EMPTY);
+        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         userbarMenuTitle.add(caret);
         userbarMenu.add(userbarMenuTitle);
 
