@@ -521,17 +521,34 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 }
 
                 if ("destroyDynamicPage".equals(action)) {
-                    String pageId = null;
+                    // Page identifier
+                    String[] pageIdParameters = parameterMap.get("pageId");
+                    String pageId;
+                    if (ArrayUtils.isEmpty(pageIdParameters)) {
+                        pageId = null;
+                    } else {
+                        pageId = URLDecoder.decode(pageIdParameters[0], CharEncoding.UTF_8);
+                    }
 
-                    if (parameterMap.get("pageId") != null) {
-                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], CharEncoding.UTF_8);
+                    if (pageId != null) {
+                        // Command
+                        StopDynamicPageCommand command = new StopDynamicPageCommand(pageId);
 
-                        StopDynamicPageCommand stopCmd = new StopDynamicPageCommand(pageId);
-                        if (parameterMap.get("location") != null)
-                            stopCmd.setLocation(URLDecoder.decode(parameterMap.get("location")[0], CharEncoding.UTF_8));
+                        // Location
+                        String[] locationParameters = parameterMap.get("location");
+                        if (ArrayUtils.isNotEmpty(locationParameters)) {
+                            String location = URLDecoder.decode(locationParameters[0], CharEncoding.UTF_8);
+                            command.setLocation(location);
+                        }
+                        
+                        // Close whole space indicator
+                        String[] closeWholeSpaceParameters = parameterMap.get("closeWholeSpace");
+                        if (ArrayUtils.isNotEmpty(closeWholeSpaceParameters)) {
+                            boolean closeWholeSpace = BooleanUtils.toBoolean(URLDecoder.decode(closeWholeSpaceParameters[0], CharEncoding.UTF_8));
+                            command.setCloseWholeSpace(closeWholeSpace);
+                        }
 
-                        return stopCmd;
-
+                        return command;
                     }
                 }
 

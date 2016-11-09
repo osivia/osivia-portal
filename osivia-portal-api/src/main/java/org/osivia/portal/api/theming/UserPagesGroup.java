@@ -12,8 +12,10 @@ public class UserPagesGroup {
 
     /** Icon. */
     private String icon;
-    /** Label internationalization key. */
-    private String labelKey;
+    /** Display name. */
+    private String displayName;
+    /** Root page. */
+    private UserPage rootPage;
 
     /** Group name. */
     private final String name;
@@ -107,6 +109,60 @@ public class UserPagesGroup {
 
 
     /**
+     * Getter for icon.
+     * 
+     * @return the icon
+     */
+    public String getIcon() {
+        return this.icon;
+    }
+
+    /**
+     * Setter for icon.
+     * 
+     * @param icon the icon to set
+     */
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    /**
+     * Getter for displayName.
+     * 
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    /**
+     * Setter for displayName.
+     * 
+     * @param displayName the displayName to set
+     */
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    /**
+     * Getter for rootPage.
+     * 
+     * @return the rootPage
+     */
+    public UserPage getRootPage() {
+        return rootPage;
+    }
+
+    /**
+     * Setter for rootPage.
+     * 
+     * @param rootPage the rootPage to set
+     */
+    public void setRootPage(UserPage rootPage) {
+        this.rootPage = rootPage;
+    }
+
+    /**
      * Getter for name.
      *
      * @return the name
@@ -140,42 +196,6 @@ public class UserPagesGroup {
      */
     public Set<UserPage> getHiddenPages() {
         return this.hiddenPages;
-    }
-
-    /**
-     * Getter for icon.
-     * 
-     * @return the icon
-     */
-    public String getIcon() {
-        return this.icon;
-    }
-
-    /**
-     * Setter for icon.
-     * 
-     * @param icon the icon to set
-     */
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    /**
-     * Getter for labelKey.
-     * 
-     * @return the labelKey
-     */
-    public String getLabelKey() {
-        return this.labelKey;
-    }
-
-    /**
-     * Setter for labelKey.
-     * 
-     * @param labelKey the labelKey to set
-     */
-    public void setLabelKey(String labelKey) {
-        this.labelKey = labelKey;
     }
 
 }

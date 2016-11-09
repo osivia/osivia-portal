@@ -146,8 +146,31 @@ public interface IPortalUrlFactory {
      * @param parentId parent identifier
      * @param pageId page identifier
      * @return destroy page URL
+     * @deprecated remove useless attribute parentId
      */
+    @Deprecated
     String getDestroyPageUrl(PortalControllerContext portalControllerContext, String parentId, String pageId);
+
+
+    /**
+     * Get destroy page URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param pageId page identifier
+     * @return URL
+     */
+    String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId);
+
+
+    /**
+     * Get destroy page URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param pageId page identifier
+     * @param closeWholeSpace close whole space indicator
+     * @return URL
+     */
+    String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId, boolean closeWholeSpace);
 
 
     /**

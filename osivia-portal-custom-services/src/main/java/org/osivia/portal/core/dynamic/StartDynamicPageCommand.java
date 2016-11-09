@@ -37,6 +37,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -141,10 +142,11 @@ public class StartDynamicPageCommand extends DynamicCommand {
             PortalObjectId potemplateid = PortalObjectId.parse(this.templateId, PortalObjectPath.SAFEST_FORMAT);
             String potemplatepath = potemplateid.toString(PortalObjectPath.CANONICAL_FORMAT);
 
-            String cmsPath = this.properties.get("osivia.cms.basePath");
+            // Base path
+            String basePath = this.properties.get("osivia.cms.basePath");
 
 
-            String pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.pageName, this.templateId, cmsPath, this.displayNames,
+            String pageName = RestorablePageUtils.createRestorableName(this.getControllerContext(), this.pageName, this.templateId, basePath, this.displayNames,
                     this.properties, this.parameters, this.cmsParameters);
             String pageUniqueName = this.pageName;
 
@@ -180,11 +182,13 @@ public class StartDynamicPageCommand extends DynamicCommand {
             Map<String, String> properties = new HashMap<String, String>(this.properties);
 
             // Tab group
+            CMSItem spaceConfig;
             EcmDocument document;
-            if (cmsPath != null) {
-                CMSItem spaceConfig = cmsService.getSpaceConfig(cmsContext, cmsPath);
+            if (basePath != null) {
+                spaceConfig = cmsService.getSpaceConfig(cmsContext, basePath);
                 document = (EcmDocument) spaceConfig.getNativeItem();
             } else {
+                spaceConfig = null;
                 document = null;
             }
             String tabType = properties.get(TabGroup.TYPE_PROPERTY);
@@ -197,6 +201,30 @@ public class StartDynamicPageCommand extends DynamicCommand {
                             properties.put(TabGroup.MAINTAINS_PROPERTY, String.valueOf(true));
                         }
                         break;
+                    }
+                }
+
+                if ((spaceConfig != null) && (properties.get(TabGroup.NAME_PROPERTY) == null)) {
+                    // Parent CMS item
+                    CMSItem parentItem = spaceConfig;
+
+                    while ((parentItem != null) && (parentItem.getType() != null) && !parentItem.getType().isRootType()) {
+                        try {
+                            // Parent path
+                            CMSObjectPath parentObjectPath = CMSObjectPath.parse(parentItem.getPath()).getParent();
+                            String parentPath = parentObjectPath.toString();
+
+                            parentItem = cmsService.getSpaceConfig(cmsContext, parentPath);
+                        } catch (Exception e) {
+                            parentItem = null;
+                        }
+                    }
+
+                    if (parentItem != null) {
+                        properties.put("osivia.cms.root", String.valueOf(parentItem.equals(spaceConfig)));
+                        properties.put("osivia.cms.rootPath", parentItem.getPath());
+                        properties.put("osivia.cms.rootDisplayName", parentItem.getProperties().get("displayName"));
+                        properties.put(TabGroup.NAME_PROPERTY, parentItem.getWebId());
                     }
                 }
             }

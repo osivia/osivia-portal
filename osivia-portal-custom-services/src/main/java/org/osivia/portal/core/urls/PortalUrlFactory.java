@@ -513,13 +513,41 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    public String getDestroyPageUrl(PortalControllerContext ctx, String parentId, String pageId) {
-        final ControllerCommand cmd = new StopDynamicPageCommand();
-        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
+    public String getDestroyPageUrl(PortalControllerContext portalControllerContext, String parentId, String pageId) {
+        return this.getDestroyPageUrl(portalControllerContext, pageId);
+    }
 
-        String url = portalURL.toString();
-        url += "&parentId=" + parentId + "&pageId=" + pageId;
-        return url;
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId) {
+        return this.getDestroyPageUrl(portalControllerContext, pageId, false);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId, boolean closeWholeSpace) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // Controller command
+        ControllerCommand command = new StopDynamicPageCommand();
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, null, null);
+
+        // URL
+        StringBuilder url = new StringBuilder();
+        url.append(portalUrl.toString());
+        url.append("&pageId=");
+        url.append(pageId);
+        if (closeWholeSpace) {
+            url.append("&closeWholeSpace=");
+            url.append(closeWholeSpace);
+        }
+
+        return url.toString();
     }
 
 

@@ -70,33 +70,17 @@
 
 
 .tabs-default {
-    border-bottom-style: solid;
-    border-width: @border-width;
-    border-color: @border-color;
-    
-    > * {
-        margin-bottom: -@border-width;
-    }
-
     ul {
-        &, &.home, &.groups {
-            margin: 0;    
-        }
+        margin: 0;
         
         li {
             position: relative;
-            
+                
             padding: 0;
-
+            
             a {
                 padding: @padding-vertical @padding-horizontal;
                 
-                border-style: solid;
-                border-width: @border-width;
-                border-color: transparent;
-                
-                .border-top-radius(@radius: @border-radius);
-
                 &:hover, &:focus {
                     text-decoration: none;
                 }
@@ -121,17 +105,6 @@
                     padding-right: floor(@padding-horizontal / 2) - @border-width;
                 }
             }
-        
-            &.active {
-                > a {
-                    background-color: #fff;
-                    border-color: @border-color @border-color transparent;
-
-                    &.page-close {
-                        border-color: transparent;
-                    }
-                }   
-            }
             
             &:not(.active) {
                 > a {
@@ -143,65 +116,108 @@
                 }
             }
         }
+    }
+    
+    .primary-tabs {
+        border-bottom-style: solid;
+        border-width: @border-width;
+        border-color: @border-color;
         
-        &.home {
-            > li {
-                margin-right: @padding-horizontal;
-            }
+        > * {
+            margin-bottom: -@border-width;
         }
-        
-        &.groups {
-            > li {
-                margin-right: @padding-horizontal;
-                
-                border-style: solid;
-                border-bottom-style: none;
-                border-width: 1px;
-                border-color: tint(@border-color);
-                
-                .border-top-radius(@radius: @border-radius);
-                
-                &.current {
-                    background-color: #fff;
-                    border-bottom-style: solid;
-                    border-color: @border-color @border-color transparent;
+    
+        ul {
+            &, &.home, &.groups {
+                margin: 0;
+            }
+            
+            li {
+                a {
+                    border-style: solid;
+                    border-width: @border-width;
+                    border-color: transparent;
+                    
+                    .border-top-radius(@radius: @border-radius);
                 }
-
-                li {
-                    &.group-title {
-                        padding: @padding-vertical floor(@padding-horizontal / 2) @padding-vertical @padding-horizontal;  
-                    }
-                    
-                    &, &.active {
-                        > a {
-                            border-style: none;
+                
+                &.active {
+                    a {
+                        background-color: #fff;
+                        border-color: @border-color @border-color transparent;
+    
+                        &.page-close {
+                            border-color: transparent;
                         }
-                    }
+                    }   
+                }
+            }
+            
+            &.home {
+                > li {
+                    margin-right: @padding-horizontal;
+                }
+            }
+            
+            &.groups {
+                > li {
+                    margin-right: @padding-horizontal;
                     
-                    &:not(:first-child) {
-                        > a {
-                            padding-left: floor(@padding-horizontal / 2);
-                            
-                            border-top-left-radius: 0;
+                    border-style: solid;
+                    border-bottom-style: none;
+                    border-width: 1px;
+                    border-color: tint(@border-color);
+                    
+                    .border-top-radius(@radius: @border-radius);
+                    
+                    &.current {
+                        background-color: #fff;
+                        border-bottom-style: solid;
+                        border-color: @border-color @border-color transparent;
+                    }
+    
+                    li {
+                        &.group-title {
+                            padding: @padding-vertical floor(@padding-horizontal / 2) @padding-vertical @padding-horizontal;  
                         }
-                    }
-                    
-                    &:not(:last-child) {
-                        > a {
-                            border-top-right-radius: 0;
-                            
-                            &:first-of-type {
-                                padding-right: @padding-horizontal + 15;
+                        
+                        &, &.active {
+                            > a {
+                                border-style: none;
                             }
-                            
-                            &:last-of-type {
-                                padding-right: floor(@padding-horizontal / 2);
-                            }     
+                        }
+                        
+                        &:not(:first-child) {
+                            > a {
+                                padding-left: floor(@padding-horizontal / 2);
+                                
+                                border-top-left-radius: 0;
+                            }
+                        }
+                        
+                        &:not(:last-child) {
+                            > a {
+                                border-top-right-radius: 0;
+                                
+                                &:first-of-type {
+                                    padding-right: @padding-horizontal + 15;
+                                }
+                                
+                                &:last-of-type {
+                                    padding-right: floor(@padding-horizontal / 2);
+                                }     
+                            }
                         }
                     }
                 }
             }
         }
+    }
+    
+    .secondary-tabs {
+        .clearfix;
+        
+        background-color: #fff;
     }
 }
 

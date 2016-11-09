@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
@@ -46,6 +47,9 @@ import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.server.ServerRequest;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.theming.TabGroup;
@@ -89,6 +93,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
     private final IPortalUrlFactory urlFactory;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
 
     /** Toolbar attributes names. */
     private final Set<String> names;
@@ -113,6 +119,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         this.urlFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
         this.names = new TreeSet<String>();
         this.names.add(Constants.ATTR_USER_PORTAL);
@@ -331,6 +341,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
         // Server request
         ServerRequest request = controllerContext.getServerInvocation().getRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
         // Portal
         Portal portal = renderPageCommand.getPortal();
 
@@ -456,6 +469,9 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
                 mainPages.add(userPage);
 
+                // Root page indicator
+                boolean isRootPage = BooleanUtils.toBoolean(child.getDeclaredProperty("osivia.cms.root"));
+
                 // Tab group
                 String groupName = child.getDeclaredProperty(TabGroup.NAME_PROPERTY);
                 if (StringUtils.isEmpty(groupName)) {
@@ -494,13 +510,46 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                         TabGroup tabGroup = tabGroups.get(groupName);
                         if (tabGroup != null) {
                             group.setIcon(tabGroup.getIcon());
-                            group.setLabelKey(tabGroup.getLabelKey());
+                            group.setDisplayName(bundle.getString(tabGroup.getLabelKey(), tabGroup.getClass().getClassLoader()));
+                        }
+
+                        // Root item
+                        String rootPath = child.getDeclaredProperty("osivia.cms.rootPath");
+                        if (StringUtils.isNotEmpty(rootPath)) {
+                            // Display name
+                            String displayName = child.getDeclaredProperty("osivia.cms.rootDisplayName");
+                            // CMS URL
+                            String url = this.urlFactory.getCMSUrl(portalControllerContext, null, rootPath, null, null, "tabs", null, null, null, null);
+                            // Close URL
+                            String closeUrl;
+                            if ((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) {
+                                try {
+                                    String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+                                    closeUrl = this.urlFactory.getDestroyPageUrl(new PortalControllerContext(controllerContext), pageId, true);
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new ControllerException(e);
+                                }
+                            } else {
+                                closeUrl = null;
+                            }
+
+                            // Root page
+                            UserPage rootPage = new UserPage(groupName);
+                            rootPage.setUrl(url);
+                            rootPage.setName(displayName);
+                            rootPage.setClosePageUrl(closeUrl);
+
+                            group.setRootPage(rootPage);
+
+                            displayedPagesCount++;
                         }
 
                         userPortal.addGroup(group);
                     }
 
-                    if (displayed) {
+                    if (isRootPage) {
+                        group.setRootPage(userPage);
+                    } else if (displayed) {
                         displayedPages.put(userPage.getId(), userPage);
                     } else {
                         group.add(userPage, displayed);
@@ -508,7 +557,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                     userPage.setGroup(groupName);
 
-                    if (displayed) {
+                    if (displayed && (group.getRootPage() == null)) {
                         displayedPagesCount++;
                     }
                 }
@@ -525,11 +574,10 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
                 if (((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) || StringUtils.isNotEmpty(groupName)) {
                     try {
-                        String parentId = URLEncoder.encode(child.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-                        String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
-
-                        String closePageURL = this.urlFactory.getDestroyPageUrl(new PortalControllerContext(controllerContext), parentId, pageId);
-                        userPage.setClosePageUrl(closePageURL);
+                        String pageId = URLEncoder.encode(child.getId().toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
+                        boolean closeWholeSpace = isRootPage;
+                        String closeUrl = this.urlFactory.getDestroyPageUrl(new PortalControllerContext(controllerContext), pageId, closeWholeSpace);
+                        userPage.setClosePageUrl(closeUrl);
                     } catch (UnsupportedEncodingException e) {
                         throw new ControllerException(e);
                     }
