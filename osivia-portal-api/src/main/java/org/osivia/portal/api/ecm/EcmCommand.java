@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.api.ecm;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
+
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -31,19 +33,19 @@ public abstract class EcmCommand  {
 	
 	public enum ReloadAfterCommandStrategy {
 		/** do nothing after the command- Not implemented ! */
-		nothing(""),
+		nothing(EMPTY),
 		
 		/** refresh page */
-		refreshPage(""),
+		refreshPage(EMPTY),
 		
 		/** refresh page and all navigation tree */
-		refreshNavigation(""),
+		refreshNavigation(EMPTY),
 		
 		/** redirect to parent and refresh navigation tree. Not implemented !  */
-		moveToParent(""),
+		moveToParent(EMPTY),
 		
 		/** redirect to child and refresh navigation tree. Not implemented !  */
-		moveToChild("");
+		moveToChild(EMPTY);
 		
 		/** Redirection path after command. */
 		private String redirectionPath;

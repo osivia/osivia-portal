@@ -14,14 +14,12 @@
  */
 package org.osivia.portal.core.ecm;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
@@ -134,7 +132,20 @@ public class EcmCommandDelegate extends ControllerCommand  {
 			execute = context.execute(redirect);
 	
 		
-		} 
+		} else if(command.getStrategy().equals(EcmCommand.ReloadAfterCommandStrategy.moveToParent)) {
+        
+            // reload navigation tree
+            PageProperties.getProperties().setRefreshingPage(true);
+            
+            // Redirection path
+            String redirectCmsPath = EcmCommand.ReloadAfterCommandStrategy.moveToParent.getRedirectionPathPath();
+    
+            CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, "destroyedChild",
+                    null, null, null, null, null, null);
+            execute = context.execute(redirect);
+    
+        
+        }
 		else {
 			CmsCommand redirect = new CmsCommand(null, cmsPath, null, null, null,
 					null, null, null, null, null, null);
