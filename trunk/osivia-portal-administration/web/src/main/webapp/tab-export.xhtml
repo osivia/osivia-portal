@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+    <c:set var="context" value="${facesContext.externalContext.requestContextPath}" />
+
+    <p class="lead">
+        <i class="glyphicons glyphicons-disk-export"></i>
+        <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_CONFIG')}" /></span>
+    </p>
+    
+    <p>
+        <a href="#{context}/export" target="_blank">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_ALL')}" />
+        </a>
+    </p>
+    
+    <p>
+        <a href="#{context}/export?filter=true" target="_blank">
+            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PUBLISHED')}" />
+        </a>
+    </p>
+    
+    <hr />
+
+    <h:form>
+        <p class="lead">
+            <i class="glyphicons glyphicons-disk-export"></i>
+            <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PAGES')}" /></span>
+        </p>
+
+        <div class="form-group">
+            <rich:tree value="#{pagesTreeBean.pagesTree}" var="page">
+                <rich:treeNode>
+                    <a href="#{context}/export?pageId=#{page.id}" target="_blank">
+                        <h:outputText value="#{page}" />
+                        <!-- <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_PAGE_LINK')}" /> -->
+                    </a>
+                </rich:treeNode>
+            </rich:tree>
+        </div>
+    </h:form>
+
+</div>

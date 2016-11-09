@@ -1,0 +1,108 @@
+//
+// OSIVIA Portal - Select2 component
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Variables
+@import "../bootstrap/variables.less";
+
+
+@hierarchy-indentation: @padding-large-horizontal;
+
+
+.select2-container {
+    .make-select2-hierarchy(@count: 5);
+    
+    .select2-results {
+        .select2-results__option--highlighted {
+            .text-muted {
+                color: #eee;
+            }
+        }
+        
+        .optgroup {
+            font-weight: bold;
+        }
+    }
+}
+
+
+// Hierarchy recursive function
+.make-select2-hierarchy(@count) when (isnumber(@count)) and (@count > 0) {
+    .select2-results {
+        .level-@{count} {
+            display: inline-block;
+            
+            margin-left: (@count - 1) * @hierarchy-indentation;
+        }
+    }
+    
+    // Loop
+    .make-select2-hierarchy(@count: @count - 1);
+}
+
+
+// Bootstrap customization
+.select2-container.select2-container--bootstrap {
+    display: block;
+    
+    .select2-selection--multiple {
+        min-height: 34px;
+        
+        .select2-selection__choice {
+            position: relative;
+            
+            .user-select(@select: none);
+            
+            &:hover {
+                border-color: darken(@btn-default-border, 12%);
+            }
+            
+            .select2-selection__choice__remove {
+                margin: 0;
+                
+                &, &::before {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                }
+                
+                &::before {
+                    content: "\E020";  // Trash
+
+                    padding-top: 4px;
+                    opacity: 0;
+                    
+                    color: @btn-default-color;
+                    background-color: fade(darken(@btn-default-bg, 10%), 80%);
+                    border-radius: 3px;
+                    
+                    text-align: center;
+                    font-family: 'Glyphicons Halflings';
+                    font-style: normal;
+                    font-weight: normal;
+                    line-height: 1;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+                
+                &, &:hover {
+                    color: transparent;
+                }
+                
+                &:hover::before {
+                    opacity: 1;
+                }
+            }
+        }
+        
+        .select2-selection__rendered {
+            display: block;
+            padding: 0;
+        }
+    }
+}
