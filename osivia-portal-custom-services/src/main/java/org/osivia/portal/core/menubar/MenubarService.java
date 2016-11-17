@@ -357,11 +357,16 @@ public class MenubarService implements IMenubarService {
      * @return toolbar DOM element
      */
     private Element generateToolbar(PortalControllerContext portalControllerContext, Map<MenubarGroup, Set<MenubarItem>> sortedItems) {
-        Element toolbar;
+        // Toolbar container
+        Element container;
+
         if (MapUtils.isNotEmpty(sortedItems)) {
+            container = DOM4JUtils.generateDivElement(null);
+
             // Toolbar
-            toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar no-ajax-link", null);
+            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar no-ajax-link", null);
             DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
+            container.add(toolbar);
 
             // Loop on menubar groups
             for (Entry<MenubarGroup, Set<MenubarItem>> sortedItemsEntry : sortedItems.entrySet()) {
@@ -389,26 +394,28 @@ public class MenubarService implements IMenubarService {
                 }
 
                 // Generate group DOM element
-                Element groupLI = this.generateGroupElement(sortedItemsKey, objects, dropdownMenus);
+                Element groupLI = this.generateGroupElement(container, sortedItemsKey, objects, dropdownMenus);
                 toolbar.add(groupLI);
             }
         } else {
-            toolbar = null;
+            container = null;
         }
 
-        return toolbar;
+        return container;
     }
 
 
     /**
      * Generate menubar group DOM element.
      *
+     * @param container toolbar container DOM element
      * @param group menubar group
      * @param objects menubar group objects
      * @param dropdownMenus menubar dropdown menus content
      * @return DOM element
      */
-    private Element generateGroupElement(MenubarGroup group, Set<MenubarObject> objects, Map<MenubarDropdown, List<MenubarItem>> dropdownMenus) {
+    private Element generateGroupElement(Element container, MenubarGroup group, Set<MenubarObject> objects,
+            Map<MenubarDropdown, List<MenubarItem>> dropdownMenus) {
         // Group LI
         Element groupLI = DOM4JUtils.generateElement(HTMLConstants.LI, group.getHtmlClasses(), null);
 
@@ -433,7 +440,7 @@ public class MenubarService implements IMenubarService {
                     // Dropdown menu
 
                     // Dropdown LI
-                    Element dropdownLI = this.generateDropdownElement(dropdown, dropdownMenuItems);
+                    Element dropdownLI = this.generateDropdownElement(container, dropdown, dropdownMenuItems);
                     genericGroupUL.add(dropdownLI);
                 } else {
                     // Direct link
@@ -461,7 +468,7 @@ public class MenubarService implements IMenubarService {
                 }
 
                 // LI
-                Element li = this.generateItemElement(item, false);
+                Element li = this.generateItemElement(container, item, false);
                 parent.add(li);
             }
         }
@@ -485,11 +492,12 @@ public class MenubarService implements IMenubarService {
     /**
      * Generate menubar dropdown menu DOM element.
      *
+     * @param container toolbar container DOM element
      * @param dropdown menubar dropdown menu
      * @param dropdownMenuItems menubar dropdown menu items
      * @return DOM element
      */
-    private Element generateDropdownElement(MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
+    private Element generateDropdownElement(Element container, MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
         // Dropdown LI
         Element dropdownLI;
         if (dropdown.isBreadcrumb()) {
@@ -533,7 +541,7 @@ public class MenubarService implements IMenubarService {
                 dropdownUL.add(dividerLI);
             }
 
-            Element dropdownItemLI = this.generateItemElement(dropdownMenuItem, true);
+            Element dropdownItemLI = this.generateItemElement(container, dropdownMenuItem, true);
             dropdownUL.add(dropdownItemLI);
 
             if (first) {
@@ -548,11 +556,12 @@ public class MenubarService implements IMenubarService {
     /**
      * Generate menubar item DOM element.
      *
+     * @param container toolbar container DOM element
      * @param item menubar item
      * @param dropdownItem dropdown item indicator
      * @return DOM element
      */
-    private Element generateItemElement(MenubarItem item, boolean dropdownItem) {
+    private Element generateItemElement(Element container, MenubarItem item, boolean dropdownItem) {
         // HTML classes
         StringBuilder htmlClasses = new StringBuilder();
         if (item.getUrl() == null) {
@@ -648,9 +657,10 @@ public class MenubarService implements IMenubarService {
 
 
         // Associated HTML
-        if (StringUtils.isNotBlank(item.getAssociatedHTML())) {
-            CDATA cdata = new DOMCDATA(item.getAssociatedHTML());
-            li.add(cdata);
+        String associatedHTML = item.getAssociatedHTML();
+        if (StringUtils.isNotBlank(associatedHTML)) {
+            CDATA cdata = new DOMCDATA(associatedHTML);
+            container.add(cdata);
         }
 
         return li;

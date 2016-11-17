@@ -7,6 +7,10 @@ package org.osivia.portal.api.html;
  */
 public enum AccessibilityRoles {
 
+    /** Dialog role. */
+    DIALOG("dialog"),
+    /** Document role. */
+    DOCUMENT("document"),
     /** Form role. */
     FORM(HTMLConstants.ROLE_FORM),
     /** Menu role. */

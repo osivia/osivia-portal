@@ -8,13 +8,6 @@ $JQry(function() {
 		var $element = $JQry(element),
 			loaded = $element.data("loaded"),
 			$container = $element.closest(".content-navbar-affix-container");
-
-		
-		// Navbar height
-		$container.css({
-			height: $element.outerHeight(true)
-		});
-		
 		
 		// Affix
 		if (!loaded) {
@@ -41,10 +34,6 @@ $JQry(window).resize(function() {
 		var $element = $JQry(element),
 			$container = $element.closest(".content-navbar-affix-container");
 
-		$container.css({
-			height: $element.outerHeight(true)
-		});
-		
 		updateContentNavbarAffixValues($container);
 		
 		$element.affix("checkPosition");

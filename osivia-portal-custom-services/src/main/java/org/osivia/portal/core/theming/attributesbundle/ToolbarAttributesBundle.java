@@ -258,8 +258,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // View profile
             try {
                 Map<String, String> properties = new HashMap<String, String>();
+                properties.put(InternalConstants.PROP_WINDOW_TITLE, bundle.getString(InternationalizationConstants.KEY_MY_PROFILE));
                 properties.put("osivia.hideTitle", "1");
-                properties.put("osivia.title", bundle.getString(InternationalizationConstants.KEY_MY_PROFILE));
+                properties.put("osivia.ajaxLink", "1");
+                properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
 
                 Map<String, String> parameters = new HashMap<String, String>();
 

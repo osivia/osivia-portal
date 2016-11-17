@@ -25,10 +25,30 @@
 }
 
 
+.content-navbar-affix-container {
+    @media screen and (min-width: @screen-sm-min) {
+        height: @navbar-height + 2;
+        
+        margin-bottom: @line-height-computed;
+    }
+}
+
+
+.content-navbar-affix {
+    @media screen and (min-width: @screen-sm-min) {
+        z-index: @zindex-navbar-fixed + 1;
+    }
+}
+
+
 .content-navbar {
     @media screen and (min-width: @screen-sm-min) {
         .navbar;
         .navbar-default;
+        
+        .content-navbar-affix-container & {
+            margin-bottom: 0;
+        }
     }
 }
 

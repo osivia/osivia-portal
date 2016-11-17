@@ -181,6 +181,18 @@ public final class DOM4JUtils {
 
 
     /**
+     * Add ARIA attribute to an existing DOM4J element.
+     * 
+     * @param element DOM4J element
+     * @param name ARIA attribute name
+     * @param value ARIA attribute value
+     */
+    public static void addAriaAttribute(Element element, String name, String value) {
+        addAttribute(element, "aria-" + name, value);
+    }
+
+
+    /**
      * Add text to an existing DOM4J element.
      *
      * @param element DOM4J element
