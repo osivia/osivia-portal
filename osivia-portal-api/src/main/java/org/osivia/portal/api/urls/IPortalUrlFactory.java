@@ -60,7 +60,7 @@ public interface IPortalUrlFactory {
     /** Display context preview (live version for validation purpose). */
     String DISPLAYCTX_PREVIEW_LIVE_VERSION = "preview";
 
-	String MBEAN_NAME = "osivia:service=UrlFactory";
+    String MBEAN_NAME = "osivia:service=UrlFactory";
 
     /**
      * Get portal CMS contextualized page.
@@ -89,8 +89,8 @@ public interface IPortalUrlFactory {
      * @param windowPermReference window perm reference
      * @return CMS url
      */
-    String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
-            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference);
+    String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams, String contextualization,
+            String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference);
 
 
     /**
@@ -154,7 +154,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get destroy page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pageId page identifier
      * @return URL
@@ -164,53 +164,66 @@ public interface IPortalUrlFactory {
 
     /**
      * Get destroy page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param pageId page identifier
-     * @param closeWholeSpace close whole space indicator
+     * @param closeChildren close children indicator
      * @return URL
      */
-    String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId, boolean closeWholeSpace);
+    String getDestroyPageUrl(PortalControllerContext portalControllerContext, String pageId, boolean closeChildren);
 
 
     /**
      * Get destroy current page URL.
      *
      * @param portalControllerContext portal controller context
-     * @return destroy current page URL
+     * @return URL
      */
     String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
+
     /**
      * Get destroy current page URL.
      *
      * @param portalControllerContext portal controller context
-     * @param location url to redirect      * 
-     * @return destroy current page URL
+     * @param redirectionUrl redirection URL
+     * @return URL
      */
-    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String location) throws PortalException;
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl) throws PortalException;
+
+
+    /**
+     * Get destroy current page URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param redirectionUrl redirection URL
+     * @param closeChildren close children indicator
+     * @return URL
+     * @throws PortalException
+     */
+    String getDestroyCurrentPageUrl(PortalControllerContext portalControllerContext, String redirectionUrl, boolean closeChildren) throws PortalException;
 
 
     /**
      * Adapt portal URL to navigation.
      *
      * @param portalControllerContext portal controller context
-     * @param orginalUrl original URL
+     * @param originalUrl original URL
      * @return navigation URL
      * @throws PortalException
      */
-    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String orginalUrl) throws PortalException;
+    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String originalUrl) throws PortalException;
 
 
     /**
      * Adapt portal URL to popup.
      *
      * @param portalControllerContext portal controller context
-     * @param orginalUrl original URL
+     * @param originalUrl original URL
      * @param adapter adapter status code
      * @return popup URL
      */
-    String adaptPortalUrlToPopup(PortalControllerContext portalControllerContext, String orginalUrl, int adapter);
+    String adaptPortalUrlToPopup(PortalControllerContext portalControllerContext, String originalUrl, int adapter);
 
 
     /**
@@ -225,13 +238,13 @@ public interface IPortalUrlFactory {
      * @deprecated see
      */
     @Deprecated
-    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
-            boolean popup) throws PortalException;
+    String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties, boolean popup)
+            throws PortalException;
 
 
     /**
      * Get start portlet URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param portletInstance portlet instance
      * @param windowProperties window properties
@@ -244,7 +257,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get start portlet URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param portletInstance portlet instance
      * @param windowProperties window properties
@@ -267,8 +280,8 @@ public interface IPortalUrlFactory {
      * @param windowParams the window parameters
      * @return the start portlet in new page
      */
-    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance, Map<String, String> windowProperties,
-            Map<String, String> windowParams) throws PortalException;
+    public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
+            Map<String, String> windowProperties, Map<String, String> windowParams) throws PortalException;
 
     /**
      * Get start portlet in region URL.
@@ -322,8 +335,7 @@ public interface IPortalUrlFactory {
      * @param newContentNotify set to true for enable notifications after this command
      * @return refresh page URL
      */
-	String getRefreshPageUrl(PortalControllerContext portalControllerContext,
-			boolean newContentNotify);
+    String getRefreshPageUrl(PortalControllerContext portalControllerContext, boolean newContentNotify);
 
     /**
      * Get put document in trash URL.
@@ -384,37 +396,46 @@ public interface IPortalUrlFactory {
 
     /**
      * Return an url who fire the ECM
+     *
      * @param portalControllerContext
      * @param path
      * @param commandName
      * @return the url
      */
-     String getEcmCommandUrl(PortalControllerContext portalControllerContext,
-            String path, EcmCommonCommands commandName) throws PortalException ;
+    String getEcmCommandUrl(PortalControllerContext portalControllerContext, String path, EcmCommonCommands commandName) throws PortalException;
 
-	/**
-	 * Return an url who fire the ECM
-	 * @param portalControllerContext
-	 * @param path
-	 * @param redirectionPath
-	 * @param commandName
-	 * @return the url
-	 */
-	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
-			String path, EcmCommonCommands commandName, String redirectionPath) throws PortalException ;
+    /**
+     * Return an url who fire the ECM
+     *
+     * @param portalControllerContext
+     * @param path
+     * @param redirectionPath
+     * @param commandName
+     * @return the url
+     */
+    String getEcmCommandUrl(PortalControllerContext portalControllerContext, String path, EcmCommonCommands commandName, String redirectionPath)
+            throws PortalException;
 
-	/**
-	 * Return an url who fire the ECM
-	 * @param portalControllerContext
-	 * @param path
-	 * @param param redirectionPath
-	 * @param commandName
-	 * @return the url
-	 */
-	 String getEcmCommandUrl(PortalControllerContext portalControllerContext,
-			String path, String commandName, String redirectionPath) throws PortalException ;
+    /**
+     * Return an url who fire the ECM
+     *
+     * @param portalControllerContext
+     * @param path
+     * @param param redirectionPath
+     * @param commandName
+     * @return the url
+     */
+    String getEcmCommandUrl(PortalControllerContext portalControllerContext, String path, String commandName, String redirectionPath) throws PortalException;
 
 
-
+    /**
+     * Get home page URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param refresh refresh page indicator
+     * @return URL
+     * @throws PortalException
+     */
+    String getHomePageUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortalException;
 
 }

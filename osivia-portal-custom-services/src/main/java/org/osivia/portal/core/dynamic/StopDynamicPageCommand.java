@@ -65,8 +65,8 @@ public class StopDynamicPageCommand extends DynamicCommand {
     private String pageId;
     /** Location. */
     private String location;
-    /** Close whole space indicator. */
-    private boolean closeWholeSpace;
+    /** Close children indicator. */
+    private boolean closeChildren;
 
     /** Command info. */
     private final CommandInfo info;
@@ -146,9 +146,6 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 String domainPath = "/" + domainName;
                 DomainContextualization domainContextualization = cmsService.getDomainContextualization(cmsContext, domainPath);
 
-                // Root path
-                String rootPath = page.getProperty("osivia.cms.rootPath");
-
                 // Get current page before it is deleted
                 Page currentPage = null;
 
@@ -210,12 +207,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
                         }
                     }
 
-                    if ((this.closeWholeSpace) && StringUtils.isNotEmpty(rootPath)) {
+                    if ((this.closeChildren) && StringUtils.isNotEmpty(basePath)) {
                         Collection<PortalObject> siblings = portal.getChildren(PortalObject.PAGE_MASK);
                         for (PortalObject sibling : siblings) {
                             Page siblingPage = (Page) sibling;
                             String siblingBasePath = siblingPage.getProperty("osivia.cms.basePath");
-                            if (StringUtils.startsWith(siblingBasePath, rootPath)) {
+                            if (StringUtils.startsWith(siblingBasePath, basePath)) {
                                 String siblingId = sibling.getId().toString(PortalObjectPath.SAFEST_FORMAT);
                                 otherPageIds.add(siblingId);
                             }
@@ -238,8 +235,9 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
                         currentPageDeleted = (currentDomainName != null) && currentDomainName.equals(domainName);
                     }
-                } else if ((this.closeWholeSpace) && StringUtils.isNotEmpty(rootPath)) {
-                    currentPageDeleted = StringUtils.equals(currentPage.getProperty("osivia.cms.rootPath"), rootPath);
+                } else if ((this.closeChildren) && StringUtils.isNotEmpty(basePath)) {
+                    String currentBasePath = currentPage.getProperty("osivia.cms.basePath");
+                    currentPageDeleted = StringUtils.equals(currentBasePath, basePath);
                 } else if (currentPage != null) {
                     currentPageDeleted = topDeletedPage.getId().equals(topCurrentPage.getId());
                 }
@@ -359,12 +357,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
     }
 
     /**
-     * Setter for closeWholeSpace.
+     * Setter for closeChildren.
      * 
-     * @param closeWholeSpace the closeWholeSpace to set
+     * @param closeChildren the closeChildren to set
      */
-    public void setCloseWholeSpace(boolean closeWholeSpace) {
-        this.closeWholeSpace = closeWholeSpace;
+    public void setCloseChildren(boolean closeChildren) {
+        this.closeChildren = closeChildren;
     }
 
 }

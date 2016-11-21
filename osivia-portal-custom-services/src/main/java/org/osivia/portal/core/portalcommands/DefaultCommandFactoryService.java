@@ -541,11 +541,11 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             command.setLocation(location);
                         }
                         
-                        // Close whole space indicator
-                        String[] closeWholeSpaceParameters = parameterMap.get("closeWholeSpace");
-                        if (ArrayUtils.isNotEmpty(closeWholeSpaceParameters)) {
-                            boolean closeWholeSpace = BooleanUtils.toBoolean(URLDecoder.decode(closeWholeSpaceParameters[0], CharEncoding.UTF_8));
-                            command.setCloseWholeSpace(closeWholeSpace);
+                        // Close children indicator
+                        String[] closeChildrenParameters = parameterMap.get("closeChildren");
+                        if (ArrayUtils.isNotEmpty(closeChildrenParameters)) {
+                            boolean closeChildren = BooleanUtils.toBoolean(URLDecoder.decode(closeChildrenParameters[0], CharEncoding.UTF_8));
+                            command.setCloseChildren(closeChildren);
                         }
 
                         return command;
