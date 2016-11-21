@@ -36,7 +36,11 @@
 
 .content-navbar-affix {
     @media screen and (min-width: @screen-sm-min) {
-        z-index: @zindex-navbar-fixed + 1;
+        z-index: @zindex-navbar-fixed - 1;
+        
+        .modal-open & {
+            z-index: @zindex-modal-background - 1;
+        }
     }
 }
 

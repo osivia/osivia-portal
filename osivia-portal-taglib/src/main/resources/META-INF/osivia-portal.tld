@@ -45,6 +45,40 @@
             <type>java.lang.String</type>
         </attribute>
     </tag>
+    
+    
+    <!-- Format relative date -->
+    <tag>
+        <description>Format a relative date.</description>
+        <display-name>Format relative date</display-name>
+        <name>formatRelativeDate</name>
+        <tag-class>org.osivia.portal.taglib.portal.tag.FormatRelativeDateTag</tag-class>
+        <body-content>empty</body-content>
+        
+        <attribute>
+            <description>Date to be formatted.</description>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.util.Date</type>
+        </attribute>
+        
+        <attribute>
+            <description>Display tooltip indicator (default: true).</description>
+            <name>tooltip</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        
+        <attribute>
+            <description>Capitalize date display (default: false).</description>
+            <name>capitalize</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+    </tag>
 
 
     <!-- Escape JavaScript function -->

@@ -12,9 +12,8 @@
 <link rel="stylesheet" href="/osivia-portal-custom-web-assets/css/osivia.min.css">
 
 <link rel="stylesheet" href="/osivia-portal-custom-web-assets/css/glyphicons.min.css">
-<link rel="stylesheet" href="/osivia-portal-custom-web-assets/css/glyphicons-1.8.min.css">
 
-<script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="/osivia-portal-custom-web-assets/components/jquery/jquery-1.12.4.min.js"></script>
 <script type="text/javascript" src="/osivia-portal-custom-web-assets/js/jquery-integration.min.js"></script>
 <script type="text/javascript" src="/osivia-portal-custom-web-assets/print/js/print.min.js"></script>
 </head>
