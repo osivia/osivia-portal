@@ -312,7 +312,15 @@ public class BrowserService implements IBrowserService {
         // CMS context
         CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
-        return cmsService.getPortalSubitems(cmsContext, parentPath);
+        // Children
+        List<CMSItem> children;
+        if (options.isNavigation()) {
+            children = cmsService.getPortalNavigationSubitems(cmsContext, options.getCmsBasePath(), parentPath);
+        } else {
+            children = cmsService.getPortalSubitems(cmsContext, parentPath);
+        }
+
+        return children;
     }
 
 

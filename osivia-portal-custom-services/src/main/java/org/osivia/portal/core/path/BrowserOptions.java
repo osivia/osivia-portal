@@ -25,6 +25,8 @@ public class BrowserOptions {
     private final String cmsNavigationPath;
     /** Ignored paths. */
     private final Set<String> ignoredPaths;
+    /** Use navigation indicator. */
+    private final boolean navigation;
     /** Live indicator. */
     private final boolean live;
     /** Accepted types, required for move. */
@@ -66,6 +68,7 @@ public class BrowserOptions {
         this.path = request.getParameter("path");
         this.cmsBasePath = request.getParameter("cmsBasePath");
         this.cmsNavigationPath = request.getParameter("cmsNavigationPath");
+        this.navigation = BooleanUtils.toBoolean(request.getParameter("navigation"));
         this.live = BooleanUtils.toBoolean(request.getParameter("live"));
         this.workspaces = BooleanUtils.toBoolean(request.getParameter("workspaces"));
         this.link = BooleanUtils.toBoolean(request.getParameter("link"));
@@ -123,6 +126,7 @@ public class BrowserOptions {
         this.cmsBasePath = options.cmsBasePath;
         this.cmsNavigationPath = options.cmsNavigationPath;
         this.ignoredPaths = options.ignoredPaths;
+        this.navigation = options.navigation;
         this.live = options.live;
         this.acceptedTypes = options.acceptedTypes;
         this.includedTypes = options.includedTypes;
@@ -172,6 +176,15 @@ public class BrowserOptions {
      */
     public Set<String> getIgnoredPaths() {
         return this.ignoredPaths;
+    }
+
+    /**
+     * Getter for navigation.
+     * 
+     * @return the navigation
+     */
+    public boolean isNavigation() {
+        return navigation;
     }
 
     /**
