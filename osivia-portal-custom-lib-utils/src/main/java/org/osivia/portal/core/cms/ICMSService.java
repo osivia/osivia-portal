@@ -212,10 +212,9 @@ public interface ICMSService {
      * Get base URL to access ECM.
      *
      * @param cmsCtx CMS context
-     * @return url
-     * @throws CMSException
+     * @return URL
      */
-    String getEcmDomain(CMSServiceCtx cmsCtx) throws CMSException;
+    String getEcmDomain(CMSServiceCtx cmsCtx);
 
 
     /**
@@ -370,13 +369,12 @@ public interface ICMSService {
 
 
     /**
-     * Refresh the user avatar.
+     * Refresh binary resource.
      *
-     * @param cmsCtx cms context
-     * @param username username
-     * @return the timestamp associated with the refresh event
+     * @param cmsContext cms context
+     * @param path binary resource path
      */
-    String refreshBinaryResource(CMSServiceCtx cmsCtx, String path);
+    void refreshBinaryResource(CMSServiceCtx cmsContext, String path);
 
 
     /**
