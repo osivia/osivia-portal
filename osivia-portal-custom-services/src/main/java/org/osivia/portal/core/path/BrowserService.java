@@ -433,6 +433,10 @@ public class BrowserService implements IBrowserService {
             }
             if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
                 extraClasses.append("current ");
+
+                if (options.isNavigation()) {
+                    extraClasses.append("text-primary ");
+                }
             }
 
             object.put("extraClasses", extraClasses.toString());
