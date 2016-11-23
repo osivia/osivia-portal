@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 /**
  * Service optimisé pour renvoyer toutes les informations de contenu liées à la
  * publication
@@ -81,7 +83,9 @@ public class CMSPublicationInfos {
 	private String draftContextualizationPath;
 	
 	private List<Integer> errorCodes = new ArrayList<Integer>();
-
+	
+	/** Informations as flux. */
+	protected JSONObject flux;
 
 	public CMSPublicationInfos() {
 		super();
@@ -361,6 +365,22 @@ public class CMSPublicationInfos {
      */
     public void setNotOrphanDraft(boolean isNotOrphanDraft) {
         this.isNotOrphanDraft = isNotOrphanDraft;
+    }
+    
+    /**
+     * Getter for provider infos property
+     * having given key.
+     * 
+     * @param key
+     * @return property
+     */
+    public Object get(String key){
+        if(this.flux != null){
+          if(this.flux.containsKey(key)){
+              return flux.get(key);
+          }
+        }
+        return new Object();
     }
 
 }

@@ -34,6 +34,11 @@
             <artifactId>xercesImpl</artifactId>
         </dependency>
         
+        <dependency>
+	        <groupId>net.sf.json-lib</groupId>
+	        <artifactId>json-lib</artifactId>
+        </dependency>
+        
     </dependencies>
 
 

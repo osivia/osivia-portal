@@ -15,6 +15,8 @@ package org.osivia.portal.core.cms;
 
 import java.util.Calendar;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -44,8 +46,11 @@ public class CMSExtendedDocumentInfos {
     /** Indicates if a validation workflow is running on a given document. */
     private Boolean isValidationWorkflowRunning = Boolean.FALSE;
     
-    /** Indicates if Folderish has Drfats. */
+    /** Indicates if Folderish has Drafts. */
     private Boolean hasDrafts = Boolean.FALSE;
+    
+    /** Internal flux. */
+    protected JSONObject flux;
     
     /**
      * A document has a state depending of the user who is browsing it
@@ -302,6 +307,22 @@ public class CMSExtendedDocumentInfos {
      */
     public void setHasDrafts(Boolean hasDrafts) {
         this.hasDrafts = hasDrafts;
+    }
+    
+    /**
+     * Getter for provider infos property
+     * having given key.
+     * 
+     * @param key
+     * @return property
+     */
+    public Object get(String key){
+        if(this.flux != null){
+          if(this.flux.containsKey(key)){
+              return flux.get(key);
+          }
+        }
+        return new Object();
     }
 
 }
