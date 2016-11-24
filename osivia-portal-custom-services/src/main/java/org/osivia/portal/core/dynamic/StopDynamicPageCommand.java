@@ -237,7 +237,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     }
                 } else if ((this.closeChildren) && StringUtils.isNotEmpty(basePath)) {
                     String currentBasePath = currentPage.getProperty("osivia.cms.basePath");
-                    currentPageDeleted = StringUtils.equals(currentBasePath, basePath);
+                    currentPageDeleted = StringUtils.startsWith(currentBasePath, basePath);
                 } else if (currentPage != null) {
                     currentPageDeleted = topDeletedPage.getId().equals(topCurrentPage.getId());
                 }
