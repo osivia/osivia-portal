@@ -43,6 +43,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.log.LoggerMessage;
 import org.osivia.portal.api.login.IUserDatasModule;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
@@ -51,6 +52,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.profils.ProfilBean;
 import org.osivia.portal.core.profils.ProfilManager;
 
@@ -192,6 +194,9 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                 // Job is marked as done
 
                 invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
+                
+                IPortalLogger.logger.info(new LoggerMessage("user.login", true));
+                
             }
 
         }

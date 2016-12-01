@@ -749,14 +749,15 @@
         <xmbean />
     </mbean>
     
-    <!-- Errors service -->
+    
+    <!-- Logger service -->
     <mbean
-        code="org.osivia.portal.core.errors.ErrorsService"
-        name="osivia:service=ErrorsService"
+        code="org.osivia.portal.core.errors.PortalLoggerService"
+        name="osivia:service=LoggerService"
         xmbean-dd=""
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
-    </mbean>    
+    </mbean>     
     
     <!-- Menubar service -->
     <mbean

@@ -75,7 +75,7 @@
       <!-- Rollover at the top of each hour
       <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
       -->
-
+      
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
          <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
@@ -174,6 +174,28 @@
       </layout>
    </appender>   
 
+
+
+  <appender name="PORTAL_SUPERVISOR_APPENDER" class="org.jboss.logging.appender.DailyRollingFileAppender">
+      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+      <param name="File" value="${jboss.server.log.dir}/portal_supervisor.log"/>
+      <param name="Append" value="true"/>
+ 
+
+      <!-- Rollover at midnight each day -->
+      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+      <!-- Rollover at the top of each hour
+      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+      -->
+
+      <layout class="org.osivia.portal.core.error.LoggerPatternLayout">
+      </layout>
+   </appender>
+   
+
+
+ 
     <!-- ====================== -->
    <!-- More Appender examples -->
    <!-- ====================== -->
@@ -400,20 +422,11 @@
    <!-- PORTAL SPECIFIC LOGGERS -->
    <!-- ======================= -->
 
-
-  <!-- Pour faire du debug sur le portail -->
-<!--
-  <category name="org.osivia.portal">
-      <priority value="DEBUG"/>
-      <appender-ref ref="PORTAL"/>
-   </category>
--->
-  
-  
   <category name="PORTAL" additivity="false">
-      <priority value="WARN"/>
+      <priority value="ERROR"/>
       <appender-ref ref="PORTAL"/>
    </category>
+
 
 
   <category name="PORTAL_ERROR" additivity="false">
@@ -442,6 +455,30 @@
   <category name="PORTAL_WINDOW">
       <priority value="ERROR"/>
    </category>
+
+
+ <!-- Supervisor -->
+
+ <category name="PORTAL_SUPERVISOR" additivity="false">
+      <priority value="DEBUG"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+
+<!-- portlet errors are displayed in PORTAL appender -->
+  <category name="javax.portlet">
+      <priority value="ERROR"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+<!-- cas errors are displayed in PORTAL appender -->
+  <category name="edu.yale.its.tp.cas">
+      <priority value="ERROR"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+
+   
 
 
 </log4j:configuration>

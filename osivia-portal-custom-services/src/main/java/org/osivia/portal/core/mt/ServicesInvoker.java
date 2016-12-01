@@ -60,6 +60,7 @@ import org.jboss.security.SecurityAssociation;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.error.CustomPageControlPolicy;
+import org.osivia.portal.core.errors.PortalLoggerContext;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -375,9 +376,11 @@ public class ServicesInvoker {
                             url += "?" + qs;
                         
                         
+                        PortalLoggerContext loggerContext = new PortalLoggerContext(timeOutWindow.getId());
+                        
                         // Stop the thread
                         KillerThread thread = new KillerThread(timeOutWindow.getId().toString(), pageFutures.get(timeOutWindow.getId()),
-                                this.currentThreads.get(timeOutWindow.getId()), request.getRemoteUser(),portletName, url, request.getHeader("User-Agent"));
+                                this.currentThreads.get(timeOutWindow.getId()), request.getRemoteUser(),portletName, url, request.getHeader("User-Agent"), loggerContext);
                         KillersThreadsPool.getInstance().execute(thread);
 
 

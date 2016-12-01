@@ -49,8 +49,8 @@ import org.osivia.portal.core.error.GlobalErrorHandler;
 
 public class CustomPageControlPolicy extends CustomControlPolicy implements PageControlPolicy {
 
-	private static final Logger log = Logger.getLogger(CustomPageControlPolicy.class);
-	private static final Logger portalLog = Logger.getLogger("PORTAL");
+	private static final Logger log = Logger.getLogger("PORTAL");
+
 
 	private ServerConfig serverConfig;
 	private PortalObjectContainer portalObjectContainer;
@@ -124,7 +124,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
                 // Request is not operationnal (timeout)
                 // Cant log
                 errDescriptor = null;
-                portalLog.warn("timeout error dump", e);
+                log.warn("timeout error dump", e);
            }
         }
         
@@ -160,7 +160,6 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 			}
 
 			catch (Exception e) {
-
 				log.error("cannot obtain RequestDispatcher for '" + getPortalCharteCtx(controlContext) + "/error/errorDiv.jsp'");
 			}
 

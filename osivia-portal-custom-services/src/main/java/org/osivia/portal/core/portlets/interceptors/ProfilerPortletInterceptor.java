@@ -18,10 +18,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.portlet.invocation.ActionInvocation;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 import org.jboss.portal.portlet.invocation.RenderInvocation;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
+import org.osivia.portal.api.log.LoggerMessage;
 import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.core.error.IPortalLogger;
 
 
 
@@ -52,11 +55,21 @@ public class ProfilerPortletInterceptor extends PortletInvokerInterceptor{
 		boolean error = false;
 
 
+		boolean debug = false;
+		
+        if( invocation instanceof RenderInvocation || invocation instanceof ActionInvocation) 
+            debug = true;
+
+		
+        if( debug && IPortalLogger.logger.isDebugEnabled()){
+            IPortalLogger.logger.debug(new LoggerMessage("portlet enter "));
+        }
+		
 		try	{
 
 		PortletInvocationResponse response =  super.invoke(invocation);
 		
-			
+		
 		
 		return response;
 		
@@ -64,15 +77,23 @@ public class ProfilerPortletInterceptor extends PortletInvokerInterceptor{
 			error = true;
 			throw e;
 		} finally	{
-			
-			if( invocation instanceof RenderInvocation)	{
+		
+            long end = System.currentTimeMillis();
+            long elapsedTime = end - begin;
+
+		    
+			if( debug)	{
 				
-				long end = System.currentTimeMillis();
-				long elapsedTime = end - begin;
 		
 				this.profiler.logEvent("PORTLET",invocation.getWindowContext().getId() , elapsedTime, error);	
+				
+	            if( IPortalLogger.logger.isDebugEnabled()){
+	                if( error == false)
+	                    IPortalLogger.logger.debug(new LoggerMessage("portlet exit " + elapsedTime));
+	                else
+                        IPortalLogger.logger.debug(new LoggerMessage("portlet exit " + elapsedTime+ " \"an error as occured\""));
+	            }				
 			}
-			
 		}
 	}
 	

@@ -31,6 +31,7 @@ import org.jboss.portal.common.http.HttpResponse;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.core.error.ErrorDescriptor;
 import org.osivia.portal.core.error.GlobalErrorHandler;
+import org.osivia.portal.core.errors.PortalLoggerContext;
 
 /**
  * 
@@ -52,9 +53,10 @@ public class KillerThread implements Runnable {
 	String portletName;
     String url;
     String userAgent;
+    PortalLoggerContext loggerContext;
 
 	
-	public KillerThread(String windowName, Future futureToSurvey, ServiceThread threadToSurvey, String userName, String portletName, String url, String userAgent) {
+	public KillerThread(String windowName, Future futureToSurvey, ServiceThread threadToSurvey, String userName, String portletName, String url, String userAgent, PortalLoggerContext loggerContext) {
 		super();
 		this.windowName = windowName;
 		this.futureToSurvey = futureToSurvey;
@@ -63,6 +65,7 @@ public class KillerThread implements Runnable {
 		this.url = url;
 		this.portletName = portletName;
 		this.userAgent = userAgent;
+		this.loggerContext = loggerContext;
 
 	}
 
@@ -99,6 +102,7 @@ public class KillerThread implements Runnable {
 	             properties.put("osivia.url", url);
 	             properties.put("osivia.header.userAgent", userAgent);
 	             properties.put("osivia.portal.portlet", portletName);
+                 properties.put("osivia.log.context", loggerContext);
 	             
 	             ErrorDescriptor errDescriptor = new ErrorDescriptor(HttpServletResponse.SC_REQUEST_TIMEOUT, null, null, this.userName, properties);
 	             GlobalErrorHandler.getInstance().logError(errDescriptor);

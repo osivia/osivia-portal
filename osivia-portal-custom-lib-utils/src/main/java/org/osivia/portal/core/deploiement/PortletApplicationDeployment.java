@@ -32,7 +32,6 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
 import org.osivia.portal.api.contribution.IContributionService;
 import org.osivia.portal.api.directory.IDirectoryServiceLocator;
-import org.osivia.portal.api.errors.IErrorsService;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.status.IStatusService;
@@ -81,7 +80,6 @@ public class PortletApplicationDeployment extends PortletAppDeployment {
                 IInternationalizationService.MBEAN_NAME);
         this.injectStandardService(Constants.CONTRIBUTION_SERVICE_NAME, IContributionService.class.getName(), IContributionService.MBEAN_NAME);
         this.injectStandardService(Constants.DIRECTORY_SERVICE_LOCATOR_NAME, IDirectoryServiceLocator.class.getName(), IDirectoryServiceLocator.MBEAN_NAME);
-        this.injectStandardService(Constants.ERRORS_SERVICE_NAME, IErrorsService.class.getName(), IErrorsService.MBEAN_NAME);
 
 
         // FIXME à déplacer dans CMS

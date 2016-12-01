@@ -113,8 +113,7 @@ public class GlobalErrorHandler {
             if (displayContext != null)
                 displayContext = "portal:"+displayContext;
             else    {
-            
-                displayContext = (String) properties.get("osivia.portal.portlet");
+                 displayContext = (String) properties.get("osivia.portal.portlet");
                 if (displayContext != null)
                     displayContext = "porlet:"+displayContext;
                 else
@@ -145,6 +144,12 @@ public class GlobalErrorHandler {
                 applicativeMessage = "Timeout expired";
             }
         }
+        
+        // Only 50x errors
+        if( ((errorCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR) 
+                || (errorCode == HttpServletResponse.SC_REQUEST_TIMEOUT)
+                ) && applicativeMessage != null)
+            IPortalLogger.logger.error(error);
         
         
         if( applicativeMessage != null) {

@@ -19,9 +19,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerInterceptor;
 import org.jboss.portal.core.controller.ControllerResponse;
+import org.jboss.portal.core.controller.command.SignOutCommand;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.command.PortalCommand;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.osivia.portal.api.log.LoggerMessage;
+import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
 
@@ -48,6 +51,8 @@ public class CommandTrackerInterceptor extends ControllerInterceptor{
 			
 		getTracker().pushState(cmd);
 		
+		if( cmd instanceof SignOutCommand)
+            IPortalLogger.logger.info(new LoggerMessage("user.logout", true));
 
 		
 		
