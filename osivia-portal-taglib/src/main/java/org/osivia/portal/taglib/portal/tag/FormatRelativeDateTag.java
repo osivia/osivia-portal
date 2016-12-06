@@ -121,7 +121,7 @@ public class FormatRelativeDateTag extends SimpleTagSupport {
                         fragment = "DAY";
                         break;
 
-                    case Calendar.HOUR:
+                    case Calendar.HOUR_OF_DAY:
                         fragment = "HOUR";
                         break;
 
