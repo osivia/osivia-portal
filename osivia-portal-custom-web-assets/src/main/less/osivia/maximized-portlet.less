@@ -1,0 +1,68 @@
+//
+// OSIVIA Portal - Maximized portlet style
+// --------------------------------------------------
+
+
+// Media queries breakpoints
+@import "media-queries-breakpoints.less";
+// Mixins
+@import "../bootstrap/mixins.less";
+
+
+#maximized {
+    > .page-header {
+        margin-top: 20px;
+    }
+    
+    .portlet-container {
+        position: relative;
+        
+        .portlet-filler {
+            overflow-x: visible;
+            overflow-y: scroll;
+        }
+        
+        .portlet-toolbar {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            
+            @media screen and (max-width: @screen-xs-max) {
+                position: fixed;
+                
+                .navbar {
+                    margin-bottom: 0;
+                    
+                    border-style: solid none none;
+                }
+            }
+            
+            @media screen and (min-width: @screen-sm-min) {
+                position: absolute;
+                
+                padding-top: 20px;
+            }
+        }
+    }
+}
+
+
+.laterals {
+    position: relative;
+    z-index: 1;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 15px;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+        z-index: -1;
+       
+        border-radius: "12px / 65px";
+        
+        .box-shadow(@shadow: 0 0 10px #555);
+    }
+}
+
