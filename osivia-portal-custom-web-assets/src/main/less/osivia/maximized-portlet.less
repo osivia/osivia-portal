@@ -19,7 +19,7 @@
         
         .portlet-filler {
             overflow-x: visible;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
         
         .portlet-toolbar {
@@ -43,26 +43,6 @@
                 padding-top: 20px;
             }
         }
-    }
-}
-
-
-.laterals {
-    position: relative;
-    z-index: 1;
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 15px;
-        bottom: 15px;
-        left: 0;
-        right: 0;
-        z-index: -1;
-       
-        border-radius: "12px / 65px";
-        
-        .box-shadow(@shadow: 0 0 10px #555);
     }
 }
 

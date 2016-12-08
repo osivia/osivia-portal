@@ -173,7 +173,7 @@ $JQry(function() {
 				$outer = $JQry(document.createElement("div"));
 
 				$inner = $JQry(document.createElement("div"));
-				$inner.addClass("text-center");
+				$inner.addClass("text-center text-overflow");
 				$inner.text(title);
 				$inner.appendTo($outer);
 
