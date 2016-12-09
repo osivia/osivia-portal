@@ -96,4 +96,12 @@ public interface TaskbarItem {
      */
     void setToDefault(int order);
 
+
+    /**
+     * Get restriction.
+     * 
+     * @return restriction
+     */
+    TaskbarItemRestriction getRestriction();
+
 }

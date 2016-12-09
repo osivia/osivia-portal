@@ -2,6 +2,7 @@ package org.osivia.portal.core.taskbar;
 
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 
 /**
@@ -40,6 +41,9 @@ public class TaskbarItemImpl implements TaskbarItem {
     /** Order. */
     private int order;
 
+    /** Restriction. */
+    private TaskbarItemRestriction restriction;
+
 
     /**
      * Constructor.
@@ -54,6 +58,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getId() {
         return this.id;
     }
@@ -62,6 +67,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public TaskbarItemType getType() {
         return this.type;
     }
@@ -70,6 +76,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getKey() {
         return this.key;
     }
@@ -78,6 +85,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public ClassLoader getCustomizedClassLoader() {
         return this.customizedClassLoader;
     }
@@ -86,6 +94,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getIcon() {
         return this.icon;
     }
@@ -94,6 +103,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public PanelPlayer getPlayer() {
         return this.player;
     }
@@ -102,6 +112,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getTemplate() {
         return this.template;
     }
@@ -110,6 +121,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDocumentType() {
         return this.documentType;
     }
@@ -118,6 +130,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isDefault() {
         return this.defaultItem;
     }
@@ -126,6 +139,7 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getOrder() {
         return this.order;
     }
@@ -134,9 +148,19 @@ public class TaskbarItemImpl implements TaskbarItem {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setToDefault(int order) {
         this.defaultItem = true;
         this.order = order;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemRestriction getRestriction() {
+        return this.restriction;
     }
 
 
@@ -247,6 +271,15 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    /**
+     * Setter for restriction.
+     * 
+     * @param restriction the restriction to set
+     */
+    public void setRestriction(TaskbarItemRestriction restriction) {
+        this.restriction = restriction;
     }
 
 }

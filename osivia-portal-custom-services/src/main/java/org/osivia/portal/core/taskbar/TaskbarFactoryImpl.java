@@ -4,6 +4,7 @@ import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
@@ -95,6 +96,18 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void restrict(TaskbarItem item, TaskbarItemRestriction restriction) {
+        if (item instanceof TaskbarItemImpl) {
+            TaskbarItemImpl taskbarItemImpl = (TaskbarItemImpl) item;
+            taskbarItemImpl.setRestriction(restriction);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     public TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) {
         TaskbarTaskImpl task = new TaskbarTaskImpl(item);
         task.setPath(path);
@@ -114,5 +127,6 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
         task.setDisabled(disabled);
         return task;
     }
+
 
 }

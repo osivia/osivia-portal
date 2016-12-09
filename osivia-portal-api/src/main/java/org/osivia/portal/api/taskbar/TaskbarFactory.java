@@ -66,6 +66,15 @@ public interface TaskbarFactory {
 
 
     /**
+     * Restrict taskbar item access.
+     * 
+     * @param item taskbar item
+     * @param restriction restriction
+     */
+    void restrict(TaskbarItem item, TaskbarItemRestriction restriction);
+
+
+    /**
      * Create taskbar task.
      *
      * @param item taskbar item
