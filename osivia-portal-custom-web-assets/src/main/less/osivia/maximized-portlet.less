@@ -20,12 +20,20 @@
         .portlet-filler {
             overflow-x: visible;
             overflow-y: auto;
+            
+            &.col-auto {
+                padding-left: 0;
+            }
         }
         
         .portlet-toolbar {
             bottom: 0;
             left: 0;
             right: 0;
+            
+            .panel {
+                margin-bottom: 0;
+            }
             
             @media screen and (max-width: @screen-xs-max) {
                 position: fixed;

@@ -1,13 +1,29 @@
 $JQry(function() {
+	var $toolbarCollapse = $JQry("#maximized .portlet-container .portlet-toolbar .collapse");
+	
 	adjustMaximizedPortletHeight();
+	
+	
+	// Adjust maximized portlet height after collapse event
+	$toolbarCollapse.on("shown.bs.collapse", function() {
+		adjustMaximizedPortletHeight();
+	});
+	$toolbarCollapse.on("hidden.bs.collapse", function() {
+		adjustMaximizedPortletHeight();
+	});
+	
 });
 
 
+//Adjust maximized portlet height on window resize
 $JQry(window).resize(function() {
 	adjustMaximizedPortletHeight();
 });
 
 
+/**
+ * Adjust maximized portlet height.
+ */
 function adjustMaximizedPortletHeight() {
 	var $window = $JQry(window),
 		$container = $JQry("#maximized .portlet-container"),
@@ -16,8 +32,7 @@ function adjustMaximizedPortletHeight() {
 	if ($filler.length) {
 		var $toolbar = $container.find(".portlet-toolbar"),
 			$table = $filler.closest("#maximized .portlet-container .table"),
-			toolbarHeight,
-			fillerHeight;
+			toolbarHeight, fillerHeight, scrollbarWidth;
 					
 		// Compute toolbar height
 		if ($toolbar.length) {
@@ -36,17 +51,26 @@ function adjustMaximizedPortletHeight() {
 			fillerHeight = "auto";
 		}
 		
-		// Update CSS
+		// Update filler CSS
 		$filler.css({
 			height: fillerHeight,
 			"margin-bottom": toolbarHeight
 		});
 		
+		// Compute scrollbar width
+		scrollbarWidth = Math.round($filler.innerWidth() - $filler.children().outerWidth(true));
+		
+		// Update toolbar CSS
+		if ($toolbar.hasClass("adapt-scrollbar")) {
+			$toolbar.css({
+				"padding-right": scrollbarWidth
+			});
+		}
+		
 		// Update table CSS
 		if ($table.length) {
 			var $tableHeader = $table.find(".table-header"),
-				$row = $tableHeader.find(".row").first(),
-				scrollbarWidth = Math.min(12, Math.round($filler.width() - $filler.children().width()));
+				$row = $tableHeader.find(".row").first();
 
 			$row.css({
 				"padding-right": scrollbarWidth
