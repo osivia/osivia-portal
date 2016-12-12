@@ -67,6 +67,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.ecm.EcmCommandDelegate;
+import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
@@ -1110,7 +1111,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // Portal default page identifier
         PortalObjectId defaultPageId = defaultPage.getId();
         
-        // Controller command command
+        // Controller command
         ControllerCommand command;
         if (refresh) {
             command = new RefreshPageCommand(defaultPageId.toString(PortalObjectPath.SAFEST_FORMAT));
@@ -1120,6 +1121,28 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, null, null);
+
+        return portalUrl.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfiledHomePageUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Current portal
+        Portal portal = PortalObjectUtils.getPortal(controllerContext);
+        // Current portal name
+        String portalName = portal.getName();
+
+        // Controller command
+        ControllerCommand command = new MonEspaceCommand(portalName);
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
 
         return portalUrl.toString();
     }

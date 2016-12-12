@@ -947,6 +947,9 @@
         <depends
             optional-attribute-name="CustomizationService"
             proxy-type="attribute">osivia:service=CustomizationService</depends>
+        <depends
+            optional-attribute-name="PortalUrlFactory"
+            proxy-type="attribute">osivia:service=UrlFactory</depends>
     </mbean>
     
     <!-- ECM commands service -->

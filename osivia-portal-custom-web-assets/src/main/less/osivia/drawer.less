@@ -9,6 +9,9 @@
 @import "media-queries-breakpoints.less";
 
 
+@default-padding: 50px;
+
+
 .btn.drawer-toggle-btn {
     display: none;
 }
@@ -36,7 +39,7 @@
         top: 0;
         left: 0;
 
-        padding-top: 50px;
+        padding-top: @default-padding;
         
         .wrapper-inner {
             & > * {
@@ -52,8 +55,8 @@
     #drawer {
         @drawer-width: 90%;
         
-        position: absolute;
-        top: 0;
+        position: fixed;
+        top: @default-padding;
         left: -@drawer-width;
         z-index: 120;
         
@@ -63,7 +66,8 @@
         
         background-color: #fff;
         
-        .translate3d(@x: 0, @y: 0, @z: 0);
+        .translate(@x: 0, @y: 0);
+//        .translate3d(@x: 0, @y: 0, @z: 0);
         .backface-visibility(@visibility: hidden);
         
         .transition-property(@transition-property: all);
@@ -71,7 +75,8 @@
         .transition-timing-function(@timing-function: ease-out);
         
         &.active {
-            .translate3d(@x: 100%, @y: 0, @z: 0);
+//            .translate3d(@x: 100%, @y: 0, @z: 0);
+            .translate(@x: 100%, @y: 0);
         }
     }
     

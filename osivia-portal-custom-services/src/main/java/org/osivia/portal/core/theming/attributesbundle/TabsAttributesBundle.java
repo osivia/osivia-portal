@@ -353,10 +353,34 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
 
+        // User profile
+        ProfilBean profile = this.profileManager.getProfilPrincipalUtilisateur();
+        boolean defaultProfile = (profile != null) && ProfilManager.DEFAULT_PROFIL_NAME.equals(profile.getName());
+        
+        // Is the current user an administrator ?
+        boolean isAdministrator = PageCustomizerInterceptor.isAdministrator(controllerContext);
+
+        
         // Hide default page indicator
         boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
+        // Home page
+        Page homePage = portal.getDefaultPage();
+        // Unprofiled home page
+        String unprofiledHomePageName = portal.getDeclaredProperty("osivia.unprofiled_home_page");
+        Page unprofiledHomePage;
+        if (StringUtils.isEmpty(unprofiledHomePageName)) {
+            unprofiledHomePage = null;
+        } else {
+            unprofiledHomePage = portal.getChild(unprofiledHomePageName, Page.class);
+        }
         // Default page
-        Page defaultPage = portal.getDefaultPage();
+        Page defaultPage;
+        if ((unprofiledHomePage == null) || isAdministrator || !defaultProfile) {
+            defaultPage = homePage;
+        } else {
+            defaultPage = unprofiledHomePage;
+        }
+
 
         // User portal
         UserPortal userPortal = new UserPortal();
@@ -372,17 +396,6 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         SortedSet<Page> sortedPages = new TreeSet<Page>(PortalObjectOrderComparator.getInstance());
         for (PortalObject po : portal.getChildren(PortalObject.PAGE_MASK)) {
             sortedPages.add((Page) po);
-        }
-
-
-        // Hide default page if user profile is not default profile...
-        String pageToHide = null;
-        ProfilBean profil = this.profileManager.getProfilPrincipalUtilisateur();
-        if ((profil != null) && !ProfilManager.DEFAULT_PROFIL_NAME.equals(profil.getName())) {
-            // ...except for administrators !
-            if (!PageCustomizerInterceptor.isAdministrator(controllerContext)) {
-                pageToHide = portal.getDeclaredProperty("osivia.unprofiled_home_page");
-            }
         }
 
 
@@ -409,6 +422,11 @@ public final class TabsAttributesBundle implements IAttributesBundle {
             
             // Check if default page must be hidden
             if (hideDefaultPage && isDefaultPage) {
+                continue;
+            }
+
+            // Hide other home page
+            if (!isAdministrator && !isDefaultPage && (child.equals(homePage) || child.equals(unprofiledHomePage))) {
                 continue;
             }
 
@@ -450,7 +468,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 }
             }
 
-            if (permissionCheck && ((pageToHide == null) || (!child.getName().equals(pageToHide)))) {
+            if (permissionCheck) {
                 UserPage userPage;
 
                 if (domainContextualization != null) {
@@ -601,7 +619,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
 
 
                     PortalObjectPermission permSubPage = new PortalObjectPermission(subpageIdToControl, PortalObjectPermission.VIEW_MASK);
-                    if (portalAuthorizationManager.checkPermission(permSubPage) && ((pageToHide == null) || (!childChild.getName().equals(pageToHide)))) {
+                    if (portalAuthorizationManager.checkPermission(permSubPage)) {
                         UserPage userSubPage = new UserPage(childChild.getId().toString());
 
                         // View sub page command

@@ -438,4 +438,14 @@ public interface IPortalUrlFactory {
      */
     String getHomePageUrl(PortalControllerContext portalControllerContext, boolean refresh) throws PortalException;
 
+
+    /**
+     * Get profiled home page URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return URL
+     * @throws PortalException
+     */
+    String getProfiledHomePageUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
 }
