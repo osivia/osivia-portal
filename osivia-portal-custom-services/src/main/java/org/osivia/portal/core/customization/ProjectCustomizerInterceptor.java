@@ -123,18 +123,25 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
      */
     private void profiledHomeRedirection(PortalControllerContext portalControllerContext, IProjectCustomizationConfiguration configuration) {
         if (!configuration.isAdministrator()) {
+            // HTTP servlet request
             HttpServletRequest request = configuration.getHttpServletRequest();
-            boolean redirect = BooleanUtils.toBoolean(request.getParameter("redirect"));
 
-            if (!redirect) {
-                Page page = configuration.getPage();
-                Portal portal = page.getPortal();
-                if (page.equals(portal.getDefaultPage())) {
-                    try {
-                        String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
-                        configuration.setRedirectionURL(url);
-                    } catch (PortalException e) {
-                        // Do nothing
+            if (request.getUserPrincipal() != null) {
+                // Redirection indicator
+                boolean redirect = BooleanUtils.toBoolean(request.getParameter("redirect"));
+
+                if (!redirect) {
+                    Page page = configuration.getPage();
+                    Portal portal = page.getPortal();
+
+                    if (page.equals(portal.getDefaultPage())) {
+                        try {
+                            // Redirection URL
+                            String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
+                            configuration.setRedirectionURL(url);
+                        } catch (PortalException e) {
+                            // Do nothing
+                        }
                     }
                 }
             }
