@@ -74,6 +74,8 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    /** Dynamic object container. */
+    private final IDynamicObjectContainer dynamicContainer;
 
 
     /**
@@ -85,6 +87,8 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        // Dynamic object container
+        this.dynamicContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
     }
 
 
@@ -151,8 +155,8 @@ public class StartDynamicPageCommand extends DynamicCommand {
             String pageUniqueName = this.pageName;
 
 
-            PortalObjectId pageId = new PortalObjectId("", new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageName),
-                    PortalObjectPath.CANONICAL_FORMAT));
+            PortalObjectId pageId = new PortalObjectId("",
+                    new PortalObjectPath(parent.getId().getPath().toString().concat("/").concat(pageName), PortalObjectPath.CANONICAL_FORMAT));
 
 
             PortalObject currentPortal = parent;
@@ -163,7 +167,6 @@ public class StartDynamicPageCommand extends DynamicCommand {
             // Templates defined in others portals may be redefined localy
             String templatePortal = potemplateid.getPath().getName(0);
             if (!templatePortal.equals(currentPortal.getName())) {
-
                 // Build local path
                 String localPath = "/" + currentPortal.getName() + potemplatepath.substring(templatePortal.length() + 1);
                 PortalObjectPath localTemplatePath = new PortalObjectPath(localPath, PortalObjectPath.CANONICAL_FORMAT);
@@ -175,8 +178,6 @@ public class StartDynamicPageCommand extends DynamicCommand {
                     potemplateid = polocaltemplateId;
                 }
             }
-
-            IDynamicObjectContainer dynamicCOntainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
 
             // Page properties
             Map<String, String> properties = new HashMap<String, String>(this.properties);
@@ -241,7 +242,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
 
             DynamicPageBean pageBean = new DynamicPageBean(parent, pageName, pageUniqueName, this.displayNames, potemplateid, properties);
 
-            dynamicCOntainer.addDynamicPage(pageBean);
+            this.dynamicContainer.addDynamicPage(pageBean);
 
             PortalObject page = this.getControllerContext().getController().getPortalObjectContainer().getObject(pageId);
 

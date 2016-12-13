@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -13,10 +13,8 @@
  */
 package org.osivia.portal.core.dynamic;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,15 +38,11 @@ import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.theming.UserPage;
-import org.osivia.portal.api.theming.UserPagesGroup;
-import org.osivia.portal.api.theming.UserPortal;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.DomainContextualization;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
@@ -56,7 +50,7 @@ import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 /**
  * Stop dynamic page command.
  * COMPLETEMENT REFACTORE PAR JSS : REPRENDRE INTEGRALEMENT lors de la migration en 3.3.
- * 
+ *
  * @see DynamicCommand
  */
 public class StopDynamicPageCommand extends DynamicCommand {
@@ -70,8 +64,11 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
     /** Command info. */
     private final CommandInfo info;
+
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    /** Dynamic object container. */
+    private final IDynamicObjectContainer dynamicContainer;
 
 
     /**
@@ -80,13 +77,17 @@ public class StopDynamicPageCommand extends DynamicCommand {
     public StopDynamicPageCommand() {
         super();
         this.info = new ActionCommandInfo(false);
+
+        // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        // Dynamic object container
+        this.dynamicContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
     }
 
 
     /**
      * Constructor.
-     * 
+     *
      * @param pageId page identifier
      */
     public StopDynamicPageCommand(String pageId) {
@@ -95,13 +96,12 @@ public class StopDynamicPageCommand extends DynamicCommand {
     }
 
 
-
     /**
      * {@inheritDoc}
      */
     @Override
     public CommandInfo getInfo() {
-        return info;
+        return this.info;
     }
 
 
@@ -114,13 +114,13 @@ public class StopDynamicPageCommand extends DynamicCommand {
         ControllerContext controllerContext = this.getControllerContext();
         // Portal object container
         PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
-        
+
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
-        
+
         try {
             // Page portal object identifier
             PortalObjectId pageObjectId = PortalObjectId.parse(this.pageId, PortalObjectPath.SAFEST_FORMAT);
@@ -149,8 +149,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 // Get current page before it is deleted
                 Page currentPage = null;
 
-                PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE,
-                        Constants.ATTR_PAGE_ID);
+                PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
                 if (currentPageId != null) {
                     currentPage = (Page) portalObjectContainer.getObject(currentPageId);
                 }
@@ -185,9 +184,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 if (hiddenPage) {
                     this.context.setAttribute(Scope.SESSION_SCOPE, "osivia.tab.hide", page.toString());
                 } else {
-                    IDynamicObjectContainer dynamicContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
-
-                    dynamicContainer.removeDynamicPage(this.pageId);
+                    this.dynamicContainer.removeDynamicPage(this.pageId);
 
                     // Other removed page identifiers
                     Set<String> otherPageIds = new HashSet<String>();
@@ -220,7 +217,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                     }
 
                     for (String id : otherPageIds) {
-                        dynamicContainer.removeDynamicPage(id);
+                        this.dynamicContainer.removeDynamicPage(id);
                     }
                 }
 
@@ -247,71 +244,20 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 if (!currentPageDeleted) {
                     pageToRefresh = currentPage;
                 } else {
-                    // TODO
-                    // L'accès à la page précédente des onglets peut renvoyer un résultat incohérent dans le cas des onglets groupés :
-                    // la page précédente peut très bien être un onglet masqué, ce qui le ferait apparaître.
-                    // Il n'est pas non plus possible de tester l'affichage des groupes, puisqu'elle dépend de la charte graphique.
-                    // Idéalement, il faudrait remonter au dernier onglet accédé par l'utilisateur et qui n'a pas été fermé depuis (via l'historique).
+                    // Redirection page path
+                    String redirectionPagePath = currentPage.getProperty("osivia.dynamic.close_page_path");
+                    if (StringUtils.isNotEmpty(redirectionPagePath)) {
+                        // Redirection page object identifier
+                        PortalObjectId redirectionPageObjectId = PortalObjectId.parse(redirectionPagePath, PortalObjectPath.CANONICAL_FORMAT);
+                        // Redirection page object path
+                        PortalObjectPath redirectionPageObjectPath = redirectionPageObjectId.getPath();
 
-
-                    // User pages
-                    UserPortal userPortal = (UserPortal) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavUserPortal");
-                    List<UserPage> userPages = new ArrayList<UserPage>(userPortal.getDisplayedPagesCount());
-                    for (UserPagesGroup group : userPortal.getGroups()) {
-                        for (UserPage userPage : group.getDisplayedPages()) {
-                            userPages.add(userPage);
-                        }
-                    }
-                    for (UserPage userPage : userPortal.getUserPages()) {
-                        if ((userPage.getGroup() == null) && !userPage.equals(userPortal.getDefaultPage())) {
-                            userPages.add(userPage);
-                        }
-                    }
-
-
-                    // Current user page index
-                    Integer index = null;
-                    for (int i = 0; i < userPages.size(); i++) {
-                        UserPage userPage = userPages.get(i);
-
-                        // Identifier
-                        String id;
-                        if (domainContextualization != null) {
-                            // Site
-                            String site = StringUtils.substringAfterLast(basePath, "/");
-                            id = domainName + "/" + site;
-                        } else {
-                            id = pageObjectId.toString();
+                        if (redirectionPageObjectPath.getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
+                            // If CMS template page, get parent page
+                            redirectionPageObjectId = new PortalObjectId(StringUtils.EMPTY, redirectionPageObjectPath.getParent());
                         }
 
-                        if (userPage.getId().equals(id)) {
-                            index = i;
-                            break;
-                        }
-                    }
-
-                    if ((index != null) && (userPages.size() > 1)) {
-                        // Search next or previous index
-                        if (index == userPages.size() - 1) {
-                            // Previous
-                            index--;
-                        } else {
-                            // Next
-                            index++;
-                        }
-
-
-                        // Redirection
-                        UserPage userPage = userPages.get(index);
-                        if (userPage.getPortalObjectId() != null) {
-                            redirectPage = portalObjectContainer.getObject(userPage.getPortalObjectId(), Page.class);
-                        } else {
-                            redirectUrl = userPage.getUrl();
-
-                            // Update page marker
-                            String pageMarker = PageMarkerUtils.getCurrentPageMarker(controllerContext);
-                            redirectUrl = redirectUrl.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + pageMarker + "/");
-                        }
+                        redirectPage = portalObjectContainer.getObject(redirectionPageObjectId, Page.class);
                     }
                 }
             }
@@ -324,10 +270,11 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 return new UpdatePageResponse(pageToRefresh.getId());
             }
 
-            
-            if( location != null)
-                redirectUrl = location;
-			
+
+            if (this.location != null) {
+                redirectUrl = this.location;
+            }
+
 
             if (redirectUrl == null) {
                 if (redirectPage == null) {
@@ -349,7 +296,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
     /**
      * Setter for location.
-     * 
+     *
      * @param location the location to set
      */
     public void setLocation(String location) {
@@ -358,7 +305,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
 
     /**
      * Setter for closeChildren.
-     * 
+     *
      * @param closeChildren the closeChildren to set
      */
     public void setCloseChildren(boolean closeChildren) {
