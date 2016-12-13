@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.4.0-SNAPSHOT</version>
+        <version>4.4.0-RC10</version>
     </parent>
 
     <artifactId>osivia-portal-custom-lib-utils</artifactId>
