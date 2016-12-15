@@ -26,17 +26,19 @@ var currentSubmit;
 var fancyContainerDivId = null;
 
 
-function onAjaxSuccess(t, callerId) {
-	var resp = "";
+function onAjaxSuccess(t, callerId, multipart) {
+	var resp;
 
-	if (t.responseText != "") {
-
+	if (multipart) {
+		resp = t;
+	} else if (t.responseText != "") {
 		try {
 			eval("resp =" + t.responseText + ";");
 		} catch (e) {
 			window.location.reload();
 			return;
 		}
+	}
 
 		if (resp.type == "update_markup") {
 			// Iterate all changes
@@ -86,7 +88,7 @@ function onAjaxSuccess(t, callerId) {
 		if (resp.type == "update_page") {
 			document.location = resp.location;
 		}
-	}
+	
 }
 
 
@@ -352,6 +354,32 @@ function bilto(event) {
 							});
 						}
 					}
+				} else {
+			        event.preventDefault();
+			 
+			        var $form = $JQry(current);
+			        var formdata = (window.FormData) ? new FormData($form[0]) : null;
+			        var data;
+			        if (formdata != null) {
+			        	formdata.append("hash", false);
+			        	formdata.append(event.findElement().name, event.findElement().value);
+			        	data = formdata;
+			        } else {
+			        	data = $form.serialize();
+			        }
+			 
+			        $JQry.ajax({
+			            url: current.action,
+			            method: "post",
+			            headers: {"ajax": true},
+			            contentType: false, // obligatoire pour de l'upload
+			            processData: false, // obligatoire pour de l'upload
+			            dataType: "json",
+			            data: formdata,
+			            success: function(data, status, xhr) {
+			            	onAjaxSuccess(data, null, true);
+			            }
+			        });
 				}
 			}
 		}
