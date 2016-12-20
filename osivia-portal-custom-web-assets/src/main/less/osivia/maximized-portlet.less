@@ -3,10 +3,10 @@
 // --------------------------------------------------
 
 
-// Media queries breakpoints
-@import "media-queries-breakpoints.less";
 // Mixins
 @import "../bootstrap/mixins.less";
+// Variables
+@import "../bootstrap/variables.less";
 
 
 #maximized {
@@ -38,10 +38,16 @@
             @media screen and (max-width: @screen-xs-max) {
                 position: fixed;
                 
-                .navbar {
-                    margin-bottom: 0;
-                    
-                    border-style: solid none none;
+                background-color: #fff;
+                
+                .box-shadow(@shadow: 0 -1px 1px fade(#000, 5%));
+                
+                > * {
+                    padding: @padding-base-vertical @padding-base-horizontal;
+                }
+                
+                .btn {
+                    margin-bottom: @padding-base-vertical;
                 }
             }
             

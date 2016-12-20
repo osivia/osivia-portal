@@ -1,0 +1,38 @@
+//
+// OSIVIA Bootstrap extensions - Notifications
+// --------------------------------------------------
+
+
+.notifications-container {
+    top: @line-height-computed;
+    
+    .notification-spacer {
+        margin-bottom: floor(@line-height-computed / 2);
+    }
+    
+    .ajax-waiter {
+        margin-bottom: floor(@line-height-computed / -2);
+        
+        .label {
+            line-height: @line-height-computed;
+        }
+    }
+    
+    .alert {
+        &.apart {
+            &:not(:hover) {
+                @media screen and (max-width: @screen-xs-max) {
+                    right: floor(@grid-gutter-width / -2) - 1;
+                }
+                
+                @media screen and (min-width: @screen-sm-min) {
+                    right: @padding-base-horizontal + @font-size-base;
+                }
+            }
+        }
+        
+        &.shaded {
+            right: floor(@grid-gutter-width / -2) - 1;
+        }
+    }
+}

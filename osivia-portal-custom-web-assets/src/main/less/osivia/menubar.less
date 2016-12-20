@@ -5,8 +5,8 @@
 
 // Mixins
 @import "../bootstrap/mixins.less";
-// Media queries breakpoints
-@import "media-queries-breakpoints.less";
+// Variables
+@import "../bootstrap/variables.less";
 
 
 
@@ -20,15 +20,17 @@
 
 
 .menubar {
-    white-space: nowrap;
-    text-align: right;
-    
     :not(.dropdown-menu) > .disabled > a {
         cursor: not-allowed;
         pointer-events: none;
         
         .opacity(@opacity: .65);
         .box-shadow(@shadow: none);
+    }
+    
+    @media screen and (min-width: @screen-sm-min) {
+        white-space: nowrap;
+        text-align: right;
     }
 }
 

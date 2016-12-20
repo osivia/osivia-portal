@@ -14,13 +14,15 @@
  */
 package org.osivia.portal.core.notifications;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -39,10 +41,12 @@ import org.jboss.portal.theme.page.WindowResult;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.core.internationalization.InternationalizationUtils;
 
 
 /**
@@ -98,6 +102,21 @@ public class NotificationsUtils {
             return null;
         }
 
+        // HTTP servlet request
+        HttpServletRequest servletRequest = portalControllerContext.getHttpServletRequest();
+
+        // Locale
+        Locale locale;
+        if (servletRequest == null) {
+            locale = null;
+        } else {
+            locale = servletRequest.getLocale();
+        }
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+
+
         // Read notifications
         List<Notifications> notificationsList = null;
         if (!"1".equals(((ControllerContext) portalControllerContext.getControllerCtx()).getAttribute(ControllerCommand.REQUEST_SCOPE,
@@ -106,7 +125,7 @@ public class NotificationsUtils {
         }
 
         // Generate HTML content
-        String htmlContent = generateNotificationsHTMLContent(notificationsList);
+        String htmlContent = generateNotificationsHTMLContent(notificationsList, locale);
 
         // Window properties
         Map<String, String> windowProperties = new HashMap<String, String>();
@@ -134,14 +153,39 @@ public class NotificationsUtils {
     }
 
 
+
     /**
-     * @param notificationsList
-     * @return
-     * @throws IOException
+     * Generate notifications HTML content
+     * 
+     * @param notificationsList notifications list
+     * @param locale user locale
+     * @return HTML content
      */
-    private static String generateNotificationsHTMLContent(List<Notifications> notificationsList) {
+    private static String generateNotificationsHTMLContent(List<Notifications> notificationsList, Locale locale) {
+        // Internationalization service
+        IInternationalizationService internationalizationService = InternationalizationUtils.getInternationalizationService();
+
+
+        // Container
+        Element container = DOM4JUtils.generateDivElement("notifications-container");
+
+        // Ajax waiter spacer
+        Element ajaxWaiterSpacer = DOM4JUtils.generateDivElement("notification-spacer");
+        container.add(ajaxWaiterSpacer);
+
+        // Ajax waiter
+        Element ajaxWaiter = DOM4JUtils.generateDivElement("ajax-waiter");
+        ajaxWaiterSpacer.add(ajaxWaiter);
+        
+        // Ajax waiter label
+        String labelText = internationalizationService.getString("AJAX_REFRESH", locale);
+        Element ajaxWaiterLabel = DOM4JUtils.generateElement("span", "label label-info", labelText, "halflings halflings-refresh", null);
+        ajaxWaiter.add(ajaxWaiterLabel);
+
+
         // Dyna window
         Element dynaWindow = DOM4JUtils.generateDivElement("dyna-window");
+        container.add(dynaWindow);
 
         // Window identifier
         Element windowId = DOM4JUtils.generateDivElement(null);
@@ -156,9 +200,13 @@ public class NotificationsUtils {
             for (Notifications notifications : notificationsList) {
                 NotificationsType type = notifications.getType();
 
+                // Notification spacer
+                Element notificationSpacer = DOM4JUtils.generateDivElement("notification-spacer");
+                dynaWindowContent.add(notificationSpacer);
+
                 // Alert
-                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable " + type.getHtmlClass());
-                dynaWindowContent.add(alert);
+                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable fade in " + type.getHtmlClass());
+                notificationSpacer.add(alert);
 
                 if (notifications.getErrorCode() != null) {
                     alert.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
@@ -210,7 +258,7 @@ public class NotificationsUtils {
         }
 
         // Write HTML content
-        return DOM4JUtils.write(dynaWindow);
+        return DOM4JUtils.write(container);
     }
 
 

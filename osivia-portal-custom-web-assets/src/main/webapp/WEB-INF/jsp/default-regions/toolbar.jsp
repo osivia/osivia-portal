@@ -45,14 +45,14 @@
                     </c:forEach>
 
                     <!-- AJAX waiter-->
-                    <div class="pull-right">
+                    <%-- <div class="pull-right">
                         <p class="navbar-text ajax-waiter">
                             <span class="label label-info">
                                 <i class="halflings halflings-refresh"></i>
                                 <span class="sr-only"><op:translate key="AJAX_REFRESH" /></span>
                             </span>
                         </p>
-                    </div>
+                    </div> --%>
 
                     <!-- Title -->
                     <div class="clearfix">
@@ -164,14 +164,14 @@
 
 
                 <!-- AJAX waiter-->
-                <div class="nav navbar-nav navbar-right">
+                <%-- <div class="nav navbar-nav navbar-right">
                     <p class="navbar-text ajax-waiter">
                         <span class="label label-info">
                             <i class="halflings halflings-refresh"></i>
                             <span><op:translate key="AJAX_REFRESH" /></span>
                         </span>
                     </p>
-                </div>
+                </div> --%>
             </div>
         </div>
     </nav>

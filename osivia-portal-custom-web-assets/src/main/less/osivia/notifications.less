@@ -1,0 +1,98 @@
+//
+// OSIVIA Portal - Notifications
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+// Variables
+@import "../bootstrap/variables.less";
+
+
+@notifications-width: 500px;
+
+
+.notifications-container {
+    position: fixed;
+    right: @padding-base-horizontal;
+    z-index: @zindex-modal-background - 1;
+    
+    
+    &, .notification-spacer {
+        width: 1px;
+    }
+    
+    .notification-spacer {
+        margin-left: auto;
+        
+        .clearfix;
+    }
+    
+    .ajax-waiter {
+        float: right;
+        
+        &.in {
+            margin-bottom: 0;
+        }
+        
+        .label {
+            display: block;
+        }
+    }
+    
+    .alert {
+        position: relative;
+        
+        margin-bottom: 0;
+        
+        .animation-name(@name: notification);
+        .animation-duration(@duration: 500ms);
+        .animation-timing-function(@timing-function: ease);
+        
+        .transition-property (@transition-property: all);
+        .transition-duration (@transition-duration: 500ms);
+        .transition-timing-function (@timing-function: ease);
+
+        &.apart {
+            &:not(:hover) {
+                opacity: 0.8;
+            }
+        }
+        
+        &.shaded {
+            opacity: 0;
+        }
+
+        @media screen and (max-width: @screen-xs-max) {
+            right: floor(@notifications-width / 2);
+            width: floor(@notifications-width / 2);
+        }
+
+        @media screen and (min-width: @screen-sm-min) {
+            right: @notifications-width;
+            width: @notifications-width;
+        }
+    }
+
+}
+
+
+@keyframes notification {
+    from {
+        opacity: 0;
+        
+        @media screen and (max-width: @screen-xs-max) {
+            .translate(@x: floor(@notifications-width / 2), @y: 0);
+        }
+        
+        @media screen and (min-width: @screen-sm-min) {
+            .translate(@x: @notifications-width, @y: 0);
+        }
+    }   
+    
+    to {
+        opacity: 1;
+        
+        .translate(@x: 0, @y: 0);
+    } 
+}

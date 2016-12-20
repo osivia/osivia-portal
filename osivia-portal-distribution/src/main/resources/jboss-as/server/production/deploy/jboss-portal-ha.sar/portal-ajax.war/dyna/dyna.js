@@ -187,7 +187,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 
 	// Waiter
 	var $ajaxWaiter = $JQry(".ajax-waiter");
-	$ajaxWaiter.delay(200).fadeIn();
+	$ajaxWaiter.delay(200).addClass("in");
 	
 	
 //	var pos = container.cumulativeOffset();
@@ -211,7 +211,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 
 	options.onSuccess = function(t) {
 		$ajaxWaiter.clearQueue();
-		$ajaxWaiter.hide();
+		$ajaxWaiter.removeClass("in");
 		
 //		ajaxWaitDiv.hide();
 

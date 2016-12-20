@@ -58,7 +58,11 @@ function adjustMaximizedPortletHeight() {
 		});
 		
 		// Compute scrollbar width
-		scrollbarWidth = Math.round($filler.innerWidth() - $filler.children().outerWidth(true));
+		if ($window.width() >= 768) {
+			scrollbarWidth = Math.round($filler.innerWidth() - $filler.children().outerWidth(true));
+		} else {
+			scrollbarWidth = 0;
+		}
 		
 		// Update toolbar CSS
 		if ($toolbar.hasClass("adapt-scrollbar")) {
