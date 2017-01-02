@@ -54,8 +54,8 @@ public class PortalLoggerService implements IPortalLogger {
      * @param prefix the prefix
      * @param item the item
      */
-    private void concat(StringBuffer sb, String prefix, String item) {
-        concat(sb, prefix, item, false);
+    private void concat(StringBuffer sb, String prefix, String item, String defaultValue) {
+        concat(sb, prefix, item, defaultValue, false);
     }
 
     /**
@@ -66,17 +66,19 @@ public class PortalLoggerService implements IPortalLogger {
      * @param item the item
      * @param last the last
      */
-    private void concat(StringBuffer sb, String prefix, String item, boolean last) {
-        if (StringUtils.isNotEmpty(item)) {
+    private void concat(StringBuffer sb, String prefix, String item, String defaultValue, boolean last) {
+        if (StringUtils.isNotEmpty(item) || defaultValue != null) {
             if (prefix != null) {
                 sb.append(prefix);
                 sb.append(" ");
             }
-
-            sb.append(item);
+            if(StringUtils.isNotEmpty(item))
+                sb.append(item);
+            else
+                sb.append(defaultValue);                
             if (last == false)
                 sb.append(" ");
-        }
+        }   
         
         if( last)
             sb.append("\n");
@@ -149,11 +151,11 @@ public class PortalLoggerService implements IPortalLogger {
 
         StringBuffer sb = new StringBuffer();
 
-        concat(sb, null, dateFormatted);
-        concat(sb, null, level.toString());
-        concat(sb, "user", user);
+        concat(sb, null, dateFormatted, null);
+        concat(sb, null, level.toString(), null);
+        concat(sb, "user", user, "-");
         
-        concat(sb, null, loggerContext.getPortalSessionID());       
+        concat(sb, null, loggerContext.getPortalSessionID(), "-");       
 
   
         boolean displayPageContext = true;
@@ -183,11 +185,11 @@ public class PortalLoggerService implements IPortalLogger {
             displayMsg = formatMsg(event.getMessage());
       
         if( displayPageContext){
-            concat(sb, "page", page);
-            concat(sb, "portlet", portlet);
+            concat(sb, "page", page, null);
+            concat(sb, "portlet", portlet, null);
         }
         
-        concat(sb, null, displayMsg, true);
+        concat(sb, null, displayMsg, null, true);
 
         return sb.toString();
 

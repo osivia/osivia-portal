@@ -173,6 +173,11 @@ public class PortalLoggerContext {
                     pageId = new PortalObjectId("", ((WindowCommand) cmd).getTargetId().getPath().getParent());
                     newPortlet = buildPortletName(cmd, ((WindowCommand) cmd).getTargetId());
                     
+                    if( request == null){
+                        // error logged inside a portlet
+                        request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+                    }
+                    
                     if( cmd instanceof InvokeWindowCommand)
                         newAction = true;
 

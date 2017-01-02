@@ -52,7 +52,7 @@ public class CommandTrackerInterceptor extends ControllerInterceptor{
 		getTracker().pushState(cmd);
 		
 		if( cmd instanceof SignOutCommand)
-            IPortalLogger.logger.info(new LoggerMessage("user.logout", true));
+            IPortalLogger.logger.info(new LoggerMessage("user logout", true));
 
 		
 		
