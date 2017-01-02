@@ -195,7 +195,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
                 invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
                 
-                IPortalLogger.logger.info(new LoggerMessage("user.login", true));
+                IPortalLogger.logger.info(new LoggerMessage("user login", true));
                 
             }
 
