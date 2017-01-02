@@ -16,6 +16,7 @@ package org.osivia.portal.core.imports;
 
 import java.util.concurrent.Future;
 
+import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
@@ -34,6 +35,11 @@ public class ImportInterceptor extends ServerInterceptor {
 
     public static boolean isPageImportTerminated = false;
     public static boolean isPortalImportTerminated = false;
+    public static String portalObjectToCheckOnCluster = null;
+
+    
+    protected static final Logger log = Logger.getLogger(ImportInterceptor.class);    
+    
 
     public static int nbPendingRequest = 0;
 
@@ -46,10 +52,13 @@ public class ImportInterceptor extends ServerInterceptor {
     public void setCacheService(ICacheService cacheService) {
         this.cacheService = cacheService;
     }
+    
+
 
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
-
+        
+   
         if (getCacheService().isImportRunning() == true) {
 
             while (getCacheService().isImportRunning() == true) {
@@ -70,28 +79,28 @@ public class ImportInterceptor extends ServerInterceptor {
 
         if (isImportRunningLocally && (isPageImportTerminated || isPortalImportTerminated)) {
 
-            // Wait after the commit for asynchronous updates
-            // (to avoid JCA exception from container)
+                // Import is terminated ant transaction is committed
+                // release other threads
+                isImportRunningLocally = false;
 
-            if (isPortalImportTerminated)
-                Thread.sleep(15000L);
-            else
-                Thread.sleep(3000L);
 
-            // Eventual loops will be ignored for the next import
-            nbPendingRequest = 0;
+                // Wait after the commit for asynchronous updates
+                // (to avoid JCA exception from container)
 
-            // Import is terminated ant transaction is committed
-            // release other threads
-            isImportRunningLocally = false;
-            
-            
-            ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.STOPPING_IMPORT));
+                if (isPortalImportTerminated)
+                    Thread.sleep(15000L);
+                else
+                    Thread.sleep(3000L);
 
-            // Release cluster nodes
-            //getCacheService().setImportRunning(false);
+                // Eventual loops will be ignored for the next import
+                nbPendingRequest = 0;
 
-        }
+
+                // release all nodes
+                Future<ClusterNotifier> future = ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.STOPPING_IMPORT));
+
+
+            }
         }
 
     }

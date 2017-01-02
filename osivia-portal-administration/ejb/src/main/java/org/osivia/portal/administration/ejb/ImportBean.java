@@ -17,18 +17,38 @@ package org.osivia.portal.administration.ejb;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.portlet.PortletContext;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.mx.util.MBeanServerLocator;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.osivia.portal.administration.util.AdministrationConstants;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager;
+
+import org.osivia.portal.core.imports.ImportCheckerDatas;
+import org.osivia.portal.core.imports.ImportCheckerNode;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
+
+
 
 /**
  * Import bean.
@@ -37,8 +57,10 @@ import org.richfaces.model.UploadItem;
  * @see AbstractAdministrationBean
  */
 @Name("importBean")
-@Scope(ScopeType.EVENT)
+@Scope(ScopeType.PAGE)
 public class ImportBean extends AbstractAdministrationBean {
+    
+    private static Log logger = LogFactory.getLog(ImportBean.class);
 
     /** Default serial version ID. */
     private static final long serialVersionUID = 1L;
@@ -54,6 +76,30 @@ public class ImportBean extends AbstractAdministrationBean {
     private final boolean autoUpload = false;
     /** Use flash. */
     private boolean useFlash = false;
+   /** Portal object container. */
+    private PortalObjectContainer portalObjectContainer;    
+    
+    protected ICacheService cacheService;
+    
+
+    private String portalObjectPath = null;
+
+    private long lastCheckTS = 0L;
+    
+
+    public String getPortalObjectPath() {
+        return portalObjectPath;
+    }
+
+    public boolean isChecking() {
+        return cacheService.isChecking();
+    }
+
+    
+    public void setPortalObjectPath(String portalObjectPath) {
+        this.portalObjectPath = portalObjectPath;
+    }
+
 
 
     /**
@@ -63,7 +109,105 @@ public class ImportBean extends AbstractAdministrationBean {
         super();
     }
 
+    
 
+    /**
+     * {@inheritDoc}
+     */
+    @Create
+    @Override
+    public void init() {
+        super.init();
+        PortletContext context = (PortletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+        this.cacheService = (ICacheService) Locator.findMBean(ICacheService.class, "osivia:service=Cache");
+        this.portalObjectContainer = (PortalObjectContainer) context.getAttribute(AdministrationConstants.PORTAL_OBJECT_CONTAINER_NAME);
+        
+    }
+    
+
+    
+    
+    
+    /**
+     * Refresh the cluster state
+     *
+     * @return the cluster msg
+     */
+    
+    public String getClusterMsg() {
+        
+        if (lastCheckTS > 0) {
+
+            ImportCheckerDatas importData = cacheService.getImportCheckerDatas();
+            
+            if (importData != null) {
+
+                String msg = "";
+
+                boolean error = false;
+
+                if (importData.getCheckerTimestamp() >= lastCheckTS) {
+ 
+                    for (ImportCheckerNode checkerNode : importData.getNodes()) {
+
+                        String color = "green";
+                        
+                        // Does it correspond to the reference value ?
+                        if (!StringUtils.equals(checkerNode.getMd5Digest(), importData.getReferenceDigest())) {
+                            color = "red";
+                            error = true;
+                        }
+
+                        msg += "<font color=\"" + color + "\">" + checkerNode.getNodeName() + " </font><br>";
+                    }
+
+
+                    if (cacheService.isChecking()) {
+                        msg += "waiting for cluster nodes ...";
+                    } else {
+                        if (!error)
+                            msg += "<font color=\"green\"> All nodes are synchronized </font>";
+                        else
+                            msg += "<font color=\"red\"> Some nodes are NOT synchronized </font>";
+
+                    }
+                } else {
+                    msg =  "waiting for cluster nodes ...";
+                }
+
+
+                return msg;
+            } else
+                return "";
+        }
+
+        return "";
+    }
+
+    
+    
+    
+    public void startChecking () {
+        
+        lastCheckTS = 0;   
+        
+        if( StringUtils.isNotEmpty(portalObjectPath))   {
+            try {
+                PortalObject po = this.portalObjectContainer.getObject(PortalObjectId.parse(portalObjectPath, PortalObjectPath.CANONICAL_FORMAT));
+                
+                if( (po instanceof Page) || (po instanceof Portal)) {
+                    cacheService.startCheckPortalObject(portalObjectPath);
+                    lastCheckTS = System.currentTimeMillis();
+                }   else
+                    this.setMessages("Le chemin ne correspond pas à une page");
+
+            } catch( Exception e)   {
+                this.setMessages("Opération impossible : " + e.getMessage());
+            }
+        }
+        
+    }
+    
     /**
      * Import listener.
      *
@@ -83,7 +227,19 @@ public class ImportBean extends AbstractAdministrationBean {
 
                 PortletContext ctx = (PortletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
                 this.deployer = (IParametresPortailDeploymentManager) ctx.getAttribute(AdministrationConstants.CONFIG_DEPLOYER_NAME);
-                this.deployer.chargerParametres(tempFile, MBeanServerLocator.locateJBoss());
+                portalObjectPath = this.deployer.chargerParametres(tempFile, MBeanServerLocator.locateJBoss());
+                
+               
+                // Start automatic checking
+                if( portalObjectPath != null)   {
+                    
+                    PortalObject po = this.portalObjectContainer.getObject(PortalObjectId.parse(portalObjectPath, PortalObjectPath.CANONICAL_FORMAT));
+                    String check = po.getProperty("osivia.import.enableAutomaticChecking");
+                    if( BooleanUtils.toBoolean(check))  {
+                         startChecking();                         
+                    }
+
+                }
             }
         } catch (Exception e) {
             this.setMessages("Opération impossible : " + e.getMessage());

@@ -65,8 +65,8 @@
             <param-value>osivia:service=DynamicPortalObjectContainer</param-value>
         </init-param>
         <init-param>
-            <param-name>AuthorizationDomainRegistry</param-name>
-            <param-value>portal:service=AuthorizationDomainRegistry</param-value>
+            <param-name>CacheService</param-name>
+            <param-value>osivia:service=Cache</param-value>
         </init-param>
     </servlet>
 

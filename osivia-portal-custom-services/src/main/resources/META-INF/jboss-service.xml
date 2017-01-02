@@ -613,6 +613,17 @@
         <depends
             optional-attribute-name="HibernateTreeCache"
             proxy-type="attribute">portal:service=TreeCache,type=hibernate</depends>
+        <depends
+            optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject
+        </depends>     
+        <depends
+            optional-attribute-name="DynamicObjectContainer"
+            proxy-type="attribute">osivia:service=DynamicPortalObjectContainer
+        </depends>     
+        <depends
+            optional-attribute-name="AuthorizationDomainRegistry"
+            proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>               
 
     </mbean>
 

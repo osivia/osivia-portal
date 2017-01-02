@@ -29,6 +29,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.seam.annotations.In;
 import org.osivia.portal.administration.util.AdministrationConstants;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 
 
@@ -61,6 +62,8 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
     private String messages;
     /** Popup title. */
     private String popupTitle;
+    
+
 
 
     /**
@@ -72,6 +75,7 @@ public abstract class AbstractAdministrationBean implements Serializable, Observ
         this.dynamicObjectContainer = (IDynamicObjectContainer) this.portletContext.getAttribute(AdministrationConstants.DYNAMIC_OBJECT_CONTAINER_NAME);
         this.internationalizationService = (IInternationalizationService) this.portletContext
                 .getAttribute(AdministrationConstants.INTERNATIONALIZATION_SERVICE_NAME);
+        
     }
 
 
