@@ -643,6 +643,15 @@ public class MenubarService implements IMenubarService {
             DOM4JUtils.addTooltip(element, tooltip);
         }
 
+        // Counter
+        if (item.getCounter() != null) {
+            Element counterOuter = DOM4JUtils.generateElement(HTMLConstants.SPAN, "counter small", null);
+            element.add(counterOuter);
+
+            Element counterInner = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-danger", String.valueOf(item.getCounter()));
+            counterOuter.add(counterInner);
+        }
+
         // Data
         if (!item.getData().isEmpty()) {
             for (Entry<String, String> data : item.getData().entrySet()) {

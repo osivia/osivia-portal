@@ -69,6 +69,8 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     private String tooltip;
     /** Menubar item add dropdown divider indicator. */
     private boolean divider;
+    /** Menubar item counter. */
+    private Integer counter;
 
     /** Menubar item parent. */
     private final MenubarContainer parent;
@@ -195,6 +197,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         clone.active = this.active;
         clone.tooltip = this.tooltip;
         clone.divider = this.divider;
+        clone.counter = this.counter;
         clone.data.putAll(this.data);
         return clone;
     }
@@ -393,6 +396,23 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         this.divider = divider;
     }
 
+    /**
+     * Getter for counter.
+     *
+     * @return the counter
+     */
+    public Integer getCounter() {
+        return this.counter;
+    }
+
+    /**
+     * Setter for counter.
+     *
+     * @param counter the counter to set
+     */
+    public void setCounter(Integer counter) {
+        this.counter = counter;
+    }
 
     /**
      * Getter for parent.

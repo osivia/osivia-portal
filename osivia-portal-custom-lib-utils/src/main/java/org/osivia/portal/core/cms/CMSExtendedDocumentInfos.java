@@ -15,47 +15,66 @@ package org.osivia.portal.core.cms;
 
 import java.util.Calendar;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 
-
+import net.sf.json.JSONObject;
 
 
 /**
  * Object containing extended informations about a document (compare to CMSPublicationInfos).
  * 
- * @author david chevrier.
+ * @author David Chevrier.
  *
  */
 public class CMSExtendedDocumentInfos {
-    
-    
+
     /** Task name from wich we get informations. */
-    private String taskName = StringUtils.EMPTY;
-    
+    private String taskName;
     /** Indicates if a task of name taskName is pending on document */
-    private Boolean isOnlineTaskPending = Boolean.FALSE;
-    
+    private boolean isOnlineTaskPending;
     /** Indicates if current user can manage pending task on document. */
-    private Boolean canUserValidateOnlineTask = Boolean.FALSE;
-    
+    private boolean canUserValidateOnlineTask;
     /** Indicates if current user is the task's initiator. */
-    private Boolean isUserOnlineTaskInitiator = Boolean.FALSE;
-    
+    private boolean isUserOnlineTaskInitiator;
     /** Indicates if a validation workflow is running on a given document. */
-    private Boolean isValidationWorkflowRunning = Boolean.FALSE;
-    
-    /** Indicates if Folderish has Drafts. */
-    private Boolean hasDrafts = Boolean.FALSE;
-    
+    private boolean isValidationWorkflowRunning;
+    /** Draft count. */
+    private int draftCount;
     /** Internal flux. */
-    protected JSONObject flux;
-    
+    private JSONObject flux;
+    /** Subscription status. */
+    private SubscriptionStatus subscriptionStatus;
+    /** Lock status */
+    private LockStatus lockStatus;
+    /** Owner of the lock */
+    private String lockOwner;
+    /** The time when document has been locked */
+    private Calendar lockDate;
+    /** Drive, folder can be synchronized */
+    private boolean canSynchronize;
+    /** Drive, folder can be unsynchronized */
+    private boolean canUnsynchronize;
+    /** Drive, Root of the synchro */
+    private String synchronizationRootPath;
+    /** Drive, DriveEdit direct url */
+    private String driveEditURL;
+
+
     /**
-     * A document has a state depending of the user who is browsing it
+     * Constructor.
+     */
+    public CMSExtendedDocumentInfos() {
+        super();
+        this.taskName = StringUtils.EMPTY;
+    }
+
+
+    /**
+     * Subscription status enumeration.
+     * A document has a state depending of the user who is browsing it.
      */
     public enum SubscriptionStatus {
+
         /** Default state : can subscribe */
         can_subscribe,
         /** Can unsubscribe if a subscription is already set */
@@ -64,42 +83,57 @@ public class CMSExtendedDocumentInfos {
         has_inherited_subscriptions,
         /** Special cases : Domains, WorkspacesRoot, ... are not allowing subscription */
         no_subscriptions;
-    };
 
-    private SubscriptionStatus subscriptionStatus;
-    
+    }
+
+
+    /**
+     * Lock status enumeration.
+     */
     public enum LockStatus {
+
         /** Default state : can lock */
         can_lock,
         /** Can uunlock */
         can_unlock,
-        /** a lock is set and is not removable by this user*/
+        /** a lock is set and is not removable by this user */
         locked,
         /** No lock avaliable (proxies, versions, ...) */
-        no_lock;    	
-    }
-    
-    /** Lock status */
-    private LockStatus lockStatus;
-    
-    /** Owner of the lock */
-    private String lockOwner;
-    
-    /** The time when document has been locked */
-    private Calendar lockDate;
-    
-    /** Drive, folder can be synchronized */
-    private boolean canSynchronize = false;
-    /** Drive, folder can be unsynchronized */
-    private boolean canUnsynchronize = false;
+        no_lock;
 
-    /** Drive, Root of the synchro */
-    private String synchronizationRootPath = null;
-    
-    /** Drive, DriveEdit direct url */
-    private String driveEditURL = null;
-    
+    }
+
+
     /**
+     * Getter for provider infos property having given key.
+     * 
+     * @param key
+     * @return property
+     */
+    public Object get(String key) {
+        Object result = null;
+
+        if (this.flux != null) {
+            result = flux.get(key);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Setter for flux.
+     * 
+     * @param flux the flux to set
+     */
+    protected void setFlux(JSONObject flux) {
+        this.flux = flux;
+    }
+
+
+    /**
+     * Getter for taskName.
+     * 
      * @return the taskName
      */
     public String getTaskName() {
@@ -107,6 +141,8 @@ public class CMSExtendedDocumentInfos {
     }
 
     /**
+     * Setter for taskName.
+     * 
      * @param taskName the taskName to set
      */
     public void setTaskName(String taskName) {
@@ -114,63 +150,98 @@ public class CMSExtendedDocumentInfos {
     }
 
     /**
+     * Getter for isOnlineTaskPending.
+     * 
      * @return the isOnlineTaskPending
      */
-    public Boolean isOnlineTaskPending() {
+    public boolean isOnlineTaskPending() {
         return isOnlineTaskPending;
     }
 
     /**
+     * Setter for isOnlineTaskPending.
+     * 
      * @param isOnlineTaskPending the isOnlineTaskPending to set
      */
-    public void setIsOnlineTaskPending(Boolean isOnlineTaskPending) {
+    public void setOnlineTaskPending(boolean isOnlineTaskPending) {
         this.isOnlineTaskPending = isOnlineTaskPending;
     }
 
     /**
+     * Getter for canUserValidateOnlineTask.
+     * 
      * @return the canUserValidateOnlineTask
      */
-    public Boolean canUserValidateOnlineTask() {
+    public boolean isCanUserValidateOnlineTask() {
         return canUserValidateOnlineTask;
     }
 
     /**
+     * Setter for canUserValidateOnlineTask.
+     * 
      * @param canUserValidateOnlineTask the canUserValidateOnlineTask to set
      */
-    public void setCanUserValidateOnlineTask(Boolean canUserValidateOnlineTask) {
+    public void setCanUserValidateOnlineTask(boolean canUserValidateOnlineTask) {
         this.canUserValidateOnlineTask = canUserValidateOnlineTask;
     }
 
     /**
+     * Getter for isUserOnlineTaskInitiator.
+     * 
      * @return the isUserOnlineTaskInitiator
      */
-    public Boolean isUserOnlineTaskInitiator() {
+    public boolean isUserOnlineTaskInitiator() {
         return isUserOnlineTaskInitiator;
     }
 
     /**
+     * Setter for isUserOnlineTaskInitiator.
+     * 
      * @param isUserOnlineTaskInitiator the isUserOnlineTaskInitiator to set
      */
-    public void setIsUserOnlineTaskInitiator(Boolean isUserOnlineTaskInitiator) {
+    public void setUserOnlineTaskInitiator(boolean isUserOnlineTaskInitiator) {
         this.isUserOnlineTaskInitiator = isUserOnlineTaskInitiator;
     }
-    
+
     /**
-     * @return isValidationWorkflowRunning value
+     * Getter for isValidationWorkflowRunning.
+     * 
+     * @return the isValidationWorkflowRunning
      */
-    public Boolean getIsValidationWorkflowRunning() {
+    public boolean isValidationWorkflowRunning() {
         return isValidationWorkflowRunning;
     }
 
     /**
+     * Setter for isValidationWorkflowRunning.
      * 
-     * @param isValidationWorkflowRunning isValidationWorkflowRunning to set
+     * @param isValidationWorkflowRunning the isValidationWorkflowRunning to set
      */
-    public void setIsValidationWorkflowRunning(Boolean isValidationWorkflowRunning) {
+    public void setValidationWorkflowRunning(boolean isValidationWorkflowRunning) {
         this.isValidationWorkflowRunning = isValidationWorkflowRunning;
     }
 
     /**
+     * Getter for draftCount.
+     * 
+     * @return the draftCount
+     */
+    public int getDraftCount() {
+        return draftCount;
+    }
+
+    /**
+     * Setter for draftCount.
+     * 
+     * @param draftCount the draftCount to set
+     */
+    public void setDraftCount(int draftCount) {
+        this.draftCount = draftCount;
+    }
+
+    /**
+     * Getter for subscriptionStatus.
+     * 
      * @return the subscriptionStatus
      */
     public SubscriptionStatus getSubscriptionStatus() {
@@ -178,151 +249,138 @@ public class CMSExtendedDocumentInfos {
     }
 
     /**
-     * @param subscriptionStatus
-     *            the subscriptionStatus to set
+     * Setter for subscriptionStatus.
+     * 
+     * @param subscriptionStatus the subscriptionStatus to set
      */
     public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
     }
 
-	/**
-	 * @return the lockStatus
-	 */
-	public LockStatus getLockStatus() {
-		return lockStatus;
-	}
-
-	/**
-	 * @param lockStatus the lockStatus to set
-	 */
-	public void setLockStatus(LockStatus lockStatus) {
-		this.lockStatus = lockStatus;
-	}
-
-	/**
-	 * @return the lockOwner
-	 */
-	public String getLockOwner() {
-		return lockOwner;
-	}
-
-	/**
-	 * @param lockOwner the lockOwner to set
-	 */
-	public void setLockOwner(String lockOwner) {
-		this.lockOwner = lockOwner;
-	}
-
-	/**
-	 * @return the lockDate
-	 */
-	public Calendar getLockDate() {
-		return lockDate;
-	}
-
-	/**
-	 * @param lockDate the lockDate to set
-	 */
-	public void setLockDate(Calendar lockDate) {
-		this.lockDate = lockDate;
-	}
-    
-
+    /**
+     * Getter for lockStatus.
+     * 
+     * @return the lockStatus
+     */
+    public LockStatus getLockStatus() {
+        return lockStatus;
+    }
 
     /**
+     * Setter for lockStatus.
+     * 
+     * @param lockStatus the lockStatus to set
+     */
+    public void setLockStatus(LockStatus lockStatus) {
+        this.lockStatus = lockStatus;
+    }
+
+    /**
+     * Getter for lockOwner.
+     * 
+     * @return the lockOwner
+     */
+    public String getLockOwner() {
+        return lockOwner;
+    }
+
+    /**
+     * Setter for lockOwner.
+     * 
+     * @param lockOwner the lockOwner to set
+     */
+    public void setLockOwner(String lockOwner) {
+        this.lockOwner = lockOwner;
+    }
+
+    /**
+     * Getter for lockDate.
+     * 
+     * @return the lockDate
+     */
+    public Calendar getLockDate() {
+        return lockDate;
+    }
+
+    /**
+     * Setter for lockDate.
+     * 
+     * @param lockDate the lockDate to set
+     */
+    public void setLockDate(Calendar lockDate) {
+        this.lockDate = lockDate;
+    }
+
+    /**
+     * Getter for canSynchronize.
+     * 
      * @return the canSynchronize
      */
     public boolean isCanSynchronize() {
         return canSynchronize;
     }
 
-
     /**
+     * Setter for canSynchronize.
+     * 
      * @param canSynchronize the canSynchronize to set
      */
     public void setCanSynchronize(boolean canSynchronize) {
         this.canSynchronize = canSynchronize;
     }
 
-
     /**
+     * Getter for canUnsynchronize.
+     * 
      * @return the canUnsynchronize
      */
     public boolean isCanUnsynchronize() {
         return canUnsynchronize;
     }
 
-
     /**
+     * Setter for canUnsynchronize.
+     * 
      * @param canUnsynchronize the canUnsynchronize to set
      */
     public void setCanUnsynchronize(boolean canUnsynchronize) {
         this.canUnsynchronize = canUnsynchronize;
     }
 
-
-    
     /**
+     * Getter for synchronizationRootPath.
+     * 
      * @return the synchronizationRootPath
      */
     public String getSynchronizationRootPath() {
         return synchronizationRootPath;
     }
 
-
     /**
+     * Setter for synchronizationRootPath.
+     * 
      * @param synchronizationRootPath the synchronizationRootPath to set
      */
     public void setSynchronizationRootPath(String synchronizationRootPath) {
         this.synchronizationRootPath = synchronizationRootPath;
     }
 
-
     /**
+     * Getter for driveEditURL.
+     * 
      * @return the driveEditURL
      */
     public String getDriveEditURL() {
         return driveEditURL;
     }
 
-
     /**
+     * Setter for driveEditURL.
+     * 
      * @param driveEditURL the driveEditURL to set
      */
     public void setDriveEditURL(String driveEditURL) {
         this.driveEditURL = driveEditURL;
-    }
-
-    
-    /**
-     * @return the hasDrafts
-     */
-    public Boolean hasDrafts() {
-        return hasDrafts;
-    }
-
-    
-    /**
-     * @param hasDrafts the hasDrafts to set
-     */
-    public void setHasDrafts(Boolean hasDrafts) {
-        this.hasDrafts = hasDrafts;
-    }
-    
-    /**
-     * Getter for provider infos property
-     * having given key.
-     * 
-     * @param key
-     * @return property
-     */
-    public Object get(String key){
-        if(this.flux != null){
-          if(this.flux.containsKey(key)){
-              return flux.get(key);
-          }
-        }
-        return new Object();
     }
 
 }

@@ -118,6 +118,8 @@
             > a {
                 .btn;
                 .btn-default;
+                
+                .add-counter(@padding-horizontal: @padding-xs-horizontal);
             }
         }
     }
@@ -140,6 +142,8 @@
                 
                 color: @navbar-default-link-color;
                 
+                .add-counter(@padding-vertical: @padding-small-vertical);
+                
                 &:hover, &:focus {
                     background-color: @navbar-default-link-hover-bg;
                     color: @navbar-default-link-hover-color;
@@ -151,6 +155,47 @@
                 background-color: @navbar-default-link-active-bg;
                 color: @navbar-default-link-active-color;
             }
+        }
+    }
+}
+
+
+.add-counter(@padding-vertical: @padding-xs-vertical, @padding-horizontal: 0) {
+    position: relative;
+    
+    &:hover, &:focus {
+        .label-default {
+            .label-variant(darken(@label-default-bg, 10%));
+        }
+        
+        .label-primary {
+            .label-variant(darken(@label-primary-bg, 10%));
+        }
+        
+        .label-success {
+            .label-variant(darken(@label-success-bg, 10%));
+        }
+        
+        .label-info {
+            .label-variant(darken(@label-info-bg, 10%));
+        }
+        
+        .label-warning {
+            .label-variant(darken(@label-warning-bg, 10%));
+        }
+        
+        .label-danger {
+            .label-variant(darken(@label-danger-bg, 10%));
+        }
+    }
+    
+    .counter {
+        padding-right: @padding-horizontal;
+        
+        > * {
+            position: absolute;
+            top: @padding-vertical;
+            right: @padding-horizontal;
         }
     }
 }
