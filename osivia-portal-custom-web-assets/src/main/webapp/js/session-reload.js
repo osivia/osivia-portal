@@ -4,6 +4,7 @@ $JQry(function() {
 
 	if ($container.data("reload")) {
 		$JQry.ajax({
+			global: false, // Disable AJAX waiter
 			url: url
 		});
 		
