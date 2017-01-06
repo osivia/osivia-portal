@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
@@ -60,6 +61,7 @@ import org.osivia.portal.core.profils.ProfilManager;
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
 
     protected static final Log logger = LogFactory.getLog(LoginInterceptor.class);
+
 
     Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
     SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
@@ -234,6 +236,23 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
+        
+        // Debug user map
+        
+        if( logger.isDebugEnabled()){
+            StringBuffer sb = new StringBuffer();
+            sb.append("userDatas[");
+            for(String key : userDatas.keySet())    {
+                sb.append(key+"="+userDatas.get(key)+";");
+             }
+            sb.append("]   person[");
+            for(String key : person.getExtraProperties().keySet())    {
+                sb.append(key+"="+ person.getExtraProperties().get(key)+";");
+             }        
+            sb.append("]");        
+            
+            logger.debug(new String(sb));
+        }
     }
 
     public void register(UserDatasModuleMetadatas moduleMetadatas) {
