@@ -1,6 +1,8 @@
 package org.osivia.portal.core.tasks;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -9,6 +11,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.core.cms.CMSException;
@@ -42,6 +45,96 @@ public class TasksService implements ITasksService {
      */
     public TasksService() {
         super();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<EcmDocument> getTasks(PortalControllerContext portalControllerContext) throws PortalException {
+        // User principal
+        Principal principal = portalControllerContext.getHttpServletRequest().getUserPrincipal();
+
+        // Tasks
+        List<EcmDocument> tasks;
+
+        if (principal == null) {
+            tasks = new ArrayList<>(0);
+        } else {
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(portalControllerContext);
+
+            try {
+                tasks = cmsService.getTasks(cmsContext, principal.getName());
+            } catch (CMSException e) {
+                throw new PortalException(e);
+            }
+        }
+
+        return tasks;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public EcmDocument getTask(PortalControllerContext portalControllerContext, String path) throws PortalException {
+        // User principal
+        Principal principal = portalControllerContext.getHttpServletRequest().getUserPrincipal();
+
+        // Task
+        EcmDocument task;
+
+        if (principal == null) {
+            task = null;
+        } else {
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(portalControllerContext);
+
+            try {
+                task = cmsService.getTask(cmsContext, principal.getName(), path, null);
+            } catch (CMSException e) {
+                throw new PortalException(e);
+            }
+        }
+
+        return task;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public EcmDocument getTask(PortalControllerContext portalControllerContext, UUID uuid) throws PortalException {
+        // User principal
+        Principal principal = portalControllerContext.getHttpServletRequest().getUserPrincipal();
+
+        // Task
+        EcmDocument task;
+
+        if (principal == null) {
+            task = null;
+        } else {
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(portalControllerContext);
+
+            try {
+                task = cmsService.getTask(cmsContext, principal.getName(), null, uuid);
+            } catch (CMSException e) {
+                throw new PortalException(e);
+            }
+        }
+
+        return task;
     }
 
 
@@ -91,20 +184,13 @@ public class TasksService implements ITasksService {
             }
 
             if (refresh) {
-                // CMS service
-                ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-                // CMS context
-                CMSServiceCtx cmsContext = new CMSServiceCtx();
-                cmsContext.setPortalControllerContext(portalControllerContext);
+                // Tasks
+                List<EcmDocument> tasks = this.getTasks(portalControllerContext);
+                // Count
+                count = tasks.size();
 
-                try {
-                    count = cmsService.getTasksCount(cmsContext, principal.getName());
-
-                    controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, COUNT_ATTRIBUTE, count);
-                    controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, TIMESTAMP_ATTRIBUTE, System.currentTimeMillis());
-                } catch (CMSException e) {
-                    throw new PortalException(e);
-                }
+                controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, COUNT_ATTRIBUTE, count);
+                controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, TIMESTAMP_ATTRIBUTE, System.currentTimeMillis());
             } else {
                 count = (Integer) countAttribute;
             }

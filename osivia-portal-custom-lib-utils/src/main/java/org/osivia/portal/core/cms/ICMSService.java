@@ -530,14 +530,27 @@ public interface ICMSService {
 
 
     /**
-     * Get user tasks count.
+     * Get user tasks.
      * 
      * @param cmsContext CMS context
      * @param user user UID
-     * @return tasks count
+     * @return tasks
      * @throws CMSException
      */
-    int getTasksCount(CMSServiceCtx cmsContext, String user) throws CMSException;
+    List<EcmDocument> getTasks(CMSServiceCtx cmsContext, String user) throws CMSException;
+
+
+    /**
+     * Get user task by path or UUID.
+     * 
+     * @param cmsContext CMS context
+     * @param user user UID
+     * @param path task path, may be null
+     * @param uuid task UUID, may be null
+     * @return task
+     * @throws CMSException
+     */
+    EcmDocument getTask(CMSServiceCtx cmsContext, String user, String path, UUID uuid) throws CMSException;
 
 
     /**

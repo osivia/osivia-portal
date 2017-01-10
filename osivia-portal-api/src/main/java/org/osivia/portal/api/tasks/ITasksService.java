@@ -1,8 +1,10 @@
 package org.osivia.portal.api.tasks;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -17,7 +19,39 @@ public interface ITasksService {
 
 
     /**
-     * Get tasks count.
+     * Get current user tasks.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return tasks
+     * @throws PortalException
+     */
+    List<EcmDocument> getTasks(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get current user task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param path task path
+     * @return task
+     * @throws PortalException
+     */
+    EcmDocument getTask(PortalControllerContext portalControllerContext, String path) throws PortalException;
+
+
+    /**
+     * Get current user task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param uuid task UUID
+     * @return task
+     * @throws PortalException
+     */
+    EcmDocument getTask(PortalControllerContext portalControllerContext, UUID uuid) throws PortalException;
+
+
+    /**
+     * Get current user tasks count.
      * 
      * @param portalControllerContext portal controller context
      * @return tasks count
