@@ -99,9 +99,14 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
     public ControllerResponse execute() throws ControllerException {
         try {
             // Generic template name
-            String genericTemplateName = System.getProperty("template.generic.name");
-            if (genericTemplateName == null) {
-                throw new ControllerException("template.generic.name undefined. Cannot instantiate this page");
+            String templateName = this.dynaProps.get("template.name");
+            if (templateName == null) {
+
+                String genericTemplateName = System.getProperty("template.generic.name");
+                if (genericTemplateName == null) {
+                    throw new ControllerException("template.generic.name undefined. Cannot instantiate this page");
+                } else
+                    templateName = genericTemplateName;
             }
 
             // Generic template region name
@@ -118,7 +123,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             }
 
             // Template identifier
-            String templateId = PortalObjectId.parse(genericTemplateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
+            String templateId = PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 
             // Page properties
             Map<String, String> properties = new HashMap<String, String>();

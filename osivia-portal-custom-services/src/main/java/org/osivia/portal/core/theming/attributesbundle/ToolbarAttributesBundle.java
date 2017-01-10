@@ -492,6 +492,38 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         } catch (PortalException e) {
             // no item if portlet is not present
         }
+        
+        
+        
+        /*
+        try {
+            if (this.instanceContainer.getDefinition("osivia-services-demo-api-testPortletInstance") != null) {
+
+
+                Map<String, String> testProperties = new HashMap<String, String>();
+
+                testProperties.put("osivia.title", "Test");
+                testProperties.put("osivia.windowState", "normal");
+                testProperties.put("osivia.ajaxLink", "1");
+                testProperties.put("theme.dyna.partial_refresh_enabled", "true");
+                testProperties.put("template.name", "/default/templates/publish-2cols" );
+
+                String TestAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "testmanagement", "Test",
+                        "osivia-services-demo-api-testPortletInstance", testProperties, parameters);
+
+                Element testAdministration = DOM4JUtils.generateLinkElement(TestAdministrationURL, null, null, null, "Test page",
+                        "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
+            
+            this.addSubMenuElement(configurationMenuUL, testAdministration, null);
+            }
+        } catch (PortalException e) {
+            // no item if portlet is not present
+        }
+        
+        */
+        
+        
+        
 
         try {
 

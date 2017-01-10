@@ -70,6 +70,7 @@ import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.core.navstate.NavigationalStateObjectChange;
 import org.jboss.portal.core.theme.PageRendition;
 import org.jboss.portal.identity.User;
+import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 import org.jboss.portal.server.config.ServerConfig;
 import org.jboss.portal.theme.LayoutService;
@@ -91,6 +92,7 @@ import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.windows.StartingWindowBean;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -99,6 +101,7 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -106,6 +109,7 @@ import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicWindow;
+import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
@@ -1133,6 +1137,61 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         }
 
+        
+        /** création dynamique d'une window */
+
+        if (cmd instanceof InvokePortletWindowActionCommand ) {
+
+
+            if (cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_START_WINDOW) != null) {
+                
+                StartingWindowBean startingWindow = (StartingWindowBean) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_START_WINDOW);
+                // Window properties
+                StringBuilder builder;
+                String windowName= startingWindow.getName();
+                
+                // Page marker
+                String pageMarker = (String) cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+
+                // Dynamic window bean
+                Window curWindow = (Window) ((InvokePortletWindowCommand) cmd).getTarget();
+
+                
+                DynamicWindowBean window = new DynamicWindowBean(curWindow.getPage().getId(), windowName, startingWindow.getPortletInstance(),  startingWindow.getProperties(), pageMarker);
+                
+                IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
+                dynamicObjectContainer.addDynamicWindow(window);
+
+                // Suppression du cache
+                builder = new StringBuilder();
+                builder.append("cached_markup.");
+                builder.append(curWindow.getPage().getId().toString());
+                builder.append("/");
+                builder.append(windowName);
+                cmd.getControllerContext().removeAttribute(ControllerCommand.PRINCIPAL_SCOPE, builder.toString());
+                
+                
+                
+                PortalObjectId windowId = new PortalObjectId("", new PortalObjectPath(curWindow.getPage().getId().getPath().toString().concat("/").concat(windowName),
+                        PortalObjectPath.CANONICAL_FORMAT));
+
+                // Réinitialisation de l'état
+                NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, windowId);
+                WindowNavigationalState windowNavState = WindowNavigationalState.create();
+                Map<String, String[]> parameters = new HashMap<String, String[]>();
+
+                WindowNavigationalState newNS = WindowNavigationalState.bilto(windowNavState, WindowState.NORMAL, windowNavState.getMode(),
+                            ParametersStateString.create(parameters));
+
+                 cmd.getControllerContext().setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
+                 
+                PortalObjectId windowID  = PortalObjectId.parse(curWindow.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName, PortalObjectPath.CANONICAL_FORMAT);
+                cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID", windowID);
+            }
+
+        }
+
+
 
 
 
@@ -1336,6 +1395,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 properties.setWindowProperty(windowId, "osivia.collapse.forceDisplay", String.valueOf(true));
             }
 
+            // Dynamic window
+            if (window.getId().equals(cmd.getControllerContext().getAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID")))    {
+                properties.setWindowProperty(windowId, "osivia.dynamicWindow", String.valueOf(true));
+            }
+            
 
             // Mobile collapse indicator
             String mobileCollapse = window.getDeclaredProperty("osivia.mobileCollapse");

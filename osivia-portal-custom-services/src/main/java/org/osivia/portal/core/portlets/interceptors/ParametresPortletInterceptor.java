@@ -466,6 +466,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction", "true");
             }
 
+            if (attributes.get(Constants.PORTLET_ATTR_START_WINDOW) != null) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,Constants.PORTLET_ATTR_START_WINDOW, attributes.get(Constants.PORTLET_ATTR_START_WINDOW));
+            }
+            
             String url = (String) attributes.get(Constants.PORTLET_ATTR_REDIRECTION_URL);
             if( url != null)    {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);

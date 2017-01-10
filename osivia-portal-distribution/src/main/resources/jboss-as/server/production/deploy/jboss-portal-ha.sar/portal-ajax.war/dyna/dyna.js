@@ -65,7 +65,20 @@ function onAjaxSuccess(t, callerId, multipart) {
 					// Should log that somewhere
 				}
 			} else {
-				// Should log that somewhere
+				// New window : create in the target region
+				
+				var markup = resp.fragments[id];
+
+
+				// Create a temporary element and paste the innerHTML in it
+				var srcContainer = document.createElement("div");
+
+				// Insert the markup in the div
+				new Insertion.Bottom(srcContainer, markup);
+
+				// Copy the region content
+				createInnerHTML(srcContainer,"dyna-window-content")				
+
 			}
 		}
 
@@ -431,6 +444,38 @@ function copyInnerHTML(srcContainer, dstContainer, className) {
 		} else {
 			// Should log that somewhere but
 		}
+	} else {
+		// Should log that somewhere
+	}
+}
+
+/*
+ * Copy the inner content into the destination region
+* This could occur if window is dynamically created
+ */
+function createInnerHTML(srcContainer, className) {
+	var srcs = srcContainer.select("." + className);
+	if (srcs.length == 1) {
+		var src = srcs[0];
+		var region = src.readAttribute("data-region-target");
+
+		if( region != null)	{
+			var dst = $(region);
+
+			// Move src non attribute children to the destination
+			while (srcContainer.hasChildNodes()) {
+				var srcChild = srcContainer.firstChild;
+				if (srcChild.nodeType != 2) {
+					dst.appendChild(srcChild);
+
+				} else {
+					src.removeChild(srcChild);
+				}
+			}
+
+		Event.observe(dst.firstChild, "click", bilto);
+		}
+ 
 	} else {
 		// Should log that somewhere
 	}

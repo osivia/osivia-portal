@@ -211,7 +211,12 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Dyna window content
-        out.print("<div class='dyna-window-content'>");
+
+        String dynamicWindow =  properties.getWindowProperty(wrc.getId(), "osivia.dynamicWindow");
+        if( dynamicWindow != null)
+            out.print("<div class='dyna-window-content' data-region-target='"+((WindowContext)wrc).getRegionName()+"'>");
+        else
+            out.print("<div class='dyna-window-content'>");
 
 
         String scripts = properties.getWindowProperty(wrc.getId(), "osivia.popupScript");

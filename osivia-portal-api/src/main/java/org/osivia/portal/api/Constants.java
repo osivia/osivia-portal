@@ -189,6 +189,9 @@ public final class Constants {
     public static final String PORTLET_ATTR_POPUP_CLOSE = "osivia.closePopup";
     /** To set breadcrumb portlet path. */
     public static final String PORTLET_ATTR_PORTLET_PATH = "osivia.portletPath";
+    /** To start a new Window */
+    public static final String PORTLET_ATTR_START_WINDOW = "osivia.startWindow";
+    
 
     public static final String PORTLET_VALUE_ACTIVATE = "true";
 

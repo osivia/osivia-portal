@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.MarkupInfo;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -289,6 +290,15 @@ public class AjaxResponseHandler implements ResponseHandler {
             /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
 //            if (!reloadAjaxWindows && !fullRefresh) {
                 if (!fullRefresh) {
+                    
+                 PortalObjectId dynamicWindowID =  (PortalObjectId) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID");
+                 
+                 if( dynamicWindowID != null && !dirtyWindowIds.contains(dynamicWindowID))  {
+                     dirtyWindowIds.add(dynamicWindowID);
+                 }
+                    
+                    
+                    
                 Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
 
@@ -385,9 +395,14 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                             //
                             if (resp instanceof MarkupResponse) {
-                                WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
-                                res.addWindowContext(windowContext);
-                                this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
+                                // Once this virtual window has been computed, it's not worth sending it into the response
+                                // because the menu is displayed in menubar context
+                                // Furthermore, dyna.js must parse its content
+                                if( !refreshedWindow.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME))    {
+                                    WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
+                                    res.addWindowContext(windowContext);
+                                    this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
+                                }
                             } else {
                                 fullRefresh = true;
                             }
