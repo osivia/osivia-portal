@@ -472,9 +472,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             if (this.instanceContainer.getDefinition("directory-person-management-instance") != null) {
 
                 properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                properties.put("osivia.ajaxLink", "1");
+                //properties.put("osivia.ajaxLink", "1");
                 properties.put("osivia.hideTitle", "1");
-
+                properties.put("osivia.windowState", "normal");
+                properties.put("template.name", "/default/templates/publish2cols" );
+                properties.put("theme.dyna.partial_refresh_enabled", "true");
+                
                 String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
                 properties.put("osivia.title", usersAdministrationTitle);
 

@@ -59,31 +59,6 @@ public interface PersonService extends IDirService {
 	 */
 	List<Person> findByCriteria(Person p);
 	
-	/**
-	 * Create a person
-	 * @param p a person 
-	 */
-	public void create(Person p);	
-	
-	/**
-	 * Update a person
-	 * @param p a person 
-	 */
-	public void update(Person p);
-
-	/**
-	 * Check if a password is correct
-	 * @param currentPassword currentPassword
-	 * @return authenticated or not 
-	 */
-	public boolean verifyPassword(String uid, String currentPassword);
-
-	/**
-	 * Update the password of a person
-	 * @param p a person 
-	 * @param newPassword 
-	 */
-	public void updatePassword(Person p, String newPassword);
 
 	/**
 	 * Get a link to the card person portlet
@@ -95,5 +70,13 @@ public interface PersonService extends IDirService {
 	Link getCardUrl(PortalControllerContext portalControllerContext, Person p)
 			throws PortalException;
 
-
+	/**
+	 * Get a document with user profile properties
+	 * @param portalControllerContext
+	 * @param person
+	 * @return document UserProfile
+	 * @throws PortalException
+	 */
+	Object getEcmProfile(PortalControllerContext portalControllerContext,
+			Person person) throws PortalException;
 }

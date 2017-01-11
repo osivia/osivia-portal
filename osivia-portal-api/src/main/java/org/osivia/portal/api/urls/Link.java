@@ -28,14 +28,18 @@ public class Link implements Serializable {
 	
 	
 	/** Link URL. */
-    private final String url;
+    private String url;
     /** External link indicator. */
-    private final boolean external;
+    private boolean external;
 
     /** Downloadable link indicator. */
     private boolean downloadable;
 
+    public Link() {
+    	
+    }
 
+    
     /**
      * Constructor.
      *
