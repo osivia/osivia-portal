@@ -82,6 +82,8 @@ function adjustMaximizedPortletHeight() {
 		}
 		
 		// Update taskbar container height
-		updateTaskbarStyles($JQry(".taskbar-container"));
+		if (typeof updateTaskbarStyles === "function") {
+			updateTaskbarStyles($JQry(".taskbar-container"));
+		}
 	}
 }

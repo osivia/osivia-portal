@@ -194,6 +194,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         this.names.add(Constants.ATTR_TOOLBAR_SIGN_OUT_URL);
         this.names.add(Constants.ATTR_TOOLBAR_ADMINISTRATION_CONTENT);
         this.names.add(Constants.ATTR_TOOLBAR_USER_CONTENT);
+        this.names.add(Constants.ATTR_TOOLBAR_MY_PROFILE);
+        this.names.add(Constants.ATTR_TOOLBAR_USER_SETTINGS_URL);
         this.names.add(Constants.ATTR_TOOLBAR_TASKS_URL);
         this.names.add(Constants.ATTR_TOOLBAR_TASKS_COUNT);
         this.names.add(TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE);
@@ -273,6 +275,31 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             }
         }
         attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
+
+        // User settings
+        String userSettingsInstance = "osivia-services-user-settings-instance";
+        String userSettingsUrl;
+        if ((person == null) || (this.instanceContainer.getDefinition(userSettingsInstance) == null)) {
+            userSettingsUrl = null;
+        } else {
+            // Title
+            String title = bundle.getString("USER_SETTINGS");
+
+            // Window properties
+            Map<String, String> properties = new HashMap<>();
+            properties.put(InternalConstants.PROP_WINDOW_TITLE, title);
+            properties.put("osivia.hideTitle", "1");
+            properties.put("osivia.ajaxLink", "1");
+            properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+
+            try {
+                userSettingsUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "user-settings", title, userSettingsInstance, properties,
+                        null);
+            } catch (PortalException e) {
+                userSettingsUrl = null;
+            }
+        }
+        attributes.put(Constants.ATTR_TOOLBAR_USER_SETTINGS_URL, userSettingsUrl);
 
         // Refresh page
         String refreshPageURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
