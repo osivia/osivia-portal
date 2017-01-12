@@ -6,6 +6,8 @@
 
 
 <c:set var="stateItems" value="${requestScope['osivia.toolbar.menubar.stateItems']}" />
+<c:set var="userProfileUrl" value="${requestScope['osivia.toolbar.myprofile']}" />
+<c:set var="userSettingsUrl" value="${requestScope['osivia.toolbar.userSettings.url']}" />
 
 
 <div class="toolbar">
@@ -130,13 +132,27 @@
                                     <li class="dropdown-header hidden-lg" role="presentation">${requestScope['osivia.toolbar.person'].displayName}</li>
                                 
                                     <!-- User profile -->
-                                    <c:if test="${not empty requestScope['osivia.toolbar.myprofile']}">
+                                    <c:if test="${not empty userProfileUrl}">
                                         <li role="presentation">
-                                            <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
+                                            <a href="${userProfileUrl}" role="menuitem">
                                                 <i class="glyphicons glyphicons-nameplate"></i>
                                                 <span><op:translate key="MY_PROFILE" /></span>
                                             </a>
                                         </li>
+                                    </c:if>
+                                    
+                                    <!-- User settings -->
+                                    <c:if test="${not empty userSettingsUrl}">
+                                        <li role="presentation">
+                                            <a href="${userSettingsUrl}" role="menuitem">
+                                                <i class="glyphicons glyphicons-cogwheel"></i>
+                                                <span><op:translate key="USER_SETTINGS"/></span>
+                                            </a>
+                                        </li>
+                                    </c:if>
+
+                                    <c:if test="${not empty userProfileUrl or not empty userSettingsUrl}">
+                                        <li class="divider" role="presentation"></li>
                                     </c:if>
 
                                     <!-- Logout -->

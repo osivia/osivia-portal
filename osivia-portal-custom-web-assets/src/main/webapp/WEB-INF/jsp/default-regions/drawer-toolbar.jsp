@@ -6,6 +6,8 @@
 
 <c:set var="userPortal" value="${requestScope['osivia.userPortal']}" />
 <c:set var="userPages" value="${userPortal.userPages}" />
+<c:set var="userProfileUrl" value="${requestScope['osivia.toolbar.myprofile']}" />
+<c:set var="userSettingsUrl" value="${requestScope['osivia.toolbar.userSettings.url']}" />
 
 <c:set var="searchPlaceholder"><op:translate key="SEARCH_PLACEHOLDER" /></c:set>
 
@@ -79,19 +81,31 @@
                                     </button>
     
                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                        <li class="dropdown-header" role="presentation">
-                                            <c:choose>
-                                                <c:when test="${empty requestScope['osivia.toolbar.person']}">${requestScope['osivia.toolbar.principal']}</c:when>
-                                                <c:otherwise>${requestScope['osivia.toolbar.person'].displayName}</c:otherwise>
-                                            </c:choose>
-                                        </li>
+                                        <li class="dropdown-header" role="presentation">${requestScope['osivia.toolbar.person'].displayName}</li>
                                     
-                                        <li role="presentation">
-                                            <a href="${requestScope['osivia.toolbar.myprofile']}" role="menuitem">
-                                                <i class="glyphicons glyphicons-nameplate"></i>
-                                                <span><op:translate key="MY_PROFILE" /></span>
-                                            </a>
-                                        </li>
+                                        <!-- User profile -->
+                                        <c:if test="${not empty userProfileUrl}">
+                                            <li role="presentation">
+                                                <a href="${userProfileUrl}" role="menuitem">
+                                                    <i class="glyphicons glyphicons-nameplate"></i>
+                                                    <span><op:translate key="MY_PROFILE" /></span>
+                                                </a>
+                                            </li>
+                                        </c:if>
+                                        
+                                        <!-- User settings -->
+                                        <c:if test="${not empty userSettingsUrl}">
+                                            <li role="presentation">
+                                                <a href="${userSettingsUrl}" role="menuitem">
+                                                    <i class="glyphicons glyphicons-cogwheel"></i>
+                                                    <span><op:translate key="USER_SETTINGS"/></span>
+                                                </a>
+                                            </li>
+                                        </c:if>
+    
+                                        <c:if test="${not empty userProfileUrl or not empty userSettingsUrl}">
+                                            <li class="divider" role="presentation"></li>
+                                        </c:if>
                                         
                                         <li role="presentation">
                                             <a href="#" onclick="logout()" role="menuitem">
