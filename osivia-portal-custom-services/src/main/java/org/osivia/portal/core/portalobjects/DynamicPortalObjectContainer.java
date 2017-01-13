@@ -238,6 +238,20 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		}
 		// Copie dans la session
 		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
+		
+		
+		// Remove child windows
+		
+        List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
+
+        for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
+            if (!windowBean.getPageId().equals(dynamicWindowId)) {
+                newWindows.add(windowBean);
+            }
+        }
+        // Copie dans la session
+        this.getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);	
+		
 
 		// On vide le cache
 		getDatas().clear();
