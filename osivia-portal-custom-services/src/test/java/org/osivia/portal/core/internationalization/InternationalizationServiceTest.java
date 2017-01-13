@@ -120,6 +120,10 @@ public class InternationalizationServiceTest {
 
         // Text
         String testText;
+        // Null
+        Object arg = null;
+        testText = this.internationalizationService.getString(key, Locale.GERMAN, arg);
+        assertEquals("Standard: null", testText);
         // Standard text
         testText = this.internationalizationService.getString(key, Locale.GERMAN, "test");
         assertEquals("Standard: test", testText);
