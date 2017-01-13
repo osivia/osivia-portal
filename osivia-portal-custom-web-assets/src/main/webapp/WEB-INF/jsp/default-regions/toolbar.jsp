@@ -54,7 +54,9 @@
 
 
                 <!-- Brand -->
-                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs">${requestScope['osivia.header.application.name']}</a>
+                <a href="${requestScope['osivia.home.url']}" class="navbar-brand hidden-xs">
+                    <span>${requestScope['osivia.header.application.name']}</span>
+                </a>
             </div>
 
             <div class="hidden-xs">

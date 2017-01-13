@@ -46,15 +46,9 @@
                 <div class="clearfix">
                     <div class="pull-left">
                         <p class="text-overflow">
-                            <c:choose>
-                                <c:when test="${not empty userPortal.defaultPage}">
-                                    <a href="${userPortal.defaultPage.url}">${requestScope['osivia.header.application.name']}</a>
-                                </c:when>
-                                
-                                <c:otherwise>
-                                    <span>${requestScope['osivia.header.application.name']}</span>
-                                </c:otherwise>
-                            </c:choose>
+                            <a href="${requestScope['osivia.home.url']}">
+                                <span>${requestScope['osivia.header.application.name']}</span>
+                            </a>
                         </p>
                     </div>
                     
