@@ -18,12 +18,29 @@ import org.osivia.portal.api.directory.v2.model.Person;
 public interface GroupService extends IDirService {
 
     /**
-     * Get group.
+     * Get empty group.
      * 
-     * @param id group identifier
      * @return group
      */
-    Group get(String id);
+    Group getEmptyGroup();
+
+
+    /**
+     * Get group.
+     * 
+     * @param dn group DN
+     * @return group
+     */
+    Group get(Name dn);
+
+
+    /**
+     * Get group.
+     * 
+     * @param cn group CN
+     * @return group
+     */
+    Group get(String CN);
 
 
     /**
@@ -33,5 +50,14 @@ public interface GroupService extends IDirService {
      * @return members
      */
     List<Person> getMembers(Name dn);
+
+
+    /**
+     * Search groups by criteria.
+     * 
+     * @param criteria search criteria
+     * @return groups
+     */
+    List<Group> search(Group criteria);
 
 }

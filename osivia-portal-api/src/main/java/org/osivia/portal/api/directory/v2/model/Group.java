@@ -36,10 +36,18 @@ public interface Group {
 
 
     /**
-     * Get group member names.
+     * Get group members.
      * 
-     * @return member names
+     * @return members
      */
     List<Name> getMembers();
+
+
+    /**
+     * Set group members.
+     * 
+     * @param members members
+     */
+    void setMembers(List<Name> members);
 
 }
