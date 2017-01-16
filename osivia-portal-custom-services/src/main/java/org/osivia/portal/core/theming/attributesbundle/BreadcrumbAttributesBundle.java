@@ -267,7 +267,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 displayPage = false;
             }
 
-            if ("1".equals(page.getProperty("osivia.genericPage"))) {
+            if ("1".equals(page.getProperty("osivia.genericPage")) && !"normal".equals(page.getProperty("osivia.windowState"))) {
                 displayPage = false;
             }
 

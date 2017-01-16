@@ -497,27 +497,26 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         try {
 
             if (this.instanceContainer.getDefinition("directory-person-management-instance") != null) {
-
-                properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, Constants.PORTLET_VALUE_ACTIVATE);
-                //properties.put("osivia.ajaxLink", "1");
-                properties.put("osivia.hideTitle", "1");
-                properties.put("osivia.windowState", "normal");
-                properties.put("template.name", "/default/templates/publish2cols" );
-                properties.put("theme.dyna.partial_refresh_enabled", "true");
-                
+                // Title
                 String usersAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION);
-                properties.put("osivia.title", usersAdministrationTitle);
 
-                String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement",
-                        bundle.getString(InternationalizationConstants.KEY_USERS_ADMINISTRATION), "directory-person-management-instance", properties,
-                        parameters);
+                properties.put("osivia.title", usersAdministrationTitle);
+                properties.put("osivia.hideTitle", "1");
+                properties.put("osivia.bootstrapPanelStyle", String.valueOf(true));
+                properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
+                properties.put("osivia.ajaxLink", "1");
+                properties.put("template.name", "/default/templates/publish2cols");
+                properties.put("osivia.windowState", "normal");
+
+                // URL
+                String usersAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "usermanagement", usersAdministrationTitle,
+                        "directory-person-management-instance", properties, parameters);
 
                 Element usersAdministration = DOM4JUtils.generateLinkElement(usersAdministrationURL, null, null, null, usersAdministrationTitle,
                         "glyphicons glyphicons-parents", AccessibilityRoles.MENU_ITEM);
                 this.addSubMenuElement(configurationMenuUL, usersAdministration, null);
 
                 identityDivider = true;
-
             }
         } catch (PortalException e) {
             // no item if portlet is not present

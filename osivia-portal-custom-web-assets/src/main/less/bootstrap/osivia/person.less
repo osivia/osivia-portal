@@ -6,6 +6,10 @@
 .person {
     .clearfix;
     
+    &, .person-avatar, .person-title, .person-extra {
+        display: block;
+    }
+    
     // Avatar
     .person-avatar {
         .pull-left;
@@ -50,7 +54,24 @@
         .text-muted;
         .text-overflow;
         
-        line-height: @input-height-base - @line-height-computed;
+        // line-height: @input-height-base - @line-height-computed;
+    }
+    
+    
+    // Link
+    a&, a & {
+        &, &:hover, &:focus {
+            color: inherit;
+            text-decoration: none;    
+        }
+        
+        &.active {
+            .bg-primary;
+            
+            .person-extra {
+                color: inherit;
+            }
+        }
     }
     
     
@@ -58,6 +79,12 @@
     .table & {
         @media screen and (max-width: @screen-xs-max) {
             margin-bottom: @padding-small-vertical;
+        }
+    }
+    a&, a & {
+        .table-row & {
+            margin: -@table-cell-padding;
+            padding: @table-cell-padding;
         }
     }
     
@@ -98,6 +125,14 @@
             &, &:last-child {
                 padding: 0;
             }
+        }
+    }
+    
+    
+    // List group active item
+    .list-group .list-group-item.active & {
+        .person-extra {
+            color: inherit;
         }
     }
 }

@@ -130,6 +130,10 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             properties.put("osivia.genericPage", "1");
             properties.put(TabGroup.TYPE_PROPERTY, StringUtils.trimToEmpty(this.dynaProps.get(TabGroup.TYPE_PROPERTY)));
 
+            if ("normal".equals(this.dynaProps.get("osivia.windowState"))) {
+                properties.put("osivia.windowState", "normal");
+            }
+
             // Start dynamic page command
             StartDynamicPageCommand pageCommand = new StartDynamicPageCommand(this.parentId, this.pageName, displayNames, templateId, properties,
                     new HashMap<String, String>());
