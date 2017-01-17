@@ -31,8 +31,12 @@
     .ajax-waiter {
         float: right;
         
+        .translate (@x: 500px , @y: 0);
+        
         &.in {
             margin-bottom: 0;
+            
+            .translate(@x: 0, @y: 0);
         }
         
         .label {
