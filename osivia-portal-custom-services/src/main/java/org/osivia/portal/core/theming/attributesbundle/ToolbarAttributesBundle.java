@@ -809,6 +809,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, "disabled");
         }
 
+        // Edit page attachments
+        String cmsEditPageAttachmentsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_ATTACHMENTS);
+        final String editPageAttachmentsGlyph = "halflings halflings-glyph-paperclip";
+        if (modePreview) {
+            String cmsEditPageAttachmentsURL = cmsService.getEcmUrl(cmsCtx, EcmViews.editAttachments, path, requestParameters);
+
+            final String onclick = "";
+
+
+            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageAttachmentsURL, onclick, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
+                    cmsEditPageAttachmentsTitle, editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
+
+            addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
+        } else {
+            Element cmsEditPageAttachmentsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEditPageAttachmentsTitle,
+                    editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsEditPageAttachmentsLink, HTMLConstants.TITLE, previewRequired);
+            addSubMenuElement(cmsEditionMenuUL, cmsEditPageAttachmentsLink, "disabled");
+        }
 
         // Move
         String moveTitle = bundle.getString("MOVE");
