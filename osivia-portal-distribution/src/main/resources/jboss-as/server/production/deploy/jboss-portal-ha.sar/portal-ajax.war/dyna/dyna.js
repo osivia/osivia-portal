@@ -49,16 +49,20 @@ function onAjaxSuccess(t, callerId) {
 					if (dstContainer != null) {
 						// Get markup fragment
 						var markup = resp.fragments[id];
-
-						// Create a temporary element and paste the innerHTML in it
-						var srcContainer = document.createElement("div");
-
-						// Insert the markup in the div
-						new Insertion.Bottom(srcContainer, markup);
-
-						// Copy the region content
-						copyInnerHTML(srcContainer, dstContainer,
-								"dyna-window-content")
+						
+						// Exclude ajax refresh incompatible portlets
+						if( markup.indexOf('bxslider-container') == -1)    { 
+							
+							// Create a temporary element and paste the innerHTML in it
+							var srcContainer = document.createElement("div");
+							
+							// Insert the markup in the div
+							new Insertion.Bottom(srcContainer, markup);
+							
+							// Copy the region content
+							copyInnerHTML(srcContainer, dstContainer,
+							"dyna-window-content")
+						}
 					} else {
 						// Should log that somewhere
 					}
