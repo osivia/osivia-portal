@@ -147,3 +147,17 @@ body {
         display: none;
     }
 }
+
+
+// Panel group
+.panel-group {
+    .panel-heading {
+        + .panel-collapse {
+            > .panel-body, > .list-group {
+                &:not(:first-child) {
+                    border-top-style: none;
+                }
+            }
+        }
+    }
+}

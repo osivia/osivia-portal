@@ -53,8 +53,6 @@
         .small;
         .text-muted;
         .text-overflow;
-        
-        // line-height: @input-height-base - @line-height-computed;
     }
     
     
@@ -80,6 +78,13 @@
         @media screen and (max-width: @screen-xs-max) {
             margin-bottom: @padding-small-vertical;
         }
+        
+        .person-extra {
+            @line-height: floor(@font-size-small * @line-height-base);
+            
+            line-height: @line-height;
+            margin-bottom: @input-height-base - @line-height-computed - @line-height;
+        }
     }
     a&, a & {
         .table-row & {
@@ -93,6 +98,15 @@
     .select2-results__option--highlighted & {
         .person-extra {
             color: inherit;
+        }
+    }
+    
+    // Select2 disabled option
+    .select2-results__option[aria-disabled=true] & {
+        .person-avatar {
+            img {
+                filter: grayscale(100%);
+            }
         }
     }
     
