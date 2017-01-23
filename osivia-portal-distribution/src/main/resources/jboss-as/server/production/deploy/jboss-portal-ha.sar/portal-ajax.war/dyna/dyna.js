@@ -371,6 +371,7 @@ function bilto(event) {
 			        $JQry.ajax({
 			            url: current.action,
 			            method: "post",
+					    type: "POST",
 			            headers: {"ajax": true},
 			            contentType: false, // obligatoire pour de l'upload
 			            processData: false, // obligatoire pour de l'upload
