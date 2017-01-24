@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -231,12 +232,23 @@ public class StartDynamicPageCommand extends DynamicCommand {
             }
 
             // Mémorisation de la page avant l'appel
-            PageMarkerInfo markerInfo = PageMarkerUtils.getLastPageState(this.getControllerContext());
+            PageMarkerInfo lastPageState = PageMarkerUtils.getLastPageState(this.getControllerContext());
 
-            if (markerInfo != null) {
+            if (lastPageState != null) {
                 // Pas de retour si ouverture depuis un popup
-                if (markerInfo.getPopupMode() == null) {
-                    properties.put("osivia.dynamic.close_page_path", markerInfo.getPageId().toString());
+                if (lastPageState.getPopupMode() == null) {
+                    // Last page identifier
+                    String lastPageId;
+                    if (lastPageState.getPageId() == null) {
+                        lastPageId = null;
+                    } else {
+                        lastPageId = lastPageState.getPageId().toString();
+                    }
+
+                    // Pas de retour si ouverture depuis une modale
+                    if (!StringUtils.equals("/osivia-util/modal", lastPageId)) {
+                        properties.put("osivia.dynamic.close_page_path", lastPageState.getPageId().toString());
+                    }
                 }
             }
 
