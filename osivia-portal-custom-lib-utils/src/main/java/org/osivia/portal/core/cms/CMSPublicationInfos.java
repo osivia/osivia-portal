@@ -375,12 +375,13 @@ public class CMSPublicationInfos {
      * @return property
      */
     public Object get(String key){
-        if(this.flux != null){
-          if(this.flux.containsKey(key)){
-              return flux.get(key);
-          }
+        Object result = null;
+
+        if (this.flux != null) {
+            result = flux.get(key);
         }
-        return new Object();
+
+        return result;
     }
 
 }

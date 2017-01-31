@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.api.cms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
@@ -22,8 +23,9 @@ import org.osivia.portal.api.portlet.PortalGenericPortlet;
  * CMS item type java-bean.
  *
  * @author Cédric Krommenhoek
+ * @see Cloneable
  */
-public class DocumentType {
+public class DocumentType implements Cloneable {
 
     /** CMS item type name. */
     private final String name;
@@ -55,8 +57,11 @@ public class DocumentType {
     /** CMS item customized class loader. */
     private final ClassLoader customizedClassLoader;
 
+
     /** CMS item editorial content indicator, may be null. */
     private Boolean editorialContent;
+    /** CMS item type is a file type indicator. */
+    private boolean isFile;
 
 
     /**
@@ -94,7 +99,8 @@ public class DocumentType {
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
-    	this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, false, true);
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph,
+                false, true);
     }
 
 
@@ -115,7 +121,8 @@ public class DocumentType {
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
-        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType, true);
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph,
+                isRootType, true);
     }
 
 
@@ -131,11 +138,12 @@ public class DocumentType {
      * @param defaultTemplate
      * @param glyph
      * @param isRootType
-     * @param moveable
+     * @param movable
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
-            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable)   {
-        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph, isRootType,moveable, false);
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean movable) {
+        this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph,
+                isRootType, movable, false);
     }
 
     /**
@@ -153,7 +161,8 @@ public class DocumentType {
      * @param glyph CMS item customized glyph, may be null for default glyph
      */
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
-            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean moveable, boolean liveEditable) {
+            boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType, boolean movable,
+            boolean liveEditable) {
         super();
         this.name = name;
         this.folderish = folderish;
@@ -166,12 +175,28 @@ public class DocumentType {
         this.defaultTemplate = defaultTemplate;
         this.glyph = glyph;
         this.isRootType = isRootType;
-        this.movable = moveable;
+        this.movable = movable;
         this.liveEditable = liveEditable;
 
         // Customized class loader
         this.customizedClassLoader = PortalGenericPortlet.CLASS_LOADER_CONTEXT.get();
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DocumentType clone() {
+        List<String> subTypes = new ArrayList<>(this.portalFormSubTypes);
+        DocumentType clone = new DocumentType(this.name, this.folderish, this.navigable, this.browsable, this.ordered, this.forcePortalContextualization,
+                this.supportsPortalForms, subTypes, this.defaultTemplate, this.glyph, this.isRootType, this.movable, this.liveEditable);
+        clone.editorialContent = this.editorialContent;
+        clone.isFile = this.isFile;
+
+        return clone;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -215,7 +240,11 @@ public class DocumentType {
      */
     @Override
     public String toString() {
-        return "CMSItemType [name=" + this.name + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("DocumentType [name=");
+        builder.append(this.name);
+        builder.append("]");
+        return builder.toString();
     }
 
 
@@ -311,11 +340,12 @@ public class DocumentType {
 
     /**
      * is root type
+     *
      * @return is root type ?
      */
-	public boolean isRootType() {
-		return this.isRootType;
-	}
+    public boolean isRootType() {
+        return this.isRootType;
+    }
 
     /**
      * Checks if is movable.
@@ -360,6 +390,24 @@ public class DocumentType {
      */
     public void setEditorialContent(Boolean editorialContent) {
         this.editorialContent = editorialContent;
+    }
+
+    /**
+     * Getter for isFile.
+     *
+     * @return the isFile
+     */
+    public boolean isFile() {
+        return this.isFile;
+    }
+
+    /**
+     * Setter for isFile.
+     *
+     * @param isFile the isFile to set
+     */
+    public void setFile(boolean isFile) {
+        this.isFile = isFile;
     }
 
 }
