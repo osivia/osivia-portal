@@ -44,6 +44,7 @@ public final class Constants {
     /** Directory locator service name. */
     public static final String DIRECTORY_SERVICE_LOCATOR_NAME = "DirctoryServiceLocator";
 
+
     // JBoss portal objects
 
     /** JBP key portalName. */

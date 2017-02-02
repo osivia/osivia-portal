@@ -472,15 +472,24 @@ public class PageMarkerUtils {
 
 
                 String tabPagePath = StringUtils.removeStart(newPath, "/portal");
+                String slashedTabPagePath = tabPagePath + "/";                
 
                 for (PageMarkerInfo pagemarkerInfo : list) {
                     // Is it a subpage of the tab ?
-
+                    
                     if ((pagemarkerInfo.getPageId() != null) && StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), tabPagePath)) {
-                        newTabPath = "/portal" + pagemarkerInfo.getPageId().toString();
-                        tabMarkerInfo = pagemarkerInfo;
-                        break;
+                        // /page or /page/xxxxxxx
+                        if( StringUtils.equals(pagemarkerInfo.getPageId().toString(), tabPagePath) || StringUtils.startsWith(pagemarkerInfo.getPageId().toString(), slashedTabPagePath))    {
+                           // Cas d'erreur type double-click 
+                           if( currentPageMarker == null  || (Integer.parseInt(currentPageMarker) >= Integer.parseInt(pagemarkerInfo.getPageMarker())))  {
+                            
+                            newTabPath = "/portal" + pagemarkerInfo.getPageId().toString();
+                            tabMarkerInfo = pagemarkerInfo;
+                            break;
+                            }
+                        }
                     }
+                    
                 }
             }
         }

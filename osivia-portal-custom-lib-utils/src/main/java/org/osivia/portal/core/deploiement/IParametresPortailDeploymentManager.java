@@ -20,6 +20,6 @@ import javax.management.MBeanServer;
 
 public interface IParametresPortailDeploymentManager {
 	
-	public void chargerParametres(File file, MBeanServer mbeanServer);
+	public String chargerParametres(File file, MBeanServer mbeanServer);
 
 }

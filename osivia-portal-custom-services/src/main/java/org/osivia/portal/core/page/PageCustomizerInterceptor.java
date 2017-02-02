@@ -95,6 +95,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.log.LoggerMessage;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.profiler.IProfilerService;
@@ -110,6 +111,7 @@ import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
+import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -132,6 +134,8 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
     /** Window logger. */
     private static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
+    
+
     /** Logger. */
     private static final Log logger = LogFactory.getLog(PageCustomizerInterceptor.class);
     /** JBoss administration portal identifier. */
@@ -532,6 +536,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         if (cmd instanceof RenderPageCommand) {
             begin = System.currentTimeMillis();
+            
+            if( IPortalLogger.logger.isDebugEnabled()){
+                IPortalLogger.logger.debug(new LoggerMessage("page enter"));
+            }
+            
         }
 
         // v2.0.22-RC6 Force to reload resources
@@ -1096,6 +1105,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 Page page = ((PageCommand) cmd).getPage();
 
                 this.profiler.logEvent("PAGE", page.getId().toString(), elapsedTime, error);
+                
+                 if( IPortalLogger.logger.isDebugEnabled()){
+                    IPortalLogger.logger.debug(new LoggerMessage("page exit " + elapsedTime));
+                }
+
+                
+                if( error == false)
+                    IPortalLogger.logger.info(elapsedTime);
 
             }
         }

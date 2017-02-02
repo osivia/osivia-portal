@@ -27,6 +27,8 @@ import javax.security.jacc.PolicyContext;
 import javax.security.jacc.PolicyContextException;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
@@ -40,6 +42,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
+import org.osivia.portal.core.tracker.ServerTrackerInterceptor;
 
 
 public class ProfilManager implements IProfilManager {
@@ -67,6 +70,10 @@ public class ProfilManager implements IProfilManager {
     private Portal getDefaultPortal() {
         return getPortalObjectContainer().getContext().getDefaultPortal();
     }
+    
+    
+    protected static final Log logger = LogFactory.getLog(ProfilManager.class);
+    
 
     /**
      * Renvoie la liste des rôles filtrée, ordonnée avec en plus les roles
@@ -331,7 +338,11 @@ public class ProfilManager implements IProfilManager {
 
     public ProfilBean getProfilPrincipalUtilisateur() {
 
-        HttpSession session = getTracker().getHttpSession();
+        
+        //logger.info("ProfilManager getProfilPrincipalUtilisateur"); 
+        
+        //HttpSession session = getTracker().getHttpSession();
+        HttpSession session =  getTracker().getHttpRequest().getSession( true);
 
         ProfilBean profil = (ProfilBean) session.getAttribute(ATTRIBUTE_PROFILE_NAME);
         if (profil == null) {

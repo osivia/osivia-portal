@@ -537,7 +537,7 @@
    		${portal.hibernate.cache.partition.name:portal.hibernate}
    	</attribute>
 
-   	<attribute name="InitialStateRetrievalTimeout">17500</attribute>
+   	<attribute name="InitialStateRetrievalTimeout">60000</attribute>
 
    	<attribute name="SyncReplTimeout">17500</attribute>
 

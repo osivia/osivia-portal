@@ -13,11 +13,13 @@
         <span> <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_IMPORT_CONFIG')}" /></span>
     </p>
 
-    <h:form>
+    
         <h:panelGrid
             columns="2"
-            columnClasses="top,top">
-            <rich:fileUpload
+            columnClasses="top,administration-checker-panel ">
+            
+            <h:form>
+            	<rich:fileUpload
                 fileUploadListener="#{importBean.listener}"
                 maxFilesQuantity="#{importBean.uploadsAvailable}"
                 id="upload"
@@ -26,13 +28,41 @@
                 allowFlash="#{importBean.useFlash}">
                 <a4j:support
                     event="onuploadcomplete"
-                    reRender="import-error-messages" />
-            </rich:fileUpload>
-        </h:panelGrid>
-    </h:form>
+                    reRender="import-error-messages,check-list" />
+            	</rich:fileUpload>
+            </h:form>
+
+			<h:panelGroup id="check-list">
+			
+			  <label>
+       			 <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_IMPORT_CHECK')}" />
+    			</label>
+			
+				<a4j:form id="import-check-form">
+					<h:inputText value="#{importBean.portalObjectPath}" />
+					
+					<a4j:commandButton id="refresh-profiles-action"
+						value="#{internationalizationBean.getString('CHECK')}"
+						action="#{importBean.startChecking}" disabled="#{importBean.checking}"  reRender="check-list,import-error-messages" />	
+					
+					<a4j:poll id="poll" interval="1000" enabled="#{importBean.checking}"  reRender="import-check-form,cluster-msg"/>
+									
+				</a4j:form>
+				
+				<h:panelGroup id="cluster-msg">
+					<h:outputText escape="false" value="#{importBean.clusterMsg}" />
+				</h:panelGroup>
+				
+				
+			</h:panelGroup>
+
+	</h:panelGrid>
+    
 
     <h:panelGroup id="import-error-messages">
-        <h:outputText value="#{importBean.messages}" />
-    </h:panelGroup>
+        <h:outputText styleClass="administration-error-msg" value="#{importBean.messages}" />
+     </h:panelGroup>
+     
+  
     
 </div>

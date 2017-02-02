@@ -15,11 +15,13 @@ package org.osivia.portal.core.pagemarker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -64,6 +66,7 @@ import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.RestorablePageUtils;
 import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
+import org.osivia.portal.core.error.UserAction;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
@@ -493,10 +496,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
         }        
         
 
-
-
-
-
+    
         return cmd;
 
     }

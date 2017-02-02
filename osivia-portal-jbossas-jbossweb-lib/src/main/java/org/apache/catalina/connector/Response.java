@@ -931,8 +931,8 @@
 /* 1571 */     if (sb.length() > 0) {
 /*      */   // MODIF PIA
 /* 1572 */       //sb.append(";jsessionid=");
-/* 1572 */       sb.append(";portalsessionid=");
-/* 1573 */       sb.append(sessionId);
+/* 1572 */       //sb.append(";portalsessionid=");
+/* 1573 */       //sb.append(sessionId);
 /*      */     }
 /* 1575 */     sb.append(anchor);
 /* 1576 */     sb.append(query);

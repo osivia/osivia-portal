@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -248,10 +249,18 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		List<DynamicWindowBean> windows = null;
 
-		if (this.getTracker().getHttpSession() != null) {
-            windows = (List<DynamicWindowBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_windows");
-        }
+//		if (this.getTracker().getHttpSession() != null) {
+//            windows = (List<DynamicWindowBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_windows");
+//        }
 
+		if (this.getTracker().getHttpRequest() != null)    {
+		   // get refreshed session
+	       HttpSession session =  getTracker().getHttpRequest().getSession( true);
+	       if( session != null){
+	           windows = (List<DynamicWindowBean>) session.getAttribute("osivia.dynamic_windows");
+	       }
+		}
+		
 
 		if (windows == null) {
             windows = new ArrayList<DynamicWindowBean>();
@@ -547,9 +556,20 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		List<DynamicPageBean> pages = null;
 
-		if (this.getTracker().getHttpSession() != null) {
-            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
-        }
+//		if (this.getTracker().getHttpSession() != null) {
+//            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
+//        }
+		
+	      if (this.getTracker().getHttpRequest() != null)    {
+	           // get refreshed session
+	           HttpSession session =  getTracker().getHttpRequest().getSession( true);
+	           if( session != null){
+	               pages = (List<DynamicPageBean>) session.getAttribute("osivia.dynamic_pages");
+	           }
+	        }
+
+		
+		
 
 		if (pages == null) {
             pages = new ArrayList<DynamicPageBean>();

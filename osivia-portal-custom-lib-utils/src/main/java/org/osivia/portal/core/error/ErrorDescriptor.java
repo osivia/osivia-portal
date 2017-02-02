@@ -29,18 +29,18 @@ public class ErrorDescriptor {
 	protected int httpErrCode;
 	protected Throwable exception;	
 	/** Trace or message if exception is null. */
-	protected String trace;
+	protected String msg;
 	protected String userId;
 	protected Map<String, Object> properties;
 
 	public ErrorDescriptor(int httpErrCode, Throwable exception, 
-			String trace, String userId,
+			String msg, String userId,
 			Map<String, Object> properties) {
 		super();
 		this.registrationDate = new Date();
 		this.httpErrCode = httpErrCode;
 		this.exception = exception;
-		this.trace = trace;
+		this.msg = msg;
 		this.userId = userId;
 		this.properties = new HashMap<String, Object>();
 		if( properties != null) {
@@ -68,14 +68,16 @@ public class ErrorDescriptor {
 		return exception;
 	}
 
-	public String getTrace() {
-		if( exception == null) {
-			return trace;
-		} else {
-			return Debug.throwableToString(exception);
-		}
+	public String getMessage() {
+			return msg;
 	}
+	
+	public String getStack() {
+	    return Debug.throwableToString(exception);
+   }
 
+
+	
 	public String getUserId() {
 		return userId;
 	}

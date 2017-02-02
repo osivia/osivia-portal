@@ -81,8 +81,7 @@ public class ServiceThread implements Runnable {
 	
 	public void setKillerThread(KillerThread killerThread) {
 		this.killerThread = killerThread;
-		logger.info("Supervisor thread "+killerThread+ " associated with current thread " +  currentThread);
-		
+		//logger.info("Supervisor thread "+killerThread+ " associated with current thread " +  currentThread);
 	}
 
 	public Thread getCurrentThread() {
@@ -239,6 +238,13 @@ public class ServiceThread implements Runnable {
                if( e.getCause() instanceof IllegalStateException)
                    shouldLog = false;
 	        }
+	        
+	        // Les erreurs liées à des portlets expirés ne sont pas affichées
+	        // (pollution des logs)
+	        if( invoker.hasParallelisationExpired())
+	            shouldLog = false;
+	        
+	        
 	        if(shouldLog)
 	            logger.error(e);
 

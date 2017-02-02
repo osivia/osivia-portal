@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
@@ -43,6 +44,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.log.LoggerMessage;
 import org.osivia.portal.api.login.IUserDatasModule;
 import org.osivia.portal.api.login.IUserDatasModuleRepository;
 import org.osivia.portal.api.login.UserDatasModuleMetadatas;
@@ -51,6 +53,7 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.profils.ProfilBean;
 import org.osivia.portal.core.profils.ProfilManager;
 
@@ -58,6 +61,7 @@ import org.osivia.portal.core.profils.ProfilManager;
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
 
     protected static final Log logger = LogFactory.getLog(LoginInterceptor.class);
+
 
     Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
     SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
@@ -192,6 +196,9 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                 // Job is marked as done
 
                 invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
+                
+                IPortalLogger.logger.info(new LoggerMessage("user login", true));
+                
             }
 
         }
@@ -229,6 +236,23 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas", userDatas);
         invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON, person);
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
+        
+        // Debug user map
+        
+        if( logger.isDebugEnabled()){
+            StringBuffer sb = new StringBuffer();
+            sb.append("userDatas[");
+            for(String key : userDatas.keySet())    {
+                sb.append(key+"="+userDatas.get(key)+";");
+             }
+            sb.append("]   person[");
+            for(String key : person.getExtraProperties().keySet())    {
+                sb.append(key+"="+ person.getExtraProperties().get(key)+";");
+             }        
+            sb.append("]");        
+            
+            logger.debug(new String(sb));
+        }
     }
 
     public void register(UserDatasModuleMetadatas moduleMetadatas) {

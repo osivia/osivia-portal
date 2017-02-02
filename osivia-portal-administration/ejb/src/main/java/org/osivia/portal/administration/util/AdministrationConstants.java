@@ -25,8 +25,9 @@ public final class AdministrationConstants {
     public static final String PORTAL_OBJECT_CONTAINER_NAME = "PortalObjectContainer";
     /** Dynamic object container name. */
     public static final String DYNAMIC_OBJECT_CONTAINER_NAME = "DynamicObjectContainer";
-    /** Authorization domain registry name. */
-    public static final String AUTHORIZATION_DOMAIN_REGISTRY_NAME = "AuthorizationDomainRegistry";
+    /** Dynamic object container name. */
+    public static final String CLUSTER_CACHE_SERVICE_NAME = "CacheService";
+
     /** Config deployer name. */
     public static final String CONFIG_DEPLOYER_NAME = "ConfigDeployer";
     /** Theme service name. */

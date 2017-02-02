@@ -236,6 +236,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
             if (directoryService != null) {
                 person = directoryService.getPerson(principal.getName());
+                
+                
+                String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
+                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+                	person.setAvatar(null);
+                }
+                
+                
                 attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
             }
         }
@@ -1090,7 +1098,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userAvatarSrc;
         if (person != null) {
             userName = person.getDisplayName();
-            userAvatarSrc = person.getAvatar().getUrl();
+            if(person.getAvatar() != null) {
+            	userAvatarSrc = person.getAvatar().getUrl();
+            }
+            else {
+            	userAvatarSrc = null;
+            }
         } else if (principal != null) {
             userName = principal.getName();
             try {
