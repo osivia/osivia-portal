@@ -59,10 +59,21 @@ public interface TaskbarFactory {
      * @param id taskbar item identifier
      * @param key taskbar item internationalization key
      * @param icon taskbar item icon
-     * @param type taskbar item document type
+     * @param documentType taskbar item document type
      * @return taskbar item
      */
     TaskbarItem createCmsTaskbarItem(String id, String key, String icon, String documentType);
+
+
+    /**
+     * Create hidden CMS taskbar item.
+     * 
+     * @param id taskbar item identifier
+     * @param key taskbar item internationalization key
+     * @param documentType taskbar item document type
+     * @return taskbar item
+     */
+    TaskbarItem createHiddenCmsTaskbarItem(String id, String key, String documentType);
 
 
     /**

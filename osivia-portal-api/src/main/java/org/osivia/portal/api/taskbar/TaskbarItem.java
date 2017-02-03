@@ -104,4 +104,12 @@ public interface TaskbarItem {
      */
     TaskbarItemRestriction getRestriction();
 
+
+    /**
+     * Get hidden indicator.
+     * 
+     * @return hidden indicator
+     */
+    boolean isHidden();
+
 }

@@ -93,6 +93,18 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public TaskbarItem getItem(PortalControllerContext portalControllerContext, String id) throws PortalException {
+        // Items
+        TaskbarItems items = this.getItems(portalControllerContext);
+
+        return items.get(id);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
     public SortedSet<TaskbarItem> getDefaultItems(PortalControllerContext portalControllerContext) throws PortalException {
         // Comparator
         Comparator<? super TaskbarItem> comparator = new TaskbarItemComparator();
@@ -131,6 +143,27 @@ public class TaskbarService implements ITaskbarService {
         }
 
         return tasks;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarTask getTask(PortalControllerContext portalControllerContext, String basePath, String id) throws PortalException {
+        TaskbarTask result = null;
+        
+        // Tasks
+        List<TaskbarTask> tasks = this.getTasks(portalControllerContext, basePath, false);
+        
+        for (TaskbarTask task : tasks) {
+            if (StringUtils.equals(id, task.getId())) {
+                result = task;
+                break;
+            }
+        }
+
+        return result;
     }
 
 

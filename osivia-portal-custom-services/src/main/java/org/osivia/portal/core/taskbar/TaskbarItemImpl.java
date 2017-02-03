@@ -44,6 +44,9 @@ public class TaskbarItemImpl implements TaskbarItem {
     /** Restriction. */
     private TaskbarItemRestriction restriction;
 
+    /** Hidden indicator. */
+    private boolean hidden;
+
 
     /**
      * Constructor.
@@ -168,6 +171,15 @@ public class TaskbarItemImpl implements TaskbarItem {
      * {@inheritDoc}
      */
     @Override
+    public boolean isHidden() {
+        return this.hidden;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -280,6 +292,15 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public void setRestriction(TaskbarItemRestriction restriction) {
         this.restriction = restriction;
+    }
+
+    /**
+     * Setter for hidden.
+     * 
+     * @param hidden the hidden to set
+     */
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
 }

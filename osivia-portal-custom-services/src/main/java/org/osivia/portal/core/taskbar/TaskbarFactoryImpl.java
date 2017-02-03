@@ -36,7 +36,7 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarItem createTransversalTaskbarItem(String id, String key, String icon, PanelPlayer player) {
+    public TaskbarItemImpl createTransversalTaskbarItem(String id, String key, String icon, PanelPlayer player) {
         TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.TRANSVERSAL, key, icon);
         item.setPlayer(player);
         return item;
@@ -46,7 +46,7 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarItem createStapledTaskbarItem(String id, String key, String icon, PanelPlayer player) {
+    public TaskbarItemImpl createStapledTaskbarItem(String id, String key, String icon, PanelPlayer player) {
         TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.STAPLED, key, icon);
         item.setPlayer(player);
         return item;
@@ -66,9 +66,20 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarItem createCmsTaskbarItem(String id, String key, String icon, String documentType) {
+    public TaskbarItemImpl createCmsTaskbarItem(String id, String key, String icon, String documentType) {
         TaskbarItemImpl item = this.createTaskbarItem(id, TaskbarItemType.CMS, key, icon);
         item.setDocumentType(documentType);
+        return item;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemImpl createHiddenCmsTaskbarItem(String id, String key, String documentType) {
+        TaskbarItemImpl item = this.createCmsTaskbarItem(id, key, null, documentType);
+        item.setHidden(true);
         return item;
     }
 

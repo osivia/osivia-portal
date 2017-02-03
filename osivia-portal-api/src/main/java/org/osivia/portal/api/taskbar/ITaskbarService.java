@@ -51,7 +51,18 @@ public interface ITaskbarService {
 
 
     /**
-     * Get default items, sorted by order.
+     * Get taskbar item.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param id taskbar item identifier
+     * @return taskbar item
+     * @throws PortalException
+     */
+    TaskbarItem getItem(PortalControllerContext portalControllerContext, String id) throws PortalException;
+
+
+    /**
+     * Get default taskbar items, sorted by order.
      *
      * @param portalControllerContext portal controller context
      * @return taskbar items
@@ -61,7 +72,7 @@ public interface ITaskbarService {
 
 
     /**
-     * Get tasks.
+     * Get taskbar tasks.
      *
      * @param portalControllerContext portal controller context
      * @param basePath CMS base path
@@ -73,10 +84,22 @@ public interface ITaskbarService {
 
 
     /**
-     * Get active task identifier.
+     * Get taskbar task.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param basePath CMS base path
+     * @param id taskbar task identifier
+     * @return taskbar task
+     * @throws PortalException
+     */
+    TaskbarTask getTask(PortalControllerContext portalControllerContext, String basePath, String id) throws PortalException;
+
+
+    /**
+     * Get active taskbar task identifier.
      *
      * @param portalControllerContext portal controller context
-     * @return task identifier
+     * @return taskbar task identifier
      * @throws PortalException
      */
     String getActiveId(PortalControllerContext portalControllerContext) throws PortalException;
