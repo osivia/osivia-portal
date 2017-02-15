@@ -132,15 +132,18 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
 
                 if (!redirect) {
                     Page page = configuration.getPage();
-                    Portal portal = page.getPortal();
 
-                    if (page.equals(portal.getDefaultPage())) {
-                        try {
-                            // Redirection URL
-                            String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
-                            configuration.setRedirectionURL(url);
-                        } catch (PortalException e) {
-                            // Do nothing
+                    if (page != null) {
+                        Portal portal = page.getPortal();
+
+                        if (page.equals(portal.getDefaultPage())) {
+                            try {
+                                // Redirection URL
+                                String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
+                                configuration.setRedirectionURL(url);
+                            } catch (PortalException e) {
+                                // Do nothing
+                            }
                         }
                     }
                 }
