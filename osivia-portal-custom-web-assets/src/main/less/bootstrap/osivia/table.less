@@ -14,6 +14,8 @@
         &.table-header {
             position: relative;
             
+            padding-top: max(@table-cell-padding, @navbar-height - @line-height-computed - @table-cell-padding + 1);
+            
             border-width: 2px;
             
             font-weight: bold;
@@ -33,13 +35,15 @@
                 
                 opacity: 0;
                 
+                white-space: nowrap;
+                
                 &, ~ * {
                     .transition-property(@transition-property: opacity);
                     .transition-duration(@transition-duration: 200ms);
                 }
                 
                 &.in {
-                    z-index: @zindex-navbar;
+                    z-index: @zindex-navbar - 3;
                     
                     opacity: 1;
                 }
