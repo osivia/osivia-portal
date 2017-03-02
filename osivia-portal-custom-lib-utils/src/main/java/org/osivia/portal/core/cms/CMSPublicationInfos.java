@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-
 /**
  * Service optimisé pour renvoyer toutes les informations de contenu liées à la
  * publication
@@ -54,6 +52,8 @@ public class CMSPublicationInfos {
     private boolean published = false;
 	/** Indicates if working version is different from published version. */
     private boolean beingModified;
+    /** Indicates if document can be copied. */
+    private boolean copiable;
     
 	private boolean commentableByUser;
 
@@ -82,10 +82,12 @@ public class CMSPublicationInfos {
 	/** Path of draft (portal) contextualization. */
 	private String draftContextualizationPath;
 	
-	private List<Integer> errorCodes = new ArrayList<Integer>();
+	/** Drive client status. */
+	private boolean driveEnabled;
+	/** Drive Edit URL. */
+	private String driveEditURL;
 	
-	/** Informations as flux. */
-	protected JSONObject flux;
+	private List<Integer> errorCodes = new ArrayList<Integer>();
 
 	public CMSPublicationInfos() {
 		super();
@@ -240,6 +242,21 @@ public class CMSPublicationInfos {
     public void setBeingModified(boolean beingModified) {
         this.beingModified = beingModified;
     }
+    
+    /**
+     * @return the copiable
+     */
+    public boolean isCopiable() {
+        return copiable;
+    }
+
+    
+    /**
+     * @param copiable the copiable to set
+     */
+    public void setCopiable(boolean copiable) {
+        this.copiable = copiable;
+    }
 
     public boolean isCommentableByUser() {
 		return commentableByUser;
@@ -367,21 +384,35 @@ public class CMSPublicationInfos {
         this.isNotOrphanDraft = isNotOrphanDraft;
     }
     
+    
     /**
-     * Getter for provider infos property
-     * having given key.
-     * 
-     * @param key
-     * @return property
+     * @return the driveEnabled
      */
-    public Object get(String key){
-        Object result = null;
+    public boolean isDriveEnabled() {
+        return driveEnabled;
+    }
 
-        if (this.flux != null) {
-            result = flux.get(key);
-        }
+    
+    /**
+     * @param driveEnabled the driveEnabled to set
+     */
+    public void setDriveEnabled(boolean driveEnabled) {
+        this.driveEnabled = driveEnabled;
+    }
 
-        return result;
+    /**
+     * @return the driveEditURL
+     */
+    public String getDriveEditURL() {
+        return driveEditURL;
+    }
+
+    
+    /**
+     * @param driveEditURL the driveEditURL to set
+     */
+    public void setDriveEditURL(String driveEditURL) {
+        this.driveEditURL = driveEditURL;
     }
 
 }
