@@ -64,15 +64,13 @@ public interface ICMSService {
     CMSPublicationInfos getPublicationInfos(CMSServiceCtx ctx, String path) throws CMSException;
 
     /**
-     * Get extended infos on document given by its path.
-     *
-     * @param ctx CMSService context
-     * @param path path of studied ddocument
-     * @return extended infos on document given by its path
+     * Get space config.
+     * 
+     * @param cmsCtx CMS context
+     * @param publishSpacePath publish space path
+     * @return CMS item
      * @throws CMSException
      */
-    CMSExtendedDocumentInfos getExtendedDocumentInfos(CMSServiceCtx ctx, String path) throws CMSException;
-
     CMSItem getSpaceConfig(CMSServiceCtx cmsCtx, String publishSpacePath) throws CMSException;
 
     /**
