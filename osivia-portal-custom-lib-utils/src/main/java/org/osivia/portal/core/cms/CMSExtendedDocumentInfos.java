@@ -17,8 +17,6 @@ import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
 
-import net.sf.json.JSONObject;
-
 
 /**
  * Object containing extended informations about a document (compare to CMSPublicationInfos).
@@ -40,8 +38,6 @@ public class CMSExtendedDocumentInfos {
     private boolean isValidationWorkflowRunning;
     /** Draft count. */
     private int draftCount;
-    /** Internal flux. */
-    private JSONObject flux;
     /** Subscription status. */
     private SubscriptionStatus subscriptionStatus;
     /** Lock status */
@@ -56,10 +52,12 @@ public class CMSExtendedDocumentInfos {
     private boolean canUnsynchronize;
     /** Drive, Root of the synchro */
     private String synchronizationRootPath;
-    /** Drive, DriveEdit direct url */
-    private String driveEditURL;
-
-
+    
+    /** Conversion of PDF. */
+    private boolean pdfConvertible;
+    /** Error on PDF conversion. */
+    private boolean errorOnPdfConversion;
+    
     /**
      * Constructor.
      */
@@ -102,34 +100,6 @@ public class CMSExtendedDocumentInfos {
         no_lock;
 
     }
-
-
-    /**
-     * Getter for provider infos property having given key.
-     * 
-     * @param key
-     * @return property
-     */
-    public Object get(String key) {
-        Object result = null;
-
-        if (this.flux != null) {
-            result = flux.get(key);
-        }
-
-        return result;
-    }
-
-
-    /**
-     * Setter for flux.
-     * 
-     * @param flux the flux to set
-     */
-    protected void setFlux(JSONObject flux) {
-        this.flux = flux;
-    }
-
 
     /**
      * Getter for taskName.
@@ -365,22 +335,36 @@ public class CMSExtendedDocumentInfos {
         this.synchronizationRootPath = synchronizationRootPath;
     }
 
+    
     /**
-     * Getter for driveEditURL.
-     * 
-     * @return the driveEditURL
+     * @return the pdfConvertible
      */
-    public String getDriveEditURL() {
-        return driveEditURL;
+    public boolean isPdfConvertible() {
+        return pdfConvertible;
     }
 
+    
     /**
-     * Setter for driveEditURL.
-     * 
-     * @param driveEditURL the driveEditURL to set
+     * @param pdfConvertible the pdfConvertible to set
      */
-    public void setDriveEditURL(String driveEditURL) {
-        this.driveEditURL = driveEditURL;
+    public void setPdfConvertible(boolean pdfConvertible) {
+        this.pdfConvertible = pdfConvertible;
+    }
+
+    
+    /**
+     * @return the errorOnPdfConversion
+     */
+    public boolean isErrorOnPdfConversion() {
+        return errorOnPdfConversion;
+    }
+
+    
+    /**
+     * @param errorOnPdfConversion the errorOnPdfConversion to set
+     */
+    public void setErrorOnPdfConversion(boolean errorOnPdfConversion) {
+        this.errorOnPdfConversion = errorOnPdfConversion;
     }
 
 }
