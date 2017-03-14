@@ -22,6 +22,7 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 
 /**
@@ -122,7 +123,7 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
      * @param configuration project customization configuration
      */
     private void profiledHomeRedirection(PortalControllerContext portalControllerContext, IProjectCustomizationConfiguration configuration) {
-        if (!configuration.isAdministrator()) {
+        if (!configuration.isAdministrator() && !PageProperties.getProperties().isRefreshingPage()) {
             // HTTP servlet request
             HttpServletRequest request = configuration.getHttpServletRequest();
 
