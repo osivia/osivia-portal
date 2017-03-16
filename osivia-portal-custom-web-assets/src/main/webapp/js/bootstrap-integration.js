@@ -5,17 +5,21 @@ $JQry(function() {
 
 	
 	// Tooltips initialization
-	$JQry("[data-toggle=tooltip]").tooltip({container: 'body'});
+	$JQry("[data-toggle=tooltip]").tooltip({
+		container: "body"
+	});
 	$JQry(document).click(function(event) {
 		$JQry("[data-toggle=tooltip]").tooltip("hide");
 	});
 	
 	// Popovers initialization
-	$JQry("[data-toggle=popover]").popover({container: 'body'});
+	$JQry("[data-toggle=popover]").popover({
+		container: "body"
+	});
 	
 	
 	// Forms in dropdown menus
-	$JQry(".dropdown-menu .form").click(function (event) {
+	$JQry(".dropdown-menu .form").click(function(event) {
 		event.stopPropagation();
 	});
 

@@ -113,6 +113,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         boolean hidePortlet = !showCMSTools && "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.hidePortlet"));
         // AJAX links indicator
         boolean ajaxLink = "1".equals(properties.getWindowProperty(wrc.getId(), "osivia.ajaxLink"));
+        // AJAX window locking indicator
+        boolean ajaxLocking = false; // FIXME
+
 
         if (hidePortlet) {
             // v2.0.22 : portlet vide non rafraichi en ajax
@@ -140,19 +143,19 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Window root element
         out.print("<div");
         if (windowId != null) {
-            out.print(" id='");
+            out.print(" id=\"");
             out.print(windowId);
-            out.print("'");
+            out.print("\"");
         }
         if (!ajaxLink || wizard) {
-            out.print(" class='no-ajax-link'");
+            out.print(" class=\"no-ajax-link\"");
         }
         out.print(">");
 
 
         // Well
         if (showCMSTools) {
-            out.print("<div class='well well-sm clearfix'>");
+            out.print("<div class=\"well well-sm clearfix\">");
         }
 
 
@@ -210,14 +213,35 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
 
+        // AJAX locking shadowbox
+        if (ajaxLink && ajaxLocking) {
+            // AJAX shadowbox container
+            Element shadowbox = DOM4JUtils.generateDivElement("ajax-shadowbox window-ajax-shadowbox");
+
+            // Progress container
+            Element progress = DOM4JUtils.generateDivElement("progress");
+            shadowbox.add(progress);
+
+            // Progress bar
+            Element progressBar = DOM4JUtils.generateDivElement("progress-bar progress-bar-striped active", AccessibilityRoles.PROGRESS_BAR);
+            DOM4JUtils.addAttribute(progressBar, "style", "width: 100%");
+            progress.add(progressBar);
+            
+            // Screen reader
+            Element srOnly = DOM4JUtils.generateElement("span", null, bundle.getString("AJAX_REFRESH"));
+            progressBar.add(srOnly);
+
+            DOM4JUtils.write(out, shadowbox);
+        }
+
+
         // Dyna window content
-
-        String dynamicWindow =  properties.getWindowProperty(wrc.getId(), "osivia.dynamicWindow");
-        if( dynamicWindow != null)
-            out.print("<div class='dyna-window-content' data-region-target='"+((WindowContext)wrc).getRegionName()+"'>");
-        else
-            out.print("<div class='dyna-window-content'>");
-
+        String dynamicWindow = properties.getWindowProperty(wrc.getId(), "osivia.dynamicWindow");
+        if (dynamicWindow != null) {
+            out.print("<div class=\"dyna-window-content\" data-region-target=\"" + ((WindowContext) wrc).getRegionName() + "\">");
+        } else {
+            out.print("<div class=\"dyna-window-content\">");
+        }
 
         String scripts = properties.getWindowProperty(wrc.getId(), "osivia.popupScript");
         if (scripts != null) {
@@ -226,7 +250,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Wizard edging
         if (wizard) {
-            out.print("<div class='window wizard-edging clearfix'>");
+            out.print("<div class=\"window wizard-edging clearfix\">");
         }
 
         // Print portlet commands
@@ -236,9 +260,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Portlet container
         if (bootstrapPanelStyle) {
-            out.print("<section class='panel panel-default portlet-container " + styles + "'>");
+            out.print("<section class=\"panel panel-default portlet-container " + styles + "\">");
         } else {
-            out.print("<section class='portlet-container " + styles + "'>");
+            out.print("<section class=\"portlet-container " + styles + "\">");
         }
 
         // Portlet container rendering
@@ -260,23 +284,23 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             }
 
             // Header
-            out.print("<div class='" + headerClass + "'>");
+            out.print("<div class=\"" + headerClass + "\">");
             rendererContext.render(wrc.getDecoration());
             out.print("</div>");
 
             // Body
             if (mobileCollapse) {
-                out.print("<div id='body_");
+                out.print("<div id=\"body_");
                 out.print(wrc.getId());
-                out.print("' class='panel-collapse collapse");
+                out.print("\" class=\"panel-collapse collapse");
 
                 if (BooleanUtils.toBoolean(properties.getWindowProperty(wrc.getId(), "osivia.collapse.forceDisplay"))) {
                     out.print(" in");
                 }
 
-                out.print("'>");
+                out.print("\">");
             }
-            out.print("<div class='" + bodyClass + "'>");
+            out.print("<div class=\"" + bodyClass + "\">");
             rendererContext.render(wrc.getPortlet());
             out.print("</div>");
             if (mobileCollapse) {
@@ -309,6 +333,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             out.print("<td class=\"portlet-footer-right\"></td></tr>");
             out.print("</table>");
         }
+
 
         // Portlet container
         out.print("</section>");
@@ -361,6 +386,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             }
         }
 
+
         // End of DIV for osivia.windowID or no ajax link
         out.print("</div>");
     }
@@ -399,7 +425,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
     @SuppressWarnings("unchecked")
     private void printPortletCommands(PrintWriter writer, WindowRendererContext windowRendererContext, PageProperties properties, Bundle bundle) throws RenderException {
         String windowId = windowRendererContext.getId();
-        String onclickAction = "windowId = '" + windowId + "'";
+        String onclickAction = "windowId = \"" + windowId + "\"";
 
         // Window title
         StringBuilder builder = new StringBuilder();

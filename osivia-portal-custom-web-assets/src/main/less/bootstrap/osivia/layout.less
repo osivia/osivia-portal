@@ -67,8 +67,7 @@ body.fixed-layout {
         }
         
         .flexbox {
-            .flex-container();
-            overflow: hidden;
+            .flexbox();
             
             &.row {
                 .flex-container(@direction: row);
@@ -114,4 +113,8 @@ body.fixed-layout {
     
     -webkit-flex-direction: @direction;
             flex-direction: @direction; 
+}
+.flexbox() {
+    .flex-container();
+    overflow: hidden;
 }

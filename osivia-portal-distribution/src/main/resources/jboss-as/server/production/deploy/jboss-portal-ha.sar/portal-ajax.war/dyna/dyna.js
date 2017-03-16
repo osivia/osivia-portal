@@ -184,7 +184,18 @@ function isURLAccepted(url) {
 
 function directAjaxCall(container, options, url, eventToStop, callerId) {
 	// Setup headers
-	var headers = [ "ajax", "true" ];
+	var headers = [ "ajax", "true" ],
+    	$container = $JQry(container),
+    	$eventTarget = $JQry(eventToStop.target),
+    	ajaxShadowbox = $eventTarget.closest("[data-ajax-shadowbox]").data("ajax-shadowbox"),
+	    $ajaxShadowbox,
+	    $ajaxWaiter = $JQry(".ajax-waiter");
+	    
+	if (ajaxShadowbox !== undefined) {
+	    $ajaxShadowbox = $container.find(ajaxShadowbox);
+	} else {
+	    $ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
+	}
 
 	// Add the view state value
 	if (view_state != null) {
@@ -199,34 +210,16 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	options.requestHeaders = headers;
 
 	// Waiter
-	var $ajaxWaiter = $JQry(".ajax-waiter");
+	if ($ajaxShadowbox.length) {
+	    $ajaxShadowbox.addClass("in");
+	}
 	$ajaxWaiter.delay(200).addClass("in");
-	
-	
-//	var pos = container.cumulativeOffset();
-//
-//	var posx = pos[0] + (container.getWidth() / 2).round()
-//	var posy = pos[1] + (container.getHeight() / 2).round();
-//
-//	var ajaxWaitDiv = Element.down(container, "div.ajax-waiting");
-//	ajaxWaitDiv.setStyle({
-//		left : posx + 'px',
-//		top : posy + 'px'
-//	});
-//
-//	// Dont'display if delay is very short (<200 ms)
-//	new Effect.Appear(ajaxWaitDiv, {
-//		duration : 0.3,
-//		from : 0,
-//		to : 0.9,
-//		delay : 0.2
-//	});
+
 
 	options.onSuccess = function(t) {
+	    $ajaxShadowbox.removeClass("in");
 		$ajaxWaiter.clearQueue();
 		$ajaxWaiter.removeClass("in");
-		
-//		ajaxWaitDiv.hide();
 
 		onAjaxSuccess(t, callerId);
 	};

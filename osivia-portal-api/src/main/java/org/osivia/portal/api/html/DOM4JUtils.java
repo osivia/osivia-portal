@@ -2,6 +2,7 @@ package org.osivia.portal.api.html;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
@@ -29,14 +30,14 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate DOM4J element.
+     * Generate DOM element.
      *
-     * @param name element name
+     * @param name DOM element name
      * @param htmlClass HTML class, may be null
-     * @param text element inner text, may be null
+     * @param text DOM element inner text, may be null
      * @param glyphicon glyphicon name, may be null
      * @param role accessibility role, may be null
-     * @return DOM4J element, or null if element name is blank
+     * @return DOM element, or null if DOM element name is blank
      */
     public static Element generateElement(String name, String htmlClass, String text, String glyphicon, AccessibilityRoles role) {
         if (StringUtils.isBlank(name)) {
@@ -56,12 +57,12 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate DOM4J element.
+     * Generate DOM element.
      *
-     * @param name element name
+     * @param name DOM element name
      * @param htmlClass HTML class, may be null
-     * @param text element inner text, may be null
-     * @return DOM4J element, or null if element name is blank
+     * @param text DOM element inner text, may be null
+     * @return DOM element, or null if element name is blank
      */
     public static Element generateElement(String name, String htmlClass, String text) {
         return generateElement(name, htmlClass, text, null, null);
@@ -69,11 +70,11 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate HTML "div" DOM4J element.
+     * Generate HTML "div" DOM element.
      *
      * @param htmlClass HTML class, may be null
      * @param role accessibility role, may be null
-     * @return HTML "div" DOM4J element
+     * @return HTML "div" DOM element
      */
     public static Element generateDivElement(String htmlClass, AccessibilityRoles role) {
         return generateElement(HTMLConstants.DIV, htmlClass, StringUtils.EMPTY, null, role);
@@ -81,10 +82,10 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate HTML "div" DOM4J element.
+     * Generate HTML "div" DOM element.
      *
      * @param htmlClass HTML class, may be null
-     * @return HTML "div" DOM4J element
+     * @return HTML "div" DOM element
      */
     public static Element generateDivElement(String htmlClass) {
         return generateDivElement(htmlClass, null);
@@ -92,7 +93,7 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate HTML "a" link DOM4J element.
+     * Generate HTML "a" link DOM element.
      *
      * @param href link URL
      * @param target link target, may be null
@@ -101,7 +102,7 @@ public final class DOM4JUtils {
      * @param text link inner text
      * @param glyphicon glyphicon name, may be null
      * @param role accessibility role, may be null
-     * @return HTML "a" link DOM4J element
+     * @return HTML "a" link DOM element
      */
     public static Element generateLinkElement(String href, String target, String onclick, String htmlClass, String text, String glyphicon,
             AccessibilityRoles role) {
@@ -120,7 +121,7 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate HTML "a" link DOM4J element.
+     * Generate HTML "a" link DOM element.
      *
      * @param href link URL
      * @param target link target, may be null
@@ -128,7 +129,7 @@ public final class DOM4JUtils {
      * @param htmlClass HTML class, may be null
      * @param text link inner text
      * @param glyphicon glyphicon name, may be null
-     * @return HTML "a" link DOM4J element
+     * @return HTML "a" link DOM element
      */
     public static Element generateLinkElement(String href, String target, String onclick, String htmlClass, String text, String glyphicon) {
         return generateLinkElement(href, target, onclick, htmlClass, text, glyphicon, null);
@@ -136,14 +137,14 @@ public final class DOM4JUtils {
 
 
     /**
-     * Generate HTML "a" link DOM4J element.
+     * Generate HTML "a" link DOM element.
      *
      * @param href link URL
      * @param target link target, may be null
      * @param onclick link onclick action, may be null
      * @param htmlClass HTML class, may be null
      * @param text link inner text
-     * @return HTML "a" link DOM4J element
+     * @return HTML "a" link DOM element
      */
     public static Element generateLinkElement(String href, String target, String onclick, String htmlClass, String text) {
         return generateLinkElement(href, target, onclick, htmlClass, text, null, null);
@@ -151,9 +152,9 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add attribute to an existing DOM4J element.
+     * Add attribute to an existing DOM element.
      *
-     * @param element DOM4J element
+     * @param element DOM element
      * @param name attribute name
      * @param value attribute value
      */
@@ -169,9 +170,9 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add data attribute to an existing DOM4J element.
+     * Add data attribute to an existing DOM element.
      * 
-     * @param element DOM4J element
+     * @param element DOM element
      * @param name data attribute name
      * @param value data attribute value
      */
@@ -181,9 +182,9 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add ARIA attribute to an existing DOM4J element.
+     * Add ARIA attribute to an existing DOM element.
      * 
-     * @param element DOM4J element
+     * @param element DOM element
      * @param name ARIA attribute name
      * @param value ARIA attribute value
      */
@@ -193,9 +194,9 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add text to an existing DOM4J element.
+     * Add text to an existing DOM element.
      *
-     * @param element DOM4J element
+     * @param element DOM element
      * @param text element inner text
      */
     public static void addText(Element element, String text) {
@@ -210,12 +211,11 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add glyphicon and text to an existing DOM4J element.
+     * Add glyphicon and text to an existing DOM element.
      *
-     * @param element DOM4J element
+     * @param element DOM element
      * @param glyphicon glyphicon name, may be null
-     * @param text element inner text
-     * @param textHTMLClass text HTML class, may be null
+     * @param text DOM element inner text
      */
     public static void addGlyphiconText(Element element, String glyphicon, String text) {
         if (element == null) {
@@ -244,9 +244,9 @@ public final class DOM4JUtils {
 
 
     /**
-     * Add tooltip to element.
+     * Add tooltip to DOM element.
      *
-     * @param element element
+     * @param element DOM element
      * @param title tooltip title
      */
     public static void addTooltip(Element element, String title) {
@@ -265,7 +265,7 @@ public final class DOM4JUtils {
     /**
      * Write HTML content.
      *
-     * @param element element
+     * @param element DOM element
      * @return HTML content
      */
     public static String write(Element element) {
@@ -287,7 +287,7 @@ public final class DOM4JUtils {
     /**
      * Write compact HTML content.
      *
-     * @param element element
+     * @param element DOM element
      * @return HTML content
      */
     public static String writeCompact(Element element) {
@@ -303,6 +303,24 @@ public final class DOM4JUtils {
             html = StringUtils.EMPTY;
         }
         return html;
+    }
+
+
+    /**
+     * Write HTML content in provided writer.
+     * 
+     * @param writer writer
+     * @param element DOM element
+     */
+    public static void write(Writer writer, Element element) {
+        HTMLWriter htmlWriter = new HTMLWriter(writer);
+        htmlWriter.setEscapeText(false);
+        try {
+            htmlWriter.write(element);
+            htmlWriter.flush();
+        } catch (IOException e) {
+            // Do nothing
+        }
     }
 
 }

@@ -21,6 +21,8 @@ public enum AccessibilityRoles {
     NAVIGATION(HTMLConstants.ROLE_NAVIGATION),
     /** Presentation role. */
     PRESENTATION(HTMLConstants.ROLE_PRESENTATION),
+    /** Progress bar role. */
+    PROGRESS_BAR("progressbar"),
     /** Toolbar role. */
     TOOLBAR(HTMLConstants.ROLE_TOOLBAR);
 
