@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -73,9 +74,14 @@ import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
 import org.jboss.portal.theme.page.PageResult;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.taskbar.TaskbarTask;
+import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.mt.IMultithreadService;
+
 import org.osivia.portal.core.profils.IProfilManager;
 
 /**
@@ -100,6 +106,9 @@ public final class RenderPageCommand extends PageCommand {
     private boolean personalizable;
 
     protected static final Log logger = LogFactory.getLog(RenderPageCommand.class);
+    
+    /** Taskbar service. */
+    private ITaskbarService taskbarService;
 
 
     public RenderPageCommand(PortalObjectId pageId) {
@@ -138,11 +147,20 @@ public final class RenderPageCommand extends PageCommand {
 
     protected IProfilManager getProfilManager() throws Exception {
         if (this.profilManager == null) {
-            // TODO : optimisation recherc profil manager
             this.profilManager = Locator.findMBean(IProfilManager.class, "osivia:service=ProfilManager");
         }
         return this.profilManager;
     }
+
+    
+    protected ITaskbarService getTaskbarService() throws Exception {
+        if (this.taskbarService == null) {
+            this.taskbarService = Locator.findMBean(ITaskbarService.class, "osivia:service=TaskbarService");
+        }
+        return this.taskbarService;
+    }
+
+    
 
 
     /**
@@ -302,6 +320,42 @@ public final class RenderPageCommand extends PageCommand {
                         }
                     }
 
+                    
+                    // Content path
+                    CMSItem spaceConfig = (CMSItem) getControllerContext().getServerInvocation().getServerContext().getClientRequest().getAttribute("osivia.cms.spaceConfig");
+
+
+                    
+                    
+                    // Affichage conditionnel / tache                   
+                    if (spaceConfig != null && addWindow) {
+                        PortalControllerContext portalCtx = new PortalControllerContext(this.getContext());
+                        // Linked taskbar item
+                        String taskbarItemId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);
+                        if (StringUtils.isNotEmpty(taskbarItemId)) {
+                            addWindow = false;
+
+                            if (StringUtils.isNotEmpty(spaceConfig.getPath())) {
+                                // Taskbar tasks
+                                List<TaskbarTask> tasks = getTaskbarService().getTasks(portalCtx, spaceConfig.getPath(), true);
+
+                                for (TaskbarTask task : tasks) {
+                                    if (taskbarItemId.equals(task.getId())) {
+                                        if(!task.isDisabled())
+                                            addWindow = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     // Is this window defined in a visible region ????
                     if (addWindow && (visibleRegions != null)) {
                         String region = window.getDeclaredProperty(ThemeConstants.PORTAL_PROP_REGION);

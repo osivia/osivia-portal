@@ -1342,30 +1342,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     hidePortlet = true;
                 }
             }
-            if (!hidePortlet) {
-                // Linked taskbar item
-                String taskbarItemId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);
-                if (StringUtils.isNotEmpty(taskbarItemId)) {
-                    hidePortlet = true;
 
-                    // Page
-                    Page page = (Page) window.getParent();
-                    // Content path
-                    String contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
-
-                    if (StringUtils.isNotEmpty(contentPath)) {
-                        // Taskbar tasks
-                        List<TaskbarTask> tasks = this.taskbarService.getTasks(portalControllerContext, contentPath, true);
-
-                        for (TaskbarTask task : tasks) {
-                            if (taskbarItemId.equals(task.getId())) {
-                                hidePortlet = task.isDisabled();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
             if (hidePortlet && (!"wizzard".equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, "osivia.windowSettingMode"))
                             || (((RenderWindowCommand) cmd).getPage() instanceof ITemplatePortalObject))) {
                 properties.setWindowProperty(windowId, "osivia.hidePortlet", "1");
