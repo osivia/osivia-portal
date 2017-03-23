@@ -13,18 +13,16 @@
 
 
 <body id="popup-body">
-    <!-- AJAX scripts -->
-    <p:region regionName="AJAXScripts" />
-
     <p:region regionName="popup_header" />
 
-    <div class="container-fluid">
-        <p:region regionName="notifications" />
-        <p:region regionName="popup" />
-    </div>
-
-	<!-- AJAX footer -->
-	<p:region regionName="AJAXFooter" />
+    <p:region regionName="popup" />
+       
+    <!-- Notifications -->
+    <p:region regionName="notifications" />
+    <!-- AJAX scripts -->
+    <p:region regionName="AJAXScripts" />
+    <!-- AJAX footer -->
+    <p:region regionName="AJAXFooter" />
 </body>
 
 </html>
