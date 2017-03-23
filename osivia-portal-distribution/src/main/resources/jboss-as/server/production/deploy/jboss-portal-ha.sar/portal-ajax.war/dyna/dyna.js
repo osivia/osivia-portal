@@ -186,16 +186,22 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	// Setup headers
 	var headers = [ "ajax", "true" ],
     	$container = $JQry(container),
-    	$eventTarget = $JQry(eventToStop.target),
-    	ajaxShadowbox = $eventTarget.closest("[data-ajax-shadowbox]").data("ajax-shadowbox"),
 	    $ajaxShadowbox,
 	    $ajaxWaiter = $JQry(".ajax-waiter");
-	    
-	if (ajaxShadowbox !== undefined) {
-	    $ajaxShadowbox = $container.find(ajaxShadowbox);
+	
+	if (eventToStop == null) {
+		$ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
 	} else {
-	    $ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
+		$eventTarget = $JQry(eventToStop.target);
+		ajaxShadowbox = $eventTarget.closest("[data-ajax-shadowbox]").data("ajax-shadowbox");
+		
+		if (ajaxShadowbox == null) {
+			$ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
+		} else {
+		    $ajaxShadowbox = $container.find(ajaxShadowbox);
+		}
 	}
+	
 
 	// Add the view state value
 	if (view_state != null) {
@@ -210,9 +216,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	options.requestHeaders = headers;
 
 	// Waiter
-	if ($ajaxShadowbox.length) {
-	    $ajaxShadowbox.addClass("in");
-	}
+    $ajaxShadowbox.addClass("in");
 	$ajaxWaiter.delay(200).addClass("in");
 
 
