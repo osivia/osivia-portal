@@ -132,4 +132,11 @@ $JQry(function() {
 		}
 	});
 	
+	
+	$JQry("#osivia-modal [data-close-modal=true]").each(function(index, element) {
+		var $modal = $JQry("#osivia-modal");
+		
+		$modal.modal("hide");
+	});
+	
 });

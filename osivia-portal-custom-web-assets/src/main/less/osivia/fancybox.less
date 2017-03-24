@@ -5,15 +5,31 @@
 
 // Mixins
 @import "../bootstrap/mixins.less";
+@import "mixins.less";
 
 
 @bottom-navbar-height: 50px;
 
 
 #popup-body {
+    display: block;
+    
+    min-height: auto;
+    
+    background-color: transparent;
+    
+    .portlet-container {
+        margin-bottom: 0;
+    }
+    
     pre {
         white-space: pre-line;
     }
+}
+
+
+.fancybox-inner {
+    .flexbox();
 }
 
 

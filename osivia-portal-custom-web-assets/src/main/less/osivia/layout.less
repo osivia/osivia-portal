@@ -1,0 +1,115 @@
+//
+// OSIVIA Bootstrap extensions - Layout
+// --------------------------------------------------
+
+
+// Mixins
+@import "../bootstrap/mixins.less";
+@import "mixins.less";
+// Variables
+@import "../bootstrap/variables.less";
+
+
+.col-auto {
+    position: relative;
+    float: left;
+    min-height: 1px;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        width: 100%;
+    }
+    
+    &.col-offset-auto {
+        .flex-container();
+        float: none;
+    }
+}
+
+
+html {
+    height: 100%;
+}
+
+
+body {
+    .flex-container();
+    min-height: 100%;
+    
+    @media screen and (max-width: @screen-xs-max) {
+        height: 100%;
+        overflow: hidden;
+    }
+}
+
+
+main {
+    .flex();
+    
+    @media screen and (max-width: @screen-xs-max) {
+        overflow: hidden;
+        
+        > .container, > .container-fluid {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+    }
+}
+
+
+// Fixed layout
+body.fixed-layout {    
+    @media screen and (min-width: @screen-sm-min) {
+        height: 100%;
+        overflow: hidden;
+        
+        main {
+            .flex-display();
+            overflow: hidden;
+        }
+        
+        .flexbox {
+            .flexbox();
+            
+            &.row {
+                .flex-container(@direction: row);
+            }
+            
+            &.col-auto:not(.col-offset-auto), &.portlet-container {
+                .flex-container(@flex: unset);
+            }
+            
+            &.portlet-container, &.table {
+                margin-bottom: 0;
+            }
+        }
+        
+        #maximized .flexbox {
+            &.portlet-container {
+                .flex-container();
+            }
+        }
+
+        .portlet-filler {
+            .scrollbox();
+        }
+    }
+}
+
+
+.flexbox {
+    .flexbox();
+}
+
+.scrollbox {
+    .scrollbox();
+}
+
+
+.scrollbox() {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
