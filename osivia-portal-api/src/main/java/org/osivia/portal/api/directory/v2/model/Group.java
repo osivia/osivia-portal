@@ -6,14 +6,14 @@ import javax.naming.Name;
 
 /**
  * LDAP group.
- * 
+ *
  * @author Cédric Krommenhoek
  */
 public interface Group {
 
     /**
      * Get group DN.
-     * 
+     *
      * @return DN
      */
     Name getDn();
@@ -21,7 +21,7 @@ public interface Group {
 
     /**
      * Get group CN.
-     * 
+     *
      * @return CN
      */
     String getCn();
@@ -29,7 +29,7 @@ public interface Group {
 
     /**
      * Set group CN.
-     * 
+     *
      * @param cn group CN
      */
     void setCn(String cn);
@@ -37,9 +37,16 @@ public interface Group {
 
     /**
      * Get group member names.
-     * 
+     *
      * @return member names
      */
     List<Name> getMembers();
 
+
+    /**
+     * Set group members.
+     *
+     * @param members members
+     */
+    void setMembers(List<Name> members);
 }

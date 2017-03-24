@@ -10,7 +10,7 @@ import org.osivia.portal.api.directory.v2.model.Person;
 
 /**
  * Group service interface.
- * 
+ *
  * @author Cédric Krommenhoek
  * @see IDirService
  * @since 4.4
@@ -18,8 +18,24 @@ import org.osivia.portal.api.directory.v2.model.Person;
 public interface GroupService extends IDirService {
 
     /**
+     * Get empty group.
+     *
+     * @return group
+     */
+    Group getEmptyGroup();
+
+
+    /**
      * Get group.
-     * 
+     *
+     * @param dn group DN
+     * @return group
+     */
+    Group get(Name dn);
+
+    /**
+     * Get group.
+     *
      * @param id group identifier
      * @return group
      */
@@ -28,10 +44,19 @@ public interface GroupService extends IDirService {
 
     /**
      * Get group members.
-     * 
+     *
      * @param dn group DN
      * @return members
      */
     List<Person> getMembers(Name dn);
+
+
+    /**
+     * Search groups by criteria.
+     *
+     * @param criteria search criteria
+     * @return groups
+     */
+    List<Group> search(Group criteria);
 
 }
