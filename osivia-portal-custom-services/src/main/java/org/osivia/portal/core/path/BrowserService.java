@@ -23,7 +23,6 @@ import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
-import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
@@ -288,11 +287,21 @@ public class BrowserService implements IBrowserService {
     private CMSItem getBaseCMSItem(PortalControllerContext portalControllerContext, BrowserOptions options) throws CMSException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-
         // CMS context
         CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
-        return cmsService.getContent(cmsContext, options.getCmsBasePath());
+        // Base path
+        String basePath = options.getCmsBasePath();
+
+        // CMS item
+        CMSItem item;
+        if (options.isNavigation()) {
+            item = cmsService.getPortalNavigationItem(cmsContext, basePath, basePath);
+        } else {
+            item = cmsService.getContent(cmsContext, basePath);
+        }
+
+        return item;
     }
 
 
@@ -308,7 +317,6 @@ public class BrowserService implements IBrowserService {
     private List<CMSItem> getChildrenCMSItem(PortalControllerContext portalControllerContext, BrowserOptions options, String parentPath) throws CMSException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-
         // CMS context
         CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
@@ -337,14 +345,8 @@ public class BrowserService implements IBrowserService {
      */
     private JSONObject generateJSONObject(PortalControllerContext portalControllerContext, CMSItem cmsItem, boolean root, BrowserOptions options)
             throws CMSException, JSONException {
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
-        // Publication infos
-        CMSPublicationInfos publicationInfos = cmsService.getPublicationInfos(cmsContext, cmsItem.getPath());
         // Path
-        String path = publicationInfos.getDocumentPath();
+        String path = cmsItem.getPath();
 
         // CMS item type
         DocumentType type = cmsItem.getType();
@@ -442,7 +444,7 @@ public class BrowserService implements IBrowserService {
             object.put("extraClasses", extraClasses.toString());
 
             // Children
-            if ((!root && expanded) || fullLoad) {
+            if ((!root && expanded)) {
                 BrowserOptions childrenOptions = new BrowserOptions(options, path);
                 JSONArray childrenJSONArray = this.generateLazyJSONArray(portalControllerContext, childrenOptions);
                 object.put("children", childrenJSONArray);
