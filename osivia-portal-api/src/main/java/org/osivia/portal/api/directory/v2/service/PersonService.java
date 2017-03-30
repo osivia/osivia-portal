@@ -31,77 +31,52 @@ import org.osivia.portal.api.urls.Link;
 public interface PersonService extends IDirService {
 
 
-    /**
-     * Get a person with no valued fields (for search)
-     * @return empty object person
-     */
-    public Person getEmptyPerson();
+	/**
+	 * Get a person with no valued fields (for search)
+	 * @return empty object person
+	 */
+	public Person getEmptyPerson();
+	
+	/**
+	 * Get a person by it's full DN
+	 * @param dn
+	 * @return the person
+	 */
+	public Person getPerson(Name dn);
+	
+	
+	/**
+	 * Get a person by it's uid
+	 * @param uid
+	 * @return the person
+	 */
+	public Person getPerson(String uid);
 
-    /**
-     * Get a person by it's full DN
-     * @param dn
-     * @return the person
-     */
-    public Person getPerson(Name dn);
+	/**
+	 * Get a person by criteria represented by a person vith filled fields
+	 * @param p a person 
+	 * @return a list of person
+	 */
+	List<Person> findByCriteria(Person p);
+	
 
+	/**
+	 * Get a link to the card person portlet
+	 * @param portalControllerContext
+	 * @param p the person
+	 * @return a link to the card person portlet
+	 * @throws PortalException
+	 */
+	Link getCardUrl(PortalControllerContext portalControllerContext, Person p)
+			throws PortalException;
 
-    /**
-     * Get a person by it's uid
-     * @param uid
-     * @return the person
-     */
-    public Person getPerson(String uid);
-
-    /**
-     * Get a person by criteria represented by a person vith filled fields
-     * @param p a person
-     * @return a list of person
-     */
-    List<Person> findByCriteria(Person p);
-
-    /**
-     * Create a person
-     * @param p a person
-     */
-    public void create(Person p);
-
-    /**
-     * Update a person
-     * @param p a person
-     */
-    public void update(Person p);
-
-    /**
-     * Check if a password is correct
-     * @param currentPassword currentPassword
-     * @return authenticated or not
-     */
-    public boolean verifyPassword(String uid, String currentPassword);
-
-    /**
-     * Update the password of a person
-     * @param p a person
-     * @param newPassword
-     */
-    public void updatePassword(Person p, String newPassword);
-
-    /**
-     * Get a link to the card person portlet
-     * @param portalControllerContext
-     * @param p the person
-     * @return a link to the card person portlet
-     * @throws PortalException
-     */
-    Link getCardUrl(PortalControllerContext portalControllerContext, Person p)
-            throws PortalException;
-
-    /**
-     * Get a document with user profile properties
-     * 
-     * @param portalControllerContext
-     * @param person
-     * @return document UserProfile
-     * @throws PortalException
-     */
-    Object getEcmProfile(PortalControllerContext portalControllerContext, Person person) throws PortalException;
+	/**
+	 * Get a document with user profile properties
+	 * @param portalControllerContext
+	 * @param person
+	 * @return document UserProfile
+	 * @throws PortalException
+	 */
+	Object getEcmProfile(PortalControllerContext portalControllerContext,
+			Person person) throws PortalException;
 }
