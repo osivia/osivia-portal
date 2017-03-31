@@ -20,8 +20,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -117,6 +121,56 @@ public class AjaxResponseHandler implements ResponseHandler {
     public void setPageService(PageService pageService) {
         this.pageService = pageService;
     }
+    
+    
+    private boolean compareParameters(PageNavigationalState oldNS, PageNavigationalState newWS) {
+        
+        // Null tests
+        if (newWS == null) {
+            if (oldNS != null)
+                return false;
+            else return true;
+        } else {
+            if (oldNS == null)
+                return true;
+        }
+
+        Map<QName, String[]> m1 = (Map<QName, String[]>) oldNS.getParameters();
+        Map<QName, String[]> m2 = (Map<QName, String[]>) newWS.getParameters();
+         
+        if (m1.size() != m2.size())
+            return false;
+
+        Iterator<Entry<QName, String[]>> i = m1.entrySet().iterator();
+        
+        while (i.hasNext()) {
+            Entry<QName, String[]> e = i.next();
+            QName key = e.getKey();
+            String[] value = e.getValue();
+            if (value == null) {
+                if (!(m2.get(key) == null && m2.containsKey(key)))
+                    return false;
+            } else {
+                // Compare values
+                String[] m1T = value;
+                String[] m2T = m2.get(key);
+                
+                if( m1T.length != m2T.length)
+                    return false;
+                
+                for(int mi=0; mi< m1T.length; mi++){
+                    if( !m1T[mi].equals(m2T[mi]))   {
+                        return false;
+                    }
+                }
+
+            }
+        }
+
+
+        return true;
+
+    }
 
 
     public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
@@ -127,6 +181,9 @@ public class AjaxResponseHandler implements ResponseHandler {
             WindowState windowState = pwr.getWindowState();
             Mode mode = pwr.getMode();
             ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(pwr.getWindowId(), mode, windowState, contentState);
+            
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID", pwr.getWindowId());
+            
             if (renderCmd != null) {
                 return new CommandForward(renderCmd, null);
             } else {
@@ -196,8 +253,46 @@ public class AjaxResponseHandler implements ResponseHandler {
             if (ctx.getChanges() == null) {
                 fullRefresh = true;
             } else {
+                
+                /*  
+                 * If public parameters are not changed, recompute only current portlet 
+                 * (only for actions)
+                 */
+                
+                
+                PortalObjectId filterWindow = null;
+                
+                PortalObjectId actionWindow = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID");
+                
+                if (actionWindow != null) {
+                   boolean publicParametersChanged = false;
 
-                for (Iterator i = ctx.getChanges(); i.hasNext();) {
+                    for (Iterator i = ctx.getChanges(); i.hasNext();) {
+                        NavigationalStateChange change = (NavigationalStateChange) i.next();
+
+                        NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
+                        NavigationalStateKey key = update.getKey();
+                        Class type = key.getType();
+
+                        if (type == PageNavigationalState.class) {
+                            PageNavigationalState oldNS = (PageNavigationalState)  update.getOldValue();
+                            PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();
+ 
+                            publicParametersChanged = !compareParameters(oldNS, newNS);
+                            
+                        }
+                    }
+
+                    if (!publicParametersChanged) {
+                        filterWindow = actionWindow;
+                    }
+
+                }
+
+                if(filterWindow != null)
+                    dirtyWindowIds.add(filterWindow);
+                else
+                 for (Iterator i = ctx.getChanges(); i.hasNext();) {
                     NavigationalStateChange change = (NavigationalStateChange) i.next();
 
                     // A change that modifies potentially the page structure
