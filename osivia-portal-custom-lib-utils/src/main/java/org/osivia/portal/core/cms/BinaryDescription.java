@@ -32,6 +32,8 @@ public class BinaryDescription {
         FILE,
         /** The attached file. */
         ATTACHED_FILE,
+        /** The file of a version. */
+        FILE_OF_VERSION,
         /** The blob. */
         BLOB;
 
