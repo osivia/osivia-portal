@@ -116,6 +116,16 @@ public interface ICMSService {
      */
     List<CMSItem> getWorkspaces(CMSServiceCtx cmsContext, boolean userWorkspaces, boolean administrator) throws CMSException;
 
+    /**
+     * Get full loaded portal navigation items.
+     * 
+     * @param cmsContext CMS context
+     * @param basePath base path
+     * @return navigation items
+     * @throws CMSException
+     */
+    Map<String, NavigationItem> getFullLoadedPortalNavigationItems(CMSServiceCtx cmsContext, String basePath) throws CMSException;
+
     Player getItemHandler(CMSServiceCtx ctx) throws CMSException;
 
     CMSBinaryContent getBinaryContent(CMSServiceCtx cmsCtx, String type, String path, String parameter) throws CMSException;

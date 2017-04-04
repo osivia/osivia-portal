@@ -1,5 +1,6 @@
 package org.osivia.portal.core.path;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.osivia.portal.core.cms.CMSObjectPath;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.NavigationItem;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 
@@ -294,14 +296,25 @@ public class BrowserService implements IBrowserService {
         String basePath = options.getCmsBasePath();
 
         // CMS item
-        CMSItem item;
-        if (options.isNavigation()) {
-            item = cmsService.getPortalNavigationItem(cmsContext, basePath, basePath);
+        CMSItem cmsItem;
+        if (options.isFullLoad()) {
+            // Full loaded navigation items
+            Map<String, NavigationItem> navigationItems = cmsService.getFullLoadedPortalNavigationItems(cmsContext, basePath);
+            // Navigation item
+            NavigationItem navigationItem = navigationItems.get(basePath);
+
+            if (navigationItem == null) {
+                cmsItem = null;
+            } else {
+                cmsItem = navigationItem.getAdaptedCMSItem();
+            }
+        } else if (options.isNavigation()) {
+            cmsItem = cmsService.getPortalNavigationItem(cmsContext, basePath, basePath);
         } else {
-            item = cmsService.getContent(cmsContext, basePath);
+            cmsItem = cmsService.getContent(cmsContext, basePath);
         }
 
-        return item;
+        return cmsItem;
     }
 
 
@@ -320,9 +333,32 @@ public class BrowserService implements IBrowserService {
         // CMS context
         CMSServiceCtx cmsContext = this.getCMSContext(portalControllerContext, options);
 
+        // Base path
+        String basePath = options.getCmsBasePath();
+
         // Children
         List<CMSItem> children;
-        if (options.isNavigation()) {
+        if (options.isFullLoad()) {
+            // Full loaded navigation items
+            Map<String, NavigationItem> navigationItems = cmsService.getFullLoadedPortalNavigationItems(cmsContext, basePath);
+            // Parent navigation item
+            NavigationItem parentNavigationItem = navigationItems.get(parentPath);
+
+            if (parentNavigationItem == null) {
+                children = new ArrayList<>(0);
+            } else {
+                children = new ArrayList<>(parentNavigationItem.getChildren().size());
+
+                for (Object object : parentNavigationItem.getChildren()) {
+                    // Navigation item
+                    NavigationItem navigationItem = (NavigationItem) object;
+                    // CMS item
+                    CMSItem cmsItem = navigationItem.getAdaptedCMSItem();
+
+                    children.add(cmsItem);
+                }
+            }
+        } else if (options.isNavigation()) {
             children = cmsService.getPortalNavigationSubitems(cmsContext, options.getCmsBasePath(), parentPath);
         } else {
             children = cmsService.getPortalSubitems(cmsContext, parentPath);
