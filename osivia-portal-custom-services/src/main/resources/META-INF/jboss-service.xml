@@ -296,6 +296,12 @@
         <depends
             optional-attribute-name="TaskbarService"
             proxy-type="attribute">osivia:service=TaskbarService</depends>
+        <depends
+            optional-attribute-name="StatusService"
+            proxy-type="attribute">osivia:service=StatusServices</depends>
+             
+            
+            
     </mbean>
 
 

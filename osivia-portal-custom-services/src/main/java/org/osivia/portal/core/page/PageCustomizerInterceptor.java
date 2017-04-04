@@ -89,6 +89,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.api.status.IStatusService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -149,6 +150,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     private static ICMSServiceLocator cmsServiceLocator;
     /** Taskbar service. */
     private ITaskbarService taskbarService;
+    /** Status service. */
+    
+    private IStatusService statusService;
 
 
     /**
@@ -372,8 +376,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 Thread.sleep(1000L);
             }
         }
-
-
+        
+        if (cmd instanceof RenderPageCommand) {
+            if(!statusService.isReady("NX-OVERLOAD"))
+                Thread.sleep(500L);
+        }
+        
+        
         long begin = 0;
         boolean error = false;
 
@@ -1715,5 +1724,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     public void setTaskbarService(ITaskbarService taskbarService) {
         this.taskbarService = taskbarService;
     }
+    
+    /**
+     * Setter for taskbarService.
+     * 
+     * @param taskbarService the taskbarService to set
+     */
+    public void setStatusService(IStatusService statusService) {
+        this.statusService = statusService;
+    }
+
 
 }

@@ -83,7 +83,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 	public boolean isReady(String url) {
 
-		if (url == null || !url.startsWith("http://"))
+		if (url == null )
 			return false;
 
 		ServiceState service = listeServices.get(url);
@@ -98,6 +98,14 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			service = listeServices.get(url);
 		}
 
+		
+		
+        if( ! service.getUrl().startsWith("http://"))    {
+            // update by external way 
+            return service.isServiceUp();
+        }
+        
+        
 		if (service.isServiceUp()  && !service.isMustBeChecked())
 			return true;
 		
@@ -115,16 +123,12 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 	
 		// On assure la périodicité des tests
-
-		
- 
-        
-        if (service.isMustBeChecked() || (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest)) {
+       if (service.isMustBeChecked() || (!service.isServiceUp() && System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest)) {
             
             service.setMustBeChecked(false);
 
             service.setLastCheckTimestamp(System.currentTimeMillis());
-
+            
             try {
                 
                 statutLog.info("Checking " + service.getUrl() );
@@ -145,6 +149,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
                 statutLog.info("Service " + service.getUrl() + " DOWN . Reason : " + e.toString());
 
             }
+            
 
         }
 
@@ -210,7 +215,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
             String msg =  e.toString();
             
             
-            // Le DOWN peut être forcé par l'appelant
+            // Le DOWN,UP peut être forcé par l'appelant
             //TOD0 : notion de DOWN forcé à intégrer dans l'API
             
             if( msg != null &&  msg.indexOf("[DOWN]") != -1)    {
@@ -220,7 +225,11 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
                 service.setServiceUp(false);
                 service.setLastCheckTimestamp( System.currentTimeMillis());
             }
-            else
+            else if( msg != null &&  msg.indexOf("[UP]") != -1)    {
+                service.setServiceUp(true);
+                service.setLastCheckTimestamp( System.currentTimeMillis());
+                statutLog.info("Service " + service.getUrl() + " UP");                
+             }   else
                 service.setMustBeChecked(true);
         }
 	}
