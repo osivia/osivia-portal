@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.cms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -109,7 +110,7 @@ public class CMSItemType {
         this.ordered = ordered;
         this.forcePortalContextualization = forcePortalContextualization;
         this.supportsPortalForms = supportsPortalForms;
-        this.portalFormSubTypes = portalFormSubTypes;
+        this.portalFormSubTypes = new ArrayList<>(portalFormSubTypes);
         this.defaultTemplate = defaultTemplate;
         this.glyph = glyph;
         this.isRootType = isRootType;
