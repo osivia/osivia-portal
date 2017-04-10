@@ -32,6 +32,8 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.NoSuchMessageException;
 
 /**
  * Internationalization service implementation.
@@ -85,6 +87,16 @@ public class InternationalizationService implements IInternationalizationService
      * {@inheritDoc}
      */
     public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args) {
+        return this.getString(key, locale, classLoader, customizedClassLoader, null, args);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext,
+            Object... args) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_KEY, key);
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_LOCALE, locale);
@@ -125,6 +137,15 @@ public class InternationalizationService implements IInternationalizationService
                 }
             }
 
+            if ((pattern == null) && (applicationContext != null)) {
+                // Application context message source
+                try {
+                    pattern = applicationContext.getMessage(key, args, locale);
+                } catch (NoSuchMessageException e) {
+                    // Do nothing
+                }
+            }
+
             if (pattern == null) {
                 // Saved class loader
                 ClassLoader savedClassLoader = Thread.currentThread().getContextClassLoader();
@@ -136,15 +157,25 @@ public class InternationalizationService implements IInternationalizationService
                     resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
                     pattern = resourceBundle.getString(key);
                 } catch (MissingResourceException e) {
-                    return "[Missing resource: " + key + "]";
+                    // Do nothing
                 } finally {
                     Thread.currentThread().setContextClassLoader(savedClassLoader);
                 }
             }
         }
 
-        Object[] formattedArguments = this.formatArguments(args, locale);
-        return MessageFormat.format(pattern, formattedArguments);
+
+        // Result
+        String result;
+
+        if (pattern == null) {
+            result = "[Missing resource: " + key + "]";
+        } else {
+            Object[] formattedArguments = this.formatArguments(args, locale);
+            result = MessageFormat.format(pattern, formattedArguments);
+        }
+
+        return result;
     }
 
 

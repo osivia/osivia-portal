@@ -106,7 +106,7 @@ public class PortalSimpleTag extends SimpleTagSupport {
      * 
      * @return dispatched request
      */
-    private HttpServletRequest getDispatchedRequest() {
+    protected HttpServletRequest getDispatchedRequest() {
         // Page context
         PageContext pageContext = (PageContext) this.getJspContext();
         // Servlet request
