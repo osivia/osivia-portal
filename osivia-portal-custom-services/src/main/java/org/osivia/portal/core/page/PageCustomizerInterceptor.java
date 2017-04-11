@@ -91,7 +91,6 @@ import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.profiler.IProfilerService;
 import org.osivia.portal.api.status.IStatusService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
-import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.StartingWindowBean;
 import org.osivia.portal.core.cms.CMSItem;
@@ -521,6 +520,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                     CMSServiceCtx handlerCtx = new CMSServiceCtx();
                     handlerCtx.setControllerContext(controllerContext);
                     handlerCtx.setDoc(cmsItem.getNativeItem());
+                    handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
 
 
 
@@ -1392,8 +1392,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             properties.setWindowProperty(windowId, "osivia.mobileCollapse", mobileCollapse);
 
             // Title
-            String title = window.getDeclaredProperty("osivia.title");
-            properties.setWindowProperty(windowId, "osivia.title", title);
+            String title = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_TITLE);
+            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE, title);
+
+            // Sub-title
+            String subTitle = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_SUB_TITLE);
+            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_SUB_TITLE, subTitle);
+
+            // Vignette URL
+            String vignetteUrl = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_VIGNETTE_URL);
+            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_VIGNETTE_URL, vignetteUrl);
 
             // Bootstrap panel style indicator
             String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");

@@ -619,6 +619,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     }
 
 
+    /**
+     * Render maximized header.
+     * 
+     * @param rendererContext renderer context
+     * @param regionRendererContext region renderer context
+     * @param bundle internationalization bundle
+     * @throws RenderException
+     */
     private void renderMaximizedHeader(RendererContext rendererContext, RegionRendererContext regionRendererContext, Bundle bundle) throws RenderException {
         // HTTP servlet request
         HttpServletRequest request = rendererContext.getDispatcher().getRequest();
@@ -628,19 +636,25 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
 
-        // Window title
+        // Window title, sub-title and vignette URL
         String windowTitle = null;
+        String windowSubTitle = null;
+        String windowVignetteUrl = null;
         Collection<?> windows = regionRendererContext.getWindows();
         if (windows.size() == 1) {
             WindowRendererContext windowRendererContext = (WindowRendererContext) windows.iterator().next();
-
+            String id = windowRendererContext.getId();
             PageProperties properties = PageProperties.getProperties();
-            if ("1".equals(properties.getWindowProperty(windowRendererContext.getId(), "osivia.displayTitle"))) {
-                windowTitle = properties.getWindowProperty(windowRendererContext.getId(), InternalConstants.PROP_WINDOW_TITLE);
+
+            if ("1".equals(properties.getWindowProperty(id, "osivia.displayTitle"))) {
+                windowTitle = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_TITLE);
                 if (windowTitle == null) {
                     DecorationRendererContext decoration = windowRendererContext.getDecoration();
                     windowTitle = decoration.getTitle();
                 }
+
+                windowSubTitle = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_SUB_TITLE);
+                windowVignetteUrl = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_URL);
             }
         }
 
@@ -670,8 +684,24 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Title
         if (windowTitle != null) {
+            if (StringUtils.isNotEmpty(windowVignetteUrl)) {
+                Element vignette = DOM4JUtils.generateElement(HTMLConstants.IMG, "pull-right", null);
+                DOM4JUtils.addAttribute(vignette, HTMLConstants.SRC, windowVignetteUrl);
+                DOM4JUtils.addAttribute(vignette, HTMLConstants.ALT, StringUtils.EMPTY);
+                pageHeader.add(vignette);
+            }
+
+            Element titleContainer = DOM4JUtils.generateDivElement("title-container");
+            pageHeader.add(titleContainer);
+
             Element title = DOM4JUtils.generateElement(HTMLConstants.DIV, "h2", windowTitle);
-            pageHeader.add(title);
+            titleContainer.add(title);
+
+            if (StringUtils.isNotBlank(windowSubTitle)) {
+                windowSubTitle = StringUtils.replace(windowSubTitle, "\n", HTMLConstants.LINE_BREAK);
+                Element subTitle = DOM4JUtils.generateElement(HTMLConstants.DIV, "text-muted", windowSubTitle);
+                titleContainer.add(subTitle);
+            }
         }
 
 

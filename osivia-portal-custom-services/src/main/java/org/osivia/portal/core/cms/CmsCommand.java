@@ -1005,6 +1005,7 @@ public class CmsCommand extends DynamicCommand {
                 handlerCtx.setDoc(cmsItemToDisplay.getNativeItem());
                 handlerCtx.setHideMetaDatas(this.getHideMetaDatas());
                 handlerCtx.setDisplayContext(this.getDisplayContext());
+                handlerCtx.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
 
                 if (contextualizationPage != null) {
                     // Ajout JSS 20130123 : les folders live affichés en mode direct

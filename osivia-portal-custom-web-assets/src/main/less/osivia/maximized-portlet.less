@@ -13,8 +13,27 @@
     > .page-header {
         margin-top: 20px;
         
-        > .h2 {
+        .btn-toolbar {
+            margin-right: 16px;
+        }
+        
+        .title-container {
+            overflow: hidden;
+        }
+        
+        .h2 {
             margin-top: 0;
+            
+            ~ * {
+                margin-top: 10px;
+            }
+        }
+        
+        img {
+            margin-top: -10px;
+            margin-left: 10px;
+            
+            max-height: 70px; 
         }
     }
     

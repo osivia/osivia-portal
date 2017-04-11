@@ -26,7 +26,7 @@ public final class HTMLConstants {
     public static final String TEXT_DEFAULT = "&nbsp;";
 
     /** HTML line break. */
-    public static final String LINE_BREAK = "<br />";
+    public static final String LINE_BREAK = "<br>";
 
 
     // HTML nodes
