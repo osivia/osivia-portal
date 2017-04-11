@@ -36,14 +36,23 @@ public class PortalSimpleTag extends SimpleTagSupport {
      * @throws JspException
      */
     protected PortletRequest getPortletRequest() throws JspException {
+        // Portlet request
+        PortletRequest request;
+
         try {
-            // Dispatched request
-            HttpServletRequest dispatchedRequest = getDispatchedRequest();
-            // Portlet request
-            return (PortletRequest) dispatchedRequest.getAttribute("javax.portlet.request");
+            // HTTP servlet request
+            HttpServletRequest httpServletRequest = getHttpServletRequest();
+
+            if (httpServletRequest == null) {
+                request = null;
+            } else {
+                request = (PortletRequest) httpServletRequest.getAttribute("javax.portlet.request");
+            }
         } catch (Exception e) {
             throw new JspException("Cannot get portlet request.", e);
         }
+
+        return request;
     }
 
 
@@ -54,14 +63,23 @@ public class PortalSimpleTag extends SimpleTagSupport {
      * @throws JspException
      */
     protected PortletResponse getPortletResponse() throws JspException {
+        // Portlet response
+        PortletResponse response;
+
         try {
-            // Dispatched request
-            HttpServletRequest dispatchedRequest = getDispatchedRequest();
-            // Portlet request
-            return (PortletResponse) dispatchedRequest.getAttribute("javax.portlet.response");
+            // HTTP servlet request
+            HttpServletRequest httpServletRequest = getHttpServletRequest();
+
+            if (httpServletRequest == null) {
+                response = null;
+            } else {
+                response = (PortletResponse) httpServletRequest.getAttribute("javax.portlet.response");
+            }
         } catch (Exception e) {
             throw new JspException("Cannot get portlet response.", e);
         }
+
+        return response;
     }
 
 
@@ -72,14 +90,23 @@ public class PortalSimpleTag extends SimpleTagSupport {
      * @throws JspException
      */
     protected PortletConfig getPortletConfig() throws JspException {
+        // Portlet config
+        PortletConfig portletConfig;
+
         try {
-            // Dispatched request
-            HttpServletRequest dispatchedRequest = getDispatchedRequest();
-            // Portlet request
-            return (PortletConfig) dispatchedRequest.getAttribute("javax.portlet.config");
+            // HTTP servlet request
+            HttpServletRequest httpServletRequest = getHttpServletRequest();
+
+            if (httpServletRequest == null) {
+                portletConfig = null;
+            } else {
+                portletConfig = (PortletConfig) httpServletRequest.getAttribute("javax.portlet.config");
+            }
         } catch (Exception e) {
             throw new JspException("Cannot get portlet config.", e);
         }
+
+        return portletConfig;
     }
 
 
@@ -90,31 +117,48 @@ public class PortalSimpleTag extends SimpleTagSupport {
      * @throws JspException
      */
     protected PortletContext getPortletContext() throws JspException {
+        // Portlet context
+        PortletContext portletContext;
+
         try {
             // Portlet config
             PortletConfig portletConfig = this.getPortletConfig();
-            // Portlet context
-            return portletConfig.getPortletContext();
+
+            if (portletConfig == null) {
+                portletContext = null;
+            } else {
+                portletContext = portletConfig.getPortletContext();
+            }
         } catch (Exception e) {
             throw new JspException("Cannot get portlet context.", e);
         }
+
+        return portletContext;
     }
 
 
     /**
-     * Get dispatched request.
+     * Get HTTP servlet request.
      * 
-     * @return dispatched request
+     * @return HTTP servlet request
      */
-    private HttpServletRequest getDispatchedRequest() {
+    private HttpServletRequest getHttpServletRequest() {
         // Page context
         PageContext pageContext = (PageContext) this.getJspContext();
         // Servlet request
         ServletRequest servletRequest = pageContext.getRequest();
         // Portlet invocation
         PortletInvocation invocation = (PortletInvocation) servletRequest.getAttribute(ContextDispatcherInterceptor.REQ_ATT_COMPONENT_INVOCATION);
-        // Dispatched request
-        return invocation.getDispatchedRequest();
+
+        // HTTP servlet request
+        HttpServletRequest httpServletRequest;
+        if (invocation == null) {
+            httpServletRequest = null;
+        } else {
+            httpServletRequest = invocation.getDispatchedRequest();
+        }
+
+        return httpServletRequest;
     }
 
 }

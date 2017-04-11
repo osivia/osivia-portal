@@ -16,6 +16,8 @@ package org.osivia.portal.api.internationalization;
 
 import java.util.Locale;
 
+import org.springframework.context.ApplicationContext;
+
 /**
  * Internationalization service interface.
  *
@@ -79,5 +81,20 @@ public interface IInternationalizationService {
      * @return localized resource property value
      */
     String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args);
+
+
+    /**
+     * Access to customized class loader localized resource property or application context message source, which can be customized.
+     *
+     * @param key resource property key
+     * @param locale locale
+     * @param classLoader class loader, may be null to access default portal resource
+     * @param customizedClassLoader customized class loader, may be null
+     * @param applicationContext application context
+     * @param args resource property arguments
+     * @return localized resource property value
+     */
+    String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext,
+            Object... args);
 
 }
