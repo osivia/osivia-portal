@@ -218,3 +218,19 @@
 
 // Body color
 .make-border(@name: body, @color: @body-bg);
+
+
+
+// Margins
+.margin-bottom(@margin) when (isnumber(@margin)) {
+    margin-bottom: @margin !important;
+}
+.margin-bottom-0 {
+    .margin-bottom(@margin: 0);
+}
+.margin-paragraph {
+    margin-bottom: floor(@line-height-computed / 2);
+}
+.margin-line-height {
+    margin-bottom: @line-height-computed;   
+}

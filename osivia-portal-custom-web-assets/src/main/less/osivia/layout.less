@@ -71,6 +71,10 @@ body.fixed-layout {
             overflow: hidden;
         }
         
+        .container-fluid {
+            width: 100%;
+        }
+        
         .flexbox {
             .flexbox();
             
@@ -100,16 +104,13 @@ body.fixed-layout {
 }
 
 
-.flexbox {
-    .flexbox();
+@media screen and (min-width: @screen-sm-min) {
+    .flexbox {
+        .flexbox();
+    }
 }
 
 .scrollbox {
-    .scrollbox();
-}
-
-
-.scrollbox() {
     overflow-x: hidden;
     overflow-y: auto;
 }
