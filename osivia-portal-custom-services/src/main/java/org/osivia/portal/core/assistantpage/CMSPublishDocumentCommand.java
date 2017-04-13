@@ -176,18 +176,11 @@ public class CMSPublishDocumentCommand extends ControllerCommand {
 
             getCMSService().getPortalNavigationItem(cmxCtx, basePath, basePath);
 
-            
-            // force reload ressources       
-            getCMSService().refreshBinaryResource(cmsCtx, pagePath);         
-
             return new UpdatePageResponse(poid);
-
-
+        } catch (ControllerException e) {
+            throw e;
         } catch (Exception e) {
-            if (!(e instanceof ControllerException))
-                throw new ControllerException(e);
-            else
-                throw (ControllerException) e;
+            throw new ControllerException(e);
         }
     }
 

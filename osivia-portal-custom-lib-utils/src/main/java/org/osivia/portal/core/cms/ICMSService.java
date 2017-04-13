@@ -377,15 +377,6 @@ public interface ICMSService {
 
 
     /**
-     * Refresh binary resource.
-     *
-     * @param cmsContext cms context
-     * @param path binary resource path
-     */
-    void refreshBinaryResource(CMSServiceCtx cmsContext, String path);
-
-
-    /**
      * Validate the delegation ticket
      *
      * @param cmsCtx cms context

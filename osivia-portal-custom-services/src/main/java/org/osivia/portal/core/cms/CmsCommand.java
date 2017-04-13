@@ -612,15 +612,6 @@ public class CmsCommand extends DynamicCommand {
             }
 
 
-            // Update resource
-            if (IPortalUrlFactory.DISPLAYCTX_REFRESH.equals(this.displayContext) || InternalConstants.PROXY_PREVIEW.equals(this.displayContext)
-                    || IPortalUrlFactory.DISPLAYCTX_PREVIEW_LIVE_VERSION.equals(this.displayContext)
-                    || InternalConstants.FANCYBOX_LIVE_CALLBACK.equals(this.displayContext)
-                    || InternalConstants.FANCYBOX_PROXY_CALLBACK.equals(this.displayContext)) {
-                cmsService.refreshBinaryResource(cmsReadItemContext, this.cmsPath.toString());
-            }
-
-
             // Lecture de la configuration de l'espace
             CMSItem pagePublishSpaceConfig = getPagePublishSpaceConfig(controllerContext, currentPage);
 
