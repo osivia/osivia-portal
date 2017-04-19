@@ -16,7 +16,9 @@ package org.osivia.portal.core.cache.global;
 
 import java.io.Serializable;
 
-public class CacheDatas implements Serializable{
+import org.osivia.portal.core.imports.ImportCheckerDatas;
+
+public class CacheDatas implements Serializable {
 
 	private static final long serialVersionUID = -4356842856191357397L;
 	
@@ -24,8 +26,19 @@ public class CacheDatas implements Serializable{
     private long profilsCount = 1;
     private long globalParametersCount = 1;
     public boolean importRunning = false;
+    private ImportCheckerDatas importCheckerDatas = null;
     
     
+    
+    public ImportCheckerDatas getImportCheckerDatas() {
+        return importCheckerDatas;
+    }
+
+    
+    public void setImportCheckerDatas(ImportCheckerDatas importCheckerDatas) {
+        this.importCheckerDatas = importCheckerDatas;
+    }
+
     public boolean isImportRunning() {
         return importRunning;
     }

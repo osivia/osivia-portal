@@ -75,7 +75,7 @@
       <!-- Rollover at the top of each hour
       <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
       -->
-
+      
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
          <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
@@ -110,6 +110,30 @@
           -->
       </layout>
    </appender>
+
+ <appender name="PORTAL_ERROR" class="org.jboss.logging.appender.DailyRollingFileAppender">
+      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+      <param name="File" value="${jboss.server.log.dir}/portal_error.log"/>
+      <param name="Append" value="false"/>
+
+
+      <!-- Rollover at midnight each day -->
+      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+      <!-- Rollover at the top of each hour
+      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+      -->
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <!-- The default pattern: Date Priority [Category] Message\n -->
+         <param name="ConversionPattern" value="%d %m%n"/>
+
+         <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
+         <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
+          -->
+      </layout>
+   </appender>
+   
    
   <appender name="PORTAL_USER_ERROR_APPENDER" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
@@ -126,7 +150,7 @@
 
       <layout class="org.apache.log4j.PatternLayout">
          <!-- The default pattern: Date Priority [Category] Message\n -->
-         <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+         <param name="ConversionPattern" value="%m%n"/>
 
          <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
          <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
@@ -174,6 +198,25 @@
       </layout>
    </appender>   
 
+
+
+  <appender name="PORTAL_SUPERVISOR_APPENDER" class="org.jboss.logging.appender.DailyRollingFileAppender">
+      <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
+      <param name="File" value="${jboss.server.log.dir}/portal_supervisor.log"/>
+      <param name="Append" value="false"/>
+ 
+
+      <!-- Rollover at midnight each day -->
+      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+      <!-- Rollover at the top of each hour
+      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+      -->
+
+      <layout class="org.osivia.portal.core.error.LoggerPatternLayout">
+      </layout>
+   </appender>
+   
 
 
  
@@ -404,13 +447,26 @@
    <!-- ======================= -->
 
 
-  <!-- Pour faire du debug sur le portail -->
+ <!-- Pour faire du debug sur le portail -->
   <category name="org.osivia.portal">
       <priority value="INFO"/>
       <appender-ref ref="PORTAL"/>
    </category>
 
  
+
+  <category name="PORTAL" additivity="false">
+      <priority value="WARN"/>
+      <appender-ref ref="PORTAL"/>
+   </category>
+
+
+ <category name="PORTAL_ERROR" additivity="false">
+      <priority value="ERROR"/>
+      <appender-ref ref="PORTAL_ERROR"/>
+   </category>
+
+
   
   <category name="PORTAL_USER_ERROR"  additivity="false">
       <priority value="ERROR"/>
@@ -435,5 +491,38 @@
       <priority value="INFO"/>
       <appender-ref ref="WINDOW"/>
    </category>
+   
+
+ <!-- Supervisor -->
+
+ <category name="PORTAL_SUPERVISOR" additivity="false">
+      <priority value="DEBUG"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+
+<!-- portlet errors are displayed in PORTAL appender -->
+  <category name="javax.portlet">
+      <priority value="ERROR"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+<!-- cas errors are displayed in PORTAL appender -->
+  <category name="edu.yale.its.tp.cas">
+      <priority value="ERROR"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+<!-- these specific portlet logs in PORTAL appender -->
+  <category name="fr.toutatice.rss">
+      <priority value="INFO"/>
+      <appender-ref ref="PORTAL_SUPERVISOR_APPENDER"/>
+   </category>
+
+   
+   
+
+   
+   
 
 </log4j:configuration>

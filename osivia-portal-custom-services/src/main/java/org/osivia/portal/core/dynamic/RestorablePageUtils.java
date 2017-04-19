@@ -13,6 +13,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 
 
 public class RestorablePageUtils {
@@ -183,5 +184,53 @@ public class RestorablePageUtils {
         return hProps;
     }
 
+    
+    public static String getPageLogName(PortalObjectId pageId) {
+
+        String templateId = null;
+        String cmsPath = null;
+
+        String pageName = null;
+
+        if (pageId.getPath().getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
+            pageName = pageId.getPath().getParent().getLastComponentName();
+        } else {
+
+            pageName = pageId.getPath().getLastComponentName();
+        }
+
+        if (isRestorable(pageName)) {
+
+            String names[] = PortalObjectPath.LEGACY_BASE64_FORMAT.parse(pageName.substring(5));
+
+            String pageType = decodePath(names[1]);
+
+            if (pageType.startsWith(TEMPLATE_ID)) {
+                templateId = names[1].substring(TEMPLATE_ID.length());
+
+                PortalObjectId potemplateid = PortalObjectId.parse(templateId, PortalObjectPath.SAFEST_FORMAT);
+                String potemplatepath = potemplateid.toString(PortalObjectPath.CANONICAL_FORMAT);
+
+                return "/portal" + potemplatepath;
+            }
+
+            if (pageType.startsWith(CMS_PATH)) {
+                cmsPath = names[1].substring(CMS_PATH.length());
+                return "/portal/cms" + cmsPath;
+            }
+        }
+
+        String portalPageName = null;
+        if (pageId.getPath().getLastComponentName().equals(CMSTemplatePage.PAGE_NAME)) {
+            portalPageName = pageId.getPath().getParent().toString();
+        } else {
+
+            portalPageName = pageId.getPath().toString();
+        }
+        
+        return "/portal" + portalPageName;
+
+    }
+    
 
 }

@@ -670,6 +670,17 @@
         <depends
             optional-attribute-name="HibernateTreeCache"
             proxy-type="attribute">portal:service=TreeCache,type=hibernate</depends>
+        <depends
+            optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject
+        </depends>     
+        <depends
+            optional-attribute-name="DynamicObjectContainer"
+            proxy-type="attribute">osivia:service=DynamicPortalObjectContainer
+        </depends>     
+        <depends
+            optional-attribute-name="AuthorizationDomainRegistry"
+            proxy-type="attribute">portal:service=AuthorizationDomainRegistry</depends>               
 
     </mbean>
 
@@ -831,6 +842,16 @@
         xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
         <xmbean />
     </mbean>
+    
+    
+    <!-- Logger service -->
+    <mbean
+        code="org.osivia.portal.core.errors.PortalLoggerService"
+        name="osivia:service=LoggerService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>     
     
     <!-- Menubar service -->
     <mbean

@@ -242,6 +242,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             person = personService.getPerson(principal.getName());
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
 
+//            IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
+//            if (directoryService != null) {
+//                person = directoryService.getPerson(principal.getName());
+                
+                
+                String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
+                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+                	person.setAvatar(null);
+                }
+                
+                
+                attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
+//            }
         }
 
         // My space
@@ -1344,7 +1357,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userAvatarSrc = null;
         if (person != null) {
             userName = person.getDisplayName();
-            userAvatarSrc = person.getAvatar().getUrl();
+            if(person.getAvatar() != null) {
+            	userAvatarSrc = person.getAvatar().getUrl();
+            }
+            else {
+            	userAvatarSrc = null;
+            }
         } else if (principal != null) {
             userName = principal.getName();
             // try {

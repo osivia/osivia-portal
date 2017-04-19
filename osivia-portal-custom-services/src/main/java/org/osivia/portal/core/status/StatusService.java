@@ -48,8 +48,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
+import org.osivia.portal.api.log.LoggerMessage;
 import org.osivia.portal.api.net.ProxyUtils;
 import org.osivia.portal.api.status.UnavailableServer;
+import org.osivia.portal.core.error.IPortalLogger;
 
 import com.sun.mail.smtp.SMTPTransport;
 
@@ -146,7 +148,12 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
                 
                 service.setServiceUp(false);
                 
+                
                 statutLog.info("Service " + service.getUrl() + " DOWN . Reason : " + e.toString());
+                
+                String url = service.getUrl();
+                if( url.endsWith("/nuxeo"))
+                     IPortalLogger.logger.fatal(new LoggerMessage("nuxeo "+ e.toString()));
 
             }
             

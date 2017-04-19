@@ -14,6 +14,9 @@
  */
 package org.osivia.portal.core.error;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.portal.core.controller.ControllerResponse;
@@ -36,12 +39,21 @@ import org.osivia.portal.core.error.ErrorDescriptor;
  */
 public abstract class CustomControlPolicy {
 	
-	protected ErrorDescriptor getErrorDescriptor(ControllerResponse response, String userId) {		
+	protected ErrorDescriptor getErrorDescriptor(ControllerResponse response, String userId, String portlet, String portalId) {		
 		ErrorDescriptor errDescriptor = null;
 		int httpErrorCode = -1;
 		Throwable cause = null;
 		String message = null;		
-
+		
+        Map<String, Object> properties = new HashMap<String, Object>(); 
+        
+        if( portlet != null)
+            properties.put("osivia.portal.portlet", portlet);
+        
+        if( portalId != null)
+            properties.put("osivia.portal.portalObject", portalId);
+         
+        
 		if (response instanceof ErrorResponse) {			
 			ErrorResponse error = (ErrorResponse) response;
 			cause = error.getCause();
@@ -52,16 +64,20 @@ public abstract class CustomControlPolicy {
 				SecurityErrorResponse ser = (SecurityErrorResponse) response;
 				if (ser.getStatus() == SecurityErrorResponse.NOT_AUTHORIZED) {
 					httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
+					cause = null;
 				}
-			}
+			}    
 		} else if (response instanceof UnavailableResourceResponse) {
 			UnavailableResourceResponse unavailable = (UnavailableResourceResponse) response;
 			httpErrorCode = HttpServletResponse.SC_NOT_FOUND;
-			message = "Resource " + unavailable.getRef() + " not found (error 404).";
+			properties.put("osivia.portal.portlet", unavailable.getRef());
 		}
 
+		if( message != null)
+            properties.put("osivia.portal.reason", message);
+		
 		if (httpErrorCode > 0) {
-			errDescriptor = new ErrorDescriptor(httpErrorCode, cause, message, userId, null);
+			errDescriptor = new ErrorDescriptor(httpErrorCode, cause, null, userId, properties);
 		}
 		return errDescriptor;
 	}

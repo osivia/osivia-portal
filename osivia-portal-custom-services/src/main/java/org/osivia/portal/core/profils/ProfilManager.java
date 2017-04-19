@@ -343,7 +343,10 @@ public class ProfilManager implements IProfilManager {
 
     public ProfilBean getProfilPrincipalUtilisateur() {
 
-        HttpSession session = this.getTracker().getHttpSession();
+        //logger.info("ProfilManager getProfilPrincipalUtilisateur"); 
+        
+        //HttpSession session = getTracker().getHttpSession();
+        HttpSession session =  getTracker().getHttpRequest().getSession( true);
 
         ProfilBean profil = (ProfilBean) session.getAttribute(ATTRIBUTE_PROFILE_NAME);
         if (profil == null) {

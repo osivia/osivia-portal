@@ -226,7 +226,7 @@ public class ParametresPortailDeployment {
 	                        		   // Suppression des fail-safe errors 
 	                        		   ((org.osivia.portal.core.page.PortalObjectContainer) portalObjectContainer).flushNaturalIdCache();
 	                        	   //} catch(Exception e)	{ 
-	                        	//	   log.error("Can't destroy child during import", e);
+	                        	//	   ((org.osivia.portal.core.page.PortalObjectContainer) portalObjectContainer).flushNaturalIdCache();
 	                        	 //  }
 	                              break;
 	                           case KEEP_IF_EXISTS:
@@ -281,7 +281,7 @@ public class ParametresPortailDeployment {
 	   }
 
 	   /** A unit of deployment in the deployment descriptor. */
-	   private static class Unit
+	   protected static class Unit
 	   {
 	      /** The strategy to use when the root object already exists. */
 	      protected int ifExists;

@@ -22,37 +22,32 @@
  ******************************************************************************/
 package org.osivia.portal.core.deploiement;
 
-import org.jboss.deployment.DeploymentException;
-import org.jboss.portal.common.transaction.TransactionManagerProvider;
-import org.jboss.portal.common.transaction.Transactions;
-import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.controller.coordination.CoordinationConfigurator;
-import org.jboss.portal.server.deployment.PortalWebApp;
-import org.jboss.portal.server.deployment.jboss.AbstractDeploymentFactory;
-import org.jboss.portal.server.deployment.jboss.Deployment;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.cache.ClusterNotifier;
-import org.osivia.portal.core.cache.global.ICacheService;
-import org.osivia.portal.core.deploiement.IParametresPortailDeploymentManager;
-import org.osivia.portal.core.imports.ImportInterceptor;
-import org.osivia.portal.core.mt.ThreadsPool;
-import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
-
-import org.xml.sax.EntityResolver;
-
-
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.util.ArrayList;
 
 import javax.management.MBeanServer;
 import javax.transaction.TransactionManager;
 
-import java.io.File;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jboss.logging.Logger;
+import org.jboss.portal.common.transaction.TransactionManagerProvider;
+import org.jboss.portal.core.controller.coordination.CoordinationConfigurator;
+import org.jboss.portal.core.model.content.spi.ContentProviderRegistry;
+import org.jboss.portal.core.model.portal.Page;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.core.cache.ClusterNotifier;
+import org.osivia.portal.core.cache.global.ICacheService;
+import org.osivia.portal.core.deploiement.ParametresPortailDeployment.Unit;
+import org.osivia.portal.core.imports.ImportCheckerDatas;
+import org.osivia.portal.core.imports.ImportInterceptor;
+import org.osivia.portal.core.mt.ThreadsPool;
+import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.xml.sax.EntityResolver;
 
 
 public class ParametresPortailDeploymentManager implements IParametresPortailDeploymentManager{
@@ -73,13 +68,19 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 	   
     static ICacheService cacheService;
     
+    protected static final Logger log = Logger.getLogger(ParametresPortailDeploymentManager.class);
+
+    
 
 
-	public void chargerParametres(File file, MBeanServer mbeanServer) {
+	public String chargerParametres(File file, MBeanServer mbeanServer) {
 		
 		boolean portalImport = false;
 		
 		try {
+		    
+		    String portalObjectId = null;
+		    
             cacheService =  Locator.findMBean(ICacheService.class,"osivia:service=Cache");
             
             
@@ -99,20 +100,18 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 //          cacheService.setImportRunning(true);
 //          ImportInterceptor.isImportRunningLocally = true;
            ImportInterceptor.isImportRunningLocally = true;
-
+           ImportInterceptor.isPageImportTerminated = false;
+           ImportInterceptor.isPortalImportTerminated = false;
 
            
            ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.RUNNING_IMPORT));
            
-
            // waiting for cluster notification
-           Thread.sleep(1000L);
+           Thread.sleep(3000L);
+		    
+		    
+		    
 
-		    
-		    
-		    
-			ImportInterceptor.isPageImportTerminated = false;
-			ImportInterceptor.isPortalImportTerminated = false;
 			
 			// Wait for pendings transaction to stop (max 10 sec)
 			int nbTries = 0;
@@ -131,7 +130,22 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 					file.toURL(), mbeanServer, tm, this);
 			portalImport = deploiement.doStart();
 			
+			
+
+            ArrayList<Unit> units = deploiement.units;
+            if (units.size() == 1) {
+                String portalId = units.get(0).ref.toString();
+                portalObjectId = portalId;
+           }
+      
+
+         
+			
+			
 	         dynamicObjectContainer.stopPersistentIteration();
+	         
+	         
+
  
 	         /*
 
@@ -142,6 +156,7 @@ public class ParametresPortailDeploymentManager implements IParametresPortailDep
 	        ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService,  ClusterNotifier.ACTION.INCREMENT_COUNTER));
 
 		
+	        return portalObjectId;
 				
 		} catch (Exception e) {
 			throw new RuntimeException(e);

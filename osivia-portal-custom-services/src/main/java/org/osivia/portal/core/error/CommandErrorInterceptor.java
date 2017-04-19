@@ -3,10 +3,14 @@
  */
 package org.osivia.portal.core.error;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -25,6 +29,8 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.core.cms.CMSException;
+import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -39,6 +45,8 @@ import org.osivia.portal.core.web.WebCommand;
  */
 public class CommandErrorInterceptor extends ControllerInterceptor {
 
+    private static final Logger log = Logger.getLogger(CommandErrorInterceptor.class);
+    
     /** Dynamic error indicator request attribute name. */
     private static final String DYNAMIC_ERROR_ATTRIBUTE = "osivia.dynamicError";
 
@@ -130,7 +138,45 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             // Functionnal errors, see displayError
             if ((response instanceof ErrorResponse) || (response instanceof UnavailableResourceResponse)) {
                 if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
+                    
+                    String userId = clientRequest.getRemoteUser();
                     response = this.displayError(command, response, -1);
+
+
+                    /* log errors */
+
+                    boolean cmsException = false;
+
+                    if (response instanceof UnavailableResourceResponse)
+                        cmsException = true;
+
+                    if (response instanceof ErrorResponse) {
+                        if (((ErrorResponse) response).getCause() instanceof CMSException)
+                            cmsException = true;
+                    }
+
+
+                    Map<String, Object> properties = new HashMap<String, Object>();
+
+
+                    int httpErrorCode = ErrorDescriptor.NO_HTTP_ERR_CODE;
+
+                    if (command instanceof CmsCommand && cmsException) {
+                        String cmsPath = ((CmsCommand) command).getCmsPath();
+                        if (cmsPath != null)
+                            properties.put("osivia.cms.target", cmsPath);
+                        if (response instanceof SecurityErrorResponse)
+                            httpErrorCode = HttpServletResponse.SC_FORBIDDEN;
+                        if (response instanceof UnavailableResourceResponse)
+                            httpErrorCode = HttpServletResponse.SC_NOT_FOUND;
+                    }
+
+
+                    ErrorDescriptor errorDescriptor = new ErrorDescriptor(httpErrorCode, null, null, userId, properties);
+                    long errId = GlobalErrorHandler.getInstance().logError(errorDescriptor);
+                    command.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.loggedError", errId);
+          
+                       
                 } else {
                     throw new PortalException("Missing error page");
                 }
@@ -156,10 +202,17 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                 // User identifier
                 String userId = clientRequest.getRemoteUser();
                 // Error descriptor
-                ErrorDescriptor errorDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, e.getMessage(), userId, null);
+                ErrorDescriptor errorDescriptor = new ErrorDescriptor(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e, null, userId, null);
+                
+                // Print stack in server.log
+                if( errorDescriptor.getException() != null)
+                    log.error("Technical error in command",errorDescriptor.getException());
+                    
 
-                // Print stack in server.log and portal_user_error.log
+                // Print stack in portal_user_error.log
                 long errId = GlobalErrorHandler.getInstance().logError(errorDescriptor);
+                command.getControllerContext().getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.loggedError", errId);
+                
                 if (BooleanUtils.isNotTrue((Boolean) clientRequest.getAttribute(DYNAMIC_ERROR_ATTRIBUTE))) {
                     // Error response
                     response = this.displayError(command, null, errId);
