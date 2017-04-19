@@ -27,10 +27,11 @@ import org.osivia.portal.api.cms.EcmDocument;
 public interface IPlayerModule<D extends EcmDocument> {
     
 	/**
-	 * Make a player with the document
-	 * @param docCtx document context
-	 * @return the player
-	 */
-    Player getCMSPlayer(DocumentContext<D> docCtx);
+     * Make a player with the document.
+     * 
+     * @param documentContext document context
+     * @return player
+     */
+    Player getCMSPlayer(DocumentContext<D> documentContext);
 
 }

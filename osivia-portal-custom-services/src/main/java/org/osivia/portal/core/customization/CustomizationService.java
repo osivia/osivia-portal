@@ -93,7 +93,7 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         for (CustomizationModuleMetadatas module : this.sortedModules) {
 
             if (module.getCustomizationIDs().contains(customizationID)) {
-                module.getModule().customize(customizationID, ctx);
+                module.getModule().customize(ctx);
             }
         }
 

@@ -334,25 +334,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Tasks
         if (principal != null) {
-            // Tasks URL
-            String tasksUrl = null;
             if (this.instanceContainer.getDefinition("osivia-services-tasks-instance") != null) {
+                // Tasks URL
+                String tasksUrl;
                 try {
                     tasksUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-services-tasks-instance", null, PortalUrlType.MODAL);
                 } catch (PortalException e) {
-                    // Do nothing
+                    tasksUrl = null;
                 }
-            }
-            attributes.put(Constants.ATTR_TOOLBAR_TASKS_URL, tasksUrl);
+                attributes.put(Constants.ATTR_TOOLBAR_TASKS_URL, tasksUrl);
 
-            // Tasks count
-            int tasksCount;
-            try {
-                tasksCount = this.tasksService.getTasksCount(portalControllerContext);
-            } catch (PortalException e) {
-                tasksCount = 0;
+                // Tasks count
+                int tasksCount;
+                try {
+                    tasksCount = this.tasksService.getTasksCount(portalControllerContext);
+                } catch (PortalException e) {
+                    tasksCount = 0;
+                }
+                attributes.put(Constants.ATTR_TOOLBAR_TASKS_COUNT, tasksCount);
             }
-            attributes.put(Constants.ATTR_TOOLBAR_TASKS_COUNT, tasksCount);
         }
 
         // Mobile state items

@@ -28,9 +28,8 @@ public interface ICustomizationModule {
     /**
      * Customize.
      *
-     * @param customizationId the customization identifier
      * @param customizationContext the customization context
      */
-    void customize(String customizationId, CustomizationContext customizationContext);
+    void customize(CustomizationContext customizationContext);
 
 }

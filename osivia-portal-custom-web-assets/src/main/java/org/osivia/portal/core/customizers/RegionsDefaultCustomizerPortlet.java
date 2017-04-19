@@ -120,7 +120,7 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     /**
      * {@inheritDoc}
      */
-    public void customize(String customizationID, CustomizationContext context) {
+    public void customize(CustomizationContext context) {
         Map<String, Object> attributes = context.getAttributes();
         IRenderedRegions renderedRegions = (IRenderedRegions) attributes.get(IRenderedRegions.CUSTOMIZER_ATTRIBUTE_RENDERED_REGIONS);
 
