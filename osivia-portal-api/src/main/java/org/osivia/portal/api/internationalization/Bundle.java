@@ -16,6 +16,8 @@ package org.osivia.portal.api.internationalization;
 
 import java.util.Locale;
 
+import org.springframework.context.ApplicationContext;
+
 /**
  * Internationalized bundle java bean.
  *
@@ -83,7 +85,19 @@ public class Bundle {
     public final String getString(String key, ClassLoader customizedClassLoader, Object... args) {
         return this.internationalizationService.getString(key, this.locale, this.classLoader, customizedClassLoader, args);
     }
+    
 
+    /**
+     * Access to a localized bundle property, which can be customized.
+     *
+     * @param key bundle property key
+     * @param customizedClassLoader customized class loader
+     * @param args property arguments
+     * @return bundle property value
+     */
+    public final String getString(String key, ApplicationContext context, Object... args) {
+        return this.internationalizationService.getString(key, this.locale, this.classLoader, null, context, args);
+    }
 
     /**
      * Getter for classLoader.
