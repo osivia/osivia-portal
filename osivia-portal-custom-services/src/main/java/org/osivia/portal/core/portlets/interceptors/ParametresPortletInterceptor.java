@@ -327,15 +327,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 customizationAttributes.put("windowId", windowId);
                                 customizationAttributes.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
 
-
+                                PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
                                 CustomizationContext customizationContext = new CustomizationContext(customizationAttributes, locale);
+                                customizationContext.setPortalControllerContext(portalControllerContext);
                                 this.customizationService.customize("MENUBAR_PRINT_ITEM", customizationContext);
 
                                 MenubarItem printItem = (MenubarItem) customizationAttributes.get("result");
                                 if (printItem == null) {
-                                    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
                                     // Parent
                                     MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext,
                                             MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID);
