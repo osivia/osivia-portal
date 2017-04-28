@@ -872,5 +872,14 @@
             proxy-type="attribute">osivia:service=CustomizationService</depends>
     </mbean>
     
+    
+      <mbean code="org.osivia.core.identity.UserInterceptor"
+          name="osivia:service=Interceptor,type=Server,name=User" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+      <attribute name="CacheUser">true</attribute>
+      <depends>portal:service=Module,type=IdentityServiceController</depends>
+   </mbean>
+    
 </server>
    

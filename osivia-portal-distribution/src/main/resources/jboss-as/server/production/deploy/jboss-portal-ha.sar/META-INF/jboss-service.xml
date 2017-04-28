@@ -144,7 +144,7 @@
          <depends-list-element>portal:service=Interceptor,type=Server,name=IdentityCache</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Server,name=UserEvent</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Server,name=SessionInvalidator</depends-list-element>
-         <depends-list-element>portal:service=Interceptor,type=Server,name=User</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Server,name=User</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Server,name=Locale</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Server,name=PortalContextPath</depends-list-element>
 
