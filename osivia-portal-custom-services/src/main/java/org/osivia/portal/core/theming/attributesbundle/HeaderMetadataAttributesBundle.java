@@ -229,6 +229,26 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
         }
 
 
+        // Document metadata
+        DocumentMetadata documentMetadata;
+        if (document == null) {
+            documentMetadata = null;
+        } else {
+            try {
+                documentMetadata = cmsService.getDocumentMetadata(cmsContext);
+            } catch (CMSException e) {
+                documentMetadata = null;
+            }
+        }
+
+        // SEO properties
+        if (documentMetadata != null) {
+            for (Entry<String, String> property : documentMetadata.getSeo().entrySet()) {
+                metadata.put(property.getKey(), property.getValue());
+            }
+        }
+
+
         // Title
         String title;
         // Canonical URL
@@ -251,22 +271,12 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
             String pagePath = page.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
             canonicalUrl = portalBaseURL + pagePath;
         } else {
-            try {
-                // Document metadata
-                DocumentMetadata documentMetadata = cmsService.getDocumentMetadata(cmsContext);
-
-                // Title
-                if (domainDisplayName != null) {
-                    title = domainDisplayName;
-                } else {
-                    title = documentMetadata.getTitle();
-                }
-
-                // SEO properties
-                for (Entry<String, String> property : documentMetadata.getSeo().entrySet()) {
-                    metadata.put(property.getKey(), property.getValue());
-                }
-            } catch (CMSException e) {
+            // Title
+            if (domainDisplayName != null) {
+                title = domainDisplayName;
+            } else if (documentMetadata != null) {
+                title = documentMetadata.getTitle();
+            } else {
                 title = null;
             }
 
