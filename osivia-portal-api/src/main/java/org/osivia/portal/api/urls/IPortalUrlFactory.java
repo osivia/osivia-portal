@@ -210,9 +210,8 @@ public interface IPortalUrlFactory {
      * @param portalControllerContext portal controller context
      * @param originalUrl original URL
      * @return navigation URL
-     * @throws PortalException
      */
-    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String originalUrl) throws PortalException;
+    String adaptPortalUrlToNavigation(PortalControllerContext portalControllerContext, String originalUrl);
 
 
     /**
