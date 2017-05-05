@@ -24,6 +24,17 @@ public abstract class MenubarObject {
 
     /**
      * Constructor.
+     * 
+     * @param id menubar object identifier
+     */
+    public MenubarObject(String id) {
+        super();
+        this.id = id;
+    }
+
+
+    /**
+     * Constructor.
      *
      * @param id menubar object identifier
      * @param title menubar object title
@@ -32,8 +43,7 @@ public abstract class MenubarObject {
      * @param disabled disabled menubar object indicator
      */
     public MenubarObject(String id, String title, String glyphicon, int order, boolean disabled) {
-        super();
-        this.id = id;
+        this(id);
         this.title = title;
         this.glyphicon = glyphicon;
         this.order = order;
