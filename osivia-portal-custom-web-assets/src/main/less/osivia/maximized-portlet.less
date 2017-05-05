@@ -18,7 +18,12 @@
         }
         
         .title-container {
+            @overflowing: 3px;
+            
             overflow: hidden;
+            
+            margin: -@overflowing 0;
+            padding: @overflowing 0;
         }
         
         .h2 {

@@ -17,17 +17,16 @@ package org.osivia.portal.api.theming;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osivia.portal.api.menubar.MenubarItem;
-
 /**
  * Breadcrumb java-bean.
  */
 public class Breadcrumb {
-	
+
+    /** Menu HTML content. */
+    private String menu;
+
     /** Breadcrumb children. */
     private final List<BreadcrumbItem> children;
-    /** Breadcrumb associated edition menubar items. */
-    private final List<MenubarItem> menubarItems;
 
 
     /**
@@ -36,7 +35,25 @@ public class Breadcrumb {
     public Breadcrumb() {
         super();
         this.children = new ArrayList<BreadcrumbItem>();
-        this.menubarItems = new ArrayList<MenubarItem>();
+    }
+
+
+    /**
+     * Getter for menu.
+     * 
+     * @return the menu
+     */
+    public String getMenu() {
+        return menu;
+    }
+
+    /**
+     * Setter for menu.
+     * 
+     * @param menu the menu to set
+     */
+    public void setMenu(String menu) {
+        this.menu = menu;
     }
 
 
@@ -47,15 +64,6 @@ public class Breadcrumb {
      */
     public List<BreadcrumbItem> getChildren() {
         return children;
-    }
-
-    /**
-     * Getter for menubarItems.
-     * 
-     * @return the menubarItems
-     */
-    public List<MenubarItem> getMenubarItems() {
-        return menubarItems;
     }
 
 }

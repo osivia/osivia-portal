@@ -13,7 +13,9 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,8 +26,11 @@ import java.util.TreeSet;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -50,6 +55,8 @@ import org.jboss.portal.theme.page.WindowContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.AccessibilityRoles;
+import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarContainer;
@@ -579,10 +586,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
             }
         }
 
-
-        // Add edition menubar items
-        this.addEditionMenubarItems(controllerContext, breadcrumb);
-
+        // Generate breadcrumb menu
+        String menu = this.generateMenu(portalControllerContext);
+        breadcrumb.setMenu(menu);
 
         return breadcrumb;
     }
@@ -610,33 +616,119 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
 
     /**
-     * Add edition menubar items.
+     * Generate breadcrumb menu.
      * 
-     * @param controllerContext controller context
-     * @param breadcrumb breadcrumb
+     * @param portalControllerContext portal controller context
+     * @param menu HTML content, may be null
      */
-    private void addEditionMenubarItems(ControllerContext controllerContext, Breadcrumb breadcrumb) {
-        // Portal controller context
-        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
+    private String generateMenu(PortalControllerContext portalControllerContext) {
         // Edition menubar items
-        Set<MenubarItem> menubarItems = null;
         Map<MenubarGroup, Set<MenubarItem>> sortedItems = menubarService.getNavbarSortedItems(portalControllerContext);
+        Map<MenubarDropdown, List<MenubarItem>> menubarItems = new LinkedHashMap<>();
         if (sortedItems != null) {
-            menubarItems = sortedItems.get(MenubarGroup.CMS);
-        }
-
-        if (menubarItems != null) {
-            for (MenubarItem menubarItem : menubarItems) {
-                MenubarContainer parent = menubarItem.getParent();
-                if (parent instanceof MenubarDropdown) {
-                    MenubarDropdown dropdown = (MenubarDropdown) parent;
-                    if (MenubarDropdown.CMS_EDITION_DROPDOWN_MENU_ID.equals(dropdown.getId()) && (dropdown.isBreadcrumb() || menubarItem.isBreadcrumb())) {
-                        breadcrumb.getMenubarItems().add(menubarItem);
+            for (Entry<MenubarGroup, Set<MenubarItem>> entry : sortedItems.entrySet()) {
+                Set<MenubarItem> groupMenubarItems = entry.getValue();
+                if (CollectionUtils.isNotEmpty(groupMenubarItems)) {
+                    for (MenubarItem menubarItem : groupMenubarItems) {
+                        MenubarContainer parent = menubarItem.getParent();
+                        if (parent instanceof MenubarDropdown) {
+                            MenubarDropdown dropdown = (MenubarDropdown) parent;
+                            if (dropdown.isBreadcrumb() || menubarItem.isBreadcrumb()) {
+                                List<MenubarItem> dropdownMenubarItems = menubarItems.get(dropdown);
+                                if (dropdownMenubarItems == null) {
+                                    dropdownMenubarItems = new ArrayList<>();
+                                    menubarItems.put(dropdown, dropdownMenubarItems);
+                                }
+                                dropdownMenubarItems.add(menubarItem);
+                            }
+                        }
                     }
                 }
             }
         }
+
+
+        // Menu HTML content
+        String menu;
+
+        if (menubarItems.isEmpty()) {
+            menu = null;
+        } else {
+            // UL
+            Element container = DOM4JUtils.generateElement("ul", "dropdown-menu", null, null, AccessibilityRoles.MENU);
+
+            boolean firstDropdown = true;
+            for (Entry<MenubarDropdown, List<MenubarItem>> dropdownEntry : menubarItems.entrySet()) {
+                MenubarDropdown dropdown = dropdownEntry.getKey();
+
+                if (firstDropdown) {
+                    firstDropdown = false;
+                } else {
+                    // Divider
+                    Element divider = DOM4JUtils.generateElement("li", "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
+                    container.add(divider);
+                }
+
+                // Header
+                Element header = DOM4JUtils.generateElement("li", "dropdown-header", dropdown.getTitle(), null, AccessibilityRoles.PRESENTATION);
+                container.add(header);
+
+                boolean firstItem = true;
+                for (MenubarItem menubarItem : dropdownEntry.getValue()) {
+                    if (firstItem) {
+                        firstItem = false;
+                    } else if (menubarItem.isDivider()) {
+                        // Divider
+                        Element divider = DOM4JUtils.generateElement("li", "divider small-divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
+                        container.add(divider);
+                    }
+
+                    // HTML classes
+                    StringBuilder htmlClasses = new StringBuilder();
+                    if (StringUtils.isEmpty(menubarItem.getUrl())) {
+                        htmlClasses.append("dropdown-header ");
+                    }
+                    if (menubarItem.isState()) {
+                        htmlClasses.append("hidden-xs ");
+                    }
+                    if (menubarItem.isAjaxDisabled()) {
+                        htmlClasses.append("no-ajax-link ");
+                    }
+                    if (menubarItem.isActive()) {
+                        htmlClasses.append("active ");
+                    }
+                    if (menubarItem.isDisabled()) {
+                        htmlClasses.append("disabled ");
+                    }
+
+                    // LI
+                    Element li = DOM4JUtils.generateElement("li", htmlClasses.toString(), null, null, AccessibilityRoles.PRESENTATION);
+                    container.add(li);
+                    
+                    if (StringUtils.isEmpty(menubarItem.getUrl())) {
+                        // Static item
+                        Element staticItem = DOM4JUtils.generateElement("span", menubarItem.getHtmlClasses(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
+                                AccessibilityRoles.MENU_ITEM);
+                        li.add(staticItem);
+                    } else {
+                        // Link
+                        Element link = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnclick(),
+                                menubarItem.getHtmlClasses(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
+                        if (MapUtils.isNotEmpty(menubarItem.getData())) {
+                            for (Entry<String, String> data : menubarItem.getData().entrySet()) {
+                                DOM4JUtils.addDataAttribute(link, data.getKey(), data.getValue());
+                            }
+                        }
+                        li.add(link);
+                    }
+                }
+            }
+
+
+            menu = DOM4JUtils.write(container);
+        }
+
+        return menu;
     }
 
 
