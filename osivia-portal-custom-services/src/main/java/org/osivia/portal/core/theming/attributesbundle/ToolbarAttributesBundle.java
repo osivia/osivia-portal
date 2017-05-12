@@ -62,6 +62,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.tasks.ITasksService;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
+import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.urls.PortalUrlType;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
@@ -237,24 +238,20 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Person
         Person person = null;
+        PersonService personService = null;
         if (principal != null) {
-            PersonService personService = this.directoryProvider.getDirService(PersonService.class);
+            personService = this.directoryProvider.getDirService(PersonService.class);
             person = personService.getPerson(principal.getName());
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
+                
+            String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
+            if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+            	person.setAvatar(null);
+            }
+            
+            
+            attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
 
-//            IDirectoryService directoryService = this.directoryServiceLocator.getDirectoryService();
-//            if (directoryService != null) {
-//                person = directoryService.getPerson(principal.getName());
-                
-                
-                String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
-                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
-                	person.setAvatar(null);
-                }
-                
-                
-                attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
-//            }
         }
 
         // My space
@@ -270,24 +267,22 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // My profile
         String myProfileUrl = null;
         if (person != null) {
+        	        	
             // View profile
             try {
-                Map<String, String> properties = new HashMap<String, String>();
-                properties.put(InternalConstants.PROP_WINDOW_TITLE, bundle.getString(InternationalizationConstants.KEY_MY_PROFILE));
-                properties.put("osivia.hideTitle", "1");
-                properties.put("osivia.ajaxLink", "1");
-                properties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
-
-                Map<String, String> parameters = new HashMap<String, String>();
-
-                myProfileUrl = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "myprofile",
-                        bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "directory-person-card-instance", properties, parameters);
+            	
+            	Link l = personService.getMyCardUrl(portalControllerContext);
+            	
+            	if(l != null) {
+            		myProfileUrl = l.getUrl();
+            		attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
+            	}
 
             } catch (PortalException e) {
                 // Do nothing
             }
         }
-        attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
+
 
         // User settings
         String userSettingsInstance = "osivia-services-user-settings-instance";
@@ -933,6 +928,25 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             this.addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, "disabled");
         }
 
+        // Edit page attachments
+        String cmsEditPageAttachmentsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_ATTACHMENTS);
+        final String editPageAttachmentsGlyph = "halflings halflings-glyph-paperclip";
+        if (modePreview) {
+            String cmsEditPageAttachmentsURL = cmsService.getEcmUrl(cmsCtx, EcmViews.editAttachments, path, requestParameters);
+
+            final String onclick = "";
+
+
+            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageAttachmentsURL, onclick, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
+                    cmsEditPageAttachmentsTitle, editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
+
+            addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
+        } else {
+            Element cmsEditPageAttachmentsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEditPageAttachmentsTitle,
+                    editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsEditPageAttachmentsLink, HTMLConstants.TITLE, previewRequired);
+            addSubMenuElement(cmsEditionMenuUL, cmsEditPageAttachmentsLink, "disabled");
+        }
 
         // Move
         String moveTitle = bundle.getString("MOVE");
@@ -1027,8 +1041,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Erase modifications
         String cmsEraseTitle = bundle.getString("SUBMENU_CMS_PAGE_ERASE");
         if (beingModified && modePreview && published) {
-
-
             String cmsEraseModificationURL = this.urlFactory.getEcmCommandUrl(portalControllerContext, path, EcmCommonCommands.eraseModifications);
 
             cmsEditionMenu.add(this.generateEraseFancyBox(bundle, cmsEraseModificationURL));

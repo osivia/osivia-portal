@@ -71,6 +71,14 @@ public interface PersonService extends IDirService {
 			throws PortalException;
 
 	/**
+	 * Get a link to my card
+	 * @param portalControllerContext
+	 * @return a link to the card person portlet
+	 * @throws PortalException
+	 */
+	Link getMyCardUrl(PortalControllerContext portalControllerContext) throws PortalException;
+	
+	/**
 	 * Get a document with user profile properties
 	 * @param portalControllerContext
 	 * @param person
@@ -79,4 +87,6 @@ public interface PersonService extends IDirService {
 	 */
 	Object getEcmProfile(PortalControllerContext portalControllerContext,
 			Person person) throws PortalException;
+
+
 }
