@@ -31,6 +31,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
@@ -189,25 +190,25 @@ public class PageMarkerUtils {
          */
 
         String pageMarker = getCurrentPageMarker(controllerCtx);
-        
-        
+
+
 
         dumpPageState(controllerCtx, page, "AVANT savePageState " + pageMarker);
 
         PageMarkerInfo markerInfo = new PageMarkerInfo(pageMarker);
         markerInfo.setLastTimeStamp(new Long(System.currentTimeMillis()));
-        
+
         String backCachePageMarker = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker");
-        
+
         List<PageBackCacheInfo> pageCacheBackInfos = new ArrayList<PageBackCacheInfo>();
-        
-        
+
+
         /* Back cache optimized for immediate back
          * We store only the cache for the current historic
-         * The cache is cleared each time we have no back action,  
+         * The cache is cleared each time we have no back action,
          * (2/3 instance max per session)
          */
-        
+
         // Get old back cache values
         if( backCachePageMarker != null){
             List<PageBackCacheInfo> oldPageCacheBackInfos = (List<PageBackCacheInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos");
@@ -221,15 +222,16 @@ public class PageMarkerUtils {
                     }
                 }
                 // If none, recopy all caches
-                if (current == -1)
+                if (current == -1) {
                     current = oldPageCacheBackInfos.size();
+                }
 
                 for (int i = 0; i < current; i++) {
                     pageCacheBackInfos.add(oldPageCacheBackInfos.get(i));
                 }
             }
        }
-        
+
         PageBackCacheInfo currentBackCache = new PageBackCacheInfo(backCachePageMarker, pageMarker, new ConcurrentHashMap<String, CacheEntry>());
 
         if (page != null) {
@@ -261,24 +263,25 @@ public class PageMarkerUtils {
 
                 windowInfos.put(window.getId(), new WindowStateMarkerInfo(ws.getWindowState(), ws.getMode(), ws.getContentState(), ws.getPublicContentState(),
                         addParams, portletPath));
-                
+
 
                 // Add the entry to the current back cache instance
                 String scopeKey = "cached_markup." + window.getId();
                 CacheEntry cacheEntry = (CacheEntry) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, scopeKey);
-                if( cacheEntry != null)
+                if( cacheEntry != null) {
                     currentBackCache.getBackCache().put(scopeKey, cacheEntry);
-                    
+                }
+
             }
-            
+
             // Add the back cache
             pageCacheBackInfos.add(currentBackCache);
-            
+
             controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos", pageCacheBackInfos);
-            
-    
-            
-            
+
+
+
+
 
             // Sauvegarde etat page
             NavigationalStateContext ctx = (NavigationalStateContext) controllerCtx.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
@@ -385,7 +388,7 @@ public class PageMarkerUtils {
             PortletStatusContainer portletStatusContainer = (PortletStatusContainer) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE,
                     IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE);
             markerInfo.setPortletStatusContainer(portletStatusContainer);
-            
+
 
 
             // Notifications list
@@ -662,7 +665,7 @@ public class PageMarkerUtils {
                             if (restorePageInfo != null) {
                                 restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
                             }
-                            
+
                          }
 
                         // Restauration des pages dynamiques
@@ -673,10 +676,10 @@ public class PageMarkerUtils {
                         }
 
                         Page page = restorePageState(controllerContext, restorePageInfo);
-                        
-                        
+
+
                         /* Restore backCache */
-                        
+
                         if (restorePageInfo != null) {
                             String restoreCachePM = restorePageInfo.getPageMarker();
 
@@ -703,7 +706,7 @@ public class PageMarkerUtils {
                                 }
                             }
                         }
-        
+
 
 
                         // restauration menu
@@ -779,7 +782,7 @@ public class PageMarkerUtils {
                         }
 
 
-   
+
 
 
                         if (CollectionUtils.isNotEmpty(markerInfo.getNotificationsList())) {
@@ -910,10 +913,10 @@ public class PageMarkerUtils {
         if (markerInfo.getCurrentPageId() != null) {
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId", markerInfo.getCurrentPageId());
         }
-        
-        
-        
-        
+
+
+
+
         // Portlet status container
         PortletStatusContainer portletStatusContainer = markerInfo.getPortletStatusContainer();
         if (portletStatusContainer != null) {
@@ -921,9 +924,9 @@ public class PageMarkerUtils {
 
             controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, IPortletStatusService.STATUS_CONTAINER_ATTRIBUTE, clone);
         }
-        
-        
-        
+
+
+
 
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.backPageMarker", null);
 
@@ -983,5 +986,27 @@ public class PageMarkerUtils {
         return markerInfo;
     }
 
+
+    /**
+     * Check if current page marker.
+     * @param controllerContext controller context
+     * @return
+     */
+    public static boolean isCurrentPageMarker(ControllerContext controllerContext) {
+    	// Current page marker
+    	String currentPageMarker = String.valueOf(controllerContext.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker"));
+    	int current = NumberUtils.toInt(currentPageMarker);
+
+    	// Last page marker
+    	PageMarkerInfo lastPageState = getLastPageState(controllerContext);
+        if (lastPageState != null) {
+            String lastPageMarker = lastPageState.getPageMarker();
+            int last = NumberUtils.toInt(lastPageMarker);
+            return ((current - last) <= 1);
+        } else {
+            // pour invalider le cache?
+            return true;
+        }
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -33,10 +33,13 @@ public enum EcmViews {
     /** edit a document */
     editDocument,
 
-    /** edit a webpage (mode webpage) */    
+    /** edit a webpage (mode webpage) */
     editPage,
 
-    /** create a fragment in the top of the region (mode webpage) */    
+    /** edit a page's attachments */
+    editAttachments,
+
+    /** create a fragment in the top of the region (mode webpage) */
     createFgtInRegion,
 
     /** create a fragment below an other window (mode webpage) */
@@ -47,26 +50,26 @@ public enum EcmViews {
 
     /** Go to the current media library in back office */
     gotoMediaLibrary,
-    
+
     /** Send a document to poeple inteerested in */
     shareDocument,
-    
+
     /** Start a validation workflow. */
     startValidationWf,
-    
+
     /** See current validation workflow task. */
     followWfValidation,
-    
+
     /** Remote publishing. */
     remotePublishing,
-    
+
     /** Remote Publishing validation. */
     validateRemotePublishing,
-    
+
     /** Global administration */
     globalAdministration,
 
     /** Reload. */
     RELOAD;
-    
+
 }

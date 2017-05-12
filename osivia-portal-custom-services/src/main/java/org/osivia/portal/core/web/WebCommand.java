@@ -23,6 +23,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -47,6 +48,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.dynamic.DynamicCommand;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.page.PagePathUtils;
+import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 
 /**
  * Web command.
@@ -258,7 +260,15 @@ public class WebCommand extends DynamicCommand {
         try {
             PortalObjectId windowId = this.getWindowId(this.context);
             if (windowId != null) {
-                String originalPath = "/portal" + windowId;
+
+                String controlledPageMarker = (String) context.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+
+                StringBuilder sbOriginalPath = new StringBuilder();
+                if (StringUtils.isNotBlank(controlledPageMarker)) {
+                    sbOriginalPath.append(PageMarkerUtils.PAGE_MARKER_PATH + controlledPageMarker);
+                }
+                sbOriginalPath.append("/portal");
+                sbOriginalPath.append(windowId);
 
                 // Controller context
                 ControllerContext controllerContext = this.getControllerContext();
@@ -269,7 +279,7 @@ public class WebCommand extends DynamicCommand {
 
                 CommandFactory commandFactory = controllerContext.getController().getCommandFactory();
                 ControllerCommand originalCommand = commandFactory.doMapping(controllerContext, invocation, serverContext.getPortalHost(),
-                        serverContext.getPortalContextPath(), originalPath);
+                        serverContext.getPortalContextPath(), sbOriginalPath.toString());
 
                 return this.context.execute(originalCommand);
             }

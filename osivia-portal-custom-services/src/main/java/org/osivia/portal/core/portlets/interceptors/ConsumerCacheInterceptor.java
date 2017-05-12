@@ -278,13 +278,17 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                 }
 
                 if ((cachedEntry != null) && StringUtils.isNotBlank(window.getProperty("osivia.sequence.priority"))) {
-                    Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.PORTLET_SEQUENCING.getTimestampAttributeName());
-                    if (timestamp != null) {
-                        sequencingTs = timestamp.longValue();
-                        if (cachedEntry.sequencingTs != sequencingTs) {
-                            cachedEntry = null;
-                        }
-                    }
+                	if (PageMarkerUtils.isCurrentPageMarker(ctx)) {
+	                	Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.PORTLET_SEQUENCING.getTimestampAttributeName());
+	                    if (timestamp != null) {
+	                        sequencingTs = timestamp.longValue();
+	                        if (cachedEntry.sequencingTs != sequencingTs) {
+	                            cachedEntry = null;
+	                        }
+	                    }
+                	} else {
+                		cachedEntry = null;
+                	}
                 }
             }
 

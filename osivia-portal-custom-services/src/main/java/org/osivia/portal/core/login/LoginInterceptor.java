@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.portlet.PortletRequest;
 import javax.security.auth.Subject;
 import javax.security.jacc.PolicyContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -223,9 +224,15 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         String userPrincipal = invocation.getServerContext().getClientRequest().getUserPrincipal().getName();
         DirectoryPerson person = null;
 
+        HttpServletRequest httpRequest = invocation.getServerContext().getClientRequest();
         for (UserDatasModuleMetadatas module : this.sortedModules) {
             // compatibilty v3.2 - provide informations about logged users with a map or with a user object
-            person = module.getModule().computeUser(userPrincipal);
+
+            List<String> excludedFeederNames = (List<String>) httpRequest.getAttribute("osivia.valve.feeder");
+            if ((excludedFeederNames == null) || !excludedFeederNames.contains(module.getName())) {
+                // exclusion du module si déjà appelé par valve
+                person = module.getModule().computeLoggedUser(httpRequest);
+            }
         }
 
         // add person in session

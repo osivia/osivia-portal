@@ -157,6 +157,10 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // Select2
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/select2/css/select2.min.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/select2/js/select2.min.js'></script>");
+        
+        // Clipboard 
+        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/clipboard/clipboard.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/clipboard-integration.min.js'></script>");
 
         // Socle packaged JavaScript
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/socle.min.js'></script>");
@@ -175,6 +179,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/effects.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dragdrop.js'></script>");
         this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/dyna.js'></script>");
+        
     }
 
 
