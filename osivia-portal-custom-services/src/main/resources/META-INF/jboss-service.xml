@@ -420,7 +420,10 @@
         <xmbean />
         <depends
             optional-attribute-name="CustomizationService"
-            proxy-type="attribute">osivia:service=CustomizationService</depends>        
+            proxy-type="attribute">osivia:service=CustomizationService</depends>
+        <depends
+            optional-attribute-name="PortalAuthorizationManagerFactory"
+            proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends>
     </mbean>
 
 

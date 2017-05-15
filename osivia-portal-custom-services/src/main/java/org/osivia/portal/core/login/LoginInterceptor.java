@@ -33,13 +33,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.PortalObjectPermission;
 import org.jboss.portal.identity.User;
 import org.jboss.portal.security.impl.jacc.JACCPortalPrincipal;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
 import org.jboss.portal.server.ServerInterceptor;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
@@ -62,59 +66,70 @@ import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.profils.ProfilBean;
 import org.osivia.portal.core.profils.ProfilManager;
 
-
+/**
+ * Login interceptor.
+ * 
+ * @see ServerInterceptor
+ * @see IUserDatasModuleRepository
+ */
 public class LoginInterceptor extends ServerInterceptor implements IUserDatasModuleRepository {
-
-    protected static final Log logger = LogFactory.getLog(LoginInterceptor.class);
-
-
-    Map<String, UserDatasModuleMetadatas> userModules = new Hashtable<String, UserDatasModuleMetadatas>();
-    SortedSet<UserDatasModuleMetadatas> sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
 
     /** Customization service. */
     private ICustomizationService customizationService;
+    /** Portal authorization manager factory. */
+    private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+    /** CMS service locator. */
+    private ICMSServiceLocator cmsServiceLocator;
 
-    private static ICMSServiceLocator cmsServiceLocator;
+    /** Modules comparator. */
+    private final Comparator<UserDatasModuleMetadatas> modulesComparator;
 
-    public static ICMSService getCMSService() throws Exception {
+    /** User modules. */
+    private final Map<String, UserDatasModuleMetadatas> userModules;
+    /** Sorted modules. */
+    private final SortedSet<UserDatasModuleMetadatas> sortedModules;
 
-        if (cmsServiceLocator == null) {
-            cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
-        }
+    /** Log. */
+    private final Log log;
+    /** Admin portal object identifier. */
+    private final PortalObjectId adminId;
 
-        return cmsServiceLocator.getCMSService();
-
-    }
 
     /**
-     * Setter for customizationService.
-     *
-     * @param customizationService the customizationService to set
+     * Constructor.
      */
-    public void setCustomizationService(ICustomizationService customizationService) {
-        this.customizationService = customizationService;
+    public LoginInterceptor() {
+        super();
+
+        // Modules comparator
+        this.modulesComparator = new Comparator<UserDatasModuleMetadatas>() {
+            public int compare(UserDatasModuleMetadatas m1, UserDatasModuleMetadatas m2) {
+                return m1.getOrder() - m2.getOrder();
+            }
+        };
+
+        this.userModules = new ConcurrentHashMap<>();
+        this.sortedModules = new TreeSet<>(modulesComparator);
+
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
+        // Admin portal object identifier
+        this.adminId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
     }
-
-
-    public static final Comparator<UserDatasModuleMetadatas> moduleComparator = new Comparator<UserDatasModuleMetadatas>() {
-
-        public int compare(UserDatasModuleMetadatas m1, UserDatasModuleMetadatas m2) {
-            return m1.getOrder() - m2.getOrder();
-
-        }
-    };
 
 
     private void synchronizeSortedModules() {
-
-        this.sortedModules = new TreeSet<UserDatasModuleMetadatas>(moduleComparator);
+        this.sortedModules.clear();
 
         for (UserDatasModuleMetadatas module : this.userModules.values()) {
             this.sortedModules.add(module);
         }
-
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @SuppressWarnings("rawtypes")
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
@@ -123,7 +138,8 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
         String remoteUser = invocation.getServerContext().getClientRequest().getRemoteUser();
 
-        /* Traitement spécifique pour utilisateurs non connectés
+        /*
+         * Traitement spécifique pour utilisateurs non connectés
          * A déléguer dans un customizer
          */
 
@@ -142,82 +158,106 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
             String userPagesPreloaded = (String) invocation.getAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone");
 
             if (!"1".equals(userPagesPreloaded)) {
+                if (!isAdministrator()) {
+                    // JSS 20131113 : pas de preload pour certains groupes
+                    boolean noPreload = false;
 
+                    String preloadingDisabledDGroups = System.getProperty("preloading.disabledGroups");
 
-                /*
-                 * JSS 20131113 : pas de preload pour certains groupes
-                 */
+                    if (preloadingDisabledDGroups != null) {
+                        List<String> groups = Arrays.asList(preloadingDisabledDGroups.split(","));
 
-                boolean noPreload = false;
+                        // Get the current authenticated subject through the JACC
+                        // contract
+                        Subject subject = (Subject) PolicyContext.getContext("javax.security.auth.Subject.container");
 
-                String preloadingDisabledDGroups = System.getProperty("preloading.disabledGroups");
+                        // utilisation mapping standard du portail
+                        JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
 
-                if (preloadingDisabledDGroups != null) {
-                    List<String> groups = Arrays.asList(preloadingDisabledDGroups.split(","));
-
-                    // Get the current authenticated subject through the JACC
-                    // contract
-                    Subject subject = (Subject) PolicyContext.getContext("javax.security.auth.Subject.container");
-
-                    // utilisation mapping standard du portail
-                    JACCPortalPrincipal pp = new JACCPortalPrincipal(subject);
-
-                    Iterator iter = pp.getRoles().iterator();
-                    while (iter.hasNext()) {
-                        Principal principal = (Principal) iter.next();
-                        if (groups.contains(principal.getName())) {
-                            noPreload = true;
-                            break;
+                        Iterator iter = pp.getRoles().iterator();
+                        while (iter.hasNext()) {
+                            Principal principal = (Principal) iter.next();
+                            if (groups.contains(principal.getName())) {
+                                noPreload = true;
+                                break;
+                            }
                         }
                     }
-                }
 
-                if (noPreload) {
+                    if (noPreload) {
 
-                    invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", new ArrayList<CMSPage>());
+                        invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", new ArrayList<CMSPage>());
 
-                } else {
+                    } else {
 
 
-                    /* Appel pages préchargées */
+                        /* Appel pages préchargées */
 
-                    try {
+                        try {
 
-                        CMSServiceCtx cmsContext = new CMSServiceCtx();
+                            CMSServiceCtx cmsContext = new CMSServiceCtx();
 
-                        cmsContext.setServerInvocation(invocation);
+                            cmsContext.setServerInvocation(invocation);
 
-                        invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", getCMSService().computeUserPreloadedPages(cmsContext));
-                    } catch (Exception e) {
-                        // Don't block login
-                        logger.error("Can't compute cms pages for user " + user.getUserName());
+                            invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages",
+                                    this.getCmsService().computeUserPreloadedPages(cmsContext));
+                        } catch (Exception e) {
+                            // Don't block login
+                            log.error("Can't compute cms pages for user " + user.getUserName());
+                        }
                     }
 
-
+                    // Appel module userdatas
+                    this.loadUserDatas(invocation);
                 }
-                /* Appel module userdatas */
 
-                this.loadUserDatas(invocation);
 
                 // Job is marked as done
-
                 invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
-                
                 IPortalLogger.logger.info(new LoggerMessage("user login", true));
-                
             }
-
         }
 
         invocation.invokeNext();
     }
 
+
+    /**
+     * Check if the current user is administrator.
+     * 
+     * @return true if the current user is administrator.
+     */
+    private boolean isAdministrator() {
+        PortalAuthorizationManager manager = this.portalAuthorizationManagerFactory.getManager();
+        PortalObjectPermission permission = new PortalObjectPermission(this.adminId, PortalObjectPermission.VIEW_MASK);
+        return manager.checkPermission(permission);
+    }
+
+
+    /**
+     * Get CMS service.
+     * 
+     * @return CMS service
+     */
+    private ICMSService getCmsService() {
+        if (this.cmsServiceLocator == null) {
+            this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
+        }
+
+        return this.cmsServiceLocator.getCMSService();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void reload(PortletRequest portletRequest) {
         ControllerContext ctx = (ControllerContext) portletRequest.getAttribute("osivia.controller");
 
         this.loadUserDatas(ctx.getServerInvocation());
-
     }
+
 
     private void loadUserDatas(ServerInvocation invocation) {
         Map<String, Object> contextDatas = new Hashtable<String, Object>();
@@ -252,26 +292,26 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userDatas.refreshTimestamp", System.currentTimeMillis());
 
         // Debug user map
-        
-        if( logger.isDebugEnabled()){
+
+        if (log.isDebugEnabled()) {
             StringBuffer sb = new StringBuffer();
             sb.append("userDatas[");
-            for(String key : userDatas.keySet())    {
-                sb.append(key+"="+userDatas.get(key)+";");
-             }
+            for (String key : userDatas.keySet()) {
+                sb.append(key + "=" + userDatas.get(key) + ";");
+            }
             sb.append("]   person[");
-            for(String key : person.getExtraProperties().keySet())    {
-                sb.append(key+"="+ person.getExtraProperties().get(key)+";");
-             }        
-            sb.append("]");        
-            
-            logger.debug(new String(sb));
+            for (String key : person.getExtraProperties().keySet()) {
+                sb.append(key + "=" + person.getExtraProperties().get(key) + ";");
+            }
+            sb.append("]");
+
+            log.debug(new String(sb));
         }
-        
+
         // @since v4.4, new person object
         PersonService service = DirServiceFactory.getService(PersonService.class);
-        if(service != null) {
-        	Person p = service.getPerson(userPrincipal);
+        if (service != null) {
+            Person p = service.getPerson(userPrincipal);
             if (p != null) {
                 contextDatas.put(Constants.ATTR_LOGGED_PERSON_2, p);
                 invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2, p);
@@ -280,19 +320,54 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
 
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void register(UserDatasModuleMetadatas moduleMetadatas) {
         this.userModules.put(moduleMetadatas.getName(), moduleMetadatas);
         this.synchronizeSortedModules();
 
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void unregister(UserDatasModuleMetadatas moduleMetadatas) {
         this.userModules.remove(moduleMetadatas.getName());
         this.synchronizeSortedModules();
 
     }
 
-	public UserDatasModuleMetadatas getModule(String name) {
-		return this.userModules.get(name);
-	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserDatasModuleMetadatas getModule(String name) {
+        return this.userModules.get(name);
+    }
+
+
+    /**
+     * Setter for customizationService.
+     *
+     * @param customizationService the customizationService to set
+     */
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
+    }
+
+
+    /**
+     * Setter for portalAuthorizationManagerFactory.
+     * 
+     * @param portalAuthorizationManagerFactory the portalAuthorizationManagerFactory to set
+     */
+    public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
+        this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
+    }
 }
