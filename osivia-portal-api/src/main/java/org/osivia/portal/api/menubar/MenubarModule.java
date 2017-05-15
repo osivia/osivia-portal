@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -22,8 +21,8 @@ public interface MenubarModule {
      * @param spaceDocumentContext space document context
      * @throws PortalException
      */
-    void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar,
-            DocumentContext<? extends EcmDocument> spaceDocumentContext) throws PortalException;
+    void customizeSpace(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext spaceDocumentContext)
+            throws PortalException;
 
 
     /**
@@ -34,7 +33,6 @@ public interface MenubarModule {
      * @param documentContext document context
      * @throws PortalException
      */
-    void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext<? extends EcmDocument> documentContext)
-            throws PortalException;
+    void customizeDocument(PortalControllerContext portalControllerContext, List<MenubarItem> menubar, DocumentContext documentContext) throws PortalException;
 
 }

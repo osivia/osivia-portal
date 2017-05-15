@@ -14,78 +14,65 @@
  */
 package org.osivia.portal.api.cms;
 
-import java.util.Collection;
-
 /**
- * This class is a root class context for all informations about a CMS document
+ * Document context.
+ * 
  * @author Loïc Billon
- * @param <D> a type which represents an implementation of ECM Document
- *
+ * @author Cédric Krommenhoek
  */
-public interface DocumentContext<D extends EcmDocument> {
+public interface DocumentContext {
 
-	/**
-	 * Get all classes (with extentions) about permissions on the current document
-	 * @return all permissions
-	 */
-	Collection<Permissions> getAllPermissions();
-	
-	/**
-	 * Get permissions
-	 * @param permType the type of permissions
-	 * @return permissions
-	 */
-	<P extends Permissions>P getPermissions(Class<P> permType);
-	
-	/**
-	 * Add a permisions definition to the collection of permissions 
-	 * @param permissions permissions
-	 */
-	void addPermissions(Permissions permissions);
-	
-	
-	/**
-	 * Get all classes (with extentions) about publication informations on the current document
-	 * @return all publication informations
-	 */
-	Collection<PublicationInfos> getAllPublicationInfos();
-	
-	/**
-	 * Get publication informations
-	 * @param publiInfos the type of publication informations
-	 * @return publication informations
-	 */	
-	<P extends PublicationInfos>P getPublicationInfos(Class<P> publiInfos);
-	
-	/**
-	 * Add a publication informations definition to the collection of publication informations 
-	 * @param publication informations
-	 */
-	void addPublicationInfos(PublicationInfos publicationInfos);
-	
-	
-	/**
-	 * Get the document type
-	 * @return the document type
-	 */
-	DocumentType getType();
-	
-	/**
-	 * Set the document type
-	 * @param type the document type
-	 */
-	void setDocumentType(DocumentType type);
-	
-	/**
-	 * Get the document
-	 * @return the document
-	 */
-	D getDoc();
-	
-	/**
-	 * Set the document
-	 * @param document the document
-	 */
-	void setDoc(D document);
-	
+    /**
+     * Get document permissions.
+     * 
+     * @return permissions
+     */
+    Permissions getPermissions();
+
+
+    /**
+     * Get document publication informations.
+     * 
+     * @return publication informations
+     */
+    PublicationInfos getPublicationInfos();
+
+
+    /**
+     * Get document.
+     * 
+     * @return document
+     */
+    EcmDocument getDocument();
+
+
+    /**
+     * Get document type.
+     * 
+     * @return document type
+     */
+    DocumentType getDocumentType();
+
+
+    /**
+     * Get document state.
+     * 
+     * @return document state
+     */
+    DocumentState getDocumentState();
+
+
+    /**
+     * Get scope.
+     * 
+     * @return scope
+     */
+    String getScope();
+
+
+    /**
+     * Force the reloading of the document context.
+     */
+    void reload();
+
 }

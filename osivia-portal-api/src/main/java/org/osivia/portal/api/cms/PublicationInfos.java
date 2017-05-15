@@ -15,10 +15,114 @@
 package org.osivia.portal.api.cms;
 
 /**
- * Define a set of publication informations
+ * Document publication informations.
+ * 
  * @author Loïc Billon
- *
+ * @author Cédric Krommenhoek
  */
 public interface PublicationInfos {
+
+    /**
+     * Get document path.
+     * 
+     * @return path
+     */
+    String getPath();
+
+
+    /**
+     * Get live document identifier.
+     * 
+     * @return document identifier
+     */
+    String getLiveId();
+
+
+    /**
+     * Check if the document is published.
+     * 
+     * @return true if the document is published
+     */
+    boolean isPublished();
+
+
+    /**
+     * Check if the document is being modified.
+     * 
+     * @return true if the document is being modified
+     */
+    boolean isBeingModified();
+
+
+    /**
+     * Get live space indicator.
+     * 
+     * @return true if the document is inside a live space
+     */
+    boolean isLiveSpace();
+
+
+    /**
+     * Get space path.
+     * 
+     * @return path
+     */
+    String getSpacePath();
+
+
+    /**
+     * Get space display name.
+     * 
+     * @return display name
+     */
+    String getSpaceDisplayName();
+
+
+    /**
+     * Get space type.
+     * 
+     * @return type
+     */
+    String getSpaceType();
+
+
+    /**
+     * Check if the document has a draft.
+     * 
+     * @return true if the document has a draft
+     */
+    boolean hasDraft();
+
+
+    /**
+     * Check if the document is a draft.
+     * 
+     * @return true if the document is a draft
+     */
+    boolean isDraft();
+
+
+    /**
+     * Check if the document is an orphan draft.
+     * 
+     * @return true if the document is an orphan draft
+     */
+    boolean isOrphanDraft();
+
+
+    /**
+     * Get draft path.
+     * 
+     * @return path
+     */
+    String getDraftPath();
+
+
+    /**
+     * Get draft contextualization path.
+     * 
+     * @return path
+     */
+    String getDraftContextualizationPath();
 
 }

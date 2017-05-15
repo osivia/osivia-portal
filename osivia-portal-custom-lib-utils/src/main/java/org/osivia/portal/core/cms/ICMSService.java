@@ -516,7 +516,20 @@ public interface ICMSService {
      * @return document context
      * @throws CMSException
      */
-    DocumentContext<? extends EcmDocument> getDocumentContext(CMSServiceCtx cmsContext, String path) throws CMSException;
+    DocumentContext getDocumentContext(CMSServiceCtx cmsContext, String path) throws CMSException;
+
+
+    /**
+     * Get document context.
+     *
+     * @param <D> document context type
+     * @param cmsContext CMS context
+     * @param path document path
+     * @param expectedType expected type
+     * @return document context
+     * @throws CMSException
+     */
+    <D extends DocumentContext> D getDocumentContext(CMSServiceCtx cmsContext, String path, Class<D> expectedType) throws CMSException;
 
 
     /**

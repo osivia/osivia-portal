@@ -25,7 +25,6 @@ import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
@@ -194,7 +193,7 @@ public class MenubarService implements IMenubarService {
         String basePath = page.getProperty("osivia.cms.basePath");
 
         // Document context
-        DocumentContext<? extends EcmDocument> documentContext;
+        DocumentContext documentContext;
         try {
             documentContext = cmsService.getDocumentContext(cmsContext, basePath);
         } catch (CMSException e) {

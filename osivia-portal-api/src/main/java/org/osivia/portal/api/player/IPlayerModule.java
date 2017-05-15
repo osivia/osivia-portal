@@ -15,16 +15,15 @@
 package org.osivia.portal.api.player;
 
 import org.osivia.portal.api.cms.DocumentContext;
-import org.osivia.portal.api.cms.EcmDocument;
 
 
 /**
- * Module defined by a portlet to display a document in a specific portlet
+ * Module defined by a portlet to display a document in a specific portlet.
+ * 
  * @author Loïc Billon
- *
- * @param <D> the ECM implementation of a document
+ * @param <D> document context type
  */
-public interface IPlayerModule<D extends EcmDocument> {
+public interface IPlayerModule<D extends DocumentContext> {
     
 	/**
      * Make a player with the document.
@@ -32,6 +31,6 @@ public interface IPlayerModule<D extends EcmDocument> {
      * @param documentContext document context
      * @return player
      */
-    Player getCMSPlayer(DocumentContext<D> documentContext);
+    Player getCMSPlayer(D documentContext);
 
 }

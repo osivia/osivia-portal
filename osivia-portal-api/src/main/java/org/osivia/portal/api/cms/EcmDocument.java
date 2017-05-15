@@ -15,10 +15,18 @@
 package org.osivia.portal.api.cms;
 
 /**
- * This interface should be implemented by an Ecm provider 
+ * Document.
+ * 
  * @author Loïc Billon
- *
+ * @author Cédric Krommenhoek
  */
 public interface EcmDocument {
+
+    /**
+     * Get document title.
+     * 
+     * @return title
+     */
+    String getTitle();
 
 }
