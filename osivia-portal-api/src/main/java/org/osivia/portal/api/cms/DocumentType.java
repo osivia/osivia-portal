@@ -47,8 +47,6 @@ public class DocumentType implements Cloneable {
     private final List<String> portalFormSubTypes;
     /** CMS item default template path, may be null for global default template path. */
     private final String defaultTemplate;
-    /** CMS item glyph, may be null for default glyph. */
-    private final String glyph;
     /** CMS item is root type */
     private final boolean isRootType;
     /** CMS item live editable indicator. */
@@ -58,6 +56,8 @@ public class DocumentType implements Cloneable {
     private final ClassLoader customizedClassLoader;
 
 
+    /** CMS item glyph, may be null for default glyph. */
+    private String glyph;
     /** CMS item editorial content indicator, may be null. */
     private Boolean editorialContent;
     /** CMS item type is a file type indicator. */
@@ -171,7 +171,7 @@ public class DocumentType implements Cloneable {
         this.ordered = ordered;
         this.forcePortalContextualization = forcePortalContextualization;
         this.supportsPortalForms = supportsPortalForms;
-        this.portalFormSubTypes = portalFormSubTypes;
+        this.portalFormSubTypes = new ArrayList<>(portalFormSubTypes);
         this.defaultTemplate = defaultTemplate;
         this.glyph = glyph;
         this.isRootType = isRootType;
@@ -330,15 +330,6 @@ public class DocumentType implements Cloneable {
     }
 
     /**
-     * Getter for glyph.
-     *
-     * @return the glyph
-     */
-    public String getGlyph() {
-        return this.glyph;
-    }
-
-    /**
      * is root type
      *
      * @return is root type ?
@@ -372,6 +363,24 @@ public class DocumentType implements Cloneable {
      */
     public ClassLoader getCustomizedClassLoader() {
         return this.customizedClassLoader;
+    }
+
+    /**
+     * Getter for glyph.
+     * 
+     * @return the glyph
+     */
+    public String getGlyph() {
+        return glyph;
+    }
+
+    /**
+     * Setter for glyph.
+     * 
+     * @param glyph the glyph to set
+     */
+    public void setGlyph(String glyph) {
+        this.glyph = glyph;
     }
 
     /**
