@@ -206,11 +206,10 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                             log.error("Can't compute cms pages for user " + user.getUserName());
                         }
                     }
-
-                    // Appel module userdatas
-                    this.loadUserDatas(invocation);
                 }
 
+                // Appel module userdatas
+                this.loadUserDatas(invocation);
 
                 // Job is marked as done
                 invocation.setAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone", "1");
