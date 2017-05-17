@@ -455,7 +455,7 @@ public class MenubarService implements IMenubarService {
             }
 
 
-            if (item != null) {
+            if (item != null && item.isVisible()) {
                 // Parent
                 Element parent;
                 if (item.isState()) {
@@ -529,23 +529,25 @@ public class MenubarService implements IMenubarService {
 
         boolean first = true;
         for (MenubarItem dropdownMenuItem : dropdownMenuItems) {
-            // Dropdown menu divider
-            if (dropdownMenuItem.isDivider() && !first) {
-                String htmlClasses = "divider";
-                if (dropdownMenuItem.isBreadcrumb()) {
-                    htmlClasses += " content-navbar-hidden";
-                }
-
-                Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
-                dropdownUL.add(dividerLI);
-            }
-
-            Element dropdownItemLI = this.generateItemElement(container, dropdownMenuItem, true);
-            dropdownUL.add(dropdownItemLI);
-
-            if (first) {
-                first = false;
-            }
+        	if(dropdownMenuItem.isVisible()) {
+	            // Dropdown menu divider
+	            if (dropdownMenuItem.isDivider() && !first) {
+	                String htmlClasses = "divider";
+	                if (dropdownMenuItem.isBreadcrumb()) {
+	                    htmlClasses += " content-navbar-hidden";
+	                }
+	
+	                Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
+	                dropdownUL.add(dividerLI);
+	            }
+	            
+	            Element dropdownItemLI = this.generateItemElement(container, dropdownMenuItem, true);
+		        dropdownUL.add(dropdownItemLI);
+		
+	            if (first) {
+	                first = false;
+	            }
+        	}
         }
 
         return dropdownLI;

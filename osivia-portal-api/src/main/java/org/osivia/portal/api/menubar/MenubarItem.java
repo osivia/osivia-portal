@@ -71,6 +71,8 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     private boolean divider;
     /** Menubar item counter. */
     private Integer counter;
+    /** Menubar item add dropdown divider indicator. */
+    private boolean visible = true;    
 
     /** Menubar item parent. */
     private final MenubarContainer parent;
@@ -199,6 +201,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         clone.divider = this.divider;
         clone.counter = this.counter;
         clone.data.putAll(this.data);
+        clone.visible = this.visible;
         return clone;
     }
 
@@ -405,7 +408,19 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         return this.counter;
     }
 
-    /**
+    
+    
+    public boolean isVisible() {
+		return visible;
+	}
+
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+
+	/**
      * Setter for counter.
      *
      * @param counter the counter to set

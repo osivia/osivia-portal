@@ -633,7 +633,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         MenubarContainer parent = menubarItem.getParent();
                         if (parent instanceof MenubarDropdown) {
                             MenubarDropdown dropdown = (MenubarDropdown) parent;
-                            if (dropdown.isBreadcrumb() || menubarItem.isBreadcrumb()) {
+                            if ((dropdown.isBreadcrumb() || menubarItem.isBreadcrumb()) && menubarItem.isVisible()) {
                                 List<MenubarItem> dropdownMenubarItems = menubarItems.get(dropdown);
                                 if (dropdownMenubarItems == null) {
                                     dropdownMenubarItems = new ArrayList<>();
