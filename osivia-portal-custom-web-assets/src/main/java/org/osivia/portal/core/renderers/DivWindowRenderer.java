@@ -64,10 +64,6 @@ import org.osivia.portal.core.page.PageProperties;
 public class DivWindowRenderer extends AbstractObjectRenderer implements WindowRenderer {
 
     /** Fancybox class, required for link. */
-    private static final String CLASS_FANCYBOX_INLINE = "fancybox_inline";
-    /** Fancybox with title class, required for link. */
-    private static final String CLASS_FANCYBOX_INLINE_TITLE = "fancybox_inline_title";
-    /** Fancybox class, required for link. */
     private static final String CLASS_FANCYBOX_FRAME = "fancyframe_refresh";
     /** Delete portlet message. */
     private static final String CMS_DELETE_CONFIRM_MESSAGE = "CMS_DELETE_CONFIRM_MESSAGE";
@@ -195,8 +191,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Delete button
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");
-            Element delete = DOM4JUtils.generateLinkElement(deleteURL, null, null, "btn btn-default no-ajax-link fancybox_inline", null,
-                    "halflings halflings-trash");
+            Element delete = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-default", null, "halflings halflings-trash");
+            DOM4JUtils.addDataAttribute(delete, "fancybox", StringUtils.EMPTY);
+            DOM4JUtils.addDataAttribute(delete, "src", deleteURL);
             DOM4JUtils.addTooltip(delete, deleteTitle);
             buttonsGroup.add(delete);
 
@@ -480,8 +477,10 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Window settings display command
         String displaySettingsURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
         String displaySettingsTitle = bundle.getString("WINDOW_GENERIC_PARAMETERS", windowTitle);
-        Element displaySettingsLink = this.generatePortletCommandLink(displaySettingsURL, onclickAction, "halflings halflings-wrench",
-                CLASS_FANCYBOX_INLINE_TITLE, displaySettingsTitle);
+        Element displaySettingsLink = this.generatePortletCommandLink("javascript:;", onclickAction, "halflings halflings-wrench",
+                null, displaySettingsTitle);
+        DOM4JUtils.addDataAttribute(displaySettingsLink, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(displaySettingsLink, "src", displaySettingsURL);
         settingsGroup.add(displaySettingsLink);
 
         // Portlet administration display command
@@ -505,7 +504,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Delete portlet command
         String deleteURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
         String deleteTitle = bundle.getString("DELETE");
-        Element deleteLink = this.generatePortletCommandLink(deleteURL, onclickAction, "halflings halflings-trash", CLASS_FANCYBOX_INLINE, deleteTitle);
+        Element deleteLink = this.generatePortletCommandLink("javascript:;", onclickAction, "halflings halflings-trash", null, deleteTitle);
+        DOM4JUtils.addDataAttribute(deleteLink, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(deleteLink, "src", deleteURL);
         deleteGroup.add(deleteLink);
 
 

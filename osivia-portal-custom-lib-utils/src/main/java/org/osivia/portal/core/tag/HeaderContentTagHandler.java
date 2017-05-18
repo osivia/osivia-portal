@@ -145,7 +145,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         // Fancybox
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.min.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.min.js'></script>");
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.pack.min.js'></script>");
 
         // Fancytree
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/fancytree/jquery.fancytree-all-2.8.0.min.js'></script>");

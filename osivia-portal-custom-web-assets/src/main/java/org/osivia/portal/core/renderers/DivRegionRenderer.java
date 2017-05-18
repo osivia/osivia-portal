@@ -333,8 +333,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 button.addText(" ");
             }
 
-            button.addAttribute(QName.get(HTMLConstants.HREF), href);
-            button.addAttribute(QName.get(HTMLConstants.CLASS), "btn btn-default fancybox_inline");
+            DOM4JUtils.addAttribute(button, HTMLConstants.HREF, "javascript:;");
+            DOM4JUtils.addAttribute(button, HTMLConstants.CLASS, "btn btn-default");
+            DOM4JUtils.addDataAttribute(button, "fancybox", StringUtils.EMPTY);
+            DOM4JUtils.addDataAttribute(button, "src", href);
             button.addText(text + irrc.getId());
 
             // Write HTML data

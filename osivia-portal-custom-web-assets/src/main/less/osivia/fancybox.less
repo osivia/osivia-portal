@@ -3,23 +3,38 @@
 // --------------------------------------------------
 
 
+// Variables
+@import "../bootstrap/variables.less";
 // Mixins
 @import "../bootstrap/mixins.less";
 @import "mixins.less";
 
 
-@bottom-navbar-height: 50px;
+@fancybox-close-button-size: 44px;
 
 
 #popup-body {
     display: block;
-    
+    height: auto;
     min-height: auto;
+    
+    padding: @padding-large-vertical @padding-large-horizontal;
     
     background-color: transparent;
     
     .portlet-container {
         margin-bottom: 0;
+        
+        &.panel {
+            background-color: unset;
+            border-style: unset;
+            
+            .box-shadow(@shadow: unset);
+            
+            > .panel-body {
+                padding: 0;
+            }
+        }
     }
     
     pre {
@@ -28,26 +43,40 @@
 }
 
 
-.fancybox-inner {
-    .flexbox();
+.fancybox-slide {
+    &.fancybox-slide--inline {
+        > * {
+            @media screen and (max-width: @screen-xs-max) {
+                max-width: 100%;
+                
+                padding: @fancybox-close-button-size @padding-large-horizontal @padding-large-vertical;
+            }
+            
+            @media screen and (min-width: @screen-sm-min) {
+                max-width: 90%;
+                
+                padding-left: @fancybox-close-button-size;
+                padding-right: @fancybox-close-button-size;
+            }
+        }  
+    }
+    
+    &.fancybox-slide--iframe {
+        .fancybox-content {
+            width: @screen-lg-min;
+            
+            @media screen and (max-width: @screen-xs-max) {
+                max-width: 100%;
+            }
+            
+            @media screen and (min-width: @screen-sm-min) {
+                max-width: 90%;
+            }
+        }   
+    }
 }
 
 
-.fancybox-bottom-controls {
-    position: relative;
-    height: 100%;
-    padding-bottom: @bottom-navbar-height + 1px;
-    
-    > .container, > .container-fluid {
-        height: 100%;
-        overflow: auto;
-    }
-    
-    .navbar-default {
-        background-color: transparent;
-    }
-    
-    .navbar-fixed-bottom {
-        position: absolute;
-    }
-}
+//.fancybox-inner {
+//    .flexbox();
+//}

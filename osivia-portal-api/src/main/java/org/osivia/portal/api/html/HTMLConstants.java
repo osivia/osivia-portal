@@ -234,8 +234,6 @@ public final class HTMLConstants {
     public static final String CLASS_FANCYBOX_TABLE = "fancybox-table";
     /** HTML Fancybox table row class. */
     public static final String CLASS_FANCYBOX_ROW = "fancybox-table-row";
-    /** HTML Fancybox portlet popup class. */
-    public static final String CLASS_FANCYFRAME = "fancyframe";
     /** HTML Fancybox portlet popup with refresh on close class. */
     public static final String CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
     /** HTML navigation item class for "li" nodes. */

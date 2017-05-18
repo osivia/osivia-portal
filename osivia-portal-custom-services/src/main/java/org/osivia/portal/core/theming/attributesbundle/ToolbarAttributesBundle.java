@@ -111,8 +111,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     /** HTML class "divider". */
     private static final String HTML_CLASS_DROPDOWN_DIVIDER = "divider";
 
-    /** HTML class "fancybox_inline". */
-    private static final String HTML_CLASS_FANCYBOX_INLINE = "fancybox_inline";
     /** HTML class "fancybox_refresh". */
     private static final String HTML_CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
 
@@ -243,13 +241,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             personService = this.directoryProvider.getDirService(PersonService.class);
             person = personService.getPerson(principal.getName());
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
-                
+
             String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
-            if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
-            	person.setAvatar(null);
+            if (StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+                person.setAvatar(null);
             }
-            
-            
+
+
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
 
         }
@@ -267,16 +265,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // My profile
         String myProfileUrl = null;
         if (person != null) {
-        	        	
+
             // View profile
             try {
-            	
-            	Link l = personService.getMyCardUrl(portalControllerContext);
-            	
-            	if(l != null) {
-            		myProfileUrl = l.getUrl();
-            		attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
-            	}
+
+                Link l = personService.getMyCardUrl(portalControllerContext);
+
+                if (l != null) {
+                    myProfileUrl = l.getUrl();
+                    attributes.put(Constants.ATTR_TOOLBAR_MY_PROFILE, myProfileUrl);
+                }
 
             } catch (PortalException e) {
                 // Do nothing
@@ -529,38 +527,35 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         } catch (PortalException e) {
             // no item if portlet is not present
         }
-        
-        
-        
+
+
         /*
-        try {
-            if (this.instanceContainer.getDefinition("osivia-services-demo-api-testPortletInstance") != null) {
+         * try {
+         * if (this.instanceContainer.getDefinition("osivia-services-demo-api-testPortletInstance") != null) {
+         * 
+         * 
+         * Map<String, String> testProperties = new HashMap<String, String>();
+         * 
+         * testProperties.put("osivia.title", "Test");
+         * testProperties.put("osivia.windowState", "normal");
+         * testProperties.put("osivia.ajaxLink", "1");
+         * testProperties.put("theme.dyna.partial_refresh_enabled", "true");
+         * testProperties.put("template.name", "/default/templates/publish-2cols" );
+         * 
+         * String TestAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "testmanagement", "Test",
+         * "osivia-services-demo-api-testPortletInstance", testProperties, parameters);
+         * 
+         * Element testAdministration = DOM4JUtils.generateLinkElement(TestAdministrationURL, null, null, null, "Test page",
+         * "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
+         * 
+         * this.addSubMenuElement(configurationMenuUL, testAdministration, null);
+         * }
+         * } catch (PortalException e) {
+         * // no item if portlet is not present
+         * }
+         * 
+         */
 
-
-                Map<String, String> testProperties = new HashMap<String, String>();
-
-                testProperties.put("osivia.title", "Test");
-                testProperties.put("osivia.windowState", "normal");
-                testProperties.put("osivia.ajaxLink", "1");
-                testProperties.put("theme.dyna.partial_refresh_enabled", "true");
-                testProperties.put("template.name", "/default/templates/publish-2cols" );
-
-                String TestAdministrationURL = this.urlFactory.getStartPortletInNewPage(portalControllerContext, "testmanagement", "Test",
-                        "osivia-services-demo-api-testPortletInstance", testProperties, parameters);
-
-                Element testAdministration = DOM4JUtils.generateLinkElement(TestAdministrationURL, null, null, null, "Test page",
-                        "glyphicons glyphicons-wallet", AccessibilityRoles.MENU_ITEM);
-            
-            this.addSubMenuElement(configurationMenuUL, testAdministration, null);
-            }
-        } catch (PortalException e) {
-            // no item if portlet is not present
-        }
-        
-        */
-        
-        
-        
 
         try {
 
@@ -608,8 +603,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
-        Element pagesList = DOM4JUtils.generateLinkElement(URL_PAGES_LIST, null, null, HTML_CLASS_FANCYBOX_INLINE, pagesListTitle,
-                "halflings halflings-sort-by-alphabet", AccessibilityRoles.MENU_ITEM);
+        Element pagesList = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pagesListTitle, "halflings halflings-sort-by-alphabet",
+                AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(pagesList, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(pagesList, "src", URL_PAGES_LIST);
         this.addSubMenuElement(configurationMenuUL, pagesList, null);
 
         // Divider
@@ -618,15 +615,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation
             String pageCreationTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_CREATION);
-            Element pageCreation = DOM4JUtils.generateLinkElement(URL_PAGE_CREATION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageCreationTitle,
-                    "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
+            Element pageCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageCreationTitle, "halflings halflings-plus",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addDataAttribute(pageCreation, "fancybox", StringUtils.EMPTY);
+            DOM4JUtils.addDataAttribute(pageCreation, "src", URL_PAGE_CREATION);
             this.addSubMenuElement(configurationMenuUL, pageCreation, null);
         }
 
         // Template creation
         String templateCreationTitle = bundle.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION);
-        Element templateCreation = DOM4JUtils.generateLinkElement(URL_TEMPLATE_CREATION, null, null, HTML_CLASS_FANCYBOX_INLINE, templateCreationTitle,
-                "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
+        Element templateCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, templateCreationTitle, "halflings halflings-plus",
+                AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(templateCreation, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(templateCreation, "src", URL_TEMPLATE_CREATION);
         this.addSubMenuElement(configurationMenuUL, templateCreation, null);
 
         // Page template access
@@ -737,15 +738,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                     "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
             this.addSubMenuElement(editionMenuUL, pageSuppression, "disabled");
         } else {
-            Element pageSuppression = DOM4JUtils.generateLinkElement(URL_PAGE_SUPPRESSION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageSuppressionTitle,
-                    "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
+            Element pageSuppression = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageSuppressionTitle, "halflings halflings-trash",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addDataAttribute(pageSuppression, "fancybox", StringUtils.EMPTY);
+            DOM4JUtils.addDataAttribute(pageSuppression, "src", URL_PAGE_SUPPRESSION);
             this.addSubMenuElement(editionMenuUL, pageSuppression, null);
         }
 
         // Page location
         String pageLocationTitle = bundle.getString(InternationalizationConstants.KEY_LOCATION);
-        Element pageLocation = DOM4JUtils.generateLinkElement(URL_PAGE_LOCATION, null, null, HTML_CLASS_FANCYBOX_INLINE, pageLocationTitle,
-                "halflings halflings-move", AccessibilityRoles.MENU_ITEM);
+        Element pageLocation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageLocationTitle, "halflings halflings-move",
+                AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(pageLocation, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(pageLocation, "src", URL_PAGE_LOCATION);
         this.addSubMenuElement(editionMenuUL, pageLocation, null);
 
         // Divider
@@ -753,20 +758,26 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         // Page properties
         String pagePropertiesTitle = bundle.getString(InternationalizationConstants.KEY_PROPERTIES);
-        Element pageProperties = DOM4JUtils.generateLinkElement(URL_PAGE_PROPERTIES, null, null, HTML_CLASS_FANCYBOX_INLINE, pagePropertiesTitle,
-                "halflings halflings-cog", AccessibilityRoles.MENU_ITEM);
+        Element pageProperties = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pagePropertiesTitle, "halflings halflings-cog",
+                AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(pageProperties, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(pageProperties, "src", URL_PAGE_PROPERTIES);
         this.addSubMenuElement(editionMenuUL, pageProperties, null);
 
         // Page CMS configuration
         String pageCMSTitle = bundle.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION);
-        Element pageCMS = DOM4JUtils.generateLinkElement(URL_PAGE_CMS, null, null, HTML_CLASS_FANCYBOX_INLINE, pageCMSTitle, "halflings halflings-cog",
+        Element pageCMS = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageCMSTitle, "halflings halflings-cog",
                 AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(pageCMS, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(pageCMS, "src", URL_PAGE_CMS);
         this.addSubMenuElement(editionMenuUL, pageCMS, null);
 
         // Page rights
         String pageRightsTitle = bundle.getString(InternationalizationConstants.KEY_RIGHTS);
-        Element pageRights = DOM4JUtils.generateLinkElement(URL_PAGE_RIGHTS, null, null, HTML_CLASS_FANCYBOX_INLINE, pageRightsTitle, "halflings halflings-cog",
+        Element pageRights = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageRightsTitle, "halflings halflings-cog",
                 AccessibilityRoles.MENU_ITEM);
+        DOM4JUtils.addDataAttribute(pageRights, "fancybox", StringUtils.EMPTY);
+        DOM4JUtils.addDataAttribute(pageRights, "src", URL_PAGE_RIGHTS);
         this.addSubMenuElement(editionMenuUL, pageRights, null);
     }
 
@@ -1045,8 +1056,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
             cmsEditionMenu.add(this.generateEraseFancyBox(bundle, cmsEraseModificationURL));
 
-            Element cmsEraseModificationLink = DOM4JUtils.generateLinkElement("#erase_cms_page", null, null, HTML_CLASS_FANCYBOX_INLINE, cmsEraseTitle,
-                    "halflings halflings-erase", AccessibilityRoles.MENU_ITEM);
+            Element cmsEraseModificationLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, cmsEraseTitle, "halflings halflings-erase",
+                    AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addDataAttribute(cmsEraseModificationLink, "fancybox", StringUtils.EMPTY);
+            DOM4JUtils.addDataAttribute(cmsEraseModificationLink, "src", "#erase_cms_page");
             this.addSubMenuElement(cmsEditionMenuUL, cmsEraseModificationLink, null);
         } else {
             Element eraseLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEraseTitle, "halflings halflings-erase",
@@ -1079,8 +1092,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 cmsEditionMenu.add(divDeleteFancyBox);
 
                 // Link
-                Element cmsDeleteLink = DOM4JUtils.generateLinkElement("#delete_cms_page", null, null, HTML_CLASS_FANCYBOX_INLINE, cmsDeleteTitle,
-                        "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
+                Element cmsDeleteLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, cmsDeleteTitle, "halflings halflings-trash",
+                        AccessibilityRoles.MENU_ITEM);
+                DOM4JUtils.addDataAttribute(cmsDeleteLink, "fancybox", StringUtils.EMPTY);
+                DOM4JUtils.addDataAttribute(cmsDeleteLink, "src", "#delete_cms_page");
                 this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, null);
             } else {
                 // Link
@@ -1369,11 +1384,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String userAvatarSrc = null;
         if (person != null) {
             userName = person.getDisplayName();
-            if(person.getAvatar() != null) {
-            	userAvatarSrc = person.getAvatar().getUrl();
-            }
-            else {
-            	userAvatarSrc = null;
+            if (person.getAvatar() != null) {
+                userAvatarSrc = person.getAvatar().getUrl();
+            } else {
+                userAvatarSrc = null;
             }
         } else if (principal != null) {
             userName = principal.getName();

@@ -85,7 +85,7 @@
 
 
 .content-navbar-breadcrumb {
-    width: 100%;
+    width: 10000px;
     
     @media screen and (max-width: @screen-xs-max) {
         display: none;
@@ -146,6 +146,20 @@
 }
 
 
+.simple-menubar-container {
+    @media screen and (min-width: @screen-sm-min) {
+        > * {
+            display: table-cell;
+            vertical-align: top;
+            
+            &:first-child {
+                width: 10000px;
+            }
+        }
+    }
+}
+
+
 .simple-menubar {
     .menubar {
         .toolbar-menubar();
@@ -175,24 +189,30 @@
             display: inline-block;
         }
         
-        > ul > li {
-            float: left;
-
-            + li > a {
-                margin-left: -1px;
-            }
+        > ul {
+            font-size: 0;
             
-            &:not(:first-of-type):not(:last-of-type) > a {
-                border-radius: 0;
-            }
-            
-            &:first-of-type:not(:last-of-type) > a {
-                .border-right-radius(0);
-            }
-            
-            &:last-of-type:not(:first-of-type) > a {
-                .border-left-radius(0);
-            }
+            > li {
+                @media screen and (max-width: @screen-xs-max) {
+                    float: left;
+                }
+    
+                + li > a {
+                    margin-left: -1px;
+                }
+                
+                &:not(:first-of-type):not(:last-of-type) > a {
+                    border-radius: 0;
+                }
+                
+                &:first-of-type:not(:last-of-type) > a {
+                    .border-right-radius(0);
+                }
+                
+                &:last-of-type:not(:first-of-type) > a {
+                    .border-left-radius(0);
+                }
+            } 
         } 
     }
 }

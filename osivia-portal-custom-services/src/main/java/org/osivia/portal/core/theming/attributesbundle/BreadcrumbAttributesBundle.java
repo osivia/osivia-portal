@@ -317,8 +317,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 cmxCtx.setScope(navigationScope);
 
                 // Check CMS preview mode
-                if (CmsPermissionHelper.CMS_VERSION_PREVIEW.equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE,
-                        CmsPermissionHelper.ATTR_TOOLBAR_CMS_VERSION))) {
+                if (CmsPermissionHelper.CMS_VERSION_PREVIEW
+                        .equals(controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, CmsPermissionHelper.ATTR_TOOLBAR_CMS_VERSION))) {
                     cmxCtx.setDisplayLiveVersion("1");
                 }
 
@@ -349,8 +349,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         } else {
                             cmsItem = cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         }
-                        
-                        
+
+
                         if (StringUtils.equals(publicationPath, basePath) && (cmsItem != null)) {
                             // Document type
                             DocumentType type = cmsItem.getType();
@@ -381,7 +381,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         throw new ControllerException(e);
                     }
 
-                    
+
                     // Get the navigation parent
                     CMSObjectPath parent = CMSObjectPath.parse(publicationPath).getParent();
                     publicationPath = parent.toString();
@@ -704,22 +704,28 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     // LI
                     Element li = DOM4JUtils.generateElement("li", htmlClasses.toString(), null, null, AccessibilityRoles.PRESENTATION);
                     container.add(li);
-                    
+
                     if (StringUtils.isEmpty(menubarItem.getUrl())) {
                         // Static item
-                        Element staticItem = DOM4JUtils.generateElement("span", menubarItem.getHtmlClasses(), menubarItem.getTitle(), menubarItem.getGlyphicon(),
-                                AccessibilityRoles.MENU_ITEM);
+                        Element staticItem = DOM4JUtils.generateElement("span", menubarItem.getHtmlClasses(), menubarItem.getTitle(),
+                                menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
                         li.add(staticItem);
                     } else {
                         // Link
                         Element link = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnclick(),
-                                menubarItem.getHtmlClasses(), menubarItem.getTitle(), menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
+                                menubarItem.getHtmlClasses(), menubarItem.getTitle(), StringUtils.trimToEmpty(menubarItem.getGlyphicon()),
+                                AccessibilityRoles.MENU_ITEM);
                         if (MapUtils.isNotEmpty(menubarItem.getData())) {
                             for (Entry<String, String> data : menubarItem.getData().entrySet()) {
                                 DOM4JUtils.addDataAttribute(link, data.getKey(), data.getValue());
                             }
                         }
                         li.add(link);
+
+                        if (StringUtils.isNotBlank(menubarItem.getTarget())) {
+                            Element externalIndicator = DOM4JUtils.generateElement("small", null, null, "glyphicons glyphicons-new-window-alt", null);
+                            link.add(externalIndicator);
+                        }
                     }
                 }
             }
