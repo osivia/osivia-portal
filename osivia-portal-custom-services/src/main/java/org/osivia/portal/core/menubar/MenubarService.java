@@ -497,13 +497,15 @@ public class MenubarService implements IMenubarService {
      * @return DOM element
      */
     private Element generateDropdownElement(Element container, MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
-        // Dropdown LI
-        Element dropdownLI;
+        // HTML classes
+        StringBuilder htmlClasses = new StringBuilder();
+        htmlClasses.append("dropdown ");
         if (dropdown.isBreadcrumb()) {
-            dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown content-navbar-hidden", null);
-        } else {
-            dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown", null);
+            htmlClasses.append("menubar-breadcrumb-item ");
         }
+
+        // Dropdown LI
+        Element dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses.toString(), null);
 
         // Dropdown button
         Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());
@@ -532,12 +534,7 @@ public class MenubarService implements IMenubarService {
         	if(dropdownMenuItem.isVisible()) {
 	            // Dropdown menu divider
 	            if (dropdownMenuItem.isDivider() && !first) {
-	                String htmlClasses = "divider";
-	                if (dropdownMenuItem.isBreadcrumb()) {
-	                    htmlClasses += " content-navbar-hidden";
-	                }
-	
-	                Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
+                    Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
 	                dropdownUL.add(dividerLI);
 	            }
 	            
@@ -585,7 +582,7 @@ public class MenubarService implements IMenubarService {
             htmlClasses.append("disabled ");
         }
         if (item.isBreadcrumb()) {
-            htmlClasses.append("content-navbar-hidden ");
+            htmlClasses.append("menubar-breadcrumb-item ");
         }
 
         // Role
@@ -602,6 +599,9 @@ public class MenubarService implements IMenubarService {
         // LI
         Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses.toString(), null, null, roleLI);
 
+        if (item.isDisabled()) {
+            DOM4JUtils.addDataAttribute(li, "disabled", StringUtils.EMPTY);
+        }
 
         // Element
         Element element;

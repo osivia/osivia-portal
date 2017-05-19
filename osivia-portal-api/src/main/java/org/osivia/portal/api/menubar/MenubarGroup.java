@@ -24,12 +24,14 @@ public enum MenubarGroup implements MenubarContainer {
 
     /** Back menubar group. */
     BACK(1, "visible-xs-inline"),
+    /** Add menubar group. */
+    ADD(2, "contextual"),
     /** Specific menubar group. */
-    SPECIFIC(2, null),
+    SPECIFIC(3, null),
     /** CMS menubar group. */
-    CMS(3, null),
+    CMS(4, null),
     /** Generic menubar group. */
-    GENERIC(4, null);
+    GENERIC(5, null);
 
 
     /** Menubar group order. */

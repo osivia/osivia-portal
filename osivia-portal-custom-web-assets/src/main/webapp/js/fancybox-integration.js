@@ -22,8 +22,9 @@ $JQry(function() {
 	$JQry(".fancyframe_refresh").fancybox({
 		closeClickOutside : false,
 		iframe : {
+			scrolling : true,
 			css : {
-				width : "1200px",
+				width : "1200px"
 			}
 		},
 		beforeClose : function(instance, slide) {

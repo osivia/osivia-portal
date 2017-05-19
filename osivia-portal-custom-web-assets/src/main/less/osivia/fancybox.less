@@ -17,6 +17,7 @@
     display: block;
     height: auto;
     min-height: auto;
+    overflow: auto;
     
     padding: @padding-large-vertical @padding-large-horizontal;
     
@@ -63,7 +64,10 @@
     
     &.fancybox-slide--iframe {
         .fancybox-content {
+            max-height: 90%;
             width: @screen-lg-min;
+            
+            margin: 0;
             
             @media screen and (max-width: @screen-xs-max) {
                 max-width: 100%;

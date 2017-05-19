@@ -587,7 +587,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         }
 
         // Generate breadcrumb menu
-        String menu = this.generateMenu(portalControllerContext);
+        String menu = this.generateMenu(portalControllerContext, breadcrumb.getChildren().size() > 2);
         breadcrumb.setMenu(menu);
 
         return breadcrumb;
@@ -619,9 +619,10 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
      * Generate breadcrumb menu.
      * 
      * @param portalControllerContext portal controller context
-     * @param menu HTML content, may be null
+     * @param rightMenu right menu indicator
+     * @return menu HTML content, may be null
      */
-    private String generateMenu(PortalControllerContext portalControllerContext) {
+    private String generateMenu(PortalControllerContext portalControllerContext, boolean rightMenu) {
         // Edition menubar items
         Map<MenubarGroup, Set<MenubarItem>> sortedItems = menubarService.getNavbarSortedItems(portalControllerContext);
         Map<MenubarDropdown, List<MenubarItem>> menubarItems = new LinkedHashMap<>();
@@ -654,8 +655,14 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
         if (menubarItems.isEmpty()) {
             menu = null;
         } else {
+            // Menu HTML classes
+            String menuHtmlClasses = "dropdown-menu";
+            if (rightMenu) {
+                menuHtmlClasses += " dropdown-menu-right";
+            }
+
             // UL
-            Element container = DOM4JUtils.generateElement("ul", "dropdown-menu", null, null, AccessibilityRoles.MENU);
+            Element container = DOM4JUtils.generateElement("ul", menuHtmlClasses, null, null, AccessibilityRoles.MENU);
 
             boolean firstDropdown = true;
             for (Entry<MenubarDropdown, List<MenubarItem>> dropdownEntry : menubarItems.entrySet()) {
@@ -683,26 +690,26 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         container.add(divider);
                     }
 
-                    // HTML classes
-                    StringBuilder htmlClasses = new StringBuilder();
+                    // Menubar item HTML classes
+                    StringBuilder itemHtmlClasses = new StringBuilder();
                     if (StringUtils.isEmpty(menubarItem.getUrl())) {
-                        htmlClasses.append("dropdown-header ");
+                        itemHtmlClasses.append("dropdown-header ");
                     }
                     if (menubarItem.isState()) {
-                        htmlClasses.append("hidden-xs ");
+                        itemHtmlClasses.append("hidden-xs ");
                     }
                     if (menubarItem.isAjaxDisabled()) {
-                        htmlClasses.append("no-ajax-link ");
+                        itemHtmlClasses.append("no-ajax-link ");
                     }
                     if (menubarItem.isActive()) {
-                        htmlClasses.append("active ");
+                        itemHtmlClasses.append("active ");
                     }
                     if (menubarItem.isDisabled()) {
-                        htmlClasses.append("disabled ");
+                        itemHtmlClasses.append("disabled ");
                     }
 
                     // LI
-                    Element li = DOM4JUtils.generateElement("li", htmlClasses.toString(), null, null, AccessibilityRoles.PRESENTATION);
+                    Element li = DOM4JUtils.generateElement("li", itemHtmlClasses.toString(), null, null, AccessibilityRoles.PRESENTATION);
                     container.add(li);
 
                     if (StringUtils.isEmpty(menubarItem.getUrl())) {

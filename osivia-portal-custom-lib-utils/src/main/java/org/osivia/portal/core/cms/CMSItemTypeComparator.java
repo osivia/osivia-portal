@@ -37,13 +37,13 @@ public class CMSItemTypeComparator implements Comparator<DocumentType> {
         // Display name #1
         String n1 = null;
         if ((o1 != null) && (o1.getName() != null)) {
-            n1 = this.bundle.getString(StringUtils.upperCase(o1.getName()));
+            n1 = this.bundle.getString(StringUtils.upperCase(o1.getName()), o1.getCustomizedClassLoader());
         }
 
         // Display name #2
         String n2 = null;
         if ((o2 != null) && (o2.getName() != null)) {
-            n2 = this.bundle.getString(StringUtils.upperCase(o2.getName()));
+            n2 = this.bundle.getString(StringUtils.upperCase(o2.getName()), o2.getCustomizedClassLoader());
         }
 
         // Comparison
