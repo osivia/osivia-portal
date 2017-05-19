@@ -1,3 +1,4 @@
+
 //
 // OSIVIA Bootstrap extensions - Table
 // --------------------------------------------------
@@ -35,7 +36,7 @@
                 
                 opacity: 0;
                 
-                white-space: nowrap;
+//                white-space: nowrap;
                 
                 &, ~ * {
                     .transition-property(@transition-property: opacity);
@@ -65,6 +66,10 @@
                 @media screen and (min-width: @screen-sm-min) {
                     position: absolute;
                     bottom: -1px;
+                    
+                    .navbar {
+                        .border-bottom-radius(@radius: 0);    
+                    }
                     
                     &.in {
                         ~ * {
