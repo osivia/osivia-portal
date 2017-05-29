@@ -132,7 +132,7 @@ function receiveMessageAction(message) {
     console.log("Receive message : " + message.data);
 
     if (message.data == 'closeFancyBox') {
-        parent.$JQry.fancybox.getInstance().close();
+    	closeFancybox();
     } else if (message.data.match('currentDocumentId=')) {
         currentDocumentId = message.data.replace('currentDocumentId=', '');
     } else if (message.data.match('live=')) {
