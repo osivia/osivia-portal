@@ -36,6 +36,15 @@ $JQry(function() {
 
 
 
+$JQry(document).on("onInit.fb", function(e, instance, slide) {
+	// Close dropdown
+	$JQry(".dropdown.open .dropdown-toggle").dropdown("toggle");
+	// Destroy tooltip
+	$JQry("body > .tooltip").remove();
+});
+
+
+
 /**
  * Manage callback after closing fancybox.
  */

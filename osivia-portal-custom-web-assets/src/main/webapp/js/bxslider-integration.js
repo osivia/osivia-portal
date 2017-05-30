@@ -1,6 +1,6 @@
 var $sliderDefault;
 
-$JQry(document).ready(function() {
+$JQry(function() {
 	
 	if (typeof $sliderDefault === "undefined") {
 		$sliderDefault = $JQry(".bxslider.bxslider-default").bxSlider({

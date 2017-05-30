@@ -41,6 +41,9 @@ function onAjaxSuccess(t, callerId, multipart) {
 	}
 	
 	if (resp.type == "update_markup") {
+		// Destroy tooltip
+		$JQry("body > .tooltip").remove();
+		
 		// Iterate all changes
 		for (var id in resp.fragments) {
 			var matchingElt = document.getElementById(id);

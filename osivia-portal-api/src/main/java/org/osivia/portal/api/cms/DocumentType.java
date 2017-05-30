@@ -14,9 +14,13 @@
  */
 package org.osivia.portal.api.cms;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
 
 /**
@@ -54,6 +58,8 @@ public class DocumentType implements Cloneable {
 
     /** CMS item customized class loader. */
     private final ClassLoader customizedClassLoader;
+    /** Log. */
+    private final Log log;
 
 
     /** CMS item glyph, may be null for default glyph. */
@@ -62,6 +68,8 @@ public class DocumentType implements Cloneable {
     private Boolean editorialContent;
     /** CMS item type is a file type indicator. */
     private boolean isFile;
+    /** Prevented creation indicator. */
+    private boolean preventedCreation;
 
 
     /**
@@ -100,7 +108,7 @@ public class DocumentType implements Cloneable {
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph) {
         this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph,
-                false, true);
+                false, false);
     }
 
 
@@ -122,7 +130,7 @@ public class DocumentType implements Cloneable {
     public DocumentType(String name, boolean folderish, boolean navigable, boolean browsable, boolean ordered, boolean forcePortalContextualization,
             boolean supportsPortalForms, List<String> portalFormSubTypes, String defaultTemplate, String glyph, boolean isRootType) {
         this(name, folderish, navigable, browsable, ordered, forcePortalContextualization, supportsPortalForms, portalFormSubTypes, defaultTemplate, glyph,
-                isRootType, true);
+                isRootType, false);
     }
 
 
@@ -180,6 +188,8 @@ public class DocumentType implements Cloneable {
 
         // Customized class loader
         this.customizedClassLoader = PortalGenericPortlet.CLASS_LOADER_CONTEXT.get();
+        // Log
+        this.log = LogFactory.getLog(this.getClass());
     }
 
 
@@ -188,11 +198,17 @@ public class DocumentType implements Cloneable {
      */
     @Override
     public DocumentType clone() {
+        // Sub types
         List<String> subTypes = new ArrayList<>(this.portalFormSubTypes);
+        // Clone
         DocumentType clone = new DocumentType(this.name, this.folderish, this.navigable, this.browsable, this.ordered, this.forcePortalContextualization,
                 this.supportsPortalForms, subTypes, this.defaultTemplate, this.glyph, this.isRootType, this.movable, this.liveEditable);
-        clone.editorialContent = this.editorialContent;
-        clone.isFile = this.isFile;
+        // Copy properties
+        try {
+            BeanUtils.copyProperties(clone, this);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            this.log.error(e);
+        }
 
         return clone;
     }
@@ -417,6 +433,24 @@ public class DocumentType implements Cloneable {
      */
     public void setFile(boolean isFile) {
         this.isFile = isFile;
+    }
+
+    /**
+     * Getter for preventedCreation.
+     * 
+     * @return the preventedCreation
+     */
+    public boolean isPreventedCreation() {
+        return preventedCreation;
+    }
+
+    /**
+     * Setter for preventedCreation.
+     * 
+     * @param preventedCreation the preventedCreation to set
+     */
+    public void setPreventedCreation(boolean preventedCreation) {
+        this.preventedCreation = preventedCreation;
     }
 
 }

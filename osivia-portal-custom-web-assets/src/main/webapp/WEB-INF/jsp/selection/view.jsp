@@ -14,7 +14,7 @@
                             <portlet:param name="action" value="delete" />
                             <portlet:param name="id" value="${item.id}" />
                         </portlet:actionURL>">
-                    <img src="${pageContext.request.contextPath}/images/cross.png" />
+                    <i class="glyphicons glyphicons-remove"></i>
                 </a>
             </li>
         </c:forEach>
