@@ -76,16 +76,6 @@ body.fixed-layout {
         }
         
         .flexbox {
-            .flexbox();
-            
-            &.row {
-                .flex-container(@direction: row);
-            }
-            
-            &.col-auto:not(.col-offset-auto), &.portlet-container {
-                .flex-container(@flex: unset);
-            }
-            
             &.portlet-container, &.table {
                 margin-bottom: 0;
             }
@@ -107,8 +97,17 @@ body.fixed-layout {
 @media screen and (min-width: @screen-sm-min) {
     .flexbox {
         .flexbox();
+        
+        &.row {
+            .flex-container(@direction: row);
+        }
+
+        &[class*="col-"]:not(.col-offset-auto), &.portlet-container {
+            .flex-container(@flex: unset);
+        }
     }
 }
+
 
 .scrollbox {
     overflow-x: hidden;
