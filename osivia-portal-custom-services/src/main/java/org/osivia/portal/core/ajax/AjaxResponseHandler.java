@@ -266,6 +266,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
                 if (actionWindow != null) {
                    boolean publicParametersChanged = false;
+                    boolean windowModeChange = false;
 
                     for (Iterator i = ctx.getChanges(); i.hasNext();) {
                         NavigationalStateChange change = (NavigationalStateChange) i.next();
@@ -274,7 +275,24 @@ public class AjaxResponseHandler implements ResponseHandler {
                         NavigationalStateKey key = update.getKey();
                         Class type = key.getType();
 
-                        if (type == PageNavigationalState.class) {
+                        if (type == WindowNavigationalState.class) {
+                            // Get old window state
+                            WindowNavigationalState oldNS = (WindowNavigationalState) update.getOldValue();
+                            WindowState oldWindowState = oldNS != null ? oldNS.getWindowState() : null;
+
+                            // Get new window state
+                            WindowNavigationalState newNS = (WindowNavigationalState) update.getNewValue();
+                            WindowState newWindowState = newNS != null ? newNS.getWindowState() : null;
+
+                            // Check if window state requires a refresh
+                            if (WindowState.MAXIMIZED.equals(oldWindowState)) {
+                                if (!WindowState.MAXIMIZED.equals(newWindowState)) {
+                                    windowModeChange = true;
+                                }
+                            } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
+                                windowModeChange = true;
+                            }
+                        } else if (type == PageNavigationalState.class) {
                             PageNavigationalState oldNS = (PageNavigationalState)  update.getOldValue();
                             PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();
  
@@ -283,7 +301,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    if (!publicParametersChanged) {
+                    if (!publicParametersChanged && !windowModeChange) {
                         filterWindow = actionWindow;
                     }
 
