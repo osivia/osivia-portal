@@ -58,6 +58,7 @@ import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.menubar.IMenubarService;
+import org.osivia.portal.api.menubar.MenubarContainer;
 import org.osivia.portal.api.menubar.MenubarDropdown;
 import org.osivia.portal.api.menubar.MenubarGroup;
 import org.osivia.portal.api.menubar.MenubarItem;
@@ -326,6 +327,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 customizationAttributes.put("menuBar", menubarItems);
                                 customizationAttributes.put("windowId", windowId);
                                 customizationAttributes.put("themePath", controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.themePath"));
+                                customizationAttributes.put("maximized", WindowState.MAXIMIZED.equals(invocation.getWindowState()));
 
                                 PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
@@ -336,14 +338,20 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                                 MenubarItem printItem = (MenubarItem) customizationAttributes.get("result");
                                 if (printItem == null) {
                                     // Parent
-                                    MenubarDropdown parent = this.menubarService.getDropdown(portalControllerContext,
-                                            MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID);
-
-                                    if (parent == null) {
-                                        parent = new MenubarDropdown(MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID,
-                                                this.internationalizationService.getString("OTHER_OPTIONS", locale), "glyphicons glyphicons-option-vertical",
-                                                MenubarGroup.GENERIC, 40, false, false);
-                                        this.menubarService.addDropdown(portalControllerContext, parent);
+                                    MenubarContainer parent;
+                                    if (WindowState.MAXIMIZED.equals(invocation.getWindowState())) {
+                                        // Dropdown
+                                        MenubarDropdown dropdown = this.menubarService.getDropdown(portalControllerContext,
+                                                MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID);
+                                        if (dropdown == null) {
+                                            dropdown = new MenubarDropdown(MenubarDropdown.OTHER_OPTIONS_DROPDOWN_MENU_ID,
+                                                    this.internationalizationService.getString("OTHER_OPTIONS", locale),
+                                                    "glyphicons glyphicons-option-vertical", MenubarGroup.GENERIC, 40, false, false);
+                                            this.menubarService.addDropdown(portalControllerContext, dropdown);
+                                        }
+                                        parent = dropdown;
+                                    } else {
+                                        parent = MenubarGroup.GENERIC;
                                     }
 
                                     // URL
