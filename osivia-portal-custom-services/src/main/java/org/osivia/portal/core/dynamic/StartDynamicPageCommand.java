@@ -210,7 +210,7 @@ public class StartDynamicPageCommand extends DynamicCommand {
                     // Parent CMS item
                     CMSItem parentItem = spaceConfig;
 
-                    while ((parentItem != null) && (parentItem.getType() != null) && !parentItem.getType().isRootType()) {
+                    while ((parentItem != null) && (parentItem.getType() != null) && !parentItem.getType().isRoot()) {
                         try {
                             // Parent path
                             CMSObjectPath parentObjectPath = CMSObjectPath.parse(parentItem.getPath()).getParent();

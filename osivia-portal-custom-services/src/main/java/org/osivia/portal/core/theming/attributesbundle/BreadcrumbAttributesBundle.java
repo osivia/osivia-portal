@@ -355,7 +355,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                             // Document type
                             DocumentType type = cmsItem.getType();
 
-                            displayParent = (type != null) && !type.isRootType();
+                            displayParent = (type != null) && !type.isRoot();
                         }
 
 

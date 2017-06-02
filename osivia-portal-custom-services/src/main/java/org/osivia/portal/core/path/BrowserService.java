@@ -142,13 +142,13 @@ public class BrowserService implements IBrowserService {
         cmsContext.setPortalControllerContext(portalControllerContext);
         cmsContext.setForcePublicationInfosScope("superuser_context");
 
-        // Workpace glyph
-        String glyph = null;
+        // Workpace icon
+        String icon = null;
         if (!workspaces.isEmpty()) {
             CMSItem workspace = workspaces.get(0);
             DocumentType type = workspace.getType();
             if (type != null) {
-                glyph = type.getGlyph();
+                icon = type.getIcon();
             }
         }
 
@@ -166,7 +166,7 @@ public class BrowserService implements IBrowserService {
             BrowserWorkspace workspace = new BrowserWorkspace();
             workspace.setTitle(workspaceCMSItem.getProperties().get("displayName"));
             workspace.setPath(workspaceCMSItem.getPath());
-            workspace.setGlyph(glyph);
+            workspace.setGlyph(icon);
             workspacesPaths.put(workspacePath, workspace);
 
             // Domain
@@ -384,13 +384,13 @@ public class BrowserService implements IBrowserService {
         // Path
         String path = cmsItem.getPath();
 
-        // CMS item type
+        // Document type
         DocumentType type = cmsItem.getType();
         boolean browsable = false;
-        String glyph = null;
+        String icon = null;
         if (type != null) {
             browsable = type.isBrowsable();
-            glyph = type.getGlyph();
+            icon = type.getIcon();
         }
 
         // Acceptable indicator
@@ -458,8 +458,8 @@ public class BrowserService implements IBrowserService {
             object.put("acceptable", acceptable);
 
             // Icon
-            if ((glyph != null) && (!glyph.contains("folder"))) {
-                object.put("iconclass", glyph);
+            if ((icon != null) && (!icon.contains("folder"))) {
+                object.put("iconclass", icon);
             }
 
             // Extra-classes
@@ -563,7 +563,7 @@ public class BrowserService implements IBrowserService {
         } else if (type == null) {
             acceptedChild = false;
         } else {
-            acceptedChild = CollectionUtils.containsAny(type.getPortalFormSubTypes(), options.getAcceptedTypes());
+            acceptedChild = CollectionUtils.containsAny(type.getSubtypes(), options.getAcceptedTypes());
         }
 
         // Included child
