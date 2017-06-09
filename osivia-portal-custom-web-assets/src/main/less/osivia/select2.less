@@ -22,6 +22,24 @@
             }
         }
         
+        .select2-results__option, .select2-results__option--highlighted {
+            &[aria-selected="true"] {
+                overflow: hidden;
+                
+                &::before {
+                    content: "\E659"; // glyphicons-tick
+                    position: relative;
+                    top: 1px;
+                    float: right;
+                    
+                    font-family: "Glyphicons Regular";
+                    font-style: normal;
+                    font-weight: normal;
+                    line-height: 1;
+                }
+            }
+        }
+        
         .optgroup {
             font-weight: bold;
         }
