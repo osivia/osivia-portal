@@ -24,12 +24,17 @@ import org.osivia.portal.core.cms.CMSServiceCtx;
  */
 public interface IWebIdService {
 
+    /** Remote proxy webId marker. */
+    String RPXY_WID_MARKER = "_c_";
+
     /** Extension of a document like .html, .jpg, .pdf. */
     String EXTENSION_URL = "extensionUrl";
     /** Explicit segment of the URL (not involved on the resolution of the document). */
     String EXPLICIT_URL = "explicitUrl";
     /** Key parameter of parent webid of a document. */
     String PARENT_ID = "parentId";
+    /** Key parameter of parent webid of a document. */
+    String PARENT_WID = "parentWebId";
     /** Key parameter of parent path of a document. */
     String PARENT_PATH = "parentPath";
 

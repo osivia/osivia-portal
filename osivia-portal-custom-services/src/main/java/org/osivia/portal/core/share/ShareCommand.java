@@ -1,20 +1,17 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- *
+ * 
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- *
+ * 
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
  */
 package org.osivia.portal.core.share;
-
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
@@ -45,8 +42,8 @@ public class ShareCommand extends DynamicCommand {
     /** Prefixed webId. */
     private String prefixedWebId;
 
-    /** Page parameters. */
-    private Map<String, String> params;
+    /** Parent webid (remote proxy case). */
+    private String parentWebId;
 
     /**
      * Default constructor.
@@ -55,7 +52,7 @@ public class ShareCommand extends DynamicCommand {
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param webId
      */
@@ -64,15 +61,10 @@ public class ShareCommand extends DynamicCommand {
         this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
     }
 
-    /**
-     * Constructor
-     *
-     * @param webId
-     */
-    public ShareCommand(String webId, Map<String, String> params) {
+    public ShareCommand(String webId, String parentWebId) {
         this.webId = webId;
         this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
-        this.params = params;
+        this.parentWebId = parentWebId;
     }
 
     /**
@@ -100,8 +92,22 @@ public class ShareCommand extends DynamicCommand {
     /**
      * @return prefixed webId.
      */
-    public String getPrefixedWebId(){
-        return  this.prefixedWebId;
+    public String getPrefixedWebId() {
+        return this.prefixedWebId;
+    }
+
+    /**
+     * @return the parentWebId
+     */
+    public String getParentWebId() {
+        return parentWebId;
+    }
+
+    /**
+     * @param parentWebId the parentWebId to set
+     */
+    public void setParentWebId(String parentWebId) {
+        this.parentWebId = parentWebId;
     }
 
     /**
@@ -118,10 +124,11 @@ public class ShareCommand extends DynamicCommand {
 
         // Extract current portal
         if (portalControllerContext.getControllerCtx() != null) {
-            final String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE, "osivia.currentPortalName");
+            final String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE,
+                    "osivia.currentPortalName");
 
-            final Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer().getContext()
-                    .getDefaultPortal();
+            final Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer()
+                    .getContext().getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
                 if (!StringUtils.equals(portalName, "osivia-util")) {
@@ -130,32 +137,17 @@ public class ShareCommand extends DynamicCommand {
             }
         }
 
-        final CmsCommand cmsCommand = new CmsCommand(null, this.prefixedWebId, params, null, null, null, null, null, null, null, portalPersistentName);
+        // Case of remote proxy: <webid>?l=<parentWebId> -> <webId>_c_<parentWebId>
+        if (StringUtils.isNotBlank(this.parentWebId)) {
+            this.prefixedWebId = this.prefixedWebId.concat(IWebIdService.RPXY_WID_MARKER).concat(this.parentWebId);
+        }
+
+        final CmsCommand cmsCommand = new CmsCommand(null, this.prefixedWebId, null, null, null, null, null, null, null, null, portalPersistentName);
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
 
         return this.context.execute(cmsCommand);
-    }
-
-
-    /**
-     * Getter for params.
-     *
-     * @return the params
-     */
-    public Map<String, String> getParams() {
-        return params;
-    }
-
-
-    /**
-     * Setter for params.
-     *
-     * @param params the params to set
-     */
-    public void setParams(Map<String, String> params) {
-        this.params = params;
     }
 
 }

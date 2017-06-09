@@ -309,7 +309,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
             } else if (IPortalUrlFactory.PERM_LINK_TYPE_SHARE.equals(permLinkType)) {
 
-                final ShareCommand shareCmd = new ShareCommand(StringUtils.substringAfter(cmsPath, IWebIdService.CMS_PATH_PREFIX), params);
+                final ShareCommand shareCmd = new ShareCommand(StringUtils.substringAfter(cmsPath, IWebIdService.CMS_PATH_PREFIX));
 
                 URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
                 urlContext = urlContext.withAuthenticated(false);

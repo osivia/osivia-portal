@@ -14,9 +14,6 @@
  */
 package org.osivia.portal.core.share;
 
-import java.net.URLEncoder;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -24,7 +21,7 @@ import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
-import org.osivia.portal.core.urls.WindowPropertiesEncoder;
+import org.osivia.portal.core.web.IWebIdService;
 
 
 /**
@@ -66,22 +63,21 @@ public class ShareURLFactory extends URLFactoryDelegate {
 
             String portalRequestPath = this.path;
 
-            final String webId = shareCmd.getWebId();
+            String webId = shareCmd.getWebId();
+
             if(StringUtils.isNotBlank(webId)){
+                // Remote proxy case
+                if (StringUtils.contains(webId, IWebIdService.RPXY_WID_MARKER)) {
+                    // Build url with parameter: <webid>?l=<parentWebId>
+                    String[] webIds = StringUtils.split(webId, IWebIdService.RPXY_WID_MARKER);
+
+                    // FIXME: check web webIds[1] != null?
+                    webId = webIds[0].concat("?l=").concat(webIds[1]);
+                }
                 portalRequestPath = portalRequestPath.concat(webId);
             }
 
             asu.setPortalRequestPath(portalRequestPath);
-
-            final Map<String, String> pageParams = shareCmd.getParams();
-            if (pageParams != null) {
-                try {
-                    asu.setParameterValue("pageParams", URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams), "UTF-8"));
-                } catch (final Exception e) {
-                    // ignore
-                }
-            }
-
             return asu;
 
         }
