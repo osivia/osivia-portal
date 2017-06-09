@@ -5,10 +5,10 @@ $JQry(function() {
 			pause = $element.data("pause");
 		
 		if (!loaded) {
-			if (pause === undefined) {
-				pause = 4000;
-			} else {
+			if (pause) {
 				pause *= 1000;
+			} else {
+				pause = 4000;
 			}
 			
 			$element.bxSlider({
