@@ -4,23 +4,19 @@
 
 
 .flex-display() {
-    display: -webkit-flex;
     display: flex;
 }
 
 .flex(@flex: 1) {
     .flex-display();
 
-    -webkit-flex: @flex;
-        -ms-flex: @flex;
-            flex: @flex;
+    flex: @flex;
 }
 
 .flex-container(@flex: 1, @direction: column) {
     .flex(@flex: @flex);
     
-    -webkit-flex-direction: @direction;
-            flex-direction: @direction; 
+    flex-direction: @direction; 
 }
 
 .flexbox() {
