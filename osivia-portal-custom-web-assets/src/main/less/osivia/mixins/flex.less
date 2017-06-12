@@ -3,24 +3,24 @@
 // --------------------------------------------------
 
 
-.flex-display() {
-    display: flex;
+.flex-display(@display: flex) {
+    display: @display;
 }
 
-.flex(@flex: 1) {
-    .flex-display();
+.flex(@flex: 1, @display: flex) {
+    .flex-display(@display: @display);
 
     flex: @flex;
 }
 
-.flex-container(@flex: 1, @direction: column) {
-    .flex(@flex: @flex);
+.flex-container(@flex: 1, @direction: column, @display: flex) {
+    .flex(@flex: @flex, @display: @display);
     
     flex-direction: @direction; 
 }
 
-.flexbox() {
-    .flex-container();
+.flexbox(@flex: 1, @direction: column, @display: flex) {
+    .flex-container(@flex, @direction, @display);
     
     overflow: hidden;
 }
