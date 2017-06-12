@@ -201,7 +201,7 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 		if (ajaxShadowbox == null) {
 			$ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
 		} else {
-		    $ajaxShadowbox = $container.find(ajaxShadowbox);
+		    $ajaxShadowbox = $JQry(ajaxShadowbox);
 		}
 	}
 	
