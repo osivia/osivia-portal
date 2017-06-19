@@ -398,19 +398,21 @@ public class MenubarService implements IMenubarService {
                 Set<MenubarObject> objects = new TreeSet<MenubarObject>(this.objectComparator);
                 Map<MenubarDropdown, List<MenubarItem>> dropdownMenus = new HashMap<MenubarDropdown, List<MenubarItem>>();
                 for (MenubarItem item : sortedItemsValue) {
-                    MenubarContainer parent = item.getParent();
-                    if (parent instanceof MenubarDropdown) {
-                        MenubarDropdown dropdownMenu = (MenubarDropdown) parent;
-                        List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
-                        if (dropdownMenuItems == null) {
-                            dropdownMenuItems = new ArrayList<MenubarItem>();
-                            dropdownMenus.put(dropdownMenu, dropdownMenuItems);
-                        }
-                        dropdownMenuItems.add(item);
+                    if (item.isVisible()) {
+                        MenubarContainer parent = item.getParent();
+                        if (parent instanceof MenubarDropdown) {
+                            MenubarDropdown dropdownMenu = (MenubarDropdown) parent;
+                            List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
+                            if (dropdownMenuItems == null) {
+                                dropdownMenuItems = new ArrayList<MenubarItem>();
+                                dropdownMenus.put(dropdownMenu, dropdownMenuItems);
+                            }
+                            dropdownMenuItems.add(item);
 
-                        objects.add(dropdownMenu);
-                    } else {
-                        objects.add(item);
+                            objects.add(dropdownMenu);
+                        } else {
+                            objects.add(item);
+                        }
                     }
                 }
 
