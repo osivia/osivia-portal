@@ -572,4 +572,14 @@ public interface ICMSService {
      */
     void reloadSession(CMSServiceCtx cmsContext) throws CMSException;
 
+
+    /**
+     * Get user subscriptions.
+     * 
+     * @param cmsContext CMS context
+     * @return subscriptions
+     * @throws CMSException
+     */
+    List<EcmDocument> getUserSubscriptions(CMSServiceCtx cmsContext) throws CMSException;
+
 }
