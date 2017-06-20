@@ -299,8 +299,10 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                 sb.append(key + "=" + userDatas.get(key) + ";");
             }
             sb.append("]   person[");
-            for (String key : person.getExtraProperties().keySet()) {
-                sb.append(key + "=" + person.getExtraProperties().get(key) + ";");
+            if (person != null) {
+                for (String key : person.getExtraProperties().keySet()) {
+                    sb.append(key + "=" + person.getExtraProperties().get(key) + ";");
+                }
             }
             sb.append("]");
 
