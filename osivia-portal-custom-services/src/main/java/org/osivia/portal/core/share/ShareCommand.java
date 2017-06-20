@@ -13,8 +13,11 @@
  */
 package org.osivia.portal.core.share;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -24,6 +27,7 @@ import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.portal.Portal;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.DynamicCommand;
@@ -109,8 +113,22 @@ public class ShareCommand extends DynamicCommand {
             webIdPath.append(this.parentWebId);
         }
 
+        // Parameters
+        Map<String, String> parameters;
+        if (MapUtils.isEmpty(this.parameters)) {
+            parameters = new HashMap<>(1);
+        } else {
+            parameters = new HashMap<>(this.parameters);
+        }
+        if (!parameters.containsKey("selectors")) {
+            // Force selectors reset
+            Map<String, List<String>> selectors = new HashMap<>(0);
+            parameters.put("selectors", PageParametersEncoder.encodeProperties(selectors));
+        }
+
+
         // CMS command
-        CmsCommand cmsCommand = new CmsCommand(null, webIdPath.toString(), this.parameters, null, null, null, null, null, null, null, portalPersistentName);
+        CmsCommand cmsCommand = new CmsCommand(null, webIdPath.toString(), parameters, null, null, null, null, null, null, null, portalPersistentName);
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);

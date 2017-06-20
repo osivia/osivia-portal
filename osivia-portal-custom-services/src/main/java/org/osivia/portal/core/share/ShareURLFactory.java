@@ -14,9 +14,13 @@
  */
 package org.osivia.portal.core.share;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -24,6 +28,7 @@ import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
@@ -67,16 +72,28 @@ public class ShareURLFactory extends URLFactoryDelegate {
             // Parent webId
             String parentWebId = command.getParentWebId();
             if (StringUtils.isNotBlank(parentWebId)) {
-                asu.setParameterValue("l", parentWebId);
+                try {
+                    asu.setParameterValue("l", URLEncoder.encode(parentWebId, CharEncoding.UTF_8));
+                } catch (UnsupportedEncodingException e) {
+                    // Ignore
+                }
             }
 
             // Page parameters
             Map<String, String> pageParams = command.getParameters();
             if (pageParams != null) {
-                try {
-                    asu.setParameterValue("pageParams", URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams), "UTF-8"));
-                } catch (Exception e) {
-                    // ignore
+                boolean emptySelectors = false;
+                if (pageParams.containsKey("selectors")) {
+                    Map<String, List<String>> properties = PageParametersEncoder.decodeProperties(pageParams.get("selectors"));
+                    emptySelectors = MapUtils.isEmpty(properties);
+                }
+
+                if (!pageParams.isEmpty() && !((pageParams.size() == 1) && emptySelectors)) {
+                    try {
+                        asu.setParameterValue("pageParams", URLEncoder.encode(WindowPropertiesEncoder.encodeProperties(pageParams), CharEncoding.UTF_8));
+                    } catch (UnsupportedEncodingException e) {
+                        // Ignore
+                    }
                 }
             }
 
