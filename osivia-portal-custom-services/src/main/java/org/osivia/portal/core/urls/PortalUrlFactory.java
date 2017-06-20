@@ -283,12 +283,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      * {@inheritDoc}
      */
     @Override
-    public String getPermaLink(PortalControllerContext ctx, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
+    public String getPermaLink(PortalControllerContext portalControllerContext, String permLinkRef, Map<String, String> params, String cmsPath, String permLinkType)
             throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         try {
             String templateInstanciationParentId = null;
-            final String portalPersistentName = this.getPortalPersistentName(ctx);
+            // Portal persistent name
+            String portalPersistentName = this.getPortalPersistentName(portalControllerContext);
 
             // Direct CMS Link : use CMSCommand
             if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
@@ -300,29 +303,41 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
                 cmsCommand.setInsertPageMarker(false);
 
-                URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
+                URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
                 urlContext = urlContext.withAuthenticated(false);
-                final String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext,
+                final String permLinkUrl = controllerContext.renderURL(cmsCommand, urlContext,
                         URLFormat.newInstance(false, true));
 
                 return permLinkUrl;
 
             } else if (IPortalUrlFactory.PERM_LINK_TYPE_SHARE.equals(permLinkType)) {
+                // WebId
+                String webId = StringUtils.substringAfter(cmsPath, IWebIdService.CMS_PATH_PREFIX);
+                // Parent webId (for remote proxy only)
+                String parentWebId;
+                if (StringUtils.contains(webId, IWebIdService.RPXY_WID_MARKER)) {
+                    String[] splittedWebId = StringUtils.split(webId, IWebIdService.RPXY_WID_MARKER, 2);
+                    webId = splittedWebId[0];
+                    parentWebId = splittedWebId[1];
+                } else {
+                    parentWebId = null;
+                }
 
-                final ShareCommand shareCmd = new ShareCommand(StringUtils.substringAfter(cmsPath, IWebIdService.CMS_PATH_PREFIX));
+                // Share command
+                ShareCommand shareCommand = new ShareCommand(webId);
+                shareCommand.setParentWebId(parentWebId);
+                shareCommand.setParameters(params);
 
-                URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
+                // URL context
+                URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
                 urlContext = urlContext.withAuthenticated(false);
-                final String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(shareCmd, urlContext,
-                        URLFormat.newInstance(false, true));
 
-                return permLinkUrl;
-
+                return controllerContext.renderURL(shareCommand, urlContext, URLFormat.newInstance(false, true));
             }
 
             // Others permalink (Lists, RSS, ...) : use PermLinkCommand
-            if (ctx.getRequest() != null) {
-                final Window window = (Window) ctx.getRequest().getAttribute("osivia.window");
+            if (portalControllerContext.getRequest() != null) {
+                final Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
                 if (window != null) {
                     final Page page = window.getPage();
 
@@ -332,15 +347,16 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 }
             }
 
-            final PermLinkCommand linkCmd = new PermLinkCommand(permLinkRef, params, templateInstanciationParentId, cmsPath, permLinkType,
+            // Permalink command
+            PermLinkCommand linkCmd = new PermLinkCommand(permLinkRef, params, templateInstanciationParentId, cmsPath, permLinkType,
                     portalPersistentName);
-            URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
 
+            // URL context
+            URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
             urlContext = urlContext.withAuthenticated(false);
 
-            return ControllerContextAdapter.getControllerContext(ctx).renderURL(linkCmd, urlContext, URLFormat.newInstance(false, true));
-
-        } catch (final Exception e) {
+            return controllerContext.renderURL(linkCmd, urlContext, URLFormat.newInstance(false, true));
+        } catch (Exception e) {
             throw new PortalException(e);
         }
     }

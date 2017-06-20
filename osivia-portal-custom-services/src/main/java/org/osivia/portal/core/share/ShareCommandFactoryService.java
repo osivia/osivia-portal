@@ -15,12 +15,14 @@ package org.osivia.portal.core.share;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Map;
 
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 
 /**
@@ -33,21 +35,33 @@ public class ShareCommandFactoryService extends AbstractCommandFactory {
      * {@inheritDoc}
      */
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String webId) {
-        final ShareCommand shareCmd = new ShareCommand(webId);
+        // Share command
+        ShareCommand command = new ShareCommand(webId);
 
-        final ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
+        // Parameter map
+        ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
+
         if (parameterMap != null) {
             try {
-                // Remote proxy case: parentWebId is in l parameter
-                if (parameterMap.get("l") != null) {
-                    shareCmd.setParentWebId(URLDecoder.decode(parameterMap.get("l")[0], "UTF-8"));
+                // Page parameters
+                String[] pageParametersValue = parameterMap.get("pageParams");
+                if (pageParametersValue != null) {
+                    String pageParametersProperties = URLDecoder.decode(pageParametersValue[0], "UTF-8");
+                    Map<String, String> pageParams = WindowPropertiesEncoder.decodeProperties(pageParametersProperties);
+                    command.setParameters(pageParams);
                 }
-            } catch (final UnsupportedEncodingException e) {
+
+                // Remote proxy case: parentWebId is in l parameter
+                String[] locationValue = parameterMap.get("l");
+                if (locationValue != null) {
+                    command.setParentWebId(URLDecoder.decode(locationValue[0], "UTF-8"));
+                }
+            } catch (UnsupportedEncodingException e) {
                 // Ignore
             }
         }
 
-        return shareCmd;
+        return command;
     }
 
 }

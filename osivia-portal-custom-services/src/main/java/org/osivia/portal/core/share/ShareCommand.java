@@ -13,6 +13,8 @@
  */
 package org.osivia.portal.core.share;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -29,105 +31,66 @@ import org.osivia.portal.core.web.IWebIdService;
 
 
 /**
+ * Share command.
+ * 
  * @author David Chevrier.
- *
+ * @see DynamicCommand
  */
 public class ShareCommand extends DynamicCommand {
 
-    private static final CommandInfo info = new ActionCommandInfo(false);
+    /** Parent webId (remote proxy case). */
+    private String parentWebId;
+    /** Parameters. */
+    private Map<String, String> parameters;
+
 
     /** WebId. */
-    private String webId;
+    private final String webId;
 
-    /** Prefixed webId. */
-    private String prefixedWebId;
+    /** Command info. */
+    private final CommandInfo info;
 
-    /** Parent webid (remote proxy case). */
-    private String parentWebId;
-
-    /**
-     * Default constructor.
-     */
-    public ShareCommand() {
-    }
 
     /**
      * Constructor.
-     *
-     * @param webId
+     * 
+     * @param webId webId
      */
     public ShareCommand(String webId) {
+        super();
         this.webId = webId;
-        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
+        this.info = new ActionCommandInfo(false);
     }
 
-    public ShareCommand(String webId, String parentWebId) {
-        this.webId = webId;
-        this.prefixedWebId = IWebIdService.CMS_PATH_PREFIX + webId;
-        this.parentWebId = parentWebId;
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public CommandInfo getInfo() {
-        return info;
+        return this.info;
     }
 
-    /**
-     * @return the webId
-     */
-    public String getWebId() {
-        return webId;
-    }
-
-    /**
-     * @param webId the webId to set
-     */
-    public void setWebId(String webId) {
-        this.webId = webId;
-    }
-
-    /**
-     * @return prefixed webId.
-     */
-    public String getPrefixedWebId() {
-        return this.prefixedWebId;
-    }
-
-    /**
-     * @return the parentWebId
-     */
-    public String getParentWebId() {
-        return parentWebId;
-    }
-
-    /**
-     * @param parentWebId the parentWebId to set
-     */
-    public void setParentWebId(String parentWebId) {
-        this.parentWebId = parentWebId;
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public ControllerResponse execute() throws ControllerException {
-        // Delegation to cmsCommand.
+        // Controller context
+        ControllerContext controllerContext = this.getControllerContext();
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
-        final ControllerContext controllerContext = this.getControllerContext();
-        final PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
+        // Portal persistent name
         String portalPersistentName = null;
 
         // Extract current portal
         if (portalControllerContext.getControllerCtx() != null) {
-            final String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE,
+            String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE,
                     "osivia.currentPortalName");
 
-            final Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer()
+            Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer()
                     .getContext().getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
@@ -138,16 +101,67 @@ public class ShareCommand extends DynamicCommand {
         }
 
         // Case of remote proxy: <webid>?l=<parentWebId> -> <webId>_c_<parentWebId>
+        StringBuilder webIdPath = new StringBuilder();
+        webIdPath.append(IWebIdService.CMS_PATH_PREFIX);
+        webIdPath.append(this.webId);
         if (StringUtils.isNotBlank(this.parentWebId)) {
-            this.prefixedWebId = this.prefixedWebId.concat(IWebIdService.RPXY_WID_MARKER).concat(this.parentWebId);
+            webIdPath.append(IWebIdService.RPXY_WID_MARKER);
+            webIdPath.append(this.parentWebId);
         }
 
-        final CmsCommand cmsCommand = new CmsCommand(null, this.prefixedWebId, null, null, null, null, null, null, null, null, portalPersistentName);
+        // CMS command
+        CmsCommand cmsCommand = new CmsCommand(null, webIdPath.toString(), this.parameters, null, null, null, null, null, null, null, portalPersistentName);
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
 
         return this.context.execute(cmsCommand);
+    }
+
+
+    /**
+     * Getter for parentWebId.
+     * 
+     * @return the parentWebId
+     */
+    public String getParentWebId() {
+        return parentWebId;
+    }
+
+    /**
+     * Setter for parentWebId.
+     * 
+     * @param parentWebId the parentWebId to set
+     */
+    public void setParentWebId(String parentWebId) {
+        this.parentWebId = parentWebId;
+    }
+
+    /**
+     * Getter for parameters.
+     * 
+     * @return the parameters
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Setter for parameters.
+     * 
+     * @param parameters the parameters to set
+     */
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
+     * Getter for webId.
+     * 
+     * @return the webId
+     */
+    public String getWebId() {
+        return webId;
     }
 
 }
