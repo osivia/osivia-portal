@@ -14,8 +14,22 @@
 }
 
 
+// Absolute
+.absolute {
+    position: absolute;
+    
+    &.absolute-full {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+
 // Text centered vertically
 .text-middle {
+    display: block;
     position: relative;
     top: 50%;
     
@@ -25,10 +39,17 @@
 
 // Text overflow with ellipsis 
 .text-overflow {
+    display: block;
+    
     .text-overflow();
     
     &.btn {
         max-width: 100%;
+    }
+    
+    &.absolute {
+        left: 0;
+        right: 0;
     }
 }
 
