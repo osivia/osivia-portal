@@ -5,18 +5,26 @@
 
 .flex-display(@display: flex) {
     display: @display;
+    
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        display: block;
+    }
 }
 
 .flex(@flex: 1, @display: flex) {
     .flex-display(@display: @display);
 
     flex: @flex;
+    
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        flex: unset;
+    }
 }
 
 .flex-container(@flex: 1, @direction: column, @display: flex) {
     .flex(@flex: @flex, @display: @display);
     
-    flex-direction: @direction; 
+    flex-direction: @direction;
 }
 
 .flexbox(@flex: 1, @direction: column, @display: flex) {

@@ -66,6 +66,10 @@ body.fixed-layout {
         height: 100%;
         overflow: hidden;
         
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            overflow: auto;            
+        }
+        
         main {
             .flex-display();
             overflow: hidden;
