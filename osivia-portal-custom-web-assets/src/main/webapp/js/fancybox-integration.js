@@ -44,6 +44,21 @@ $JQry(document).on("onInit.fb", function(event, instance, slide) {
 });
 
 
+$JQry(document).on("beforeLoad.fb", function(event, instance, slide) {
+	var $orig = slide.opts.$orig,
+		name = $orig.data("input-name"),
+		value = $orig.data("input-value"),
+		$target = $JQry($orig.data("src")),
+		$input;
+	
+	if ($target !== undefined) {
+		$input = $target.find("input[name=" + name + "]");
+		$input.val(value);
+	}
+});
+
+
+
 /**
  * Manage callback after closing fancybox.
  */
