@@ -3,28 +3,32 @@
 // --------------------------------------------------
 
 
-.flex-display() {
-    display: -webkit-flex;
-    display: flex;
-}
-
-.flex(@flex: 1) {
-    .flex-display();
-
-    -webkit-flex: @flex;
-        -ms-flex: @flex;
-            flex: @flex;
-}
-
-.flex-container(@flex: 1, @direction: column) {
-    .flex(@flex: @flex);
+.flex-display(@display: flex) {
+    display: @display;
     
-    -webkit-flex-direction: @direction;
-            flex-direction: @direction; 
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        display: block;
+    }
 }
 
-.flexbox() {
-    .flex-container();
+.flex(@flex: 1, @display: flex) {
+    .flex-display(@display: @display);
+
+    flex: @flex;
+    
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+        flex: unset;
+    }
+}
+
+.flex-container(@flex: 1, @direction: column, @display: flex) {
+    .flex(@flex: @flex, @display: @display);
+    
+    flex-direction: @direction;
+}
+
+.flexbox(@flex: 1, @direction: column, @display: flex) {
+    .flex-container(@flex, @direction, @display);
     
     overflow: hidden;
 }
