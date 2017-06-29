@@ -66,6 +66,10 @@ body.fixed-layout {
         height: 100%;
         overflow: hidden;
         
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            overflow: auto;            
+        }
+        
         main {
             .flex-display();
             overflow: hidden;
@@ -76,18 +80,12 @@ body.fixed-layout {
         }
         
         .flexbox {
-            .flexbox();
-            
-            &.row {
-                .flex-container(@direction: row);
-            }
-            
-            &.col-auto:not(.col-offset-auto), &.portlet-container {
-                .flex-container(@flex: unset);
-            }
-            
             &.portlet-container, &.table {
                 margin-bottom: 0;
+            }
+            
+            &.table {
+                .flex(@flex: unset);
             }
         }
         
@@ -107,8 +105,17 @@ body.fixed-layout {
 @media screen and (min-width: @screen-sm-min) {
     .flexbox {
         .flexbox();
+        
+        &.row {
+            .flex-container(@direction: row);
+        }
+
+        &[class*="col-"]:not(.col-offset-auto), &.portlet-container {
+            .flex-container(@flex: unset);
+        }
     }
 }
+
 
 .scrollbox {
     overflow-x: hidden;
