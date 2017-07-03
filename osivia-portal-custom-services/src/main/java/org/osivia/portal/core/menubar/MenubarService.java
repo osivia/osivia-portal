@@ -225,8 +225,10 @@ public class MenubarService implements IMenubarService {
         // Customized menubar
         List<MenubarItem> customizedMenubar = this.getCustomizedMenubar(portalControllerContext);
         for (MenubarItem item : customizedMenubar) {
-            MenubarGroup group = item.getParent().getGroup();
-            this.addSortedItem(sortedItems, group, item);
+            if (item.getParent() != null) {
+                MenubarGroup group = item.getParent().getGroup();
+                this.addSortedItem(sortedItems, group, item);
+            }
         }
 
         return sortedItems;
