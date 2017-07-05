@@ -42,6 +42,8 @@ public class ImportInterceptor extends ServerInterceptor {
     
 
     public static int nbPendingRequest = 0;
+    
+    public static long lockTimestamp = 0;
 
     protected ICacheService cacheService;
 
@@ -58,13 +60,29 @@ public class ImportInterceptor extends ServerInterceptor {
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
 
         
-   
+  
         if (getCacheService().isImportRunning() == true) {
-
+    
             while (getCacheService().isImportRunning() == true) {
+                
+                if( lockTimestamp == 0L)  {
+                    lockTimestamp = System.currentTimeMillis();
+                }   
+                
+                if( System.currentTimeMillis() - lockTimestamp > 60000L)    {
+                    
+                    // release all nodes
+                    Future<ClusterNotifier> future = ThreadsPool.getInstance().execute(new ClusterNotifier(cacheService, ClusterNotifier.ACTION.STOPPING_IMPORT));
+                        
+                    lockTimestamp =  0L;
+                }
+                
                 Thread.sleep(1000L);
             }
         }
+        
+        
+          
 
         try {
             nbPendingRequest++;

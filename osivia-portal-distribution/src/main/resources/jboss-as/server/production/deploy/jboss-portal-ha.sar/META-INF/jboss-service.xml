@@ -539,9 +539,9 @@
 
    	<attribute name="InitialStateRetrievalTimeout">60000</attribute>
 
-   	<attribute name="SyncReplTimeout">17500</attribute>
+   	<attribute name="SyncReplTimeout">60000</attribute>
 
-   	<attribute name="LockAcquisitionTimeout">15000</attribute>
+   	<attribute name="LockAcquisitionTimeout">60000</attribute>
 
 
    	<attribute name="EvictionPolicyClass">
