@@ -7,24 +7,27 @@ import javax.portlet.PortletResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
 
 /**
- * Portal simple tag abstract super-class.
+ * Portal body tag abstract super-class.
  * 
  * @author Cédric Krommenhoek
- * @see SimpleTagSupport
+ * @see BodyTagSupport
  */
-public abstract class PortalSimpleTag extends SimpleTagSupport {
+public abstract class PortalBodyTag extends BodyTagSupport {
+
+    /** Default serial version identifier. */
+    private static final long serialVersionUID = 1L;
+
 
     /**
      * Constructor.
      */
-    public PortalSimpleTag() {
+    public PortalBodyTag() {
         super();
     }
 
@@ -143,10 +146,8 @@ public abstract class PortalSimpleTag extends SimpleTagSupport {
      * @return HTTP servlet request
      */
     private HttpServletRequest getHttpServletRequest() {
-        // Page context
-        PageContext pageContext = (PageContext) this.getJspContext();
         // Servlet request
-        ServletRequest servletRequest = pageContext.getRequest();
+        ServletRequest servletRequest = this.pageContext.getRequest();
         // Portlet invocation
         PortletInvocation invocation = (PortletInvocation) servletRequest.getAttribute(ContextDispatcherInterceptor.REQ_ATT_COMPONENT_INVOCATION);
 

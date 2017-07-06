@@ -216,6 +216,9 @@ public class PanelsService implements IPanelsService {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     public void resetTaskDependentPanels(PortalControllerContext portalControllerContext) throws PortalException {
         this.portletStatusService.resetTaskDependentStatus(portalControllerContext);
     }

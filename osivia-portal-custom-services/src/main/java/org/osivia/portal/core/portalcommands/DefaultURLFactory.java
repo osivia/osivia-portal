@@ -55,6 +55,7 @@ import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 
 
 /**
@@ -651,6 +652,32 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 }
                 if (StringUtils.isNotEmpty(command.getRedirectionUrl())) {
                     asu.setParameterValue(UpdateTaskCommand.REDIRECTION_URL_PARAMETER, URLEncoder.encode(command.getRedirectionUrl(), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
+
+        // Save jQuery UI resizable component value
+        if (cmd instanceof SaveResizableWidthCommand) {
+            SaveResizableWidthCommand command = (SaveResizableWidthCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, SaveResizableWidthCommand.ACTION);
+
+            // Parameters
+            try {
+                // Linked to tasks indicator
+                asu.setParameterValue(SaveResizableWidthCommand.LINKED_TO_TASKS_PARAMETER,
+                        URLEncoder.encode(String.valueOf(command.isLinkedToTasks()), CharEncoding.UTF_8));
+
+                // Resizable width
+                if (command.getWidth() != null) {
+                    asu.setParameterValue(SaveResizableWidthCommand.WIDTH_PARAMETER, URLEncoder.encode(String.valueOf(command.getWidth()), CharEncoding.UTF_8));
                 }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
