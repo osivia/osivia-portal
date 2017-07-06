@@ -7,28 +7,40 @@
 @import "../bootstrap/mixins.less";
 
 
-.bxslider-container .bx-wrapper {
-    margin-bottom: 40px;
-    
-    .bx-viewport {
-        left: 0;
-                
-        border-style: none;
+.bx-wrapper {
+    .bxslider-container & {
+        margin-bottom: 40px;
         
-        .box-shadow(@shadow: none);
+        .bx-viewport {
+            left: 0;
+                    
+            border-style: none;
+            
+            .box-shadow(@shadow: none);
+        }
+        
+        .bx-controls-direction a {
+            z-index: 10;
+            
+            opacity: 0.05;
+            
+            .transition-property(@transition-property: opacity);
+            .transition-duration(@transition-duration: 200ms);
+            .transition-timing-function(@timing-function: ease-in-out);
+        }
+        
+        &:hover .bx-controls-direction a {
+            opacity: 1;
+        }
     }
     
-    .bx-controls-direction a {
-        z-index: 10;
-        
-        opacity: 0.05;
-        
-        .transition-property(@transition-property: opacity);
-        .transition-duration(@transition-duration: 200ms);
-        .transition-timing-function(@timing-function: ease-in-out);
-    }
     
-    &:hover .bx-controls-direction a {
-        opacity: 1;
+    img {
+        &.media-object {
+            max-width: unset;
+        }
     }
 }
+
+
+
