@@ -211,7 +211,7 @@ public class PageMarkerUtils {
 
         // Get old back cache values
         if( backCachePageMarker != null){
-            List<PageBackCacheInfo> oldPageCacheBackInfos = (List<PageBackCacheInfo>) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos");
+            List<PageBackCacheInfo> oldPageCacheBackInfos = (List<PageBackCacheInfo>) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.backCacheInfos");
             if (oldPageCacheBackInfos != null) {
                 // Find caches to replace in the historic
                 int current = -1;
@@ -277,7 +277,7 @@ public class PageMarkerUtils {
             // Add the back cache
             pageCacheBackInfos.add(currentBackCache);
 
-            controllerCtx.setAttribute(Scope.SESSION_SCOPE, "osivia.backCacheInfos", pageCacheBackInfos);
+            controllerCtx.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.backCacheInfos", pageCacheBackInfos);
 
 
 
@@ -683,7 +683,7 @@ public class PageMarkerUtils {
                         if (restorePageInfo != null) {
                             String restoreCachePM = restorePageInfo.getPageMarker();
 
-                            List<PageBackCacheInfo> pageCacheBackInfos = (List<PageBackCacheInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE,
+                            List<PageBackCacheInfo> pageCacheBackInfos = (List<PageBackCacheInfo>) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE,
                                     "osivia.backCacheInfos");
                             PageBackCacheInfo pageCacheToRestore = null;
 
