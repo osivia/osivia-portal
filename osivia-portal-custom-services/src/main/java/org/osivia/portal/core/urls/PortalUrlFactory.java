@@ -47,6 +47,7 @@ import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmCommonCommands;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
@@ -1076,18 +1077,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     @Override
     public String getEcmCommandUrl(PortalControllerContext portalControllerContext, String path, String commandName, String redirectionPath)
             throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        final IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
-        final org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(commandName);
+        IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
+        EcmCommand initialCommand = service.getCommand(commandName);
 
         if (initialCommand == null) {
             throw new PortalException("command " + commandName + " not found");
         }
 
-        initialCommand.getStrategy().setRedirectionPathPath(redirectionPath);
+        controllerContext.setAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE, redirectionPath);
+
         final ControllerCommand cmd = new EcmCommandDelegate(initialCommand, path);
 
-        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+        final PortalURL portalURL = new PortalURLImpl(cmd, controllerContext, null, null);
         return portalURL.toString();
     }
 

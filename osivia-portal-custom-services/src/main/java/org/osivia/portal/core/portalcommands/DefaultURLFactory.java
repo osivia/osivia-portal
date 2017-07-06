@@ -24,12 +24,14 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
@@ -621,7 +623,12 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
                 asu.setParameterValue("cmsPath", URLEncoder.encode(command.getCmsPath(), "UTF-8"));
                 asu.setParameterValue("command", URLEncoder.encode(command.getCommand().getCommandName(), "UTF-8"));
-                asu.setParameterValue("cmsRedirectionPath", URLEncoder.encode(command.getCommand().getStrategy().getRedirectionPathPath(), "UTF-8"));
+
+                // Redirection path
+                String redirectionPath = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE);
+                if (StringUtils.isNotEmpty(redirectionPath)) {
+                    asu.setParameterValue("cmsRedirectionPath", URLEncoder.encode(redirectionPath, "UTF-8"));
+                }
 
             } catch (UnsupportedEncodingException e) {
                 // ignore

@@ -28,11 +28,13 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
 import org.jboss.portal.server.ServerInvocation;
+import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
@@ -766,8 +768,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         cmsRedirectionPath = URLDecoder.decode(parameterMap.get("cmsRedirectionPath")[0], "UTF-8");
 
                         IEcmCommandervice service = Locator.findMBean(IEcmCommandervice.class, IEcmCommandervice.MBEAN_NAME);
-                        org.osivia.portal.api.ecm.EcmCommand initialCommand = service.getCommand(command);
-                        initialCommand.getStrategy().setRedirectionPathPath(cmsRedirectionPath);
+                        EcmCommand initialCommand = service.getCommand(command);
+                        controllerContext.setAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE, cmsRedirectionPath);
 
                         return new EcmCommandDelegate(initialCommand, cmsPath);
 

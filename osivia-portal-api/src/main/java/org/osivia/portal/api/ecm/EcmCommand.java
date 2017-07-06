@@ -14,56 +14,39 @@
  */
 package org.osivia.portal.api.ecm;
 
-import static org.apache.commons.lang.StringUtils.EMPTY;
-
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.osivia.portal.api.PortalException;
 
 
 /**
- * Describe a command executed by the ECM
+ * Describe a command executed by the ECM.
+ * 
  * @author lbillon
- *
  */
 public abstract class EcmCommand  {
 
-	
-	public enum ReloadAfterCommandStrategy {
-		/** do nothing after the command- Not implemented ! */
-		nothing(EMPTY),
-		
-		/** refresh page */
-		refreshPage(EMPTY),
-		
-		/** refresh page and all navigation tree */
-		refreshNavigation(EMPTY),
-		
-		/** redirect to parent and refresh navigation tree. Not implemented !  */
-		moveToParent(EMPTY),
-		
-		/** redirect to child and refresh navigation tree. Not implemented !  */
-		moveToChild(EMPTY);
-		
-		/** Redirection path after command. */
-		private String redirectionPath;
-		
-		/** Contructor. */
-		private ReloadAfterCommandStrategy(String redirectionPath){
-		    this.redirectionPath = redirectionPath;
-		}
+    /** ECM command redirection path attribute name. */
+    public static final String REDIRECTION_PATH_ATTRIBUTE = "osivia.ecm.command.redirectionPath";
 
-        /** Getter for redirection path after command. */
-		public String getRedirectionPathPath(){
-		    return this.redirectionPath;
-		}
-		
-		/** Setter for redirection path after command. */
-		public void setRedirectionPathPath(String redirectionPath){
-		    this.redirectionPath = redirectionPath;
-		}
+	
+    /**
+     * Command callback reload strategies enumeration.
+     * 
+     * @author Cédric Krommenhoek
+     */
+	public enum ReloadAfterCommandStrategy {
+
+        /** Do nothing after the command. Not implemented ! */
+        NOTHING,
+        /** Refresh page. */
+        REFRESH_PAGE,
+        /** Refresh page and all navigation tree. */
+        REFRESH_NAVIGATION,
+		/** redirect to parent and refresh navigation tree. Not implemented !  */
+        MOVE_TO_PARENT,
+		/** redirect to child and refresh navigation tree. Not implemented !  */
+        MOVE_TO_CHILD;
 		
 	}
 	

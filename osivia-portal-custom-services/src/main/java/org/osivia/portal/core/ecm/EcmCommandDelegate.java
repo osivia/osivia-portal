@@ -15,12 +15,15 @@
 package org.osivia.portal.core.ecm;
 
 import org.jboss.portal.common.invocation.InvocationException;
+import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.info.ActionCommandInfo;
 import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.osivia.portal.api.ecm.EcmCommand;
+import org.osivia.portal.api.ecm.EcmCommand.ReloadAfterCommandStrategy;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -115,45 +118,43 @@ public class EcmCommandDelegate extends ControllerCommand  {
 
 	public ControllerResponse redirectAfterCommand()
 			throws InvocationException, ControllerException {
+        // Controller context
+        ControllerContext controllerContext = this.getControllerContext();
 
-
+        // Controller response
 		ControllerResponse execute = null;
 		
-		if(command.getStrategy().equals(EcmCommand.ReloadAfterCommandStrategy.refreshNavigation)) {
-		
-			// reload navigation tree
-			PageProperties.getProperties().setRefreshingPage(true);
-			
-			// Redirection path
-			String redirectCmsPath = EcmCommand.ReloadAfterCommandStrategy.refreshNavigation.getRedirectionPathPath();
-	
-			CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, null,
-					null, null, null, null, null, null);
-			execute = context.execute(redirect);
-	
-		
-		} else if(command.getStrategy().equals(EcmCommand.ReloadAfterCommandStrategy.moveToParent)) {
-        
+        if (command.getStrategy().equals(ReloadAfterCommandStrategy.REFRESH_NAVIGATION)) {
+
             // reload navigation tree
             PageProperties.getProperties().setRefreshingPage(true);
-            
-            // Redirection path
-            String redirectCmsPath = EcmCommand.ReloadAfterCommandStrategy.moveToParent.getRedirectionPathPath();
-    
-            CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, "destroyedChild",
-                    null, null, null, null, null, null);
-            execute = context.execute(redirect);
-    
-        
-        }
-		else {
-			CmsCommand redirect = new CmsCommand(null, cmsPath, null, null, null,
-					null, null, null, null, null, null);
-			execute = context.execute(redirect);
-		}
-		
 
-		return execute;
+            // Redirection path
+            String redirectCmsPath = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE);
+
+            CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, null, null, null, null, null, null, null);
+            execute = context.execute(redirect);
+
+
+        } else if (command.getStrategy().equals(ReloadAfterCommandStrategy.MOVE_TO_PARENT)) {
+
+            // reload navigation tree
+            PageProperties.getProperties().setRefreshingPage(true);
+
+            // Redirection path
+            String redirectCmsPath = (String) controllerContext.getAttribute(Scope.SESSION_SCOPE, EcmCommand.REDIRECTION_PATH_ATTRIBUTE);
+
+            CmsCommand redirect = new CmsCommand(null, redirectCmsPath, null, null, "destroyedChild", null, null, null, null, null, null);
+            execute = context.execute(redirect);
+
+
+        } else {
+            CmsCommand redirect = new CmsCommand(null, cmsPath, null, null, null, null, null, null, null, null, null);
+            execute = context.execute(redirect);
+        }
+
+
+        return execute;
 	}
 	
 	
