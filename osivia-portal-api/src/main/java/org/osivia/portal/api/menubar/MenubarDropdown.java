@@ -39,16 +39,20 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
 
     /** Menubar dropdown menu parent group. */
     private final MenubarGroup group;
+    /** Temporary menubar dropdown menu indicator. */
+    private final boolean temporary;
 
 
     /**
      * Constructor.
      * 
      * @param id menubar dropdown identifier
+     * @param group menubar dropdown group
      */
-    public MenubarDropdown(String id) {
+    public MenubarDropdown(String id, MenubarGroup group) {
         super(id);
-        this.group = null;
+        this.group = group;
+        this.temporary = true;
     }
 
 
@@ -67,6 +71,7 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
         super(id, title, glyphicon, order, disabled);
         this.reducible = reducible;
         this.group = group;
+        this.temporary = false;
     }
 
     /**
@@ -80,14 +85,6 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
      */
     public MenubarDropdown(String id, String title, String glyphicon, MenubarGroup group, int order) {
         this(id, title, glyphicon, group, order, false, true);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public MenubarGroup getGroup() {
-        return this.group;
     }
 
 
@@ -120,6 +117,24 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
      */
     public void setReducible(boolean reducible) {
         this.reducible = reducible;
+    }
+
+    /**
+     * Getter for group.
+     * 
+     * @return the group
+     */
+    public MenubarGroup getGroup() {
+        return group;
+    }
+
+    /**
+     * Getter for temporary.
+     * 
+     * @return the temporary
+     */
+    public boolean isTemporary() {
+        return temporary;
     }
 
 }

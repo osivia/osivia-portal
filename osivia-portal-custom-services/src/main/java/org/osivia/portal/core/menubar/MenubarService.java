@@ -227,9 +227,7 @@ public class MenubarService implements IMenubarService {
         for (MenubarItem item : customizedMenubar) {
             if (item.getParent() != null) {
                 MenubarGroup group = item.getParent().getGroup();
-                if (group != null) {
-                    this.addSortedItem(sortedItems, group, item);
-                }
+                this.addSortedItem(sortedItems, group, item);
             }
         }
 
@@ -326,9 +324,7 @@ public class MenubarService implements IMenubarService {
             for (MenubarItem item : items) {
                 if (item.getParent() != null) {
                     MenubarGroup group = item.getParent().getGroup();
-                    if (group != null) {
-                        this.addSortedItem(sortedItems, group, item);
-                    }
+                    this.addSortedItem(sortedItems, group, item);
                 }
             }
         }
@@ -403,21 +399,21 @@ public class MenubarService implements IMenubarService {
                 Set<MenubarItem> sortedItemsValue = sortedItemsEntry.getValue();
 
                 // Menubar group objects, with dropdown menus
-                Set<MenubarObject> objects = new TreeSet<MenubarObject>(this.objectComparator);
-                Map<MenubarDropdown, List<MenubarItem>> dropdownMenus = new HashMap<MenubarDropdown, List<MenubarItem>>();
+                Set<MenubarObject> objects = new TreeSet<>(this.objectComparator);
+                Map<MenubarDropdown, List<MenubarItem>> dropdownMenus = new HashMap<>();
                 for (MenubarItem item : sortedItemsValue) {
                     if (item.isVisible()) {
                         MenubarContainer parent = item.getParent();
                         if (parent instanceof MenubarDropdown) {
                             MenubarDropdown dropdownMenu = (MenubarDropdown) parent;
-                            if (dropdownMenu.getGroup() != null) {
-                                List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
-                                if (dropdownMenuItems == null) {
-                                    dropdownMenuItems = new ArrayList<MenubarItem>();
-                                    dropdownMenus.put(dropdownMenu, dropdownMenuItems);
-                                }
-                                dropdownMenuItems.add(item);
+                            List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
+                            if (dropdownMenuItems == null) {
+                                dropdownMenuItems = new ArrayList<MenubarItem>();
+                                dropdownMenus.put(dropdownMenu, dropdownMenuItems);
+                            }
+                            dropdownMenuItems.add(item);
 
+                            if (!dropdownMenu.isTemporary()) {
                                 objects.add(dropdownMenu);
                             }
                         } else {
