@@ -16,48 +16,57 @@
         padding-right: 0;
         padding-left: 0;
     }
-    
-    &.loaded {
-        &.flexbox {
-            ~ * {
-                .flex();
+}
+
+
+@media screen and (max-width: @screen-xs-max) {
+    .ui-resizable-handle {
+        display: none !important;
+    }
+}
+
+
+@media screen and (min-width: @screen-sm-min) {
+    [data-resizable] {
+        &.loaded {
+            &.flexbox {
+                ~ * {
+                    .flex();
+                    
+                    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+                        float: none;
+                        width: auto;
+                    }
+                }
+            }
+            
+            .navigation-panel {
+                width: 100%;
             }
         }
-        
-        .navigation-panel {
-            width: 100%;
+    }
+    
+    .ui-resizable {
+    
+    }
+    
+    .ui-resizable-resizing {
+        ~ * {
+            z-index: -1;
         }
     }
-}
-
-
-.ui-resizable {
-
-}
-
-.ui-resizable-resizing {
-    ~ * {
-        z-index: -1;
-    }
-}
-
-.ui-resizable-handle {
-    @media screen and (max-width: @screen-xs-max) {
-        display: none !important;    
-    }
-}
-
-
-.ui-resizable-e {
-    cursor: col-resize;
     
-    .ui-resizable[class*="col-"] & {
-        right: 0;
-    }
-    
-    .ui-resizable-resizing & {
-        background-color: fade(#333, 2%);
+    .ui-resizable-e {
+        cursor: col-resize;
         
-        .box-shadow(@shadow: inset 2px 0 2px -2px fade(#333, 20%));
+        .ui-resizable[class*="col-"] & {
+            right: 0;
+        }
+        
+        .ui-resizable-resizing & {
+            background-color: fade(#333, 2%);
+            
+            .box-shadow(@shadow: inset 2px 0 2px -2px fade(#333, 20%));
+        }
     }
 }

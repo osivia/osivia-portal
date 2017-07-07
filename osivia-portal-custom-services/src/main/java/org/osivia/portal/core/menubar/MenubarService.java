@@ -227,7 +227,9 @@ public class MenubarService implements IMenubarService {
         for (MenubarItem item : customizedMenubar) {
             if (item.getParent() != null) {
                 MenubarGroup group = item.getParent().getGroup();
-                this.addSortedItem(sortedItems, group, item);
+                if (group != null) {
+                    this.addSortedItem(sortedItems, group, item);
+                }
             }
         }
 
@@ -322,8 +324,12 @@ public class MenubarService implements IMenubarService {
 
         if (items != null) {
             for (MenubarItem item : items) {
-                MenubarGroup group = item.getParent().getGroup();
-                this.addSortedItem(sortedItems, group, item);
+                if (item.getParent() != null) {
+                    MenubarGroup group = item.getParent().getGroup();
+                    if (group != null) {
+                        this.addSortedItem(sortedItems, group, item);
+                    }
+                }
             }
         }
 
@@ -404,14 +410,16 @@ public class MenubarService implements IMenubarService {
                         MenubarContainer parent = item.getParent();
                         if (parent instanceof MenubarDropdown) {
                             MenubarDropdown dropdownMenu = (MenubarDropdown) parent;
-                            List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
-                            if (dropdownMenuItems == null) {
-                                dropdownMenuItems = new ArrayList<MenubarItem>();
-                                dropdownMenus.put(dropdownMenu, dropdownMenuItems);
-                            }
-                            dropdownMenuItems.add(item);
+                            if (dropdownMenu.getGroup() != null) {
+                                List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
+                                if (dropdownMenuItems == null) {
+                                    dropdownMenuItems = new ArrayList<MenubarItem>();
+                                    dropdownMenus.put(dropdownMenu, dropdownMenuItems);
+                                }
+                                dropdownMenuItems.add(item);
 
-                            objects.add(dropdownMenu);
+                                objects.add(dropdownMenu);
+                            }
                         } else {
                             objects.add(item);
                         }

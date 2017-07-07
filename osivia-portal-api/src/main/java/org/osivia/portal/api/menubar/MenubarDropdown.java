@@ -45,11 +45,10 @@ public class MenubarDropdown extends MenubarObject implements MenubarContainer {
      * Constructor.
      * 
      * @param id menubar dropdown identifier
-     * @param group menubar dropdown group
      */
-    public MenubarDropdown(String id, MenubarGroup group) {
+    public MenubarDropdown(String id) {
         super(id);
-        this.group = group;
+        this.group = null;
     }
 
 

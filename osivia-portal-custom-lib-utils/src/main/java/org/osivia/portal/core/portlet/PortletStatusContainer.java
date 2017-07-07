@@ -68,7 +68,11 @@ public class PortletStatusContainer implements Cloneable {
      */
     public void setPortletStatus(PortalObjectId pageId, String portletName, PortletStatus status) {
         PortletKey key = new PortletKey(pageId, portletName);
-        this.map.put(key, status);
+        if (status == null) {
+            this.map.remove(key);
+        } else {
+            this.map.put(key, status);
+        }
     }
 
 
