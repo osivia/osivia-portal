@@ -151,9 +151,19 @@
                 }
             }
             
-            &.dropdown.open {
-                background-color: @navbar-default-link-active-bg;
-                color: @navbar-default-link-active-color;
+            &.dropdown {
+                &.open {
+                    background-color: @navbar-default-link-active-bg;
+                    color: @navbar-default-link-active-color;
+                }
+                
+                > a.dropdown-toggle {
+                    padding-right: @navbar-padding-horizontal + @caret-width-base;
+                    
+                    .caret {
+                        right: floor(@navbar-padding-horizontal / 2);
+                    }
+                }
             }
         }
     }

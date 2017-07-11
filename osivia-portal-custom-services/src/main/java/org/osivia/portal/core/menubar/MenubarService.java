@@ -546,6 +546,10 @@ public class MenubarService implements IMenubarService {
         }
         dropdownLI.add(dropdownButton);
 
+        // Dropdown button caret
+        Element caret = DOM4JUtils.generateElement("span", "caret", StringUtils.EMPTY);
+        dropdownButton.add(caret);
+
         // Dropdown UL
         Element dropdownUL = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu dropdown-menu-right", null, null, AccessibilityRoles.MENU);
         dropdownLI.add(dropdownUL);

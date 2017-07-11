@@ -127,11 +127,9 @@
 .fancytree-expander {
     color: #ccc;
     
-    &:hover {
-        .transition-property(@transition-property: color);
-        .transition-duration(@transition-duration: 200ms);
-        .transition-timing-function(@timing-function: ease);
-    }
+    .transition-property(@transition-property: color);
+    .transition-duration(@transition-duration: 200ms);
+    .transition-timing-function(@timing-function: ease);
     
     .fancytree-expanded & {
         color: inherit;

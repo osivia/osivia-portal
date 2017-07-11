@@ -212,6 +212,14 @@
                 &:last-of-type:not(:first-of-type) > a {
                     .border-left-radius(0);
                 }
+                
+                &.dropdown {
+                    > .dropdown-toggle {
+                        .caret {
+                            display: none;      
+                        }
+                    }
+                }
             } 
         } 
     }
@@ -230,11 +238,35 @@
         }
         
         > ul > li {
-            &.dropdown > .dropdown-menu {
-                margin-top: 0;
+            &.dropdown {
+                > a.dropdown-toggle {
+                    .caret {
+                        position: absolute;
+                        top: 1px;
+                        bottom: 0;
+                        
+                        margin: auto 0;
+                        
+                        opacity: 0.1;
+                        
+                        .transition-property(@transition-property: opacity);
+                        .transition-duration(@transition-duration: 100ms);
+                        .transition-timing-function(@timing-function: ease);
+                    }
+                    
+                    &:hover, &:focus {
+                        .caret {
+                            opacity: 1;
+                        }
+                    }
+                }
                 
-                .border-top-radius(0);
-            }
+                > .dropdown-menu {
+                    margin-top: 0;
+                    
+                    .border-top-radius(0);
+                }                
+            } 
         }
     }
 }
@@ -250,8 +282,6 @@
             &, &.dropdown-menu-right {
                 left: -1px;
                 right: -1px;
-                
-                margin-top: -3px;
             }
         }
     }
