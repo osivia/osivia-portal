@@ -276,7 +276,9 @@ public class CMSServiceCtx {
 
 	public void setControllerContext(ControllerContext controllerContext) {
 		this.controllerContext = controllerContext;
-		this.serverInvocation = controllerContext.getServerInvocation();
+		if(controllerContext != null) {
+			this.serverInvocation = controllerContext.getServerInvocation();
+		}
 	}
 
 
