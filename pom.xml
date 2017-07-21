@@ -459,6 +459,14 @@
                 <version>${json.version}</version>
                 <scope>provided</scope>
             </dependency>
+            
+            
+			<dependency>
+			    <groupId>quartz</groupId>
+			    <artifactId>quartz</artifactId>
+			    <version>1.5.2</version>
+			    <scope>provided</scope>
+			</dependency>            
 
             <!-- Various libs -->
             <dependency>
@@ -499,6 +507,7 @@
                 <version>${powermock.version}</version>
                 <scope>test</scope>
             </dependency>
+
 
         </dependencies>
     </dependencyManagement>
