@@ -19,7 +19,7 @@
         <uri>/WEB-INF/layout/modal/index.jsp</uri>
         <uri state="maximized">/WEB-INF/layout/modal/maximized.jsp</uri>
         <regions>
-            <region name="modal"/>
+            <region name="osivia-modal-region"/>
         </regions>
     </layout>
 

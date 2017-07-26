@@ -2,8 +2,8 @@ $JQry(function() {
 	
 	$JQry("select.select2.select2-default").each(function(index, element) {
 		var $element = $JQry(element),
-			url = $element.data("url");
-			loadingLabel = $element.data("loading-label");
+			url = $element.data("url"),
+			loadingLabel = $element.data("loading-label"),
 			options = {
 					theme : "bootstrap",
 					width : "resolve"

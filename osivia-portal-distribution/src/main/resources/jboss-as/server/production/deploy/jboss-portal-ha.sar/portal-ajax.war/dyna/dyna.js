@@ -342,6 +342,12 @@ function bilto(event) {
 
 			// Check we have a form and use it
 			if (current.nodeName == 'FORM') {
+                if ($JQry(current).find(".mce-tinymce").length) {
+                    // Trigger TinyMCE save
+                    tinymce.triggerSave();
+                }
+
+
 				var enctype = current.enctype;
 				// We don't handle file upload for now
 				if (enctype != "multipart/form-data") {

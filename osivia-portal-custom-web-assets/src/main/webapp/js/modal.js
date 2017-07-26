@@ -7,16 +7,19 @@ $JQry(function() {
 		if (!loaded) {
 			$element.on("show.bs.modal", function(event) {
 				var $target = $JQry(event.target),
-					$header = $target.find(".modal-header"),
-					$footer = $target.find(".modal-footer"),
+                    $dialog = $target.find(".modal-dialog"),
+					$header = $dialog.find(".modal-header"),
+					$footer = $dialog.find(".modal-footer"),
 					$clone = $target.children(".modal-clone"),
-					$window = $target.find(".dyna-window"),
-					url = $target.data("load-url") + " .partial-refresh-window",
+					$window = $dialog.find(".dyna-window"),
+					//url = $target.data("load-url") + " .partial-refresh-window",
+                    url = $target.data("load-url"),
 					callbackFunction = $target.data("load-callback-function"),
 					callbackFunctionArgs = $target.data("load-callback-function-args"),
 					title = $target.data("title"),
-					footer = $target.data("footer");
-				
+					footer = $target.data("footer"),
+                    size = $target.data("size");
+
 				// Header
 				if (title) {
 					$header.find(".modal-title").text(title);
@@ -35,13 +38,20 @@ $JQry(function() {
 						window[callbackFunction](callbackFunctionArgs);
 					}
 				});
+
+				// Size
+                if ((size === "lg") || (size === "large")) {
+                    $dialog.addClass("modal-lg");
+                } else if ((size === "sm") || (size === "small")) {
+                    $dialog.addClass("modal-sm");
+                }
 			});
-			
+
 			$element.on("hide.bs.modal", function(event) {
 				var $target = $JQry(event.target),
 					$window = $target.find(".dyna-window"),
 					callbackFunction = $target.data("callback-function"),
-					callbackFunctionArgs = $target.data("callback-function-args");
+					callbackFunctionArgs = $target.data("callback-function-args"),
 					callbackUrl = $target.data("callback-url");
 				
 				$window.unbind("load");	
@@ -51,16 +61,12 @@ $JQry(function() {
 				}
 				
 				if (callbackUrl) {
-					container = null,
-					options = {
-						requestHeaders : [ "ajax", "true", "bilto" ],
-						method : "post",
-						onSuccess : function(t) {
-							onAjaxSuccess(t, null);
-						}
-					},
-					eventToStop = null,
-					callerId = null;
+					var container = null,
+                        options = {
+                            method : "post"
+                        },
+                        eventToStop = null,
+                        callerId = null;
 				
 					directAjaxCall(container, options, callbackUrl, eventToStop, callerId);
 				}
@@ -73,14 +79,16 @@ $JQry(function() {
 				$target.removeData("callback-url");
 				$target.removeData("title");
 				$target.removeData("footer");
+				$target.removeData("size");
 			});
 			
 			$element.on("hidden.bs.modal", function(event) {
 				var $target = $JQry(event.target),
-					$header = $target.find(".modal-header"),
-					$footer = $target.find(".modal-footer"),
+                    $dialog = $target.find(".modal-dialog"),
+					$header = $dialog.find(".modal-header"),
+					$footer = $dialog.find(".modal-footer"),
 					$clone = $target.children(".modal-clone"),
-					$window = $target.find(".dyna-window");
+					$window = $dialog.find(".dyna-window");
 				
 				// Header
 				$header.addClass("hidden");
@@ -92,6 +100,9 @@ $JQry(function() {
 				// Body
 				$window.empty();
 				$clone.children().appendTo($window);
+
+				// Size
+                $dialog.removeClass("modal-lg modal-sm");
 			});
 			
 			$element.data("loaded", true);
@@ -114,6 +125,7 @@ $JQry(function() {
 					callbackUrl = $target.data("callback-url"),
 					title = $target.data("title"),
 					footer = $target.data("footer"),
+                    size = $target.data("size"),
 					$modal = $JQry("#osivia-modal");
 	
 				$modal.data("load-url", loadUrl);
@@ -124,6 +136,7 @@ $JQry(function() {
 				$modal.data("callback-url", callbackUrl);
 				$modal.data("title", title);
 				$modal.data("footer", footer);
+				$modal.data("size", size);
 
 				$modal.modal("show");
 			});

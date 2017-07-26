@@ -71,7 +71,7 @@
 
 
 // Text pre-wrap
-.text-pre-wrap {
+.pre-wrap, .text-pre-wrap {
     white-space: pre-wrap;
 }
 
@@ -221,4 +221,13 @@
             }
         }
     }
+}
+
+
+// Vignette
+img.vignette {
+    @vignette-size: 100px;
+
+    max-height: @vignette-size;
+    max-width: @vignette-size;
 }
