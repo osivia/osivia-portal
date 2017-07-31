@@ -14,13 +14,14 @@
  */
 package org.osivia.portal.api.internationalization;
 
+import org.springframework.context.ApplicationContext;
+
 import java.util.Locale;
 
 /**
  * Bundle factory interface.
- * 
+ *
  * @author Cédric Krommenhoek
- * 
  */
 public interface IBundleFactory {
 

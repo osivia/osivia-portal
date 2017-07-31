@@ -19,6 +19,7 @@ import java.util.Locale;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Bundle factory implementation.
@@ -32,30 +33,43 @@ public class BundleFactory implements IBundleFactory {
     private final IInternationalizationService internationalizationService;
     /** Class loader. */
     private final ClassLoader classLoader;
+    /** Application context. */
+    private final ApplicationContext applicationContext;
 
 
     /**
      * Constructor.
      *
      * @param internationalizationService internationalization service
-     * @param classLoader class loader
+     * @param classLoader                 class loader
      */
     public BundleFactory(IInternationalizationService internationalizationService, ClassLoader classLoader) {
-        super();
-        this.internationalizationService = internationalizationService;
-        this.classLoader = classLoader;
+        this(internationalizationService, classLoader, null);
     }
 
 
     /**
-     * {@inheritDoc}
+     * Constructor.
+     *
+     * @param internationalizationService internationalization service
+     * @param classLoader                 class loader
+     * @param applicationContext          application context
      */
+    public BundleFactory(IInternationalizationService internationalizationService, ClassLoader classLoader, ApplicationContext applicationContext) {
+        super();
+        this.internationalizationService = internationalizationService;
+        this.classLoader = classLoader;
+        this.applicationContext = applicationContext;
+    }
+
+
+    @Override
     public Bundle getBundle(Locale locale) {
         Bundle bundle;
         if (locale == null) {
-            bundle = new Bundle(this.internationalizationService, this.classLoader, Locale.getDefault());
+            bundle = new Bundle(this.internationalizationService, this.classLoader, this.applicationContext, Locale.getDefault());
         } else {
-            bundle = new Bundle(this.internationalizationService, this.classLoader, locale);
+            bundle = new Bundle(this.internationalizationService, this.classLoader, this.applicationContext, locale);
         }
 
         return bundle;

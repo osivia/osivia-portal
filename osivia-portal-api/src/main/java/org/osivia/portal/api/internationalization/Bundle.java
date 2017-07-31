@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.api.internationalization;
 
+import org.springframework.context.ApplicationContext;
+
 import java.util.Locale;
 
 /**
@@ -30,6 +32,8 @@ public class Bundle {
     private final IInternationalizationService internationalizationService;
     /** Class loader. */
     private final ClassLoader classLoader;
+    /** Application context. */
+    private final ApplicationContext applicationContext;
     /** Locale. */
     private final Locale locale;
 
@@ -38,13 +42,27 @@ public class Bundle {
      * Constructor.
      *
      * @param internationalizationService internationalization service
-     * @param classLoader class loader
-     * @param locale locale
+     * @param classLoader                 class loader
+     * @param locale                      locale
      */
     public Bundle(IInternationalizationService internationalizationService, ClassLoader classLoader, Locale locale) {
+        this(internationalizationService, classLoader, null, locale);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param internationalizationService internationalization service
+     * @param classLoader                 class loader
+     * @param applicationContext          application context
+     * @param locale                      locale
+     */
+    public Bundle(IInternationalizationService internationalizationService, ClassLoader classLoader, ApplicationContext applicationContext, Locale locale) {
         super();
         this.internationalizationService = internationalizationService;
         this.classLoader = classLoader;
+        this.applicationContext = applicationContext;
         this.locale = locale;
     }
 
@@ -56,32 +74,32 @@ public class Bundle {
      * @return bundle property value
      */
     public final String getString(String key) {
-        return this.internationalizationService.getString(key, this.locale, this.classLoader);
+        return this.internationalizationService.getString(key, this.locale, this.classLoader, this.applicationContext);
     }
 
 
     /**
      * Access to a localized bundle property, which can be customized.
      *
-     * @param key bundle property key
+     * @param key  bundle property key
      * @param args property arguments
      * @return bundle property value
      */
     public final String getString(String key, Object... args) {
-        return this.internationalizationService.getString(key, this.locale, this.classLoader, args);
+        return this.internationalizationService.getString(key, this.locale, this.classLoader, this.applicationContext, args);
     }
 
 
     /**
      * Access to a localized bundle property, which can be customized.
      *
-     * @param key bundle property key
+     * @param key                   bundle property key
      * @param customizedClassLoader customized class loader
-     * @param args property arguments
+     * @param args                  property arguments
      * @return bundle property value
      */
     public final String getString(String key, ClassLoader customizedClassLoader, Object... args) {
-        return this.internationalizationService.getString(key, this.locale, this.classLoader, customizedClassLoader, args);
+        return this.internationalizationService.getString(key, this.locale, this.classLoader, customizedClassLoader, this.applicationContext, args);
     }
 
 
@@ -92,6 +110,15 @@ public class Bundle {
      */
     public ClassLoader getClassLoader() {
         return this.classLoader;
+    }
+
+    /**
+     * Getter for applicationContext.
+     *
+     * @return the applicationContext
+     */
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 
     /**

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.springframework.context.ApplicationContext;
 
 
 public class BundleFactoryTest {
@@ -38,9 +39,10 @@ public class BundleFactoryTest {
     @Before
     public void setUp() throws Exception {
         ClassLoader classLoader = this.getClass().getClassLoader();
+        ApplicationContext applicationContext = null;
 
         this.internationalizationServiceMock = EasyMock.createMock("InternationalizationService", IInternationalizationService.class);
-        EasyMock.expect(this.internationalizationServiceMock.getString("EXAMPLE", Locale.ITALIAN, classLoader)).andReturn("esempio");
+        EasyMock.expect(this.internationalizationServiceMock.getString("EXAMPLE", Locale.ITALIAN, classLoader, applicationContext)).andReturn("esempio");
         EasyMock.replay(this.internationalizationServiceMock);
 
         this.bundleFactory = new BundleFactory(this.internationalizationServiceMock, classLoader);

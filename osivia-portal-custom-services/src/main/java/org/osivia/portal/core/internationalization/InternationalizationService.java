@@ -59,44 +59,44 @@ public class InternationalizationService implements IInternationalizationService
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IBundleFactory getBundleFactory(ClassLoader classLoader) {
         return new BundleFactory(this, classLoader);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public IBundleFactory getBundleFactory(ClassLoader classLoader, ApplicationContext applicationContext) {
+        return new BundleFactory(this, classLoader, applicationContext);
+    }
+
+
+    @Override
     public String getString(String key, Locale locale, Object... args) {
-        return this.getString(key, locale, null, args);
+        return this.getString(key, locale, null, null, null, args);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, Object... args) {
-        return this.getString(key, locale, classLoader, null, args);
+        return this.getString(key, locale, classLoader, null, null, args);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args) {
         return this.getString(key, locale, classLoader, customizedClassLoader, null, args);
     }
 
+    @Override
+    public String getString(String key, Locale locale, ClassLoader classLoader, ApplicationContext applicationContext, Object... args) {
+        return this.getString(key, locale, classLoader, null, applicationContext, args);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext,
-            Object... args) {
+                            Object... args) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_KEY, key);
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_LOCALE, locale);
@@ -182,7 +182,7 @@ public class InternationalizationService implements IInternationalizationService
     /**
      * Utility method used to format arguments.
      *
-     * @param args arguments
+     * @param args   arguments
      * @param locale locale
      * @return formatted arguments
      */
