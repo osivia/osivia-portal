@@ -110,34 +110,7 @@ public class InternationalizationService implements IInternationalizationService
             // Custom result
             pattern = (String) attributes.get(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT);
         } else {
-            // Get resource bundle
-            ResourceBundle resourceBundle = null;
-
-            if (customizedClassLoader != null) {
-                // Customized class loader resource bundle
-                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, customizedClassLoader);
-                if (resourceBundle != null) {
-                    try {
-                        pattern = resourceBundle.getString(key);
-                    } catch (MissingResourceException e) {
-                        // Do nothing
-                    }
-                }
-            }
-
-            if ((pattern == null) && (classLoader != null)) {
-                // Current class loader resource bundle
-                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
-                if (resourceBundle != null) {
-                    try {
-                        pattern = resourceBundle.getString(key);
-                    } catch (MissingResourceException e) {
-                        // Do nothing
-                    }
-                }
-            }
-
-            if ((pattern == null) && (applicationContext != null)) {
+            if (applicationContext != null) {
                 // Application context message source
                 try {
                     pattern = applicationContext.getMessage(key, args, locale);
@@ -147,6 +120,15 @@ public class InternationalizationService implements IInternationalizationService
             }
 
             if (pattern == null) {
+                pattern = this.getPattern(key, locale, customizedClassLoader);
+            }
+
+            if (pattern == null) {
+                pattern = this.getPattern(key, locale, classLoader);
+            }
+
+
+            if (pattern == null) {
                 // Saved class loader
                 ClassLoader savedClassLoader = Thread.currentThread().getContextClassLoader();
 
@@ -154,7 +136,8 @@ public class InternationalizationService implements IInternationalizationService
                 Thread.currentThread().setContextClassLoader(this.classLoader);
 
                 try {
-                    resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
+                    // Resource bundle
+                    ResourceBundle resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
                     pattern = resourceBundle.getString(key);
                 } catch (MissingResourceException e) {
                     // Do nothing
@@ -176,6 +159,33 @@ public class InternationalizationService implements IInternationalizationService
         }
 
         return result;
+    }
+
+
+    /**
+     * Get pattern.
+     *
+     * @param key         internationalization key
+     * @param locale      locale
+     * @param classLoader class loader
+     * @return pattern
+     */
+    private String getPattern(String key, Locale locale, ClassLoader classLoader) {
+        String pattern = null;
+
+        if (classLoader != null) {
+            // Class loader resource bundle
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
+            if (resourceBundle != null) {
+                try {
+                    pattern = resourceBundle.getString(key);
+                } catch (MissingResourceException e) {
+                    // Do nothing
+                }
+            }
+        }
+
+        return pattern;
     }
 
 
