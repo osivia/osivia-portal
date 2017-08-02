@@ -41,13 +41,13 @@ public class AdvancedSearchCommand extends ControllerCommand {
 
 
     /** Search keywords selector identifier. */
-    private static final String KEYWORDS_SELECTOR_ID = "search";
+    private static final String KEYWORDS_SELECTOR_ID = "keywords";
     /** Dummy selector identifier. */
     private static final String DUMMY_SELECTOR_ID = "dummy-selector";
     /** Advanced search page name. */
     private static final String PAGE_NAME = "AdvancedSearch";
     /** Advanced search template path. */
-    private static final String TEMPLATE_PATH = "/default/templates/advancedSearch";
+    private static final String TEMPLATE_PATH = "/default/templates/search";
 
     /** Command info. */
     private static final CommandInfo commandInfo = new ActionCommandInfo(false);

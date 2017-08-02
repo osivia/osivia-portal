@@ -1,5 +1,60 @@
 $JQry(document).ready(function() {
 	
+	$JQry(".fancytree.fancytree-default").each(function(index, element) {
+		var $element = $JQry(element),
+			url = $element.data("lazyloadingurl"),
+			options = {
+				activeVisible : true,
+				clickFolderMode : 2,
+				extensions : ["filter", "glyph"],
+				tabbable : false,
+				titlesTabbable : true,
+				toggleEffect : false,
+				
+				filter : {
+					mode : "hide"
+				},
+				
+				glyph : {
+					map : {
+						doc : "glyphicons glyphicons-file",
+						docOpen: "glyphicons glyphicons-file",
+						error: "halflings halflings-exclamation-sign",
+						expanderClosed: "glyphicons glyphicons-collapse text-primary-hover",
+						expanderLazy: "glyphicons glyphicons-collapse text-primary-hover",
+						expanderOpen: "glyphicons glyphicons-expand text-primary-hover",
+						folder: "glyphicons glyphicons-folder-closed",
+						folderOpen: "glyphicons glyphicons-folder-open",
+						loading: "halflings halflings-hourglass text-info"
+					}
+				}
+			};
+		
+		if (url !== undefined) {
+			// Source URL
+			options["source"] = {
+				url : url,
+				cache : false
+			};
+			
+			// Lazy loading
+			options["lazyLoad"] = function(event, data) {
+				var node = data.node;
+	
+				data.result = {
+					url : url,
+					data : {
+						"path" : node.data.path
+					},
+					cache : false
+				};
+			}
+		}
+	
+		// Fancytree
+		$element.fancytree(options);	
+	});
+	
 	// Fancytree with links
 	$JQry(".fancytree.fancytree-links").each(function(index, element) {
 		var $element = $JQry(element),
