@@ -380,6 +380,17 @@ public interface IPortalUrlFactory {
 
 
     /**
+     * Get back URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param mobile                  mobile indicator
+     * @param refresh                 refresh indicator
+     * @return back URL
+     */
+    String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh);
+
+
+    /**
      * Get parameterized URL.
      *
      * @param portalControllerContext portal controller context

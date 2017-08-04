@@ -940,6 +940,12 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile) {
+        return this.getBackURL(portalControllerContext, mobile, false);
+    }
+
+
+    @Override
+    public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh) {
         // Controller context
         final ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -956,7 +962,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
 
         final String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, backPageMarkerName);
-        final Boolean refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, refreshName));
+
+        if (!refresh) {
+            refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, refreshName));
+        }
 
         String backURL = null;
         if (backPageMarker != null) {
