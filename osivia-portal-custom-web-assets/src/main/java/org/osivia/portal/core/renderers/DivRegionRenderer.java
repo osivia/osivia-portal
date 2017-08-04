@@ -656,7 +656,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 }
 
                 windowSubTitle = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_SUB_TITLE);
-                windowVignetteUrl = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_URL);
+
+                if (BooleanUtils.toBoolean(properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY))) {
+                    windowVignetteUrl = "#"; // FIXME
+                }
             }
         }
 

@@ -1416,9 +1416,9 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             String subTitle = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_SUB_TITLE);
             properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_SUB_TITLE, subTitle);
 
-            // Vignette URL
-            String vignetteUrl = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_VIGNETTE_URL);
-            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_VIGNETTE_URL, vignetteUrl);
+            // Vignette display indicator
+            String vignetteDisplay = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY);
+            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, vignetteDisplay);
 
             // Bootstrap panel style indicator
             String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");
@@ -1753,7 +1753,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
     /**
      * Setter for taskbarService.
      * 
-     * @param taskbarService the taskbarService to set
+     * @param statusService the statusService to set
      */
     public void setStatusService(IStatusService statusService) {
         this.statusService = statusService;
