@@ -56,7 +56,7 @@ public interface ICMSService {
     /**
      * Retourne un ensemble d'informations liées à l'espace de publication contenant le document dont le chemin est passé en paramètre.
      *
-     * @param ctx contexte du CMSService
+     * @param ctx  contexte du CMSService
      * @param path chemin d'un document
      * @return l' ensemble des informations liées à l'espace de publication dans un objet de type CMSPublicationInfos
      * @throws CMSException
@@ -65,8 +65,8 @@ public interface ICMSService {
 
     /**
      * Get space config.
-     * 
-     * @param cmsCtx CMS context
+     *
+     * @param cmsCtx           CMS context
      * @param publishSpacePath publish space path
      * @return CMS item
      * @throws CMSException
@@ -76,9 +76,9 @@ public interface ICMSService {
     /**
      * Get portal navigation CMS item.
      *
-     * @param ctx CMS service context
+     * @param ctx              CMS service context
      * @param publishSpacePath publish space path
-     * @param path current path
+     * @param path             current path
      * @return portal navigation CMS item
      * @throws CMSException
      */
@@ -87,9 +87,9 @@ public interface ICMSService {
     /**
      * Get portal navigation CMS sub-items.
      *
-     * @param ctx CMS service context
+     * @param ctx              CMS service context
      * @param publishSpacePath publish space path
-     * @param path current path
+     * @param path             current path
      * @return portal navigation CMS sub-items
      * @throws CMSException
      */
@@ -99,7 +99,7 @@ public interface ICMSService {
      * Get portal CMS sub-items.
      *
      * @param cmsContext CMS service context
-     * @param path current path
+     * @param path       current path
      * @return portal CMS sub-items
      * @throws CMSException
      */
@@ -108,9 +108,9 @@ public interface ICMSService {
     /**
      * Get workspaces.
      *
-     * @param cmsContext CMS context
+     * @param cmsContext     CMS context
      * @param userWorkspaces user workspaces indicator
-     * @param administrator administrator indicator
+     * @param administrator  administrator indicator
      * @return workspaces
      * @throws CMSException
      */
@@ -118,9 +118,9 @@ public interface ICMSService {
 
     /**
      * Get full loaded portal navigation items.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param basePath base path
+     * @param basePath   base path
      * @return navigation items
      * @throws CMSException
      */
@@ -135,7 +135,7 @@ public interface ICMSService {
     /**
      * Transform webid path in cms path
      *
-     * @param cmsCtx context
+     * @param cmsCtx      context
      * @param requestPath the path given in webid
      * @return path adapted
      */
@@ -149,17 +149,17 @@ public interface ICMSService {
     /**
      * Build and return all editable windows included and inherided in the page.
      *
-     * @param cmsContext CMS context
-     * @param path current path
+     * @param cmsContext       CMS context
+     * @param path             current path
      * @param publishSpacePath publish space path
-     * @param sitePath site path
-     * @param navigationScope navigation scope
-     * @param isSpaceSite if the portal is a space site
+     * @param sitePath         site path
+     * @param navigationScope  navigation scope
+     * @param isSpaceSite      if the portal is a space site
      * @return editable windows
      * @throws CMSException
      */
-    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsContext, String path, String publishSpacePath, String sitePath, String navigationScope, Boolean isSpaceSite)
-            throws CMSException;
+    List<CMSEditableWindow> getEditableWindows(CMSServiceCtx cmsContext, String path, String publishSpacePath, String sitePath, String navigationScope,
+                                               Boolean isSpaceSite) throws CMSException;
 
 
     /**
@@ -174,9 +174,9 @@ public interface ICMSService {
     /**
      * Save CMS region inheritance.
      *
-     * @param cmsContext CMS context
-     * @param path current path
-     * @param regionName region name
+     * @param cmsContext  CMS context
+     * @param path        current path
+     * @param regionName  region name
      * @param inheritance CMS region inheritance configuration
      * @throws CMSException
      */
@@ -196,7 +196,7 @@ public interface ICMSService {
     /**
      * Get CMS regions selected layout.
      *
-     * @param item CMS item
+     * @param item          CMS item
      * @param regionLayouts region layouts
      * @return CMS regions selected layout
      * @throws CMSException
@@ -207,9 +207,9 @@ public interface ICMSService {
     /**
      * Save CMS region selected layout.
      *
-     * @param cmsContext CMS context
-     * @param path current path
-     * @param regionName region name
+     * @param cmsContext       CMS context
+     * @param path             current path
+     * @param regionName       region name
      * @param regionLayoutName selected region layout name
      * @throws CMSException
      */
@@ -228,9 +228,9 @@ public interface ICMSService {
     /**
      * Get urls used to access ECM specific views.
      *
-     * @param cmsCtx CMS context
-     * @param command type of command acceded (ex : create, edit, etc.)
-     * @param path the path of the page
+     * @param cmsCtx            CMS context
+     * @param command           type of command acceded (ex : create, edit, etc.)
+     * @param path              the path of the page
      * @param requestParameters GET params added in the URL
      * @return url
      * @throws CMSException
@@ -241,9 +241,9 @@ public interface ICMSService {
     /**
      * Remove a CMS fragment on a page.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
-     * @param refURI an unique identifier on the fragment to delete in the current page
+     * @param refURI   an unique identifier on the fragment to delete in the current page
      * @throws CMSException
      */
     void deleteFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI) throws CMSException;
@@ -252,23 +252,23 @@ public interface ICMSService {
     /**
      * Move a CMS fragment on a page (drag & drop).
      *
-     * @param cmsCtx CMS context
-     * @param pagePath the path of the page
+     * @param cmsCtx     CMS context
+     * @param pagePath   the path of the page
      * @param fromRegion the identifier of the region from the fragment is moved
-     * @param fromPos position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region)
-     * @param toRegion the identifier of the region where the fragment is dropped
-     * @param toPos the new position of the fgt in the toRegion
-     * @param refUri the id of the window moved
+     * @param fromPos    position in the fromRegion (from 0 (top) to N-1 ( number of current fgts in the region)
+     * @param toRegion   the identifier of the region where the fragment is dropped
+     * @param toPos      the new position of the fgt in the toRegion
+     * @param refUri     the id of the window moved
      * @throws CMSException
      */
-    void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos, String refUri)
-            throws CMSException;
+    void moveFragment(CMSServiceCtx cmsCtx, String pagePath, String fromRegion, Integer fromPos, String toRegion, Integer toPos, String refUri) throws
+            CMSException;
 
 
     /**
      * Return true if the document type is allowed in CMS mode for creation and edition.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx  CMS context
      * @param cmsPath CMS path
      * @return the permission
      */
@@ -278,7 +278,7 @@ public interface ICMSService {
     /**
      * Publish the current live version of a document online.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -288,7 +288,7 @@ public interface ICMSService {
     /**
      * Unpublish the current online version.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -298,7 +298,7 @@ public interface ICMSService {
     /**
      * Start Publication workflow.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -308,7 +308,7 @@ public interface ICMSService {
     /**
      * Cancel Publication workflow.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -318,7 +318,7 @@ public interface ICMSService {
     /**
      * Accept publication of current document.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -328,7 +328,7 @@ public interface ICMSService {
     /**
      * Reject publication of current document.
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param pagePath the path of the page
      * @throws CMSException
      */
@@ -339,7 +339,7 @@ public interface ICMSService {
      * Delete the document.
      *
      * @param cmsCtx CMS context
-     * @param path page path
+     * @param path   page path
      * @throws CMSException
      */
     void deleteDocument(CMSServiceCtx cmsCtx, String path) throws CMSException;
@@ -349,7 +349,7 @@ public interface ICMSService {
      * Put the document in a deleted state.
      *
      * @param cmsCtx CMS context
-     * @param docId document identifier
+     * @param docId  document identifier
      * @throws CMSException
      */
     void putDocumentInTrash(CMSServiceCtx cmsCtx, String docId) throws CMSException;
@@ -359,7 +359,7 @@ public interface ICMSService {
      * Refresh the user avatar.
      * TODO : déplacer dans person service
      *
-     * @param cmsCtx cms context
+     * @param cmsCtx   cms context
      * @param username username
      * @return the timestamp associated with the refresh event
      */
@@ -369,7 +369,7 @@ public interface ICMSService {
     /**
      * Get binary url
      *
-     * @param cmsCtx CMS context
+     * @param cmsCtx   CMS context
      * @param username user identifier
      * @return user avatar
      */
@@ -379,22 +379,22 @@ public interface ICMSService {
     /**
      * Validate the delegation ticket
      *
-     * @param cmsCtx cms context
+     * @param cmsCtx   cms context
      * @param username username
      * @return the timestamp associated with the refresh event
      */
-     public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path) ;
+    public BinaryDelegation validateBinaryDelegation(CMSServiceCtx cmsCtx, String path);
 
 
-	/**
-	 * Execute and ECM command
-	 * @param cmsCtx
-	 * @param command
-	 * @param cmsPath
-	 * @throws CMSException
-	 */
-	void executeEcmCommand(CMSServiceCtx cmsCtx,
-			EcmCommand command, String cmsPath) throws CMSException;
+    /**
+     * Execute and ECM command
+     *
+     * @param cmsCtx
+     * @param command
+     * @param cmsPath
+     * @throws CMSException
+     */
+    void executeEcmCommand(CMSServiceCtx cmsCtx, EcmCommand command, String cmsPath) throws CMSException;
 
 
     /**
@@ -411,7 +411,7 @@ public interface ICMSService {
      * Get taskbar tasks.
      *
      * @param cmsContext CMS context
-     * @param basePath CMS base path
+     * @param basePath   CMS base path
      * @param navigation navigation usage indicator
      * @return tasks
      * @throws CMSException
@@ -482,8 +482,8 @@ public interface ICMSService {
      * Get documents metadata.
      *
      * @param cmsContext CMS context
-     * @param basePath CMS base path
-     * @param timestamp timestamp, may be null for full refresh
+     * @param basePath   CMS base path
+     * @param timestamp  timestamp, may be null for full refresh
      * @return documents metadata
      * @throws CMSException
      */
@@ -512,7 +512,7 @@ public interface ICMSService {
      * Get document context.
      *
      * @param cmsContext CMS context
-     * @param path document path
+     * @param path       document path
      * @return document context
      * @throws CMSException
      */
@@ -522,9 +522,9 @@ public interface ICMSService {
     /**
      * Get document context.
      *
-     * @param <D> document context type
-     * @param cmsContext CMS context
-     * @param path document path
+     * @param <D>          document context type
+     * @param cmsContext   CMS context
+     * @param path         document path
      * @param expectedType expected type
      * @return document context
      * @throws CMSException
@@ -534,7 +534,7 @@ public interface ICMSService {
 
     /**
      * Get template adapters.
-     * 
+     *
      * @param cmsContext CMS context
      * @return template adapters
      */
@@ -543,9 +543,9 @@ public interface ICMSService {
 
     /**
      * Get user tasks.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param user user UID
+     * @param user       user UID
      * @return tasks
      * @throws CMSException
      */
@@ -554,11 +554,11 @@ public interface ICMSService {
 
     /**
      * Get user task by path or UUID.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param user user UID
-     * @param path task path, may be null
-     * @param uuid task UUID, may be null
+     * @param user       user UID
+     * @param path       task path, may be null
+     * @param uuid       task UUID, may be null
      * @return task
      * @throws CMSException
      */
@@ -567,11 +567,11 @@ public interface ICMSService {
 
     /**
      * Update task.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param uuid UUID
-     * @param actionId action identifier
-     * @param variables task variables
+     * @param uuid       UUID
+     * @param actionId   action identifier
+     * @param variables  task variables
      * @throws CMSException
      */
     void updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
@@ -579,7 +579,7 @@ public interface ICMSService {
 
     /**
      * Reload CMS session.
-     * 
+     *
      * @param cmsContext CMS context
      * @throws CMSException
      */
@@ -588,11 +588,22 @@ public interface ICMSService {
 
     /**
      * Get user subscriptions.
-     * 
+     *
      * @param cmsContext CMS context
      * @return subscriptions
      * @throws CMSException
      */
     List<EcmDocument> getUserSubscriptions(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get title metadata window properties.
+     *
+     * @param cmsContext CMS context
+     * @param path       document path
+     * @return window properties
+     * @throws CMSException
+     */
+    Map<String, String> getTitleMetadataProperties(CMSServiceCtx cmsContext, String path) throws CMSException;
 
 }

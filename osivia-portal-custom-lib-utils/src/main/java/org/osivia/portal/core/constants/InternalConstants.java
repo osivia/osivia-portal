@@ -38,10 +38,12 @@ public final class InternalConstants {
 
     /** Window title property name. */
     public static final String PROP_WINDOW_TITLE = "osivia.title";
+    /** Window title metadata display indicator property name. */
+    public static final String PROP_WINDOW_TITLE_METADATA = "osivia.title.metadata";
     /** Window sub-title property name. */
     public static final String PROP_WINDOW_SUB_TITLE = "osivia.subtitle";
-    /** Window display vignette indicator property name. */
-    public static final String PROP_WINDOW_VIGNETTE_DISPLAY = "osivia.vignette.display";
+    /** Window vignette URL property name. */
+    public static final String PROP_WINDOW_VIGNETTE_URL = "osivia.vignette.url";
 
 
     // LDAP

@@ -94,12 +94,7 @@ import org.osivia.portal.api.status.IStatusService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.StartingWindowBean;
-import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.*;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -1412,13 +1407,24 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             String title = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_TITLE);
             properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_TITLE, title);
 
-            // Sub-title
-            String subTitle = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_SUB_TITLE);
-            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_SUB_TITLE, subTitle);
+            // Title metadata
+            boolean contextualized = "1".equals( window.getDeclaredProperty("osivia.cms.contextualization"));
+            boolean display = BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.PROP_WINDOW_TITLE_METADATA));
+            String path = window.getDeclaredProperty(Constants.WINDOW_PROP_URI);
+            if (contextualized && display && StringUtils.isNotEmpty(path)) {
+                // CMS context
+                CMSServiceCtx cmsContext = new CMSServiceCtx();
+                cmsContext.setControllerContext(controllerContext);
+                cmsContext.setServletRequest(controllerContext.getServerInvocation().getServerContext().getClientRequest());
 
-            // Vignette display indicator
-            String vignetteDisplay = window.getDeclaredProperty(InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY);
-            properties.setWindowProperty(windowId, InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY, vignetteDisplay);
+                // Title metadata window properties
+                Map<String, String> titleMetadataProperties = getCMSService().getTitleMetadataProperties(cmsContext, path);
+
+                for (Map.Entry<String, String> entry : titleMetadataProperties.entrySet()) {
+                    properties.setWindowProperty(windowId, entry.getKey(), entry.getValue());
+                }
+            }
+
 
             // Bootstrap panel style indicator
             String bootstrapPanelStyle = window.getDeclaredProperty("osivia.bootstrapPanelStyle");

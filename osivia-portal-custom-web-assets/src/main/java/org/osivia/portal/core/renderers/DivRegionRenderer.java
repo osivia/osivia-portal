@@ -656,10 +656,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 }
 
                 windowSubTitle = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_SUB_TITLE);
-
-                if (BooleanUtils.toBoolean(properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_DISPLAY))) {
-                    windowVignetteUrl = "#"; // FIXME
-                }
+                windowVignetteUrl = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_URL);
             }
         }
 
@@ -669,7 +666,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         if (windowTitle == null) {
             pageHeaderClass = "clearfix hidden-xs";
         } else {
-            pageHeaderClass = "page-header hidden-xs";
+            pageHeaderClass = "page-header clearfix hidden-xs";
         }
         Element pageHeader = DOM4JUtils.generateDivElement(pageHeaderClass);
 
