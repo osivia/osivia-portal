@@ -47,6 +47,9 @@ public class ShareCommand extends DynamicCommand {
     /** Parameters. */
     private Map<String, String> parameters;
 
+    /** displayContext */
+    private String displayContext;
+
 
     /** WebId. */
     private final String webId;
@@ -128,7 +131,7 @@ public class ShareCommand extends DynamicCommand {
 
 
         // CMS command
-        CmsCommand cmsCommand = new CmsCommand(null, webIdPath.toString(), parameters, null, null, null, null, null, null, null, portalPersistentName);
+        CmsCommand cmsCommand = new CmsCommand(null, webIdPath.toString(), parameters, null, displayContext, null, null, null, null, null, portalPersistentName);
         // Remove default initialisation
         cmsCommand.setItemScope(null);
         cmsCommand.setInsertPageMarker(false);
@@ -180,6 +183,26 @@ public class ShareCommand extends DynamicCommand {
      */
     public String getWebId() {
         return webId;
+    }
+
+
+    /**
+     * Getter for displayContext.
+     * 
+     * @return the displayContext
+     */
+    public String getDisplayContext() {
+        return displayContext;
+    }
+
+
+    /**
+     * Setter for displayContext.
+     * 
+     * @param displayContext the displayContext to set
+     */
+    public void setDisplayContext(String displayContext) {
+        this.displayContext = displayContext;
     }
 
 }

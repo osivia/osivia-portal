@@ -56,6 +56,12 @@ public class ShareCommandFactoryService extends AbstractCommandFactory {
                 if (locationValue != null) {
                     command.setParentWebId(URLDecoder.decode(locationValue[0], "UTF-8"));
                 }
+
+                // Remote proxy case: parentWebId is in l parameter
+                String[] displayContext = parameterMap.get("displayContext");
+                if (displayContext != null) {
+                    command.setDisplayContext(URLDecoder.decode(displayContext[0], "UTF-8"));
+                }
             } catch (UnsupportedEncodingException e) {
                 // Ignore
             }

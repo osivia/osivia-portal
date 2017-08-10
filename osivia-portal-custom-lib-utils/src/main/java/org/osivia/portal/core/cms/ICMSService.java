@@ -606,4 +606,16 @@ public interface ICMSService {
      */
     Map<String, String> getTitleMetadataProperties(CMSServiceCtx cmsContext, String path) throws CMSException;
 
+
+    /**
+     * return all dashboards defined in a procedureModel as CMSEditableWindow.
+     * 
+     * @param cmsContext CMS context
+     * @param path current path
+     * 
+     * @return CMSEditableWindow for each dashboard
+     * @throws CMSException
+     */
+    List<CMSEditableWindow> getProcedureDashboards(CMSServiceCtx cmsContext, String path) throws CMSException;
+
 }

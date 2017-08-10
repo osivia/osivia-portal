@@ -78,6 +78,16 @@ public class ShareURLFactory extends URLFactoryDelegate {
                     // Ignore
                 }
             }
+            
+            // Parent webId
+            String displayContext = command.getDisplayContext();
+            if (StringUtils.isNotBlank(displayContext)) {
+                try {
+                    asu.setParameterValue("displayContext", URLEncoder.encode(displayContext, CharEncoding.UTF_8));
+                } catch (UnsupportedEncodingException e) {
+                    // Ignore
+                }
+            }
 
             // Page parameters
             Map<String, String> pageParams = command.getParameters();

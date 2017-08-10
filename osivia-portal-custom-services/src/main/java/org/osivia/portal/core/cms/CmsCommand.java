@@ -671,9 +671,47 @@ public class CmsCommand extends DynamicCommand {
                 }
             }
 
+
+            if ("procedureDashboard".equals(this.displayContext)) {
+
+                Map<String, String> props = new HashMap<String, String>();
+
+                Map<Locale, String> displayNames = new HashMap<Locale, String>();
+                displayNames.put(Locale.FRENCH, "Nom de la procédure");
+
+                Portal portal = null;
+
+                if (currentPage != null) {
+                    portal = currentPage.getPortal();
+                } else {
+                    // Pas de page courante, c'est un permalink
+                    // On regarde si il est associé à un portail
+                    if (this.portalPersistentName != null) {
+                        portal = controllerContext.getController().getPortalObjectContainer().getContext().getPortal(this.portalPersistentName);
+                    } else {
+                        portal = controllerContext.getController().getPortalObjectContainer().getContext().getDefaultPortal();
+                    }
+                }
+
+                String pageName = "procedureDashboard"
+                        + (new CMSObjectPath(cmsItem.getPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
+
+                props.put("osivia.procedure.dashboard.path", cmsItem.getPath());
+
+                StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), pageName, displayNames,
+                        PortalObjectId.parse("/default/templates/procedureDashboard", PortalObjectPath.CANONICAL_FORMAT).toString(
+                                PortalObjectPath.SAFEST_FORMAT), props, new HashMap<String, String>());
+
+                cmd.setCmsParameters(this.pageParams);
+
+                return this.context.execute(cmd);
+            }
+
+
             if ("detailedView".equals(this.displayContext)) {
                 this.contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTLET;
             }
+
 
             // Contextualisation du contenu dans la page ou dans le portail (une page dynamique est créée si aucune page n'est trouvée)
             boolean contextualizeinPage = false;
@@ -770,6 +808,7 @@ public class CmsCommand extends DynamicCommand {
                         }
                     }
                 }
+
 
                 if (contextualizeinPortal) {
                     Portal portal = null;
