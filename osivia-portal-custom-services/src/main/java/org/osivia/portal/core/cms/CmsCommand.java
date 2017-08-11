@@ -677,7 +677,7 @@ public class CmsCommand extends DynamicCommand {
                 Map<String, String> props = new HashMap<String, String>();
 
                 Map<Locale, String> displayNames = new HashMap<Locale, String>();
-                displayNames.put(Locale.FRENCH, "Nom de la procédure");
+                displayNames.put(Locale.FRENCH, cmsItem.getProperties().get("displayName"));
 
                 Portal portal = null;
 
