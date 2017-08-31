@@ -672,7 +672,7 @@ public class CmsCommand extends DynamicCommand {
             }
 
 
-            if ("procedureDashboard".equals(this.displayContext)) {
+            if ("dashboard".equals(this.displayContext)) {
 
                 Map<String, String> props = new HashMap<String, String>();
 
