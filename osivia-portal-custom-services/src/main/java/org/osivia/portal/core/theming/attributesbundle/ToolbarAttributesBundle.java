@@ -229,7 +229,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 
                 
                 String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
-                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true")) {
+                if(StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true") && person != null) {
                 	person.setAvatar(null);
                 }
                 
