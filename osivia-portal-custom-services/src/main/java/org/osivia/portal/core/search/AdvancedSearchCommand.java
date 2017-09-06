@@ -41,7 +41,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
 
 
     /** Search keywords selector identifier. */
-    private static final String KEYWORDS_SELECTOR_ID = "keywords";
+    private static final String KEYWORDS_SELECTOR_ID = "search";
     /** Dummy selector identifier. */
     private static final String DUMMY_SELECTOR_ID = "dummy-selector";
     /** Advanced search page name. */

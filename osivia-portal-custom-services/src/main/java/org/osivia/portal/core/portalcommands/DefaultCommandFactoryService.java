@@ -33,6 +33,8 @@ import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.AbstractCommandFactory;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
@@ -71,6 +73,7 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
+import org.osivia.portal.core.urls.BackCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 /**
@@ -649,12 +652,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String[] searchParameterMap = parameterMap.get(AdvancedSearchCommand.SEARCH_PARAMETER_NAME);
                     String[] advancedSearchParameterMap = parameterMap.get(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME);
 
-                    if (searchParameterMap != null) {
-
+                    if (ArrayUtils.isNotEmpty(searchParameterMap)) {
+                        // Search value
                         String search = URLDecoder.decode(searchParameterMap[0], CharEncoding.UTF_8);
 
-                        boolean advancedSearch = false;
-                        if (advancedSearchParameterMap != null) {
+                        // Advanced search indicator
+                        boolean advancedSearch;
+                        if (ArrayUtils.isEmpty(advancedSearchParameterMap)) {
+                            advancedSearch = false;
+                        } else {
                             advancedSearch = BooleanUtils.toBoolean(URLDecoder.decode(advancedSearchParameterMap[0], CharEncoding.UTF_8));
                         }
 
@@ -877,6 +883,46 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     }
 
                     return new SaveResizableWidthCommand(linkedToTasks, width);
+                }
+
+
+                // Back
+                if (BackCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] pageIdParameter = parameterMap.get(BackCommand.PAGE_ID_PARAMETER);
+                    String[] pageMarkerParameter = parameterMap.get(BackCommand.PAGE_MARKER_PARAMETER);
+                    String[] refreshParameter = parameterMap.get(BackCommand.REFRESH_PARAMETER);
+
+                    // Page identifier
+                    String pageId;
+                    if (ArrayUtils.isEmpty(pageIdParameter)) {
+                        pageId = null;
+                    } else {
+                        pageId = URLDecoder.decode(pageIdParameter[0], CharEncoding.UTF_8);
+                    }
+
+                    // Page marker
+                    String pageMarker;
+                    if (ArrayUtils.isEmpty(pageMarkerParameter)) {
+                        pageMarker = null;
+                    } else {
+                        pageMarker = URLDecoder.decode(pageMarkerParameter[0], CharEncoding.UTF_8);
+                    }
+
+                    // Refresh indicator
+                    boolean refresh;
+                    if (ArrayUtils.isEmpty(refreshParameter)) {
+                        refresh = false;
+                    } else {
+                        refresh = BooleanUtils.toBoolean(URLDecoder.decode(refreshParameter[0], CharEncoding.UTF_8));
+                    }
+
+                    if (StringUtils.isNotEmpty(pageId) && StringUtils.isNotEmpty(pageMarker)) {
+                        // Page portal object identifer
+                        PortalObjectId pageObjectId = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
+
+                        return new BackCommand(pageObjectId, pageMarker, refresh);
+                    }
                 }
             }
         } catch (Exception e) {

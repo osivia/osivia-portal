@@ -81,7 +81,6 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.mt.IMultithreadService;
-
 import org.osivia.portal.core.profils.IProfilManager;
 
 /**
@@ -194,7 +193,13 @@ public final class RenderPageCommand extends PageCommand {
     @SuppressWarnings("unchecked")
     @Override
     public ControllerResponse execute() throws ControllerException, InvocationException {
+        // Controller response
+        ControllerResponse response;
+
         try {
+            // Controller context
+            ControllerContext controllerContext = (ControllerContext) this.getContext();
+
             PageService pageService = this.context.getController().getPageService();
             ThemeService themeService = pageService.getThemeService();
             LayoutService layoutService = pageService.getLayoutService();
@@ -213,8 +218,7 @@ public final class RenderPageCommand extends PageCommand {
 
             // Determine theme
             if (this.personalizable) {
-                ControllerContext controllerCtx = (ControllerContext) this.getContext();
-                User user = controllerCtx.getUser();
+                User user = controllerContext.getUser();
                 if (user != null) {
                     UserProfileModule userProfileModule = null;
 
@@ -255,6 +259,9 @@ public final class RenderPageCommand extends PageCommand {
                 layout = layoutService.getLayoutById("osivia-popup");
                 theme = themeService.getThemeById("osivia-popup");
             }
+
+
+            // Reset Ajax
 
 
             // TODO : optimiser acces service multi-threads
@@ -307,8 +314,7 @@ public final class RenderPageCommand extends PageCommand {
                     String conditionalScope = window.getProperty("osivia.conditionalScope");
                     if (conditionalScope != null) {
                         addWindow = false;
-                        ControllerContext controllerCtx = (ControllerContext) this.getContext();
-                        Boolean isAdmin = (Boolean) controllerCtx.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
+                        Boolean isAdmin = (Boolean) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
                         if (isAdmin != null) {
                             if (isAdmin) {
                                 addWindow = true;
@@ -349,11 +355,6 @@ public final class RenderPageCommand extends PageCommand {
                             }
                         }
                     }
-                    
-                    
-                    
-                    
-                    
                     
                     
                     // Is this window defined in a visible region ????
@@ -403,7 +404,7 @@ public final class RenderPageCommand extends PageCommand {
             if ((multithreadService != null) && isMultiThreadEnabled) {
                 ControllerResponse pageResult = multithreadService.execute(this.page, this.context, filteredWindows, layout, theme, pageService,
                         pageNavigationalState);
-                return pageResult;
+                response = pageResult;
             } else {
                 // Call the portlet container to create the markup fragment(s) for each portlet that needs to render itself
                 PageResult pageResult = new PageResult(this.getPage().getName(), new HashMap<Object, Object>(this.getPage().getProperties()));
@@ -412,6 +413,7 @@ public final class RenderPageCommand extends PageCommand {
                 WindowContextFactory wcFactory = new WindowContextFactory(this.context);
 
                 // Render the windows
+                response = null;
                 for (PortalObject po : filteredWindows) {
                     if (po instanceof Window) {
                         Window window = (Window) po;
@@ -428,16 +430,17 @@ public final class RenderPageCommand extends PageCommand {
                         // We ignore null result objects
                         if (rendition != null) {
                             // Get the controller response
-                            ControllerResponse response = rendition.getControllerResponse();
+                            ControllerResponse controllerResponse = rendition.getControllerResponse();
 
                             // Null means we skip the window
-                            if (response != null) {
-                                if (response instanceof MarkupResponse) {
+                            if (controllerResponse != null) {
+                                if (controllerResponse instanceof MarkupResponse) {
                                     // If this is a markup response we aggregate it
                                     pageResult.addWindowContext(wcFactory.createWindowContext(window, rendition));
-                                } else if (response != null) {
+                                } else if (controllerResponse != null) {
                                     // Otherwise we return it
-                                    return response;
+                                    response = controllerResponse;
+                                    break;
                                 }
                             }
                         }
@@ -445,14 +448,21 @@ public final class RenderPageCommand extends PageCommand {
                 }
 
                 //
-                return new PageRendition(layout, theme, pageResult, pageService);
+                if (response == null) {
+                    response = new PageRendition(layout, theme, pageResult, pageService);
+                }
             }
+
+
+            // Reset AJAX portlet action indicator
+            controllerContext.removeAttribute(Scope.PRINCIPAL_SCOPE, "osivia.ajax.action");
         } catch (Exception e) {
+            response = null;
             rethrow(e);
         }
 
         //
-        return null;
+        return response;
     }
 
 

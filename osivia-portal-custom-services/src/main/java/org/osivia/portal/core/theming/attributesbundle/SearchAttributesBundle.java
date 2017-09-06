@@ -92,26 +92,20 @@ public final class SearchAttributesBundle implements IAttributesBundle {
         ControllerContext controllerContext = renderPageCommand.getControllerContext();
         // Portal controller context
         PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-        // Portal identifier
-//        String portalId = renderPageCommand.getPortal().getId().toString();
-
 
         try {
-            // v1.0.13 : always open the same page
-//            String searchUrl = this.portalURLFactory.getStartPageUrl(portalControllerContext, portalId, "search", "/default/templates/search", properties,
-//                    parameters);
-            
-            AdvancedSearchCommand searchCmd = new AdvancedSearchCommand("__REPLACE_KEYWORDS__", true);
+            // Search command
+            AdvancedSearchCommand command = new AdvancedSearchCommand(null, false);
             
             // URL context
             final URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
             // URL format
             final URLFormat urlFormat = URLFormat.newInstance(false, true);
-            String searchUrl = controllerContext.renderURL(searchCmd, urlContext, urlFormat);
             
-            attributes.put(Constants.ATTR_SEARCH_URL, searchUrl);
-            
-            
+            // Search URL
+            String url = controllerContext.renderURL(command, urlContext, urlFormat);
+
+            attributes.put(Constants.ATTR_SEARCH_URL, url);
         } catch (Exception e) {
             throw new ControllerException(e);
         }

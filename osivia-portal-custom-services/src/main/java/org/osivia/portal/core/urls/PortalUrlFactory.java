@@ -915,79 +915,71 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     /**
      * {@inheritDoc}
      */
-    // public String getEcmFilesManagementUrl(PortalControllerContext ctx, String cmsPath, EcmOperations parameter) {
-    //
-    // ControllerCommand cmd = new EcmFilesManagementCommand(cmsPath, parameter);
-    // PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
-    //
-    // return portalURL.toString();
-    // }
-
-    /**
-     * {@inheritDoc}
-     */
-    // public String getSubscriptionUrl(PortalControllerContext ctx, String cmsPath, EcmOperations parameter) {
-    //
-    // ControllerCommand cmd = new SubscriptionCommand(cmsPath, parameter);
-    //
-    // PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
-    // return portalURL.toString();
-    // }
-
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile) {
         return this.getBackURL(portalControllerContext, mobile, false);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getBackURL(PortalControllerContext portalControllerContext, boolean mobile, boolean refresh) {
         // Controller context
-        final ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        // Back page marker
 
-        String backPageMarkerName = "osivia.backPageMarker";
+        // Back page marker attribute name
+        String backPageMarkerName;
         if (mobile) {
             backPageMarkerName = "osivia.backMobilePageMarker";
+        } else {
+            backPageMarkerName = "osivia.backPageMarker";
         }
+        // Back page marker
+        String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, backPageMarkerName);
 
-        String refreshName = "osivia.refreshBack";
+
+        // Refresh indicator attribute name
+        String refreshName;
         if (mobile) {
             refreshName = "osivia.mobileRefreshBack";
+        } else {
+            refreshName = "osivia.refreshBack";
         }
-
-        final String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, backPageMarkerName);
 
         if (!refresh) {
             refresh = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, refreshName));
         }
 
-        String backURL = null;
-        if (backPageMarker != null) {
-            final PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
+
+        // Back URL
+        String backUrl;
+        if (backPageMarker == null) {
+            backUrl = null;
+        } else {
+            // Page marker infos
+            PageMarkerInfo infos = PageMarkerUtils.getPageMarkerInfo(controllerContext, backPageMarker);
+
             if ((infos != null) && (infos.getPageId() != null)) {
-                final PortalObjectId pageId = infos.getPageId();
+                // Page portal object identifier
+                PortalObjectId pageObjectId = infos.getPageId();
+                // URL context
+                URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+                // URL format
+                URLFormat urlFormat = URLFormat.newInstance(false, true);
 
-                final URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
-
-                if (refresh) {
-                    final RefreshPageCommand resfreshCmd = new RefreshPageCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT));
-                    backURL = controllerContext.renderURL(resfreshCmd, urlContext, URLFormat.newInstance(false, true)) + "&backPageMarker=" + backPageMarker;
-                } else {
-                    final ViewPageCommand rpc = new ViewPageCommand(pageId);
-                    backURL = controllerContext.renderURL(rpc, urlContext, URLFormat.newInstance(false, true)) + "?backPageMarker=" + backPageMarker;
-                }
-
-                // backURL = backURL.replaceAll("/pagemarker/([0-9]*)/", "/pagemarker/" + backPageMarker + "/");
+                // Controller command
+                ControllerCommand command = new BackCommand(pageObjectId, backPageMarker, refresh);
+                
+                backUrl = controllerContext.renderURL(command, urlContext, urlFormat);
+            } else {
+                backUrl = null;
             }
         }
 
-        return backURL;
+        return backUrl;
     }
 
 

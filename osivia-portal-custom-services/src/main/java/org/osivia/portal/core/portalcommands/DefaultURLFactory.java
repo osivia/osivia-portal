@@ -28,6 +28,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.command.mapper.URLFactoryDelegate;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
@@ -58,6 +59,7 @@ import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
+import org.osivia.portal.core.urls.BackCommand;
 
 
 /**
@@ -357,17 +359,23 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
         // Advanced search command
         if (cmd instanceof AdvancedSearchCommand) {
-            AdvancedSearchCommand advancedSearchCommand = (AdvancedSearchCommand) cmd;
+            AdvancedSearchCommand command = (AdvancedSearchCommand) cmd;
 
             AbstractServerURL asu = new AbstractServerURL();
+            asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);
             asu.setPortalRequestPath(this.path);
 
             // Parameters
             try {
-                asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);                
-                asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getSearch(), CharEncoding.UTF_8));
-                asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME,
-                        URLEncoder.encode(String.valueOf(advancedSearchCommand.isAdvancedSearch()), CharEncoding.UTF_8));
+                // Search value
+                if (StringUtils.isNotBlank(command.getSearch())) {
+                    asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(command.getSearch(), CharEncoding.UTF_8));
+                }
+
+                // Advanced search indicator
+                if (command.isAdvancedSearch()) {
+                    asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME, URLEncoder.encode(String.valueOf(true), CharEncoding.UTF_8));
+                }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }
@@ -685,6 +693,36 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 // Resizable width
                 if (command.getWidth() != null) {
                     asu.setParameterValue(SaveResizableWidthCommand.WIDTH_PARAMETER, URLEncoder.encode(String.valueOf(command.getWidth()), CharEncoding.UTF_8));
+                }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+
+
+        // Back
+        if (cmd instanceof BackCommand) {
+            BackCommand command = (BackCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+            asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, BackCommand.ACTION);
+
+            // Parameters
+            try {
+                // Page identifier
+                String pageId = command.getPageObjectId().toString(PortalObjectPath.SAFEST_FORMAT);
+                asu.setParameterValue(BackCommand.PAGE_ID_PARAMETER, URLEncoder.encode(pageId, CharEncoding.UTF_8));
+
+                // Page marker
+                String pageMarker = command.getPageMarker();
+                asu.setParameterValue(BackCommand.PAGE_MARKER_PARAMETER, URLEncoder.encode(pageMarker, CharEncoding.UTF_8));
+
+                // Refresh indicator
+                if (command.isRefresh()) {
+                    asu.setParameterValue(BackCommand.REFRESH_PARAMETER, URLEncoder.encode(String.valueOf(true), CharEncoding.UTF_8));
                 }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing

@@ -67,6 +67,7 @@ $JQry(function() {
 		$element.select2(options);
 		
 		
+		// Auto submit on change
 		if ($element.data("onchange") == "submit") {
 			$element.on("select2:unselecting", function(event) {
 				var $target = $JQry(event.target);

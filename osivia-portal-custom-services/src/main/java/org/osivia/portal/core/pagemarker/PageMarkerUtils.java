@@ -629,18 +629,22 @@ public class PageMarkerUtils {
 
             Map<String, PageMarkerInfo> markers = (Map<String, PageMarkerInfo>) controllerContext.getAttribute(Scope.SESSION_SCOPE, "markers");
             if (markers != null) {
-                PageMarkerInfo markerInfo = null;
+                PageMarkerInfo markerInfo;
 
                 try {
-                    markerInfo = markers.get(currentPageMarker);
+                    if (backPageMarker == null) {
+                        markerInfo = markers.get(currentPageMarker);
+                    } else {
+                        markerInfo = markers.get(backPageMarker);
+                    }
 
                 } catch (ClassCastException e) {
+                    markerInfo = null;
                     // Cas d'un redéploiement à chaud
                 }
 
+
                 if (markerInfo != null) {
-
-
                     markerInfo.setLastTimeStamp(System.currentTimeMillis());
 
 
@@ -660,13 +664,6 @@ public class PageMarkerUtils {
                             }
                         }
 
-                        if (backPageMarker != null) {
-                            restorePageInfo = markers.get(backPageMarker);
-                            if (restorePageInfo != null) {
-                                restorePageInfo.setLastTimeStamp(System.currentTimeMillis());
-                            }
-
-                         }
 
                         // Restauration des pages dynamiques
                         if (markerInfo.getDynamicPages() != null) {

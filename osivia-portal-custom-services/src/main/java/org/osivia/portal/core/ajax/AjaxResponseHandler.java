@@ -53,6 +53,7 @@ import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
@@ -121,15 +122,16 @@ public class AjaxResponseHandler implements ResponseHandler {
     public void setPageService(PageService pageService) {
         this.pageService = pageService;
     }
-    
-    
+
+
     private boolean compareParameters(PageNavigationalState oldNS, PageNavigationalState newWS) {
-        
+
         // Null tests
         if (newWS == null) {
             if (oldNS != null)
                 return false;
-            else return true;
+            else
+                return true;
         } else {
             if (oldNS == null)
                 return true;
@@ -137,12 +139,12 @@ public class AjaxResponseHandler implements ResponseHandler {
 
         Map<QName, String[]> m1 = (Map<QName, String[]>) oldNS.getParameters();
         Map<QName, String[]> m2 = (Map<QName, String[]>) newWS.getParameters();
-         
+
         if (m1.size() != m2.size())
             return false;
 
         Iterator<Entry<QName, String[]>> i = m1.entrySet().iterator();
-        
+
         while (i.hasNext()) {
             Entry<QName, String[]> e = i.next();
             QName key = e.getKey();
@@ -154,12 +156,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                 // Compare values
                 String[] m1T = value;
                 String[] m2T = m2.get(key);
-                
-                if( m1T.length != m2T.length)
+
+                if (m1T.length != m2T.length)
                     return false;
-                
-                for(int mi=0; mi< m1T.length; mi++){
-                    if( !m1T[mi].equals(m2T[mi]))   {
+
+                for (int mi = 0; mi < m1T.length; mi++) {
+                    if (!m1T[mi].equals(m2T[mi])) {
                         return false;
                     }
                 }
@@ -173,27 +175,35 @@ public class AjaxResponseHandler implements ResponseHandler {
     }
 
 
-    public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
+    /**
+     * Process command response.
+     * 
+     * @param controllerContext controller context
+     * @param controllerCommand controller command
+     * @param controllerResponse controller response
+     * @return handler response
+     * @throws ResponseHandlerException
+     */
+    public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand controllerCommand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
+        // Handler response
+        HandlerResponse response;
+
         if (controllerResponse instanceof PortletWindowActionResponse) {
             PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
             StateString contentState = pwr.getContentState();
             WindowState windowState = pwr.getWindowState();
             Mode mode = pwr.getMode();
             ControllerCommand renderCmd = new InvokePortletWindowRenderCommand(pwr.getWindowId(), mode, windowState, contentState);
-            
+
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID", pwr.getWindowId());
-            
-            if (renderCmd != null) {
-                return new CommandForward(renderCmd, null);
-            } else {
-                return null;
-            }
+
+            response = new CommandForward(renderCmd, null);
         } else if (controllerResponse instanceof SignOutResponse) {
             // Get the optional signout location
             String location = ((SignOutResponse) controllerResponse).getLocation();
 
-            final ServerInvocation invocation = controllerContext.getServerInvocation();
+            ServerInvocation invocation = controllerContext.getServerInvocation();
 
             //
             if (location == null) {
@@ -209,21 +219,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
             // We perform a full refresh
             UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(location);
-            return new AjaxResponse(dresp);
-        } else if (controllerResponse instanceof UpdatePageResponse)
-        // {
-        // UpdatePageResponse upr = (UpdatePageResponse)controllerResponse;
-        // ViewPageCommand rpc = new ViewPageCommand(upr.getPageId());
-        // String url = controllerContext.renderURL(rpc, null, null);
-        // UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
-        // return new AjaxResponse(dresp);
-        // }
-        // else if (controllerResponse instanceof UpdateWindowResponse)
-        {
-
-            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
-            // boolean reloadAjaxWindows = false;
-
+            response = new AjaxResponse(dresp);
+        } else if (controllerResponse instanceof UpdatePageResponse) {
             UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
 
             // Obtain page and portal
@@ -235,7 +232,7 @@ public class AjaxResponseHandler implements ResponseHandler {
             NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
             // The windows marked dirty during the request
-            Set dirtyWindowIds = new HashSet();
+            Set<PortalObjectId> dirtyWindowIds = new HashSet<>();
 
             // Whether we need a full refresh or not
             boolean fullRefresh = false;
@@ -244,7 +241,7 @@ public class AjaxResponseHandler implements ResponseHandler {
             // If the page has changed, need a full refresh
             // It's useful for error pages
             PortalObjectId portalObjectId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.currentPageId");
-            if( !page.getId().equals(portalObjectId))   {
+            if (!page.getId().equals(portalObjectId)) {
                 fullRefresh = true;
             }
 
@@ -253,27 +250,27 @@ public class AjaxResponseHandler implements ResponseHandler {
             if (ctx.getChanges() == null) {
                 fullRefresh = true;
             } else {
-                
-                /*  
-                 * If public parameters are not changed, recompute only current portlet 
+
+                /*
+                 * If public parameters are not changed, recompute only current portlet
                  * (only for actions)
                  */
-                
-                
+
+
                 PortalObjectId filterWindow = null;
-                
+
                 PortalObjectId actionWindow = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID");
-                
+
                 if (actionWindow != null) {
-                   boolean publicParametersChanged = false;
+                    boolean publicParametersChanged = false;
                     boolean windowModeChange = false;
 
-                    for (Iterator i = ctx.getChanges(); i.hasNext();) {
-                        NavigationalStateChange change = (NavigationalStateChange) i.next();
+                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext();) {
+                        NavigationalStateChange change = i.next();
 
                         NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
                         NavigationalStateKey key = update.getKey();
-                        Class type = key.getType();
+                        Class<?> type = key.getType();
 
                         if (type == WindowNavigationalState.class) {
                             // Get old window state
@@ -293,11 +290,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 windowModeChange = true;
                             }
                         } else if (type == PageNavigationalState.class) {
-                            PageNavigationalState oldNS = (PageNavigationalState)  update.getOldValue();
+                            PageNavigationalState oldNS = (PageNavigationalState) update.getOldValue();
                             PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();
- 
+
                             publicParametersChanged = !compareParameters(oldNS, newNS);
-                            
+
                         }
                     }
 
@@ -307,73 +304,50 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                 }
 
-                if(filterWindow != null)
+                if (filterWindow != null) {
                     dirtyWindowIds.add(filterWindow);
-                else
-                 for (Iterator i = ctx.getChanges(); i.hasNext();) {
-                    NavigationalStateChange change = (NavigationalStateChange) i.next();
+                } else {
+                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext();) {
+                        NavigationalStateChange change = i.next();
 
-                    // A change that modifies potentially the page structure
-                    if (!(change instanceof NavigationalStateObjectChange)) {
-                        fullRefresh = true;
-                        break;
-                    }
-                    NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
-                    /*
-                     * // A change that modifies potentially the page structure
-                     * if (update.getType() != NavigationalStateObjectChange.UPDATE)
-                     * {
-                     * fullRefresh = true;
-                     * break;
-                     * }
-                     */
-                    // Get the state key
-                    NavigationalStateKey key = update.getKey();
-
-                    // We consider only portal object types
-                    Class type = key.getType();
-                    if (type == WindowNavigationalState.class) {
-                        // Get old window state
-                        WindowNavigationalState oldNS = (WindowNavigationalState) update.getOldValue();
-                        WindowState oldWindowState = oldNS != null ? oldNS.getWindowState() : null;
-
-                        // Get new window state
-                        WindowNavigationalState newNS = (WindowNavigationalState) update.getNewValue();
-                        WindowState newWindowState = newNS != null ? newNS.getWindowState() : null;
-
-                        // Check if window state requires a refresh
-                        if (WindowState.MAXIMIZED.equals(oldWindowState)) {
-                            if (!WindowState.MAXIMIZED.equals(newWindowState)) {
-                                fullRefresh = true;
-                                break;
-                            }
-                        } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
+                        // A change that modifies potentially the page structure
+                        if (!(change instanceof NavigationalStateObjectChange)) {
                             fullRefresh = true;
                             break;
                         }
+                        NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
 
-                        // Collect the dirty window id
-                        dirtyWindowIds.add(key.getId());
-                    }   else   if (type == PageNavigationalState.class) {
-                        break;
+                        // Get the state key
+                        NavigationalStateKey key = update.getKey();
+
+                        // We consider only portal object types
+                        Class<?> type = key.getType();
+                        if (type == WindowNavigationalState.class) {
+                            // Get old window state
+                            WindowNavigationalState oldNS = (WindowNavigationalState) update.getOldValue();
+                            WindowState oldWindowState = oldNS != null ? oldNS.getWindowState() : null;
+
+                            // Get new window state
+                            WindowNavigationalState newNS = (WindowNavigationalState) update.getNewValue();
+                            WindowState newWindowState = newNS != null ? newNS.getWindowState() : null;
+
+                            // Check if window state requires a refresh
+                            if (WindowState.MAXIMIZED.equals(oldWindowState)) {
+                                if (!WindowState.MAXIMIZED.equals(newWindowState)) {
+                                    fullRefresh = true;
+                                    break;
+                                }
+                            } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
+                                fullRefresh = true;
+                                break;
+                            }
+
+                            // Collect the dirty window id
+                            dirtyWindowIds.add((PortalObjectId) key.getId());
+                        } else if (type == PageNavigationalState.class) {
+                            break;
+                        }
                     }
-                    /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
-
-                    /*
-                     * else if (type == PageNavigationalState.class) {
-                     *
-                     * // Pas de rechargement de la page si les parametres publics sont modifies
-                     *
-                     * // force full refresh for now...
-                     * // fullRefresh = true;
-                     *
-                     * // A la place, on recharge les windows
-                     * reloadAjaxWindows = true;
-                     *
-                     * // On peut vérifier que les paramètres publics on bien été modifiés
-                     * // PageNavigationalState pp = (PageNavigationalState) update.getNewValue();
-                     * }
-                     */
                 }
             }
 
@@ -382,36 +356,14 @@ public class AjaxResponseHandler implements ResponseHandler {
                 fullRefresh = true;
             }
 
+            if (!fullRefresh) {
+                PortalObjectId dynamicWindowID = (PortalObjectId) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID");
 
-            // TODO : rechargement systématique des windows supportant le mode Ajax
-            /*
-             * if( reloadAjaxWindows && !fullRefresh){
-             *
-             * Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
-             *
-             * for (PortalObject window : windows) {
-             *
-             * if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
-             * if (!dirtyWindowIds.contains(window.getId()))
-             * dirtyWindowIds.add(window.getId());
-             * }
-             * }
-             */
+                if (dynamicWindowID != null && !dirtyWindowIds.contains(dynamicWindowID)) {
+                    dirtyWindowIds.add(dynamicWindowID);
+                }
 
-            // v2.0.8 : gestion des evenements de selection
 
-            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
-//            if (!reloadAjaxWindows && !fullRefresh) {
-                if (!fullRefresh) {
-                    
-                 PortalObjectId dynamicWindowID =  (PortalObjectId) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID");
-                 
-                 if( dynamicWindowID != null && !dirtyWindowIds.contains(dynamicWindowID))  {
-                     dirtyWindowIds.add(dynamicWindowID);
-                 }
-                    
-                    
-                    
                 Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
 
 
@@ -433,32 +385,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                     }
                 }
             }
-
-
-            // Le rafraichissment de la page doit etre explicitement demandé par le portlet
-
-            /* v3.0.2 : empecher le rafraichissement systématique de tous les portlets */
-
-            // if (reloadAjaxWindows) {
-            // if (!"true".equals(controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.refreshPage"))) {
-            //
-            // Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
-            //
-            //
-            // for (PortalObject window : windows) {
-            //
-            // if ("true".equals(window.getProperty("theme.dyna.partial_refresh_enabled"))) {
-            // if (!dirtyWindowIds.contains(window.getId())) {
-            // dirtyWindowIds.add(window.getId());
-            // }
-            // }
-            // }
-            // } else {
-            // fullRefresh = true;
-            // }
-            //
-            // }
-
 
 
             // Commit changes
@@ -485,9 +411,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                 PageResult res = new PageResult(page.getName(), page.getProperties());
 
                 //
-                ServerInvocation invocation = controllerContext.getServerInvocation();
-
-                //
                 WindowContextFactory wcf = new WindowContextFactory(controllerContext);
 
                 //
@@ -496,9 +419,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                         .createPortletPageNavigationalState(true);
 
                 //
-                for (Iterator i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
+                for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
                     try {
-                        Window refreshedWindow = (Window) i.next();
+                        Window refreshedWindow = i.next();
                         RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                         WindowRendition rendition = rwc.render(controllerContext);
 
@@ -511,7 +434,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 // Once this virtual window has been computed, it's not worth sending it into the response
                                 // because the menu is displayed in menubar context
                                 // Furthermore, dyna.js must parse its content
-                                if( !refreshedWindow.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME))    {
+                                if (!refreshedWindow.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME)) {
                                     WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
                                     res.addWindowContext(windowContext);
                                     this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
@@ -572,18 +495,27 @@ public class AjaxResponseHandler implements ResponseHandler {
             }
 
             // We perform a full refresh
-
             PageMarkerUtils.savePageState(controllerContext, page);
 
 
             ViewPageCommand rpc = new ViewPageCommand(page.getId());
             String url = controllerContext.renderURL(rpc, null, null);
             UpdatePageLocationResponse dresp = new UpdatePageLocationResponse(url);
-            return new AjaxResponse(dresp);
+            response = new AjaxResponse(dresp);
         } else {
-            return null;
+            response = null;
         }
+
+
+        // AJAX portlet action indicator
+        if (controllerCommand instanceof InvokePortletWindowActionCommand) {
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, "osivia.ajax.action", true);
+        }
+
+
+        return response;
     }
+
 
     /**
      * Refresh window context.
@@ -609,8 +541,8 @@ public class AjaxResponseHandler implements ResponseHandler {
         StringWriter buffer = new StringWriter();
 
         // Dispatcher
-        ServletContextDispatcher dispatcher = new ServletContextDispatcher(serverContext.getClientRequest(), serverContext
-                .getClientResponse(), controllerContext.getServletContainer());
+        ServletContextDispatcher dispatcher = new ServletContextDispatcher(serverContext.getClientRequest(), serverContext.getClientResponse(),
+                controllerContext.getServletContainer());
 
         // Not really used for now in that context, so we can pass null (need to change that of course)
         ThemeContext themeContext = new ThemeContext(null, null);

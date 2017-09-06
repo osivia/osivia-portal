@@ -207,46 +207,51 @@ public class TaskbarService implements ITaskbarService {
                             }
                         }
                     }
-                } else {
+                }
+
+                if (activeId == null) {
                     // Base path
                     String basePath = page.getProperty("osivia.cms.basePath");
-                    // Content path
-                    String contentPath;
-                    if (request != null) {
-                        contentPath = request.getParameter("osivia.cms.contentPath");
-                    } else {
-                        contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
-                    }
-                    // Navigation path
-                    String navigationPath;
-                    if (request != null) {
-                        navigationPath = request.getParameter("osivia.cms.path");
-                    } else {
-                        navigationPath = PagePathUtils.getNavigationPath(controllerContext, page.getId());
-                    }
-                    // Task path
-                    String taskPath;
-                    if (StringUtils.startsWith(contentPath, basePath)) {
-                        taskPath = contentPath;
-                    } else {
-                        // Virtual navigation path
-                        taskPath = navigationPath;
-                    }
 
-                    if (StringUtils.equals(taskPath, basePath)) {
-                        activeId = ITaskbarService.HOME_TASK_ID;
-                    } else {
-                        // Protected task path
-                        String protectedTaskPath = taskPath + "/";
+                    if (StringUtils.isNotEmpty(basePath)) {
+                        // Content path
+                        String contentPath;
+                        if (request != null) {
+                            contentPath = request.getParameter("osivia.cms.contentPath");
+                        } else {
+                            contentPath = PagePathUtils.getContentPath(controllerContext, page.getId());
+                        }
+                        // Navigation path
+                        String navigationPath;
+                        if (request != null) {
+                            navigationPath = request.getParameter("osivia.cms.path");
+                        } else {
+                            navigationPath = PagePathUtils.getNavigationPath(controllerContext, page.getId());
+                        }
+                        // Task path
+                        String taskPath;
+                        if (StringUtils.startsWith(contentPath, basePath)) {
+                            taskPath = contentPath;
+                        } else {
+                            // Virtual navigation path
+                            taskPath = navigationPath;
+                        }
 
-                        // Navigation tasks
-                        List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
+                        if (StringUtils.equals(taskPath, basePath)) {
+                            activeId = ITaskbarService.HOME_TASK_ID;
+                        } else {
+                            // Protected task path
+                            String protectedTaskPath = taskPath + "/";
 
-                        for (TaskbarTask navigationTask : navigationTasks) {
-                            String protectedPath = navigationTask.getPath() + "/";
-                            if (StringUtils.startsWith(protectedTaskPath, protectedPath)) {
-                                activeId = navigationTask.getId();
-                                break;
+                            // Navigation tasks
+                            List<TaskbarTask> navigationTasks = this.getTasks(portalControllerContext, basePath, true);
+
+                            for (TaskbarTask navigationTask : navigationTasks) {
+                                String protectedPath = navigationTask.getPath() + "/";
+                                if (StringUtils.startsWith(protectedTaskPath, protectedPath)) {
+                                    activeId = navigationTask.getId();
+                                    break;
+                                }
                             }
                         }
                     }
