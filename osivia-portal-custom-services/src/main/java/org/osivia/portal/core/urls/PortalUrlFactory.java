@@ -317,7 +317,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 // Parent webId (for remote proxy only)
                 String parentWebId;
                 if (StringUtils.contains(webId, IWebIdService.RPXY_WID_MARKER)) {
-                    String[] splittedWebId = StringUtils.split(webId, IWebIdService.RPXY_WID_MARKER, 2);
+                    String[] splittedWebId = StringUtils.splitByWholeSeparator(webId, IWebIdService.RPXY_WID_MARKER, 2);
                     webId = splittedWebId[0];
                     parentWebId = splittedWebId[1];
                 } else {
