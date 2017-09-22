@@ -13,6 +13,7 @@
  */
 package org.osivia.portal.api.directory.v2.model;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.naming.Name;
@@ -185,6 +186,54 @@ public interface Person {
      * @param avatar avatar link
      */
     void setAvatar(Link avatar);
+
+
+    /**
+     * Get external account indicator.
+     * 
+     * @return external account indicator
+     */
+    Boolean getExternal();
+
+
+    /**
+     * Set external account indicator.
+     * 
+     * @param external external account indicator
+     */
+    void setExternal(Boolean external);
+
+
+    /**
+     * Get account validity date.
+     * 
+     * @return account validity date
+     */
+    Date getValidity();
+
+
+    /**
+     * Set account validity date.
+     * 
+     * @param validity account validity date
+     */
+    void setValidity(Date validity);
+
+
+    /**
+     * Get last connection date.
+     * 
+     * @return last connection date
+     */
+    Date getLastConnection();
+
+
+    /**
+     * Set last connection date.
+     * 
+     * @param lastConnection last connection date
+     */
+    void setLastConnection(Date lastConnection);
 
 
     /**
