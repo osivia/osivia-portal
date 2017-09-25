@@ -448,7 +448,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                     }
 
                     String cachePath = path != null ? path : "";
-                    cachePath = procedurePath != null ? "path_".concat(cachePath).concat("proceudrePath_").concat(procedurePath) : cachePath;
+                    cachePath = procedurePath != null ? "path_".concat(cachePath).concat("procedurePath_").concat(procedurePath) : cachePath;
 
                     // Pour performances
                     windows = (List<DynamicWindowBean>) invocation.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.editableWindows."
