@@ -113,7 +113,7 @@ public class InternationalizationService implements IInternationalizationService
             if (applicationContext != null) {
                 // Application context message source
                 try {
-                    pattern = applicationContext.getMessage(key, args, locale);
+                    pattern = applicationContext.getMessage(key, null, locale);
                 } catch (NoSuchMessageException e) {
                     // Do nothing
                 }

@@ -89,4 +89,13 @@ public interface PersonService extends IDirService {
 			Person person) throws PortalException;
 
 
+    /**
+     * Check if the current user is a portal administrator.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return true if the current user is a portal administrator
+     * @throws PortalException
+     */
+    boolean isPortalAdministrator(PortalControllerContext portalControllerContext) throws PortalException;
+
 }

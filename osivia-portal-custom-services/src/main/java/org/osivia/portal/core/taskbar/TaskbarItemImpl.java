@@ -152,16 +152,6 @@ public class TaskbarItemImpl implements TaskbarItem {
      * {@inheritDoc}
      */
     @Override
-    public void setToDefault(int order) {
-        this.defaultItem = true;
-        this.order = order;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public TaskbarItemRestriction getRestriction() {
         return this.restriction;
     }
@@ -283,6 +273,24 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public void setDocumentType(String documentType) {
         this.documentType = documentType;
+    }
+
+    /**
+     * Setter for defaultItem.
+     * 
+     * @param defaultItem the defaultItem to set
+     */
+    public void setDefaultItem(boolean defaultItem) {
+        this.defaultItem = defaultItem;
+    }
+
+    /**
+     * Setter for order.
+     * 
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     /**

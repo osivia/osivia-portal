@@ -90,14 +90,6 @@ public interface TaskbarItem {
 
 
     /**
-     * Set to default.
-     * 
-     * @param order order
-     */
-    void setToDefault(int order);
-
-
-    /**
      * Get restriction.
      * 
      * @return restriction

@@ -86,6 +86,16 @@ public interface TaskbarFactory {
 
 
     /**
+     * Preset taskbar item.
+     * 
+     * @param item taskbar item
+     * @param preset preset indicator
+     * @param order taskbar preset order, may be null to keep default value
+     */
+    void preset(TaskbarItem item, boolean preset, Integer order);
+
+
+    /**
      * Create taskbar task.
      *
      * @param item taskbar item

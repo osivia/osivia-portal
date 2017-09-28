@@ -110,8 +110,23 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     @Override
     public void restrict(TaskbarItem item, TaskbarItemRestriction restriction) {
         if (item instanceof TaskbarItemImpl) {
-            TaskbarItemImpl taskbarItemImpl = (TaskbarItemImpl) item;
-            taskbarItemImpl.setRestriction(restriction);
+            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
+            itemImpl.setRestriction(restriction);
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void preset(TaskbarItem item, boolean preset, Integer order) {
+        if (item instanceof TaskbarItemImpl) {
+            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
+            itemImpl.setDefaultItem(preset);
+            if (order != null) {
+                itemImpl.setOrder(order);
+            }
         }
     }
 

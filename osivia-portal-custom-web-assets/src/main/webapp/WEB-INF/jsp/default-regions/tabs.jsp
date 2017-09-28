@@ -31,7 +31,7 @@
     <!-- Title -->
     <h2 class="sr-only"><op:translate key="TABS_TITLE" /></h2>
     
-    <div class="primary-tabs">
+    <div class="primary-tabs clearfix">
         <!-- Home -->
         <c:if test="${not empty userPortal.defaultPage}">
             <div class="pull-left">

@@ -23,6 +23,14 @@ package org.osivia.portal.api.cms;
 public interface DocumentContext {
 
     /**
+     * Get document path.
+     * 
+     * @return path
+     */
+    String getPath();
+
+
+    /**
      * Get document permissions.
      * 
      * @return permissions
