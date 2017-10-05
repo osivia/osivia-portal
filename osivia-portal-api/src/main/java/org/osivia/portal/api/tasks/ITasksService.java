@@ -17,6 +17,9 @@ public interface ITasksService {
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=TasksService";
 
+    /** Customized host system property. */
+    String HOST_PROPERTY = "osivia.tasks.host";
+
 
     /**
      * Get current user tasks.

@@ -82,14 +82,6 @@ public class UpdateTaskCommand extends ControllerCommand {
 
 
     /**
-     * Default constructor.
-     */
-    public UpdateTaskCommand() {
-        this(null, null, null, null);
-    }
-
-
-    /**
      * {@inheritDoc}
      */
     @Override

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -219,13 +220,28 @@ public class TasksService implements ITasksService {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
+        // Customized host property
+        String host = System.getProperty(HOST_PROPERTY);
+
         // Command
         ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
 
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+
+        // Command URL
+        String url;
+
+        if (StringUtils.isEmpty(host)) {
+            url = portalUrl.toString();
+        } else {
+            // Relative portal URL
+            portalUrl.setRelative(true);
+
+            url = host + portalUrl.toString();
+        }
         
-        return portalUrl.toString();
+        return url;
     }
 
 
