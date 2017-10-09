@@ -328,27 +328,34 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
         boolean isDefaultPageCache = false;
 
+        
         if (cmd instanceof RenderPageCommand) {
+        	
+            if( "1".equals(System.getProperty("osivia.homePageCache")))	{
+        	
 
-            RenderPageCommand rpc = (RenderPageCommand) cmd;
+	            RenderPageCommand rpc = (RenderPageCommand) cmd;
+	
+	            // Mode anonyme
+	            HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
+	
+	            String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
+            
 
-            // Mode anonyme
-            HttpServletRequest request = controllerCtx.getServerInvocation().getServerContext().getClientRequest();
 
-            String pageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "currentPageMarker");
-
-            // Premier acces seulement (pour l'instant)
-            if ("1".equals(pageMarker)) {
-
-                if (request.getUserPrincipal() == null) {
-                    // Page d'accueil
-                    if (rpc.getPage().getId().equals(portalObjectContainer.getContext().getDefaultPortal().getDefaultPage().getId())) {
-
-                        controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
-
-                        isDefaultPageCache = true;
-                    }
-                }
+	            // Premier acces seulement (pour l'instant)
+	            if ("1".equals(pageMarker)) {
+	
+	                if (request.getUserPrincipal() == null) {
+	                    // Page d'accueil
+	                    if (rpc.getPage().getId().equals(portalObjectContainer.getContext().getDefaultPortal().getDefaultPage().getId())) {
+	
+	                        controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "osivia.useGlobalWindowCaches", "1");
+	
+	                        isDefaultPageCache = true;
+	                    }
+	                }
+	            }
             }
 
         }
