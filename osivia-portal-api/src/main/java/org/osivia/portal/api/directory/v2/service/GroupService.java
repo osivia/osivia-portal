@@ -60,4 +60,12 @@ public interface GroupService extends IDirService {
      */
     List<Group> search(Group criteria);
 
+
+    /**
+     * Delete group.
+     * 
+     * @param dn group DN
+     */
+    void delete(Name dn);
+
 }
