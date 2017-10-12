@@ -140,12 +140,6 @@ public class StartDynamicPageCommand extends DynamicCommand {
             cmsContext.setPortalControllerContext(portalControllerContext);
 
 
-            // Compatibilité 4.1 : propriété ttc:pageTemplate relative à l'espace
-            if (StringUtils.startsWith(this.templateId, "/templates/") && !StringUtils.startsWith(this.templateId, "/templates/templates/")) {
-                this.templateId = "/default" + this.templateId;
-            }
-
-
             // Récupération page
             PortalObjectId poid = PortalObjectId.parse(this.parentId, PortalObjectPath.SAFEST_FORMAT);
             PortalObject parent = this.getControllerContext().getController().getPortalObjectContainer().getObject(poid);
