@@ -323,6 +323,9 @@ public final class InternalConstants {
     public static final String HIDE_PORTLET_IN_MENU_PROPERTY = "hide";
 
 
+    public static final String USER_DOMAINS_ATTRIBUTE = "osivia.user.domains";
+
+
     /**
      * Private constructor : prevent instantiation.
      */

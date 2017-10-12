@@ -347,6 +347,8 @@
 			proxy-type="attribute">osivia:service=CustomizationService</depends>
 		<depends optional-attribute-name="PortalAuthorizationManagerFactory"
 			proxy-type="attribute">portal:service=PortalAuthorizationManagerFactory</depends>
+        <depends optional-attribute-name="PortalObjectContainer"
+            proxy-type="attribute">portal:container=PortalObject</depends>
 	</mbean>
 
 

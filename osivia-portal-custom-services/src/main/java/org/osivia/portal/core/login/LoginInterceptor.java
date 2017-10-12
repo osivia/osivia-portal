@@ -16,6 +16,7 @@ package org.osivia.portal.core.login;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -31,12 +32,17 @@ import javax.security.jacc.PolicyContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.aspects.server.UserInterceptor;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.Context;
+import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.PortalObjectPermission;
@@ -61,6 +67,7 @@ import org.osivia.portal.core.cms.CMSPage;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.error.IPortalLogger;
 import org.osivia.portal.core.profils.ProfilBean;
@@ -78,8 +85,12 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     private ICustomizationService customizationService;
     /** Portal authorization manager factory. */
     private PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
+    /** Portal object container. */
+    private PortalObjectContainer portalObjectContainer;
+
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
+
 
     /** Modules comparator. */
     private final Comparator<UserDatasModuleMetadatas> modulesComparator;
@@ -185,14 +196,9 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                     }
 
                     if (noPreload) {
-
                         invocation.setAttribute(Scope.REQUEST_SCOPE, "osivia.userPreloadedPages", new ArrayList<CMSPage>());
-
                     } else {
-
-
-                        /* Appel pages préchargées */
-
+                        // Appel pages préchargées
                         try {
 
                             CMSServiceCtx cmsContext = new CMSServiceCtx();
@@ -217,6 +223,28 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
             }
         }
 
+
+        List<?> domainsAttribute = (List<?>) invocation.getAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE);
+        if (domainsAttribute == null) {
+            // Portal
+            Portal portal = this.getPortal(invocation);
+            // Portal domains
+            if (portal != null) {
+                String[] properties = StringUtils.split(portal.getDeclaredProperty("osivia.site.domains"), ",");
+                List<String> domains;
+                if (properties == null) {
+                    domains = new ArrayList<>(0);
+                } else {
+                    domains = new ArrayList<>(properties.length);
+                    for (String property : properties) {
+                        domains.add(StringUtils.trim(property));
+                    }
+                }
+                invocation.setAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE, domains);
+            }
+        }
+
+
         invocation.invokeNext();
     }
 
@@ -230,6 +258,40 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         PortalAuthorizationManager manager = this.portalAuthorizationManagerFactory.getManager();
         PortalObjectPermission permission = new PortalObjectPermission(this.adminId, PortalObjectPermission.VIEW_MASK);
         return manager.checkPermission(permission);
+    }
+
+
+    /**
+     * Get portal.
+     * 
+     * @param invocation server invocation
+     * @return portal
+     */
+    private Portal getPortal(ServerInvocation invocation) {
+        // HTTP servlet request
+        HttpServletRequest request = invocation.getServerContext().getClientRequest();
+        // Host
+        String host = request.getServerName();
+
+        // Root context
+        Context context = this.portalObjectContainer.getContext();
+        // Portals
+        Collection<PortalObject> portals = context.getChildren(PortalObject.PORTAL_MASK);
+
+
+        // Portal
+        Portal portal = null;
+        for (PortalObject portalObject : portals) {
+            if ((portalObject instanceof Portal) && StringUtils.equals(host, portalObject.getDeclaredProperty("osivia.site.hostName"))) {
+                portal = (Portal) portalObject;
+                break;
+            }
+        }
+        if (portal == null) {
+            portal = context.getDefaultPortal();
+        }
+
+        return portal;
     }
 
 
@@ -362,7 +424,6 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         this.customizationService = customizationService;
     }
 
-
     /**
      * Setter for portalAuthorizationManagerFactory.
      * 
@@ -371,4 +432,14 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     public void setPortalAuthorizationManagerFactory(PortalAuthorizationManagerFactory portalAuthorizationManagerFactory) {
         this.portalAuthorizationManagerFactory = portalAuthorizationManagerFactory;
     }
+
+    /**
+     * Setter for portalObjectContainer.
+     * 
+     * @param portalObjectContainer the portalObjectContainer to set
+     */
+    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
+    }
+
 }
