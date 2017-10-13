@@ -144,6 +144,26 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
     @Override
     @SuppressWarnings("rawtypes")
     protected void invoke(ServerInvocation invocation) throws Exception, InvocationException {
+        List<?> domainsAttribute = (List<?>) invocation.getAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE);
+        if (domainsAttribute == null) {
+            // Portal
+            Portal portal = this.getPortal(invocation);
+            // Portal domains
+            if (portal != null) {
+                String[] properties = StringUtils.split(portal.getDeclaredProperty("osivia.site.domains"), ",");
+                List<String> domains;
+                if (properties == null) {
+                    domains = new ArrayList<>(0);
+                } else {
+                    domains = new ArrayList<>(properties.length);
+                    for (String property : properties) {
+                        domains.add(StringUtils.trim(property));
+                    }
+                }
+                invocation.setAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE, domains);
+            }
+        }
+
 
         User user = (User) invocation.getAttribute(Scope.PRINCIPAL_SCOPE, UserInterceptor.USER_KEY);
 
@@ -222,28 +242,6 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
                 IPortalLogger.logger.info(new LoggerMessage("user login", true));
             }
         }
-
-
-        List<?> domainsAttribute = (List<?>) invocation.getAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE);
-        if (domainsAttribute == null) {
-            // Portal
-            Portal portal = this.getPortal(invocation);
-            // Portal domains
-            if (portal != null) {
-                String[] properties = StringUtils.split(portal.getDeclaredProperty("osivia.site.domains"), ",");
-                List<String> domains;
-                if (properties == null) {
-                    domains = new ArrayList<>(0);
-                } else {
-                    domains = new ArrayList<>(properties.length);
-                    for (String property : properties) {
-                        domains.add(StringUtils.trim(property));
-                    }
-                }
-                invocation.setAttribute(Scope.SESSION_SCOPE, InternalConstants.USER_DOMAINS_ATTRIBUTE, domains);
-            }
-        }
-
 
         invocation.invokeNext();
     }
