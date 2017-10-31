@@ -658,7 +658,12 @@ public class MenubarService implements IMenubarService {
                 glyphicon = StringUtils.trimToEmpty(glyphicon);
             }
 
-            element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), text, glyphicon, roleElement);
+            if (item.isDisabled()) {
+                element = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, item.getHtmlClasses(), text, glyphicon, roleElement);
+            } else {
+                element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), text, glyphicon,
+                        roleElement);
+            }
 
             // External link indicator
             if (dropdownItem && StringUtils.isNotBlank(item.getTarget())) {
