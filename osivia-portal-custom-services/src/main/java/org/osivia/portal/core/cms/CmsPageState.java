@@ -269,7 +269,7 @@ public class CmsPageState {
                                             // Apply template adapters
                                             List<TemplateAdapter> templateAdapters = this.getCMSService().getTemplateAdapters(cmsReadNavContext);
                                             for (TemplateAdapter adapter : templateAdapters) {
-                                                String adaptedTemplate = adapter.adapt(spaceTemplate, template);
+                                                String adaptedTemplate = adapter.adapt(this.basePublishPath, pathToCheck, spaceTemplate, template);
                                                 if (adaptedTemplate != null) {
                                                     template = adaptedTemplate;
                                                     break;
