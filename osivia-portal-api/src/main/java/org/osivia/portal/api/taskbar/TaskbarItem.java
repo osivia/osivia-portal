@@ -104,4 +104,12 @@ public interface TaskbarItem {
      */
     boolean isHidden();
 
+
+    /**
+     * Get executor.
+     * 
+     * @return executor
+     */
+    TaskbarItemExecutor getExecutor();
+
 }

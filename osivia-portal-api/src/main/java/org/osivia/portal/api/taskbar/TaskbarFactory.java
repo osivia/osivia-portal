@@ -94,6 +94,15 @@ public interface TaskbarFactory {
 
 
     /**
+     * Set taskbar item executor.
+     * 
+     * @param item taskbar item
+     * @param executor executor
+     */
+    void setExecutor(TaskbarItem item, TaskbarItemExecutor executor);
+
+
+    /**
      * Create taskbar task.
      *
      * @param item taskbar item

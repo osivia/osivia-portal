@@ -23,14 +23,6 @@ public class TaskbarTaskImpl extends TaskbarItemImpl implements TaskbarTask {
 
     /**
      * Constructor.
-     */
-    public TaskbarTaskImpl() {
-        super();
-    }
-
-
-    /**
-     * Constructor.
      *
      * @param item taskbar item
      * @throws ReflectiveOperationException

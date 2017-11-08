@@ -2,6 +2,7 @@ package org.osivia.portal.core.taskbar;
 
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
 import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 
@@ -46,6 +47,9 @@ public class TaskbarItemImpl implements TaskbarItem {
 
     /** Hidden indicator. */
     private boolean hidden;
+
+    /** Executor. */
+    private TaskbarItemExecutor executor;
 
 
     /**
@@ -163,6 +167,15 @@ public class TaskbarItemImpl implements TaskbarItem {
     @Override
     public boolean isHidden() {
         return this.hidden;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public TaskbarItemExecutor getExecutor() {
+        return this.executor;
     }
 
 
@@ -309,6 +322,15 @@ public class TaskbarItemImpl implements TaskbarItem {
      */
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    /**
+     * Setter for executor.
+     * 
+     * @param executor the executor to set
+     */
+    public void setExecutor(TaskbarItemExecutor executor) {
+        this.executor = executor;
     }
 
 }

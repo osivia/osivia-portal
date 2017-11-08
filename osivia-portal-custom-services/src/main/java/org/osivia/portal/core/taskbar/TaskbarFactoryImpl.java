@@ -4,6 +4,7 @@ import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.portlet.PortalGenericPortlet;
 import org.osivia.portal.api.taskbar.TaskbarFactory;
 import org.osivia.portal.api.taskbar.TaskbarItem;
+import org.osivia.portal.api.taskbar.TaskbarItemExecutor;
 import org.osivia.portal.api.taskbar.TaskbarItemRestriction;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
@@ -128,6 +129,18 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
             if (order != null) {
                 itemImpl.setOrder(order);
             }
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setExecutor(TaskbarItem item, TaskbarItemExecutor executor) {
+        if (item instanceof TaskbarItemImpl) {
+            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
+            itemImpl.setExecutor(executor);
         }
     }
 
