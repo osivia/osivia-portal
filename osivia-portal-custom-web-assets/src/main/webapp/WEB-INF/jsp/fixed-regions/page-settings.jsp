@@ -122,6 +122,7 @@ var currentPageId = '${currentPageId}';
                         </legend>
     
                         <input type="hidden" name="action" value="createPage">
+                        <input type="hidden" name="template" value="false">
                     
                         <!-- Name -->
                         <div class="form-group">
@@ -239,6 +240,7 @@ var currentPageId = '${currentPageId}';
                         </legend>
                         
                         <input type="hidden" name="action" value="createPage">
+                        <input type="hidden" name="template" value="true">
                     
                         <!-- Name -->
                         <div class="form-group">
@@ -319,7 +321,7 @@ var currentPageId = '${currentPageId}';
                                 
                                                         <c:out value="${requestScope['osivia.settings.templateParents']}" escapeXml="false" />
                                                     </div>
-                                                </div>  
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

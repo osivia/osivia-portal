@@ -168,7 +168,8 @@ $JQry(document).ready(function() {
 						return data.node.data.acceptable;
 					}
 				}
-			};
+			},
+			activeNode;
 		
 		if (url !== undefined) {
 			// Source URL
@@ -193,6 +194,17 @@ $JQry(document).ready(function() {
 
 		// Fancytree
 		$element.fancytree(options);
+
+		
+		// Active node
+		activeNode = $element.fancytree("getActiveNode");
+		if (activeNode) {
+			var $selector = activeNode.tree.$div.closest(".selector"),
+				$input = $selector.find("input.selector-value"),
+				path = activeNode.data.path;
+			
+			$input.val(path);
+		}
 	});
 	
 	

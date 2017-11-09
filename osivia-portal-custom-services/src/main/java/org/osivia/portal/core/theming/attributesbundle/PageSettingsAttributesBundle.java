@@ -685,8 +685,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         Element rootContainer = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
 
         // Root
-        Element root = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("ROOT_NODE"));
+        Element root = DOM4JUtils.generateElement(HTMLConstants.LI, "active", bundle.getString("ROOT_NODE"));
         DOM4JUtils.addDataAttribute(root, "path", portalId);
+        // DOM4JUtils.addDataAttribute(root, "selected", String.valueOf(true));
         DOM4JUtils.addDataAttribute(root, "folder", String.valueOf(true));
         DOM4JUtils.addDataAttribute(root, "expanded", String.valueOf(true));
         DOM4JUtils.addDataAttribute(root, "retain", String.valueOf(true));
@@ -855,6 +856,10 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 DOM4JUtils.addDataAttribute(li, "folder", String.valueOf(true));
                 DOM4JUtils.addDataAttribute(li, "expanded", String.valueOf(true));
                 DOM4JUtils.addDataAttribute(li, "retain", String.valueOf(true));
+
+                if (BooleanUtils.isTrue(templates)) {
+                    extraClasses.append("active ");
+                }
 
                 if (virtualEndNode) {
                     DOM4JUtils.addDataAttribute(li, "acceptable", String.valueOf(false));
