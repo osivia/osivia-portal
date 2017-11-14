@@ -266,6 +266,15 @@ public class MenubarService implements IMenubarService {
 
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<MenubarItem> getMenubar(PortalControllerContext portalControllerContext) {
+        return this.getMenubar(portalControllerContext, false);
+    }
+
+
+    /**
      * Get menubar.
      * 
      * @param portalControllerContext portal controller context

@@ -64,6 +64,15 @@ public interface IMenubarService {
 
 
     /**
+     * Get menubar.
+     * 
+     * @param portalControllerContext portal controller context
+     * @return menubar
+     */
+    List<MenubarItem> getMenubar(PortalControllerContext portalControllerContext);
+
+
+    /**
      * Get navbar menubar items, sorted by groups.
      *
      * @param portalControllerContext portal controller context
