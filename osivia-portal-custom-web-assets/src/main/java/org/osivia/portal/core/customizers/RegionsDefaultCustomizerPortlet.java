@@ -60,8 +60,6 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
     private static final String WEB_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.toolbar.path";
     /** Drawer toolbar path init parameter name. */
     private static final String DRAWER_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.drawer.toolbar.path";
-    /** Back path init parameter name. */
-    private static final String BACK_PATH_INIT_PARAM = "osivia.portal.customizer.regions.back.path";
     /** Page settings path init parameter name. */
     private static final String PAGE_SETTINGS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.page.settings.path";
 
