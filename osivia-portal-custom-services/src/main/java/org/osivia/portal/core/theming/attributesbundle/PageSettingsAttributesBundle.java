@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -122,6 +124,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /** Windows settings fancyboxes prefix. */
     private static final String PREFIX_ID_FANCYBOX_WINDOW_SETTINGS = "window-settings-";
+    /** Layout or theme excluded names. */
+    private static final String[] EXCLUDED_NAMES = new String[]{"osivia-modal", "osivia-popup", "generic", "3columns", "1column", "renaissance", "industrial",
+            "maple", "renewal"};
 
     /** Singleton instance. */
     private static PageSettingsAttributesBundle instance;
@@ -152,6 +157,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /** Toolbar attributes names. */
     private final Set<String> names;
+
+    /** Layouts and themes collection filter predicate. */
+    private final Predicate predicate;
 
 
     /**
@@ -185,8 +193,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 IInternationalizationService.MBEAN_NAME);
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
-
-
+        // Attribute names
         this.names = new TreeSet<String>();
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
@@ -206,6 +213,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
         this.names.add("osivia.settings.elements");
         this.names.add("osivia.session.reload.url");
+        
+        // Layouts and themes collection filter predicate
+        this.predicate = new LayoutsAndThemesPredicate();
     }
 
 
@@ -347,6 +357,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
             // Layouts
             List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
+            CollectionUtils.filter(layouts, this.predicate);
             Collections.sort(layouts, new PortalLayoutComparator());
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
 
@@ -355,6 +366,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
             // Themes
             List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
+            CollectionUtils.filter(themes, this.predicate);
             Collections.sort(themes, new PortalThemeComparator());
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
 
@@ -1136,6 +1148,52 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      */
     public Set<String> getAttributeNames() {
         return this.names;
+    }
+
+
+    /**
+     * Layouts and themes collection filter predicate.
+     * 
+     * @author Cédric Krommenhoek
+     * @see Predicate
+     */
+    private class LayoutsAndThemesPredicate implements Predicate {
+
+        /** Excluded layout and theme names. */
+        private final Set<String> excludedNames;
+
+
+        /**
+         * Constructor.
+         */
+        public LayoutsAndThemesPredicate() {
+            super();
+            this.excludedNames = new HashSet<>(Arrays.asList(EXCLUDED_NAMES));
+        }
+
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean evaluate(Object object) {
+            // Layout or theme name
+            String name;
+            if (object == null) {
+                name = null;
+            } else if (object instanceof PortalLayout) {
+                PortalLayout layout = (PortalLayout) object;
+                name = layout.getLayoutInfo().getName();
+            } else if (object instanceof PortalTheme) {
+                PortalTheme theme = (PortalTheme) object;
+                name = theme.getThemeInfo().getName();
+            } else {
+                name = null;
+            }
+            
+            return StringUtils.isNotEmpty(name) && !excludedNames.contains(name);
+        }
+
     }
 
 }
