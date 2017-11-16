@@ -20,7 +20,7 @@
          Define a non-SSL HTTP/1.1 Connector on port 8080
     -->
 	<Connector port="8080" address="${jboss.bind.address}"    
-         maxThreads="250" maxHttpHeaderSize="8192"
+         maxThreads="250" maxHttpHeaderSize="32768"
          emptySessionPath="true" protocol="HTTP/1.1" URIEncoding="UTF-8"
          enableLookups="false" redirectPort="8443" acceptCount="100"
          connectionTimeout="20000" disableUploadTimeout="true" proxyName="${portal.proxyName}" proxyPort="${portal.proxyPort}" />
