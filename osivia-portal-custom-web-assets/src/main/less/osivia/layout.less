@@ -80,12 +80,9 @@ body.fixed-layout {
         }
         
         .flexbox {
-            &.portlet-container, &.table {
-                margin-bottom: 0;
-            }
-            
             &.table {
                 .flex(@flex: unset);
+                margin-bottom: 0;
             }
         }
         
@@ -110,7 +107,7 @@ body.fixed-layout {
             .flex-container(@direction: row);
         }
 
-        &[class*="col-"]:not(.col-offset-auto), &.portlet-container {
+        &[class*="col-"]:not(.col-offset-auto) {
             .flex-container(@flex: unset);
         }
     }
