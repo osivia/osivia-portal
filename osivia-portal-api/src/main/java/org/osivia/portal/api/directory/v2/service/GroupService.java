@@ -40,7 +40,7 @@ public interface GroupService extends IDirService {
      * @param cn group CN
      * @return group
      */
-    Group get(String CN);
+    Group get(String cn);
 
 
     /**
@@ -59,13 +59,5 @@ public interface GroupService extends IDirService {
      * @return groups
      */
     List<Group> search(Group criteria);
-
-
-    /**
-     * Delete group.
-     * 
-     * @param dn group DN
-     */
-    void delete(Name dn);
 
 }
