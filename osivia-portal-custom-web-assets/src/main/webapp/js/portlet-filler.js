@@ -4,10 +4,10 @@ $JQry(function() {
 	if (!$portletFiller.closest(".scrollbox.fixed-scrollbox").length) {
 		// Portlet filler parents flexbox class
 		$portletFiller.parentsUntil(".flexbox").addClass("flexbox");
-		
-		// Update scrollbar width
-		updateScrollbarWidth();
 	}
+	
+	// Update scrollbar width
+	updateScrollbarWidth();
 });
 
 
