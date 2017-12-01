@@ -26,19 +26,18 @@ function updateScrollbarWidth() {
 	
 	$portletFiller.each(function(index, element) {
 		var $element = $JQry(element),
+			width = Math.round($element.innerWidth() - $element.children().outerWidth(true)),
 			$table = $element.closest(".table"),
-			$tableHeader = $table.find(".table-header"),
-			scrollbarWidth;
-	
-		if ($window.width() >= 768) {
-			scrollbarWidth = Math.round($element.innerWidth() - $element.children().outerWidth(true));
-		} else {
-			scrollbarWidth = 0;
+			$tableHeader = $table.find(".table-header");
+		
+		if ($element.hasClass("hidden-scrollbar")) {
+			// Update negative margin for hidden scrollbar
+			$element.css("margin-right", -width);
 		}
 		
 		// Update table header
 		$tableHeader.find(".row").first().css({
-			"padding-right": scrollbarWidth
+			"padding-right": width
 		});
 	});
 }

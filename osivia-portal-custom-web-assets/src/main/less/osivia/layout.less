@@ -94,6 +94,16 @@ body.fixed-layout {
 
         .portlet-filler {
             .scrollbox();
+            
+            &.hidden-scrollbar {
+                // Always show scrollbar
+                overflow-y: scroll !important;
+                
+                @media screen and (min-width: @screen-sm-min) {
+                    // Default scrollbar width
+                    margin-right: -10px;
+                }
+            }
         }
     }
 }
