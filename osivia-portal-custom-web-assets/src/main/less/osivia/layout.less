@@ -96,11 +96,20 @@ body.fixed-layout {
             .scrollbox();
             
             &.hidden-scrollbar {
-                // Always show scrollbar
-                overflow-y: scroll !important;
+                // Hide scrollbar before JavaScript
+                overflow-y: hidden;
                 
-                // Default scrollbar width
-                margin-right: -10px;
+                // Background scroll shadow
+                @background: #fff;
+                @shadow: #000;
+                background-image: linear-gradient(@background 10%, fade(@background, 0%)),
+                    linear-gradient(fade(@background, 0%), @background 90%),
+                    linear-gradient(fade(@shadow, 10%), fade(@shadow, 0%)),
+                    linear-gradient(fade(@shadow, 0), fade(@shadow, 10%));
+                background-repeat: no-repeat;
+                background-attachment: local, local, scroll, scroll;
+                background-position-y: 0%, 100%, 0%, 100%;
+                background-size: 100% 50px, 100% 50px, 100% 5px, 100% 5px;
             }
         }
     }

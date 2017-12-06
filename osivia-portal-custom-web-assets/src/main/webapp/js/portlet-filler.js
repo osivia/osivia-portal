@@ -31,6 +31,12 @@ function updateScrollbarWidth() {
 			$tableHeader = $table.find(".table-header");
 		
 		if ($element.hasClass("hidden-scrollbar")) {
+			// Force scrollbar display
+			$element.css("overflow-y", "scroll");
+			
+			// Update scrollbar width
+			width = Math.round($element.innerWidth() - $element.children().outerWidth(true));
+			
 			// Update negative margin for hidden scrollbar
 			$element.css("margin-right", -width);
 		}
