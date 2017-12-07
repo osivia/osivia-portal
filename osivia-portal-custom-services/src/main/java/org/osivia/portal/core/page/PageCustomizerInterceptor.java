@@ -94,7 +94,12 @@ import org.osivia.portal.api.status.IStatusService;
 import org.osivia.portal.api.taskbar.ITaskbarService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.windows.StartingWindowBean;
-import org.osivia.portal.core.cms.*;
+import org.osivia.portal.core.cms.CMSItem;
+import org.osivia.portal.core.cms.CMSPlayHandlerUtils;
+import org.osivia.portal.core.cms.CMSServiceCtx;
+import org.osivia.portal.core.cms.CmsCommand;
+import org.osivia.portal.core.cms.ICMSService;
+import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
@@ -1169,10 +1174,15 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         /** création dynamique d'une window */
 
         if (cmd instanceof InvokePortletWindowActionCommand ) {
-
+            InvokePortletWindowActionCommand invokePortletWindowActionCommand = (InvokePortletWindowActionCommand) cmd;
 
             if (cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_START_WINDOW) != null) {
-                
+                // Page
+                Page page = invokePortletWindowActionCommand.getPage();
+                // Windows
+                Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+
+
                 StartingWindowBean startingWindow = (StartingWindowBean) cmd.getControllerContext().getAttribute(ControllerCommand.REQUEST_SCOPE, Constants.PORTLET_ATTR_START_WINDOW);
                 // Window properties
                 StringBuilder builder;
@@ -1189,6 +1199,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 
                 IDynamicObjectContainer dynamicObjectContainer = Locator.findMBean(IDynamicObjectContainer.class, "osivia:service=DynamicPortalObjectContainer");
                 dynamicObjectContainer.addDynamicWindow(window);
+
 
                 // Suppression du cache
                 builder = new StringBuilder();
@@ -1215,6 +1226,10 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                  
                 PortalObjectId windowID  = PortalObjectId.parse(curWindow.getPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT) + "/" + windowName, PortalObjectPath.CANONICAL_FORMAT);
                 cmd.getControllerContext().setAttribute(Scope.REQUEST_SCOPE, "ajax.dynamicWindowID", windowID);
+
+
+                // Unset max mode
+                unsetMaxMode(windows, controllerContext);
             }
 
         }
