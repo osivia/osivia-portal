@@ -14,7 +14,6 @@
 package org.osivia.portal.api.theming;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,8 +72,8 @@ public class UserPortal {
      *
      * @return groups
      */
-    public Collection<UserPagesGroup> getGroups() {
-        return this.groups.values();
+    public Map<String, UserPagesGroup> getGroups() {
+        return this.groups;
     }
 
 
