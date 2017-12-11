@@ -16,9 +16,12 @@ package org.osivia.portal.core.cms;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +37,7 @@ import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.controller.command.response.UnavailableResourceResponse;
+import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -45,6 +49,7 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
+import org.jboss.util.collection.CollectionsUtil;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -833,11 +838,45 @@ public class CmsCommand extends DynamicCommand {
                     PortalObject publicationPage = searchPublicationPage(controllerContext, portal, searchPath, this.getProfilManager());
 
 
+                    // Redirected portal
+                    Portal redirectedPortal;
+                    if ((publicationPage != null) && (publicationPage instanceof Page)) {
+                        Page page = (Page) publicationPage;
+                        redirectedPortal = page.getPortal();
+                    } else {
+                        // Protected search path
+                        String protectedSearchPath = searchPath + "/";
+                        
+                        // Root object
+                        Context root = controllerContext.getController().getPortalObjectContainer().getContext();
+                        // Portals
+                        Collection<PortalObject> portals = root.getChildren(PortalObject.PORTAL_MASK);
+                        Iterator<PortalObject> iterator = portals.iterator();
+                        
+                        // Redirected portal
+                        redirectedPortal = null;
+                        while (iterator.hasNext() && (redirectedPortal == null)) {
+                            Portal testedPortal = (Portal) iterator.next();
+
+                            // Portal domains
+                            String[] domains = StringUtils.split(testedPortal.getDeclaredProperty("osivia.site.domains"), ", ");
+                            if (ArrayUtils.isNotEmpty(domains)) {
+                                for (int i = 0; i < domains.length; i++) {
+                                    String domain = domains[i] + "/";
+                                    if (StringUtils.startsWith(protectedSearchPath, domain)) {
+                                        redirectedPortal = testedPortal;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    
                     // Controle du host
                     // Si le host est différent du host courant, on redirige sur le nouveau host
-                    if (publicationPage != null) {
-                        Portal pubPortal = ((Page) publicationPage).getPortal();
-                        String host = pubPortal.getDeclaredProperty("osivia.site.hostName");
+                    if (redirectedPortal != null) {
+                        String host = redirectedPortal.getDeclaredProperty("osivia.site.hostName");
                         String reqHost = controllerContext.getServerInvocation().getServerContext().getClientRequest().getServerName();
 
                         if ((host != null) && !reqHost.equals(host)) {
