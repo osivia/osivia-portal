@@ -63,6 +63,8 @@
 
     <build>
         <plugins>
+        
+            <!-- LESS -->
             <plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
@@ -78,6 +80,7 @@
                 </configuration>
             </plugin>
             
+            <!-- YUI compressor -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
