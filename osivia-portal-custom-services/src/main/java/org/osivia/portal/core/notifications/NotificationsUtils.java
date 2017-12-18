@@ -206,6 +206,9 @@ public class NotificationsUtils {
 
                 // Alert
                 Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable fade in " + type.getHtmlClass());
+                if (type.getPriority() < NotificationsType.ERROR.getPriority()) {
+                    DOM4JUtils.addDataAttribute(alert, "apart", StringUtils.EMPTY);
+                }
                 notificationSpacer.add(alert);
 
                 if (notifications.getErrorCode() != null) {
