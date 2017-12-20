@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,28 +14,44 @@
  */
 package org.osivia.portal.core.customization;
 
+import java.util.List;
+
 import org.osivia.portal.api.customization.CustomizationContext;
 
 public interface ICustomizationService {
-	
+
     /** MBean name. */
     String MBEAN_NAME = "osivia:service=CustomizationService";
-    
-	/**
-	 * Calls the customizers for the specified id
-	 *
-	 * @param customizationID the customization id
-	 * @param ctx the ctx
-	 */
-	public void customize ( String customizationID, CustomizationContext ctx);
-	
-    
-    
+
+    /**
+     * Calls the customizers for the specified id
+     *
+     * @param customizationID the customization id
+     * @param ctx the ctx
+     */
+    public void customize ( String customizationID, CustomizationContext ctx);
+
+
+
     /**
      * Set The CMS Observer.
      *
      * @param observer the observer
      */
     public void setCMSObserver(ICMSCustomizationObserver observer);
+
+
+    /**
+     * Checks if a plugin with the provided name is registered
+     *
+     * @param pluginName
+     */
+    public boolean isPluginRegistered(String pluginName);
+
+    /**
+     * lists the names of registered plugins
+     *
+     */
+    public List<String> getRegisteredPluginNames();
 
 }

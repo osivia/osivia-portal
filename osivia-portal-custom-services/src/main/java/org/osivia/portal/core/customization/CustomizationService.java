@@ -42,13 +42,13 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     protected static final Log logger = LogFactory.getLog(LoginInterceptor.class);
 
     /** The custom modules. */
-    Map<String, CustomizationModuleMetadatas> customModules = new Hashtable<String, CustomizationModuleMetadatas>();
+    Map<String, CustomizationModuleMetadatas> customModules = new Hashtable<>();
 
     /** The sorted modules. */
-    SortedSet<CustomizationModuleMetadatas> sortedModules = new TreeSet<CustomizationModuleMetadatas>(moduleComparator);
+    SortedSet<CustomizationModuleMetadatas> sortedModules = new TreeSet<>(moduleComparator);
 
     /** The first ts. */
-    Hashtable<MultiKey, Long> firstTS = new Hashtable<MultiKey, Long>();
+    Hashtable<MultiKey, Long> firstTS = new Hashtable<>();
 
     /** The cms observer. */
     private ICMSCustomizationObserver cmsObserver;
@@ -57,6 +57,7 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     /** The Constant moduleComparator. */
     public static final Comparator<CustomizationModuleMetadatas> moduleComparator = new Comparator<CustomizationModuleMetadatas>() {
 
+        @Override
         public int compare(CustomizationModuleMetadatas m1, CustomizationModuleMetadatas m2) {
             int order1 = m1.getOrder();
             int order2 = m2.getOrder();
@@ -77,10 +78,10 @@ public class CustomizationService implements ICustomizationService, ICustomizati
      */
     private void synchronizeSortedModules() {
 
-        this.sortedModules = new TreeSet<CustomizationModuleMetadatas>(moduleComparator);
+        sortedModules = new TreeSet<>(moduleComparator);
 
-        for (CustomizationModuleMetadatas module : this.customModules.values()) {
-            this.sortedModules.add(module);
+        for (CustomizationModuleMetadatas module : customModules.values()) {
+            sortedModules.add(module);
         }
 
     }
@@ -88,9 +89,10 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     /* (non-Javadoc)
      * @see org.osivia.portal.core.customization.ICustomizationService#customize(java.lang.String, org.osivia.portal.api.customization.CustomizationContext)
      */
+    @Override
     public void customize(String customizationID, CustomizationContext ctx) {
 
-        for (CustomizationModuleMetadatas module : this.sortedModules) {
+        for (CustomizationModuleMetadatas module : sortedModules) {
 
             if (module.getCustomizationIDs().contains(customizationID)) {
                 module.getModule().customize(customizationID, ctx);
@@ -98,8 +100,8 @@ public class CustomizationService implements ICustomizationService, ICustomizati
         }
 
         MultiKey updateKey = new MultiKey(customizationID, ctx.getLocale());
-        if (this.firstTS.get(updateKey) == null) {
-            this.firstTS.put(updateKey, System.currentTimeMillis());
+        if (firstTS.get(updateKey) == null) {
+            firstTS.put(updateKey, System.currentTimeMillis());
         }
     }
 
@@ -110,30 +112,31 @@ public class CustomizationService implements ICustomizationService, ICustomizati
      * @param moduleMetadatas the module metadatas
      */
     private void removeTS(CustomizationModuleMetadatas moduleMetadatas) {
-        List<MultiKey> itemsToRemove = new ArrayList<MultiKey>();
+        List<MultiKey> itemsToRemove = new ArrayList<>();
 
-        for (MultiKey key : this.firstTS.keySet()) {
+        for (MultiKey key : firstTS.keySet()) {
             if (moduleMetadatas.getCustomizationIDs().contains(key.getKey(0))) {
                 itemsToRemove.add(key);
             }
         }
 
         for (MultiKey key : itemsToRemove) {
-            this.firstTS.remove(key);
+            firstTS.remove(key);
         }
     }
 
     /* (non-Javadoc)
      * @see org.osivia.portal.api.customization.ICustomizationModulesRepository#register(org.osivia.portal.api.customization.CustomizationModuleMetadatas)
      */
+    @Override
     public void register(CustomizationModuleMetadatas moduleMetadatas) {
-        this.customModules.put(moduleMetadatas.getName(), moduleMetadatas);
-        this.removeTS(moduleMetadatas);
-        this.synchronizeSortedModules();
+        customModules.put(moduleMetadatas.getName(), moduleMetadatas);
+        removeTS(moduleMetadatas);
+        synchronizeSortedModules();
 
-        if (this.cmsObserver != null) {
+        if (cmsObserver != null) {
             if (moduleMetadatas.getCustomizationIDs().contains(ICustomizationModule.PLUGIN_ID)) {
-                this.cmsObserver.notifyDeployment();
+                cmsObserver.notifyDeployment();
             }
         }
     }
@@ -141,17 +144,18 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     /* (non-Javadoc)
      * @see org.osivia.portal.api.customization.ICustomizationModulesRepository#unregister(org.osivia.portal.api.customization.CustomizationModuleMetadatas)
      */
+    @Override
     public void unregister(CustomizationModuleMetadatas moduleMetadatas) {
-        this.customModules.remove(moduleMetadatas.getName());
-        this.removeTS(moduleMetadatas);
-        this.synchronizeSortedModules();
+        customModules.remove(moduleMetadatas.getName());
+        removeTS(moduleMetadatas);
+        synchronizeSortedModules();
 
-        if( this.cmsObserver != null) {
+        if( cmsObserver != null) {
             if( moduleMetadatas.getCustomizationIDs().contains(ICustomizationModule.PLUGIN_ID)) {
                 ;
             }
         }
-                this.cmsObserver.notifyDeployment();
+        cmsObserver.notifyDeployment();
 
     }
 
@@ -159,10 +163,27 @@ public class CustomizationService implements ICustomizationService, ICustomizati
     /* (non-Javadoc)
      * @see org.osivia.portal.core.customization.ICustomizationService#setCMSObserver(org.osivia.portal.core.customization.ICMSCustomizationObserver)
      */
+    @Override
     public void setCMSObserver(ICMSCustomizationObserver observer) {
-        this.cmsObserver = observer;
-     }
+        cmsObserver = observer;
+    }
 
+    @Override
+    public boolean isPluginRegistered(String pluginName) {
+        if (pluginName != null) {
+            return customModules.get(pluginName) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public List<String> getRegisteredPluginNames() {
+        List<String> registeredPluginNames = new ArrayList<>();
+        for (CustomizationModuleMetadatas customizationModuleMetadatas : sortedModules) {
+            registeredPluginNames.add(customizationModuleMetadatas.getName());
+        }
+        return registeredPluginNames;
+    }
 
 
 }
