@@ -25,73 +25,83 @@ import org.osivia.portal.api.urls.Link;
 
 /**
  * Service to request, create, update persons, aggregated between nuxeo and ldap
+ *
  * @author Loïc Billon
+ * @see IDirService
  * @since 4.4
  */
 public interface PersonService extends IDirService {
 
+    /**
+     * Get a person with no valued fields (for search)
+     *
+     * @return empty object person
+     */
+    Person getEmptyPerson();
 
-	/**
-	 * Get a person with no valued fields (for search)
-	 * @return empty object person
-	 */
-	public Person getEmptyPerson();
-	
-	/**
-	 * Get a person by it's full DN
-	 * @param dn
-	 * @return the person
-	 */
-	public Person getPerson(Name dn);
-	
-	
-	/**
-	 * Get a person by it's uid
-	 * @param uid
-	 * @return the person
-	 */
-	public Person getPerson(String uid);
 
-	/**
-	 * Get a person by criteria represented by a person vith filled fields
-	 * @param p a person 
-	 * @return a list of person
-	 */
-	List<Person> findByCriteria(Person p);
-	
+    /**
+     * Get a person by it's full DN
+     *
+     * @param dn
+     * @return the person
+     */
+    Person getPerson(Name dn);
 
-	/**
-	 * Get a link to the card person portlet
-	 * @param portalControllerContext
-	 * @param p the person
-	 * @return a link to the card person portlet
-	 * @throws PortalException
-	 */
-	Link getCardUrl(PortalControllerContext portalControllerContext, Person p)
-			throws PortalException;
 
-	/**
-	 * Get a link to my card
-	 * @param portalControllerContext
-	 * @return a link to the card person portlet
-	 * @throws PortalException
-	 */
-	Link getMyCardUrl(PortalControllerContext portalControllerContext) throws PortalException;
-	
-	/**
-	 * Get a document with user profile properties
-	 * @param portalControllerContext
-	 * @param person
-	 * @return document UserProfile
-	 * @throws PortalException
-	 */
-	Object getEcmProfile(PortalControllerContext portalControllerContext,
-			Person person) throws PortalException;
+    /**
+     * Get a person by it's uid
+     *
+     * @param uid
+     * @return the person
+     */
+    Person getPerson(String uid);
+
+
+    /**
+     * Get a person by criteria represented by a person vith filled fields
+     *
+     * @param p a person
+     * @return a list of person
+     */
+    List<Person> findByCriteria(Person p);
+
+
+    /**
+     * Get a link to the card person portlet
+     *
+     * @param portalControllerContext
+     * @param p the person
+     * @return a link to the card person portlet
+     * @throws PortalException
+     */
+    Link getCardUrl(PortalControllerContext portalControllerContext, Person p) throws PortalException;
+
+
+    /**
+     * Get a link to my card
+     *
+     * @param portalControllerContext
+     * @return a link to the card person portlet
+     * @throws PortalException
+     */
+    Link getMyCardUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get a document with user profile properties
+     *
+     * @param portalControllerContext
+     * @param person
+     * @return document UserProfile
+     * @throws PortalException
+     */
+    Object getEcmProfile(PortalControllerContext portalControllerContext, Person person) throws PortalException;
 
 
     /**
      * Check if the current user is a portal administrator.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return true if the current user is a portal administrator
      * @throws PortalException

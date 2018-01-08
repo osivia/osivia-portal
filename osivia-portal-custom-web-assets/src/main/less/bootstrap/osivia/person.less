@@ -3,6 +3,9 @@
 // --------------------------------------------------
 
 
+@person-height: @line-height-computed + floor((@font-size-small * @line-height-base));
+
+
 .person {
     .clearfix;
     
@@ -15,8 +18,8 @@
         .pull-left;
         .text-center;
         
-        height: @input-height-base;
-        width: @input-height-base;
+        height: @person-height;
+        width: @person-height;
         
         margin-right: @padding-base-horizontal;
         
@@ -111,7 +114,7 @@
     }
     
     // Select2 selection
-    .select2-selection__choice & {
+    .select2-selection__rendered &, .select2-selection__choice & {
         .person-avatar, .person-title {
             display: inline;
         }

@@ -17,7 +17,6 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.taglib.common.PortalSimpleTag;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.portlet.context.PortletApplicationContextUtils;
 
 /**
  * Translation tag.
@@ -82,12 +81,7 @@ public class TranslationTag extends PortalSimpleTag {
             }
 
             // Optional Spring framework application context
-            ApplicationContext applicationContext;
-            if (portletContext == null) {
-                applicationContext = null;
-            } else {
-                applicationContext = PortletApplicationContextUtils.getWebApplicationContext(portletContext);
-            }
+            ApplicationContext applicationContext = this.getApplicationContext();
 
             // Property arguments
             Object[] arguments = StringUtils.split(this.args, SEPARATOR);
