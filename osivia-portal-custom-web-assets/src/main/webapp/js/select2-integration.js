@@ -67,6 +67,13 @@ $JQry(function() {
 		$element.select2(options);
 		
 		
+		// Clear button
+		$element.siblings().find("button[name=clear]").click(function(event) {
+		    $element.val("");
+		    $element.trigger("change");
+		});
+		
+		
 		// Auto submit on change
 		if ($element.data("onchange") == "submit") {
 			$element.on("select2:unselecting", function(event) {
