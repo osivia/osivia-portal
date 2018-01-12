@@ -31,6 +31,14 @@ public interface DocumentContext {
 
 
     /**
+     * Get webId.
+     * 
+     * @return webId
+     */
+    String getWebId();
+
+
+    /**
      * Get document permissions.
      * 
      * @return permissions

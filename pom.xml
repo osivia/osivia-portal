@@ -458,9 +458,13 @@
                 <artifactId>json-lib</artifactId>
                 <version>${json.version}</version>
                 <scope>provided</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-            
-            
 			<dependency>
 			    <groupId>quartz</groupId>
 			    <artifactId>quartz</artifactId>
@@ -507,7 +511,6 @@
                 <version>${powermock.version}</version>
                 <scope>test</scope>
             </dependency>
-
 
         </dependencies>
     </dependencyManagement>

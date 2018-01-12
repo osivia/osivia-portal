@@ -14,6 +14,16 @@
     <name>OSIVIA Portal - API library</name>
     
     
+    <dependencies>
+    
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+        </dependency>
+        
+    </dependencies>
+    
+    
     <profiles>
         <profile>
             <activation>
