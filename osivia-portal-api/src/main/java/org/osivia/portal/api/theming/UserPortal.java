@@ -26,8 +26,10 @@ public class UserPortal {
 
     /** Portal name. */
     private String name;
-    /** Default page. */
+    /** User default page. */
     private UserPage defaultPage;
+    /** Portal default page. */
+    private UserPage portalDefaultPage;
     /** Displayed pages count. */
     private int displayedPagesCount;
 
@@ -112,6 +114,24 @@ public class UserPortal {
      */
     public void setDefaultPage(UserPage defaultPage) {
         this.defaultPage = defaultPage;
+    }
+    
+    /**
+     * Getter for portalDefaultPage.
+     * 
+     * @return the portalDefaultPage
+     */
+    public UserPage getPortalDefaultPage() {
+        return portalDefaultPage;
+    }
+    
+    /**
+     * Setter for portalDefaultPage.
+     * 
+     * @param portalDefaultPage the portalDefaultPage to set
+     */
+    public void setPortalDefaultPage(UserPage portalDefaultPage) {
+        this.portalDefaultPage = portalDefaultPage;
     }
 
     /**

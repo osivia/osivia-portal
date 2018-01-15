@@ -70,7 +70,6 @@ import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
-import org.osivia.portal.core.profils.ProfilManager;
 
 public final class TabsAttributesBundle implements IAttributesBundle {
 
@@ -353,35 +352,52 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
 
-        // User profile
-        ProfilBean profile = this.profileManager.getProfilPrincipalUtilisateur();
-        boolean defaultProfile = (profile != null) && ProfilManager.DEFAULT_PROFIL_NAME.equals(profile.getName());
         
         // Is the current user an administrator ?
         boolean isAdministrator = PageCustomizerInterceptor.isAdministrator(controllerContext);
-
         
         // Hide default page indicator
         boolean hideDefaultPage = BooleanUtils.toBoolean(portal.getDeclaredProperty(InternalConstants.TABS_HIDE_DEFAULT_PAGE_PROPERTY));
-        // Home page
-        Page homePage = portal.getDefaultPage();
-        // Unprofiled home page
-        String unprofiledHomePageName = portal.getDeclaredProperty("osivia.unprofiled_home_page");
-        Page unprofiledHomePage;
-        if (StringUtils.isEmpty(unprofiledHomePageName)) {
-            unprofiledHomePage = null;
+        
+        // User profile
+        ProfilBean profile = this.profileManager.getProfilPrincipalUtilisateur();
+        
+        // Portal default page
+        Page portalDefaultPage = portal.getDefaultPage();
+        
+        // Unprofiled page
+        String unprofiledDefaultPageName = portal.getDeclaredProperty("osivia.unprofiled_home_page");
+        Page unprofiledDefaultPage;
+        if (StringUtils.isEmpty(unprofiledDefaultPageName)) {
+            unprofiledDefaultPage = null;
         } else {
-            unprofiledHomePage = portal.getChild(unprofiledHomePageName, Page.class);
+            unprofiledDefaultPage = portal.getChild(unprofiledDefaultPageName, Page.class);
         }
-        // Default page
+
+        // User default page
+        String defaultPageName;
+        if (profile == null) {
+            defaultPageName = null;
+        } else {
+            defaultPageName = profile.getDefaultPageName();
+        }
         Page defaultPage;
-        if ((unprofiledHomePage == null) || isAdministrator || !defaultProfile) {
-            defaultPage = homePage;
+        if (isAdministrator) {
+            defaultPage = portalDefaultPage;
+        } else if (StringUtils.isEmpty(defaultPageName)) {
+            defaultPage = null;
         } else {
-            defaultPage = unprofiledHomePage;
+            defaultPage = portal.getChild(defaultPageName, Page.class);
+        }
+        if (defaultPage == null) {
+            if (unprofiledDefaultPage == null) {
+                defaultPage = portalDefaultPage;
+            } else {
+                defaultPage = unprofiledDefaultPage;
+            }
         }
 
-
+        
         // User portal
         UserPortal userPortal = new UserPortal();
         userPortal.setName(portal.getName());
@@ -412,8 +428,12 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         for (Page child : sortedPages) {
             // Page name
             String name = PortalObjectUtils.getDisplayName(child, request.getLocales());
-            // Default page indicator
+            // User default page indicator
             boolean isDefaultPage = child.equals(defaultPage);
+            // Portal default page indicator
+            boolean isPortalDefaultPage = child.equals(portalDefaultPage);
+            // Unprofiled default page indicator
+            boolean isUnprofiledDefaultPage = child.equals(unprofiledDefaultPage);
 
             // Hide templates
             if ("templates".equalsIgnoreCase(name)) {
@@ -425,8 +445,8 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 continue;
             }
 
-            // Hide other home page
-            if (!isAdministrator && !isDefaultPage && (child.equals(homePage) || child.equals(unprofiledHomePage))) {
+            // Hide portal default page & unprofiled default page
+            if (!isAdministrator && !isDefaultPage && (isPortalDefaultPage || isUnprofiledDefaultPage)) {
                 continue;
             }
 
@@ -583,11 +603,15 @@ public final class TabsAttributesBundle implements IAttributesBundle {
                 if (isDefaultPage) {
                     userPortal.setDefaultPage(userPage);
                 }
+                if (isPortalDefaultPage) {
+                    userPortal.setPortalDefaultPage(userPage);
+                }
 
 
                 userPage.setName(name);
 
                 userPage.setDefaultPage(isDefaultPage);
+                userPage.setPortalDefaultPage(isPortalDefaultPage);
 
 
                 if (((child instanceof ITemplatePortalObject) && ((ITemplatePortalObject) child).isClosable()) || StringUtils.isNotEmpty(groupName)) {
