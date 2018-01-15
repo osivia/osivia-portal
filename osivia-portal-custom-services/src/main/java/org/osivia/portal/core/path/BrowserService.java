@@ -467,7 +467,7 @@ public class BrowserService implements IBrowserService {
             if (!acceptable) {
                 extraClasses.append("text-muted not-allowed ");
             } else if (options.isHighlight() && (BooleanUtils.isFalse(cmsItem.getPublished()) || BooleanUtils.isTrue(cmsItem.getBeingModified()))) {
-                extraClasses.append("text-warning ");
+                extraClasses.append("text-info ");
             }
             if (StringUtils.equals(options.getCmsNavigationPath(), path)) {
                 extraClasses.append("current ");
