@@ -138,7 +138,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/postmessage/postmessage.min.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css' title='Bootstrap'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap.min.css' title='Bootstrap'>");
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/osivia.min.css'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
 

@@ -55,7 +55,7 @@ $JQry(function() {
                     }
                 },
 
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.min.css"],
+                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css"],
                 height: 200,
 
                 // Prevent relative URL conversion
