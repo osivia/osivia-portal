@@ -43,6 +43,12 @@ public class CMSPublicationInfos {
 	private boolean manageableByUser = false;
 	private boolean deletableByUser = false;
 	private boolean userCanValidate = false;
+	
+	/** Indicates if remote proxy is unpublishable */
+	private boolean userCanUnpublishRemoteProxy = false;
+	/** Indicates if remote proxy has no more live doc */
+	private boolean isLiveDeleted = false;
+	
 	private boolean anonymouslyReadable = false;
 	/** Indicates if document is remote publishable. */
 	private boolean isRemotePublishable = false;
@@ -172,8 +178,25 @@ public class CMSPublicationInfos {
     public void setUserCanValidate(boolean userCanValidate) {
         this.userCanValidate = userCanValidate;
     }
+    
+    public boolean isUserCanUnpublishRemoteProxy() {
+        return userCanUnpublishRemoteProxy;
+    }
+    
+	public void setUserCanUnpublishRemoteProxy(boolean userCanUnpublishRemoteProxy) {
+		this.userCanUnpublishRemoteProxy = userCanUnpublishRemoteProxy;
+	}
+	
 
-    public boolean isAnonymouslyReadable() {
+    public boolean isLiveDeleted() {
+		return isLiveDeleted;
+	}
+
+	public void setLiveDeleted(boolean isLiveDeleted) {
+		this.isLiveDeleted = isLiveDeleted;
+	}
+
+	public boolean isAnonymouslyReadable() {
 		return anonymouslyReadable;
 	}
 
