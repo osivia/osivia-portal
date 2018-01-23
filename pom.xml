@@ -23,6 +23,7 @@
         <commons-collections.version>3.2.1</commons-collections.version>
         <commons-beanutils.version>1.9.2</commons-beanutils.version>
         <commons-httpclient.version>3.1</commons-httpclient.version>
+        <commons-codec.version>1.11</commons-codec.version>
         <commons-io.version>2.2</commons-io.version>
 
         <!-- Spring framework -->
@@ -317,6 +318,12 @@
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
                 <version>${commons-httpclient.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

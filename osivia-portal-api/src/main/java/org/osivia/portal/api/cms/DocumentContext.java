@@ -23,17 +23,19 @@ package org.osivia.portal.api.cms;
 public interface DocumentContext {
 
     /**
-     * Get document path.
+     * Get CMS path.
      * 
-     * @return path
+     * @return CMS path
+     * @since 4.7
      */
-    String getPath();
+    String getCmsPath();
 
 
     /**
      * Get webId.
      * 
      * @return webId
+     * @since 4.7
      */
     String getWebId();
 

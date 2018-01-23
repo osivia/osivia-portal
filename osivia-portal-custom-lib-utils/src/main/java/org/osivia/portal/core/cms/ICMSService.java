@@ -512,7 +512,7 @@ public interface ICMSService {
      * Get document context.
      *
      * @param cmsContext CMS context
-     * @param path       document path
+     * @param path CMS path or webId
      * @return document context
      * @throws CMSException
      */
@@ -522,9 +522,9 @@ public interface ICMSService {
     /**
      * Get document context.
      *
-     * @param <D>          document context type
-     * @param cmsContext   CMS context
-     * @param path         document path
+     * @param <D> document context type
+     * @param cmsContext CMS context
+     * @param path CMS path or webId
      * @param expectedType expected type
      * @return document context
      * @throws CMSException
