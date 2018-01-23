@@ -58,14 +58,21 @@ import com.sun.mail.smtp.SMTPTransport;
 public class StatusService extends ServiceMBeanSupport implements StatusServiceMBean, Serializable {
 
 	/**
+	 * Property setted in environnement_portal.properties
+	 */
+	private static final String NUXEOPROBE_PROPERTY = "osivia.status.nuxeoprobe";
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long intervalleTest = 60L * 1000L;
 	
 	private static final String NUXEO_RUNNINGSTATUS_URL = "/runningstatus";
-	private static final String NUXEO_RUNNINGSTATUS_OK = "Ok";
-
+	private static final String NUXEO_RUNNINGSTATUS_OK = "true";
+	
+	private static final String NUXEO_PROBESTATUS_URL = "/site/probes/status";
+	private static final String NUXEO_PROBESTATUS_OK = "{\"error\":0}";
+	
 
 	private static Log statutLog = LogFactory.getLog("PORTAL_STATUS");
 
@@ -235,12 +242,23 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 	}
 
 	/**
-	 * Teste l'état d'un service . Un thread est lancé pour s'assurer qu'on ne bloquera pas
+	 * Marque un service a tester . Un thread est lancé pour s'assurer qu'on ne bloquera pas
 	 * la requete
 	 * 
 	 * @param service
-	 * @throws UnavailableServer
 	 */
+	public void markServiceToCheck(String serviceCode) {
+        statutLog.warn(serviceCode + " marked as to check.");
+		
+		ServiceState service = listeServices.get(serviceCode);
+		
+		if (service != null) {
+			synchronized (listeServices) {
+				service.setMustBeChecked(true);
+			}
+		}
+		
+	}
 	
 	public void testerService(ServiceState service) throws UnavailableServer {
 
@@ -258,7 +276,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			
 			// TODO : externaliser dans l'API status (utl d'appel différente de url service)
 			if( url.endsWith("/nuxeo"))
-			    url += NUXEO_RUNNINGSTATUS_URL;
+			    url += getNuxeoStatusUrl();
 			
             statutLog.info("Testing Nuxeo service URL : " + url);
 			
@@ -267,9 +285,9 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 			
 			String response = future.get(timeOut, TimeUnit.SECONDS);
 
-			if( url.endsWith(NUXEO_RUNNINGSTATUS_URL))   {
+			if( url.endsWith(getNuxeoStatusUrl()))   {
 
-			    if( !StringUtils.containsIgnoreCase(response, NUXEO_RUNNINGSTATUS_OK))    {
+			    if( !StringUtils.containsIgnoreCase(response, getNuxeoStatusMessage()))    {
 			        throw new UnavailableServer(response);
 			    }
 			}
@@ -293,6 +311,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 		}
 
 	}
+
 
 	private static class URLTesteur implements Callable<String> {
 
@@ -369,6 +388,36 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 
 			return responseBody;
 		}
+	}
+	
+	/**
+	 * Return the status url to check (if probe mode is activated or not)
+	 * @return
+	 */
+	private String getNuxeoStatusUrl() {
+		
+		if(System.getProperty(NUXEOPROBE_PROPERTY) != null && "true".equals(System.getProperty(NUXEOPROBE_PROPERTY))) {
+			return NUXEO_PROBESTATUS_URL;
+		}
+		else {
+			return NUXEO_RUNNINGSTATUS_URL;
+		}
+		
+	}
+
+	/**
+	 * Return the status message to check (if probe mode is activated or not)
+	 * @return
+	 */
+	private String getNuxeoStatusMessage() {
+		
+		if(System.getProperty(NUXEOPROBE_PROPERTY) != null && "true".equals(System.getProperty(NUXEOPROBE_PROPERTY))) {
+			return NUXEO_PROBESTATUS_OK;
+		}
+		else {
+			return NUXEO_RUNNINGSTATUS_OK;
+		}
+		
 	}
 
 }

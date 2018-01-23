@@ -20,9 +20,27 @@ package org.osivia.portal.api.status;
  */
 public interface IStatusService {
 
+	/**
+	 * Alert if a service is in fault
+	 * @param url of the service
+	 * @param e
+	 */
 	public void notifyError(String url, UnavailableServer e);
 	
+	/**
+	 * Check if service is ready
+	 * @param url of the service
+	 * @return true if service is ready
+	 */
 	public boolean isReady(String url);
+
+	/**
+	 * Mark the service to check.
+	 * Used if an error occured during the last call of the service.
+	 * This service will be checked the next time the service is call
+	 * @param url of the service
+	 */
+	public void markServiceToCheck(String url);
 
 
 }
