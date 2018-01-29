@@ -1,5 +1,6 @@
 $JQry(function() {
     
+    // TinyMCE default
     $JQry("textarea.tinymce.tinymce-default").each(function(index, element) {
         var $textarea = $JQry(element),
             id = $textarea.attr("id");
@@ -57,7 +58,8 @@ $JQry(function() {
 
                 content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css"],
                 height: 200,
-
+                width: "auto",
+                
                 // Prevent relative URL conversion
                 convert_urls: false,
                 // Remove style on paste

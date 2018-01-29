@@ -1,12 +1,19 @@
-// 
-// TinyMCE theme
+//
+// OSIVIA Bootstrap extensions - TinyMCE
 // --------------------------------------------------
 
 
-// Mixins
-@import "../bootstrap/mixins.less";
-// Variables
-@import "../bootstrap/variables.less";
+textarea.tinymce {
+    
+    // TinyMCE default 
+    &.tinymce-default {
+        @tinymce-height: 200px;
+        @tinymce-border-width: 1px;
+        
+        height: @input-height-base + @tinymce-height + 2 * @panel-body-padding + 3 * @tinymce-border-width;
+    }
+    
+}
 
 
 .mce-panel {
