@@ -1,30 +1,32 @@
 /*     */ package org.apache.catalina.connector;
 /*     */ 
 /*     */ import java.io.IOException;
-			import org.apache.catalina.CometEvent;
-/*     */ import org.apache.catalina.CometEvent.EventSubType;
-/*     */ import org.apache.catalina.CometEvent.EventType;
-/*     */ import org.apache.catalina.Container;
+
+import org.apache.catalina.CometEvent;
 /*     */ import org.apache.catalina.Context;
-/*     */ import org.apache.catalina.Pipeline;
-/*     */ import org.apache.catalina.Valve;
 /*     */ import org.apache.catalina.Wrapper;
 /*     */ import org.apache.catalina.util.StringManager;
+import org.apache.commons.lang.StringUtils;
 /*     */ import org.apache.coyote.ActionCode;
 /*     */ import org.apache.coyote.Adapter;
-/*     */ import org.apache.coyote.RequestInfo;
 /*     */ import org.apache.tomcat.util.buf.B2CConverter;
 /*     */ import org.apache.tomcat.util.buf.ByteChunk;
 /*     */ import org.apache.tomcat.util.buf.CharChunk;
 /*     */ import org.apache.tomcat.util.buf.MessageBytes;
-/*     */ import org.apache.tomcat.util.buf.UDecoder;
 /*     */ import org.apache.tomcat.util.http.Cookies;
-/*     */ import org.apache.tomcat.util.http.Parameters;
 /*     */ import org.apache.tomcat.util.http.ServerCookie;
-/*     */ import org.apache.tomcat.util.http.mapper.Mapper;
-/*     */ import org.apache.tomcat.util.http.mapper.MappingData;
 /*     */ import org.apache.tomcat.util.net.SocketStatus;
 /*     */ import org.jboss.logging.Logger;
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
+/*     */ 
 /*     */ 
 /*     */ public class CoyoteAdapter
 /*     */   implements Adapter
@@ -420,6 +422,24 @@ return false;
 /*     */         continue;
 /* 536 */       if (!request.isRequestedSessionIdFromCookie())
 /*     */       {
+					// #1790 LBI check integrity of PORTALSESSIONID
+	
+					String cookieValue = scookie.getValue().toString();
+					
+					if(cookieValue != null) {
+						
+						if(!StringUtils.endsWith(cookieValue, ".jbossX")) {
+							log.debug("cookie invalide !");
+							continue;
+						}
+						cookieValue = cookieValue.replace(".jbossX", "");
+						if(!StringUtils.isAlphanumeric(cookieValue)) {
+							log.debug("cookie invalide !");
+							continue;
+						}
+					}
+	
+	
 /* 538 */         convertMB(scookie.getValue());
 /* 539 */         request.setRequestedSessionId(scookie.getValue().toString());
 /*     */ 

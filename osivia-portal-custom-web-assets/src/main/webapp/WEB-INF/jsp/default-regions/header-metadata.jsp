@@ -14,6 +14,10 @@
 <title>${title}</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="0">
+
 <c:forEach var="meta" items="${requestScope['osivia.header.metadata']}">
 <meta name="${meta.key}" content="${fn:escapeXml(meta.value)}">
 </c:forEach>
