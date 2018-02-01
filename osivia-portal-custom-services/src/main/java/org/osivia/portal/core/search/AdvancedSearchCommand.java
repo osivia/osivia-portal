@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
@@ -65,7 +66,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
      * @param advancedSearch advanced search indicator
      */
     public AdvancedSearchCommand(String search, boolean advancedSearch) {
-        this.search = search;
+        this.search = StringEscapeUtils.escapeHtml(search);
         this.advancedSearch = advancedSearch;
     }
 
