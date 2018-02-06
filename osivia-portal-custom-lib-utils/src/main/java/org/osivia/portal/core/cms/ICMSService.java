@@ -559,9 +559,10 @@ public interface ICMSService {
      * @param uuid UUID
      * @param actionId action identifier
      * @param variables task variables
+     * @return true if the task has been updated
      * @throws CMSException
      */
-    void updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
+    boolean updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
 
 
     /**

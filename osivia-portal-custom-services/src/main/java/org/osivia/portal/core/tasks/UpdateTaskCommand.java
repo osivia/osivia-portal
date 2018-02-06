@@ -3,6 +3,8 @@ package org.osivia.portal.core.tasks;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
@@ -14,7 +16,13 @@ import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
+import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.notifications.INotificationsService;
+import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
@@ -56,6 +64,10 @@ public class UpdateTaskCommand extends ControllerCommand {
 
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
+    /** Internationalization bundle factory. */
+    private final IBundleFactory bundleFactory;
+    /** Notifications service. */
+    private final INotificationsService notificationsService;
 
 
     /**
@@ -78,6 +90,12 @@ public class UpdateTaskCommand extends ControllerCommand {
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
+        // Internationalization bundle factory
+        IInternationalizationService internationalizationService = Locator.findMBean(IInternationalizationService.class,
+                IInternationalizationService.MBEAN_NAME);
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        // Notifications service
+        this.notificationsService = Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
 
@@ -95,6 +113,13 @@ public class UpdateTaskCommand extends ControllerCommand {
      */
     @Override
     public ControllerResponse execute() throws ControllerException {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.context);
+        // HTTP servlet request
+        HttpServletRequest request = portalControllerContext.getHttpServletRequest();
+        // Internationalization bundle
+        Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
+
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
@@ -105,10 +130,10 @@ public class UpdateTaskCommand extends ControllerCommand {
         ControllerResponse response;
 
         try {
-            cmsService.updateTask(cmsContext, this.uuid, this.actionId, this.variables);
+            boolean updated = cmsService.updateTask(cmsContext, this.uuid, this.actionId, this.variables);
 
             // Redirection
-            if (StringUtils.isEmpty(this.redirectionUrl)) {
+            if (StringUtils.isEmpty(this.redirectionUrl) || !updated) {
                 PortalObjectId pageId = PortalObjectUtils.getPageId(this.context);
                 if (pageId == null) {
                     Portal portal = PortalObjectUtils.getPortal(this.context);
@@ -117,6 +142,11 @@ public class UpdateTaskCommand extends ControllerCommand {
                 response = new UpdatePageResponse(pageId);
             } else {
                 response = new RedirectionResponse(this.redirectionUrl);
+            }
+
+            if (!updated) {
+                String message = bundle.getString("INFO_TASK_NOT_UPDATED");
+                this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
             }
         } catch (CMSException e) {
             response = new ErrorResponse(e, true);
