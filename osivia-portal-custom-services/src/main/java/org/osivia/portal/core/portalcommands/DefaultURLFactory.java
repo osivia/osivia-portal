@@ -354,17 +354,23 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
         // Advanced search command
         if (cmd instanceof AdvancedSearchCommand) {
-            AdvancedSearchCommand advancedSearchCommand = (AdvancedSearchCommand) cmd;
+            AdvancedSearchCommand command = (AdvancedSearchCommand) cmd;
 
             AbstractServerURL asu = new AbstractServerURL();
+            asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);
             asu.setPortalRequestPath(this.path);
 
             // Parameters
             try {
-                asu.setParameterValue(COMMAND_ACTION_PARAMETER_NAME, AdvancedSearchCommand.COMMAND_ACTION_VALUE);                
-                asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(advancedSearchCommand.getSearch(), CharEncoding.UTF_8));
-                asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME,
-                        URLEncoder.encode(String.valueOf(advancedSearchCommand.isAdvancedSearch()), CharEncoding.UTF_8));
+                // Search value
+                if (StringUtils.isNotBlank(command.getSearch())) {
+                    asu.setParameterValue(AdvancedSearchCommand.SEARCH_PARAMETER_NAME, URLEncoder.encode(command.getSearch(), CharEncoding.UTF_8));
+                }
+
+                // Advanced search indicator
+                if (command.isAdvancedSearch()) {
+                    asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME, URLEncoder.encode(String.valueOf(true), CharEncoding.UTF_8));
+                }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }

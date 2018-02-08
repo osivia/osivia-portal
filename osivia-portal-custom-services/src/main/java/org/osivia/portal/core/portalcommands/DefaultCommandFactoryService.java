@@ -645,12 +645,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String[] searchParameterMap = parameterMap.get(AdvancedSearchCommand.SEARCH_PARAMETER_NAME);
                     String[] advancedSearchParameterMap = parameterMap.get(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME);
 
-                    if (searchParameterMap != null) {
-
+                    if (ArrayUtils.isNotEmpty(searchParameterMap)) {
+                        // Search value
                         String search = URLDecoder.decode(searchParameterMap[0], CharEncoding.UTF_8);
 
-                        boolean advancedSearch = false;
-                        if (advancedSearchParameterMap != null) {
+                        // Advanced search indicator
+                        boolean advancedSearch;
+                        if (ArrayUtils.isEmpty(advancedSearchParameterMap)) {
+                            advancedSearch = false;
+                        } else {
                             advancedSearch = BooleanUtils.toBoolean(URLDecoder.decode(advancedSearchParameterMap[0], CharEncoding.UTF_8));
                         }
 

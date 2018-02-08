@@ -26,9 +26,11 @@
                     </div>
                 
                     <div class="media-body">
-                        <form action="${requestScope['osivia.search.url']}" method="post" role="search">
+                        <form action="${requestScope['osivia.search.url']}" method="get" role="search">
+                            <input type="hidden" name="action" value="advancedSearch">
+                        
                             <div class="input-group">
-                                <input type="text" name="keywords" class="form-control" placeholder="${searchPlaceholder}">
+                                <input type="text" name="search" class="form-control" placeholder="${searchPlaceholder}">
                                 
                                 <span class="input-group-btn">    
                                     <button type="submit" class="btn btn-default">

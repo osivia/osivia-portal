@@ -9,11 +9,13 @@
 
 
 <div class="pull-right hidden-xs">
-    <form action="${requestScope['osivia.search.url']}" method="post" class="form-inline" role="search">
+    <form action="${requestScope['osivia.search.url']}" method="get" class="form-inline" role="search">
+        <input type="hidden" name="action" value="advancedSearch">
+    
         <div class="form-group">
             <label class="sr-only" for="search-input"><op:translate key="SEARCH" /></label>
             <div class="input-group input-group-sm">
-                <input id="search-input" type="text" name="keywords" class="form-control" placeholder="${placeholder}">
+                <input id="search-input" type="text" name="search" class="form-control" placeholder="${placeholder}">
                 <span class="input-group-btn">
                     <button type="submit" class="btn btn-default" title="${title}" data-toggle="tooltip" data-placement="bottom">
                         <i class="halflings halflings-search"></i>

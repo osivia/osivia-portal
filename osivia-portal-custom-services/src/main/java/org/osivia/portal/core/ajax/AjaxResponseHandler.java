@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -412,6 +413,11 @@ public class AjaxResponseHandler implements ResponseHandler {
                         } else {
                             fullRefresh = true;
                         }
+                    }
+
+                    // Prevent Ajax refresh (useful for keywords selector)
+                    if (BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.ATTR_WINDOW_PREVENT_AJAX_REFRESH))) {
+                        dirtyWindowIds.remove(window.getId());
                     }
                 }
             }
