@@ -320,7 +320,7 @@ function filterTree(event) {
 		clearFilter(tree, expand);
 	} else {
 		tree.filterNodes(function(node) {
-			var match = (node.title.toLowerCase().indexOf(value.toLowerCase()) > -1);
+			var match = (node.title !== undefined) && (node.title.toLowerCase().indexOf(value.toLowerCase()) > -1);
 			if (match) {
 				node.makeVisible({
 					noAnimation : true,
