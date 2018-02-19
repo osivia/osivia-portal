@@ -60,9 +60,38 @@ $JQry(function() {
 			};
 		}
 		
-		$element.css({
-			width : "100%"
-		});
+		// Internationalization
+        options["language"] = {};
+        if ($element.data("input-too-short") !== undefined) {
+            options["language"]["inputTooShort"] = function() {
+                return $element.data("input-too-short");
+            }
+        }
+        if ($element.data("error-loading") !== undefined) {
+            options["language"]["errorLoading"] = function() {
+                return $element.data("error-loading");
+            }
+        }
+        if ($element.data("loading-more") !== undefined) {
+            options["language"]["loadingMore"] = function() {
+                return $element.data("loading-more");
+            }
+        }
+        if ($element.data("searching") !== undefined) {
+            options["language"]["searching"] = function() {
+                return $element.data("searching");
+            }
+        }
+        if ($element.data("no-results") !== undefined) {
+            options["language"]["noResults"] = function() {
+                return $element.data("no-results");
+            }
+        }
+
+        // Force width to 100%
+        $element.css({
+            width : "100%"
+        });
 		
 		$element.select2(options);
 		
