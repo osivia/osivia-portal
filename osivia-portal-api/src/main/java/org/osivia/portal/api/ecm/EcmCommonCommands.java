@@ -37,7 +37,7 @@ public enum EcmCommonCommands {
     
     deleteDocument,
 
-    pin,
+    addToQuickAccess,
     
-    unpin
+    removeFromQuickAccess
 }
