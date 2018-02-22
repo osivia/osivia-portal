@@ -31,6 +31,20 @@ $JQry(function() {
 			callback();
 		}
 	});
+	
+	$JQry(".fancyframe_refresh_fullscreen").fancybox({
+		closeClickOutside : false,
+		iframe : {
+			scrolling : true,
+			css : {
+				width : "90%",
+				height : "90%"
+			}
+		},
+		beforeClose : function(instance, slide) {
+			callback();
+		}
+	});
 
 });
 
