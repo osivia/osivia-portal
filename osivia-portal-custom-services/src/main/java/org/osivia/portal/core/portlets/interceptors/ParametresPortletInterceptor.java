@@ -57,6 +57,8 @@ import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.directory.entity.DirectoryPerson;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
+import org.osivia.portal.api.log.LogContext;
+import org.osivia.portal.api.log.LogContextFactory;
 import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.menubar.MenubarContainer;
 import org.osivia.portal.api.menubar.MenubarDropdown;
@@ -482,6 +484,12 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);
             }
         }
+        
+        
+        // Delete current log context
+        LogContext logContext = LogContextFactory.getLogContext();
+        logContext.deleteContext(null);
+        
 
         return response;
     }

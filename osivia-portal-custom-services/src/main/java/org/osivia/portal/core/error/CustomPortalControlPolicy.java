@@ -14,28 +14,26 @@
  */
 package org.osivia.portal.core.error;
 
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
-import org.jboss.portal.core.model.portal.control.page.PageControlContext;
 import org.jboss.portal.core.model.portal.control.portal.PortalControlContext;
 import org.jboss.portal.core.model.portal.control.portal.PortalControlPolicy;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
-import org.osivia.portal.core.error.ErrorDescriptor;
-import org.osivia.portal.core.error.GlobalErrorHandler;
-import org.w3c.dom.Element;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.log.LogContext;
 
 
 
@@ -43,8 +41,16 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 
 	private PortalObjectContainer portalObjectContainer;
 	
+    /** Log context. */
+    private LogContext logContext;
+
+    /** Default log. */
+    private final Log defaultLog;
+
+
 	public CustomPortalControlPolicy() {
 		super();
+        this.defaultLog = LogFactory.getLog(this.getClass());
 	}
 
 	public PortalObjectContainer getPortalObjectContainer() {
@@ -67,17 +73,46 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 
 	public void doControl(PortalControlContext controlContext) {
 		ControllerResponse response = controlContext.getResponse();
-		String userId = getUserId(controlContext.getControllerContext().getUser());
+        ControllerContext controllerContext = controlContext.getControllerContext();
+        String userId = getUserId(controllerContext.getUser());
 		
 		String portalId = controlContext.getPortalId().toString(PortalObjectPath.CANONICAL_FORMAT);
 		
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, null, portalId);
 		
-		if( errDescriptor != null) {			
-			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
+        if (errDescriptor != null) {
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
-			controlContext.setResponse(new RedirectionResponse(getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?err=" + errId+ "&httpCode=" + errDescriptor.getHttpErrCode()));
+            String token = this.logContext.createContext(portalControllerContext, "portal", null);
+            this.defaultLog.error("Portlet error", errDescriptor.getException());
+
+            errDescriptor.setToken(token);
+
+			GlobalErrorHandler.getInstance().logError(errDescriptor);
+
+            // URL encoded token
+            String encodedToken;
+            try {
+                encodedToken = URLEncoder.encode(token, CharEncoding.UTF_8);
+            } catch (UnsupportedEncodingException e) {
+                this.defaultLog.error("Token URL encoding error", e);
+                encodedToken = StringUtils.EMPTY;
+            }
+
+
+            controlContext.setResponse(new RedirectionResponse(
+                    getPortalCharteCtx(controlContext) + "/error/errorPage.jsp?httpCode=" + errDescriptor.getHttpErrCode() + "&token=" + encodedToken));
 		}
 	}
+
+
+    /**
+     * Setter for logContext.
+     * 
+     * @param logContext the logContext to set
+     */
+    public void setLogContext(LogContext logContext) {
+        this.logContext = logContext;
+    }
 	
 }

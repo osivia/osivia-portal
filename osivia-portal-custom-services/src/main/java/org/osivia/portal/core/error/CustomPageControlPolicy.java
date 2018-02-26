@@ -14,23 +14,19 @@
  */
 package org.osivia.portal.core.error;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-
-
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
-import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerRequestDispatcher;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.impl.model.content.portlet.PortletContent;
 import org.jboss.portal.core.model.content.Content;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
@@ -43,20 +39,28 @@ import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
-import org.osivia.portal.core.error.ErrorDescriptor;
-import org.osivia.portal.core.error.GlobalErrorHandler;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.log.LogContext;
 
 
 public class CustomPageControlPolicy extends CustomControlPolicy implements PageControlPolicy {
 
-	private static final Logger log = Logger.getLogger("PORTAL");
-
-
 	private ServerConfig serverConfig;
 	private PortalObjectContainer portalObjectContainer;
+	
+	/** Log context. */
+	private LogContext logContext;
+	
+	/** Portal log. */
+	private final Logger portalLog;
+    /** Default log. */
+    private final Log defaultLog;
+	
 
 	public CustomPageControlPolicy() {
 		super();
+		this.portalLog = Logger.getLogger("PORTAL");
+		this.defaultLog = LogFactory.getLog(this.getClass());
 	}
 
 	public ServerConfig getServerConfig() {
@@ -124,20 +128,27 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
                 // Request is not operationnal (timeout)
                 // Cant log
                 errDescriptor = null;
-                log.warn("timeout error dump", e);
+                this.portalLog.warn("timeout error dump", e);
            }
         }
         
         
 		
 		if (errDescriptor != null) {
-			long errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
+		    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
+		    
+		    String token = this.logContext.createContext(portalControllerContext, "portal", null);
+		    this.defaultLog.error("Portlet error", errDescriptor.getException());
+		    
+		    errDescriptor.setToken(token);
+		    
+			GlobalErrorHandler.getInstance().logError(errDescriptor);
 			boolean affichage = false;
 
+			
 			try {
-
 				ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getPortalCharteCtx(controlContext),
-						"/error/errorDiv.jsp?err=" + errId);
+						"/error/errorDiv.jsp?token=" + URLEncoder.encode(token, CharEncoding.UTF_8));
 
  				
 				if (rd != null) {
@@ -160,7 +171,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 			}
 
 			catch (Exception e) {
-				log.error("cannot obtain RequestDispatcher for '" + getPortalCharteCtx(controlContext) + "/error/errorDiv.jsp'");
+			    this.portalLog.error("cannot obtain RequestDispatcher for '" + getPortalCharteCtx(controlContext) + "/error/errorDiv.jsp'");
 			}
 
 			if (!affichage)
@@ -168,5 +179,10 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 
 		}
 	}
+
+    
+    public void setLogContext(LogContext logContext) {
+        this.logContext = logContext;
+    }
 
 }

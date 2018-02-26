@@ -14,7 +14,7 @@
 package org.osivia.portal.core.error;
 
 import java.io.IOException;
-import java.security.Principal;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
+import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.core.utils.URLUtils;
 
 
@@ -90,37 +92,19 @@ public class ErrorValve extends ValveBase {
                 if (cause == null) {
                     cause = (Exception) request.getAttribute("javax.servlet.error.exception");
                 }
-
-
-                Principal principal = request.getPrincipal();
-                String userId = null;
-                if (principal != null)
-                    userId = principal.getName();
-
+                
+                // Token
+                String token = (String) request.getAttribute("osivia.log.token");
 
                 Map<String, Object> properties = new HashMap<String, Object>();
                 properties.put("osivia.url", request.getDecodedRequestURI());
                 properties.put("osivia.header.userAgent", request.getHeader("User-Agent"));
 
 
-                ErrorDescriptor errDescriptor = new ErrorDescriptor(httpErrorCode, cause, null, userId, properties);
-
-                if ((response.getStatus() == 500 || response.getStatus() == 404) && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
-                    Long errId = (Long) request.getAttribute("osivia.loggedError");
-
-                    if (errId == null)
-                        errId = GlobalErrorHandler.getInstance().logError(errDescriptor);
-
+                if ((response.getStatus() == 500 || response.getStatus() == 403 || response.getStatus() == 404) && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
                     Map<String, String> parameters = new HashMap<String, String>(2);
-                    parameters.put("err", String.valueOf(errId));
                     parameters.put("httpCode", String.valueOf(httpErrorCode));
-                    String url = URLUtils.createUrl(httpRequest, errorPageUri, parameters);
-
-                    response.sendRedirect(url);
-                } else if (response.getStatus() == 403 && !"1".equals(request.getAttribute("osivia.no_redirection"))) {
-                    // No error registered if forbidden
-                    Map<String, String> parameters = new HashMap<String, String>(1);
-                    parameters.put("httpCode", String.valueOf(httpErrorCode));
+                    parameters.put("token", URLEncoder.encode(StringUtils.trimToEmpty(token), CharEncoding.UTF_8));
                     String url = URLUtils.createUrl(httpRequest, errorPageUri, parameters);
 
                     response.sendRedirect(url);
