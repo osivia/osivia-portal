@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,10 +14,13 @@
  */
 package org.osivia.portal.core.cms;
 
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.statistics.IStatisticsService;
 import org.osivia.portal.core.cms.spi.ICMSIntegration;
 
 
@@ -26,41 +29,61 @@ import org.osivia.portal.core.cms.spi.ICMSIntegration;
  * system of the end of the user session
  */
 public class SessionListener implements HttpSessionListener {
-	
-	public static long activeSessions = 0;
-	
-	public static String activeSessionSync = new String("activeSessionSync");
-	
-	private static ICMSServiceLocator icmsServiceLocactor = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
 
-	
-	public void sessionCreated(HttpSessionEvent arg0) {
-		
-		synchronized (activeSessionSync) {
-			activeSessions++;			
-		}
+    public static long activeSessions = 0;
 
-	}
+    public static String activeSessionSync = new String("activeSessionSync");
 
-	public void sessionDestroyed(HttpSessionEvent arg0) {
-		
-		synchronized (activeSessionSync) {
-			activeSessions--;
-		}
-		
 
-		ICMSIntegration nuxeoService;
-		try {
-			nuxeoService = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+    /** Nuxeo service. */
+    private final ICMSIntegration nuxeoService;
+    /** Statistics service. */
+    private final IStatisticsService statisticsService;
 
-		nuxeoService.sessionDestroyed(arg0);
-		
-		
-		
 
-	}
+    /**
+     * Constructor.
+     */
+    public SessionListener() {
+        super();
+
+        // Nuxeo service
+        this.nuxeoService = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
+        // Statistics service
+        this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sessionCreated(HttpSessionEvent sessionEvent) {
+        synchronized (activeSessionSync) {
+            activeSessions++;
+        }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void sessionDestroyed(HttpSessionEvent sessionEvent) {
+        synchronized (activeSessionSync) {
+            activeSessions--;
+        }
+
+        this.nuxeoService.sessionDestroyed(sessionEvent);
+
+        // HTTP session
+        HttpSession httpSession = sessionEvent.getSession();
+
+        try {
+            this.statisticsService.aggregateUserStatistics(httpSession);
+        } catch (PortalException e) {
+            // Do nothing
+        }
+    }
 
 }

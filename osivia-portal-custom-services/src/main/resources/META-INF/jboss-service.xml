@@ -1032,6 +1032,18 @@
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
+    
+    <!-- Statistics service -->
+    <mbean
+        code="org.osivia.portal.core.statistics.StatisticsService"
+        name="osivia:service=StatisticsService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
 
 </server>
    
