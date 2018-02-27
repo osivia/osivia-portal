@@ -17,6 +17,8 @@ package org.osivia.portal.core.error;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import javax.portlet.PortletException;
+
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,6 +34,7 @@ import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
+import org.osivia.portal.api.PortalApplicationException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.log.LogContext;
 
@@ -81,13 +84,54 @@ public class CustomPortalControlPolicy extends CustomControlPolicy implements Po
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, null, portalId);
 		
         if (errDescriptor != null) {
+            // Portal controller context
             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
-            String token = this.logContext.createContext(portalControllerContext, "portal", null);
-            this.defaultLog.error("Portlet error", errDescriptor.getException());
+            // Exception
+            Throwable throwable = errDescriptor.getException();
+
+            // Portlet exception
+            PortletException portletException;
+            if (throwable == null) {
+                portletException = null;
+            } else {
+                try {
+                    throw throwable;
+                } catch (PortletException e) {
+                    portletException = e;
+                } catch (Throwable e) {
+                    portletException = null;
+                }
+            }
+
+            // Application exception
+            PortalApplicationException applicationException;
+            if ((portletException == null) || (portletException.getCause() == null)) {
+                applicationException = null;
+            } else {
+                try {
+                    throw portletException.getCause();
+                } catch (PortalApplicationException e) {
+                    applicationException = e;
+                } catch (Throwable e) {
+                    applicationException = null;
+                }
+            }
+
+            // Token
+            String token;
+
+            if (applicationException == null) {
+                token = this.logContext.createContext(portalControllerContext, "portal", null);
+                this.defaultLog.error("Portlet error", throwable);
+            } else {
+                token = this.logContext.createContext(portalControllerContext, StringUtils.defaultIfEmpty(applicationException.getDomain(), "portal"), applicationException.getCode());
+                this.defaultLog.error(StringUtils.defaultIfEmpty(applicationException.getMessage(), "Portlet error"));
+            }
 
             errDescriptor.setToken(token);
 
+            // Global error handler
 			GlobalErrorHandler.getInstance().logError(errDescriptor);
 
             // URL encoded token

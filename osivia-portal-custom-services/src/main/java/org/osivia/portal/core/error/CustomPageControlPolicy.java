@@ -17,7 +17,10 @@ package org.osivia.portal.core.error;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import javax.portlet.PortletException;
+
 import org.apache.commons.lang.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
@@ -39,6 +42,7 @@ import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.ThemeService;
+import org.osivia.portal.api.PortalApplicationException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.log.LogContext;
 
@@ -106,15 +110,13 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 	
 
 	public void doControl(PageControlContext controlContext) {
-		
-
 		WindowRendition rendition = controlContext.getRendition();
 		ControllerResponse response = rendition.getControllerResponse();
-		ControllerContext controllerCtx = controlContext.getControllerContext();
-		String userId = getUserId(controllerCtx.getUser());
+		ControllerContext controllerContext = controlContext.getControllerContext();
+		String userId = getUserId(controllerContext.getUser());
 		
 		
-		String portletName=getPortletName(controllerCtx, controlContext.getWindowId());
+		String portletName=getPortletName(controllerContext, controlContext.getWindowId());
 		
 
 		ErrorDescriptor errDescriptor = getErrorDescriptor(response, userId, portletName, null);
@@ -123,7 +125,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 
         if (errDescriptor != null) {
             try {
-                controllerCtx.getRequestDispatcher(getPortalCharteCtx(controlContext), "/error/errorDiv.jsp");
+                controllerContext.getRequestDispatcher(getPortalCharteCtx(controlContext), "/error/errorDiv.jsp");
             } catch (Exception e) {
                 // Request is not operationnal (timeout)
                 // Cant log
@@ -135,10 +137,51 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
         
 		
 		if (errDescriptor != null) {
-		    PortalControllerContext portalControllerContext = new PortalControllerContext(controllerCtx);
-		    
-		    String token = this.logContext.createContext(portalControllerContext, "portal", null);
-		    this.defaultLog.error("Portlet error", errDescriptor.getException());
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
+            // Exception
+            Throwable throwable = errDescriptor.getException();
+
+            // Portlet exception
+            PortletException portletException;
+            if (throwable == null) {
+                portletException = null;
+            } else {
+                try {
+                    throw throwable;
+                } catch (PortletException e) {
+                    portletException = e;
+                } catch (Throwable e) {
+                    portletException = null;
+                }
+            }
+
+            // Application exception
+            PortalApplicationException applicationException;
+            if ((portletException == null) || (portletException.getCause() == null)) {
+                applicationException = null;
+            } else {
+                try {
+                    throw portletException.getCause();
+                } catch (PortalApplicationException e) {
+                    applicationException = e;
+                } catch (Throwable e) {
+                    applicationException = null;
+                }
+            }
+
+            // Token
+            String token;
+
+            if (applicationException == null) {
+                token = this.logContext.createContext(portalControllerContext, "portal", null);
+                this.defaultLog.error("Portlet error", throwable);
+            } else {
+                token = this.logContext.createContext(portalControllerContext, StringUtils.defaultIfEmpty(applicationException.getDomain(), "portal"),
+                        applicationException.getCode());
+                this.defaultLog.error(StringUtils.defaultIfEmpty(applicationException.getMessage(), "Portlet error"));
+            }
 		    
 		    errDescriptor.setToken(token);
 		    
@@ -147,7 +190,7 @@ public class CustomPageControlPolicy extends CustomControlPolicy implements Page
 
 			
 			try {
-				ControllerRequestDispatcher rd = controllerCtx.getRequestDispatcher(getPortalCharteCtx(controlContext),
+				ControllerRequestDispatcher rd = controllerContext.getRequestDispatcher(getPortalCharteCtx(controlContext),
 						"/error/errorDiv.jsp?token=" + URLEncoder.encode(token, CharEncoding.UTF_8));
 
  				

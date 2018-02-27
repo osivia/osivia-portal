@@ -235,7 +235,7 @@ public class GlobalErrorHandler {
                 HttpSession session = request.getSession();
                 List<UserAction> historic = (List<UserAction>) session.getAttribute("osivia.trace.historic");
                 if (historic != null && historic.size() > 0) {
-                    sb.append("historic: ");
+                    sb.append("history: ");
                     String display = "";
                     for(UserAction userAction: historic)    {
                         display += "\n  " + formatTime( new Date(userAction.getTimestamp()))+" : "+userAction.getCommand()+" ";
