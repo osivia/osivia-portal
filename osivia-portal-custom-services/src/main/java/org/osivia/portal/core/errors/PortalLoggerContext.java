@@ -23,6 +23,7 @@ import javax.security.jacc.PolicyContextException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.WindowCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokeWindowCommand;
@@ -137,7 +138,7 @@ public class PortalLoggerContext {
         boolean newAction = false;
 
 
-        Stack stack = null;
+        Stack<?> stack = null;
 
 
         HttpServletRequest request = ErrorValve.mainRequest.get();
@@ -164,27 +165,34 @@ public class PortalLoggerContext {
             Object topCmd = stack.peek();
 
             if (topCmd instanceof ControllerCommand) {
-                ControllerCommand cmd = (ControllerCommand) stack.peek();
-
+                // Command
+                ControllerCommand command = (ControllerCommand) stack.peek();
+                // Controller context
+                ControllerContext controllerContext;
+                if (command == null) {
+                    controllerContext = null;
+                } else {
+                    controllerContext = command.getControllerContext();
+                }
 
                 PortalObjectId pageId = null;
 
-                if (cmd instanceof WindowCommand) {
-                    pageId = new PortalObjectId("", ((WindowCommand) cmd).getTargetId().getPath().getParent());
-                    newPortlet = buildPortletName(cmd, ((WindowCommand) cmd).getTargetId());
+                if (command instanceof WindowCommand) {
+                    pageId = new PortalObjectId("", ((WindowCommand) command).getTargetId().getPath().getParent());
+                    newPortlet = buildPortletName(command, ((WindowCommand) command).getTargetId());
                     
-                    if( request == null){
+                    if ((controllerContext != null) && (request == null)) {
                         // error logged inside a portlet
-                        request = cmd.getControllerContext().getServerInvocation().getServerContext().getClientRequest();
+                        request = controllerContext.getServerInvocation().getServerContext().getClientRequest();
                     }
                     
-                    if( cmd instanceof InvokeWindowCommand)
+                    if (command instanceof InvokeWindowCommand)
                         newAction = true;
 
-                } else if (cmd instanceof RenderPageCommand) {
-                    pageId = ((RenderPageCommand) cmd).getTargetId();
+                } else if (command instanceof RenderPageCommand) {
+                    pageId = ((RenderPageCommand) command).getTargetId();
                     if (windowId != null) {
-                        newPortlet = buildPortletName(cmd, windowId);
+                        newPortlet = buildPortletName(command, windowId);
                     }
 
                 }
@@ -193,8 +201,8 @@ public class PortalLoggerContext {
                 // for cms : /portal/cms/path
                 // for dynamic page : template name
 
-                if (pageId != null) {
-                    navigationPath = PagePathUtils.getContentPath(cmd.getControllerContext(), pageId);
+                if ((controllerContext != null) && (pageId != null)) {
+                    navigationPath = PagePathUtils.getContentPath(controllerContext, pageId);
                     if (navigationPath != null) {
                         newPage = "/portal/cms" + navigationPath;
                     } else {
@@ -203,8 +211,8 @@ public class PortalLoggerContext {
                             newPage = restorableName;
                     }
                 } else {
-                    if (cmd instanceof CmsCommand) {
-                        newPage = "/portal/cms" + ((CmsCommand) cmd).getCmsPath();
+                    if (command instanceof CmsCommand) {
+                        newPage = "/portal/cms" + ((CmsCommand) command).getCmsPath();
                     }
                 }
 
