@@ -68,7 +68,7 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 	private static final long intervalleTest = 60L * 1000L;
 	
 	private static final String NUXEO_RUNNINGSTATUS_URL = "/runningstatus";
-	private static final String NUXEO_RUNNINGSTATUS_OK = "true";
+	private static final String NUXEO_RUNNINGSTATUS_OK = "Ok";
 	
 	private static final String NUXEO_PROBESTATUS_URL = "/site/probes/status";
 	private static final String NUXEO_PROBESTATUS_OK = "{\"error\":0}";
