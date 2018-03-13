@@ -1,10 +1,12 @@
 $JQry(function() {
-	var $portletFiller = $JQry("body.fixed-layout .portlet-filler");
-	
-	if (!$portletFiller.closest(".scrollbox.fixed-scrollbox").length) {
-		// Portlet filler parents flexbox class
-		$portletFiller.parentsUntil(".flexbox").addClass("flexbox");
-	}
+	$JQry("body.fixed-layout .portlet-filler").each(function(index, element) {
+		var $element = $JQry(element);
+		
+		if (!$element.closest(".scrollbox.fixed-scrollbox").length) {
+			// Portlet filler parents flexbox class
+			$element.parentsUntil(".flexbox").addClass("flexbox");
+		}
+	});
 	
 	// Update scrollbar width
 	updateScrollbarWidth();

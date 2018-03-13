@@ -27,28 +27,42 @@
 
 
 <div>
-    <p class="lead">
+    <h3>
         <i class="glyphicons glyphicons-book-open"></i>
         <span><op:translate key="BROWSE_PORTLET_TITLE" /></span>
-    </p>
+    </h3>
     
-    <dl class="dl-horizontal">
-        <dt><op:translate key="LEGEND" /></dt>
-        <dd>
-            <span><op:translate key="DOCUMENT_UP_TO_DATE" /></span>
-            <br>
-            <span class="text-warning"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></span>
-            <br>
-            <span><strong><op:translate key="DOCUMENT_CURRENT" /></strong></span>
-        </dd>
-    </dl>
     
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingURL}">
+    <div class="row">
+        <div class="col-sm-6 col-md-7 col-lg-8">
+            <h4><op:translate key="BROWSE_PORTLET_DOCUMENTS" /></h4>
+            
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingURL}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-md-5 col-lg-4">
+            <h4><op:translate key="BROWSE_PORTLET_LEGEND" /></h4>
+            
+            <div class="well">
+                <dl>
+                    <dt><op:translate key="BROWSE_PORTLET_DOCUMENT_STATES" /></dt>
+                    <dd>
+                        <ul>
+                            <li><op:translate key="BROWSE_PORTLET_DOCUMENT_UP_TO_DATE" /></li>
+                            <li class="text-info"><op:translate key="BROWSE_PORTLET_DOCUMENT_ONGOING_CHANGES" /></li>
+                        </ul>
+                    </dd>
+                </dl>
+            
+                <p>
+                    <strong><op:translate key="BROWSE_PORTLET_DOCUMENT_CURRENT" /></strong>
+                </p>
             </div>
         </div>
     </div>
 </div>
-
-

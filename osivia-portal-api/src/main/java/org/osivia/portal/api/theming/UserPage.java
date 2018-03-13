@@ -30,8 +30,10 @@ public class UserPage {
     private String url;
     /** Close page URL. */
     private String closePageUrl;
-    /** Default page indicator. */
+    /** User default page indicator. */
     private boolean defaultPage;
+    /** Portal default page indicator. */
+    private boolean portalDefaultPage;
     /** Tab group name. */
     private String group;
     /** Maintains visible indicator. */
@@ -200,6 +202,24 @@ public class UserPage {
      */
     public void setDefaultPage(boolean defaultPage) {
         this.defaultPage = defaultPage;
+    }
+    
+    /**
+     * Getter for portalDefaultPage.
+     * 
+     * @return the portalDefaultPage
+     */
+    public boolean isPortalDefaultPage() {
+        return portalDefaultPage;
+    }
+    
+    /**
+     * Setter for portalDefaultPage.
+     * 
+     * @param portalDefaultPage the portalDefaultPage to set
+     */
+    public void setPortalDefaultPage(boolean portalDefaultPage) {
+        this.portalDefaultPage = portalDefaultPage;
     }
 
     /**
