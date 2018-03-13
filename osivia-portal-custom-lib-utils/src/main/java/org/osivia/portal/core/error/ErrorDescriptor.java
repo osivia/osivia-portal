@@ -24,7 +24,8 @@ public class ErrorDescriptor {
 	
 	public final static int NO_HTTP_ERR_CODE = -1;
 
-	protected long errorId;
+	private String token;
+	
 	protected Date registrationDate;
 	protected int httpErrCode;
 	protected Throwable exception;	
@@ -48,15 +49,16 @@ public class ErrorDescriptor {
 		}
 	}
 
-	public long getErrorId() {
-		return errorId;
-	}	
+	
+    public String getToken() {
+        return token;
+    }
+    
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-	protected void setErrorId(long errorId) {
-		this.errorId = errorId;
-	}
-
-	public Date getDate() {
+    public Date getDate() {
 		return registrationDate;
 	}
 

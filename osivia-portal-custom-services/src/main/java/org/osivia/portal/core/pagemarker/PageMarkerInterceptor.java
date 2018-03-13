@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
@@ -74,12 +75,9 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
             ControllerContext controllerCtx = cmd.getControllerContext();
 
             if (cmd instanceof InvokePortletWindowResourceCommand) {
-
-
-                // pas de page marker pour les ressources
-
-                controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "currentPageMarker", "0");
-
+                // on reprend le page marker pour les ressources sans l'incrémenter
+                String currentPageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "currentPageMarker", StringUtils.defaultIfEmpty(currentPageMarker, "0"));
             } else {
                 // Initialisation standard
                 PageMarkerUtils.getCurrentPageMarker(controllerCtx);

@@ -48,7 +48,6 @@ public class GlobalErrorHandler {
         return s_instance;
     }
 
-    private long currentErrorId = 0;
     private Log log;
 
     protected GlobalErrorHandler() {
@@ -57,10 +56,7 @@ public class GlobalErrorHandler {
     }
 
     // v.1.0.21 : desynchronisation
-    public synchronized long logError(ErrorDescriptor error) {
-        currentErrorId++;
-        error.setErrorId(currentErrorId);
-
+    public synchronized void logError(ErrorDescriptor error) {
         int errorCode = error.getHttpErrCode();
 
 
@@ -99,7 +95,7 @@ public class GlobalErrorHandler {
 
         log.error(asString(error, url, request, userAgent));
 
-        String msg = "#" + currentErrorId + "# ";
+        String msg = "#" + error.getToken() + "# ";
 
         
         
@@ -159,9 +155,6 @@ public class GlobalErrorHandler {
         
         
         logger.error(msg);
-
-
-        return currentErrorId;
     }
 
 
@@ -175,7 +168,7 @@ public class GlobalErrorHandler {
         if (error != null) {
             sb.append("\n\n----------------------------------------------------------------\n");
 
-            sb.append("\nNumError: #" + error.getErrorId() + "#");
+            sb.append("\ntoken: " + error.getToken());
 
             Date errDate = error.getDate();
             if (errDate != null) {
@@ -242,7 +235,7 @@ public class GlobalErrorHandler {
                 HttpSession session = request.getSession();
                 List<UserAction> historic = (List<UserAction>) session.getAttribute("osivia.trace.historic");
                 if (historic != null && historic.size() > 0) {
-                    sb.append("historic: ");
+                    sb.append("history: ");
                     String display = "";
                     for(UserAction userAction: historic)    {
                         display += "\n  " + formatTime( new Date(userAction.getTimestamp()))+" : "+userAction.getCommand()+" ";

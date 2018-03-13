@@ -439,6 +439,9 @@
 		<depends optional-attribute-name="PortalObjectContainer"
 			proxy-type="attribute">portal:container=PortalObject
 		</depends>
+		<depends optional-attribute-name="LogContext"
+            proxy-type="attribute">osivia:service=LogContext
+        </depends>
 	</mbean>
 
 	<mbean code="org.osivia.portal.core.error.CustomPortalControlPolicy"
@@ -448,6 +451,9 @@
 		<depends optional-attribute-name="PortalObjectContainer"
 			proxy-type="attribute">portal:container=PortalObject
 		</depends>
+        <depends optional-attribute-name="LogContext"
+            proxy-type="attribute">osivia:service=LogContext
+        </depends>
 	</mbean>
 
 	<mbean code="org.osivia.portal.core.error.CommandErrorInterceptor"
@@ -457,6 +463,8 @@
 
 		<depends optional-attribute-name="InternationalizationService"
 			proxy-type="attribute">osivia:service=InternationalizationService</depends>
+	    <depends optional-attribute-name="LogContext"
+            proxy-type="attribute">osivia:service=LogContext</depends>
 	</mbean>
 
 	<mbean code="org.osivia.portal.core.mt.MultithreadService" name="osivia:service=MultithreadService">
@@ -857,7 +865,6 @@
 		name="osivia:service=HABatchDeployer" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
-
 	</mbean>
 
 	<mbean code="org.jboss.ha.singleton.HASingletonController" name="jboss:service=HASingletonController">
@@ -874,6 +881,13 @@
 		<attribute name="TargetStartMethod">startSingleton</attribute>
 		<attribute name="TargetStopMethod">stopSingleton</attribute>
 	</mbean>
+
+
+    <!-- Log context -->
+    <mbean code="org.osivia.portal.core.log.LogContextImpl" name="osivia:service=LogContext"
+        xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
 
 </server>
    

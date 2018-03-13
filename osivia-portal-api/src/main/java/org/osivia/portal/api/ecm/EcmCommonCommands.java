@@ -35,6 +35,9 @@ public enum EcmCommonCommands {
 
     eraseModifications,
     
-    deleteDocument
+    deleteDocument,
 
+    addToQuickAccess,
+    
+    removeFromQuickAccess
 }
