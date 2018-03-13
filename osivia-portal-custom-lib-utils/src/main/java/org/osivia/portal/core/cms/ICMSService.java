@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.servlet.http.HttpSession;
+
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.ecm.EcmCommand;
@@ -26,6 +28,7 @@ import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.statistics.SpaceStatistics;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
@@ -572,9 +575,10 @@ public interface ICMSService {
      * @param uuid       UUID
      * @param actionId   action identifier
      * @param variables  task variables
+     * @return true if the task has been updated
      * @throws CMSException
      */
-    void updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
+    boolean updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
 
 
     /**
@@ -617,5 +621,27 @@ public interface ICMSService {
      * @throws CMSException
      */
     List<CMSEditableWindow> getProcedureDashboards(CMSServiceCtx cmsContext, String path) throws CMSException;
+    
+    
+    /**
+     * Get space statistics.
+     * 
+     * @param cmsContext CMS context
+     * @param paths space paths
+     * @return statistics
+     * @throws CMSException
+     */
+    List<SpaceStatistics> getSpaceStatistics(CMSServiceCtx cmsContext, Set<String> paths) throws CMSException;
+
+
+    /**
+     * Update space statistics.
+     * 
+     * @param cmsContext CMS context
+     * @param httpSession HTTP session
+     * @param spaceStatistics space statistics
+     * @throws CMSException
+     */
+    void updateStatistics(CMSServiceCtx cmsContext, HttpSession httpSession, List<SpaceStatistics> spaceStatistics) throws CMSException;
 
 }

@@ -53,6 +53,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.api.player.Player;
+import org.osivia.portal.api.statistics.IStatisticsService;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.trace.ITraceServiceLocator;
 import org.osivia.portal.api.trace.Trace;
@@ -127,10 +128,18 @@ public class CmsCommand extends DynamicCommand {
     private IWebIdService webIdService;
 
 
+    /** Statistics service. */
+    private final IStatisticsService statisticsService;
+
+
     /**
      * Default constructor.
      */
     public CmsCommand() {
+        super();
+
+        // Statistics service
+        this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
     }
 
 
@@ -152,6 +161,7 @@ public class CmsCommand extends DynamicCommand {
      */
     public CmsCommand(String pagePath, String cmsPath, Map<String, String> pageParams, String contextualization, String displayContext, String hideMetaDatas,
             String itemScope, String displayLiveVersion, String windowPermReference, String addToBreadcrumb, String portalPersistentName) {
+        this();
         this.pagePath = pagePath;
         this.cmsPath = cmsPath;
         this.pageParams = pageParams;
@@ -472,6 +482,9 @@ public class CmsCommand extends DynamicCommand {
         try {
             // Controller context
             ControllerContext controllerContext = this.getControllerContext();
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
+
             // CMS service
             ICMSService cmsService = getCMSService();
 
@@ -635,6 +648,13 @@ public class CmsCommand extends DynamicCommand {
                     }
                 }
             }
+
+
+            // Statistics
+            if (StringUtils.isNotEmpty(this.cmsPath)) {
+                this.statisticsService.incrementsUserStatistics(portalControllerContext, this.cmsPath);
+            }
+
 
             // Adapatation des paths à la navigation pilotée par le contenu
 
@@ -841,9 +861,8 @@ public class CmsCommand extends DynamicCommand {
                         String reqHost = controllerContext.getServerInvocation().getServerContext().getClientRequest().getServerName();
 
                         if ((host != null) && !reqHost.equals(host)) {
-                            PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
-
-                            String url = this.getUrlFactory().getPermaLink(portalCtx, null, null, itemPublicationPath, IPortalUrlFactory.PERM_LINK_TYPE_CMS);
+                            String url = this.getUrlFactory().getPermaLink(portalControllerContext, null, null, itemPublicationPath,
+                                    IPortalUrlFactory.PERM_LINK_TYPE_CMS);
                             url = url.replaceFirst(reqHost, host);
                             return new RedirectionResponse(url.toString());
                         }
@@ -978,9 +997,8 @@ public class CmsCommand extends DynamicCommand {
             // Manage ECM notifications
             String ecmActionReturn = this.getEcmActionReturn();
             if (StringUtils.isNotBlank(ecmActionReturn)) {
-                PortalControllerContext portalCtx = new PortalControllerContext(controllerContext);
                 String notification = itlzService.getString(ecmActionReturn, this.getControllerContext().getServerInvocation().getRequest().getLocale());
-                notifService.addSimpleNotification(portalCtx, notification, NotificationsType.SUCCESS);
+                notifService.addSimpleNotification(portalControllerContext, notification, NotificationsType.SUCCESS);
             }
             
             

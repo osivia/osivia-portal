@@ -914,16 +914,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ((sSelector != null) && (sSelector.length > 0)) {
                 Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(sSelector[0]);
-                boolean hideAdvancedSearchLink = true;
+                boolean advancedSearchFilters = false;
                 for (String selectorId : selectors.keySet()) {
                     if (!"search".equals(selectorId) && !"selectorChanged".equals(selectorId)) {
-                        hideAdvancedSearchLink = false;
+                        advancedSearchFilters = true;
                         break;
                     }
                 }
-                if (hideAdvancedSearchLink) {
-                    controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch", "off");
-                }
+                controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.advancedSearch.filters", String.valueOf(advancedSearchFilters));
             }
 
             /* Masquage de la region advanced search */
