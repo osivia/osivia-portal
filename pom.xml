@@ -878,7 +878,7 @@
 			</activation>
 			<distributionManagement>
     			<snapshotRepository>
-            		<id>galactica</id>
+            		<id>galactica-ci-snapshots</id>
             		<url>http://nexus:8081/repository/ci-snapshots</url>
         		</snapshotRepository>
     		</distributionManagement>
