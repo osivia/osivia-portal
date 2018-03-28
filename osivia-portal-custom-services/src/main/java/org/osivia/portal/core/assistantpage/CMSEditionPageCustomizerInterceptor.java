@@ -277,7 +277,10 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
 
             // Page CMS path
             String pageCMSPath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path");
-            if (StringUtils.isNotEmpty(pageCMSPath)) {
+            // Content path
+            String contentPath = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.cms.contentPath");
+
+            if (StringUtils.startsWith(contentPath, pageCMSPath) && StringUtils.isNotEmpty(pageCMSPath)) {
                 // Fetch document
                 CMSItem cmsItem = cmsService.getContent(cmsContext, pageCMSPath);
 

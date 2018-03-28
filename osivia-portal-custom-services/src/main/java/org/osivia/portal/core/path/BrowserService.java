@@ -349,9 +349,7 @@ public class BrowserService implements IBrowserService {
             } else {
                 children = new ArrayList<>(parentNavigationItem.getChildren().size());
 
-                for (Object object : parentNavigationItem.getChildren()) {
-                    // Navigation item
-                    NavigationItem navigationItem = (NavigationItem) object;
+                for (NavigationItem navigationItem : parentNavigationItem.getChildren()) {
                     // CMS item
                     CMSItem cmsItem = navigationItem.getAdaptedCMSItem();
 

@@ -148,7 +148,7 @@ public class CmsPermissionHelper {
         String cmsPath = null;
         String sPath[] = null;
         if (pageState != null) {
-            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+            sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"));
             if ((sPath != null) && (sPath.length == 1)) {
                 cmsPath = sPath[0];
             }

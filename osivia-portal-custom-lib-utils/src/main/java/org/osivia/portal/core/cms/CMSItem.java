@@ -25,8 +25,8 @@ public class CMSItem {
 
     /** CMS native item. */
     private final Object nativeItem;
-    /** CMS item path. */
-    private final String path;
+    /** CMS item navigation path. */
+    private final String navigationPath;
     /** CMS item properties. */
     private final Map<String, String> properties;
     /** Domain identifier. */
@@ -40,22 +40,24 @@ public class CMSItem {
     private Boolean beingModified;
     /** CMS item type. */
     private DocumentType type;
+    /** CMS item path. */
+    private String cmsPath;
 
 
     /**
      * Constructor.
      * 
-     * @param path CMS item path
+     * @param navigationPath CMS item navigation path
      * @param webId web identifier
      * @param domainId domain identifier
      * @param properties CMS item properties, may be null if empty
      * @param nativeItem CMS native item
      */
-    public CMSItem(String path, String domainId, String webId, Map<String, String> properties, Object nativeItem) {
+    public CMSItem(String navigationPath, String domainId, String webId, Map<String, String> properties, Object nativeItem) {
         super();
 
         this.nativeItem = nativeItem;
-        this.path = path;
+        this.navigationPath = navigationPath;
         if (properties == null) {
             this.properties = new HashMap<String, String>();
         } else {
@@ -71,7 +73,7 @@ public class CMSItem {
      */
     @Override
     public String toString() {
-        return "CMSItem [path=" + this.path + ", domainId=" + this.domainId + ", webId=" + this.webId + "]";
+        return "CMSItem [path=" + this.navigationPath + ", domainId=" + this.domainId + ", webId=" + this.webId + "]";
     }
 
 
@@ -142,9 +144,20 @@ public class CMSItem {
      * Getter for path.
      *
      * @return the path
+     * @deprecated use getNavigationPath() instead
      */
+    @Deprecated
     public String getPath() {
-        return this.path;
+        return this.navigationPath;
+    }
+
+    /**
+     * Getter for navigationPath.
+     * 
+     * @return the navigationPath
+     */
+    public String getNavigationPath() {
+        return navigationPath;
     }
 
     /**
@@ -172,6 +185,24 @@ public class CMSItem {
      */
     public String getWebId() {
         return this.webId;
+    }
+
+    /**
+     * Getter for cmsPath.
+     * 
+     * @return the cmsPath
+     */
+    public String getCmsPath() {
+        return cmsPath;
+    }
+
+    /**
+     * Setter for cmsPath.
+     * 
+     * @param cmsPath the cmsPath to set
+     */
+    public void setCmsPath(String cmsPath) {
+        this.cmsPath = cmsPath;
     }
 
 }

@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,7 +48,6 @@ import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
-import org.jboss.util.collection.CollectionsUtil;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -385,7 +383,7 @@ public class CmsCommand extends DynamicCommand {
 
         Map<String, String> props = new HashMap<String, String>();
 
-        props.put("osivia.cms.basePath", cmsItem.getPath());
+        props.put("osivia.cms.basePath", cmsItem.getNavigationPath());
         props.put("osivia.cms.directContentPublisher", "1");
 
         // V2.0-rc7
@@ -429,13 +427,14 @@ public class CmsCommand extends DynamicCommand {
         }
 
 
-        String pageName = "portalSite" + (new CMSObjectPath(portalSite.getPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
+        String pageName = "portalSite"
+                + (new CMSObjectPath(portalSite.getNavigationPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
 
         Page publishPage = (Page) portal.getChild(pageName);
         if (publishPage == null) {
             Map<String, String> props = new HashMap<String, String>();
 
-            props.put("osivia.cms.basePath", portalSite.getPath());
+            props.put("osivia.cms.basePath", portalSite.getNavigationPath());
 
             // if(
             // "true".equals(portalSite.getProperties().get("contextualizeInternalContents")))
@@ -667,6 +666,7 @@ public class CmsCommand extends DynamicCommand {
             this.contentPath = this.cmsPath;
             String itemPublicationPath = this.cmsPath;
             String virtualNavigationPath = null;
+            String realNavigationPath = null;
 
 
             if (cmsItem != null) {
@@ -675,24 +675,21 @@ public class CmsCommand extends DynamicCommand {
                 // Adapt navigation path
                 virtualNavigationPath = cmsService.getAdaptedNavigationPath(cmsReadItemContext);
                 if (virtualNavigationPath != null) {
-                    // Le pub infos devient celui de la navigation
-                    try {
-                        pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, virtualNavigationPath);
-
-                        // Le path eventuellement en ID a été retranscrit en chemin
-                        itemPublicationPath = pubInfos.getDocumentPath() + "/" + StringUtils.substringAfterLast(this.cmsPath, "/");
-                    } catch (CMSException e) {
-                        if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN) {
-                            return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
+                    realNavigationPath = virtualNavigationPath;
+                    boolean realPath = false;
+                    while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
+                        try {
+                            // FIXME
+                            pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
+                            realPath = true;
+                        } catch (CMSException e) {
+                            PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
+                            realNavigationPath = objectPath.getParent().toString(PortalObjectPath.CANONICAL_FORMAT);
                         }
-
-                        if (e.getErrorCode() == CMSException.ERROR_NOTFOUND) {
-                            return new UnavailableResourceResponse(this.cmsPath, false);
-                        }
-
-                        throw e;
-                        // TODO : gerer les cas d'erreurs
                     }
+
+                    // FIXME
+                    itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
                 }
             }
 
@@ -719,9 +716,9 @@ public class CmsCommand extends DynamicCommand {
                 }
 
                 String pageName = "procedureDashboard"
-                        + (new CMSObjectPath(cmsItem.getPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
+                        + (new CMSObjectPath(cmsItem.getNavigationPath(), CMSObjectPath.CANONICAL_FORMAT)).toString(CMSObjectPath.SAFEST_FORMAT);
 
-                props.put("osivia.procedure.dashboard.path", cmsItem.getPath());
+                props.put("osivia.procedure.dashboard.path", cmsItem.getNavigationPath());
 
                 StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), pageName, displayNames,
                         PortalObjectId.parse("/default/templates/procedureDashboard", PortalObjectPath.CANONICAL_FORMAT).toString(
@@ -771,7 +768,7 @@ public class CmsCommand extends DynamicCommand {
                     if (searchPage != null) {
                         String searchPath = itemPublicationPath;
                         if (virtualNavigationPath != null) {
-                            searchPath = virtualNavigationPath;
+                            searchPath = realNavigationPath;
                         }
 
                         PortalObject publicationPage = searchPublicationPage(controllerContext, searchPage, searchPath, this.getProfilManager());
@@ -852,7 +849,7 @@ public class CmsCommand extends DynamicCommand {
 
                     String searchPath = itemPublicationPath;
                     if (virtualNavigationPath != null) {
-                        searchPath = virtualNavigationPath;
+                        searchPath = realNavigationPath;
                     }
 
                     PortalObject publicationPage = searchPublicationPage(controllerContext, portal, searchPath, this.getProfilManager());
@@ -936,7 +933,7 @@ public class CmsCommand extends DynamicCommand {
 
                         if (publishSpace != null) {
                             // Domain contextualization
-                            String domainName = StringUtils.substringBefore(StringUtils.removeStart(publishSpace.getPath(), "/"), "/");
+                            String domainName = StringUtils.substringBefore(StringUtils.removeStart(publishSpace.getNavigationPath(), "/"), "/");
                             String domainPath = "/" + domainName;
                             DomainContextualization domainContextualization = cmsService.getDomainContextualization(userCtx, domainPath);
 
@@ -1017,7 +1014,7 @@ public class CmsCommand extends DynamicCommand {
                                 }
 
                                 if (cmsNav != null) {
-                                    parameters.put("osivia.cms.path", new String[]{cmsNav.getPath()});
+                                    parameters.put("osivia.cms.path", new String[]{cmsNav.getNavigationPath()});
                                 }
 
                                 ParameterMap params = new ParameterMap(parameters);
@@ -1060,11 +1057,11 @@ public class CmsCommand extends DynamicCommand {
                     }
                 } else {
 
-                    if (!computeNavPath(itemPublicationPath).equals(cmsNav.getPath())) {
+                    if (!computeNavPath(itemPublicationPath).equals(cmsNav.getNavigationPath())) {
                         // Items détachés du path
                         displayContent = true;
                     } else {
-                        if (!cmsNav.getPath().equals(basePublishPath)) {
+                        if (!cmsNav.getNavigationPath().equals(basePublishPath)) {
                             if (!"1".equals(cmsNav.getProperties().get("pageDisplayMode"))) {
                                 displayContent = true;
                                 navigationPlayer = true;

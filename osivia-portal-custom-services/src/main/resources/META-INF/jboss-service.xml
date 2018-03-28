@@ -881,7 +881,12 @@
 		<attribute name="TargetStartMethod">startSingleton</attribute>
 		<attribute name="TargetStopMethod">stopSingleton</attribute>
 	</mbean>
-
+    
+    <!-- Virtual navigation service -->
+    <mbean code="org.osivia.portal.core.cms.VirtualNavigationServiceImpl" name="osivia:service=VirtualNavigationService"
+        xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
 
     <!-- Log context -->
     <mbean code="org.osivia.portal.core.log.LogContextImpl" name="osivia:service=LogContext"

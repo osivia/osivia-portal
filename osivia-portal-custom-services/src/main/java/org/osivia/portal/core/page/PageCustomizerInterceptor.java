@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -834,8 +835,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             PageNavigationalState pageState = nsContext.getPageNavigationalState(page.getId().toString());
 
             String sPath[] = null;
+            String contentPath = null;
             if (pageState != null) {
                 sPath = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.path"));
+
+                String[] contentPathParameter = pageState.getParameter(new QName(XMLConstants.DEFAULT_NS_PREFIX, "osivia.cms.contentPath"));
+                if (ArrayUtils.isNotEmpty(contentPathParameter)) {
+                    contentPath = contentPathParameter[0];
+                }
             }
 
             if ((sPath != null) && (sPath.length > 0)) {
@@ -857,7 +864,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
                 Boolean layoutCMS = (Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, InternalConstants.ATTR_LAYOUT_CMS_INDICATOR);
                 if (BooleanUtils.isTrue(layoutCMS)) {
-                   if (getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
+                    if (StringUtils.startsWith(contentPath, sPath[0]) && getCMSService().isCmsWebPage(cmxCtx, sPath[0])) {
                         controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPagePath", sPath[0]);
                         if (pageInEditionMode) {
                             controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.webPageEditionPath", sPath[0]);

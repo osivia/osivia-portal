@@ -190,7 +190,8 @@ public class CmsPageState {
                     boolean errorDuringCheck = false;
                     String pathToCheck = this.itemPublicationPath;
                     
-                    if(isVirtualNavigation){
+                    CMSItem navigationItem = this.getCMSService().getPortalNavigationItem(cmsReadNavContext, this.basePublishPath, pathToCheck);
+                    if (isVirtualNavigation && (navigationItem == null)) {
                         // l'item n'existe pas
                         pathToCheck = CMSObjectPath.parse(pathToCheck).getParent().toString();
                     }

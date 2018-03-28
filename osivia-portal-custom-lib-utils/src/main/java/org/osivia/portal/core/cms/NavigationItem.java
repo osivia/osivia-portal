@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,54 +17,112 @@ package org.osivia.portal.core.cms;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.osivia.portal.core.cms.CMSItem;
-
-
-
-
+/**
+ * Navigation item.
+ */
 public class NavigationItem {
-	
-	private Object mainDoc;
-	private List<Object> children;
-	private CMSItem adaptedCMSItem;
-	private boolean unfetchedChildren =  false;
-	
-	public boolean isUnfetchedChildren() {
-		return unfetchedChildren;
-	}
+
+    /** Main document. */
+    private Object mainDoc;
+    /** Adapted CMS item. */
+    private CMSItem adaptedCMSItem;
+    /** Unfetched children indicator. */
+    private boolean unfetchedChildren;
+    /** Path. */
+    private String path;
+
+    /** Children . */
+    private final List<NavigationItem> children;
 
 
-	public void setUnfetchedChildren(boolean unfetchedChildren) {
-		this.unfetchedChildren = unfetchedChildren;
-	}
+    /**
+     * Constructor.
+     */
+    public NavigationItem() {
+        super();
+        this.children = new ArrayList<>();
+    }
 
 
-	public Object getMainDoc() {
-		return mainDoc;
-	}
+    /**
+     * Getter for mainDoc.
+     * 
+     * @return the mainDoc
+     */
+    public Object getMainDoc() {
+        return mainDoc;
+    }
 
-	
-	public CMSItem getAdaptedCMSItem() {
-		return adaptedCMSItem;
-	}
-	public void setAdaptedCMSItem(CMSItem adaptedCMSItem) {
-		this.adaptedCMSItem = adaptedCMSItem;
-	}
-	public void setMainDoc(Object mainDoc) {
-		this.mainDoc = mainDoc;
-	}
-	public List<Object> getChildren() {
-		return children;
-	}
+    /**
+     * Setter for mainDoc.
+     * 
+     * @param mainDoc the mainDoc to set
+     */
+    public void setMainDoc(Object mainDoc) {
+        this.mainDoc = mainDoc;
+    }
 
-	public void setChildren(List<Object> children) {
-		this.children = children;
-	}
-	public NavigationItem() {
-		super();
-		children = new ArrayList<Object>();
-	}
-	
-	
+    /**
+     * Getter for adaptedCMSItem.
+     * 
+     * @return the adaptedCMSItem
+     */
+    public CMSItem getAdaptedCMSItem() {
+        return adaptedCMSItem;
+    }
+
+    /**
+     * Setter for adaptedCMSItem.
+     * 
+     * @param adaptedCMSItem the adaptedCMSItem to set
+     */
+    public void setAdaptedCMSItem(CMSItem adaptedCMSItem) {
+        this.adaptedCMSItem = adaptedCMSItem;
+    }
+
+    /**
+     * Getter for unfetchedChildren.
+     * 
+     * @return the unfetchedChildren
+     */
+    public boolean isUnfetchedChildren() {
+        return unfetchedChildren;
+    }
+
+    /**
+     * Setter for unfetchedChildren.
+     * 
+     * @param unfetchedChildren the unfetchedChildren to set
+     */
+    public void setUnfetchedChildren(boolean unfetchedChildren) {
+        this.unfetchedChildren = unfetchedChildren;
+    }
+
+    /**
+     * Getter for path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Setter for path.
+     * 
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * Getter for children.
+     * 
+     * @return the children
+     */
+    public List<NavigationItem> getChildren() {
+        return children;
+    }
 
 }

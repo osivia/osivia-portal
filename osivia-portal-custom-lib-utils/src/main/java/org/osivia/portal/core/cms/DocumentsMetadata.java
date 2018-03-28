@@ -3,6 +3,7 @@ package org.osivia.portal.core.cms;
 import java.util.List;
 
 import org.osivia.portal.api.cms.EcmDocument;
+import org.osivia.portal.api.cms.Symlink;
 
 /**
  * Documents metadata interface.
@@ -35,6 +36,14 @@ public interface DocumentsMetadata {
      * @return documents
      */
     List<EcmDocument> getDocuments();
+
+
+    /**
+     * Get symlinks.
+     * 
+     * @return symlinks
+     */
+    List<Symlink> getSymlinks();
 
 
     /**
