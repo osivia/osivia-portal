@@ -428,15 +428,19 @@ return false;
 					
 					if(cookieValue != null) {
 						
-						if(!StringUtils.endsWith(cookieValue, ".jbossX")) {
+						String[] split = StringUtils.split(".");
+						
+						// cookie should have a duet of value separated by a dot
+						if (split.length != 2) {
 							log.debug("cookie invalide !");
 							continue;
 						}
-						cookieValue = cookieValue.replace(".jbossX", "");
-						if(!StringUtils.isAlphanumeric(cookieValue)) {
+						// duet of value should be alphanumeric
+						if(!StringUtils.isAlphanumeric(split[0]) && !StringUtils.isAlphanumeric(split[0])) {
 							log.debug("cookie invalide !");
-							continue;
+							continue;							
 						}
+
 					}
 	
 	
