@@ -428,19 +428,18 @@ return false;
 					
 					if(cookieValue != null) {
 						
-						String[] split = StringUtils.split(".");
+						String[] split = StringUtils.split(cookieValue,".");
 						
 						// cookie should have a duet of value separated by a dot
 						if (split.length != 2) {
-							log.debug("cookie invalide !");
+							log.error("cookie invalide !" + cookieValue);
 							continue;
 						}
 						// duet of value should be alphanumeric
-						if(!StringUtils.isAlphanumeric(split[0]) && !StringUtils.isAlphanumeric(split[0])) {
-							log.debug("cookie invalide !");
+						if(!StringUtils.isAlphanumeric(split[0]) && !StringUtils.isAlphanumeric(split[1])) {
+							log.error("cookie invalide !" + cookieValue);
 							continue;							
 						}
-
 					}
 	
 	
