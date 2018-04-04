@@ -847,6 +847,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
 
             if ((sPath != null) && (sPath.length > 0)) {
                 controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.path", sPath[0]);
+                controllerContext.setAttribute(Scope.REQUEST_SCOPE, "osivia.cms.contentPath", contentPath);
 
 
                 /* Inject path web page edition */
