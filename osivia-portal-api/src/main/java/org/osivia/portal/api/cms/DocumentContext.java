@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.api.cms;
 
+import org.osivia.portal.api.context.PortalControllerContext;
+
 /**
  * Document context.
  * 
@@ -21,6 +23,14 @@ package org.osivia.portal.api.cms;
  * @author Cédric Krommenhoek
  */
 public interface DocumentContext {
+
+    /**
+     * Get portal controller context.
+     * 
+     * @return portal controller context
+     */
+    PortalControllerContext getPortalControllerContext();
+
 
     /**
      * Get CMS path.

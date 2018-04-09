@@ -672,24 +672,26 @@ public class CmsCommand extends DynamicCommand {
             if (cmsItem != null) {
                 cmsReadItemContext.setDoc(cmsItem.getNativeItem());
 
-                // Adapt navigation path
-                virtualNavigationPath = cmsService.getAdaptedNavigationPath(cmsReadItemContext);
-                if (virtualNavigationPath != null) {
-                    realNavigationPath = virtualNavigationPath;
-                    boolean realPath = false;
-                    while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
-                        try {
-                            // FIXME
-                            pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
-                            realPath = true;
-                        } catch (CMSException e) {
-                            PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
-                            realNavigationPath = objectPath.getParent().toString(PortalObjectPath.CANONICAL_FORMAT);
+                if (!"portal".equals(this.contextualization)) {
+                    // Adapt navigation path
+                    virtualNavigationPath = cmsService.getAdaptedNavigationPath(cmsReadItemContext);
+                    if (virtualNavigationPath != null) {
+                        realNavigationPath = virtualNavigationPath;
+                        boolean realPath = false;
+                        while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
+                            try {
+                                // FIXME
+                                pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
+                                realPath = true;
+                            } catch (CMSException e) {
+                                PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
+                                realNavigationPath = objectPath.getParent().toString(PortalObjectPath.CANONICAL_FORMAT);
+                            }
                         }
-                    }
 
-                    // FIXME
-                    itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
+                        // FIXME
+                        itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
+                    }
                 }
             }
 
