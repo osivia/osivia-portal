@@ -379,7 +379,10 @@ public class CmsCommand extends DynamicCommand {
         // if (publishPage == null) {
 
         Map<Locale, String> displayNames = new HashMap<Locale, String>();
-        displayNames.put(Locale.FRENCH, cmsItem.getProperties().get("displayName"));
+        String displayName = cmsItem.getProperties().get("displayName");
+        if (StringUtils.isNotEmpty(displayName)) {
+            displayNames.put(Locale.FRENCH, displayName);
+        }
 
         Map<String, String> props = new HashMap<String, String>();
 
