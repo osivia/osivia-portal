@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+
 /**
  * Symlinks container.
  * 
@@ -34,13 +36,17 @@ public class Symlinks {
      * @param symlinks
      */
     public void addAll(Symlinks symlinks) {
-        if (this.links == null) {
-            this.links = new ArrayList<>(symlinks.getLinks());
-        } else {
-            this.links.addAll(symlinks.getLinks());
+        if (CollectionUtils.isNotEmpty(symlinks.getLinks())) {
+            if (this.links == null) {
+                this.links = new ArrayList<>(symlinks.getLinks());
+            } else {
+                this.links.addAll(symlinks.getLinks());
+            }
         }
 
-        this.paths.addAll(symlinks.getPaths());
+        if (CollectionUtils.isNotEmpty(symlinks.getPaths())) {
+            this.paths.addAll(symlinks.getPaths());
+        }
     }
 
 
