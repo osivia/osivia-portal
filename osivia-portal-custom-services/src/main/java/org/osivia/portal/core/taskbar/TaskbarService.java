@@ -126,11 +126,19 @@ public class TaskbarService implements ITaskbarService {
     /**
      * {@inheritDoc}
      */
-    public List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath, boolean navigation) throws PortalException {
+    private List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath, boolean navigation, boolean superUser) throws PortalException {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
+        
+         
+        if(superUser)	{
+        	cmsContext.setScope("superuser_context");
+           	cmsContext.setForcePublicationInfosScope("superuser_context");
+        }
+    	
+        
         cmsContext.setPortalControllerContext(portalControllerContext);
         cmsContext.setDisplayLiveVersion("1");
 
@@ -145,6 +153,33 @@ public class TaskbarService implements ITaskbarService {
         return tasks;
     }
 
+    
+    
+    
+    
+    
+    @Override
+    public List<TaskbarTask> getAllTasks(PortalControllerContext portalControllerContext, String basePath,
+    		boolean superUser) throws PortalException {
+    	return getTasks(portalControllerContext, basePath, false, superUser);
+
+    }
+    
+    @Override
+    public List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath)
+    		throws PortalException {
+       	return getTasks(portalControllerContext, basePath, true, false);
+    }
+    
+    @Override
+    public List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath,
+    		boolean navigation) throws PortalException {
+       	return getTasks(portalControllerContext, basePath, navigation, false);
+    }
+
+
+    
+    
 
     /**
      * {@inheritDoc}

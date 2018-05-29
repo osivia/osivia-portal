@@ -82,8 +82,37 @@ public interface ITaskbarService {
      * @return tasks
      * @throws PortalException
      */
+    @Deprecated
     List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath, boolean navigation) throws PortalException;
 
+    
+    
+    /**
+     * Get taskbar tasks.
+     *
+     * @param portalControllerContext portal controller context
+     * @param basePath CMS base path
+     * @param navigation navigation usage indicator
+     * @return tasks
+     * @throws PortalException
+     */
+    List<TaskbarTask> getTasks(PortalControllerContext portalControllerContext, String basePath) throws PortalException;
+
+  
+    
+    /**
+     * Get taskbar tasks.
+     *
+     * @param portalControllerContext portal controller context
+     * @param basePath CMS base path
+     * @param navigation navigation usage indicator
+     * @return tasks
+     * @throws PortalException
+     */
+    List<TaskbarTask> getAllTasks(PortalControllerContext portalControllerContext, String basePath, boolean superUser) throws PortalException;
+
+    
+   
 
     /**
      * Get taskbar task.
