@@ -248,15 +248,29 @@ public class StatusService extends ServiceMBeanSupport implements StatusServiceM
 	 * @param service
 	 */
 	public void markServiceToCheck(String serviceCode) {
-        statutLog.warn(serviceCode + " marked as to check.");
 		
 		ServiceState service = listeServices.get(serviceCode);
 		
 		if (service != null) {
-			synchronized (listeServices) {
-				service.setMustBeChecked(true);
-			}
+		// LBI #1850 - tempo check
+		if(System.currentTimeMillis() - service.getLastCheckTimestamp() > intervalleTest) {
+
+			statutLog.warn(serviceCode + " marked as to check.");
+
+			
+				synchronized (listeServices) {
+					service.setMustBeChecked(true);
+				}
+			
 		}
+				else {
+			statutLog.warn(serviceCode + " will not be checked yet.");
+
+		}
+		}
+
+		
+
 		
 	}
 	

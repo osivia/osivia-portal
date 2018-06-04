@@ -66,7 +66,7 @@
   <appender name="PORTAL" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/portal.log"/>
-      <param name="Append" value="false"/>
+      <param name="Append" value="true"/>
  
 
       <!-- Rollover at midnight each day -->
@@ -91,7 +91,7 @@
   <appender name="WINDOW" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/window.log"/>
-      <param name="Append" value="false"/>
+      <param name="Append" value="true"/>
  
 
       <!-- Rollover at midnight each day -->
@@ -114,7 +114,7 @@
   <appender name="PORTAL_USER_ERROR_APPENDER" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/portal_user_error.log"/>
-      <param name="Append" value="false"/>
+      <param name="Append" value="true"/>
 
 
       <!-- Rollover at midnight each day -->
@@ -139,7 +139,7 @@
 
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/portal_profiler.log"/>
-      <param name="Append" value="false"/>
+      <param name="Append" value="true"/>
 
        <!-- Rollover at the top of each hour -->
       <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
@@ -154,7 +154,7 @@
   <appender name="PORTAL_STATUS_APPENDER" class="org.jboss.logging.appender.DailyRollingFileAppender">
       <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler"/>
       <param name="File" value="${jboss.server.log.dir}/portal_status.log"/>
-      <param name="Append" value="false"/>
+      <param name="Append" value="true"/>
 
 
       <!-- Rollover at midnight each day -->
