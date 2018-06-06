@@ -37,7 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -1004,6 +1006,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             taskbarItems = null;
         }
 
+        // Satellites
+        Map<String, String> satellites = this.getSatellites();
+        
 
         // Window settings
         List<WindowSettings> windowSettings = new ArrayList<WindowSettings>(windows.size());
@@ -1102,9 +1107,40 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             String priority = window.getDeclaredProperty("osivia.sequence.priority");
             settings.setPriority(priority);
 
+            // Satellites
+            String selectedSatellite = StringUtils.trimToEmpty(window.getDeclaredProperty("osivia.satellite"));
+            settings.setSelectedSatellite(selectedSatellite);
+            if (MapUtils.isNotEmpty(satellites)) {
+                settings.getSatellites().put(StringUtils.EMPTY, bundle.getString("WINDOW_PROPERTIES_MAIN_SATELLITE_LABEL"));
+                settings.getSatellites().putAll(satellites);
+            }
         }
 
         return windowSettings;
+    }
+
+
+    /**
+     * Get satellites.
+     * 
+     * @return satellites
+     */
+    private Map<String, String> getSatellites() {
+        String[] keys = StringUtils.split(System.getProperty("nuxeo.satellites"), ",");
+
+        Map<String, String> satellites;
+        if (ArrayUtils.isEmpty(keys)) {
+            satellites = null;
+        } else {
+            satellites = new LinkedHashMap<>(keys.length);
+            for (String key : keys) {
+                String property = "nuxeo.satellite." + key + ".label";
+                String label = StringUtils.defaultIfBlank(System.getProperty(property), key);
+                satellites.put(key, label);
+            }
+        }
+
+        return satellites;
     }
 
 
