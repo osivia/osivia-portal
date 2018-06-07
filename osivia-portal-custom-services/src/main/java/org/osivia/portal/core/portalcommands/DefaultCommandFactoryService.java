@@ -234,11 +234,15 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             priority = "";
                         }
 
+                        // Selected satellite
+                        String satellite = parameterMap.getValue("satellite");
+
                         // Change window settings command
                         ChangeWindowSettingsCommand command = new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title,
                                 displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope,
                                 bshActivation, bshScript, cacheID, selectionDep, priority);
                         command.setTaskbarItemId(taskbarItemId);
+                        command.setSatellite(satellite);
                         return command;
                     }
                 }
