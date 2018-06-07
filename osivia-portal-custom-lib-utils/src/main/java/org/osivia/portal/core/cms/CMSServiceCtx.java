@@ -48,9 +48,27 @@ public class CMSServiceCtx {
     private String creationPath;
 
     private String forcedLivePath;
+    
+    private String satelliteName;
 
 
     /**
+	 * @return the satelliteName
+	 */
+	public String getSatelliteName() {
+		return satelliteName;
+	}
+
+
+	/**
+	 * @param satelliteName the satelliteName to set
+	 */
+	public void setSatelliteName(String satelliteName) {
+		this.satelliteName = satelliteName;
+	}
+
+
+	/**
      * Constructor.
      */
     public CMSServiceCtx() {
