@@ -618,4 +618,13 @@ public interface ICMSService {
      */
     List<CMSEditableWindow> getProcedureDashboards(CMSServiceCtx cmsContext, String path) throws CMSException;
 
+    
+    /**
+     * Get satellites.
+     * 
+     * @return satellites
+     * @throws CMSException
+     */
+    Set<Satellite> getSatellites() throws CMSException;
+    
 }

@@ -48,24 +48,8 @@ public class CMSServiceCtx {
     private String creationPath;
 
     private String forcedLivePath;
-    
-    private String satelliteName;
-
-
-    /**
-	 * @return the satelliteName
-	 */
-	public String getSatelliteName() {
-		return satelliteName;
-	}
-
-
-	/**
-	 * @param satelliteName the satelliteName to set
-	 */
-	public void setSatelliteName(String satelliteName) {
-		this.satelliteName = satelliteName;
-	}
+    /** Satellite. */
+    private Satellite satellite;
 
 
 	/**
@@ -407,5 +391,23 @@ public class CMSServiceCtx {
 	public void setAsyncCacheRefreshing(boolean isAsyncCacheRefreshing) {
 		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
 	}
+
+    /**
+     * Getter for satellite.
+     * 
+     * @return the satellite
+     */
+    public Satellite getSatellite() {
+        return satellite;
+    }
+
+    /**
+     * Setter for satellite.
+     * 
+     * @param satellite the satellite to set
+     */
+    public void setSatellite(Satellite satellite) {
+        this.satellite = satellite;
+    }
 
 }

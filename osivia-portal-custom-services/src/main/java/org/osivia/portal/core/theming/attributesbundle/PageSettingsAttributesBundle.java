@@ -39,7 +39,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -103,6 +102,7 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.Satellite;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -1126,21 +1126,29 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * @return satellites
      */
     private Map<String, String> getSatellites() {
-        String[] keys = StringUtils.split(System.getProperty("nuxeo.satellites"), ",");
-
-        Map<String, String> satellites;
-        if (ArrayUtils.isEmpty(keys)) {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        
+        Set<Satellite> satellites;
+        try {
+            satellites = cmsService.getSatellites();
+        } catch (CMSException e) {
             satellites = null;
+        }
+        
+        Map<String, String> result;
+        if (CollectionUtils.isEmpty(satellites)) {
+            result = null;
         } else {
-            satellites = new LinkedHashMap<>(keys.length);
-            for (String key : keys) {
-                String property = "nuxeo.satellite." + key + ".label";
-                String label = StringUtils.defaultIfBlank(System.getProperty(property), key);
-                satellites.put(key, label);
+            result = new LinkedHashMap<>(satellites.size());
+            for (Satellite satellite : satellites) {
+                String key = satellite.getId();
+                String value = satellite.getLabel();
+                result.put(key, value);
             }
         }
 
-        return satellites;
+        return result;
     }
 
 
