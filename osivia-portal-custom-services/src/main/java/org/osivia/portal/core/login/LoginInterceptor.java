@@ -32,6 +32,7 @@ import javax.security.jacc.PolicyContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -189,7 +190,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
             String userPagesPreloaded = (String) invocation.getAttribute(Scope.SESSION_SCOPE, "osivia.userLoginDone");
 
             if (!"1".equals(userPagesPreloaded)) {
-                if (!isAdministrator()) {
+                if (!isAdministrator() || BooleanUtils.toBoolean(System.getProperty("osivia.administrator.preloading"))) {
                     // JSS 20131113 : pas de preload pour certains groupes
                     boolean noPreload = false;
 
