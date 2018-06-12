@@ -93,6 +93,11 @@ public class CMSPublicationInfos {
 	/** Drive Edit URL. */
 	private String driveEditURL;
 	
+	/** Satellite **/
+	private Satellite satellite;
+	
+	
+
 	private List<Integer> errorCodes = new ArrayList<Integer>();
 
 	public CMSPublicationInfos() {
@@ -437,5 +442,20 @@ public class CMSPublicationInfos {
     public void setDriveEditURL(String driveEditURL) {
         this.driveEditURL = driveEditURL;
     }
+
+    
+    /**
+	 * @return the satellite
+	 */
+	public Satellite getSatellite() {
+		return satellite;
+	}
+
+	/**
+	 * @param satellite the satellite to set
+	 */
+	public void setSatellite(Satellite satellite) {
+		this.satellite = satellite;
+	}
 
 }
