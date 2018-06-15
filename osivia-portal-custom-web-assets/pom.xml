@@ -68,11 +68,9 @@
                 <artifactId>lesscss-maven-plugin</artifactId>
                 <configuration>
                     <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
-                    <outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
-                    <compress>true</compress>
+                     <compress>true</compress>
                     <includes>
                         <include>*.less</include>
-                        <include>bootstrap/bootstrap.less</include>
                     </includes>
                     <outputFileFormat>{fileName}.min.css</outputFileFormat>
                 </configuration>
