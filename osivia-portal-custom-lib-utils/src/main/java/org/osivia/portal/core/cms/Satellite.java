@@ -1,5 +1,8 @@
 package org.osivia.portal.core.cms;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -23,6 +26,8 @@ public class Satellite {
     private String privateHost;
     /** Private port. */
     private String privatePort;
+    /** Path patterns. */
+    private List<Pattern> paths;
 
 
     /** Identifier. */
@@ -173,6 +178,24 @@ public class Satellite {
      */
     public void setPrivatePort(String privatePort) {
         this.privatePort = privatePort;
+    }
+
+    /**
+     * Getter for paths.
+     * 
+     * @return the paths
+     */
+    public List<Pattern> getPaths() {
+        return paths;
+    }
+
+    /**
+     * Setter for paths.
+     * 
+     * @param paths the paths to set
+     */
+    public void setPaths(List<Pattern> paths) {
+        this.paths = paths;
     }
 
     /**

@@ -1042,7 +1042,7 @@ rightCellToggle.add(example);
                                 <!-- Satellite -->
                                 <c:if test="${not empty window.satellites}">
                                     <div class="form-group">
-                                        <label for="${window.id}-satellite" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM" /></label>
+                                        <label for="${window.id}-satellite" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SATELLITE" /></label>
                                         <div class="col-sm-9">
                                             <select id="${window.id}-satellite" name="satellite" class="form-control">
                                                 <c:forEach var="satellite" items="${window.satellites}">

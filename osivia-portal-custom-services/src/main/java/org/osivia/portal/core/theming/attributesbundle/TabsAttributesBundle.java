@@ -663,7 +663,7 @@ public final class TabsAttributesBundle implements IAttributesBundle {
         }
 
         // Add displayed pages
-        for (UserPagesGroup group : userPortal.getGroups()) {
+        for (UserPagesGroup group : userPortal.getGroups().values()) {
             // Previous displayed pages
             Set<UserPage> previousDisplayedPages = null;
             if (previousUserPortal != null) {
