@@ -34,9 +34,39 @@ public class CMSException extends Exception {
 
     /** Error code. */
     private final int errorCode;
-
+    
+    private Satellite satellite;
+    private String commandId;
 
     /**
+	 * @return the commandId
+	 */
+	public String getCommandId() {
+		return commandId;
+	}
+
+	/**
+	 * @param commandId the commandId to set
+	 */
+	public void setCommandId(String commandId) {
+		this.commandId = commandId;
+	}
+
+	/**
+	 * @return the satelliteName
+	 */
+	public Satellite getSatellite() {
+		return satellite;
+	}
+
+	/**
+	 * @param satelliteName the satelliteName to set
+	 */
+	public void setSatellite(Satellite satelliteName) {
+		this.satellite = satellite;
+	}
+
+	/**
      * Constructor.
      * @param e cause
      */
@@ -78,29 +108,41 @@ public class CMSException extends Exception {
      */
     @Override
     public String getMessage() {
-        String causeMessage = super.getMessage();
+    	
+ //       String causeMessage = super.getMessage();
 
-        StringBuilder message = new StringBuilder();
+         StringBuilder message = new StringBuilder();
+
+		String nuxeoSrc = "NUXEO/"+Satellite.getAsKey(satellite);
+	
+		message.append("Source=" + nuxeoSrc );
+		
+		if( commandId != null)
+			message.append(", Command=" + commandId );		
+		
         if (errorCode > 0) {
             switch (errorCode) {
                 case ERROR_FORBIDDEN:
-                    message.append("Forbidden (403)");
+                	message.append(", rc=403");
                     break;
                 case ERROR_NOTFOUND:
-                    message.append("Not found (404)");
+                    message.append(", rc=404");
                     break;
             }
         }
 
-        if ((message.length() > 0) && (causeMessage != null)) {
-            message.append(" - ");
-        }
-        message.append(StringUtils.trimToEmpty(causeMessage));
+//        if (causeMessage != null) {
+//        		message.append("CAUSE     : \n");
+//        }
+//        message.append(StringUtils.trimToEmpty(causeMessage));
 
         return message.toString();
     }
 
 
+    
+    
+    
     /**
      * Getter for errorCode.
      * 

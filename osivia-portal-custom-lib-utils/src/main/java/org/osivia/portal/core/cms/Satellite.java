@@ -14,7 +14,7 @@ public class Satellite {
 
     /** Main satellite. */
     public static final Satellite MAIN = new Satellite();
-
+    public static final String MAIN_DISPLAY_STRING = "MAIN";
 
     /** Label. */
     private String label;
@@ -216,4 +216,21 @@ public class Satellite {
         return main;
     }
 
+    
+    /**
+     * return a key compatible value (not empty) for loggers
+     * 
+     * @return the main
+     */
+    public static String getAsKey(Satellite satellite) {
+    	if( satellite == null || satellite.isMain())
+    		return MAIN_DISPLAY_STRING;
+    	else	{
+    		return satellite.getId();
+    	}
+    }
+
+
+    
+    
 }

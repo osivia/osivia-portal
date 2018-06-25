@@ -224,8 +224,10 @@ public class GlobalErrorHandler {
             }
             
             
-            if (error.getException() != null)
+            if (error.getException() != null)	{
+            	sb.append("stack: \n");
                 sb.append(error.getStack());
+            }
 
             
             if( request != null)    {
