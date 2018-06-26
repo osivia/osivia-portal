@@ -13,8 +13,6 @@
  */
 package org.osivia.portal.core.cms;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * CMS exception.
  * 
@@ -52,22 +50,27 @@ public class CMSException extends Exception {
 		this.commandId = commandId;
 	}
 
-	/**
-	 * @return the satelliteName
-	 */
-	public Satellite getSatellite() {
-		return satellite;
-	}
+    /**
+     * Getter for satellite.
+     * 
+     * @return the satellite
+     */
+    public Satellite getSatellite() {
+        return satellite;
+    }
 
-	/**
-	 * @param satelliteName the satelliteName to set
-	 */
-	public void setSatellite(Satellite satelliteName) {
-		this.satellite = satellite;
-	}
+    /**
+     * Setter for satellite.
+     * 
+     * @param satellite the satellite to set
+     */
+    public void setSatellite(Satellite satellite) {
+        this.satellite = satellite;
+    }
 
-	/**
+    /**
      * Constructor.
+     * 
      * @param e cause
      */
     public CMSException(Throwable e) {
@@ -111,9 +114,15 @@ public class CMSException extends Exception {
     	
  //       String causeMessage = super.getMessage();
 
-         StringBuilder message = new StringBuilder();
+        StringBuilder message = new StringBuilder();
 
-		String nuxeoSrc = "NUXEO/"+Satellite.getAsKey(satellite);
+        // Satellite
+        Satellite satellite = this.satellite;
+        if (satellite == null) {
+            satellite = Satellite.MAIN;
+        }
+
+        String nuxeoSrc = "NUXEO/" + satellite.getId();
 	
 		message.append("Source=" + nuxeoSrc );
 		

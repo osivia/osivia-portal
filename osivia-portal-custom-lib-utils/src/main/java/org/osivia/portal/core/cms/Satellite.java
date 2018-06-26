@@ -3,8 +3,6 @@ package org.osivia.portal.core.cms;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Satellite java-bean.
  * 
@@ -14,7 +12,9 @@ public class Satellite {
 
     /** Main satellite. */
     public static final Satellite MAIN = new Satellite();
-    public static final String MAIN_DISPLAY_STRING = "MAIN";
+    /** Main satellite identifier. */
+    public static final String MAIN_ID = "main";
+
 
     /** Label. */
     private String label;
@@ -52,7 +52,7 @@ public class Satellite {
      */
     private Satellite() {
         super();
-        this.id = StringUtils.EMPTY;
+        this.id = MAIN_ID;
         this.main = true;
     }
 
@@ -215,22 +215,5 @@ public class Satellite {
     public boolean isMain() {
         return main;
     }
-
-    
-    /**
-     * return a key compatible value (not empty) for loggers
-     * 
-     * @return the main
-     */
-    public static String getAsKey(Satellite satellite) {
-    	if( satellite == null || satellite.isMain())
-    		return MAIN_DISPLAY_STRING;
-    	else	{
-    		return satellite.getId();
-    	}
-    }
-
-
-    
     
 }
