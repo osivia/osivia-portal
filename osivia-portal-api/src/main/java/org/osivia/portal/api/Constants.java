@@ -214,7 +214,8 @@ public final class Constants {
 
     /** Portlet CMS URI request attribute name. */
     public static final String REQUEST_ATTR_URI = WINDOW_PROP_URI;
-
+    /** The version of the content. */
+    public static final String REQUEST_ATTR_VERSION = WINDOW_PROP_VERSION;
 
     // SESSION
 
