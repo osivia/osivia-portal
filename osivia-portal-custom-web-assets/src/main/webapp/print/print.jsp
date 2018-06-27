@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 <html>
 
 <head>
@@ -18,14 +20,14 @@
 <script type="text/javascript" src="/osivia-portal-custom-web-assets/print/js/print.min.js"></script>
 </head>
 
-
 <body>
+	
     <div class="container-fluid">
         <div class="page-header">
-            <h1 class="h3">${param.title}</h1>
+            <h1 class="h3">${fn:escapeXml(param.title)}</h1>
         </div>
 
-        <div class="print-content" data-id="${param.id}"></div>
+        <div class="print-content" data-id="${fn:escapeXml(param.id)}"></div>
     </div>
 </body>
 
