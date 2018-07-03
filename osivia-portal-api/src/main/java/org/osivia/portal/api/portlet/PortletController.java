@@ -28,7 +28,7 @@ public abstract class PortletController {
 
     /** Person service. */
     @Autowired
-    private PersonService personService;
+    protected PersonService personService;
 
 
     /**

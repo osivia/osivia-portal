@@ -51,6 +51,8 @@ import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
+import org.osivia.portal.api.internationalization.Bundle;
+import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
@@ -90,7 +92,9 @@ public class CmsCommand extends DynamicCommand {
 
     public static final String LAYOUT_TYPE_CURRENT_PAGE = "0";
     public static final String LAYOUT_TYPE_SCRIPT = "1";
-
+    
+    public static final String PROCEDURE_TYPE="ProcedureInstance";
+    public static final String PROCEDURE_LABEL_KEY="PROCEDURE_LABEL";
     /**
 	 * Id of action (for stats)
 	 */
@@ -133,6 +137,9 @@ public class CmsCommand extends DynamicCommand {
 
     /** Statistics service. */
     private final IStatisticsService statisticsService;
+    
+    /** Bundle factory. */
+    private final IBundleFactory bundleFactory;
 
 
     /**
@@ -143,6 +150,11 @@ public class CmsCommand extends DynamicCommand {
 
         // Statistics service
         this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
+        
+        IInternationalizationService internationalizationService = InternationalizationUtils.getInternationalizationService();
+        this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
+        
+        
     }
 
 
@@ -382,6 +394,12 @@ public class CmsCommand extends DynamicCommand {
         String displayName = cmsItem.getProperties().get("displayName");
         if (StringUtils.isNotEmpty(displayName)) {
             displayNames.put(Locale.FRENCH, displayName);
+        }	else if(PROCEDURE_TYPE.equals(cmsItem.getProperties().get("type")))	{
+        	// Procedures have no title
+            Locale locale = this.getControllerContext().getServerInvocation().getRequest().getLocale();
+            Bundle bundle = this.bundleFactory.getBundle(locale);
+        	
+        	displayNames.put(Locale.FRENCH, bundle.getString(PROCEDURE_LABEL_KEY));
         }
 
         Map<String, String> props = new HashMap<String, String>();
