@@ -434,7 +434,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                         if ((state != null) && EditionState.CONTRIBUTION_MODE_EDITION.equals(state.getContributionMode())) {
                             cmsReadItemContext.setForcedLivePath(state.getDocPath());
                             windowsEditableWindowsMode = "preview";
-                        } else if ((state == null) || StringUtils.startsWith(sitePath, state.getDocPath())) {
+                        } else if ((state == null) || StringUtils.startsWith( state.getDocPath(), sitePath)) {
                             // Web page mode
 
                             boolean modePreview = CmsPermissionHelper.getCurrentCmsVersion(controllerContext).equals(CmsPermissionHelper.CMS_VERSION_PREVIEW);
