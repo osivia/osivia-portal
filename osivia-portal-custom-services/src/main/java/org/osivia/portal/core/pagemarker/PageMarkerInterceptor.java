@@ -94,7 +94,7 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
         	// Mais la command Web, ne porte pas de pagemarker
         	// On se contente du traitement du ServerTrackerInterceptor
             PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
-            if(currentPageId.getPath().toString().equals("/osivia-util/modal"))
+            if(currentPageId != null && currentPageId.getPath().toString().equals("/osivia-util/modal"))
             	computePortal = false;
             		
         }
