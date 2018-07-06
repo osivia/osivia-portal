@@ -35,6 +35,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.web.WebCommand;
 
 
 /**
@@ -87,21 +88,33 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 
         // Calcul du nom de portail
 
-        String portalName = null;
-        if (cmd instanceof PortalCommand) {
-            portalName = ((PortalCommand) cmd).getPortal().getName();
-        } else {
+        boolean computePortal = true;
+        if ( cmd instanceof WebCommand)	{
+        	// On peut sortir d'une modale par echap ou Fermer
+        	// Mais la command Web, ne porte pas de pagemarker
+        	// On se contente du traitement du ServerTrackerInterceptor
             PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
-
-            if (currentPageId == null) {
-                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
-            } else {
-                portalName = currentPageId.getPath().getName(0);
-            }
-
+            if(currentPageId.getPath().toString().equals("/osivia-util/modal"))
+            	computePortal = false;
+            		
         }
-        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
-
+        
+        if( computePortal)	{
+	        String portalName = null;
+	        if (cmd instanceof PortalCommand) {
+	            portalName = ((PortalCommand) cmd).getPortal().getName();
+	        } else {
+	            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+	
+	            if (currentPageId == null) {
+	                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
+	            } else {
+	                portalName = currentPageId.getPath().getName(0);
+	            }
+	
+	        }
+	        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
+        }
 
         resp = (ControllerResponse) cmd.invokeNext();
 
