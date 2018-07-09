@@ -214,7 +214,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
         this.names.add("osivia.settings.elements");
-        this.names.add("osivia.session.reload.url");
+        this.names.add("osivia.session.reload.urls");
         
         // Layouts and themes collection filter predicate
         this.predicate = new LayoutsAndThemesPredicate();
@@ -1173,16 +1173,44 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Reload session indicator
         Boolean reload = (Boolean) session.getAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
         if (BooleanUtils.isTrue(reload)) {
-            // URL
-            String url;
+            // Satellites
+            Set<Satellite> satellites;
             try {
-                url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                satellites = cmsService.getSatellites();
             } catch (CMSException e) {
-                url = null;
+                satellites = null;
+            }
+            List<Satellite> allSatellites;
+            if (CollectionUtils.isEmpty(satellites)) {
+                allSatellites = new ArrayList<>(1);
+            } else {
+                allSatellites = new ArrayList<>(satellites);
+            }
+            allSatellites.add(0, Satellite.MAIN);
+
+
+            // URLs
+            List<String> urls = new ArrayList<>(allSatellites.size());
+
+            for (Satellite satellite : allSatellites) {
+                cmsContext.setSatellite(satellite);
+
+                // URL
+                String url;
+                try {
+                    url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                } catch (CMSException e) {
+                    url = null;
+                }
+
+                if (StringUtils.isNotEmpty(url)) {
+                    urls.add(url);
+                }
             }
 
-            attributes.put("osivia.session.reload.url", url);
+            attributes.put("osivia.session.reload.urls", StringUtils.join(urls, "|"));
         }
+
         session.removeAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
     }
 
