@@ -29,6 +29,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
+import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
 import org.jboss.portal.server.ServerInvocation;
@@ -196,6 +197,29 @@ public class InitPageInterceptor extends ControllerInterceptor {
             // Check layout
             this.checkLayout(controllerContext, page);
         }
+        
+        
+        if((command instanceof RenderWindowCommand) && (ControllerContext.AJAX_TYPE == command.getControllerContext().getType())) {
+            
+           
+            // Portal object container
+            PortalObjectContainer portalObjectContainer = command.getControllerContext().getController().getPortalObjectContainer();
+            // Target object identifier
+            PortalObjectId targetId = new PortalObjectId("",((RenderWindowCommand) command).getTargetId().getPath().getParent());
+         
+            // Target
+            PortalObject target = portalObjectContainer.getObject(targetId);      
+            Page page = null;
+
+            if (target instanceof Page) {
+                page = (Page) target;
+            }
+
+            
+            // Check layout (necessary for ajax fragment refresh in web mode)
+            this.checkLayout(command.getControllerContext(), (Page) page);           
+        }
+        
 
         return (ControllerResponse) command.invokeNext();
     }
