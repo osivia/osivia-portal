@@ -341,11 +341,22 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
 
                     try {
                         // CMS item
-                        CMSItem cmsItem = cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                        CMSItem cmsItem;
                         if (currentItem) {
+                            // Navigation path
+                            String navigationPath;
+                            CMSItem navigationItem = cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
+                            if (navigationItem == null) {
+                                navigationPath = publicationPath;
+                            } else {
+                                navigationPath = navigationItem.getCmsPath();
+                            }
+
                             // First navigation item must be fetched directly (not in navigation) to get the correct edition state
-                            cmsItem = this.computeContent(controllerContext, cmsItem.getCmsPath());
+                            cmsItem = this.computeContent(controllerContext, navigationPath);
                             currentItem = false;
+                        } else {
+                            cmsItem = cmsService.getPortalNavigationItem(cmxCtx, basePath, publicationPath);
                         }
 
 
