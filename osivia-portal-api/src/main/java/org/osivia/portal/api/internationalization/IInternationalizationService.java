@@ -48,11 +48,21 @@ public interface IInternationalizationService {
 
 
     /**
+     * Get bundle factory.
+     *
+     * @param classLoader        class loader, may be null to access default portal resource
+     * @param applicationContext application context
+     * @return bundle factory
+     */
+    IBundleFactory getBundleFactory(ClassLoader classLoader, ApplicationContext applicationContext);
+
+
+    /**
      * Access to portal localized resource property, which can be customized.
      *
-     * @param key resource property key
+     * @param key    resource property key
      * @param locale locale
-     * @param args resource property arguments
+     * @param args   resource property arguments
      * @return localized resource property value
      */
     String getString(String key, Locale locale, Object... args);
@@ -61,10 +71,10 @@ public interface IInternationalizationService {
     /**
      * Access to class loader localized resource property, which can be customized.
      *
-     * @param key resource property key
-     * @param locale locale
+     * @param key         resource property key
+     * @param locale      locale
      * @param classLoader class loader, may be null to access default portal resource
-     * @param args resource property arguments
+     * @param args        resource property arguments
      * @return localized resource property value
      */
     String getString(String key, Locale locale, ClassLoader classLoader, Object... args);
@@ -73,11 +83,11 @@ public interface IInternationalizationService {
     /**
      * Access to customized class loader localized resource property, which can be customized.
      *
-     * @param key resource property key
-     * @param locale locale
-     * @param classLoader class loader, may be null to access default portal resource
+     * @param key                   resource property key
+     * @param locale                locale
+     * @param classLoader           class loader, may be null to access default portal resource
      * @param customizedClassLoader customized class loader, may be null
-     * @param args resource property arguments
+     * @param args                  resource property arguments
      * @return localized resource property value
      */
     String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args);
@@ -86,15 +96,28 @@ public interface IInternationalizationService {
     /**
      * Access to customized class loader localized resource property or application context message source, which can be customized.
      *
-     * @param key resource property key
-     * @param locale locale
-     * @param classLoader class loader, may be null to access default portal resource
-     * @param customizedClassLoader customized class loader, may be null
+     * @param key                resource property key
+     * @param locale             locale
+     * @param classLoader        class loader, may be null to access default portal resource
      * @param applicationContext application context
-     * @param args resource property arguments
+     * @param args               resource property arguments
      * @return localized resource property value
      */
-    String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext,
-            Object... args);
+    String getString(String key, Locale locale, ClassLoader classLoader, ApplicationContext applicationContext, Object... args);
+
+
+    /**
+     * Access to customized class loader localized resource property or application context message source, which can be customized.
+     *
+     * @param key                   resource property key
+     * @param locale                locale
+     * @param classLoader           class loader, may be null to access default portal resource
+     * @param customizedClassLoader customized class loader, may be null
+     * @param applicationContext    application context
+     * @param args                  resource property arguments
+     * @return localized resource property value
+     */
+    String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext, Object...
+            args);
 
 }

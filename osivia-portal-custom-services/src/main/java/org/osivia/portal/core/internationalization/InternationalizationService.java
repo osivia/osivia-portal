@@ -59,44 +59,44 @@ public class InternationalizationService implements IInternationalizationService
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public IBundleFactory getBundleFactory(ClassLoader classLoader) {
         return new BundleFactory(this, classLoader);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public IBundleFactory getBundleFactory(ClassLoader classLoader, ApplicationContext applicationContext) {
+        return new BundleFactory(this, classLoader, applicationContext);
+    }
+
+
+    @Override
     public String getString(String key, Locale locale, Object... args) {
-        return this.getString(key, locale, null, args);
+        return this.getString(key, locale, null, null, null, args);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, Object... args) {
-        return this.getString(key, locale, classLoader, null, args);
+        return this.getString(key, locale, classLoader, null, null, args);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, Object... args) {
         return this.getString(key, locale, classLoader, customizedClassLoader, null, args);
     }
 
+    @Override
+    public String getString(String key, Locale locale, ClassLoader classLoader, ApplicationContext applicationContext, Object... args) {
+        return this.getString(key, locale, classLoader, null, applicationContext, args);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public String getString(String key, Locale locale, ClassLoader classLoader, ClassLoader customizedClassLoader, ApplicationContext applicationContext,
-            Object... args) {
+                            Object... args) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_KEY, key);
         attributes.put(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_LOCALE, locale);
@@ -110,41 +110,23 @@ public class InternationalizationService implements IInternationalizationService
             // Custom result
             pattern = (String) attributes.get(IInternationalizationService.CUSTOMIZER_ATTRIBUTE_RESULT);
         } else {
-            // Get resource bundle
-            ResourceBundle resourceBundle = null;
-
-            if (customizedClassLoader != null) {
-                // Customized class loader resource bundle
-                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, customizedClassLoader);
-                if (resourceBundle != null) {
-                    try {
-                        pattern = resourceBundle.getString(key);
-                    } catch (MissingResourceException e) {
-                        // Do nothing
-                    }
-                }
-            }
-
-            if ((pattern == null) && (classLoader != null)) {
-                // Current class loader resource bundle
-                resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
-                if (resourceBundle != null) {
-                    try {
-                        pattern = resourceBundle.getString(key);
-                    } catch (MissingResourceException e) {
-                        // Do nothing
-                    }
-                }
-            }
-
-            if ((pattern == null) && (applicationContext != null)) {
+            if (applicationContext != null) {
                 // Application context message source
                 try {
-                    pattern = applicationContext.getMessage(key, args, locale);
+                    pattern = applicationContext.getMessage(key, null, locale);
                 } catch (NoSuchMessageException e) {
                     // Do nothing
                 }
             }
+
+            if (pattern == null) {
+                pattern = this.getPattern(key, locale, customizedClassLoader);
+            }
+
+            if (pattern == null) {
+                pattern = this.getPattern(key, locale, classLoader);
+            }
+
 
             if (pattern == null) {
                 // Saved class loader
@@ -154,7 +136,8 @@ public class InternationalizationService implements IInternationalizationService
                 Thread.currentThread().setContextClassLoader(this.classLoader);
 
                 try {
-                    resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
+                    // Resource bundle
+                    ResourceBundle resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale);
                     pattern = resourceBundle.getString(key);
                 } catch (MissingResourceException e) {
                     // Do nothing
@@ -180,9 +163,36 @@ public class InternationalizationService implements IInternationalizationService
 
 
     /**
+     * Get pattern.
+     *
+     * @param key         internationalization key
+     * @param locale      locale
+     * @param classLoader class loader
+     * @return pattern
+     */
+    private String getPattern(String key, Locale locale, ClassLoader classLoader) {
+        String pattern = null;
+
+        if (classLoader != null) {
+            // Class loader resource bundle
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(InternationalizationConstants.RESOURCE_BUNDLE_NAME, locale, classLoader);
+            if (resourceBundle != null) {
+                try {
+                    pattern = resourceBundle.getString(key);
+                } catch (MissingResourceException e) {
+                    // Do nothing
+                }
+            }
+        }
+
+        return pattern;
+    }
+
+
+    /**
      * Utility method used to format arguments.
      *
-     * @param args arguments
+     * @param args   arguments
      * @param locale locale
      * @return formatted arguments
      */
