@@ -318,6 +318,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
         PortalLayout pageLayout = this.getServiceLayout().getLayout(layoutId, true);
 
+        // CMS base path
+        String basePath = page.getProperty("osivia.cms.basePath");
 
         // Locale
         Locale locale = controllerContext.getServerInvocation().getRequest().getLocale();
@@ -325,7 +327,8 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
         // Regions layout
         Set<CMSConfigurationItem> regionLayouts = cmsService.getCMSRegionLayoutsConfigurationItems(cmsContext);
         PageProperties.getProperties().setRegionLayouts(regionLayouts);
-        Map<String, CMSConfigurationItem> regionsSelectedLayout = cmsService.getCMSRegionsSelectedLayout(cmsItem, regionLayouts);
+        Map<String, CMSConfigurationItem> regionsSelectedLayout = cmsService.getCmsRegionsInheritedLayout(cmsContext, basePath, cmsItem.getNavigationPath(),
+                regionLayouts);
 
 
         for (Object regionObject : rendition.getPageResult().getRegions()) {

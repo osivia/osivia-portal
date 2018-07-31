@@ -197,6 +197,20 @@ public interface ICMSService {
 
 
     /**
+     * Get CMS regions inherited layout.
+     * 
+     * @param cmsContext CMS context
+     * @param basePath CMS base path
+     * @param path CMS path
+     * @param configuredLayouts configured layouts
+     * @return CMS regions inherited layout
+     * @throws CMSException
+     */
+    Map<String, CMSConfigurationItem> getCmsRegionsInheritedLayout(CMSServiceCtx cmsContext, String basePath, String path,
+            Set<CMSConfigurationItem> configuredLayouts) throws CMSException;
+
+
+    /**
      * Get CMS regions selected layout.
      *
      * @param item          CMS item
