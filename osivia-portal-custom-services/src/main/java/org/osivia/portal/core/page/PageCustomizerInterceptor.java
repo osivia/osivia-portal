@@ -732,7 +732,13 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             if ((pathPublication != null) && !"1".equals(page.getProperty("osivia.cms.directContentPublisher"))) {
 
                 if (PortalObjectUtils.isSpaceSite(page)) {
-                    onlinePage = Level.allowOnlineVersion.equals(CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId()));
+                    Level level = CmsPermissionHelper.getCurrentPageSecurityLevel(controllerContext, page.getId());
+                    if( level == Level.notAWebPage)
+                        onlinePage = true;
+                    else    {
+                        onlinePage = Level.allowOnlineVersion.equals(level);
+                    }
+                    
                 } else {
                     NavigationalStateContext nsContext = (NavigationalStateContext) controllerContext
                             .getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
