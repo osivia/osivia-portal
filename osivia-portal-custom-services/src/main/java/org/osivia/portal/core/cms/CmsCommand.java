@@ -71,6 +71,7 @@ import org.osivia.portal.core.error.UserNotificationsException;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
@@ -754,7 +755,9 @@ public class CmsCommand extends DynamicCommand {
 
 
             if ("detailedView".equals(this.displayContext)) {
-                this.contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTLET;
+                // Need navigation context to work
+                if( currentPage != null)
+                    this.contextualization = IPortalUrlFactory.CONTEXTUALIZATION_PORTLET;
             }
 
 
@@ -848,8 +851,26 @@ public class CmsCommand extends DynamicCommand {
                                 }
                             }
                         } else {
-                            // Pas de page, on contextualise dans le portail (exemple : permalink)
+                            // Pas de page dans le contexte, on contextualise dans le portail (exemple : permalink)
                             contextualizeinPortal = true;
+                            
+                            
+                            // Cas des sites web 
+                            // (ou on a par défaut pas de contexte de navigation et donc tout est permalien ...)
+                            
+                            // Si je n'ai pas de navigation virtuelle , il faut être capable d'afficher le contenu 
+                            // On l'affiche alors dans la page d'accueil
+                            if( virtualNavigationPath == null)    {
+                                Portal portal = PortalObjectUtils.getPortal(controllerContext);
+                                if( portal != null) {
+                                    if (PortalObjectUtils.isSpaceSite( portal)) {
+                                          String baseCMSPath = portal.getDefaultPage().getDeclaredProperty("osivia.cms.basePath");
+                                          virtualNavigationPath = baseCMSPath;
+                                          realNavigationPath = virtualNavigationPath;
+                                          itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
+                                    }
+                                }
+                            }
                         }
                     }
                 }
