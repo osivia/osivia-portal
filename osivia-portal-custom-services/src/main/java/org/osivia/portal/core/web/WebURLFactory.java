@@ -45,6 +45,7 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.CmsCommand;
@@ -214,9 +215,17 @@ public class WebURLFactory extends URLFactoryDelegate {
                 if (cmsCommand.getPortalPersistentName() != null) {
                     return null;
                 }
+                
+                // need navigation information
                 if (StringUtils.equals("detailedView", cmsCommand.getDisplayContext())) {
                     return null;
                 }
+                
+                // need navigation information
+                if (StringUtils.equals(IPortalUrlFactory.CONTEXTUALIZATION_PORTLET, cmsCommand.getContextualization())) {
+                    return null;
+                }
+                
 
                 // WebId
                 String webId = StringUtils.removeStart(cmsCommand.getCmsPath(), IWebIdService.CMS_PATH_PREFIX.concat(SLASH));
