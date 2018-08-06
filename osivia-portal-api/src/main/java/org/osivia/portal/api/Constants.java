@@ -196,6 +196,10 @@ public final class Constants {
     
 
     public static final String PORTLET_VALUE_ACTIVATE = "true";
+    
+    /** for i18n */
+    public static final String PORTLET_ATTR_WEBAPP_CONTEXT = "osivia.applicationContext";
+
 
 
     // WINDOWS

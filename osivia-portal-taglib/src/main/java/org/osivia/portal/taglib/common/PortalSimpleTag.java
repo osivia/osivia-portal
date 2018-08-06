@@ -13,10 +13,11 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
+import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.portlet.context.PortletApplicationContextUtils;
+
 
 /**
  * Portal simple tag abstract super-class.
@@ -211,13 +212,14 @@ public abstract class PortalSimpleTag extends SimpleTagSupport {
     protected ApplicationContext getApplicationContext() throws JspException {
         // Portlet context
         PortletContext portletContext = this.getPortletContext();
+        PortletConfig portletConfig = this.getPortletConfig();
 
         // Application context
         ApplicationContext applicationContext;
         if (portletContext == null) {
             applicationContext = null;
         } else {
-            applicationContext = PortletApplicationContextUtils.getWebApplicationContext(portletContext);
+            applicationContext = (ApplicationContext) portletContext.getAttribute(Constants.PORTLET_ATTR_WEBAPP_CONTEXT + "." + portletConfig.getPortletName());
         }
 
         return applicationContext;
