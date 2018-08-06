@@ -215,11 +215,21 @@ public abstract class PortalSimpleTag extends SimpleTagSupport {
         PortletConfig portletConfig = this.getPortletConfig();
 
         // Application context
-        ApplicationContext applicationContext;
-        if (portletContext == null) {
-            applicationContext = null;
-        } else {
-            applicationContext = (ApplicationContext) portletContext.getAttribute(Constants.PORTLET_ATTR_WEBAPP_CONTEXT + "." + portletConfig.getPortletName());
+        ApplicationContext applicationContext = null;
+
+
+        if (getPortletRequest() != null) {
+            applicationContext = (ApplicationContext) getPortletRequest().getAttribute(Constants.PORTLET_ATTR_WEBAPP_CONTEXT);
+        }
+
+
+        if (applicationContext == null) {
+            if (portletContext == null) {
+                applicationContext = null;
+            } else {
+                applicationContext = (ApplicationContext) portletContext
+                        .getAttribute(Constants.PORTLET_ATTR_WEBAPP_CONTEXT + "." + portletConfig.getPortletName());
+            }
         }
 
         return applicationContext;
