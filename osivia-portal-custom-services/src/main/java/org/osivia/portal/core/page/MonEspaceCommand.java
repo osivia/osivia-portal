@@ -26,10 +26,18 @@ import org.jboss.portal.core.controller.command.response.SecurityErrorResponse;
 import org.jboss.portal.core.impl.api.node.PageURL;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowResourceCommand;
+import org.jboss.portal.portlet.cache.CacheLevel;
+import org.jboss.portal.server.ServerURL;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.AssistantCommand;
+import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
+import org.osivia.portal.core.web.WebCommand;
+import org.osivia.portal.core.web.WebURLFactory;
 
 
 public class MonEspaceCommand extends ControllerCommand {
@@ -101,11 +109,25 @@ public class MonEspaceCommand extends ControllerCommand {
 
 
             if (child != null) {
+                
+                // La page d'accueil en mode Web doit être affichée avec une url web
+                if ( child.equals(portal.getDefaultPage()) && InternalConstants.PORTAL_URL_POLICY_WEB.equals(portal.getProperty(InternalConstants.PORTAL_PROP_NAME_URL_POLICY))) {
+                    
+                    String basePath = WebURLFactory.getWebPortalBasePath(getControllerContext());
+                    // Portal URL factory
+                    IPortalUrlFactory urlFactory = Locator.findMBean(IPortalUrlFactory.class, "osivia:service=UrlFactory");                    
+                    String cmsUrl = urlFactory.getCMSUrl(new PortalControllerContext(getControllerContext()), null, basePath, null, null, null, null, null, null, null);
+
+                    return  new RedirectionResponse(cmsUrl);
+                }   
+                
+                
                 PageURL url = new PageURL(child.getId(), this.getControllerContext());
 
                 logger.debug("Redirection page : " + url.toString());
                 // Redirection
                 return new RedirectionResponse(url.toString() + "?init-state=true&redirect=true");
+                
             } else {
                 // Page inexistante, on redirige vers la page par defaut du
                 // portail
