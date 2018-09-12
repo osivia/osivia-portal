@@ -205,6 +205,21 @@ public interface Person {
 
 
     /**
+     * Get creation date.
+     * 
+     * @return creation date
+     */
+    Date getCreationDate();
+
+
+    /**
+     * Set account creation date.
+     * 
+     * @param creation account date
+     */
+    void setCreationDate(Date creation);
+    
+    /**
      * Get account validity date.
      * 
      * @return account validity date
