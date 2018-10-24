@@ -1,6 +1,7 @@
 package org.osivia.portal.core.customization;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
@@ -43,6 +44,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
     private final Page page;
     /** HTTP servlet request. */
     private final HttpServletRequest httpServletRequest;
+    /** HTTP servlet response. */
+    private final HttpServletResponse httpServletResponse;
     /** Administrator indicator. */
     private final boolean administrator;
 
@@ -68,6 +71,8 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // HTTP client request
         this.httpServletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+        // HTTP client response
+        this.httpServletResponse = controllerContext.getServerInvocation().getServerContext().getClientResponse();
 
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, "osivia:service=CmsServiceLocator");
@@ -164,6 +169,13 @@ public class ProjectCustomizationConfiguration implements IProjectCustomizationC
      */
     public HttpServletRequest getHttpServletRequest() {
         return this.httpServletRequest;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public HttpServletResponse getHttpServletResponse() {
+        return this.httpServletResponse;
     }
 
 

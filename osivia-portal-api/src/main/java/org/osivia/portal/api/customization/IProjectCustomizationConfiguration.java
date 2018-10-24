@@ -1,6 +1,7 @@
 package org.osivia.portal.api.customization;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jboss.portal.core.model.portal.Page;
 
@@ -56,6 +57,12 @@ public interface IProjectCustomizationConfiguration {
      */
     HttpServletRequest getHttpServletRequest();
 
+    /**
+     * Get HTTP servlet response.
+     *
+     * @return HTTP servlet response
+     */
+    HttpServletResponse getHttpServletResponse();
 
     /**
      * Get theme name.
