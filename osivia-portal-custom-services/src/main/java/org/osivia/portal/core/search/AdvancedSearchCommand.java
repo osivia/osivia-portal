@@ -82,7 +82,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
      * @param advancedSearch advanced search indicator
      */
     public AdvancedSearchCommand(String search, boolean advancedSearch) {
-        this.search = StringEscapeUtils.escapeHtml(search);
+        this.search = search;
         this.advancedSearch = advancedSearch;
     }
 
