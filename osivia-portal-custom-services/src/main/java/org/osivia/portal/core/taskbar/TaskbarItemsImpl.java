@@ -76,4 +76,13 @@ public class TaskbarItemsImpl implements TaskbarItems {
         }
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void remove(String id) {
+        this.items.remove(id);
+    }
+
 }

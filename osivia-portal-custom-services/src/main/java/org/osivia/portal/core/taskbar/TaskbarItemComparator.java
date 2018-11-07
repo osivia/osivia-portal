@@ -34,6 +34,12 @@ public class TaskbarItemComparator implements Comparator<TaskbarItem> {
             Integer order1 = item1.getOrder();
             Integer order2 = item2.getOrder();
             result = order1.compareTo(order2);
+
+            if (result == 0) {
+                String id1 = item1.getId();
+                String id2 = item2.getId();
+                result = id1.compareTo(id2);
+            }
         }
         return result;
     }

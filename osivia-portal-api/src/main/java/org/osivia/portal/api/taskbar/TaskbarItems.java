@@ -41,4 +41,12 @@ public interface TaskbarItems {
      */
     void add(List<TaskbarItem> items);
 
+
+    /**
+     * Remove taskbar item from his identifier.
+     * 
+     * @param id taskbar item identifier
+     */
+    void remove(String id);
+
 }
