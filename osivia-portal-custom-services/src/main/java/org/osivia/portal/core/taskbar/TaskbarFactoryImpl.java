@@ -119,8 +119,9 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) {
+    public TaskbarTask createTaskbarTask(TaskbarItem item, String title, String path, boolean disabled) {
         TaskbarTaskImpl task = new TaskbarTaskImpl(item);
+        task.setTitle(title);
         task.setPath(path);
         task.setDisabled(disabled);
         return task;
