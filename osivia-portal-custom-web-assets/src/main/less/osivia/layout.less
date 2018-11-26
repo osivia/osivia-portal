@@ -80,12 +80,9 @@ body.fixed-layout {
         }
         
         .flexbox {
-            &.portlet-container, &.table {
-                margin-bottom: 0;
-            }
-            
             &.table {
                 .flex(@flex: unset);
+                margin-bottom: 0;
             }
         }
         
@@ -101,6 +98,23 @@ body.fixed-layout {
 
         .portlet-filler {
             .scrollbox();
+            
+            &.hidden-scrollbar {
+                // Hide scrollbar before JavaScript
+                overflow-y: hidden;
+                
+                // Background scroll shadow
+                @background: #fff;
+                @shadow: #000;
+                background-image: linear-gradient(@background 10%, fade(@background, 0%)),
+                    linear-gradient(fade(@background, 0%), @background 90%),
+                    linear-gradient(fade(@shadow, 10%), fade(@shadow, 0%)),
+                    linear-gradient(fade(@shadow, 0), fade(@shadow, 10%));
+                background-repeat: no-repeat;
+                background-attachment: local, local, scroll, scroll;
+                background-position-y: 0%, 100%, 0%, 100%;
+                background-size: 100% 50px, 100% 50px, 100% 5px, 100% 5px;
+            }
         }
     }
 }
@@ -114,7 +128,7 @@ body.fixed-layout {
             .flex-container(@direction: row);
         }
 
-        &[class*="col-"]:not(.col-offset-auto), &.portlet-container {
+        &[class*="col-"]:not(.col-offset-auto) {
             .flex-container(@flex: unset);
         }
     }

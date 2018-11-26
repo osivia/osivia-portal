@@ -1,8 +1,12 @@
 $JQry(function() {
-	var $portletFiller = $JQry("body.fixed-layout .portlet-filler");
-	
-	// Portlet filler parents flexbox class
-	$portletFiller.parentsUntil(".flexbox").addClass("flexbox");
+	$JQry("body.fixed-layout .portlet-filler").each(function(index, element) {
+		var $element = $JQry(element);
+		
+		if (!$element.closest(".scrollbox.fixed-scrollbox").length) {
+			// Portlet filler parents flexbox class
+			$element.parentsUntil(".flexbox").addClass("flexbox");
+		}
+	});
 	
 	// Update scrollbar width
 	updateScrollbarWidth();
@@ -24,19 +28,24 @@ function updateScrollbarWidth() {
 	
 	$portletFiller.each(function(index, element) {
 		var $element = $JQry(element),
+			width = Math.round($element.innerWidth() - $element.children().outerWidth(true)),
 			$table = $element.closest(".table"),
-			$tableHeader = $table.find(".table-header"),
-			scrollbarWidth;
-	
-		if ($window.width() >= 768) {
-			scrollbarWidth = Math.round($element.innerWidth() - $element.children().outerWidth(true));
-		} else {
-			scrollbarWidth = 0;
+			$tableHeader = $table.find(".table-header");
+		
+		if ($element.hasClass("hidden-scrollbar")) {
+			// Force scrollbar display
+			$element.css("overflow-y", "scroll");
+			
+			// Update scrollbar width
+			width = Math.round($element.innerWidth() - $element.children().outerWidth(true));
+			
+			// Update negative margin for hidden scrollbar
+			$element.css("margin-right", -width);
 		}
 		
 		// Update table header
 		$tableHeader.find(".row").first().css({
-			"padding-right": scrollbarWidth
+			"padding-right": width
 		});
 	});
 }
