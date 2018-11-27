@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
@@ -53,6 +52,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
     /** Command info. */
     private static final CommandInfo commandInfo = new ActionCommandInfo(false);
 
+
     /** Search content. */
     private final String search;
     /** Advanced search indicator. */
@@ -68,7 +68,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
 
     /**
      * Constructor.
-     * 
+     *
      * @param advancedSearch advanced search indicator
      */
     public AdvancedSearchCommand(boolean advancedSearch) {
@@ -93,15 +93,16 @@ public class AdvancedSearchCommand extends ControllerCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         // Portal identifier
-        Portal portal = PortalObjectUtils.getPortal(context);
-        
+        Portal portal = PortalObjectUtils.getPortal(this.context);
         String portalId = portal.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
-        
-        
-        // Search keywords
+        // Selectors
         Map<String, List<String>> selectors = new HashMap<String, List<String>>();
-        selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
+
+        // Search keywords
+        if (StringUtils.isNotEmpty(this.search)) {
+            selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
+        }
 
         // Dummy selector
         if (this.advancedSearch) {

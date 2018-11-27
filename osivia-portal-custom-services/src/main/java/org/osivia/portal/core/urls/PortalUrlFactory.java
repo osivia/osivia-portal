@@ -79,6 +79,7 @@ import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.share.ShareCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
@@ -1141,6 +1142,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         // Controller command
         ControllerCommand command = new MonEspaceCommand(portalName);
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+
+        return portalUrl.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Controller command
+        ControllerCommand command = new AdvancedSearchCommand(search, advancedSearch);
+
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
 
