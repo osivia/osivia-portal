@@ -24,6 +24,8 @@ public interface ITaskbarService {
 
     /** Taskbar home task identifier. */
     String HOME_TASK_ID = "HOME";
+    /** Taskbar search task identifier. */
+    String SEARCH_TASK_ID = "SEARCH";
 
     /** Taskbar task identifier window property name. */
     String TASK_ID_WINDOW_PROPERTY = "osivia.taskbar.id";

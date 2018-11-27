@@ -66,14 +66,12 @@ public interface TaskbarFactory {
 
 
     /**
-     * Create hidden CMS taskbar item.
+     * Hide taskbar item.
      * 
-     * @param id taskbar item identifier
-     * @param key taskbar item internationalization key
-     * @param documentType taskbar item document type
-     * @return taskbar item
+     * @param item taskbar item
+     * @param hidden hidden indicator
      */
-    TaskbarItem createHiddenCmsTaskbarItem(String id, String key, String documentType);
+    void hide(TaskbarItem item, boolean hidden);
 
 
     /**

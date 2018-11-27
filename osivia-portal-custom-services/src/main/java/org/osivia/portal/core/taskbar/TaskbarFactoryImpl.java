@@ -74,17 +74,6 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
 
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TaskbarItemImpl createHiddenCmsTaskbarItem(String id, String key, String documentType) {
-        TaskbarItemImpl item = this.createCmsTaskbarItem(id, key, null, documentType);
-        item.setHidden(true);
-        return item;
-    }
-
-
-    /**
      * Create generic taskbar item.
      *
      * @param id identifier
@@ -101,6 +90,18 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
         item.setIcon(icon);
         item.setCustomizedClassLoader(PortalGenericPortlet.CLASS_LOADER_CONTEXT.get());
         return item;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hide(TaskbarItem item, boolean hidden) {
+        if (item instanceof TaskbarItemImpl) {
+            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
+            itemImpl.setHidden(hidden);
+        }
     }
 
 
