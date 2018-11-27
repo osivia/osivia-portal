@@ -448,4 +448,16 @@ public interface IPortalUrlFactory {
      */
     String getProfiledHomePageUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
+
+    /**
+     * Get advanced search URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param search search query
+     * @param advancedSearch advanced search indicator
+     * @return
+     * @throws PortalException
+     */
+    String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch) throws PortalException;
+
 }
