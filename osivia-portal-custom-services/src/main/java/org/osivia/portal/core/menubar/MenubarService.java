@@ -123,8 +123,8 @@ public class MenubarService implements IMenubarService {
         Bundle bundle = bundleFactory.getBundle(httpServletRequest.getLocale());
 
 
-        // Get menubar items, sorted by groups
-        Map<MenubarGroup, Set<MenubarItem>> sortedItems = this.getNavbarSortedItems(portalControllerContext);
+        // Menubar
+        List<MenubarItem> menubar = this.getMenubar(portalControllerContext, false);
 
 
         // Back
@@ -132,7 +132,7 @@ public class MenubarService implements IMenubarService {
         if (backURL != null) {
             MenubarItem item = new MenubarItem("BACK", bundle.getString("BACK"), "halflings halflings-arrow-left", MenubarGroup.BACK, 0, backURL, null, null,
                     null);
-            this.addSortedItem(sortedItems, MenubarGroup.BACK, item);
+            menubar.add(item);
         }
 
 
@@ -142,9 +142,13 @@ public class MenubarService implements IMenubarService {
             if (refreshURL != null) {
                 MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat", MenubarGroup.GENERIC, 100,
                         refreshURL, null, null, null);
-                this.addSortedItem(sortedItems, MenubarGroup.GENERIC, item);
+                menubar.add(item);
             }
         }
+
+
+        // Get menubar items, sorted by groups
+        Map<MenubarGroup, Set<MenubarItem>> sortedItems = this.getNavbarSortedItems(portalControllerContext);
 
 
         // Dyna-window container
@@ -239,13 +243,39 @@ public class MenubarService implements IMenubarService {
      * @return customized menubar
      */
     private List<MenubarItem> getCustomizedMenubar(PortalControllerContext portalControllerContext) {
-        // Controller context
-        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // HTTP servlet request
         HttpServletRequest httpServletRequest = portalControllerContext.getHttpServletRequest();
         // Bundle
         IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(this.getClass().getClassLoader());
         Bundle bundle = bundleFactory.getBundle(httpServletRequest.getLocale());
+
+        // Menubar
+        List<MenubarItem> menubar = this.getMenubar(portalControllerContext, true);
+
+
+        // Configuration dropdown menu
+        MenubarDropdown configurationDropdown = new MenubarDropdown(MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID, bundle.getString("CONFIGURATION"),
+                "glyphicons glyphicons-cogwheel", MenubarGroup.GENERIC, 50, false, false);
+        this.addDropdown(portalControllerContext, configurationDropdown);
+
+
+        // Customized menubar items
+        this.addCustomizedMenubarItems(portalControllerContext, menubar);
+
+        return menubar;
+    }
+
+
+    /**
+     * Get menubar.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param clone cloned menubar indicator
+     * @return menubar
+     */
+    private List<MenubarItem> getMenubar(PortalControllerContext portalControllerContext, boolean clone) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
         // Items list
         List<?> list = (List<?>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR);
@@ -264,15 +294,9 @@ public class MenubarService implements IMenubarService {
             }
         }
 
-
-        // Configuration dropdown menu
-        MenubarDropdown configurationDropdown = new MenubarDropdown(MenubarDropdown.CONFIGURATION_DROPDOWN_MENU_ID, bundle.getString("CONFIGURATION"),
-                "glyphicons glyphicons-cogwheel", MenubarGroup.GENERIC, 50, false, false);
-        this.addDropdown(portalControllerContext, configurationDropdown);
-
-
-        // Customized menubar items
-        this.addCustomizedMenubarItems(portalControllerContext, menubar);
+        if (!clone) {
+            controllerContext.setAttribute(Scope.REQUEST_SCOPE, Constants.PORTLET_ATTR_MENU_BAR, menubar);
+        }
 
         return menubar;
     }
