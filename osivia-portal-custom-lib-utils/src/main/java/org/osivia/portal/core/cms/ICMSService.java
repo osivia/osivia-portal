@@ -21,8 +21,10 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
+import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.menubar.MenubarModule;
@@ -34,7 +36,7 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.Link;
-
+import org.osivia.portal.api.user.UserPreferences;
 /**
  * CMS service interface.
  */
@@ -607,5 +609,23 @@ public interface ICMSService {
      * @throws CMSException
      */
     void updateStatistics(CMSServiceCtx cmsContext, HttpSession httpSession, List<SpaceStatistics> spaceStatistics) throws CMSException;
+
+
+	/**
+	 * Get User Preferences
+	 * @param context
+	 * @param httpSession
+	 * @return UserPreferences
+	 * @throws PortalException 
+	 */
+	UserPreferences getUserPreferences(PortalControllerContext context) throws PortalException;
+
+
+	/**
+	 * Update User Preferences in ecm
+	 * @param cmsContext
+	 * @param httpSession
+	 */
+	void updateUserPreferences(CMSServiceCtx cmsContext, HttpSession httpSession);
 
 }

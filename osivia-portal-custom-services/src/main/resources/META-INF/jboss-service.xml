@@ -1044,6 +1044,19 @@
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
+    
+    <!-- User preferences service -->
+    <mbean
+        code="org.osivia.portal.core.user.UserPreferencesService"
+        name="osivia:service=UserPreferencesService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
 
 </server>
    
