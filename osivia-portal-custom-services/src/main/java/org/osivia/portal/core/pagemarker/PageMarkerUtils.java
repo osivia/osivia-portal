@@ -323,7 +323,7 @@ public class PageMarkerUtils {
                 markerInfo.setFirstTab(firstTab);
             }
 
-            PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+            PortalObjectId currentPageId = (PortalObjectId) controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
             if (currentPageId != null) {
                 markerInfo.setCurrentPageId(currentPageId);
             }
@@ -347,6 +347,13 @@ public class PageMarkerUtils {
             if (mobileRefreshBack != null) {
                 markerInfo.setMobileRefreshBack(mobileRefreshBack);
             }
+
+            String ajaxFirstPageMarker = (String) controllerCtx.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.firstPageMarker");
+            if (ajaxFirstPageMarker != null) {
+                markerInfo.setAjaxFirstPageMarker(ajaxFirstPageMarker);
+            }
+            
+
 
             // Restauration mode popup
             String popupMode = (String) controllerCtx.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupMode");
@@ -435,6 +442,16 @@ public class PageMarkerUtils {
         markers.put(pageMarker, markerInfo);
         controllerCtx.setAttribute(Scope.SESSION_SCOPE, "lastSavedPageMarker", pageMarker);
 
+        
+        // Sauvegarde des éléments conversationnels (pour une restauration sans pagemarker : ex permalien)
+        IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+
+        controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_pages", po.getDynamicPages());
+        controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_windows", po.getDynamicWindows());
+        controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.pageID", controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID));
+
+
+
         // NON NECESSAIRE
         // controllerCtx.setAttribute(Scope.SESSION_SCOPE, "markers", markers);
     }
@@ -486,6 +503,16 @@ public class PageMarkerUtils {
         return pageMarker;
     }
 
+    
+    public static void setCurrentPageMarker(ControllerContext controllerCtx, String pageMarker) {
+        controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "currentPageMarker", pageMarker);      
+    }
+   
+    public static void  reinitRestore(ControllerContext controllerContext) { 
+        controllerContext.removeAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+    }
+    
+
     /**
      * Utility method used to restore the page state.
      *
@@ -496,7 +523,7 @@ public class PageMarkerUtils {
      * @return new path
      */
     @SuppressWarnings("unchecked")
-    public static String restorePageState(ControllerContext controllerContext, String requestPath) {
+    public static String restorePageState(ControllerContext controllerContext, String requestPath, String backPageMarker) {
         String newPath = requestPath;
         String newTabPath = null;
 
@@ -564,14 +591,7 @@ public class PageMarkerUtils {
             }
         }
 
-        /* Tab restoration */
 
-        String backPageMarker = null;
-
-
-        if (request.getParameter("backPageMarker") != null) {
-            backPageMarker = request.getParameter("backPageMarker");
-        }
 
 
         /*
@@ -613,6 +633,10 @@ public class PageMarkerUtils {
         // traitement
         String controlledPageMarker = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
 
+        
+        boolean restoreState = false;
+        
+
         // TEST PERF
         // if( false)
         // v2.1 WORKSPACE : en AJAX, les pagemarker arrivent à 0 -> pas de restauration
@@ -624,9 +648,14 @@ public class PageMarkerUtils {
                 PageMarkerInfo markerInfo = null;
 
                 try {
+                    if (backPageMarker == null) {
                     markerInfo = markers.get(currentPageMarker);
+                    } else {
+                        markerInfo = markers.get(backPageMarker);
+                    }
 
                 } catch (ClassCastException e) {
+                    markerInfo = null;
                     // Cas d'un redéploiement à chaud
                 }
 
@@ -659,6 +688,8 @@ public class PageMarkerUtils {
                             }
                             
                          }
+
+                        restoreState = true;
 
                         // Restauration des pages dynamiques
                         if (markerInfo.getDynamicPages() != null) {
@@ -714,6 +745,15 @@ public class PageMarkerUtils {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.tabbedNavheaderUsername",
                                     markerInfo.getTabbedNavHeaderUsername());
                         }
+                        
+                        
+                        PortalObjectId currentPageId = markerInfo.getCurrentPageId();
+                        if( currentPageId != null)  {
+                            controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, currentPageId);
+                        }
+
+                        
+                        
                         if (markerInfo.getFirstTab() != null) {
                             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.firstTab", markerInfo.getFirstTab());
                         }
@@ -794,6 +834,25 @@ public class PageMarkerUtils {
 
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker", currentPageMarker);
 
+        
+        if( !restoreState) {
+            // Restauration des éléments conversationnels sans pageMarker (ex: permalien)
+            
+            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
+                    .getDynamicObjectContainer();
+            List<DynamicPageBean> dynaPages = (List<DynamicPageBean>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.dynamic_pages");
+            if( dynaPages != null)
+                poc.setDynamicPages(dynaPages);
+            List<DynamicWindowBean> dynaWindows = (List<DynamicWindowBean>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.dynamic_windows");
+            if( dynaWindows != null)
+                poc.setDynamicWindows(dynaWindows);        
+            PortalObjectId pageId =  (PortalObjectId) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.pageID");
+            if( pageId != null)
+                controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, pageId);
+            
+            
+        }
+
         if (newTabPath != null) {
 
             // Inhibit the standard tab
@@ -867,8 +926,9 @@ public class PageMarkerUtils {
 
                     String windowCanonicalName = child.getId().toString(PortalObjectPath.CANONICAL_FORMAT);
 
+                    NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, child.getId());
 
-                    controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, windowCanonicalName, newNS);
+                    controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey, newNS);
 
                     StateString additionnalState = wInfo.getAdditionnalState();
                     if (additionnalState != null) {
@@ -934,6 +994,12 @@ public class PageMarkerUtils {
 
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.refreshBack", markerInfo.isRefreshBack());
         controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.mobileRefreshBack", markerInfo.isMobileRefreshBack());
+
+        
+        if (markerInfo.getAjaxFirstPageMarker() != null) {
+            controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.firstPageMarker", markerInfo.getAjaxFirstPageMarker());
+        }
+
 
         return page;
     }

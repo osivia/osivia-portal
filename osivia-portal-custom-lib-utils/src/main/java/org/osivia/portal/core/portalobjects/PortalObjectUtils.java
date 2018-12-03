@@ -62,7 +62,7 @@ public class PortalObjectUtils {
 
         if (controllerContext != null) {
             // Page identifier
-            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+            pageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
         }
 
         return pageId;

@@ -74,12 +74,9 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
             ControllerContext controllerCtx = cmd.getControllerContext();
 
             if (cmd instanceof InvokePortletWindowResourceCommand) {
-
-
-                // pas de page marker pour les ressources
-
-                controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "currentPageMarker", "0");
-
+                // on reprend le page marker pour les ressources sans l'incrémenter
+                String currentPageMarker = (String) controllerCtx.getAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker");
+                controllerCtx.setAttribute(Scope.REQUEST_SCOPE, "currentPageMarker", StringUtils.defaultIfEmpty(currentPageMarker, "0"));
             } else {
                 // Initialisation standard
                 PageMarkerUtils.getCurrentPageMarker(controllerCtx);
@@ -88,23 +85,33 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 
 
         // Calcul du nom de portail
-
-        String portalName = null;
-        if (cmd instanceof PortalCommand) {
-            portalName = ((PortalCommand) cmd).getPortal().getName();
-        } else {
-            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
-
-            if (currentPageId == null) {
-                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
-            } else {
-                portalName = currentPageId.getPath().getName(0);
-            }
-
+        boolean computePortal = true;
+        if ( cmd instanceof WebCommand)	{
+        	// On peut sortir d'une modale par echap ou Fermer
+        	// Mais la command Web, ne porte pas de pagemarker
+        	// On se contente du traitement du ServerTrackerInterceptor
+            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
+            if(currentPageId != null && currentPageId.getPath().toString().equals("/osivia-util/modal"))
+            	computePortal = false;
+            		
         }
-        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
-
-
+        
+        if( computePortal)	{
+	        String portalName = null;
+	        if (cmd instanceof PortalCommand) {
+	            portalName = ((PortalCommand) cmd).getPortal().getName();
+	        } else {
+	            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
+	
+	            if (currentPageId == null) {
+	                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();
+	            } else {
+	                portalName = currentPageId.getPath().getName(0);
+	            }
+	
+	        }
+	        PageProperties.getProperties().getPagePropertiesMap().put(Constants.PORTAL_NAME, portalName);
+        }
         resp = (ControllerResponse) cmd.invokeNext();
 
         boolean alreadySaved = false;

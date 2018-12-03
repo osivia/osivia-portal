@@ -93,7 +93,9 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
         PrintWriter markup = rendererContext.getWriter();
         String serverBaseURL = rendererContext.getProperty(DynaConstants.SERVER_BASE_URL);
         String viewState = rendererContext.getProperty(DynaConstants.VIEW_STATE);
+        String popStateURL = rendererContext.getProperty("osivia.popStateUrl");
 
+        
         // Handle special ajax region here
         if ("AJAXScripts".equals(rrc.getId())) {
             markup.print("<script type='text/javascript'>\n");
@@ -112,6 +114,11 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
                 markup.print("view_state = null;");
             }
 
+            // reload in ajax mode
+            markup.print("popStateUrl=\"");
+            markup.print(popStateURL);
+            markup.print("\";\n");
+            
             //
             markup.print("</script>\n");
         } else if ("AJAXFooter".equals(rrc.getId())) {
