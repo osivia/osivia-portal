@@ -628,7 +628,7 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             }
 
 
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID, rpc.getPage().getId());
+            controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, rpc.getPage().getId());
 
 
             // Force la valorisation dans le contexte
@@ -1615,6 +1615,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
              * }
              * }
              */
+            
+            
+            ViewPageCommand renderCmd = new ViewPageCommand(rpc.getPage().getId());
+            PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);  
+            Map pageProps = rendition.getPageResult().getProperties();
+            pageProps.put("osivia.popStateUrl", portalUrl.toString() + "?backPageMarker=first");
+            
+            
         }
 
         //

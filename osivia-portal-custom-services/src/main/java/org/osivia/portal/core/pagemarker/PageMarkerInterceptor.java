@@ -93,7 +93,7 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
         	// On peut sortir d'une modale par echap ou Fermer
         	// Mais la command Web, ne porte pas de pagemarker
         	// On se contente du traitement du ServerTrackerInterceptor
-            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
             if(currentPageId != null && currentPageId.getPath().toString().equals("/osivia-util/modal"))
             	computePortal = false;
             		
@@ -104,7 +104,7 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 	        if (cmd instanceof PortalCommand) {
 	            portalName = ((PortalCommand) cmd).getPortal().getName();
 	        } else {
-	            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+	            PortalObjectId currentPageId = (PortalObjectId) cmd.getControllerContext().getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
 	
 	            if (currentPageId == null) {
 	                portalName = this.getPortalObjectContainer().getContext().getDefaultPortal().getName();

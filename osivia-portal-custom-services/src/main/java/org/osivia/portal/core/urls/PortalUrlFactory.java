@@ -876,7 +876,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // Controller context
         final ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
-        final PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+        final PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
 
         // URL context
         final URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();

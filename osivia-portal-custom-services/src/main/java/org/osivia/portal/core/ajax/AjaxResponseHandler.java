@@ -33,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.common.util.MarkupInfo;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -90,7 +91,9 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.web.WebCommand;
 
 /**
  * Ajoute une commande de redirection (sert notamment pour les erreurs sur les actions Ajax)
@@ -261,8 +264,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                 PortalObjectId filterWindow = null;
 
                 PortalObjectId actionWindow = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID");
+                
+                boolean actionReload = false;
+                if( "true".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("reload.action")))
+                    actionReload = true;
 
-                if (actionWindow != null) {
+                if (actionWindow != null || actionReload) {
                     boolean publicParametersChanged = false;
                     boolean windowModeChange = false;
 
@@ -299,7 +306,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    if (!publicParametersChanged && !windowModeChange) {
+                    if ((actionWindow != null &&(!publicParametersChanged && !windowModeChange))) {
                         filterWindow = actionWindow;
                     }
 
@@ -402,6 +409,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                     PortalObjectId childId = child.getId();
                     if (dirtyWindowIds.contains(childId)) {
                         refreshedWindows.add((Window) child);
+                    }   else    {
+                        // TODO
+                        // Gestion du back navigateur en Ajax
+                        // Les algotrithmes de calcul de changement (ControllerPageNavigationalState/cpns) ne peuvent atre appliqués
+                        // sur les retours Ajax car on ne peut pas rejouer les PortletActions en arriere, il faudrait donc réinjecter dans le cpns les 
+                        // tous les paramètres modifiés en tenant compte des paramètres publics
+                        // Du coup, on rafraichit toutes les windows
+                        if( controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("backPageMarker") != null) {
+                            refreshedWindows.add((Window) child);
+                        }
                     }
                 }
 
@@ -409,8 +426,34 @@ public class AjaxResponseHandler implements ResponseHandler {
                 LayoutService layoutService = this.getPageService().getLayoutService();
                 PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
 
+                
+                /* Create the reload Url
+                 * it's obtained from a view page command associated with a new state 
+                 */
+                
+                String replayUrl = "";
+                
+                PortalObjectId pageId = null;
+                if( controllerCommand instanceof InvokePortletWindowRenderCommand)
+                    pageId = ((InvokePortletWindowRenderCommand) controllerCommand).getPage().getId();
+                if( controllerCommand instanceof WebCommand)    {
+                    pageId = ((UpdatePageResponse) controllerResponse).getPageId();
+                }
+                
+                
+                if( pageId != null) {
+                    
+                    // Create a specific page marker for back action
+                    String reloadPM = PageMarkerUtils.saveAsANewState(controllerContext, page);
+                    
+                    ViewPageCommand renderCmd = new ViewPageCommand(pageId);
+                    PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);  
+                    replayUrl = portalUrl.toString()+ "?backPageMarker="+reloadPM;
+                 }
+
+
                 //
-                UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId());
+                UpdatePageStateResponse updatePage = new UpdatePageStateResponse(ctx.getViewId(), replayUrl);
 
                 // Call to the theme framework
                 PageResult res = new PageResult(page.getName(), page.getProperties());
@@ -494,6 +537,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     // updatePage.addFragment("notification", "message");
                     PageMarkerUtils.savePageState(controllerContext, page);
+                    
+                    controllerContext.getServerInvocation().getServerContext().getClientResponse().addHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
 
                     return new AjaxResponse(updatePage);
                 }

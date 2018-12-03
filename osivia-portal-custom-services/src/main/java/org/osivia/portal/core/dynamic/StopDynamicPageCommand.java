@@ -149,7 +149,7 @@ public class StopDynamicPageCommand extends DynamicCommand {
                 // Get current page before it is deleted
                 Page currentPage = null;
 
-                PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID);
+                PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
                 if (currentPageId != null) {
                     currentPage = (Page) portalObjectContainer.getObject(currentPageId);
                 }
