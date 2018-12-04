@@ -875,14 +875,16 @@ public class PageMarkerUtils {
             if( pageId != null)
                 controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, pageId);
             
-            // Ressources site web
+            // Ressources et édition site web
             if( pageId != null) {
                 PageNavigationalState pns = (PageNavigationalState) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.pageState");
                 if( pns != null)    {
                     //
                     NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
                     ctx.setPageNavigationalState(pageId.toString(), pns);
-                 }
+                    
+                    ((PortalObjectNavigationalStateContext) ctx).applyChanges();
+                  }
             }
             
         }
