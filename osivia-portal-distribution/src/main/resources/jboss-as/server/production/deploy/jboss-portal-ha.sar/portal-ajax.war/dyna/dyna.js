@@ -95,7 +95,21 @@ function onAjaxSuccess(t, callerId, multipart, popState) {
 		}
 		
 
-		if( popState === undefined)	{
+		if( popState === undefined  && resp.url != "")	{
+			
+			// Add the first page of the Ajax sequence
+			if( popStateUrl != null && popStateUrl != "")	{
+			
+				var stateObject = {
+					url: popStateUrl
+				};
+			
+				// preserve the original location (bookmark url)
+				history.replaceState(stateObject, "", document.location);
+			}
+			popStateUrl = null;
+			
+			// Add the current page
 			var stateObject = {
 					url: resp.url
 			};			
@@ -242,20 +256,6 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
     $ajaxShadowbox.addClass("in");
 	$ajaxWaiter.delay(200).addClass("in");
 
-
-	// Url for the first page of the Ajax sequence
-	if( popStateUrl != null)	{
-	
-		var stateObject = {
-			url: popStateUrl
-		};
-	
-		console.log("replaceState");
-		history.replaceState(stateObject, "", document.location);
-		
-		popStateUrl = null;
-	}
-	
 	
 	
 	var popState;
