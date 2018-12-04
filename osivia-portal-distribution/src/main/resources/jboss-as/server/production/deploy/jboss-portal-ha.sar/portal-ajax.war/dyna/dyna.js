@@ -243,6 +243,21 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	$ajaxWaiter.delay(200).addClass("in");
 
 
+	// Url for the first page of the Ajax sequence
+	if( popStateUrl != null)	{
+	
+		var stateObject = {
+			url: popStateUrl
+		};
+	
+		console.log("replaceState");
+		history.replaceState(stateObject, "", document.location);
+		
+		popStateUrl = null;
+	}
+	
+	
+	
 	var popState;
     if ((eventToStop != null) && (eventToStop.type === "popstate")) {
 		popState = true;
@@ -607,15 +622,6 @@ function footer() {
 		Event.observe(portlet, "click", bilto);
 	}
 
-	// Url for the first page of the Ajax sequence
-	if( popStateUrl != null)	{
-		reloadUrl = popStateUrl;
-	
-		var stateObject = {
-			url: popStateUrl
-		};
-	
-		history.replaceState(stateObject, "", popStateUrl);
-	}
+
 
 }
