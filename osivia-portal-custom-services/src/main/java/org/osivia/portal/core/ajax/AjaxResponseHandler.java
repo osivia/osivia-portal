@@ -459,12 +459,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                 
                 if( pageId != null) {
                     
-                    // Create a specific page marker for back action
-                    String reloadPM = PageMarkerUtils.saveAsANewState(controllerContext, page);
+                    PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
+                    if (!modalId.equals(page.getId())) {
                     
-                    ViewPageCommand renderCmd = new ViewPageCommand(pageId);
-                    PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);  
-                    replayUrl = portalUrl.toString()+ "?backPageMarker="+reloadPM;
+                        // Create a specific page marker for back action
+                        String reloadPM = PageMarkerUtils.saveAsANewState(controllerContext, page);
+                    
+                        ViewPageCommand renderCmd = new ViewPageCommand(pageId);
+                        PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);  
+                        replayUrl = portalUrl.toString()+ "?backPageMarker="+reloadPM;
+                    }
                  }
 
                 

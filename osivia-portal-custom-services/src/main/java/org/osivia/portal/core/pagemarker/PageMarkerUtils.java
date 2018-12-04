@@ -449,7 +449,9 @@ public class PageMarkerUtils {
         controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_pages", po.getDynamicPages());
         controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_windows", po.getDynamicWindows());
         controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.pageID", controllerCtx.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID));
+        controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.pageState", markerInfo.getPageNavigationalState());
 
+        markerInfo.getPageNavigationalState();
 
 
         // NON NECESSAIRE
@@ -850,6 +852,15 @@ public class PageMarkerUtils {
             if( pageId != null)
                 controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, pageId);
             
+            // Ressources site web
+            if( pageId != null) {
+                PageNavigationalState pns = (PageNavigationalState) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.pageState");
+                if( pns != null)    {
+                    //
+                    NavigationalStateContext ctx = (NavigationalStateContext) controllerContext.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
+                    ctx.setPageNavigationalState(pageId.toString(), pns);
+                 }
+            }
             
         }
 
