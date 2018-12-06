@@ -66,12 +66,14 @@ import org.osivia.portal.core.attributes.StorageAttributeValue;
 import org.osivia.portal.core.attributes.StorageScope;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.contribution.ContributionService;
+import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.portlet.PortletStatusContainer;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 
@@ -458,6 +460,24 @@ public class PageMarkerUtils {
         // controllerCtx.setAttribute(Scope.SESSION_SCOPE, "markers", markers);
     }
 
+    /**
+     * Save current state as a new state (creates a new pagemarker)
+     * 
+     * @param controllerContext
+     * @param page
+     * @return
+     */
+    
+    public static String saveAsANewState(ControllerContext controllerContext, Page page) {
+        String currentPM = PageMarkerUtils.getCurrentPageMarker(controllerContext);
+        String reloadPM = PageMarkerUtils.generateNewPageMarker(controllerContext);
+        PageMarkerUtils.setCurrentPageMarker(controllerContext, reloadPM);
+        PageMarkerUtils.savePageState(controllerContext, PortalObjectUtils.getPage(controllerContext));
+        // Restore pagemarker
+        PageMarkerUtils.setCurrentPageMarker(controllerContext, currentPM);
+        return reloadPM;
+    }    
+    
     @SuppressWarnings("unchecked")
     public static String generateNewPageMarker(ControllerContext controllerCtx) {
         String lastPageMarker = (String) controllerCtx.getAttribute(Scope.SESSION_SCOPE, "lastPageMarker");

@@ -582,7 +582,8 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	}
 
 	public void setDynamicWindows(List<DynamicWindowBean> dynaWindows) {
-
+	    this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", dynaWindows);
+		
 		// On vide le cache
 		getDatas().clear();
 	}

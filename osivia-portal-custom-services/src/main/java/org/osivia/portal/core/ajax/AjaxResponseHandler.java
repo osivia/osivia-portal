@@ -178,7 +178,7 @@ public class AjaxResponseHandler implements ResponseHandler {
     }
 
 
-    public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand commeand, ControllerResponse controllerResponse)
+    public HandlerResponse processCommandResponseOriginal(ControllerContext controllerContext, ControllerCommand controllerCommand, ControllerResponse controllerResponse)
             throws ResponseHandlerException {
         if (controllerResponse instanceof PortletWindowActionResponse) {
             PortletWindowActionResponse pwr = (PortletWindowActionResponse) controllerResponse;
@@ -300,6 +300,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 }
                             } else if (WindowState.MAXIMIZED.equals(newWindowState)) {
                                 windowModeChange = true;
+                            }
                         } else  if (type == PageNavigationalState.class) {
                             PageNavigationalState oldNS = (PageNavigationalState) update.getOldValue();
                             PageNavigationalState newNS = (PageNavigationalState) update.getNewValue();

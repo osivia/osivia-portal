@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.Scope;
@@ -34,6 +35,7 @@ import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.web.WebCommand;
 
 
 /**
