@@ -168,9 +168,8 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		newWindows.add(newWindow);
 
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);
-
+		this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", newWindows);
+		
 		// On vide le cache
 		getDatas().clear();
 	}
@@ -201,9 +200,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
         }
 		newPages.add(newPage);
 
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
-
+        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", newPages);
 		// On vide le cache
 		getDatas().clear();
 	}
@@ -218,8 +215,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 newWindows.add(window);
             }
 		}
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);
+		this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", newWindows);
 
 		// On vide le cache
 		getDatas().clear();
@@ -236,8 +232,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 newPages.add(page);
             }
 		}
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
+        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", newPages);
 		
 		
 		// Remove child windows
@@ -249,9 +244,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 newWindows.add(windowBean);
             }
         }
-        // Copie dans la session
-        this.getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", newWindows);	
-		
+        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", newWindows);  		
 
 		// On vide le cache
 		getDatas().clear();
@@ -262,10 +255,13 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		List<DynamicWindowBean> windows = null;
 
-		if (this.getTracker().getHttpSession() != null) {
-            windows = (List<DynamicWindowBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_windows");
-        }
 
+		if (this.getTracker().getHttpRequest() != null)    {
+   
+		    windows=   (List<DynamicWindowBean>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic_windows");        
+  
+		}
+		
 
 		if (windows == null) {
             windows = new ArrayList<DynamicWindowBean>();
@@ -561,9 +557,16 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		List<DynamicPageBean> pages = null;
 
-		if (this.getTracker().getHttpSession() != null) {
-            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
-        }
+//		if (this.getTracker().getHttpSession() != null) {
+//            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
+//        }
+		
+	      if (this.getTracker().getHttpRequest() != null)    {
+	           pages = (List<DynamicPageBean>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic_pages");
+	        }
+
+		
+		
 
 		if (pages == null) {
             pages = new ArrayList<DynamicPageBean>();
@@ -579,19 +582,15 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	}
 
 	public void setDynamicWindows(List<DynamicWindowBean> dynaWindows) {
-
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_windows", dynaWindows);
-
+	    this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", dynaWindows);
+		
 		// On vide le cache
 		getDatas().clear();
 	}
 
 	public void setDynamicPages(List<DynamicPageBean> dynaPages) {
-
-		// Copie dans la session
-		this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", dynaPages);
-
+	    this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", dynaPages);
+        
 		// On vide le cache
 		getDatas().clear();
 	}

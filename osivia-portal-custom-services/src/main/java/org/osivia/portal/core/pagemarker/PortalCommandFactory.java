@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
+import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
@@ -64,8 +65,10 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.page.PageProperties;
+import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
+import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.tracker.RequestContextUtil;
 import org.osivia.portal.core.web.WebCommand;
 
@@ -273,14 +276,41 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             path = requestPath.substring(POPUP_OPEN_PATH.length() - 1);
             popupOpened = true;
             controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID",
-                    controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID));
+                    controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID));
         }
         if (requestPath.startsWith(POPUP_CLOSE_PATH)) {
             path = requestPath.substring(POPUP_CLOSE_PATH.length() - 1);
             closePopup = true;
         }
 
-        String newPath = PageMarkerUtils.restorePageState(controllerContext, path);
+
+        String pageMarker = controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("backPageMarker");
+        
+        // get the first state of the ajax sequence
+
+        if( "first".equals(pageMarker)) {
+            PageMarkerUtils.restorePageState(controllerContext, path, null);
+            pageMarker = (String) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.firstPageMarker");
+            PageMarkerUtils.reinitRestore(controllerContext);
+        }
+        
+        String newPath = PageMarkerUtils.restorePageState(controllerContext, path, pageMarker);
+         
+        // Save the current state before the first Ajax 
+        // It will be interpreted as the 'first' backPageMarker
+        
+        if (ControllerContext.AJAX_TYPE == controllerContext.getType()) {
+            if( controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.firstPageMarker") == null) {
+                
+                // Create a specific page marker for back action
+                String reloadPM = PageMarkerUtils.saveAsANewState(controllerContext, PortalObjectUtils.getPage(controllerContext));
+            
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,"osivia.ajax.firstPageMarker", reloadPM);
+            }
+        }   else    {
+            // Not AJAX : reinit. this state
+            controllerContext.removeAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.firstPageMarker");
+        }
 
 
         // Applicative close
@@ -292,7 +322,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         if (popupClosed) {
             // For error displaying in master page
-            controllerContext.setAttribute(ControllerCommand.PRINCIPAL_SCOPE, Constants.ATTR_PAGE_ID,
+            controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID,
                     controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, "osivia.popupModeOriginalPageID"));
 
             controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.popupModeClosed", "1");

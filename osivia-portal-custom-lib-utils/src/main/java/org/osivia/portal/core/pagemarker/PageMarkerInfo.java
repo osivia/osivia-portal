@@ -62,6 +62,16 @@ public class PageMarkerInfo implements Serializable {
     /** Mobile back page marker. */
     private String mobileBackPageMarker;
     /** Mobile refresh back indicator. */
+    private String ajaxFirstPageMarker;
+    
+    public String getAjaxFirstPageMarker() {
+        return ajaxFirstPageMarker;
+    }
+    public void setAjaxFirstPageMarker(String ajaxFirstPageMarker) {
+        this.ajaxFirstPageMarker = ajaxFirstPageMarker;
+    }
+
+    /** Mobile refresh back indicator. */
     private boolean mobileRefreshBack;
     /** Notifications. */
     private List<Notifications> notificationsList;

@@ -26,7 +26,7 @@ var currentSubmit;
 var fancyContainerDivId = null;
 
 
-function onAjaxSuccess(t, callerId, multipart) {
+function onAjaxSuccess(t, callerId, multipart, popState) {
 	var resp;
 
 	if (multipart) {
@@ -81,6 +81,8 @@ function onAjaxSuccess(t, callerId, multipart) {
 
 			}
 		}
+		
+		
 
 		// update view state
 		if (resp.view_state != null) {
@@ -89,6 +91,27 @@ function onAjaxSuccess(t, callerId, multipart) {
 			alert("No view state");
 		}
 		
+
+		if( popState === undefined  && resp.url != "")	{
+			
+			// Add the first page of the Ajax sequence
+			if( popStateUrl != null && popStateUrl != "")	{
+			
+				var stateObject = {
+					url: popStateUrl
+				};
+			
+				// preserve the original location (bookmark url)
+				history.replaceState(stateObject, "", document.location);
+			}
+			popStateUrl = null;
+			
+			// Add the current page
+			var stateObject = {
+					url: resp.url
+			};			
+			history.pushState(stateObject, "", resp.url);
+		}
 		
 		// Call jQuery.ready() events
 		$JQry(document).ready();
@@ -181,8 +204,19 @@ function isURLAccepted(url) {
 	return true;
 }
 
+window.onpopstate = function(event) {
+	if (event.state) {
+			var options = new Object();
+			options.method = "get";
+			options.asynchronous = true;
+			directAjaxCall(null, options, event.state.url, event, null);
+	}
+
+}
+
 
 function directAjaxCall(container, options, url, eventToStop, callerId) {
+
 	// Setup headers
 	var headers = [ "ajax", "true" ],
     	$container = $JQry(container),
@@ -219,20 +253,31 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
     $ajaxShadowbox.addClass("in");
 	$ajaxWaiter.delay(200).addClass("in");
 
-
+	
+	
+	var popState;
+    if ((eventToStop != null) && (eventToStop.type === "popstate")) {
+		popState = true;
+	}
+	
+    
 	options.onSuccess = function(t) {
 	    $ajaxShadowbox.removeClass("in");
 		$ajaxWaiter.clearQueue();
 		$ajaxWaiter.removeClass("in");
 
-		onAjaxSuccess(t, callerId);
+		onAjaxSuccess(t, callerId, null, popState);
 	};
 
-	if (eventToStop != null) {
+	
+
+    if ((eventToStop != null) && !(eventToStop.type === "popstate")) {
 		Event.stop(eventToStop);
 	}
 
+	
 	new Ajax.Request(url, options);
+
 }
 
 
@@ -567,4 +612,7 @@ function footer() {
 		var portlet = Element.up(portlets_on_page[i]);
 		Event.observe(portlet, "click", bilto);
 	}
+
+
+
 }

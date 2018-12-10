@@ -10,16 +10,22 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.portlet.aspects.portlet.ContextDispatcherInterceptor;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
+import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.core.constants.InternalConstants;
+import org.springframework.context.ApplicationContext;
+
 
 /**
- * Portal simple tag.
+ * Portal simple tag abstract super-class.
  * 
  * @author Cédric Krommenhoek
  * @see SimpleTagSupport
  */
-public class PortalSimpleTag extends SimpleTagSupport {
+public abstract class PortalSimpleTag extends SimpleTagSupport {
 
     /**
      * Constructor.
@@ -159,6 +165,64 @@ public class PortalSimpleTag extends SimpleTagSupport {
         }
 
         return httpServletRequest;
+    }
+
+
+    /**
+     * Get portal controller context.
+     * 
+     * @return portal controller context
+     * @throws JspException
+     */
+    protected PortalControllerContext getPortalControllerContext() throws JspException {
+        // Portlet request
+        PortletRequest portletRequest = this.getPortletRequest();
+
+        // Portal controller context
+        PortalControllerContext portalControllerContext;
+
+        if (portletRequest == null) {
+            // Page context
+            PageContext pageContext = (PageContext) this.getJspContext();
+            // Servlet request
+            ServletRequest servletRequest = pageContext.getRequest();
+            // Controller context
+            ControllerContext controllerContext = (ControllerContext) servletRequest.getAttribute(InternalConstants.ATTR_CONTROLLER_CONTEXT);
+
+            portalControllerContext = new PortalControllerContext(controllerContext);
+        } else {
+            // Portlet response
+            PortletResponse portletResponse = this.getPortletResponse();
+            // Portlet context
+            PortletContext portletContext = this.getPortletContext();
+
+            portalControllerContext = new PortalControllerContext(portletContext, portletRequest, portletResponse);
+        }
+
+        return portalControllerContext;
+    }
+
+
+    /**
+     * Get application context.
+     * 
+     * @return application context
+     * @throws JspException
+     */
+    protected ApplicationContext getApplicationContext() throws JspException {
+        // Portlet context
+        PortletContext portletContext = this.getPortletContext();
+        PortletConfig portletConfig = this.getPortletConfig();
+
+        // Application context
+        ApplicationContext applicationContext;
+        if (portletContext == null) {
+            applicationContext = null;
+        } else {
+            applicationContext = (ApplicationContext) portletContext.getAttribute(Constants.PORTLET_ATTR_WEBAPP_CONTEXT + "." + portletConfig.getPortletName());
+        }
+
+        return applicationContext;
     }
 
 }
