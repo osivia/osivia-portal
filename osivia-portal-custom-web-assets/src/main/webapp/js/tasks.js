@@ -15,8 +15,10 @@ $JQry(function() {
  * @param count tasks count
  */
 function updateTasksCounter(count) {
-	var $button = $JQry("button[name='open-tasks']"),
-		$label = $button.find(".counter .label");
+	var $button = $JQry("button[name='open-tasks']");
+	var $label = $button.find(".counter .label");
+	
+	$button.data("tasks-count", count);
 	
 	if (count > 0) {
 		$label.removeClass("label-default");
