@@ -36,6 +36,17 @@ public class BasicPermissions implements Permissions{
 	/** document is manageable (all rights) by user */
 	private boolean manageableByUser = false;
 
+    /** Copiable indicator. */
+    private boolean copiable;
+
+
+    /**
+     * Constructor.
+     */
+    public BasicPermissions() {
+        super();
+    }
+
 
 	/**
 	 * @return the editableByUser
@@ -93,5 +104,22 @@ public class BasicPermissions implements Permissions{
 		this.manageableByUser = manageableByUser;
 	}
 
+    /**
+     * Getter for copiable.
+     * 
+     * @return the copiable
+     */
+    public boolean isCopiable() {
+        return copiable;
+    }
+
+    /**
+     * Setter for copiable.
+     * 
+     * @param copiable the copiable to set
+     */
+    public void setCopiable(boolean copiable) {
+        this.copiable = copiable;
+    }
 
 }
