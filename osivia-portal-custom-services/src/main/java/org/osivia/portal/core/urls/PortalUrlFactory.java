@@ -1161,7 +1161,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         ControllerCommand command = new AdvancedSearchCommand(search, advancedSearch);
 
         // Portal URL
-        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
 
         return portalUrl.toString();
     }
