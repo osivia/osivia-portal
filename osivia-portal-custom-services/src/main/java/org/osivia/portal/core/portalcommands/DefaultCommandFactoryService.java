@@ -644,6 +644,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                 if (AdvancedSearchCommand.COMMAND_ACTION_VALUE.equals(action)) {
                     String[] searchParameterMap = parameterMap.get(AdvancedSearchCommand.SEARCH_PARAMETER_NAME);
                     String[] advancedSearchParameterMap = parameterMap.get(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME);
+                    String[] selectorsParameterMap = parameterMap.get(AdvancedSearchCommand.SELECTORS_PARAMETER_NAME);
 
                     // Search value
                     String search;
@@ -660,10 +661,35 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     } else {
                         advancedSearch = BooleanUtils.toBoolean(URLDecoder.decode(advancedSearchParameterMap[0], CharEncoding.UTF_8));
                     }
+                    
+                    AdvancedSearchCommand advancedSearchCommand = new AdvancedSearchCommand(search, advancedSearch);
+                    
+                    // Selectors
+                    Map<String, List<String>> selectors;
+                    if (ArrayUtils.isEmpty(selectorsParameterMap)) {
+                    	selectors = null;
+                    } else {
+                    	selectors = new HashMap<>();
+                    	
+                    	String selectorsMapStr = URLDecoder.decode(selectorsParameterMap[0], CharEncoding.UTF_8);
+                    	String[] split = StringUtils.split(selectorsMapStr, "&");
+                    	for(String selectorStr : split) {
+                    		String[] selector = StringUtils.split(selectorStr, "=");
+                    		String param = selector[0];
+                    		String valuesStr = selector[1];
+                    		String[] values = StringUtils.split(valuesStr, ",");
+                    		
+                    		List<String> valuesArray = new ArrayList<>();
+                    		for(String value : values) {
+                    			valuesArray.add(value);
+                    		}
+                    		selectors.put(param, valuesArray);
+                    	}
+                    	advancedSearchCommand.setSelectors(selectors);
+                    }
 
-                    return new AdvancedSearchCommand(search, advancedSearch);
+                    return advancedSearchCommand;
                 }
-
 
                 /* CMS commands */
 

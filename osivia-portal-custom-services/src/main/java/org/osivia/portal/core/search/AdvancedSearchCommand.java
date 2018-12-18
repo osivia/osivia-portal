@@ -38,7 +38,8 @@ public class AdvancedSearchCommand extends ControllerCommand {
     public static final String SEARCH_PARAMETER_NAME = "search";
     /** Advanced search indicator parameter name. */
     public static final String ADVANCED_SEARCH_PARAMETER_NAME = "advancedSearch";
-
+    /** Advanced search indicator parameter name. */
+    public static final String SELECTORS_PARAMETER_NAME = "selectors";
 
     /** Search keywords selector identifier. */
     private static final String KEYWORDS_SELECTOR_ID = "search";
@@ -57,6 +58,8 @@ public class AdvancedSearchCommand extends ControllerCommand {
     private final String search;
     /** Advanced search indicator. */
     private final boolean advancedSearch;
+    
+    private Map<String, List<String>> selectors;
 
 
     /**
@@ -97,7 +100,10 @@ public class AdvancedSearchCommand extends ControllerCommand {
         String portalId = portal.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
         // Selectors
-        Map<String, List<String>> selectors = new HashMap<String, List<String>>();
+        //Map<String, List<String>> selectors = new HashMap<String, List<String>>();
+        if(selectors == null) {
+        	selectors = new HashMap<String, List<String>>();
+        }
 
         // Search keywords
         if (StringUtils.isNotEmpty(this.search)) {
@@ -152,5 +158,23 @@ public class AdvancedSearchCommand extends ControllerCommand {
     public boolean isAdvancedSearch() {
         return this.advancedSearch;
     }
+
+    /**
+     * Getter for selectors.
+     * @return
+     */
+	public Map<String, List<String>> getSelectors() {
+		return selectors;
+	}
+
+	/**
+     * Setter for selectors.
+	 * @param selectors
+	 */
+	public void setSelectors(Map<String, List<String>> selectors) {
+		this.selectors = selectors;
+	}
+    
+    
 
 }
