@@ -46,6 +46,9 @@ public interface IPortalUrlFactory {
     String PERM_LINK_TYPE_CMS = "cms";
     /** Permalink type share. */
     String PERM_LINK_TYPE_SHARE = "share";
+    /** Permalink type portlet resource. */
+    String PERM_LINK_TYPE_PORTLET_RESOURCE = "resource";
+
 
     /** Popup URL adapter open status. */
     int POPUP_URL_ADAPTER_OPEN = 0;

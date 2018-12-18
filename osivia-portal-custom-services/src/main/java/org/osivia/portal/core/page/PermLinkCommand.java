@@ -269,6 +269,16 @@ public class PermLinkCommand extends ControllerCommand
             }
 
 
+            if (IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE.equals(this.permLinkType)) {
+                // CMS command
+                CmsCommand cmsCommand = new CmsCommand(null, this.cmsPath, this.parameters, IPortalUrlFactory.CONTEXTUALIZATION_PORTAL,
+                        IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE, null, null, null, this.permLinkRef, null, this.portalPersistentName);
+
+                // Response
+                return this.context.execute(cmsCommand);
+            }
+
+
             if( PortalUrlFactory.PERM_LINK_TYPE_PAGE.equals(this.permLinkType) ){
 
                 // Search ref

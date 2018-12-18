@@ -19,7 +19,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -560,7 +562,7 @@ public class CmsCommand extends DynamicCommand {
             }
 
             // Decode webid paths if given
-            if (this.cmsPath.startsWith(IWebIdService.CMS_PATH_PREFIX)) {
+            if (StringUtils.startsWith(this.cmsPath, IWebIdService.CMS_PATH_PREFIX)) {
                 this.cmsPath = this.getWebIdService().cmsPathToFetchPath(this.cmsPath);
             }
 
@@ -1199,11 +1201,58 @@ public class CmsCommand extends DynamicCommand {
                 }
 
 
-                StartDynamicWindowCommand cmd = new StartDynamicWindowCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "virtual",
+                ControllerCommand command = new StartDynamicWindowCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "virtual",
                         contentProperties.getPortletInstance(), "CMSPlayerWindow", windowProperties, params, addPortletToBreadcrumb, editionState);
+                ControllerResponse controllerResponse = this.context.execute(command);
 
-                return this.context.execute(cmd);
+                if (IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE.equals(this.displayContext)) {
+                    // Refresh page
+                    page = controllerContext.getController().getPortalObjectContainer().getObject(page.getId(), Page.class);
+                } else {
+                    return controllerResponse;
+                }
             }
+
+
+            if (IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE.equals(this.displayContext)) {
+                // Page windows
+                Collection<PortalObject> windows = page.getChildren(PortalObject.WINDOW_MASK);
+                // Window
+                PortalObject window = null;
+
+                Iterator<PortalObject> iterator = windows.iterator();
+                while ((window == null) && iterator.hasNext()) {
+                    PortalObject portalObject = iterator.next();
+
+                    if ("CMSPlayerWindow".equals(portalObject.getName())) {
+                        window = portalObject;
+                    }
+                }
+
+                ControllerResponse controllerResponse;
+                if (window == null) {
+                    // 404
+                    controllerResponse = new UnavailableResourceResponse(this.cmsPath, false);
+                } else {
+                    // Parameters
+                    Map<String, String[]> parameters = new HashMap<>();
+                    if (MapUtils.isNotEmpty(this.pageParams)) {
+                        for (Entry<String, String> entry : this.pageParams.entrySet()) {
+                            parameters.put(entry.getKey(), new String[]{entry.getValue()});
+                        }
+                    }
+
+                    StateString resourceState = ParametersStateString.create();
+                    ParameterMap resourceForm = new ParameterMap(parameters);
+                    ControllerCommand command = new InvokePortletWindowResourceCommand(window.getId(), CacheLevel.PAGE, this.windowPermReference, resourceState,
+                            resourceForm);
+                    
+                    controllerResponse = this.context.execute(command);
+                }
+
+                return controllerResponse;
+            }
+
 
             return new UpdatePageResponse(page.getId());
         } catch (ControllerException e) {
