@@ -92,6 +92,21 @@ public class BasicPublicationInfos implements PublicationInfos {
 	/** If a document should be displayed in a specific context */
 	private String displayContext;
 
+
+    /** Enabled Nuxeo drive indicator. */
+    private boolean driveEnabled;
+    /** Nuxeo drive URL. */
+    private String driveUrl;
+
+
+    /**
+     * Constructor.
+     */
+    public BasicPublicationInfos() {
+        super();
+    }
+
+
 	/**
 	 * @return the basePath
 	 */
@@ -264,7 +279,40 @@ public class BasicPublicationInfos implements PublicationInfos {
 		this.draft = draft;
 	}
 
-	
-	
+    /**
+     * Getter for driveEnabled.
+     * 
+     * @return the driveEnabled
+     */
+    public boolean isDriveEnabled() {
+        return driveEnabled;
+    }
+
+    /**
+     * Setter for driveEnabled.
+     * 
+     * @param driveEnabled the driveEnabled to set
+     */
+    public void setDriveEnabled(boolean driveEnabled) {
+        this.driveEnabled = driveEnabled;
+    }
+
+    /**
+     * Getter for driveUrl.
+     * 
+     * @return the driveUrl
+     */
+    public String getDriveUrl() {
+        return driveUrl;
+    }
+
+    /**
+     * Setter for driveUrl.
+     * 
+     * @param driveUrl the driveUrl to set
+     */
+    public void setDriveUrl(String driveUrl) {
+        this.driveUrl = driveUrl;
+    }
 	
 }
