@@ -97,6 +97,8 @@ audio {
     label.control-label {
         &::after {
             content: " *";
+            
+            white-space: nowrap;
         }
     }
     
@@ -156,19 +158,5 @@ audio {
 .dropdown-menu {
     .divider.small-divider {
         margin: 4px 15px;    
-    }
-}
-
-
-// Media
-.media {
-    @overflowing-horizontal: 3px;
-    @overflowing-vertical: 5px;
-    
-    margin: (15px - @overflowing-horizontal) -@overflowing-vertical -@overflowing-horizontal;
-    padding: @overflowing-horizontal @overflowing-vertical;
-    
-    &:first-child {
-        margin-top: -@overflowing-horizontal;
     }
 }
