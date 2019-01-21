@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -81,6 +82,7 @@ import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.share.ShareCommand;
+import org.osivia.portal.core.sharing.link.LinkSharingCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
 import org.osivia.portal.core.web.IWebIdService;
@@ -1166,6 +1168,36 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
 
         return portalUrl.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSharingLinkUrl(PortalControllerContext portalControllerContext, String id) throws PortletException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // URL context
+        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        // URL format
+        URLFormat urlFormat = URLFormat.newInstance(false, true);
+
+
+        // URL
+        String url;
+
+        if (StringUtils.isEmpty(id)) {
+            url = null;
+        } else {
+            // Command
+            LinkSharingCommand command = new LinkSharingCommand();
+
+            url = controllerContext.renderURL(command, urlContext, urlFormat);
+        }
+
+        return url;
     }
 
 }

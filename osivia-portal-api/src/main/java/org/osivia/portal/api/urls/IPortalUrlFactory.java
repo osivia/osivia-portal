@@ -16,6 +16,8 @@ package org.osivia.portal.api.urls;
 
 import java.util.Map;
 
+import javax.portlet.PortletException;
+
 import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -457,5 +459,16 @@ public interface IPortalUrlFactory {
      * @throws PortalException
      */
     String getProfiledHomePageUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get sharing link URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param id link identifier
+     * @return URL
+     * @throws PortletException
+     */
+    String getSharingLinkUrl(PortalControllerContext portalControllerContext, String id) throws PortletException;
 
 }
