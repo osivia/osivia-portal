@@ -336,14 +336,16 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 return controllerContext.renderURL(shareCommand, urlContext, URLFormat.newInstance(false, true));
             }
 
-            // Others permalink (Lists, RSS, ...) : use PermLinkCommand
-            if (portalControllerContext.getRequest() != null) {
-                final Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
-                if (window != null) {
-                    final Page page = window.getPage();
+            if (!IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE.equals(permLinkType)) {
+                // Others permalink (Lists, RSS, ...) : use PermLinkCommand
+                if (portalControllerContext.getRequest() != null) {
+                    final Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+                    if (window != null) {
+                        final Page page = window.getPage();
 
-                    if (page instanceof ITemplatePortalObject) {
-                        templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                        if (page instanceof ITemplatePortalObject) {
+                            templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                        }
                     }
                 }
             }
