@@ -1193,6 +1193,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         } else {
             // Command
             LinkSharingCommand command = new LinkSharingCommand();
+            command.setId(id);
 
             url = controllerContext.renderURL(command, urlContext, urlFormat);
         }
