@@ -47,6 +47,8 @@ public class WindowSettings {
     private boolean selectionDependency;
     /** The priority. */
     private String priority;
+    /** Selected satellite. */
+    private String selectedSatellite;
 
 
     /** Window identifier. */
@@ -58,6 +60,8 @@ public class WindowSettings {
     private final Map<String, String> scopes;
     /** Taskbar items. */
     private final SortedMap<String, String> taskbarItems;
+    /** Nuxeo satellites. */
+    private final Map<String, String> satellites;
 
 
     /**
@@ -68,9 +72,10 @@ public class WindowSettings {
     public WindowSettings(String id) {
         super();
         this.id = id;
-        this.styles = new LinkedHashMap<String, Boolean>();
-        this.scopes = new LinkedHashMap<String, String>();
-        this.taskbarItems = new TreeMap<String, String>();
+        this.styles = new LinkedHashMap<>();
+        this.scopes = new LinkedHashMap<>();
+        this.taskbarItems = new TreeMap<>();
+        this.satellites = new LinkedHashMap<>();
     }
 
 
@@ -362,6 +367,41 @@ public class WindowSettings {
         this.selectionDependency = selectionDependency;
     }
 
+    /**
+     * Getter for priority.
+     *
+     * @return the priority
+     */
+    public String getPriority() {
+        return priority;
+    }
+
+    /**
+     * Setter for priority.
+     *
+     * @param priority the new priority
+     */
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    /**
+     * Getter for selectedSatellite.
+     * 
+     * @return the selectedSatellite
+     */
+    public String getSelectedSatellite() {
+        return selectedSatellite;
+    }
+
+    /**
+     * Setter for selectedSatellite.
+     * 
+     * @param selectedSatellite the selectedSatellite to set
+     */
+    public void setSelectedSatellite(String selectedSatellite) {
+        this.selectedSatellite = selectedSatellite;
+    }
 
     /**
      * Getter for id.
@@ -400,21 +440,12 @@ public class WindowSettings {
     }
 
     /**
-     * Getter for priority.
-     *
-     * @return the priority
+     * Getter for satellites.
+     * 
+     * @return the satellites
      */
-    public String getPriority() {
-        return priority;
-    }
-    
-    /**
-     * Setter for priority.
-     *
-     * @param priority the new priority
-     */
-    public void setPriority(String priority) {
-        this.priority = priority;
+    public Map<String, String> getSatellites() {
+        return satellites;
     }
 
 }

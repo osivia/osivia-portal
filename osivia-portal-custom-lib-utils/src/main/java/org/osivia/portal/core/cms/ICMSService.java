@@ -658,4 +658,24 @@ public interface ICMSService {
      */
     void updateStatistics(CMSServiceCtx cmsContext, HttpSession httpSession, List<SpaceStatistics> spaceStatistics) throws CMSException;
 
+    
+    /**
+     * Get satellites.
+     * 
+     * @return satellites
+     * @throws CMSException
+     */
+    Set<Satellite> getSatellites() throws CMSException;
+    
+
+    /**
+     * Resolve link sharing.
+     * 
+     * @param cmsContext CMS context
+     * @param linkId link identifier
+     * @return target document path
+     * @throws CMSException
+     */
+    String resolveLinkSharing(CMSServiceCtx cmsContext, String linkId) throws CMSException;
+
 }

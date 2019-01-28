@@ -70,8 +70,6 @@ public final class InternationalizationConstants {
     public static final String KEY_OSIVIA_ADMINISTRATION = "SUBMENU_OSIVIA_ADMINISTRATION";
     /** Bundle resource key for JBoss administration access. */
     public static final String KEY_JBOSS_ADMINISTRATION = "SUBMENU_JBOSS_ADMINISTRATION";
-    /** Bundle resource key for JBoss administration access. */
-	public static final String KEY_ECM_ADMINISTRATION = "SUBMENU_ECM_ADMINISTRATION";
     /** Bundle resource key for users admin. */
 	public static final String KEY_USERS_ADMINISTRATION = "SUBMENU_USERS_ADMINISTRATION";
 	/** Bundle resource key for groups admin. */

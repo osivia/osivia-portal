@@ -426,6 +426,7 @@ return false;
 	
 					String cookieValue = scookie.getValue().toString();
 					
+<<<<<<< HEAD
                     if(cookieValue != null) {
                         
                         String[] split = StringUtils.split(cookieValue,".");
@@ -441,6 +442,23 @@ return false;
                             continue;                           
                         }
                     }
+=======
+					if(cookieValue != null) {
+						
+						String[] split = StringUtils.split(cookieValue,".");
+						
+						// cookie should have a duet of value separated by a dot
+						if (split.length != 2) {
+							log.error("cookie invalide !" + cookieValue);
+							continue;
+						}
+						// duet of value should be alphanumeric
+						if(!StringUtils.isAlphanumeric(split[0]) && !StringUtils.isAlphanumeric(split[1])) {
+							log.error("cookie invalide !" + cookieValue);
+							continue;							
+						}
+					}
+>>>>>>> refs/remotes/origin/svn/branches/4.6-maintenance
 	
 	
 /* 538 */         convertMB(scookie.getValue());

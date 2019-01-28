@@ -14,14 +14,16 @@
  */
 package org.osivia.portal.core.page;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.core.controller.ControllerCommand;
@@ -48,6 +50,7 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.Satellite;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -189,11 +192,31 @@ public class RefreshPageCommand extends ControllerCommand {
             }
 		}
 
-        // Reload CMS session
+
+        // Satellites
+        Set<Satellite> satellites;
         try {
-            cmsService.reloadSession(cmsContext);
+            satellites = cmsService.getSatellites();
         } catch (CMSException e) {
-            throw new ControllerException(e);
+            satellites = null;
+        }
+        List<Satellite> allSatellites;
+        if (CollectionUtils.isEmpty(satellites)) {
+            allSatellites = new ArrayList<>(1);
+        } else {
+            allSatellites = new ArrayList<>(satellites);
+        }
+        allSatellites.add(0, Satellite.MAIN);
+
+        // Reload CMS session
+        for (Satellite satellite : allSatellites) {
+            cmsContext.setSatellite(satellite);
+
+            try {
+                cmsService.reloadSession(cmsContext);
+            } catch (CMSException e) {
+                throw new ControllerException(e);
+            }
         }
 
         return new UpdatePageResponse(page.getId());

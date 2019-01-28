@@ -1038,19 +1038,33 @@ rightCellToggle.add(example);
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <!-- Satellite -->
+                                <c:if test="${not empty window.satellites}">
+                                    <div class="form-group">
+                                        <label for="${window.id}-satellite" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SATELLITE" /></label>
+                                        <div class="col-sm-9">
+                                            <select id="${window.id}-satellite" name="satellite" class="form-control">
+                                                <c:forEach var="satellite" items="${window.satellites}">
+                                                    <option value="${satellite.key}" ${satellite.key eq window.selectedSatellite ? 'selected="selected"' : ''}>${satellite.value}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </div>          
+                                </c:if>
                             </fieldset>
                         </div>
                     </div>
                     
                     <div class="row">
-                    <div class="col-sm-offset-3 col-sm-9">
-                        <button type="submit" class="btn btn-primary navbar-btn">
-                            <i class="halflings halflings-floppy-disk"></i>
-                            <span><op:translate key="SAVE" /></span>
-                        </button>
-                        
-                        <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
-                    </div>
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary navbar-btn">
+                                <i class="halflings halflings-floppy-disk"></i>
+                                <span><op:translate key="SAVE" /></span>
+                            </button>
+                            
+                            <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -1103,7 +1117,5 @@ rightCellToggle.add(example);
 
 
 <!-- Reload -->
-<c:set var="url" value="${requestScope['osivia.session.reload.url']}" />
-<c:if test="${not empty url}">
-    <div id="session-reload" data-reload="true" data-url="${url}"></div>
-</c:if>
+<c:set var="urls" value="${requestScope['osivia.session.reload.urls']}" />
+<div id="session-reload" data-reload="true" data-urls="${urls}"></div>

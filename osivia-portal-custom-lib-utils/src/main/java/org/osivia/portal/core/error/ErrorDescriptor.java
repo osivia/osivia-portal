@@ -75,7 +75,8 @@ public class ErrorDescriptor {
 	}
 	
 	public String getStack() {
-	    return Debug.throwableToString(exception);
+		return Debug.stackTraceToString( exception ) ;
+
    }
 
 

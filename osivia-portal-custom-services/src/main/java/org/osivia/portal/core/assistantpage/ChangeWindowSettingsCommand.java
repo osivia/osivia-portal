@@ -65,8 +65,10 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String selectionDep;
 	private String priority;
 
-    // Linked taskbar item identifier
+    /** Linked taskbar item identifier. */
     private String taskbarItemId;
+    /** Selected satellite. */
+    private String satellite;
 
 
     /**
@@ -251,6 +253,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
             window.setDeclaredProperty("osivia.sequence.priority", null);
         }
 
+        // Selected satellite
+        window.setDeclaredProperty("osivia.satellite", StringUtils.trimToNull(this.satellite));
+
 		return new UpdatePageResponse(page.getId());
 	}
 
@@ -262,6 +267,15 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      */
     public void setTaskbarItemId(String taskbarItemId) {
         this.taskbarItemId = taskbarItemId;
+    }
+
+    /**
+     * Setter for satellite.
+     * 
+     * @param satellite the satellite to set
+     */
+    public void setSatellite(String satellite) {
+        this.satellite = satellite;
     }
 
 }
