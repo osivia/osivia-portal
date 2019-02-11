@@ -42,6 +42,7 @@ import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.Window;
@@ -379,6 +380,53 @@ public class CmsCommand extends DynamicCommand {
 
 
     /**
+     * Get sharing page.
+     * 
+     * @param portal portal
+     * @param sharingRootPath sharing root path
+     * @return page
+     * @throws InvocationException
+     * @throws ControllerException
+     */
+    private Page getSharingPage(Portal portal, String sharingRootPath) throws InvocationException, ControllerException {
+        // Portal object container
+        PortalObjectContainer portalObjectContainer = this.context.getController().getPortalObjectContainer();
+        // Internationalization bundle
+        Locale locale = this.context.getServerInvocation().getRequest().getLocale();
+        Bundle bundle = this.bundleFactory.getBundle(locale);
+
+        // Page display names
+        Map<Locale, String> displayNames = new HashMap<>(1);
+        displayNames.put(Locale.FRENCH, bundle.getString("PAGE_SHARING_DISPLAY_NAME"));
+
+        // Template
+        PortalObjectId templateObjectId = PortalObjectId.parse("/default/templates/sharing", PortalObjectPath.CANONICAL_FORMAT);
+        Page template = portalObjectContainer.getObject(templateObjectId, Page.class);
+        if (template == null) {
+            templateObjectId = PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT);
+        }
+        String templateId = templateObjectId.toString(PortalObjectPath.SAFEST_FORMAT);
+
+        // Page properties
+        Map<String, String> properties = new HashMap<>(2);
+        properties.put("osivia.cms.basePath", sharingRootPath);
+        properties.put("osivia.cms.directContentPublisher", "1");
+
+        // Command
+        String parentId = portal.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+        String pageName = "sharing";
+        Map<String, String> parameters = new HashMap<>(0);
+        ControllerCommand command = new StartDynamicPageCommand(parentId, pageName, displayNames, templateId, properties, parameters);
+
+        // Page identifier
+        UpdatePageResponse response = (UpdatePageResponse) this.context.execute(command);
+        PortalObjectId pageId = response.getPageId();
+
+        return portalObjectContainer.getObject(pageId, Page.class);
+    }
+
+
+    /**
      *
      * Page de publication des contenus par défaut
      *
@@ -390,9 +438,6 @@ public class CmsCommand extends DynamicCommand {
      */
     private Page getContentPublishPage(Portal portal, CMSItem cmsItem) throws UnsupportedEncodingException, IllegalArgumentException, InvocationException,
             ControllerException {
-        Page publishPage = (Page) portal.getChild("publish");
-        // if (publishPage == null) {
-
         Map<Locale, String> displayNames = new HashMap<Locale, String>();
         String displayName = cmsItem.getProperties().get("displayName");
         if (StringUtils.isNotEmpty(displayName)) {
@@ -421,10 +466,7 @@ public class CmsCommand extends DynamicCommand {
 
         PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(cmd)).getPageId();
 
-        publishPage = (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(pageId);
-        // }
-
-        return publishPage;
+        return (Page) this.getControllerContext().getController().getPortalObjectContainer().getObject(pageId);
     }
 
 
@@ -997,7 +1039,12 @@ public class CmsCommand extends DynamicCommand {
 
                         // Create empty page if no current page spécified
                         if ((contextualizationPage == null) && (currentPage == null)) {
-                            contextualizationPage = this.getContentPublishPage(portal, cmsItem);
+                            CMSItem sharingRoot = cmsService.getSharingRoot(cmsReadItemContext);
+                            if (sharingRoot == null) {
+                                contextualizationPage = this.getContentPublishPage(portal, cmsItem);
+                            } else {
+                                contextualizationPage = this.getSharingPage(portal, sharingRoot.getNavigationPath());
+                            }
                         }
                     }
                 }

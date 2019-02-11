@@ -669,6 +669,16 @@ public interface ICMSService {
     
 
     /**
+     * Get sharing root CMS item, or null if there is no sharing.
+     * 
+     * @param cmsContext CMS context
+     * @return CMS item
+     * @throws CMSException
+     */
+    CMSItem getSharingRoot(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
      * Resolve link sharing.
      * 
      * @param cmsContext CMS context
