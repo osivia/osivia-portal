@@ -846,6 +846,16 @@
                         <wtpversion>2.0</wtpversion>
                     </configuration>
                 </plugin>
+                
+                <!-- Disable strict javadoc checking since java8 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<additionalparam>-Xdoclint:none</additionalparam>
+					</configuration>
+				</plugin>
+
             
             </plugins>
         </pluginManagement>
