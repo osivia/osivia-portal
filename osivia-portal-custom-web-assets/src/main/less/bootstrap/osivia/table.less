@@ -58,6 +58,7 @@
         background-color: @brand-primary;
         border-color: darken(@brand-primary, 5%);
 
+<<<<<<< HEAD
         &, a:not(.btn), [class^="text"] {
             color: #fff;
         }
@@ -90,6 +91,34 @@
     .btn {
         margin-bottom: @padding-small-vertical;
     }
+=======
+        &, a, [class^="text"] {
+            color: #fff;
+        }
+    }
+}
+
+.portal-table-cell-inner {
+    .portal-table-header-group & {
+        height: 2 * @line-height-computed + @table-cell-padding;
+        
+        padding-bottom: @table-cell-padding;
+        padding-left: @table-cell-padding;
+    }
+    
+    .portal-table-row-group & {
+        height: 2 * @line-height-computed + 2 * @table-cell-padding;
+    
+        padding: 0 @table-cell-padding;
+    }
+}
+
+
+// Toolbar
+
+.portal-table-toolbar-container {
+    min-height: @input-height-small;
+>>>>>>> branch '4.4.16-branch' of https://github.com/osivia/osivia-portal.git
 }
 
 
