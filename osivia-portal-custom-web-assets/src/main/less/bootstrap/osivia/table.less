@@ -66,16 +66,16 @@
 
 .portal-table-cell-inner {
     .portal-table-header-group & {
-        height: 2 * @line-height-computed + @table-cell-padding;
+        min-height: 2 * @line-height-computed + @table-cell-padding;
         
         padding-bottom: @table-cell-padding;
         padding-left: @table-cell-padding;
     }
     
     .portal-table-row-group & {
-        height: 2 * @line-height-computed + 2 * @table-cell-padding;
+        min-height: 2 * @line-height-computed + 2 * @table-cell-padding;
     
-        padding: 0 @table-cell-padding;
+        padding: floor(@table-cell-padding / 2) @table-cell-padding;
     }
 }
 
