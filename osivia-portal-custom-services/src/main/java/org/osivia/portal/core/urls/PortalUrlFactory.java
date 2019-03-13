@@ -293,8 +293,15 @@ public class PortalUrlFactory implements IPortalUrlFactory {
             final String portalPersistentName = this.getPortalPersistentName(ctx);
 
             // Direct CMS Link : use CMSCommand
-            if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType)) {
+            if (IPortalUrlFactory.PERM_LINK_TYPE_CMS.equals(permLinkType) || IPortalUrlFactory.PERM_LINK_TYPE_TASK.equals(permLinkType)) {
 
+            	// #1960 - in case of tasks, the link is generated relative, the public host will be set by a custom property.
+                boolean relative = false;
+
+                if(IPortalUrlFactory.PERM_LINK_TYPE_TASK.equals(permLinkType)) {
+                	relative = true;
+                }
+            	
                 final CmsCommand cmsCommand = new CmsCommand(null, cmsPath, params, null, null, null, null, null, null, null, portalPersistentName);
 
                 // Remove default initialisation
@@ -304,8 +311,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
                 URLContext urlContext = ControllerContextAdapter.getControllerContext(ctx).getServerInvocation().getServerContext().getURLContext();
                 urlContext = urlContext.withAuthenticated(false);
-                final String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext,
-                        URLFormat.newInstance(false, true));
+				final String permLinkUrl = ControllerContextAdapter.getControllerContext(ctx).renderURL(cmsCommand, urlContext,
+                        URLFormat.newInstance(relative, true));
 
                 return permLinkUrl;
 

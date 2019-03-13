@@ -43,10 +43,13 @@ public interface IPortalUrlFactory {
     String PERM_LINK_TYPE_RSS = "rss";
     /** Permalink type "RSS picture". */
     String PERM_LINK_TYPE_RSS_PICTURE = "rsspicture";
+    
     /** Permalink type "CMS". */
     String PERM_LINK_TYPE_CMS = "cms";
     /** Permalink type share. */
     String PERM_LINK_TYPE_SHARE = "share";
+    /** Permalink type "CMS". */
+    String PERM_LINK_TYPE_TASK = "task";    
 
     /** Popup URL adapter open status. */
     int POPUP_URL_ADAPTER_OPEN = 0;
