@@ -1,9 +1,10 @@
 package org.osivia.portal.api.tokens;
 
+import java.util.Map;
 
 public class Token {
     private long creationTs;
-    private String uid;
+    private Map<String, String> attributes;
 
     
     
@@ -21,8 +22,8 @@ public class Token {
      * Getter for uid.
      * @return the uid
      */
-    public String getUid() {
-        return uid;
+    public Map<String,String> getAttributes() {
+        return attributes;
     }
 
 
@@ -30,9 +31,9 @@ public class Token {
      * Setter for creationTs.
      * @param creationTs the creationTs to set
      */
-     public Token(String uid) {
+     public Token(Map<String,String> attributes) {
         this.creationTs = System.currentTimeMillis();
-        this.uid=uid;
+        this.attributes=attributes;
     }
      
      
