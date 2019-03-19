@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.portal.core</groupId>
     <artifactId>parent</artifactId>
-    <version>4.6.3.p1</version>
+    <version>4.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>OSIVIA Portal - Parent</name>
 
@@ -837,6 +837,17 @@
                         <wtpversion>2.0</wtpversion>
                     </configuration>
                 </plugin>
+                
+				<!-- Disable strict javadoc checking since java8 -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<configuration>
+						<additionalOptions>
+							<additionalOption>-Xdoclint:none</additionalOption>
+						</additionalOptions>
+					</configuration>
+				</plugin>                 
             
             </plugins>
         </pluginManagement>
@@ -845,8 +856,11 @@
 
 
     <scm>
-        <developerConnection>scm:svn:http://www.osivia.org/repos/osivia-portal/tags/4.6.3.p1</developerConnection>
-    </scm>
+        <url>https://github.com/osivia/osivia-portal.git</url>
+        <connection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</developerConnection>     
+        <tag>HEAD</tag>
+	</scm>
 
 
     <distributionManagement>
