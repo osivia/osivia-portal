@@ -155,7 +155,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Select2
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/select2/css/select2.min.css'>");
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/select2/js/select2.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/select2/js/select2.full.min.js'></script>");
         
         // Clipboard 
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/clipboard/clipboard.min.js'></script>");
