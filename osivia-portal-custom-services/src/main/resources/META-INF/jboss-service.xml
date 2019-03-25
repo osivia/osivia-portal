@@ -894,5 +894,12 @@
         <xmbean />
     </mbean>
 
+	<!-- Token service -->
+	<mbean code="org.osivia.portal.core.tokens.TokenService"
+		name="osivia:service=TokenService" xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+	</mbean>
+
 </server>
    
