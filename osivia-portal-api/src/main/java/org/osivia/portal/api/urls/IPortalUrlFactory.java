@@ -14,6 +14,7 @@
  */
 package org.osivia.portal.api.urls;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletException;
@@ -473,5 +474,30 @@ public interface IPortalUrlFactory {
      * @throws PortletException
      */
     String getSharingLinkUrl(PortalControllerContext portalControllerContext, String id) throws PortletException;
+
+
+	/**
+     * Get advanced search URL.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param search search query
+     * @param advancedSearch advanced search indicator
+     * @return
+     * @throws PortalException
+     */
+    String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch) throws PortalException;
+
+
+    /**
+     * Get advanced search URL with prevalued selectors.
+     * 
+     * @param portalControllerContext portal controller context
+     * @param search search query
+     * @param advancedSearch advanced search indicator
+     * @param selector selectors
+     * @return
+     * @throws PortalException
+     */
+    String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch, Map<String, List<String>> selectors) throws PortalException;
 
 }

@@ -106,11 +106,12 @@ public interface TaskbarFactory {
      * Create taskbar task.
      *
      * @param item taskbar item
+     * @param title title
      * @param path CMS path
      * @param disabled disabled indicator
      * @return taskbar task
      */
-    TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled);
+    TaskbarTask createTaskbarTask(TaskbarItem item, String title, String path, boolean disabled);
 
 
     /**

@@ -455,6 +455,36 @@
   <category name="PORTAL_WINDOW">
       <priority value="ERROR"/>
    </category>
+   
+	<!-- LDAP modifications -->
+	<category name="org.osivia.directory.v2">
+		<priority value="ERROR" />
+		<appender-ref ref="FILE" />		
+	</category>	
+	<category name="org.osivia.directory.v2">
+		<priority value="INFO" />
+		<appender-ref ref="LDAP_APPENDER" />
+	</category>
+	<appender name="LDAP_APPENDER"
+		class="org.jboss.logging.appender.DailyRollingFileAppender">
+		<errorHandler
+			class="org.jboss.logging.util.OnlyOnceErrorHandler" />
+		<param name="File"
+			value="${jboss.server.log.dir}/ldap.log" />
+		<param name="Append" value="true" />
+
+		<!-- Rollover at midnight each day -->
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+
+		<!-- Rollover at the top of each hour <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/> -->
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- The default pattern: Date Priority [Category] Message\n -->
+			<param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+
+		</layout>
+	</appender>   	
+   
 
 
  <!-- Supervisor -->

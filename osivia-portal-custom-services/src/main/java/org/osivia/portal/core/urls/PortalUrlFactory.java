@@ -16,6 +16,7 @@ package org.osivia.portal.core.urls;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,6 +82,7 @@ import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.share.ShareCommand;
 import org.osivia.portal.core.sharing.link.LinkSharingCommand;
 import org.osivia.portal.core.tracker.ITracker;
@@ -1201,6 +1203,35 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
 
         return url;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch) throws PortalException {
+
+        return getAdvancedSearchUrl(portalControllerContext, search, advancedSearch, null);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch, Map<String, List<String>> selectors) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Controller command
+        AdvancedSearchCommand command = new AdvancedSearchCommand(search, advancedSearch);
+        if(selectors != null) {
+        	command.setSelectors(selectors);
+    	}
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
+
+        return portalUrl.toString();
     }
 
 }

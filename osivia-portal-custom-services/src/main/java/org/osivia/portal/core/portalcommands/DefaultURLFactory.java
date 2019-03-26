@@ -376,6 +376,17 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                 if (command.isAdvancedSearch()) {
                     asu.setParameterValue(AdvancedSearchCommand.ADVANCED_SEARCH_PARAMETER_NAME, URLEncoder.encode(String.valueOf(true), CharEncoding.UTF_8));
                 }
+                
+                // selectors
+                if (MapUtils.isNotEmpty(command.getSelectors())) {
+                    List<String> variables = new ArrayList<String>(command.getSelectors().size());
+                    for (Entry<String, List<String>> entry : command.getSelectors().entrySet()) {
+                        variables.add(StringEscapeUtils.escapeHtml(entry.getKey()) + "=" + StringUtils.join(entry.getValue(), ","));
+                    }
+                    asu.setParameterValue(AdvancedSearchCommand.SELECTORS_PARAMETER_NAME, URLEncoder.encode(StringUtils.join(variables, "&"), CharEncoding.UTF_8));
+                }
+            	
+                
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }

@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class WindowPropertiesEncoder {
 
-	public static String encodeProperties(Map<String, String> properties) {
+    public static String encodeProperties(Map<String, String> properties) {
         StringBuilder url = new StringBuilder();
 
         for (Entry<String, String> entry : properties.entrySet()) {
@@ -47,9 +47,9 @@ public class WindowPropertiesEncoder {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-	}
+    }
 
-	public static Map<String, String> decodeProperties(String url) {
+    public static Map<String, String> decodeProperties(String url) {
         Map<String, String> properties;
         if (StringUtils.isEmpty(url)) {
             properties = new HashMap<>(0);
@@ -83,19 +83,19 @@ public class WindowPropertiesEncoder {
         }
 
         return properties;
-	}
+    }
 
 
-	private static String encodeValue(String origValue) {
+    private static String encodeValue(String origValue) {
 
-		if (origValue.contains("=="))
-			throw new RuntimeException("Bad parameter format");
-		
-		if (origValue.contains("&&"))
-			throw new RuntimeException("Bad parameter format");
+        if (origValue.contains("=="))
+            throw new RuntimeException("Bad parameter format");
+        
+        if (origValue.contains("&&"))
+            throw new RuntimeException("Bad parameter format");
 
-		return origValue;
+        return origValue;
 
-	}
+    }
 
 }

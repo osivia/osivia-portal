@@ -419,41 +419,41 @@ public class AjaxResponseHandler implements ResponseHandler {
                         if( controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("backPageMarker") != null) {
                             refreshedWindows.add((Window) child);
                         }
-                    }
+					}
                 }
-
                 // Obtain layout
                 LayoutService layoutService = this.getPageService().getLayoutService();
                 PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
-
                 
-                /* Create the reload Url
-                 * it's obtained from a view page command associated with a new state 
+                
+                /*
+                 * Create the reload Url
+                 * it's obtained from a view page command associated with a new state
                  */
-                
+
                 String replayUrl = "";
-                
+
                 PortalObjectId pageId = null;
-                if( controllerCommand instanceof InvokePortletWindowRenderCommand)
+                if (controllerCommand instanceof InvokePortletWindowRenderCommand)
                     pageId = ((InvokePortletWindowRenderCommand) controllerCommand).getPage().getId();
-                if( controllerCommand instanceof WebCommand)    {
+                if (controllerCommand instanceof WebCommand) {
                     pageId = ((UpdatePageResponse) controllerResponse).getPageId();
                 }
-                
-                
-                if( pageId != null) {
-                    
+
+
+                if (pageId != null) {
+
                     PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
                     if (!modalId.equals(page.getId())) {
-                    
+
                         // Create a specific page marker for back action
                         String reloadPM = PageMarkerUtils.saveAsANewState(controllerContext, page);
-                    
+
                         ViewPageCommand renderCmd = new ViewPageCommand(pageId);
-                        PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);  
-                        replayUrl = portalUrl.toString()+ "?backPageMarker="+reloadPM;
+                        PortalURL portalUrl = new PortalURLImpl(renderCmd, controllerContext, null, null);
+                        replayUrl = portalUrl.toString() + "?backPageMarker=" + reloadPM;
                     }
-                 }
+                }
 
 
                 //
@@ -543,7 +543,9 @@ public class AjaxResponseHandler implements ResponseHandler {
                     PageMarkerUtils.savePageState(controllerContext, page);
                     
                     controllerContext.getServerInvocation().getServerContext().getClientResponse().addHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
-
+                                         
+                    controllerContext.getServerInvocation().getServerContext().getClientResponse().addHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
+ 
                     return new AjaxResponse(updatePage);
                 }
             }
