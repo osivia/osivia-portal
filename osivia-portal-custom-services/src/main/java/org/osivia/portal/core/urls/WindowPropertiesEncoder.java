@@ -14,65 +14,77 @@
  */
 package org.osivia.portal.core.urls;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.lang.StringUtils;
 
 public class WindowPropertiesEncoder {
 
-	public static String encodeProperties(Map<String, String> props) {
+	public static String encodeProperties(Map<String, String> properties) {
+        StringBuilder url = new StringBuilder();
 
-		try {
-			String url = "";
+        for (Entry<String, String> entry : properties.entrySet()) {
+            String key = entry.getKey();
+            String value = StringUtils.trimToEmpty(entry.getValue());
 
-			for (String name : props.keySet()) {
-				if (props.get(name) != null) {
-					if (url.length() > 0)
-						url += "&&";
-					url += encodeValue(name) + "==" + encodeValue(props.get(name));
-				}
-			}
+            if (url.length() > 0) {
+                url.append("&&");
+            }
 
-			return URLEncoder.encode(url, "UTF-8");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+            url.append(encodeValue(key));
+            url.append("==");
+            url.append(encodeValue(value));
+        }
+
+        try {
+            return URLEncoder.encode(url.toString(), CharEncoding.UTF_8);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
 	}
 
-	public static Map<String, String> decodeProperties(String urlParams) {
-		try {
+	public static Map<String, String> decodeProperties(String url) {
+        Map<String, String> properties;
+        if (StringUtils.isEmpty(url)) {
+            properties = new HashMap<>(0);
+        } else {
+            String[] splittedUrl = StringUtils.splitByWholeSeparator(url, "&&");
 
-			Map<String, String> params = new HashMap<String, String>();
+            properties = new HashMap<>(splittedUrl.length);
 
-			if (urlParams == null || urlParams.length() == 0)
-				return params;
+            for (String segment : splittedUrl) {
+                String[] splittedSegment = StringUtils.splitByWholeSeparator(segment, "==");
 
-			String decodedParam = URLDecoder.decode(urlParams, "UTF-8");
+                if ((splittedSegment.length != 1) && (splittedSegment.length != 2)) {
+                    throw new IllegalArgumentException("Bad parameter format");
+                }
 
-			String[] tabParams = decodedParam.split("&&");
+                try {
+                    String key = URLDecoder.decode(splittedSegment[0], CharEncoding.UTF_8);
 
-			for (int i = 0; i < tabParams.length; i++) {
-				String[] valParams = tabParams[i].split("==");
-				
-				if (valParams.length != 1 && valParams.length != 2)
-					throw new IllegalArgumentException("Bad parameter format");
-			
-				String value = "";
-				
-				if( valParams.length == 2)
-					value = valParams[1];
+                    String value;
+                    if (splittedSegment.length == 2) {
+                        value = URLDecoder.decode(splittedSegment[1], CharEncoding.UTF_8);
+                    } else {
+                        value = StringUtils.EMPTY;
+                    }
 
-				params.put(valParams[0], value);
-			}
+                    properties.put(key, value);
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
 
-			return params;
-
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-
+        return properties;
 	}
+
 
 	private static String encodeValue(String origValue) {
 
