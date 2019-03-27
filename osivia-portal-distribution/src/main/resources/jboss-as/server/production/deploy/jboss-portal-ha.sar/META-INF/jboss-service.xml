@@ -1512,6 +1512,133 @@
    </mbean>
       
 	
+	
+     <!--       cache OSIVIA Connect -->
+
+    <mbean code="org.jboss.cache.TreeCache"
+   	name="osivia:service=ConnectTreeCache">
+   	<depends>jboss:service=Naming</depends>
+   	<depends>jboss:service=TransactionManager</depends>
+
+   	<attribute name="TransactionManagerLookupClass">
+   		org.jboss.cache.JBossTransactionManagerLookup
+   	</attribute>
+
+  	<attribute name="NodeLockingScheme">OPTIMISTIC</attribute>
+   	<attribute name="IsolationLevel">READ_COMMITTED</attribute>
+
+<!-- suppression branche 1.0
+   	<attribute name="CacheMode">REPL_SYNC</attribute>
+-->
+   	<attribute name="CacheMode">REPL_ASYNC</attribute>
+ 	<attribute name="ClusterName">
+   		connect
+   	</attribute>
+
+   	<attribute name="InitialStateRetrievalTimeout">17500</attribute>
+
+   	<attribute name="SyncReplTimeout">17500</attribute>
+
+   	<attribute name="LockAcquisitionTimeout">15000</attribute>
+
+
+   	<attribute name="EvictionPolicyClass">
+   		org.jboss.cache.eviction.LRUPolicy
+   	</attribute>
+   	<attribute name="EvictionPolicyConfig">
+   		<config>
+   			<attribute name="wakeUpIntervalSeconds">5</attribute>
+
+   			<region name="/_default_">
+   				<attribute name="maxNodes">5000</attribute>
+   				<attribute name="timeToLiveSeconds">1000</attribute>
+   			</region>
+   		</config>
+   	</attribute>
+
+   	<attribute name="ClusterConfig">
+   	<!--
+   		<config>
+   			<UDP
+   				mcast_addr="${jboss.partition.udpGroup:239.11.12.13}"
+   				mcast_port="${portal.hibernate.cache.udpPort:23456}" tos="8"
+   				ucast_recv_buf_size="20000000" ucast_send_buf_size="640000"
+   				mcast_recv_buf_size="25000000" mcast_send_buf_size="640000"
+   				loopback="false" discard_incompatible_packets="true"
+   				enable_bundling="false" max_bundle_size="64000"
+   				max_bundle_timeout="30" use_incoming_packet_handler="true"
+   				use_outgoing_packet_handler="false"
+   				ip_ttl="${jgroups.udp.ip_ttl:2}" down_thread="false"
+   				up_thread="false" />
+   			<PING timeout="2000" down_thread="false"
+   				up_thread="false" num_initial_members="3" />
+   			<MERGE2 max_interval="100000" down_thread="false"
+   				up_thread="false" min_interval="20000" />
+   			<FD_SOCK down_thread="false" up_thread="false" />
+   			<FD timeout="10000" max_tries="5" down_thread="false"
+   				up_thread="false" shun="true" />
+   			<VERIFY_SUSPECT timeout="1500" down_thread="false"
+   				up_thread="false" />
+   			<pbcast.NAKACK max_xmit_size="60000"
+   				use_mcast_xmit="false" gc_lag="0"
+   				retransmit_timeout="300,600,1200,2400,4800" down_thread="false"
+   				up_thread="false" discard_delivered_msgs="true" />
+   			<UNICAST timeout="300,600,1200,2400,3600"
+   				down_thread="false" up_thread="false" />
+   			<pbcast.STABLE stability_delay="1000"
+   				desired_avg_gossip="50000" down_thread="false" up_thread="false"
+   				max_bytes="400000" />
+   			<pbcast.GMS print_local_addr="true" join_timeout="3000"
+   				down_thread="false" up_thread="false" join_retry_timeout="2000"
+   				shun="true" view_bundling="true" />
+   			<FRAG2 frag_size="60000" down_thread="false"
+   				up_thread="false" />
+   			<pbcast.STATE_TRANSFER down_thread="false"
+   				up_thread="false" use_flush="false" />
+   		</config>
+   		-->
+         <config>
+   		 <TCP bind_addr="${portal.connect.cache.tcpAddr:localhost}" start_port="${portal.connect.cache.tcpPort:7970}" loopback="true"
+                     tcp_nodelay="true"
+	                 recv_buf_size="20000000"
+	                 send_buf_size="640000"
+	                 discard_incompatible_packets="true"
+	                 enable_bundling="false"
+	                 max_bundle_size="64000"
+	                 max_bundle_timeout="30"
+	                 use_incoming_packet_handler="true"
+	                 use_outgoing_packet_handler="false"
+	                 down_thread="false" up_thread="false"
+	                 use_send_queues="false"
+	                 sock_conn_timeout="300"
+	                 skip_suspected_members="true"/>
+	                 
+	            <TCPPING initial_hosts="${portal.connect.cache.initial_hosts:localhost[7970]}" port_range="3"
+	                     timeout="3000"
+	                     down_thread="false" up_thread="false"
+	                     num_initial_members="3"/>
+	            <MERGE2 max_interval="100000"
+	                    down_thread="false" up_thread="false" min_interval="20000"/>
+	            <FD_SOCK down_thread="false" up_thread="false"/>
+	            <FD timeout="10000" max_tries="5" down_thread="false" up_thread="false" shun="true"/>
+	            <VERIFY_SUSPECT timeout="1500" down_thread="false" up_thread="false"/>
+	            <pbcast.NAKACK max_xmit_size="60000"
+	                           use_mcast_xmit="false" gc_lag="0"
+	                           retransmit_timeout="300,600,1200,2400,4800"
+	                           down_thread="false" up_thread="false"
+	                           discard_delivered_msgs="true"/>
+	            <pbcast.STABLE stability_delay="1000" desired_avg_gossip="50000"
+	                           down_thread="false" up_thread="false"
+	                           max_bytes="400000"/>
+	            <pbcast.GMS print_local_addr="true" join_timeout="3000"
+	                        down_thread="false" up_thread="false"
+	                        join_retry_timeout="2000" shun="true"
+	                        view_bundling="true"/>
+	            <pbcast.STATE_TRANSFER down_thread="false" up_thread="false" use_flush="false"/>
+           </config>
+
+   	</attribute>
+   </mbean>	
            
 
    

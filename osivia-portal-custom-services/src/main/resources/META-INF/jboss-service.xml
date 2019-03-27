@@ -899,6 +899,9 @@
 		name="osivia:service=TokenService" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
+		<depends optional-attribute-name="TreeCache" proxy-type="attribute">osivia:service=ConnectTreeCache
+		</depends>
+		
 	</mbean>
 
 </server>
