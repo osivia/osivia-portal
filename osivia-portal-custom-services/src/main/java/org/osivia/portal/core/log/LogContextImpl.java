@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.MDC;
@@ -58,7 +60,19 @@ public class LogContextImpl implements LogContext {
      * @return token
      */
     private String generateNewToken(PortalControllerContext portalControllerContext) {
-        String token = "#" + String.valueOf(System.currentTimeMillis());
+        
+        String serverName = "";
+        if (portalControllerContext.getHttpServletRequest() != null)    {
+            Cookie[] cookies = portalControllerContext.getHttpServletRequest().getCookies();
+            for(int i=0; i< cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if( "ROUTEID".equals(cookie.getName())) {
+                    serverName = cookie.getValue() + ":" ;
+                }
+            }
+        }
+        
+        String token = "#" + serverName + String.valueOf(System.currentTimeMillis());
         
         if (portalControllerContext.getRequest() != null) {
             portalControllerContext.getRequest().setAttribute(TOKEN_ATTRIBUTE, token);
