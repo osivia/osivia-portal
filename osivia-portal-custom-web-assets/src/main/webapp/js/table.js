@@ -36,13 +36,27 @@ $JQry(function() {
 		
 		// Checkbox
 		$JQry(".portal-table-checkbox a").click(function(event) {
-			var $target = $JQry(event.target);
-			var $selectee = $target.closest(".portal-table-selectable-filter");
+			var $target = $JQry(event.target).closest("a");
 			
-			if ($selectee.hasClass("ui-selected")) {
-				$selectee.removeClass("ui-selected");
+			if ($target.closest(".portal-table-header-group").length) {
+				var $table = $target.closest(".portal-table");
+				var $selectee = $table.find(".portal-table-selectable-filter");
+				
+				if ($target.hasClass("checked")) {
+					$selectee.removeClass("ui-selected");
+					$target.removeClass("checked");
+				} else {
+					$selectee.addClass("ui-selected");
+					$target.addClass("checked");
+				}
 			} else {
-				$selectee.addClass("ui-selected");
+				var $selectee = $target.closest(".portal-table-selectable-filter");
+				
+				if ($selectee.hasClass("ui-selected")) {
+					$selectee.removeClass("ui-selected");
+				} else {
+					$selectee.addClass("ui-selected");
+				}
 			}
 			
 			// Update toolbar
@@ -51,14 +65,12 @@ $JQry(function() {
 		
 		
 		// Double click
-		$JQry(".portal-table-selectable-filter").dblclick(function(event) {
+		$JQry(".portal-table-selectable-filter[data-double-click-target]").dblclick(function(event) {
 			var $target = $JQry(event.target);
 			var $selectee = $target.closest(".portal-table-selectable-filter");
-			var $link = $selectee.find("a").first();
+			var $link = $selectee.find($selectee.data("double-click-target")).first();
 			
-			if ($target.closest(".portal-table-checkbox").length) {
-				// Do nothing
-			} else if ($link.length) {
+			if ($link.length) {
 				$link.get(0).click();
 			} else {
 				console.error("Double click event failed: link not found.");
@@ -84,6 +96,8 @@ $JQry(window).resize(function() {
 
 function updateTableToolbar($target) {
 	var $container = $target.closest(".portal-table-container");
+	var allSelected = ($container.find(".portal-table-selectable-filter").length === $container.find(".ui-selected").length);
+	var $selectAll = $container.find(".portal-table-header-group .portal-table-checkbox a");
 	var $toolbarContainer = $container.siblings(".portal-table-toolbar-container");
 	var $toolbar = $toolbarContainer.find(".portal-table-toolbar");
 	var $rows = $container.find(".portal-table-row");
@@ -97,6 +111,7 @@ function updateTableToolbar($target) {
 	if (tableToolbarXhr && tableToolbarXhr.readyState != 4) {
 		tableToolbarXhr.abort();
     }
+	
 	
 	// Build selected indexes 
 	$selected.each(function(index, element) {
@@ -127,6 +142,14 @@ function updateTableToolbar($target) {
 			$JQry(document).ready();
 		}
 	});
+	
+	
+	// Update "select all" checkbox
+	if ($selectAll.hasClass("checked") && !allSelected) {
+		$selectAll.removeClass("checked");
+	} else if (!$selectAll.hasClass("checked") && allSelected) {
+		$selectAll.addClass("checked");
+	}
 }
 
 
