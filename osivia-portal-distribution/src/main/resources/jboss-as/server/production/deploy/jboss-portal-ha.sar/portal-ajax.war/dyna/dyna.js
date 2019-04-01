@@ -357,9 +357,9 @@ function bilto(event) {
 			return;
 		}
 
-		// if unknow source (IMG, SPAN, ...) , search the ancestor 'A'
+		// if unknow source (IMG, SPAN, ...) , search the ancestor A, INPUT or BUTTON
 		if ((source.nodeName != "A") && (source.nodeName != "INPUT") && (source.nodeName != "BUTTON")) {
-			source = Element.up(source, "A");
+			source = Element.up(source, "A, INPUT, BUTTON");
 			if (source == null)
 				return;
 		}
@@ -409,7 +409,7 @@ function bilto(event) {
 							options.method = "post"
 							options.postBody = Form.serialize(current, {
 								'hash' : false,
-								'submit' : event.findElement().name
+								'submit' : source.name
 							});
 						}
 					}
@@ -421,7 +421,7 @@ function bilto(event) {
 			        var data;
 			        if (formdata != null) {
 			        	formdata.append("hash", false);
-			        	formdata.append(event.findElement().name, event.findElement().value);
+			        	formdata.append(source.name, source.value);
 			        	data = formdata;
 			        } else {
 			        	data = $form.serialize();
