@@ -23,8 +23,6 @@
     a {
         i {
             color: @gray;
-            
-            &:extend(.small);
         }
     
         &:hover, &:focus {
@@ -94,6 +92,14 @@
 
 
 // Checkbox
+
+.portal-table-checkbox {
+    a {
+        .portal-table-header-group & {
+            margin-right: @table-cell-padding;
+        }
+    }    
+}
 
 [data-column="checkbox"] {
     width: 2 * @line-height-computed + 2 * @table-cell-padding;

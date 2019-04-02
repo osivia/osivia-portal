@@ -125,9 +125,20 @@
     a {
         font-size: @checkbox-size;
         outline: 0;
+        
+        .portal-table-header-group & {
+            display: inline-block;
+            vertical-align: bottom;
+            
+            height: @checkbox-size;
+            
+            i {
+                top: 0;
+            }
+        }
     }
     
-    .ui-selecting &, .ui-selected & {
+    .ui-selecting &, .ui-selected &, .checked {
         .glyphicons-unchecked {
             &::before {
                 content: "\E153"; // check
