@@ -479,6 +479,10 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE,Constants.PORTLET_ATTR_START_WINDOW, attributes.get(Constants.PORTLET_ATTR_START_WINDOW));
             }
             
+            if (BooleanUtils.toBoolean(String.valueOf(attributes.get("osivia.ajax.preventRefresh")))) {
+                controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId", invocation.getWindowContext().getId());
+            }
+
             String url = (String) attributes.get(Constants.PORTLET_ATTR_REDIRECTION_URL);
             if( url != null)    {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.redirection.url", url);

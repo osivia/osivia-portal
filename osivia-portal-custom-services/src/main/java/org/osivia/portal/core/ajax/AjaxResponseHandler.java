@@ -396,6 +396,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                         dirtyWindowIds.remove(window.getId());
                     }
                 }
+
+                String preventAjaxRefreshWindowId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId");
+                if (StringUtils.isNotEmpty(preventAjaxRefreshWindowId)) {
+                    PortalObjectId objectId = PortalObjectId.parse(preventAjaxRefreshWindowId, PortalObjectPath.CANONICAL_FORMAT);
+                    dirtyWindowIds.remove(objectId);
+                }
             }
 
 
