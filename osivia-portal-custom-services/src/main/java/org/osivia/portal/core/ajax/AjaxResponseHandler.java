@@ -27,7 +27,6 @@ import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -240,6 +239,8 @@ public class AjaxResponseHandler implements ResponseHandler {
 
             // Whether we need a full refresh or not
             boolean fullRefresh = false;
+            // Prevent menubar refresh indicator
+            boolean preventMenubarRefresh = false;
 
 
             // If the page has changed, need a full refresh
@@ -390,17 +391,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                             fullRefresh = true;
                         }
                     }
-
-                    // Prevent Ajax refresh (useful for keywords selector)
-                    if (BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.ATTR_WINDOW_PREVENT_AJAX_REFRESH))) {
-                        dirtyWindowIds.remove(window.getId());
-                    }
                 }
 
+                // Prevent Ajax refresh
                 String preventAjaxRefreshWindowId = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE, "osivia.ajax.preventRefreshWindowId");
                 if (StringUtils.isNotEmpty(preventAjaxRefreshWindowId)) {
                     PortalObjectId objectId = PortalObjectId.parse(preventAjaxRefreshWindowId, PortalObjectPath.CANONICAL_FORMAT);
-                    dirtyWindowIds.remove(objectId);
+                    preventMenubarRefresh = dirtyWindowIds.remove(objectId);
                 }
             }
 
@@ -527,10 +524,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                             res.addWindowContext(notificationsWindowContext);
                             this.refreshWindowContext(controllerContext, layout, updatePage, res, notificationsWindowContext);
 
-                            // Menubar window context
-                            WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
-                            res.addWindowContext(menubarWindowContext);
-                            this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
+                            if (!preventMenubarRefresh) {
+                                // Menubar window context
+                                WindowContext menubarWindowContext = MenubarUtils.createContentNavbarActionsWindowContext(portalControllerContext);
+                                res.addWindowContext(menubarWindowContext);
+                                this.refreshWindowContext(controllerContext, layout, updatePage, res, menubarWindowContext);
+                            }
                         }
                     } catch (Exception e) {
                         log.error("An error occured during the computation of window markup", e);
