@@ -227,7 +227,8 @@ public class TasksService implements ITasksService {
         ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
 
         // Portal URL
-        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+        // #1964 - tasks url may be done with anonymous user id
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
 
         // Command URL
         String url;
