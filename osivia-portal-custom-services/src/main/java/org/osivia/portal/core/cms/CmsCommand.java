@@ -388,7 +388,7 @@ public class CmsCommand extends DynamicCommand {
      * @throws InvocationException
      * @throws ControllerException
      */
-    private Page getContentPublishPage(Portal portal, CMSItem cmsItem) throws UnsupportedEncodingException, IllegalArgumentException, InvocationException,
+    private Page getContentPublishPage(Portal portal, CMSItem cmsItem, String displayContext) throws UnsupportedEncodingException, IllegalArgumentException, InvocationException,
             ControllerException {
         Page publishPage = (Page) portal.getChild("publish");
         // if (publishPage == null) {
@@ -410,13 +410,23 @@ public class CmsCommand extends DynamicCommand {
         props.put("osivia.cms.basePath", cmsItem.getNavigationPath());
         props.put("osivia.cms.directContentPublisher", "1");
 
+        String templateName = "/default/templates/publish";
+        if( "uncluttered".equals(displayContext)) {
+            templateName = "/default/templates/uncluttered";
+        }
+
+        
+        
         // V2.0-rc7
         // props.put("osivia.cms.pageContextualizationSupport", "0");
         props.put("osivia.cms.layoutType", CmsCommand.LAYOUT_TYPE_SCRIPT);
-        props.put("osivia.cms.layoutRules", "return \"/default/templates/publish\"");
+        props.put("osivia.cms.layoutRules", "return \""+templateName+"\"");
+        
+ 
+        
 
         StartDynamicPageCommand cmd = new StartDynamicPageCommand(portal.getId().toString(PortalObjectPath.SAFEST_FORMAT), "publish", displayNames,
-                PortalObjectId.parse("/default/templates/publish", PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), props,
+                PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT), props,
                 new HashMap<String, String>());
 
         PortalObjectId pageId = ((UpdatePageResponse) this.context.execute(cmd)).getPageId();
@@ -754,6 +764,11 @@ public class CmsCommand extends DynamicCommand {
 
                 return this.context.execute(cmd);
             }
+            
+            
+            
+
+            
 
 
             if ("detailedView".equals(this.displayContext)) {
@@ -997,7 +1012,7 @@ public class CmsCommand extends DynamicCommand {
 
                         // Create empty page if no current page spécified
                         if ((contextualizationPage == null) && (currentPage == null)) {
-                            contextualizationPage = this.getContentPublishPage(portal, cmsItem);
+                            contextualizationPage = this.getContentPublishPage(portal, cmsItem, displayContext);
                         }
                     }
                 }
@@ -1199,6 +1214,8 @@ public class CmsCommand extends DynamicCommand {
                 if (contextualizationPage != null) {
                     windowProperties.put("osivia.dynamic.disable.close", "1");
                 }
+
+                
 
 
                 ControllerCommand command = new StartDynamicWindowCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), "virtual",
