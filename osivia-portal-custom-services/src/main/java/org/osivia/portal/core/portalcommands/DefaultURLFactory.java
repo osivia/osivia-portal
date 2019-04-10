@@ -665,9 +665,6 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                     }
                     asu.setParameterValue(UpdateTaskCommand.VARIABLES_PARAMETER, URLEncoder.encode(StringUtils.join(variables, "&"), CharEncoding.UTF_8));
                 }
-                if (StringUtils.isNotEmpty(command.getRedirectionUrl())) {
-                    asu.setParameterValue(UpdateTaskCommand.REDIRECTION_URL_PARAMETER, URLEncoder.encode(command.getRedirectionUrl(), CharEncoding.UTF_8));
-                }
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }

@@ -824,7 +824,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
                     String[] actionIdParameter = parameterMap.get(UpdateTaskCommand.ACTION_ID_PARAMETER);
                     String[] variablesParameter = parameterMap.get(UpdateTaskCommand.VARIABLES_PARAMETER);
-                    String[] redirectionUrlParameter = parameterMap.get(UpdateTaskCommand.REDIRECTION_URL_PARAMETER);
 
                     if (ArrayUtils.isNotEmpty(uuidParameter) && ArrayUtils.isNotEmpty(actionIdParameter)) {
                         // UUID
@@ -847,15 +846,8 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                                 }
                             }
                         }
-                        // Redirection URL
-                        String redirectionUrl;
-                        if (ArrayUtils.isEmpty(redirectionUrlParameter)) {
-                            redirectionUrl = null;
-                        } else {
-                            redirectionUrl = URLDecoder.decode(redirectionUrlParameter[0], CharEncoding.UTF_8);
-                        }
 
-                        return new UpdateTaskCommand(uuid, actionId, variables, redirectionUrl);
+                        return new UpdateTaskCommand(uuid, actionId, variables);
                     }
                 }
 

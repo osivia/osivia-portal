@@ -586,13 +586,13 @@ public interface ICMSService {
      * Update task.
      *
      * @param cmsContext CMS context
-     * @param uuid       UUID
-     * @param actionId   action identifier
-     * @param variables  task variables
-     * @return true if the task has been updated
+     * @param uuid UUID
+     * @param actionId action identifier
+     * @param variables task variables
+     * @return updated variables
      * @throws CMSException
      */
-    boolean updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
+    Map<String, String> updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
 
 
     /**

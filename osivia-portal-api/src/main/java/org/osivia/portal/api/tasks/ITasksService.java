@@ -78,10 +78,9 @@ public interface ITasksService {
      * @param portalControllerContext portal controller context
      * @param uuid UUID
      * @param actionId action identifier
-     * @param redirectionUrl redirection URL
      * @return URL
      * @throws PortalException
      */
-    String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException;
+    String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId) throws PortalException;
 
 }

@@ -216,7 +216,7 @@ public class TasksService implements ITasksService {
     /**
      * {@inheritDoc}
      */
-    public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException {
+    public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -224,7 +224,7 @@ public class TasksService implements ITasksService {
         String host = System.getProperty(HOST_PROPERTY);
 
         // Command
-        ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
+        ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null);
 
         // Portal URL
         // #1964 - tasks url may be done with anonymous user id
