@@ -125,6 +125,10 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
         	<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>${commons-pool}</version>
@@ -227,6 +231,7 @@
                                 <configuration>
                                     <includeGroupIds>
                                         commons,
+                                        org.apache.commons,
                                         org.springframework,
                                         aopalliance
                                     </includeGroupIds>

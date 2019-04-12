@@ -25,6 +25,7 @@
         <commons-httpclient.version>3.1</commons-httpclient.version>
         <commons-codec.version>1.11</commons-codec.version>
         <commons-io.version>2.2</commons-io.version>
+        <commons-csv.version>1.6</commons-csv.version>
 
         <!-- Spring framework -->
         <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
@@ -330,6 +331,12 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons-csv.version}</version>
                 <scope>provided</scope>
             </dependency>
 
