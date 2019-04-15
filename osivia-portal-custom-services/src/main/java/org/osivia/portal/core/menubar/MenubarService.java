@@ -652,18 +652,31 @@ public class MenubarService implements IMenubarService {
                 }
             }
 
-            // Glyphicon
+            if (item.isDisabled()) {
+                element = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, item.getHtmlClasses(), null, null, roleElement);
+            } else {
+                element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), null, null, roleElement);
+            }
+
+
+            // Icon
+            Element iconContainer = DOM4JUtils.generateElement("span", "icon-container", StringUtils.EMPTY);
+            element.add(iconContainer);
+
             String glyphicon = item.getGlyphicon();
             if (dropdownItem) {
                 glyphicon = StringUtils.trimToEmpty(glyphicon);
             }
 
-            if (item.isDisabled()) {
-                element = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, item.getHtmlClasses(), text, glyphicon, roleElement);
-            } else {
-                element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), text, glyphicon,
-                        roleElement);
+            if (item.getCustomizedIcon() != null) {
+                iconContainer.add(item.getCustomizedIcon());
+            } else if (StringUtils.isNotEmpty(glyphicon)) {
+                DOM4JUtils.addGlyphiconText(iconContainer, glyphicon, null);
             }
+
+            // Text
+            DOM4JUtils.addGlyphiconText(element, null, text);
+
 
             // External link indicator
             if (dropdownItem && StringUtils.isNotBlank(item.getTarget())) {
