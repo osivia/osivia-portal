@@ -162,6 +162,45 @@
 	</mbean>
 
 
+    <!-- Link sharing -->
+    <mbean
+        code="org.osivia.portal.core.sharing.link.LinkSharingCommandFactoryService"
+        name="osivia:commandFactory=LinkSharing"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+    <mbean
+        code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+        name="osivia:commandFactory=Delegate,path=link"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="Path">/link</attribute>
+        <depends
+            optional-attribute-name="DelegatingFactory"
+            proxy-type="attribute">portal:commandFactory=Delegating
+        </depends>
+        <depends
+            optional-attribute-name="DelegateFactory"
+            proxy-type="attribute">
+            osivia:commandFactory=LinkSharing
+        </depends>
+    </mbean>
+    <mbean
+        code="org.osivia.portal.core.sharing.link.LinkSharingUrlFactory"
+        name="osivia:urlFactory=LinkSharing"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="Path">/link</attribute>
+        <depends
+            optional-attribute-name="Factory"
+            proxy-type="attribute">portal:urlFactory=Delegating
+        </depends>
+    </mbean>
+
+
 	<!-- Page initialization interceptor -->
 	<mbean code="org.osivia.portal.core.page.InitPageInterceptor"
 		name="osivia:service=Interceptor,type=Command,name=InitPage"
@@ -718,6 +757,19 @@
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
+    
+    <!-- User preferences service -->
+    <mbean
+        code="org.osivia.portal.core.user.UserPreferencesService"
+        name="osivia:service=UserPreferencesService"
+        xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends
+            optional-attribute-name="CmsServiceLocator"
+            proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+    </mbean>
+    
 
 	<!-- Delegator of cmsAjax -->
 	<mbean

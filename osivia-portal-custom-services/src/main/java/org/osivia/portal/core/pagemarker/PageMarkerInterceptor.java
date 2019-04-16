@@ -87,7 +87,6 @@ public class PageMarkerInterceptor extends ControllerInterceptor {
 
 
         // Calcul du nom de portail
-
         boolean computePortal = true;
         if ( cmd instanceof WebCommand)	{
         	// On peut sortir d'une modale par echap ou Fermer

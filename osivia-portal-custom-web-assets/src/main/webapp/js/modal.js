@@ -1,24 +1,23 @@
 $JQry(function() {
 	
 	$JQry("#osivia-modal").each(function(index, element) {
-		var $element = $JQry(element),
-			loaded = $element.data("loaded");
+		var $element = $JQry(element);
+		var loaded = $element.data("loaded");
 		
 		if (!loaded) {
 			$element.on("show.bs.modal", function(event) {
-				var $target = $JQry(event.target),
-                    $dialog = $target.find(".modal-dialog"),
-					$header = $dialog.find(".modal-header"),
-					$footer = $dialog.find(".modal-footer"),
-					$clone = $target.children(".modal-clone"),
-					$window = $dialog.find(".dyna-window"),
-					//url = $target.data("load-url") + " .partial-refresh-window",
-                    url = $target.data("load-url"),
-					callbackFunction = $target.data("load-callback-function"),
-					callbackFunctionArgs = $target.data("load-callback-function-args"),
-					title = $target.data("title"),
-					footer = $target.data("footer"),
-                    size = $target.data("size");
+				var $target = $JQry(event.target);
+                var $dialog = $target.find(".modal-dialog");
+				var $header = $dialog.find(".modal-header");
+				var $footer = $dialog.find(".modal-footer");
+				var $clone = $target.children(".modal-clone");
+				var $window = $dialog.find(".dyna-window");
+                var url = $target.data("load-url");
+				var callbackFunction = $target.data("load-callback-function");
+				var callbackFunctionArgs = $target.data("load-callback-function-args");
+				var title = $target.data("title");
+				var footer = $target.data("footer");
+                var size = $target.data("size");
 
 				// Header
 				if (title) {
@@ -48,11 +47,11 @@ $JQry(function() {
 			});
 
 			$element.on("hide.bs.modal", function(event) {
-				var $target = $JQry(event.target),
-					$window = $target.find(".dyna-window"),
-					callbackFunction = $target.data("callback-function"),
-					callbackFunctionArgs = $target.data("callback-function-args"),
-					callbackUrl = $target.data("callback-url");
+				var $target = $JQry(event.target);
+				var $window = $target.find(".dyna-window");
+				var callbackFunction = $target.data("callback-function");
+				var callbackFunctionArgs = $target.data("callback-function-args");
+				var callbackUrl = $target.data("callback-url");
 				
 				$window.unbind("load");	
 					
@@ -80,15 +79,16 @@ $JQry(function() {
 				$target.removeData("title");
 				$target.removeData("footer");
 				$target.removeData("size");
+				$target.removeData("backdrop");
 			});
 			
 			$element.on("hidden.bs.modal", function(event) {
-				var $target = $JQry(event.target),
-                    $dialog = $target.find(".modal-dialog"),
-					$header = $dialog.find(".modal-header"),
-					$footer = $dialog.find(".modal-footer"),
-					$clone = $target.children(".modal-clone"),
-					$window = $dialog.find(".dyna-window");
+				var $target = $JQry(event.target);
+                var $dialog = $target.find(".modal-dialog");
+				var $header = $dialog.find(".modal-header");
+				var $footer = $dialog.find(".modal-footer");
+				var $clone = $target.children(".modal-clone");
+				var $window = $dialog.find(".dyna-window");
 				
 				// Header
 				$header.addClass("hidden");
@@ -111,22 +111,23 @@ $JQry(function() {
 	
 	
 	$JQry("[data-target='#osivia-modal']").each(function(index, element) {
-		var $element = $JQry(element),
-			loaded = $element.data("loaded");
+		var $element = $JQry(element);
+		var loaded = $element.data("loaded");
 		
 		if (!loaded) {
 			$element.click(function(event) {
-				var $target = $JQry(event.target).closest("a, button"),
-					loadUrl = $target.data("load-url"),
-					loadCallbackFunction = $target.data("load-callback-function"),
-					loadCallbackFunctionArgs = $target.data("load-callback-function-args"),
-					callbackFunction = $target.data("callback-function"),
-					callbackFunctionArgs = $target.data("callback-function-args"),
-					callbackUrl = $target.data("callback-url"),
-					title = $target.data("title"),
-					footer = $target.data("footer"),
-                    size = $target.data("size"),
-					$modal = $JQry("#osivia-modal");
+				var $target = $JQry(event.target).closest("a, button");
+				var loadUrl = $target.data("load-url");
+				var loadCallbackFunction = $target.data("load-callback-function");
+				var loadCallbackFunctionArgs = $target.data("load-callback-function-args");
+				var callbackFunction = $target.data("callback-function");
+				var callbackFunctionArgs = $target.data("callback-function-args");
+				var callbackUrl = $target.data("callback-url");
+				var title = $target.data("title");
+				var footer = $target.data("footer");
+                var size = $target.data("size");
+                var backdrop = $target.data("backdrop");
+				var $modal = $JQry("#osivia-modal");
 	
 				$modal.data("load-url", loadUrl);
 				$modal.data("load-callback-function", loadCallbackFunction);
@@ -137,6 +138,7 @@ $JQry(function() {
 				$modal.data("title", title);
 				$modal.data("footer", footer);
 				$modal.data("size", size);
+				$modal.data("backdrop", backdrop);
 
 				$modal.modal("show");
 			});

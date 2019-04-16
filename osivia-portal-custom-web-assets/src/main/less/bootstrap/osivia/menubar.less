@@ -6,8 +6,19 @@
 
 .breadcrumb, .menubar {
     .dropdown-menu {
-        i {
-            width: @font-size-base + 1px;
+        .icon-container {
+            display: inline-block;
+            width: ~"@{line-height-base}em";
+            vertical-align: bottom;
+            
+            margin-left: -5px;
+            margin-right: 4px;
+            
+            text-align: right;
+            
+            .document-type {
+                font-size: 85%;
+            }
         }
     }
 }
@@ -164,6 +175,12 @@
                         right: floor(@navbar-padding-horizontal / 2);
                     }
                 }
+            }
+            
+            &.text {
+                margin-top: @navbar-padding-vertical;
+                margin-bottom: @navbar-padding-vertical;
+                margin-right: @padding-xs-horizontal;
             }
         }
     }

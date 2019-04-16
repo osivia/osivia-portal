@@ -48,9 +48,11 @@ public class CMSServiceCtx {
     private String creationPath;
 
     private String forcedLivePath;
+    /** Satellite. */
+    private Satellite satellite;
 
 
-    /**
+	/**
      * Constructor.
      */
     public CMSServiceCtx() {
@@ -389,5 +391,23 @@ public class CMSServiceCtx {
 	public void setAsyncCacheRefreshing(boolean isAsyncCacheRefreshing) {
 		this.isAsyncCacheRefreshing = isAsyncCacheRefreshing;
 	}
+
+    /**
+     * Getter for satellite.
+     * 
+     * @return the satellite
+     */
+    public Satellite getSatellite() {
+        return satellite;
+    }
+
+    /**
+     * Setter for satellite.
+     * 
+     * @param satellite the satellite to set
+     */
+    public void setSatellite(Satellite satellite) {
+        this.satellite = satellite;
+    }
 
 }

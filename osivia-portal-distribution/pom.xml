@@ -127,6 +127,10 @@
             <artifactId>commons-io</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
         	<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>${commons-pool}</version>
@@ -181,6 +185,14 @@
 			<artifactId>spring-security-oauth2</artifactId>	
 			<version>${org.springframework.security.oauth2.version}</version>
 		</dependency>
+
+        <!-- JBPM -->
+        <dependency>
+            <groupId>org.jbpm.identity</groupId>
+            <artifactId>jbpm-identity</artifactId>
+            <version>3.2.2</version>
+            <classifier>jdk8</classifier>
+        </dependency>
 
     </dependencies>
 
@@ -241,6 +253,7 @@
                                 <configuration>
                                     <includeGroupIds>
                                         commons,
+                                        org.apache.commons,
                                         org.springframework,
                                         aopalliance
                                     </includeGroupIds>

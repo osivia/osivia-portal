@@ -1,5 +1,7 @@
 package org.osivia.portal.api.menubar;
 
+import org.dom4j.Element;
+
 /**
  * Abstract menubar object.
  *
@@ -11,6 +13,8 @@ public abstract class MenubarObject {
     private String title;
     /** Menubar object glyphicons. */
     private String glyphicon;
+    /** Customized icon DOM element. */
+    private Element customizedIcon;
     /** Menubar object order. */
     private int order;
     /** Disabled menubar object indicator. */
@@ -122,6 +126,24 @@ public abstract class MenubarObject {
      */
     public void setGlyphicon(String glyphicon) {
         this.glyphicon = glyphicon;
+    }
+
+    /**
+     * Getter for customizedIcon.
+     * 
+     * @return the customizedIcon
+     */
+    public Element getCustomizedIcon() {
+        return customizedIcon;
+    }
+
+    /**
+     * Setter for customizedIcon.
+     * 
+     * @param customizedIcon the customizedIcon to set
+     */
+    public void setCustomizedIcon(Element customizedIcon) {
+        this.customizedIcon = customizedIcon;
     }
 
     /**

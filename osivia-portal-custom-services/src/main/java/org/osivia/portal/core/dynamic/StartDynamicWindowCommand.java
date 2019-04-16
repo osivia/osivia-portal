@@ -236,7 +236,7 @@ public class StartDynamicWindowCommand extends DynamicCommand {
 
             InstanceDefinition instance = this.getControllerContext().getController().getInstanceContainer().getDefinition(this.instanceId);
             if (instance == null) {
-                throw new ControllerException("Instance not defined");
+                throw new ControllerException("Instance \"" + this.instanceId + "\" not defined");
             }
 
             for (PortalObject po : page.getChildren(PortalObject.WINDOW_MASK)) {

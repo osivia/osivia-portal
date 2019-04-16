@@ -75,18 +75,6 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
 
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hide(TaskbarItem item, boolean hidden) {
-        if (item instanceof TaskbarItemImpl) {
-            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
-            itemImpl.setHidden(hidden);
-        }
-    }
-
-
-    /**
      * Create generic taskbar item.
      *
      * @param id identifier
@@ -103,6 +91,18 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
         item.setIcon(icon);
         item.setCustomizedClassLoader(PortalGenericPortlet.CLASS_LOADER_CONTEXT.get());
         return item;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hide(TaskbarItem item, boolean hidden) {
+        if (item instanceof TaskbarItemImpl) {
+            TaskbarItemImpl itemImpl = (TaskbarItemImpl) item;
+            itemImpl.setHidden(hidden);
+        }
     }
 
 
@@ -148,8 +148,9 @@ public class TaskbarFactoryImpl implements TaskbarFactory {
     /**
      * {@inheritDoc}
      */
-    public TaskbarTask createTaskbarTask(TaskbarItem item, String path, boolean disabled) {
+    public TaskbarTask createTaskbarTask(TaskbarItem item, String title, String path, boolean disabled) {
         TaskbarTaskImpl task = new TaskbarTaskImpl(item);
+        task.setTitle(title);
         task.setPath(path);
         task.setDisabled(disabled);
         return task;

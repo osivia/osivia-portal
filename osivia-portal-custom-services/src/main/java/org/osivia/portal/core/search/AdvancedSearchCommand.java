@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerException;
@@ -39,7 +38,8 @@ public class AdvancedSearchCommand extends ControllerCommand {
     public static final String SEARCH_PARAMETER_NAME = "search";
     /** Advanced search indicator parameter name. */
     public static final String ADVANCED_SEARCH_PARAMETER_NAME = "advancedSearch";
-
+    /** Advanced search indicator parameter name. */
+    public static final String SELECTORS_PARAMETER_NAME = "selectors";
 
     /** Search keywords selector identifier. */
     private static final String KEYWORDS_SELECTOR_ID = "search";
@@ -53,10 +53,13 @@ public class AdvancedSearchCommand extends ControllerCommand {
     /** Command info. */
     private static final CommandInfo commandInfo = new ActionCommandInfo(false);
 
+
     /** Search content. */
     private final String search;
     /** Advanced search indicator. */
     private final boolean advancedSearch;
+    
+    private Map<String, List<String>> selectors;
 
 
     /**
@@ -68,7 +71,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
 
     /**
      * Constructor.
-     * 
+     *
      * @param advancedSearch advanced search indicator
      */
     public AdvancedSearchCommand(boolean advancedSearch) {
@@ -82,7 +85,7 @@ public class AdvancedSearchCommand extends ControllerCommand {
      * @param advancedSearch advanced search indicator
      */
     public AdvancedSearchCommand(String search, boolean advancedSearch) {
-        this.search = StringEscapeUtils.escapeHtml(search);
+        this.search = search;
         this.advancedSearch = advancedSearch;
     }
 
@@ -93,15 +96,19 @@ public class AdvancedSearchCommand extends ControllerCommand {
     @Override
     public ControllerResponse execute() throws ControllerException {
         // Portal identifier
-        Portal portal = PortalObjectUtils.getPortal(context);
-        
+        Portal portal = PortalObjectUtils.getPortal(this.context);
         String portalId = portal.getId().toString(PortalObjectPath.SAFEST_FORMAT);
 
-        
-        
+        // Selectors
+        //Map<String, List<String>> selectors = new HashMap<String, List<String>>();
+        if(selectors == null) {
+        	selectors = new HashMap<String, List<String>>();
+        }
+
         // Search keywords
-        Map<String, List<String>> selectors = new HashMap<String, List<String>>();
-        selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
+        if (StringUtils.isNotEmpty(this.search)) {
+            selectors.put(KEYWORDS_SELECTOR_ID, Arrays.asList(StringUtils.split(this.search)));
+        }
 
         // Dummy selector
         if (this.advancedSearch) {
@@ -151,5 +158,23 @@ public class AdvancedSearchCommand extends ControllerCommand {
     public boolean isAdvancedSearch() {
         return this.advancedSearch;
     }
+
+    /**
+     * Getter for selectors.
+     * @return
+     */
+	public Map<String, List<String>> getSelectors() {
+		return selectors;
+	}
+
+	/**
+     * Setter for selectors.
+	 * @param selectors
+	 */
+	public void setSelectors(Map<String, List<String>> selectors) {
+		this.selectors = selectors;
+	}
+    
+    
 
 }

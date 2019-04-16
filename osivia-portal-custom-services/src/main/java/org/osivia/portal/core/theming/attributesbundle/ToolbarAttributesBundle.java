@@ -16,12 +16,14 @@ package org.osivia.portal.core.theming.attributesbundle;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -77,6 +79,7 @@ import org.osivia.portal.core.cms.CMSPublicationInfos;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.Satellite;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
@@ -468,26 +471,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
 
         // ECM administration
-        CMSServiceCtx cmsCtx = new CMSServiceCtx();
-        cmsCtx.setServerInvocation(context.getServerInvocation());
-        cmsCtx.setControllerContext(context);
-        Map<String, String> requestParameters = new HashMap<String, String>();
-
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        String ecmAdminUrl;
-        try {
-            ecmAdminUrl = cmsService.getEcmUrl(cmsCtx, EcmViews.globalAdministration, "", requestParameters);
-            String ecmAdminTitle = bundle.getString(InternationalizationConstants.KEY_ECM_ADMINISTRATION);
-            Element ecmAdministation = DOM4JUtils.generateLinkElement(ecmAdminUrl, "ged", null, null, ecmAdminTitle, "halflings halflings-hdd",
-                    AccessibilityRoles.MENU_ITEM);
-
-            Element ecmAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
-            ecmAdministation.add(ecmAdministrationNewWindowGlyph);
-
-            this.addSubMenuElement(configurationMenuUL, ecmAdministation, null);
-        } catch (CMSException e1) {
-            // do nothing
-        }
+        generateEcmAdministration(context, bundle, configurationMenuUL);
 
 
         // Divider
@@ -554,6 +538,69 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, null, cachesInitializationTitle,
                 "glyphicons glyphicons-restart", AccessibilityRoles.MENU_ITEM);
         this.addSubMenuElement(configurationMenuUL, cachesInitialization, null);
+    }
+
+
+    /**
+     * Generate ECM administration.
+     * 
+     * @param controllerContext controller context
+     * @param bundle internationalization bundle
+     * @param ul menu UL DOM element
+     */
+    private void generateEcmAdministration(ControllerContext controllerContext, Bundle bundle, Element ul) {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setServerInvocation(controllerContext.getServerInvocation());
+        cmsContext.setControllerContext(controllerContext);
+
+        // Satellites
+        Set<Satellite> satellites;
+        try {
+            satellites = cmsService.getSatellites();
+        } catch (CMSException e) {
+            satellites = null;
+        }
+        List<Satellite> allSatellites;
+        if (CollectionUtils.isEmpty(satellites)) {
+            allSatellites = new ArrayList<>(1);
+        } else {
+            allSatellites = new ArrayList<>(satellites);
+        }
+        allSatellites.add(0, Satellite.MAIN);
+        
+        
+        // Request parameters
+        Map<String, String> requestParameters = new HashMap<>();
+        
+        for (Satellite satellite : allSatellites) {
+            cmsContext.setSatellite(satellite);
+
+            // URL
+            String url;
+            try {
+                url = cmsService.getEcmUrl(cmsContext, EcmViews.globalAdministration, StringUtils.EMPTY, requestParameters);
+            } catch (CMSException e) {
+                url = HTMLConstants.A_HREF_DEFAULT;
+            }
+            // Title
+            String title;
+            if (satellite.isMain()) {
+                title = bundle.getString("SUBMENU_ECM_MAIN_ADMINISTRATION");
+            } else {
+                title = bundle.getString("SUBMENU_ECM_SATELLITE_ADMINISTRATION", StringUtils.defaultIfBlank(satellite.getLabel(), satellite.getId()));
+            }
+            // Link DOM element
+            Element link = DOM4JUtils.generateLinkElement(url, satellite.getId(), null, null, title, "halflings halflings-hdd", AccessibilityRoles.MENU_ITEM);
+            // New window indicator DOM element
+            Element indicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
+            link.add(indicator);
+
+            this.addSubMenuElement(ul, link, null);
+        }
     }
 
 

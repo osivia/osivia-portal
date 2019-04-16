@@ -27,6 +27,7 @@ import org.osivia.portal.core.cms.CmsCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.share.ShareCommand;
+import org.osivia.portal.core.sharing.link.LinkSharingCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.web.WebCommand;
@@ -87,7 +88,7 @@ public class PortalDelegatingURLFactoryService extends DelegatingURLFactoryServi
             pageMarkerInsertion = false;
         }
 
-        if ((cmd instanceof PermLinkCommand) || (cmd instanceof UpdateTaskCommand)) {
+        if ((cmd instanceof PermLinkCommand) || (cmd instanceof UpdateTaskCommand) || (cmd instanceof LinkSharingCommand)) {
             pageMarkerInsertion = false;
         }
 

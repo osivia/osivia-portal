@@ -16,10 +16,12 @@ package org.osivia.portal.core.urls;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
@@ -80,7 +82,9 @@ import org.osivia.portal.core.pagemarker.PortalCommandFactory;
 import org.osivia.portal.core.portalobjects.CMSTemplatePage;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
+import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.share.ShareCommand;
+import org.osivia.portal.core.sharing.link.LinkSharingCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
 import org.osivia.portal.core.web.IWebIdService;
@@ -336,14 +340,16 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 return controllerContext.renderURL(shareCommand, urlContext, URLFormat.newInstance(false, true));
             }
 
-            // Others permalink (Lists, RSS, ...) : use PermLinkCommand
-            if (portalControllerContext.getRequest() != null) {
-                final Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
-                if (window != null) {
-                    final Page page = window.getPage();
+            if (!IPortalUrlFactory.PERM_LINK_TYPE_PORTLET_RESOURCE.equals(permLinkType)) {
+                // Others permalink (Lists, RSS, ...) : use PermLinkCommand
+                if (portalControllerContext.getRequest() != null) {
+                    final Window window = (Window) portalControllerContext.getRequest().getAttribute("osivia.window");
+                    if (window != null) {
+                        final Page page = window.getPage();
 
-                    if (page instanceof ITemplatePortalObject) {
-                        templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                        if (page instanceof ITemplatePortalObject) {
+                            templateInstanciationParentId = URLEncoder.encode(page.getParent().getId().toString(PortalObjectPath.SAFEST_FORMAT), "UTF-8");
+                        }
                     }
                 }
             }
@@ -1164,6 +1170,66 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         ControllerCommand command = new MonEspaceCommand(portalName);
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+
+        return portalUrl.toString();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSharingLinkUrl(PortalControllerContext portalControllerContext, String id) throws PortletException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // URL context
+        URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
+        // URL format
+        URLFormat urlFormat = URLFormat.newInstance(false, true);
+
+
+        // URL
+        String url;
+
+        if (StringUtils.isEmpty(id)) {
+            url = null;
+        } else {
+            // Command
+            LinkSharingCommand command = new LinkSharingCommand();
+            command.setId(id);
+
+            url = controllerContext.renderURL(command, urlContext, urlFormat);
+        }
+
+        return url;
+    }
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch) throws PortalException {
+
+        return getAdvancedSearchUrl(portalControllerContext, search, advancedSearch, null);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch, Map<String, List<String>> selectors) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Controller command
+        AdvancedSearchCommand command = new AdvancedSearchCommand(search, advancedSearch);
+        if(selectors != null) {
+        	command.setSelectors(selectors);
+    	}
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
 
         return portalUrl.toString();
     }

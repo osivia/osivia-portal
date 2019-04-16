@@ -242,7 +242,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
         List<DynamicWindowBean> newWindows = new ArrayList<DynamicWindowBean>();
 
         for (DynamicWindowBean windowBean : this.getDynamicWindows()) {
-            if (!windowBean.getPageId().equals(dynamicWindowId)) {
+            if (!windowBean.getPageId().toString(PortalObjectPath.SAFEST_FORMAT).equals(dynamicWindowId)) {
                 newWindows.add(windowBean);
             }
         }
@@ -612,7 +612,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	public void setDynamicWindows(List<DynamicWindowBean> dynaWindows) {
 	    this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_windows", dynaWindows);
 
-		// On vide le cache
+	    // On vide le cache
 		getDatas().clear();
 	}
 

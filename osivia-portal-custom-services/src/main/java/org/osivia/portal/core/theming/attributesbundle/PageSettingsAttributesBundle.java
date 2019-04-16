@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -101,6 +102,7 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.Satellite;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -212,7 +214,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_BASE_PATH);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
         this.names.add("osivia.settings.elements");
-        this.names.add("osivia.session.reload.url");
+        this.names.add("osivia.session.reload.urls");
         
         // Layouts and themes collection filter predicate
         this.predicate = new LayoutsAndThemesPredicate();
@@ -1004,6 +1006,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             taskbarItems = null;
         }
 
+        // Satellites
+        Map<String, String> satellites = this.getSatellites();
+        
 
         // Window settings
         List<WindowSettings> windowSettings = new ArrayList<WindowSettings>(windows.size());
@@ -1102,9 +1107,48 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             String priority = window.getDeclaredProperty("osivia.sequence.priority");
             settings.setPriority(priority);
 
+            // Satellites
+            String selectedSatellite = StringUtils.trimToEmpty(window.getDeclaredProperty("osivia.satellite"));
+            settings.setSelectedSatellite(selectedSatellite);
+            if (MapUtils.isNotEmpty(satellites)) {
+                settings.getSatellites().put(StringUtils.EMPTY, bundle.getString("WINDOW_PROPERTIES_MAIN_SATELLITE_LABEL"));
+                settings.getSatellites().putAll(satellites);
+            }
         }
 
         return windowSettings;
+    }
+
+
+    /**
+     * Get satellites.
+     * 
+     * @return satellites
+     */
+    private Map<String, String> getSatellites() {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        
+        Set<Satellite> satellites;
+        try {
+            satellites = cmsService.getSatellites();
+        } catch (CMSException e) {
+            satellites = null;
+        }
+        
+        Map<String, String> result;
+        if (CollectionUtils.isEmpty(satellites)) {
+            result = null;
+        } else {
+            result = new LinkedHashMap<>(satellites.size());
+            for (Satellite satellite : satellites) {
+                String key = satellite.getId();
+                String value = satellite.getLabel();
+                result.put(key, value);
+            }
+        }
+
+        return result;
     }
 
 
@@ -1129,16 +1173,44 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Reload session indicator
         Boolean reload = (Boolean) session.getAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
         if (BooleanUtils.isTrue(reload)) {
-            // URL
-            String url;
+            // Satellites
+            Set<Satellite> satellites;
             try {
-                url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                satellites = cmsService.getSatellites();
             } catch (CMSException e) {
-                url = null;
+                satellites = null;
+            }
+            List<Satellite> allSatellites;
+            if (CollectionUtils.isEmpty(satellites)) {
+                allSatellites = new ArrayList<>(1);
+            } else {
+                allSatellites = new ArrayList<>(satellites);
+            }
+            allSatellites.add(0, Satellite.MAIN);
+
+
+            // URLs
+            List<String> urls = new ArrayList<>(allSatellites.size());
+
+            for (Satellite satellite : allSatellites) {
+                cmsContext.setSatellite(satellite);
+
+                // URL
+                String url;
+                try {
+                    url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                } catch (CMSException e) {
+                    url = null;
+                }
+
+                if (StringUtils.isNotEmpty(url)) {
+                    urls.add(url);
+                }
             }
 
-            attributes.put("osivia.session.reload.url", url);
+            attributes.put("osivia.session.reload.urls", StringUtils.join(urls, "|"));
         }
+
         session.removeAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
     }
 

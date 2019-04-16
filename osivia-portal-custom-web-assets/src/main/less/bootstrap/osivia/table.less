@@ -1,136 +1,106 @@
 //
-// OSIVIA Bootstrap extensions - Table
+// OSIVIA Portal - Table
 // --------------------------------------------------
 
 
-.table {
-    .table-row {
-        padding: @table-cell-padding;
-        
-        border-bottom-style: solid;
-        border-width: 1px;
-        border-color: @table-border-color;
-        
-        &.table-header {
-            position: relative;
-            
-            padding-top: max(@table-cell-padding, @navbar-height - @line-height-computed - @table-cell-padding + 1);
-            
-            border-width: 2px;
-            
-            font-weight: bold;
-            
-            a {
-                color: @text-color;
-                
-                &:hover, &:focus {
-                    color: darken(@text-color, 15%);
-                }
-            }
-            
-            .contextual-toolbar {
-                left: 0;
-                right: 0;
-                z-index: -1;
-                
-                opacity: 0;
-                
-//                white-space: nowrap;
-                
-                &, ~ * {
-                    .transition-property(@transition-property: opacity);
-                    .transition-duration(@transition-duration: 200ms);
-                }
-                
-                &.in {
-                    z-index: @zindex-navbar - 3;
-                    
-                    opacity: 1;
-                }
-                
-                .navbar {
-                    margin-bottom: 0;
-                }
-                
-                
-                @media screen and (max-width: @screen-xs-max) {
-                    position: fixed;
-                    bottom: 0;
-                    
-                    .navbar {
-                        border-style: solid none none;
-                    }
-                }
-                
-                @media screen and (min-width: @screen-sm-min) {
-                    position: absolute;
-                    bottom: -1px;
-                    
-                    .navbar {
-                        .border-bottom-radius(@radius: 0);    
-                    }
-                    
-                    &.in {
-                        ~ * {
-                            opacity: 0;
-                        }
-                    }
-                }
-                
-                @media screen and (min-width: @screen-md-min) {
-                   .container-fluid {
-                       padding: 0;
-                   }
-               }
-            }
-        }
-        
-        &.muted {
-            color: @accessible-gray-light;
-            background-color: #fcfcfc;
-        }
-        
-        fieldset[disabled] {
-            opacity: 0.3;
-        }
+// Layout
+
+.portal-table-container {
+    padding-top: 2 * @line-height-computed + @table-cell-padding + 2;
+    
+    > * {
+        border-color: @gray;
+    }
+}
+
+.portal-table-header-group {
+    border-color: @gray;
+
+    &, a {
+        color: @gray-light;
     }
     
-    
-    .row {
-        margin-left: -@table-cell-padding;
-        margin-right: -@table-cell-padding;
-        
-        [class*="col-"] {
-            padding-left: @table-cell-padding;
-            padding-right: @table-cell-padding;
+    a {
+        i {
+            color: @gray;
         }
-        
-        [class*="visible-"] {
-            margin-bottom: @padding-base-vertical;
-        }
-    }
     
-    
-    &.table-striped {
-        .table-row:not(.table-header) {
-            &:nth-child(odd) {
-                background-color: @table-bg-accent;
+        &:hover, &:focus {
+            color: darken(@gray-light, 15%);
+            
+            i {
+                color: darken(@gray, 15%);
             }
         }
     }
+}
+
+.portal-table-row {
+    color: @gray;
+    border-color: @gray-lighter;
     
-    
-    &.table-hover {
-        .table-row:not(.table-header) {
-            &:hover {
-                background-color: @table-bg-hover;
-            }
+    a {
+        color: @gray;
+        
+        &:hover, &:focus {
+            color: darken(@gray, 15%);
         }
     }
     
-    
-    ul {
-        margin-bottom: 0;
+    &.ui-selecting {
+        background-color: @state-info-bg;
+        border-color: @state-info-border;
     }
     
+    &.ui-selected {
+        background-color: @brand-primary;
+        border-color: darken(@brand-primary, 5%);
+
+        &, a:not(.btn), [class^="text"] {
+            color: #fff;
+        }
+    }
+}
+
+.portal-table-cell-inner {
+    .portal-table-header-group & {
+        min-height: 2 * @line-height-computed + @table-cell-padding;
+        
+        padding-bottom: @table-cell-padding;
+        padding-left: @table-cell-padding;
+    }
+    
+    .portal-table-row-group & {
+        min-height: 2 * @line-height-computed + 2 * @table-cell-padding;
+    
+        padding: floor(@table-cell-padding / 2) @table-cell-padding;
+    }
+}
+
+
+// Toolbar
+
+.portal-table-toolbar-container {
+    min-height: @input-height-small + @padding-small-vertical;
+
+    margin-bottom: -@padding-small-vertical;
+    
+    .btn {
+        margin-bottom: @padding-small-vertical;
+    }
+}
+
+
+// Checkbox
+
+.portal-table-checkbox {
+    a {
+        .portal-table-header-group & {
+            margin-right: @table-cell-padding;
+        }
+    }    
+}
+
+[data-column="checkbox"] {
+    width: 2 * @line-height-computed + 2 * @table-cell-padding;
 }

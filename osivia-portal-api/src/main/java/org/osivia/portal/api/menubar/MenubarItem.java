@@ -72,10 +72,10 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     /** Menubar item counter. */
     private Integer counter;
     /** Menubar item add dropdown divider indicator. */
-    private boolean visible = true;    
-
+    private boolean visible = true;
     /** Menubar item parent. */
-    private final MenubarContainer parent;
+    private MenubarContainer parent;
+
     /** Menubar item data attributes. */
     private final Map<String, String> data;
 
@@ -191,6 +191,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     public MenubarItem clone() {
         MenubarItem clone = new MenubarItem(this.getId(), this.getTitle(), this.getGlyphicon(), this.parent, this.getOrder(), this.url, this.target,
                 this.onclick, this.htmlClasses);
+        clone.setCustomizedIcon(this.getCustomizedIcon());
         clone.setDisabled(this.isDisabled());
         clone.setBreadcrumb(this.isBreadcrumb());
         clone.associatedHTML = this.associatedHTML;
@@ -200,8 +201,8 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         clone.tooltip = this.tooltip;
         clone.divider = this.divider;
         clone.counter = this.counter;
-        clone.data.putAll(this.data);
         clone.visible = this.visible;
+        clone.data.putAll(this.data);
         return clone;
     }
 
@@ -408,19 +409,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         return this.counter;
     }
 
-    
-    
-    public boolean isVisible() {
-		return visible;
-	}
-
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-
-	/**
+    /**
      * Setter for counter.
      *
      * @param counter the counter to set
@@ -430,12 +419,39 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     }
 
     /**
+     * Getter for visible.
+     * 
+     * @return the visible
+     */
+    public boolean isVisible() {
+        return visible;
+    }
+
+    /**
+     * Setter for visible.
+     * 
+     * @param visible the visible to set
+     */
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    /**
      * Getter for parent.
      *
      * @return the parent
      */
     public MenubarContainer getParent() {
         return this.parent;
+    }
+
+    /**
+     * Setter for parent.
+     * 
+     * @param parent the parent to set
+     */
+    public void setParent(MenubarContainer parent) {
+        this.parent = parent;
     }
 
     /**

@@ -179,6 +179,7 @@ public class CmsPageState {
             if ((this.baseCMSPublicationPage != null) && !IPortalUrlFactory.CONTEXTUALIZATION_PORTLET.equals(this.contextualization)) {
                 // Space config
                 CMSItem spaceConfig = this.getCMSService().getSpaceConfig(cmsReadNavContext, this.basePublishPath);
+                // Space template
                 String spaceTemplate = spaceConfig.getProperties().get("pageTemplate");
 
                 if ("1".equals(this.baseCMSPublicationPage.getProperty("osivia.cms.directContentPublisher"))) {
