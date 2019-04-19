@@ -57,13 +57,6 @@
         <easymock.version>3.1</easymock.version>
         <powermock.version>1.6.5</powermock.version>
 
-
-        <!-- Deployment directories -->
-        <deploy.dir>${osivia-portal-deploy-dir}</deploy.dir>
-        <deploy.socle.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/socle</deploy.socle.dir>
-        <deploy.socle-libs.dir>${osivia-portal-deploy-dir}/jbossas/server/production/lib</deploy.socle-libs.dir>
-        <deploy.jbp.dir>${osivia-portal-deploy-dir}/jbossas/server/production/deploy/jboss-portal-ha.sar</deploy.jbp.dir>
-        
         <!-- Sonar -->
         <sonar.skippedModules>
 			osivia-portal-jbp-core-lib,
@@ -850,20 +843,61 @@
                     </configuration>
                 </plugin>
 
-				<!-- Disable strict javadoc checking since java8 -->
+                <!-- Javadocs -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<configuration>
-						<additionalOptions>
-							<additionalOption>-Xdoclint:none</additionalOption>
-						</additionalOptions>
-					</configuration>
+                    <version>3.1.0</version>
+                    <configuration>
+                        <additionalOptions>
+                            <!-- Disable strict javadoc checking since java8 -->
+                            <additionalOption>-Xdoclint:none</additionalOption>
+                        </additionalOptions>
+                    </configuration>
 				</plugin>
 
+                <!-- Sources -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                </plugin>
 
             </plugins>
         </pluginManagement>
+
+
+        <plugins>
+
+            <!-- Javadocs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
 
     </build>
 
