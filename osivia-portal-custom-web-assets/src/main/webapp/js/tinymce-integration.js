@@ -56,7 +56,7 @@ $JQry(function() {
                     }
                 },
 
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css"],
+                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.css"],
                 height: 200,
                 width: "auto",
                 

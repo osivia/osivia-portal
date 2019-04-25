@@ -109,7 +109,7 @@ var currentPageId = '${currentPageId}';
     </script>
 
 
-    <div class="hidden">
+    <div class="d-none">
     
         <!-- Page creation -->
         <div id="page-creation" class="flexbox">
@@ -152,7 +152,7 @@ var currentPageId = '${currentPageId}';
                                                             <input type="text" class="form-control" placeholder="${filterLabel}">
                                                             
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                                                     <i class="halflings halflings-erase"></i>
                                                                     <span class="sr-only">${clearFilterLabel}</span>
                                                                 </button>
@@ -194,7 +194,7 @@ var currentPageId = '${currentPageId}';
                                                             <input type="text" class="form-control" placeholder="${filterLabel}">
                                                             
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                                                     <i class="halflings halflings-erase"></i>
                                                                     <span class="sr-only">${clearFilterLabel}</span>
                                                                 </button>
@@ -218,7 +218,7 @@ var currentPageId = '${currentPageId}';
                                     <span><op:translate key="SAVE" /></span>
                                 </button>
                             
-                                <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <button type="button" class="btn btn-secondary" onclick="closeFancybox()">
                                     <span><op:translate key="CANCEL" /></span>
                                 </button>
                             </div>
@@ -270,7 +270,7 @@ var currentPageId = '${currentPageId}';
                                                             <input type="text" class="form-control" placeholder="${filterLabel}">
                                                             
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                                                     <i class="halflings halflings-erase"></i>
                                                                     <span class="sr-only">${clearFilterLabel}</span>
                                                                 </button>
@@ -312,7 +312,7 @@ var currentPageId = '${currentPageId}';
                                                             <input type="text" class="form-control" placeholder="${filterLabel}">
                                                             
                                                             <span class="input-group-btn">
-                                                                <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                                <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                                                     <i class="halflings halflings-erase"></i>
                                                                     <span class="sr-only">${clearFilterLabel}</span>
                                                                 </button>
@@ -336,7 +336,7 @@ var currentPageId = '${currentPageId}';
                                     <span><op:translate key="SAVE" /></span>
                                 </button>
                             
-                                <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <button type="button" class="btn btn-secondary" onclick="closeFancybox()">
                                     <span><op:translate key="CANCEL" /></span>
                                 </button>
                             </div>
@@ -480,7 +480,7 @@ var currentPageId = '${currentPageId}';
                                 <op:translate key="CHANGE" />
                             </button>
                             
-                            <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                            <button type="button" class="btn btn-secondary" onclick="closeFancybox()">
                                 <op:translate key="CANCEL" />
                             </button>
                         </div>
@@ -520,7 +520,7 @@ var currentPageId = '${currentPageId}';
                                                     <input type="text" class="form-control" placeholder="${filterLabel}">
                                                     
                                                     <span class="input-group-btn">
-                                                        <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                                                        <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                                             <i class="halflings halflings-erase"></i>
                                                             <span class="sr-only">${clearFilterLabel}</span>
                                                         </button>
@@ -544,7 +544,7 @@ var currentPageId = '${currentPageId}';
                                     <span><op:translate key="SAVE" /></span>
                                 </button>
                             
-                                <button type="button" class="btn btn-default" onclick="closeFancybox()">
+                                <button type="button" class="btn btn-secondary" onclick="closeFancybox()">
                                     <span><op:translate key="CANCEL" /></span>
                                 </button>
                             </div>
@@ -584,8 +584,8 @@ var currentPageId = '${currentPageId}';
                     </div>
                     
                     <div class="text-center">
-                        <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_RIGHTS_SUBMIT" /></button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                        <button type="submit" class="btn btn-secondary btn-primary"><op:translate key="PAGE_RIGHTS_SUBMIT" /></button>
+                        <button type="button" class="btn btn-secondary" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </form>
             </div>
@@ -635,8 +635,8 @@ var currentPageId = '${currentPageId}';
                     
                     <div class="row">
                         <div class="col-sm-offset-4 col-sm-8">
-                            <button type="submit" class="btn btn-default btn-primary"><op:translate key="PAGE_CMS_SUBMIT" /></button>
-                            <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                            <button type="submit" class="btn btn-secondary btn-primary"><op:translate key="PAGE_CMS_SUBMIT" /></button>
+                            <button type="button" class="btn btn-secondary" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                         </div>
                     </div>
                 </form>
@@ -658,7 +658,7 @@ var currentPageId = '${currentPageId}';
                             <i class="halflings halflings-alert"></i>
                             <span><op:translate key="YES" /></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="NO" /></button>
+                        <button type="button" class="btn btn-secondary" onclick="closeFancybox()"><op:translate key="NO" /></button>
                     </div>
                 </form>
             </div>
@@ -684,7 +684,7 @@ var currentPageId = '${currentPageId}';
                         <input type="text" class="form-control" placeholder="${filterLabel}">
                         
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
+                            <button type="button" class="btn btn-secondary" title="${clearFilterLabel}" data-toggle="tooltip" data-placement="bottom">
                                 <i class="halflings halflings-erase"></i>
                                 <span class="sr-only">${clearFilterLabel}</span>
                             </button>
@@ -709,7 +709,7 @@ var currentPageId = '${currentPageId}';
                     <formatter:portletsList />
                     
                     <div class="text-center">
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                        <button type="button" class="btn btn-secondary" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                     </div>
                 </form>
             </div>
@@ -730,7 +730,7 @@ var currentPageId = '${currentPageId}';
                             <i class="halflings halflings-alert"></i>
                             <span><op:translate key="YES" /></span>
                         </button>
-                        <button type="button" class="btn btn-default" onclick="closeFancybox()"><op:translate key="NO" /></button>
+                        <button type="button" class="btn btn-secondary" onclick="closeFancybox()"><op:translate key="NO" /></button>
                     </div>
                 </form>
             </div>
@@ -1063,7 +1063,7 @@ rightCellToggle.add(example);
                                 <span><op:translate key="SAVE" /></span>
                             </button>
                             
-                            <button type="button" class="btn btn-default navbar-btn" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
+                            <button type="button" class="btn btn-secondary navbar-btn" onclick="closeFancybox()"><op:translate key="CANCEL" /></button>
                         </div>
                     </div>
                 </form>
@@ -1105,7 +1105,7 @@ rightCellToggle.add(example);
             
             <!-- Footer -->
             <div class="modal-footer hidden">
-                <button type="button" class="btn btn-default" data-dismiss="modal">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
                     <span><op:translate key="CLOSE" /></span>
                 </button>
             </div>

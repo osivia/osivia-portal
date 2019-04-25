@@ -670,8 +670,8 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                 menuHtmlClasses += " dropdown-menu-right";
             }
 
-            // UL
-            Element container = DOM4JUtils.generateElement("ul", menuHtmlClasses, null, null, AccessibilityRoles.MENU);
+            // Dropdown menu
+            Element dropdownMenu = DOM4JUtils.generateDivElement(menuHtmlClasses);
 
             boolean firstDropdown = true;
             for (Entry<MenubarDropdown, List<MenubarItem>> dropdownEntry : menubarItems.entrySet()) {
@@ -681,13 +681,13 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                     firstDropdown = false;
                 } else {
                     // Divider
-                    Element divider = DOM4JUtils.generateElement("li", "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
-                    container.add(divider);
+                    Element divider = DOM4JUtils.generateDivElement("dropdown-divider");
+                    dropdownMenu.add(divider);
                 }
 
                 // Header
-                Element header = DOM4JUtils.generateElement("li", "dropdown-header", dropdown.getTitle(), null, AccessibilityRoles.PRESENTATION);
-                container.add(header);
+                Element header = DOM4JUtils.generateElement("div", "dropdown-header", dropdown.getTitle());
+                dropdownMenu.add(header);
 
                 boolean firstItem = true;
                 for (MenubarItem menubarItem : dropdownEntry.getValue()) {
@@ -695,59 +695,17 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         firstItem = false;
                     } else if (menubarItem.isDivider()) {
                         // Divider
-                        Element divider = DOM4JUtils.generateElement("li", "divider small-divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
-                        container.add(divider);
+                        Element divider = DOM4JUtils.generateDivElement("dropdown-divider small-dropdown-divider");
+                        dropdownMenu.add(divider);
                     }
 
-                    // Menubar item HTML classes
-                    StringBuilder itemHtmlClasses = new StringBuilder();
-                    if (StringUtils.isEmpty(menubarItem.getUrl())) {
-                        itemHtmlClasses.append("dropdown-header ");
-                    }
-                    if (menubarItem.isState()) {
-                        itemHtmlClasses.append("hidden-xs ");
-                    }
-                    if (menubarItem.isAjaxDisabled()) {
-                        itemHtmlClasses.append("no-ajax-link ");
-                    }
-                    if (menubarItem.isActive()) {
-                        itemHtmlClasses.append("active ");
-                    }
-                    if (menubarItem.isDisabled()) {
-                        itemHtmlClasses.append("disabled ");
-                    }
-
-                    // LI
-                    Element li = DOM4JUtils.generateElement("li", itemHtmlClasses.toString(), null, null, AccessibilityRoles.PRESENTATION);
-                    container.add(li);
-
-                    if (StringUtils.isEmpty(menubarItem.getUrl())) {
-                        // Static item
-                        Element staticItem = DOM4JUtils.generateElement("span", menubarItem.getHtmlClasses(), menubarItem.getTitle(),
-                                menubarItem.getGlyphicon(), AccessibilityRoles.MENU_ITEM);
-                        li.add(staticItem);
-                    } else {
-                        // Link
-                        Element link = DOM4JUtils.generateLinkElement(menubarItem.getUrl(), menubarItem.getTarget(), menubarItem.getOnclick(),
-                                menubarItem.getHtmlClasses(), menubarItem.getTitle(), StringUtils.trimToEmpty(menubarItem.getGlyphicon()),
-                                AccessibilityRoles.MENU_ITEM);
-                        if (MapUtils.isNotEmpty(menubarItem.getData())) {
-                            for (Entry<String, String> data : menubarItem.getData().entrySet()) {
-                                DOM4JUtils.addDataAttribute(link, data.getKey(), data.getValue());
-                            }
-                        }
-                        li.add(link);
-
-                        if (StringUtils.isNotBlank(menubarItem.getTarget())) {
-                            Element externalIndicator = DOM4JUtils.generateElement("small", null, null, "glyphicons glyphicons-new-window-alt", null);
-                            link.add(externalIndicator);
-                        }
-                    }
+                    // Dropdown item
+                    Element dropdownItem = this.menubarService.generateItemElement(null, menubarItem, true);
+                    dropdownMenu.add(dropdownItem);
                 }
             }
 
-
-            menu = DOM4JUtils.write(container);
+            menu = DOM4JUtils.write(dropdownMenu);
         }
 
         return menu;

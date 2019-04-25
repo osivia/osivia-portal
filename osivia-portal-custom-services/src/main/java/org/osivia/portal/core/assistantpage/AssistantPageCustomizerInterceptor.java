@@ -458,7 +458,7 @@ public class AssistantPageCustomizerInterceptor extends ControllerInterceptor im
             // Submit
             Element input = new DOMElement(QName.get(HTMLConstants.BUTTON));
             input.addAttribute(QName.get(HTMLConstants.TYPE), HTMLConstants.INPUT_TYPE_SUBMIT);
-            input.addAttribute(QName.get(HTMLConstants.CLASS), "btn btn-default btn-sm");
+            input.addAttribute(QName.get(HTMLConstants.CLASS), "btn btn-secondary btn-sm");
             input.addAttribute(QName.get(HTMLConstants.ONCLICK), "selectPortlet('" + instance.getId() + "', this.form)");
             input.setText(buttonText);
             rightCell.add(input);

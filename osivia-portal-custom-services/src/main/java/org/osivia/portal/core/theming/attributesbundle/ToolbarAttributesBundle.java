@@ -102,18 +102,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
     /** Toolbar menubar state items request attribute name. */
     private static final String TOOLBAR_MENUBAR_STATE_ITEMS_ATTRIBUTE = "osivia.toolbar.menubar.stateItems";
 
-    /** HTML class "toolbar-administration". */
-    private static final String HTML_CLASS_TOOLBAR_ADMINISTRATION = "nav navbar-nav navbar-left";
-
-    /** HTML class "dropdown". */
-    private static final String HTML_CLASS_DROPDOWN = "dropdown";
-    /** HTML class "dropdown-toggle". */
-    private static final String HTML_CLASS_DROPDOWN_TOGGLE = "dropdown-toggle";
-    /** HTML class "dropdown-menu". */
-    private static final String HTML_CLASS_DROPDOWN_MENU = "dropdown-menu";
-    /** HTML class "divider". */
-    private static final String HTML_CLASS_DROPDOWN_DIVIDER = "divider";
-
     /** HTML class "fancybox_refresh". */
     private static final String HTML_CLASS_FANCYFRAME_REFRESH = "fancyframe_refresh";
 
@@ -369,7 +357,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         PageType pageType = PageType.getPageType(page, context);
 
         // Administration root element
-        Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_TOOLBAR_ADMINISTRATION, StringUtils.EMPTY);
+        Element administration = DOM4JUtils.generateElement(HTMLConstants.UL, "navbar-nav", StringUtils.EMPTY);
 
         if (PageCustomizerInterceptor.isAdministrator(context)) {
             // Configuration menu
@@ -417,34 +405,32 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Portal name
         String portalName = page.getPortal().getName();
 
-        // Configuration menu root element
-        Element configurationMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
-        administration.add(configurationMenu);
+        // Configuration menu dropdown element
+        Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
+        administration.add(configurationDropdown);
 
-        // Configuration menu title
-        String menuTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
-        Element configurationMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
-                "glyphicons glyphicons-wrench");
-        DOM4JUtils.addAttribute(configurationMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
-        configurationMenuTitle.add(title);
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-        configurationMenuTitle.add(caret);
-        configurationMenu.add(configurationMenuTitle);
+        // Configuration menu dropdown title
+        String configurationTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
+        Element configurationDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null,
+                "glyphicons glyphicons-basic-wrench");
+        DOM4JUtils.addAttribute(configurationDropdownTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "d-none d-lg-inline", configurationTitle);
+        configurationDropdownTitle.add(title);
+        configurationDropdown.add(configurationDropdownTitle);
 
-        // Configuration menu "ul" node
-        Element configurationMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
-        configurationMenu.add(configurationMenuUL);
+        // Configuration menu
+        Element configurationMenu = DOM4JUtils.generateElement(HTMLConstants.DIV, "dropdown-menu", null);
+        configurationDropdown.add(configurationMenu);
 
         // Menu header
-        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
-        configurationMenuUL.add(header);
+        Element header = DOM4JUtils.generateElement(HTMLConstants.H3, "dropdown-header", configurationTitle);
+        configurationMenu.add(header);
 
         // Home
         String homeURL = context.getServerInvocation().getServerContext().getPortalContextPath();
         String homeTitle = bundle.getString(InternationalizationConstants.KEY_HOME);
-        Element home = DOM4JUtils.generateLinkElement(homeURL, null, null, null, homeTitle, "halflings halflings-home", AccessibilityRoles.MENU_ITEM);
-        this.addSubMenuElement(configurationMenuUL, home, null);
+        Element home = DOM4JUtils.generateLinkElement(homeURL, null, null, "dropdown-item", homeTitle, "glyphicons glyphicons-basic-home");
+        configurationMenu.add(home);
 
         // OSIVIA Portal administration
         String osiviaAdministrationURL = StringUtils.EMPTY;
@@ -455,57 +441,56 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // Do nothing
         }
         String osiviaAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_OSIVIA_ADMINISTRATION);
-        Element osiviaAdministration = DOM4JUtils.generateLinkElement(osiviaAdministrationURL, null, null, HTML_CLASS_FANCYFRAME_REFRESH,
-                osiviaAdministrationTitle, "halflings halflings-cog", AccessibilityRoles.MENU_ITEM);
-        this.addSubMenuElement(configurationMenuUL, osiviaAdministration, null);
+        Element osiviaAdministration = DOM4JUtils.generateLinkElement(osiviaAdministrationURL, null, null, "dropdown-item " + HTML_CLASS_FANCYFRAME_REFRESH,
+                osiviaAdministrationTitle, "glyphicons glyphicons-basic-cogwheel");
+        configurationMenu.add(osiviaAdministration);
 
         // JBoss administration
         ViewPageCommand jbossAdministrationCommand = new ViewPageCommand(this.adminPortalId);
         String jbossAdministrationURL = new PortalURLImpl(jbossAdministrationCommand, context, null, null).toString();
         String jbossAdministrationTitle = bundle.getString(InternationalizationConstants.KEY_JBOSS_ADMINISTRATION);
-        Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, "jboss", null, null, jbossAdministrationTitle,
-                "halflings halflings-dashboard", AccessibilityRoles.MENU_ITEM);
-        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
+        Element jbossAdministration = DOM4JUtils.generateLinkElement(jbossAdministrationURL, "jboss", null, "dropdown-item", jbossAdministrationTitle,
+                "glyphicons glyphicons-basic-server-cogwheel", AccessibilityRoles.MENU_ITEM);
+        Element jbossAdministrationNewWindowGlyph = DOM4JUtils.generateElement(HTMLConstants.SMALL, "d-inline-block align-text-bottom", null, "glyphicons glyphicons-basic-square-new-window", null);
         jbossAdministration.add(jbossAdministrationNewWindowGlyph);
-        this.addSubMenuElement(configurationMenuUL, jbossAdministration, null);
+        configurationMenu.add(jbossAdministration);
 
 
         // ECM administration
-        generateEcmAdministration(context, bundle, configurationMenuUL);
+        this.generateEcmAdministration(context, bundle, configurationMenu);
 
 
         // Divider
-        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(configurationMenu);
 
 
         // Pages list
         String pagesListTitle = bundle.getString(InternationalizationConstants.KEY_PAGES_LIST);
-        Element pagesList = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pagesListTitle, "halflings halflings-sort-by-alphabet",
-                AccessibilityRoles.MENU_ITEM);
+        Element pagesList = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pagesListTitle, "glyphicons glyphicons-basic-sort-alphabetically");
         DOM4JUtils.addDataAttribute(pagesList, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(pagesList, "src", URL_PAGES_LIST);
-        this.addSubMenuElement(configurationMenuUL, pagesList, null);
+        configurationMenu.add(pagesList);
+
 
         // Divider
-        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(configurationMenu);
+
 
         if (InternalConstants.PORTAL_TYPE_STATIC_PORTAL.equals(page.getPortal().getDeclaredProperty(InternalConstants.PORTAL_PROP_NAME_PORTAL_TYPE))) {
             // Page creation
             String pageCreationTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_CREATION);
-            Element pageCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageCreationTitle, "halflings halflings-plus",
-                    AccessibilityRoles.MENU_ITEM);
+            Element pageCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pageCreationTitle, "glyphicons glyphicons-basic-square-plus");
             DOM4JUtils.addDataAttribute(pageCreation, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(pageCreation, "src", URL_PAGE_CREATION);
-            this.addSubMenuElement(configurationMenuUL, pageCreation, null);
+            configurationMenu.add(pageCreation);
         }
 
         // Template creation
         String templateCreationTitle = bundle.getString(InternationalizationConstants.KEY_TEMPLATE_CREATION);
-        Element templateCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, templateCreationTitle, "halflings halflings-plus",
-                AccessibilityRoles.MENU_ITEM);
+        Element templateCreation = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", templateCreationTitle, "glyphicons glyphicons-basic-square-plus");
         DOM4JUtils.addDataAttribute(templateCreation, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(templateCreation, "src", URL_TEMPLATE_CREATION);
-        this.addSubMenuElement(configurationMenuUL, templateCreation, null);
+        configurationMenu.add(templateCreation);
 
         // Page template access
         String pageTemplateAccessTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_TEMPLATE_ACCESS);
@@ -517,27 +502,29 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             pageTemplateAccessURL += "?init-state=true&edit-template-mode=true&original-portal=" + portalName;
 
             // Link
-            Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(pageTemplateAccessURL, null, null, null, pageTemplateAccessTitle,
-                    "glyphicons glyphicons-construction-cone", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, null);
+            Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(pageTemplateAccessURL, null, null, "dropdown-item", pageTemplateAccessTitle,
+                    "glyphicons glyphicons-basic-construction-cone");
+            configurationMenu.add(pageTemplateAccessLink);
         } else {
             // Link
-            Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, pageTemplateAccessTitle,
-                    "glyphicons glyphicons-construction-cone", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(configurationMenuUL, pageTemplateAccessLink, "disabled");
+            Element pageTemplateAccessLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", pageTemplateAccessTitle,
+                    "glyphicons glyphicons-basic-construction-cone");
+            configurationMenu.add(pageTemplateAccessLink);
         }
 
+
         // Divider
-        this.addSubMenuElement(configurationMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(configurationMenu);
+
 
         // Caches initialization
         ViewPageCommand cachesInitializationCommand = new ViewPageCommand(page.getId());
         String cachesInitializationURL = new PortalURLImpl(cachesInitializationCommand, context, null, null).toString();
         cachesInitializationURL += "?init-cache=true";
         String cachesInitializationTitle = bundle.getString(InternationalizationConstants.KEY_CACHES_INITIALIZATION);
-        Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, null, cachesInitializationTitle,
-                "glyphicons glyphicons-restart", AccessibilityRoles.MENU_ITEM);
-        this.addSubMenuElement(configurationMenuUL, cachesInitialization, null);
+        Element cachesInitialization = DOM4JUtils.generateLinkElement(cachesInitializationURL, null, null, "dropdown-item", cachesInitializationTitle,
+                "glyphicons glyphicons-restart");
+        configurationMenu.add(cachesInitialization);
     }
 
 
@@ -546,9 +533,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * 
      * @param controllerContext controller context
      * @param bundle internationalization bundle
-     * @param ul menu UL DOM element
+     * @param menu menu DOM element
      */
-    private void generateEcmAdministration(ControllerContext controllerContext, Bundle bundle, Element ul) {
+    private void generateEcmAdministration(ControllerContext controllerContext, Bundle bundle, Element menu) {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
@@ -594,12 +581,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 title = bundle.getString("SUBMENU_ECM_SATELLITE_ADMINISTRATION", StringUtils.defaultIfBlank(satellite.getLabel(), satellite.getId()));
             }
             // Link DOM element
-            Element link = DOM4JUtils.generateLinkElement(url, satellite.getId(), null, null, title, "halflings halflings-hdd", AccessibilityRoles.MENU_ITEM);
+            Element link = DOM4JUtils.generateLinkElement(url, satellite.getId(), null, "dropdown-item", title, "glyphicons glyphicons-basic-hard-drive-cogwheel");
             // New window indicator DOM element
-            Element indicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
+            Element indicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, "d-inline-block align-text-bottom", null, "glyphicons glyphicons-basic-square-new-window", null);
             link.add(indicator);
 
-            this.addSubMenuElement(ul, link, null);
+            menu.add(link);
         }
     }
 
@@ -617,35 +604,33 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Page type
         PageType pageType = PageType.getPageType(page, context);
 
-        // Edition menu root element
-        Element editionMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
-        administration.add(editionMenu);
+        // Edition dropdown element
+        Element editionDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
+        administration.add(editionDropdown);
 
-        // Edition menu title
-        String menuTitle;
+        // Edition dropdown title
+        String editionTitle;
         if (pageType.isSpace()) {
-            menuTitle = bundle.getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE);
+            editionTitle = bundle.getString(InternationalizationConstants.KEY_SPACE_EDITION_MENU_TITLE);
         } else if (PortalObjectUtils.isTemplate(page)) {
-            menuTitle = bundle.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE);
+            editionTitle = bundle.getString(InternationalizationConstants.KEY_TEMPLATE_EDITION_MENU_TITLE);
         } else {
-            menuTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE);
+            editionTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE);
         }
-        Element editionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
-                "glyphicons glyphicons-pencil");
-        DOM4JUtils.addAttribute(editionMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
-        editionMenuTitle.add(title);
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-        editionMenuTitle.add(caret);
-        editionMenu.add(editionMenuTitle);
+        Element editionDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null,
+                "glyphicons glyphicons-basic-pencil");
+        DOM4JUtils.addAttribute(editionDropdownTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "d-none d-lg-inline", editionTitle);
+        editionDropdownTitle.add(title);
+        editionDropdown.add(editionDropdownTitle);
 
-        // Edition menu "ul" node
-        Element editionMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
-        editionMenu.add(editionMenuUL);
+        // Edition menu node
+        Element editionMenu = DOM4JUtils.generateElement(HTMLConstants.DIV, "dropdown-menu", null);
+        editionDropdown.add(editionMenu);
 
         // Menu header
-        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
-        editionMenuUL.add(header);
+        Element header = DOM4JUtils.generateElement(HTMLConstants.H3, "dropdown-header", editionTitle);
+        editionMenu.add(header);
 
         if (!pageType.isTemplated()) {
             // Icons display
@@ -654,71 +639,65 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String modeHtmlClass;
             if (InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(mode)) {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), StringUtils.EMPTY);
-                modeHtmlClass = "halflings halflings-check";
+                modeHtmlClass = "glyphicons glyphicons-basic-square-selected";
             } else {
                 changeModeCommand = new ChangeModeCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT),
                         InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
-                modeHtmlClass = "halflings halflings-unchecked";
+                modeHtmlClass = "glyphicons glyphicons-basic-square-empty";
             }
             String changeModeURL = new PortalURLImpl(changeModeCommand, context, null, null).toString();
             String changeModeTitle = bundle.getString(InternationalizationConstants.KEY_ICONS_DISPLAY);
 
-            Element iconsDisplay = DOM4JUtils.generateLinkElement(changeModeURL, null, null, null, changeModeTitle, modeHtmlClass,
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(editionMenuUL, iconsDisplay, null);
+            Element iconsDisplay = DOM4JUtils.generateLinkElement(changeModeURL, null, null, "dropdown-item", changeModeTitle, modeHtmlClass);
+            editionMenu.add(iconsDisplay);
 
             // Divider
-            this.addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+            this.addDropdownDivider(editionMenu);
         }
 
         // Page suppression
         String pageSuppressionTitle = bundle.getString(InternationalizationConstants.KEY_SUPPRESSION);
         if (PortalObjectUtils.isPortalDefaultPage(page)) {
-            Element pageSuppression = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, pageSuppressionTitle,
-                    "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(editionMenuUL, pageSuppression, "disabled");
+            Element pageSuppression = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", pageSuppressionTitle,
+                    "glyphicons glyphicons-basic-bin");
+            editionMenu.add(pageSuppression);
         } else {
-            Element pageSuppression = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageSuppressionTitle, "halflings halflings-trash",
-                    AccessibilityRoles.MENU_ITEM);
+            Element pageSuppression = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pageSuppressionTitle, "glyphicons glyphicons-basic-bin");
             DOM4JUtils.addDataAttribute(pageSuppression, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(pageSuppression, "src", URL_PAGE_SUPPRESSION);
-            this.addSubMenuElement(editionMenuUL, pageSuppression, null);
+            editionMenu.add(pageSuppression);
         }
 
         // Page location
         String pageLocationTitle = bundle.getString(InternationalizationConstants.KEY_LOCATION);
-        Element pageLocation = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageLocationTitle, "halflings halflings-move",
-                AccessibilityRoles.MENU_ITEM);
+        Element pageLocation = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pageLocationTitle, "glyphicons glyphicons-basic-block-move");
         DOM4JUtils.addDataAttribute(pageLocation, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(pageLocation, "src", URL_PAGE_LOCATION);
-        this.addSubMenuElement(editionMenuUL, pageLocation, null);
+        editionMenu.add(pageLocation);
 
         // Divider
-        this.addSubMenuElement(editionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(editionMenu);
 
         // Page properties
         String pagePropertiesTitle = bundle.getString(InternationalizationConstants.KEY_PROPERTIES);
-        Element pageProperties = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pagePropertiesTitle, "halflings halflings-cog",
-                AccessibilityRoles.MENU_ITEM);
+        Element pageProperties = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pagePropertiesTitle, "glyphicons glyphicons-basic-cogwheel");
         DOM4JUtils.addDataAttribute(pageProperties, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(pageProperties, "src", URL_PAGE_PROPERTIES);
-        this.addSubMenuElement(editionMenuUL, pageProperties, null);
+        editionMenu.add(pageProperties);
 
         // Page CMS configuration
         String pageCMSTitle = bundle.getString(InternationalizationConstants.KEY_CMS_CONFIGURATION);
-        Element pageCMS = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageCMSTitle, "halflings halflings-cog",
-                AccessibilityRoles.MENU_ITEM);
+        Element pageCMS = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pageCMSTitle, "glyphicons glyphicons-basic-cogwheel");
         DOM4JUtils.addDataAttribute(pageCMS, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(pageCMS, "src", URL_PAGE_CMS);
-        this.addSubMenuElement(editionMenuUL, pageCMS, null);
+        editionMenu.add(pageCMS);
 
         // Page rights
         String pageRightsTitle = bundle.getString(InternationalizationConstants.KEY_RIGHTS);
-        Element pageRights = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, pageRightsTitle, "halflings halflings-cog",
-                AccessibilityRoles.MENU_ITEM);
+        Element pageRights = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", pageRightsTitle, "glyphicons glyphicons-basic-cogwheel");
         DOM4JUtils.addDataAttribute(pageRights, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(pageRights, "src", URL_PAGE_RIGHTS);
-        this.addSubMenuElement(editionMenuUL, pageRights, null);
+        editionMenu.add(pageRights);
     }
 
 
@@ -784,28 +763,26 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String onClickCallback = builder.toString();
 
 
-        // CMS edition menu root element
-        Element cmsEditionMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
-        administration.add(cmsEditionMenu);
+        // CMS edition dropdown element
+        Element cmsEditionDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
+        administration.add(cmsEditionDropdown);
 
-        // CMS edition menu title
-        String menuTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE);
-        Element cmsEditionMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null,
-                "glyphicons glyphicons-pencil");
-        DOM4JUtils.addAttribute(cmsEditionMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
-        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visible-lg-inline", menuTitle);
-        cmsEditionMenuTitle.add(title);
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-        cmsEditionMenuTitle.add(caret);
-        cmsEditionMenu.add(cmsEditionMenuTitle);
+        // CMS edition title
+        String cmsEditionTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE);
+        Element cmsEditionDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null,
+                "glyphicons glyphicons-basic-pencil");
+        DOM4JUtils.addAttribute(cmsEditionDropdownTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
+        Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "d-none d-lg-inline", cmsEditionTitle);
+        cmsEditionDropdownTitle.add(title);
+        cmsEditionDropdown.add(cmsEditionDropdownTitle);
 
-        // CMS edition menu "ul" node
-        Element cmsEditionMenuUL = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
-        cmsEditionMenu.add(cmsEditionMenuUL);
+        // CMS edition menu node
+        Element cmsEditionMenu = DOM4JUtils.generateElement(HTMLConstants.DIV, "dropown-menu", null);
+        cmsEditionDropdown.add(cmsEditionMenu);
 
         // Menu header
-        Element header = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header hidden-lg", menuTitle, null, AccessibilityRoles.PRESENTATION);
-        cmsEditionMenuUL.add(header);
+        Element header = DOM4JUtils.generateElement(HTMLConstants.H3, "dropdown-header", cmsEditionTitle);
+        cmsEditionMenu.add(header);
 
         // Preview required message
         String previewRequired = bundle.getString(InternationalizationConstants.KEY_PTITLE_PREVIEW_MODE_REQUIRED);
@@ -816,9 +793,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String toggleAdvancedToolsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_TOGGLE_ADVANCED_TOOLS);
         String toggleAdvancedToolsGlyphicon;
         if (showAdvancedTools) {
-            toggleAdvancedToolsGlyphicon = "halflings halflings-check";
+            toggleAdvancedToolsGlyphicon = "glyphicons glyphicons-basic-square-selected";
         } else {
-            toggleAdvancedToolsGlyphicon = "halflings halflings-unchecked";
+            toggleAdvancedToolsGlyphicon = "glyphicons glyphicons-basic-square-empty";
         }
         if (modePreview) {
             // URL
@@ -827,20 +804,20 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String toggleAdvancedToolsURL = new PortalURLImpl(toggleAdvancedToolsCommand, context, null, null).toString();
 
             // Link
-            Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(toggleAdvancedToolsURL, null, null, null, toggleAdvancedToolsTitle,
-                    toggleAdvancedToolsGlyphicon, AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, null);
+            Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(toggleAdvancedToolsURL, null, null, "dropdown-item", toggleAdvancedToolsTitle,
+                    toggleAdvancedToolsGlyphicon);
+            cmsEditionMenu.add(toggleAdvancedToolsLink);
         } else {
             // Link
-            Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, toggleAdvancedToolsTitle,
-                    toggleAdvancedToolsGlyphicon, AccessibilityRoles.MENU_ITEM);
+            Element toggleAdvancedToolsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", toggleAdvancedToolsTitle,
+                    toggleAdvancedToolsGlyphicon);
             DOM4JUtils.addAttribute(toggleAdvancedToolsLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, toggleAdvancedToolsLink, "disabled");
+            cmsEditionMenu.add(toggleAdvancedToolsLink);
         }
 
 
         // Divider
-        this.addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(cmsEditionMenu);
 
         // CMS create page
         String cmsCreatePageTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_CREATE);
@@ -849,16 +826,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String cmsCreatePageURL = cmsService.getEcmUrl(cmsCtx, EcmViews.createPage, path, requestParameters);
 
             // Link
-            Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(cmsCreatePageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
-                    cmsCreatePageTitle, "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
+            Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(cmsCreatePageURL, null, onClickCallback, "dropdown-item " + HTML_CLASS_FANCYFRAME_REFRESH,
+                    cmsCreatePageTitle, "glyphicons glyphicons-basic-square-plus");
             DOM4JUtils.addAttribute(cmsCreatePageLink, HTMLConstants.ACCESSKEY, "n");
-            this.addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, null);
+            cmsEditionMenu.add(cmsCreatePageLink);
         } else {
             // Link
-            Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsCreatePageTitle,
-                    "halflings halflings-plus", AccessibilityRoles.MENU_ITEM);
+            Element cmsCreatePageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsCreatePageTitle,
+                    "glyphicons glyphicons-basic-square-plus");
             DOM4JUtils.addAttribute(cmsCreatePageLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsCreatePageLink, "disabled");
+            cmsEditionMenu.add(cmsCreatePageLink);
         }
 
 
@@ -868,56 +845,48 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // URL
             String cmsEditPageURL = cmsService.getEcmUrl(cmsCtx, EcmViews.editPage, path, requestParameters);
 
-            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageURL, null, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH, cmsEditPageTitle,
-                    "halflings halflings-pencil", AccessibilityRoles.MENU_ITEM);
+            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageURL, null, onClickCallback, "dropdown-item " + HTML_CLASS_FANCYFRAME_REFRESH, cmsEditPageTitle,
+                    "glyphicons glyphicons-basic-pencil");
             DOM4JUtils.addAttribute(cmsEditPageLink, HTMLConstants.ACCESSKEY, "e");
-            this.addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
+            cmsEditionMenu.add(cmsEditPageLink);
         } else {
-            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEditPageTitle,
-                    "halflings halflings-pencil", AccessibilityRoles.MENU_ITEM);
+            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsEditPageTitle,
+                    "glyphicons glyphicons-basic-pencil", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsEditPageLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, "disabled");
+            cmsEditionMenu.add(cmsEditPageLink);
         }
 
         // Edit page attachments
         String cmsEditPageAttachmentsTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_ATTACHMENTS);
-        final String editPageAttachmentsGlyph = "halflings halflings-glyph-paperclip";
+        final String editPageAttachmentsGlyph = "glyphicons glyphicons-basic-paperclip";
         if (modePreview) {
             String cmsEditPageAttachmentsURL = cmsService.getEcmUrl(cmsCtx, EcmViews.editAttachments, path, requestParameters);
-
-            final String onclick = "";
-
-
-            Element cmsEditPageLink = DOM4JUtils.generateLinkElement(cmsEditPageAttachmentsURL, onclick, onClickCallback, HTML_CLASS_FANCYFRAME_REFRESH,
-                    cmsEditPageAttachmentsTitle, editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
-
-            addSubMenuElement(cmsEditionMenuUL, cmsEditPageLink, null);
+            Element cmsEditPageAttachmentsLink = DOM4JUtils.generateLinkElement(cmsEditPageAttachmentsURL, null, onClickCallback, "dropdown-item " + HTML_CLASS_FANCYFRAME_REFRESH,
+                    cmsEditPageAttachmentsTitle, editPageAttachmentsGlyph);
+            cmsEditionMenu.add(cmsEditPageAttachmentsLink);
         } else {
-            Element cmsEditPageAttachmentsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEditPageAttachmentsTitle,
-                    editPageAttachmentsGlyph, AccessibilityRoles.MENU_ITEM);
+            Element cmsEditPageAttachmentsLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsEditPageAttachmentsTitle,
+                    editPageAttachmentsGlyph);
             DOM4JUtils.addAttribute(cmsEditPageAttachmentsLink, HTMLConstants.TITLE, previewRequired);
-            addSubMenuElement(cmsEditionMenuUL, cmsEditPageAttachmentsLink, "disabled");
+            cmsEditionMenu.add(cmsEditPageAttachmentsLink);
         }
 
         // Move
         String moveTitle = bundle.getString("MOVE");
         if (basePath.equals(pagePath)) {
-            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
-                    AccessibilityRoles.MENU_ITEM);
+            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", moveTitle, "glyphicons glyphicons-basic-block-move");
             DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_MOVE"));
-            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+            cmsEditionMenu.add(moveLink);
         } else if (modePreview) {
             // URL
             String url = cmsService.getMoveUrl(cmsCtx);
 
-            Element moveLink = DOM4JUtils.generateLinkElement(url, null, null, "fancyframe_refresh", moveTitle, "halflings halflings-move",
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, moveLink, null);
+            Element moveLink = DOM4JUtils.generateLinkElement(url, null, null, "dropdown-item fancyframe_refresh", moveTitle, "glyphicons glyphicons-basic-block-move");
+            cmsEditionMenu.add(moveLink);
         } else {
-            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, moveTitle, "halflings halflings-move",
-                    AccessibilityRoles.MENU_ITEM);
+            Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", moveTitle, "glyphicons glyphicons-basic-block-move");
             DOM4JUtils.addAttribute(moveLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, moveLink, "disabled");
+            cmsEditionMenu.add(moveLink);
         }
 
 
@@ -926,14 +895,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String reorderUrl = cmsService.getReorderUrl(cmsCtx);
         if (reorderUrl != null) {
             if (modePreview) {
-                Element reorderLink = DOM4JUtils.generateLinkElement(reorderUrl, null, null, "fancyframe_refresh", reorderTitle, "halflings halflings-sort",
-                        AccessibilityRoles.MENU_ITEM);
-                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, null);
+                Element reorderLink = DOM4JUtils.generateLinkElement(reorderUrl, null, null, "dropdown-item fancyframe_refresh", reorderTitle, "glyphicons glyphicons-basic-sort");
+                cmsEditionMenu.add(reorderLink);
             } else {
-                Element reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, reorderTitle, "halflings halflings-sort",
-                        AccessibilityRoles.MENU_ITEM);
+                Element reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", reorderTitle, "glyphicons glyphicons-basic-sort");
                 DOM4JUtils.addAttribute(reorderLink, HTMLConstants.TITLE, previewRequired);
-                this.addSubMenuElement(cmsEditionMenuUL, reorderLink, "disabled");
+                cmsEditionMenu.add(reorderLink);
             }
         }
 
@@ -947,25 +914,24 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String cmsPublishURL = context.renderURL(cmsPublishCommand, urlContext, URLFormat.newInstance(true, true));
 
             // Link
-            Element cmsPublishLink = DOM4JUtils.generateLinkElement(cmsPublishURL, null, null, null, cmsPublishTitle, "halflings halflings-ok-circle",
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, null);
+            Element cmsPublishLink = DOM4JUtils.generateLinkElement(cmsPublishURL, null, null, "dropdown-item", cmsPublishTitle, "glyphicons glyphicons-basic-circle-check");
+            cmsEditionMenu.add(cmsPublishLink);
         } else {
             // Link
-            Element cmsPublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsPublishTitle,
-                    "halflings halflings-ok-circle", AccessibilityRoles.MENU_ITEM);
+            Element cmsPublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsPublishTitle,
+                    "glyphicons glyphicons-basic-circle-check");
             DOM4JUtils.addAttribute(cmsPublishLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsPublishLink, "disabled");
+            cmsEditionMenu.add(cmsPublishLink);
         }
 
 
         // CMS unpublish document
         String cmsUnpublishTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_UNPUBLISH);
         if (basePath.equals(pagePath)) {
-            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsUnpublishTitle,
-                    "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
+            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsUnpublishTitle,
+                    "glyphicons glyphicons-basic-circle-remove");
             DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_UNPUBLISH"));
-            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
+            cmsEditionMenu.add(cmsUnpublishLink);
         } else if (modePreview && published) {
             // URL
             CMSPublishDocumentCommand cmsUnpublishCommand = new CMSPublishDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path,
@@ -973,20 +939,19 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             String cmsUnpublishURL = context.renderURL(cmsUnpublishCommand, urlContext, URLFormat.newInstance(true, true));
 
             // Link
-            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(cmsUnpublishURL, null, null, null, cmsUnpublishTitle, "halflings halflings-remove-circle",
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, null);
+            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(cmsUnpublishURL, null, null, "dropdown-item", cmsUnpublishTitle, "glyphicons glyphicons-basic-circle-remove");
+            cmsEditionMenu.add(cmsUnpublishLink);
         } else {
             // Link
-            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsUnpublishTitle,
-                    "halflings halflings-remove-circle", AccessibilityRoles.MENU_ITEM);
+            Element cmsUnpublishLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsUnpublishTitle,
+                    "glyphicons glyphicons-basic-circle-remove");
             if (!modePreview) {
                 DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, previewRequired);
             } else {
                 String publishRequired = bundle.getString(InternationalizationConstants.KEY_PTITLE_PUBLISH_REQUIRED);
                 DOM4JUtils.addAttribute(cmsUnpublishLink, HTMLConstants.TITLE, publishRequired);
             }
-            this.addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
+            cmsEditionMenu.add(cmsUnpublishLink);
         }
 
         // Erase modifications
@@ -994,27 +959,24 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (beingModified && modePreview && published) {
             String cmsEraseModificationURL = this.urlFactory.getEcmCommandUrl(portalControllerContext, path, EcmCommonCommands.eraseModifications);
 
-            cmsEditionMenu.add(this.generateEraseFancyBox(bundle, cmsEraseModificationURL));
+            cmsEditionDropdown.add(this.generateEraseFancyBox(bundle, cmsEraseModificationURL));
 
-            Element cmsEraseModificationLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, cmsEraseTitle, "halflings halflings-erase",
-                    AccessibilityRoles.MENU_ITEM);
+            Element cmsEraseModificationLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", cmsEraseTitle, "glyphicons glyphicons-basic-eraser");
             DOM4JUtils.addDataAttribute(cmsEraseModificationLink, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(cmsEraseModificationLink, "src", "#erase_cms_page");
-            this.addSubMenuElement(cmsEditionMenuUL, cmsEraseModificationLink, null);
+            cmsEditionMenu.add(cmsEraseModificationLink);
         } else {
-            Element eraseLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsEraseTitle, "halflings halflings-erase",
-                    AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, eraseLink, "disabled");
+            Element eraseLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsEraseTitle, "glyphicons glyphicons-basic-eraser");
+            cmsEditionMenu.add(eraseLink);
         }
 
         // CMS delete document
         String cmsDeleteTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_DELETE);
         if (basePath.equals(pagePath)) {
             // Link
-            Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle, "halflings halflings-trash",
-                    AccessibilityRoles.MENU_ITEM);
+            Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDeleteTitle, "glyphicons glyphicons-basic-bin");
             DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_ROOT_SUPPRESSION"));
-            this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+            cmsEditionMenu.add(cmsDeleteLink);
         } else if (modePreview) {
             // User can only delete a document which its parent is editable.
             CMSObjectPath parent = CMSObjectPath.parse(pagePath).getParent();
@@ -1029,33 +991,31 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
                 // Inline fancybox
                 Element divDeleteFancyBox = this.generateDeleteFancyBox(bundle, cmsDeleteURL);
-                cmsEditionMenu.add(divDeleteFancyBox);
+                cmsEditionDropdown.add(divDeleteFancyBox);
 
                 // Link
-                Element cmsDeleteLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, null, cmsDeleteTitle, "halflings halflings-trash",
-                        AccessibilityRoles.MENU_ITEM);
+                Element cmsDeleteLink = DOM4JUtils.generateLinkElement("javascript:;", null, null, "dropdown-item", cmsDeleteTitle, "glyphicons glyphicons-basic-bin");
                 DOM4JUtils.addDataAttribute(cmsDeleteLink, "fancybox", StringUtils.EMPTY);
                 DOM4JUtils.addDataAttribute(cmsDeleteLink, "src", "#delete_cms_page");
-                this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, null);
+                cmsEditionMenu.add(cmsDeleteLink);
             } else {
                 // Link
-                Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle,
-                        "halflings halflings-trash", AccessibilityRoles.MENU_ITEM);
+                Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDeleteTitle,
+                        "glyphicons glyphicons-basic-bin");
                 String deleteForbidden = bundle.getString(InternationalizationConstants.KEY_PTITLE_DELETE_FORBIDDEN);
                 DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, deleteForbidden);
-                this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+                cmsEditionMenu.add(cmsDeleteLink);
             }
         } else {
             // Link
-            Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDeleteTitle, "halflings halflings-trash",
-                    AccessibilityRoles.MENU_ITEM);
+            Element cmsDeleteLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDeleteTitle, "glyphicons glyphicons-basic-bin");
             DOM4JUtils.addAttribute(cmsDeleteLink, HTMLConstants.TITLE, previewRequired);
-            this.addSubMenuElement(cmsEditionMenuUL, cmsDeleteLink, "disabled");
+            cmsEditionMenu.add(cmsDeleteLink);
         }
 
 
         // Divider
-        this.addSubMenuElement(cmsEditionMenuUL, null, HTML_CLASS_DROPDOWN_DIVIDER);
+        this.addDropdownDivider(cmsEditionMenu);
 
 
         // URL
@@ -1065,9 +1025,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String sitemapUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties,
                 PortalUrlType.POPUP);
         // Link
-        Element sitemapLink = DOM4JUtils.generateLinkElement(sitemapUrl, null, null, HTML_CLASS_FANCYFRAME_REFRESH,
-                bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "halflings halflings-map-marker", AccessibilityRoles.MENU_ITEM);
-        this.addSubMenuElement(cmsEditionMenuUL, sitemapLink, null);
+        Element sitemapLink = DOM4JUtils.generateLinkElement(sitemapUrl, null, null, "dropdown-item" + HTML_CLASS_FANCYFRAME_REFRESH,
+                bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "glyphicons glyphicons-basic-map-marker");
+        cmsEditionMenu.add(sitemapLink);
 
 
         // Media library
@@ -1075,16 +1035,16 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String mediaLibraryURL = cmsService.getEcmUrl(cmsCtx, EcmViews.gotoMediaLibrary, basePath, requestParameters);
         if (StringUtils.isNotBlank(mediaLibraryURL)) {
             // Link
-            Element mediaLibraryLink = DOM4JUtils.generateLinkElement(mediaLibraryURL, HTMLConstants.TARGET_NEW_WINDOW, null, null, mediaLibraryTitle,
-                    "halflings halflings-picture", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, null);
+            Element mediaLibraryLink = DOM4JUtils.generateLinkElement(mediaLibraryURL, HTMLConstants.TARGET_NEW_WINDOW, null, "dropdown-item", mediaLibraryTitle,
+                    "glyphicons glyphicons-basic-book-library");
+            cmsEditionMenu.add(mediaLibraryLink);
         } else {
             // Link
-            Element mediaLibraryLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, mediaLibraryTitle,
-                    "halflings halflings-picture", AccessibilityRoles.MENU_ITEM);
+            Element mediaLibraryLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", mediaLibraryTitle,
+                    "glyphicons glyphicons-basic-book-library");
             String noMediaLib = bundle.getString(InternationalizationConstants.KEY_PTITLE_NO_MEDIA_LIB);
             DOM4JUtils.addAttribute(mediaLibraryLink, HTMLConstants.TITLE, noMediaLib);
-            this.addSubMenuElement(cmsEditionMenuUL, mediaLibraryLink, "disabled");
+            cmsEditionMenu.add(mediaLibraryLink);
         }
     }
 
@@ -1141,14 +1101,14 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
                 CmsPermissionHelper.CMS_VERSION_ONLINE, editionMode);
         String onlineURL = new PortalURLImpl(onlineCommand, context, null, null).toString();
 
-        Element online = DOM4JUtils.generateLinkElement(onlineURL, null, null, null, null, "glyphicons glyphicons-global");
+        Element online = DOM4JUtils.generateLinkElement(onlineURL, null, null, null, null, "glyphicons glyphicons-basic-globe");
 
         if (CmsPermissionHelper.getCurrentCmsVersion(context).equals(CmsPermissionHelper.CMS_VERSION_ONLINE)) {
             DOM4JUtils.addAttribute(online, HTMLConstants.CLASS, "btn btn-success active");
             Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, onlineTitle);
             online.add(displayText);
         } else {
-            DOM4JUtils.addAttribute(online, HTMLConstants.CLASS, "btn btn-default");
+            DOM4JUtils.addAttribute(online, HTMLConstants.CLASS, "btn btn-secondary");
             DOM4JUtils.addTooltip(online, onlineTitle);
         }
 
@@ -1168,7 +1128,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, previewTitle);
             preview.add(displayText);
         } else {
-            DOM4JUtils.addAttribute(preview, HTMLConstants.CLASS, "btn btn-default");
+            DOM4JUtils.addAttribute(preview, HTMLConstants.CLASS, "btn btn-secondary");
             DOM4JUtils.addTooltip(preview, previewTitle);
         }
 
@@ -1188,7 +1148,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             Element displayText = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, editionTitle);
             edition.add(displayText);
         } else {
-            DOM4JUtils.addAttribute(edition, HTMLConstants.CLASS, "btn btn-default");
+            DOM4JUtils.addAttribute(edition, HTMLConstants.CLASS, "btn btn-secondary");
             DOM4JUtils.addTooltip(edition, editionTitle);
         }
 
@@ -1245,13 +1205,13 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
         // OK button
-        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning", bundle.getString("YES"), "halflings halflings-alert",
+        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-warning", bundle.getString("YES"), "halflings halflings-alert",
                 null);
         DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         form.add(okButton);
 
         // Cancel button
-        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", bundle.getString("NO"));
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary", bundle.getString("NO"));
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
         form.add(cancelButton);
@@ -1263,7 +1223,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * Generate erase confirmation fancybox.
      *
      * @param bundle bundle
-     * @param urlDelete the command for delete
+     * @param urlErase the command for delete
      * @return fancybox DOM element
      * @throws UnsupportedEncodingException
      */
@@ -1281,12 +1241,12 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         container.add(message);
 
         // OK button
-        Element okButton = DOM4JUtils.generateLinkElement(urlErase, null, null, "btn btn-default btn-warning", bundle.getString("YES"),
+        Element okButton = DOM4JUtils.generateLinkElement(urlErase, null, null, "btn btn-secondary btn-warning", bundle.getString("YES"),
                 "halflings halflings-alert");
         container.add(okButton);
 
         // Cancel button
-        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", bundle.getString("NO"));
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary", bundle.getString("NO"));
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
         container.add(cancelButton);
@@ -1346,26 +1306,24 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
 
-        // Userbar menu root element
-        Element userbarMenu = DOM4JUtils.generateElement(HTMLConstants.LI, HTML_CLASS_DROPDOWN, null);
+        // Userbar dropdown element
+        Element userbarDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
 
         // Userbar menu title
-        Element userbarMenuTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, HTML_CLASS_DROPDOWN_TOGGLE, null);
-        DOM4JUtils.addAttribute(userbarMenuTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
+        Element userbarDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null);
+        DOM4JUtils.addAttribute(userbarDropdownTitle, HTMLConstants.DATA_TOGGLE, "dropdown");
         if (userAvatarSrc != null) {
             Element avatar = DOM4JUtils.generateElement(HTMLConstants.IMG, "avatar", null);
             DOM4JUtils.addAttribute(avatar, HTMLConstants.SRC, userAvatarSrc);
-            userbarMenuTitle.add(avatar);
+            userbarDropdownTitle.add(avatar);
         }
         Element displayName = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, userName);
-        userbarMenuTitle.add(displayName);
-        Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
-        userbarMenuTitle.add(caret);
-        userbarMenu.add(userbarMenuTitle);
+        userbarDropdownTitle.add(displayName);
+        userbarDropdown.add(userbarDropdownTitle);
 
-        // Userbar menu "ul" node
-        Element userbarMenuUl = DOM4JUtils.generateElement(HTMLConstants.UL, HTML_CLASS_DROPDOWN_MENU, null, null, AccessibilityRoles.MENU);
-        userbarMenu.add(userbarMenuUl);
+        // Userbar menu node
+        Element userbarMenu = DOM4JUtils.generateElement(HTMLConstants.DIV, "dropdown-menu", null);
+        userbarDropdown.add(userbarMenu);
 
         if (principal != null) {
             // My space
@@ -1378,44 +1336,39 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             if (person != null) {
                 // View profile
 
-                Element viewProfile = DOM4JUtils.generateLinkElement(myProfileUrl, null, null, null,
-                        bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "halflings halflings-user", AccessibilityRoles.MENU_ITEM);
-                this.addSubMenuElement(userbarMenuUl, viewProfile, null);
+                Element viewProfile = DOM4JUtils.generateLinkElement(myProfileUrl, null, null, "dropdown-item",
+                        bundle.getString(InternationalizationConstants.KEY_MY_PROFILE), "glyphicons glyphicons-basic-user");
+                userbarMenu.add(viewProfile);
 
             }
 
 
             // Logout
-            Element signOut = DOM4JUtils.generateLinkElement(signOutURL, null, null, null, bundle.getString(InternationalizationConstants.KEY_LOGOUT),
-                    "halflings halflings-log-out", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(userbarMenuUl, signOut, null);
+            Element signOut = DOM4JUtils.generateLinkElement(signOutURL, null, null, "dropdown-item", bundle.getString(InternationalizationConstants.KEY_LOGOUT),
+                    "glyphicons glyphicons-basic-log-out");
+            userbarMenu.add(signOut);
         } else {
             // Login
-            Element login = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, null, bundle.getString(InternationalizationConstants.KEY_LOGIN),
-                    "halflings halflings-log-in", AccessibilityRoles.MENU_ITEM);
-            this.addSubMenuElement(userbarMenuUl, login, null);
+            Element login = DOM4JUtils.generateLinkElement(mySpaceURL, null, null, "dropdown-item", bundle.getString(InternationalizationConstants.KEY_LOGIN),
+                    "glyphicons glyphicons-basic-log-in");
+            userbarMenu.add(login);
         }
 
 
         // Write HTML content
-        return DOM4JUtils.write(userbarMenu);
+        return DOM4JUtils.write(userbarDropdown);
     }
 
 
     /**
-     * Add sub-menu element.
-     *
-     * @param ul current "ul" element
-     * @param element element to add, may be null
-     * @param htmlClass HTML class, may be null
+     * Add dropdown divider.
+     * @param menu dropdown menu
      */
-    private void addSubMenuElement(Element ul, Element element, String htmlClass) {
-        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClass, StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
-        if (element != null) {
-            li.add(element);
-        }
-        ul.add(li);
+    private void addDropdownDivider(Element menu) {
+        Element divider = DOM4JUtils.generateDivElement("dropdown-divider");
+        menu.add(divider);
     }
+
 
 
     /**

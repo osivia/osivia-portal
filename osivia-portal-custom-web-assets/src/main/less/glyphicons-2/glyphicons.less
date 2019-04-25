@@ -1,7 +1,7 @@
-@glyphicons-default-size: 1.428571429em; // 20/14;
+@glyphicons-default-size: 1.5em;
 
 
-.glyphicons-2 {
+.glyphicons, .halflings {
     display: inline-flex;
     align-self: center;
     
@@ -19,7 +19,11 @@
         -webkit-mask-repeat: no-repeat;
         mask-size: contain;
         -webkit-mask-size: contain;
-        
+
+        @url: "../components/glyphicons-2.0/basic/glyphicons-basic-587-bug.svg";
+        mask-image: url("@{url}");
+        -webkit-mask-image: url("@{url}");
+
         background-color: currentColor;
     }
 }
@@ -27,15 +31,15 @@
 
 .make-glyphicons(@type, @number, @name, @legacy1, @legacy2, @legacy3) {
     @url: "../components/glyphicons-2.0/@{type}/glyphicons-@{type}-@{number}-@{name}.svg";
-    .glyphicons-2-@{type}-@{name} {
+    .glyphicons-@{type}-@{name} {
         &::before {
             mask-image: url("@{url}");
             -webkit-mask-image: url("@{url}");
         }
     }
-//    .make-glyphicons-legacy(@type, @legacy1, @url);
-//    .make-glyphicons-legacy(@type, @legacy2, @url);
-//    .make-glyphicons-legacy(@type, @legacy3, @url);
+    .make-glyphicons-legacy(@type, @legacy1, @url);
+    .make-glyphicons-legacy(@type, @legacy2, @url);
+    .make-glyphicons-legacy(@type, @legacy3, @url);
 }
 
 .make-glyphicons(@type, @number, @name, @legacy1, @legacy2) {

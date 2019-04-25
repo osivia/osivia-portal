@@ -77,6 +77,15 @@
                     <outputFileFormat>{fileName}.min.css</outputFileFormat>
                 </configuration>
             </plugin>
+
+            <!-- SASS -->
+            <plugin>
+                <groupId>com.github.warmuuh</groupId>
+                <artifactId>libsass-maven-plugin</artifactId>
+                <configuration>
+                    <outputStyle>nested</outputStyle>
+                </configuration>
+            </plugin>
             
             <!-- YUI compressor -->
             <plugin>
