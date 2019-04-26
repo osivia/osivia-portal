@@ -1118,4 +1118,6 @@ rightCellToggle.add(example);
 
 <!-- Reload -->
 <c:set var="urls" value="${requestScope['osivia.session.reload.urls']}" />
-<div id="session-reload" data-reload="true" data-urls="${urls}"></div>
+<c:if test="${not empty urls}">
+    <div id="session-reload" data-reload="true" data-urls="${urls}"></div>
+</c:if>
