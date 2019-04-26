@@ -823,15 +823,14 @@
                     <version>1.8</version>
                 </plugin>
 
-                <!-- Eclipse -->
+                <!-- Disable strict javadoc checking since java8 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.10</version>
+                    <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
-                        <downloadJavadocs>true</downloadJavadocs>
-                        <downloadSources>true</downloadSources>
-                        <wtpversion>2.0</wtpversion>
+                        <additionalOptions>
+                            <additionalOption>-Xdoclint:none</additionalOption>
+                        </additionalOptions>
                     </configuration>
                 </plugin>
             
