@@ -14,20 +14,23 @@ $JQry(document).ready(function() {
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-file",
-						docOpen: "glyphicons glyphicons-file",
-						error: "halflings halflings-exclamation-sign",
-						expanderClosed: "glyphicons glyphicons-collapse text-primary-hover",
-						expanderLazy: "glyphicons glyphicons-collapse text-primary-hover",
-						expanderOpen: "glyphicons glyphicons-expand text-primary-hover",
-						folder: "glyphicons glyphicons-folder-closed",
-						folderOpen: "glyphicons glyphicons-folder-open",
-						loading: "halflings halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-halflings-file",
+						docOpen: "glyphicons glyphicons-halflings-file",
+						checkbox: "glyphicons glyphicons-halflings-square-empty",
+						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
+						error: "glyphicons glyphicons-halflings-square-alert",
+						expanderClosed: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderLazy: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderOpen: "glyphicons glyphicons-halflings-square-triangle-down",
+						folder: "glyphicons glyphicons-halflings-folder",
+						folderOpen: "glyphicons glyphicons-halflings-folder-open",
+						loading: "glyphicons glyphicons-halflings-hourglass text-info"
 					}
-				}
+				},
 			};
 		
 		if (url !== undefined) {
@@ -69,18 +72,21 @@ $JQry(document).ready(function() {
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-file",
-						docOpen: "glyphicons glyphicons-file",
-						error: "halflings halflings-exclamation-sign",
-						expanderClosed: "glyphicons glyphicons-collapse text-primary-hover",
-						expanderLazy: "glyphicons glyphicons-collapse text-primary-hover",
-						expanderOpen: "glyphicons glyphicons-expand text-primary-hover",
-						folder: "glyphicons glyphicons-folder-closed",
-						folderOpen: "glyphicons glyphicons-folder-open",
-						loading: "halflings halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-halflings-file",
+						docOpen: "glyphicons glyphicons-halflings-file",
+						checkbox: "glyphicons glyphicons-halflings-square-empty",
+						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
+						error: "glyphicons glyphicons-halflings-square-alert",
+						expanderClosed: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderLazy: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderOpen: "glyphicons glyphicons-halflings-square-triangle-down",
+						folder: "glyphicons glyphicons-halflings-folder",
+						folderOpen: "glyphicons glyphicons-halflings-folder-open",
+						loading: "glyphicons glyphicons-halflings-hourglass text-info"
 					}
 				},
 				
@@ -138,18 +144,21 @@ $JQry(document).ready(function() {
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-file",
-						docOpen: "glyphicons glyphicons-file",
-						error: "halflings halflings-exclamation-sign text-error",
-						expanderClosed: "glyphicons glyphicons-collapse",
-						expanderLazy: "glyphicons glyphicons-collapse",
-						expanderOpen: "glyphicons glyphicons-expand",
-						folder: "glyphicons glyphicons-folder-closed",
-						folderOpen: "glyphicons glyphicons-folder-open",
-						loading: "halflings halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-halflings-file",
+						docOpen: "glyphicons glyphicons-halflings-file",
+						checkbox: "glyphicons glyphicons-halflings-square-empty",
+						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
+						error: "glyphicons glyphicons-halflings-square-alert",
+						expanderClosed: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderLazy: "glyphicons glyphicons-halflings-square-triangle-right",
+						expanderOpen: "glyphicons glyphicons-halflings-square-triangle-down",
+						folder: "glyphicons glyphicons-halflings-folder",
+						folderOpen: "glyphicons glyphicons-halflings-folder-open",
+						loading: "glyphicons glyphicons-halflings-hourglass text-info"
 					}
 				},
 				
@@ -225,18 +234,21 @@ $JQry(document).ready(function() {
 				url : url,
 				cache : false
 			},
-			
+
 			glyph : {
 				map : {
-					doc : "glyphicons glyphicons-file",
-					docOpen: "glyphicons glyphicons-file",
-					error: "halflings halflings-exclamation-sign",
-					expanderClosed: "glyphicons glyphicons-collapse text-primary-hover",
-					expanderLazy: "glyphicons glyphicons-collapse text-primary-hover",
-					expanderOpen: "glyphicons glyphicons-expand text-primary-hover",
-					folder: "glyphicons glyphicons-folder-closed",
-					folderOpen: "glyphicons glyphicons-folder-open",
-					loading: "halflings halflings-hourglass text-info"
+					doc : "glyphicons glyphicons-halflings-file",
+					docOpen: "glyphicons glyphicons-halflings-file",
+					checkbox: "glyphicons glyphicons-halflings-square-empty",
+					checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
+					checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
+					error: "glyphicons glyphicons-halflings-square-alert",
+					expanderClosed: "glyphicons glyphicons-halflings-square-triangle-right",
+					expanderLazy: "glyphicons glyphicons-halflings-square-triangle-right",
+					expanderOpen: "glyphicons glyphicons-halflings-square-triangle-down",
+					folder: "glyphicons glyphicons-halflings-folder",
+					folderOpen: "glyphicons glyphicons-halflings-folder-open",
+					loading: "glyphicons glyphicons-halflings-hourglass text-info"
 				}
 			},
 			

@@ -1,0 +1,126 @@
+@import "variables";
+
+
+$fancytree-icon-size: 1.25rem;
+$fancytree-padding: .25rem;
+
+
+.fancytree {
+  user-select: none;
+
+  ul {
+    padding-left: 0;
+
+    list-style: none;
+
+    ul {
+      padding-left: $fancytree-icon-size + $fancytree-padding;
+    }
+  }
+}
+
+
+.fancytree-container {
+  outline: none;
+}
+
+
+.fancytree-node {
+  display: flex;
+  align-items: center;
+
+  padding: $fancytree-padding;
+
+  cursor: pointer;
+
+  @include text-truncate;
+  @include border-radius($thumbnail-border-radius);
+
+  &:hover {
+    background-color: $light;
+  }
+
+  &.current {
+    color: $primary;
+    font-weight: $font-weight-bold;
+  }
+
+  &.not-allowed {
+    > :not(.fancytree-expander) {
+      cursor: not-allowed;
+    }
+  }
+}
+
+
+.fancytree-hide {
+  display: none;
+}
+
+
+.fancytree-match {
+  font-weight: bold;
+}
+
+.fancytree-submatch:not(.fancytree-match) {
+  opacity: 0.65;
+}
+
+
+.fancytree-drop-accept {
+  cursor: move;
+}
+
+.fancytree-drop-reject {
+  cursor: not-allowed;
+}
+
+
+.fancytree-statusnode-error {
+  color: $danger;
+}
+
+
+.fancytree-expander, .fancytree-icon, .fancytree-custom-icon {
+  margin-right: $fancytree-padding;
+
+  &, &.glyphicons::before {
+    height: $fancytree-icon-size;
+    width: $fancytree-icon-size;
+  }
+}
+
+
+.fancytree-expander {
+  color: $text-muted;
+
+  @include transition($btn-transition);
+
+  &:hover, &:focus {
+    color: darken($link-color, $emphasized-link-hover-darken-percentage) !important;
+  }
+
+  .fancytree-expanded & {
+    color: inherit;
+  }
+
+  .fancytree-node:not(.fancytree-has-children) & {
+    visibility: hidden;
+  }
+}
+
+
+// Init styles
+
+.fancytree {
+  a {
+    @extend .fancytree-node;
+
+    padding-left: $fancytree-icon-size * 2 + $fancytree-padding * 3;
+
+    &, &:hover, &:focus {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
