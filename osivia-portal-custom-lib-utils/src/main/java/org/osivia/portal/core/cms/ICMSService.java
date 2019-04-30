@@ -49,6 +49,17 @@ public interface ICMSService {
     String getParentPath(String documentPath);
 
     CMSItem getContent(CMSServiceCtx ctx, String path) throws CMSException;
+    
+    
+    /**
+     * Gets the by share id.
+     *
+     * @param ctx the ctx
+     * @param shareID the share ID
+     * @return the by share id
+     * @throws CMSException the CMS exception
+     */
+    CMSItem getByShareId(CMSServiceCtx ctx, String shareID) throws CMSException;
 
     /**
      * @param cmsPath: path?key=value&..., webid?key=value&...
