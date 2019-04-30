@@ -65,7 +65,7 @@
         <plugins>
         
             <!-- LESS -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.lesscss</groupId>
                 <artifactId>lesscss-maven-plugin</artifactId>
                 <configuration>
@@ -76,15 +76,12 @@
                     </includes>
                     <outputFileFormat>{fileName}.min.css</outputFileFormat>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <!-- SASS -->
             <plugin>
                 <groupId>com.github.warmuuh</groupId>
                 <artifactId>libsass-maven-plugin</artifactId>
-                <configuration>
-                    <outputStyle>nested</outputStyle>
-                </configuration>
             </plugin>
             
             <!-- YUI compressor -->
@@ -106,7 +103,7 @@
                         </aggregation>
                     </aggregations>
                     <excludes>
-                        <exclude>**/*.min.css</exclude>
+                        <exclude>**/*.css</exclude>
                         <exclude>**/*.min.js</exclude>
                     </excludes>
                     <jswarn>false</jswarn>

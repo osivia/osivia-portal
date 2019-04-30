@@ -829,6 +829,7 @@
                         <inputPath>${project.basedir}/src/main/sass/</inputPath>
                         <outputPath>${project.basedir}/src/main/webapp/css</outputPath>
                         <outputStyle>compressed</outputStyle>
+                        <sourceMapOutputPath>${project.basedir}/src/main/webapp/css</sourceMapOutputPath>
                     </configuration>
                 </plugin>
             
