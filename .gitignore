@@ -1,8 +1,8 @@
-*.min.css
+*.css
 
 
-# Created by https://www.gitignore.io/api/maven,eclipse,intellij+all
-# Edit at https://www.gitignore.io/?templates=maven,eclipse,intellij+all
+# Created by https://www.gitignore.io/api/sass,maven,eclipse,intellij+all
+# Edit at https://www.gitignore.io/?templates=sass,maven,eclipse,intellij+all
 
 ### Eclipse ###
 .metadata
@@ -172,4 +172,10 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# End of https://www.gitignore.io/api/maven,eclipse,intellij+all
+### Sass ###
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map
+
+# End of https://www.gitignore.io/api/sass,maven,eclipse,intellij+all
