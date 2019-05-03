@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dom4j.Element;
 import org.osivia.portal.api.context.PortalControllerContext;
 
 /**
@@ -80,6 +81,17 @@ public interface IMenubarService {
      * @return HTML content
      */
     String generatePortletContent(PortalControllerContext portalControllerContext, List<MenubarItem> items);
+
+
+    /**
+     * Generate menubar item DOM element.
+     *
+     * @param container toolbar container DOM element
+     * @param menubarItem menubar item
+     * @param dropdownItem dropdown item indicator
+     * @return DOM element
+     */
+    Element generateItemElement(Element container, MenubarItem menubarItem, boolean dropdownItem);
 
 
     /**

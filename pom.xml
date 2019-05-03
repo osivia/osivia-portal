@@ -811,6 +811,27 @@
                         </execution>
                     </executions>
                 </plugin>
+
+                <!-- SASS -->
+                <plugin>
+                    <groupId>com.github.warmuuh</groupId>
+                    <artifactId>libsass-maven-plugin</artifactId>
+                    <version>0.2.10-libsass_3.5.3</version>
+                    <executions>
+                        <execution>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <inputPath>${project.basedir}/src/main/sass/</inputPath>
+                        <outputPath>${project.basedir}/src/main/webapp/css</outputPath>
+                        <outputStyle>compressed</outputStyle>
+                        <sourceMapOutputPath>${project.basedir}/src/main/webapp/css</sourceMapOutputPath>
+                    </configuration>
+                </plugin>
             
                 <!-- YUI compressor -->
                 <plugin>

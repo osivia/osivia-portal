@@ -334,7 +334,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             }
 
             DOM4JUtils.addAttribute(button, HTMLConstants.HREF, "javascript:;");
-            DOM4JUtils.addAttribute(button, HTMLConstants.CLASS, "btn btn-default");
+            DOM4JUtils.addAttribute(button, HTMLConstants.CLASS, "btn btn-secondary");
             DOM4JUtils.addDataAttribute(button, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(button, "src", href);
             button.addText(text + irrc.getId());
@@ -375,7 +375,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Add fragment button
         Element addFragmentButton;
         if (inherited) {
-            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-default disabled", null, "halflings halflings-plus", null);
+            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-secondary disabled", null, "halflings halflings-plus", null);
         } else {
             String addFragmentURL = irrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
@@ -387,7 +387,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             addFragmentOnClick.append(irrc.getProperty("osivia.ecmBaseUrl"));
             addFragmentOnClick.append("');");
 
-            addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-default fancyframe_refresh", null,
+            addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-secondary fancyframe_refresh", null,
                     "halflings halflings-plus");
         }
         DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
@@ -436,7 +436,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         toolbar.add(dropdownContainer);
 
         // Dropdown menu button
-        Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
+        Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
                 "halflings halflings-wrench", null);
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
@@ -485,7 +485,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Submit button
-        Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary", bundle.getString("SAVE"));
+        Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-primary", bundle.getString("SAVE"));
         DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
         form.add(submit);
     }
@@ -516,10 +516,10 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Dropdown menu button
         Element dropdownButton;
         if (inherited) {
-            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle disabled", HTMLConstants.TEXT_DEFAULT,
+            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary dropdown-toggle disabled", HTMLConstants.TEXT_DEFAULT,
                     "glyphicons glyphicons-sampler", null);
         } else {
-            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
+            dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
                     "glyphicons glyphicons-sampler", null);
             DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         }
@@ -575,7 +575,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
             // Submit button
-            Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-primary", bundle.getString("SAVE"));
+            Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-primary", bundle.getString("SAVE"));
             DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
             form.add(submit);
         }

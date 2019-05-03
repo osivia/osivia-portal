@@ -81,7 +81,7 @@
                         <ul class="nav navbar-nav navbar-right">
                             <!-- Help -->
                             <c:if test="${not empty requestScope['osivia.toolbar.helpURL']}">
-                                <li>
+                                <li class="nav-item">
                                     <a href="${requestScope['osivia.toolbar.helpURL']}" class="navbar-link">
                                         <i class="halflings halflings-question-sign"></i>
                                         <span class="hidden-sm"><op:translate key="HELP" /></span>
@@ -92,7 +92,7 @@
                             <!-- Tasks -->
                             <c:if test="${not empty requestScope['osivia.toolbar.tasks.url']}">
                                 <c:set var="title"><op:translate key="NOTIFICATION_TASKS" /></c:set>
-                                <li>
+                                <li class="nav-item">
                                     <button type="button" name="open-tasks" class="btn btn-link navbar-btn" data-target="#osivia-modal"
                                         data-load-url="${requestScope['osivia.toolbar.tasks.url']}" data-load-callback-function="tasksModalCallback"
                                         data-title="${title}" data-footer="true">
@@ -114,7 +114,7 @@
                             </c:if>
 
                             <!-- User bar -->
-                            <li>
+                            <li class="nav-item">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <c:choose>
                                         <c:when test="${empty requestScope['osivia.toolbar.person']}">

@@ -177,11 +177,7 @@ public class ResizableService implements IResizableService {
             }
 
             DOM4JUtils.addAttribute(container, "class", containerHtmlClasses);
-
-            // Child DOM element
-            Element child = DOM4JUtils.generateDivElement("col-offset-auto col-auto");
-            DOM4JUtils.addText(child, bodyContent);
-            container.add(child);
+            DOM4JUtils.addText(container, bodyContent);
         }
 
         return container;

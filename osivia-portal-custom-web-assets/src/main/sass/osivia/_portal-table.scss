@@ -1,0 +1,224 @@
+@import "variables";
+@import "glyphicons/mixins";
+
+
+.portal-table-container {
+  position: relative;
+
+  padding-top: calc(#{$line-height-base + $table-cell-padding * 2} + #{$border-width * 2});
+
+  > * {
+    border-bottom: {
+      style: solid;
+      width: $border-width * 2;
+      color: $gray-800;
+    }
+  }
+}
+
+
+.portal-table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+
+.portal-table-column-group {
+  display: table-column-group;
+}
+
+
+.portal-table-column {
+  display: table-column;
+}
+
+
+.portal-table-header-group {
+  display: table-header-group;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  border-bottom: {
+    style: solid;
+    width: $border-width * 2;
+    color: $gray-800;
+  }
+
+  &, a {
+    color: $gray-600;
+  }
+
+  a {
+    &:hover, &:focus {
+      color: darken($gray-600, $emphasized-link-hover-darken-percentage);
+      text-decoration: none;
+
+      span {
+        text-decoration: underline;
+      }
+
+      i {
+        color: darken($gray-800, $emphasized-link-hover-darken-percentage);
+      }
+    }
+
+    i {
+      color: $gray-800;
+    }
+  }
+}
+
+
+.portal-table-row-group {
+  display: table-row-group;
+  position: relative;
+}
+
+
+.portal-table-row {
+  display: table-row;
+
+  border-color: $gray-100;
+
+  &, a {
+    color: $gray-800;
+  }
+
+  a {
+    &:hover, &:focus {
+      color: darken($gray-800, $emphasized-link-hover-darken-percentage);
+    }
+  }
+
+  &.ui-selecting {
+    background-color: theme-color-level("info", $alert-bg-level);
+    border-color: theme-color-level("info", $alert-border-level);
+
+    &, a {
+      color: theme-color-level("info", $alert-color-level);
+    }
+  }
+
+  &.ui-selected {
+    background-color: $primary;
+    border-color: darken($primary, 5%);
+
+    &, a:not(.btn), [class^="text"] {
+      color: $white;
+    }
+  }
+}
+
+
+.portal-table-cell {
+  display: table-cell;
+  vertical-align: middle;
+
+  .portal-table-row & {
+    border-bottom: {
+      style: solid;
+      width: $border-width;
+      color: inherit;
+    }
+  }
+
+  .portal-table-row:last-child & {
+    border-style: none;
+  }
+}
+
+
+.portal-table-cell-inner {
+  display: flex;
+
+  .portal-table-header-group & {
+    align-items: end;
+
+    min-height: $line-height-base + $table-cell-padding * 2;
+
+    padding-bottom: $table-cell-padding;
+    padding-left: $table-cell-padding;
+  }
+
+  .portal-table-row-group & {
+    align-items: center;
+
+    min-height: $line-height-base * 2 + $table-cell-padding * 2;
+
+    padding: floor($table-cell-padding / 2) $table-cell-padding;
+  }
+
+  a {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+
+// Toolbar
+
+.portal-table-toolbar-container {
+  display: flex;
+
+  min-height: $input-btn-line-height-sm + $input-btn-padding-x-sm;
+
+  margin-bottom: -#{map_get($spacers, 2)};
+
+  .btn {
+    margin-bottom: map_get($spacers, 2);
+  }
+}
+
+.portal-table-toolbar {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+
+  .btn-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    margin-bottom: 0;
+    margin-left: 0;
+  }
+}
+
+
+// Checkbox
+
+.portal-table-checkbox {
+  $checkbox-size : #{$line-height-base}rem;
+
+  flex-grow: 1;
+
+  text-align: right;
+
+  a {
+    font-size: 1rem;
+    outline: 0;
+
+    .portal-table-header-group & {
+      display: inline-flex;
+      align-self: center;
+      vertical-align: bottom;
+
+      height: $checkbox-size;
+
+      margin-right: $table-cell-padding;
+    }
+  }
+
+  .ui-selecting &, .ui-selected &, .checked {
+    .glyphicons-basic-square-empty {
+        @include glyphicons-mask(glyphicons-url("basic", 155, "square-selected"));
+    }
+  }
+}
+
+[data-column="checkbox"] {
+  width: $line-height-base + $table-cell-padding * 2;
+}

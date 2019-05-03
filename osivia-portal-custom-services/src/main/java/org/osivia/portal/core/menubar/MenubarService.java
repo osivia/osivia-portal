@@ -1,15 +1,7 @@
 package org.osivia.portal.core.menubar;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -128,7 +120,7 @@ public class MenubarService implements IMenubarService {
         // Back
         String backURL = this.urlFactory.getBackURL(portalControllerContext, true);
         if (backURL != null) {
-            MenubarItem item = new MenubarItem("BACK", bundle.getString("BACK"), "halflings halflings-arrow-left", MenubarGroup.BACK, 0, backURL, null, null,
+            MenubarItem item = new MenubarItem("BACK", bundle.getString("BACK"), "glyphicons glyphicons-basic-step-back", MenubarGroup.BACK, 0, backURL, null, null,
                     null);
             menubar.add(item);
         }
@@ -137,7 +129,7 @@ public class MenubarService implements IMenubarService {
         if (httpServletRequest.getUserPrincipal() != null) {
             String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
             if (refreshURL != null) {
-                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat", MenubarGroup.GENERIC, 100,
+                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-basic-reload", MenubarGroup.GENERIC, 100,
                         refreshURL, null, null, null);
                 menubar.add(item);
             }
@@ -382,16 +374,13 @@ public class MenubarService implements IMenubarService {
      * @return toolbar DOM element
      */
     private Element generateToolbar(PortalControllerContext portalControllerContext, Map<MenubarGroup, Set<MenubarItem>> sortedItems) {
-        // Toolbar container
-        Element container;
+        // Container
+        Element container = DOM4JUtils.generateDivElement("menubar");
 
         if (MapUtils.isNotEmpty(sortedItems)) {
-            container = DOM4JUtils.generateDivElement(null);
-
-            // Toolbar
-            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.UL, "menubar no-ajax-link", null);
-            DOM4JUtils.addAttribute(toolbar, HTMLConstants.ROLE, HTMLConstants.ROLE_TOOLBAR);
-            container.add(toolbar);
+            // Navbar
+            Element navbar = DOM4JUtils.generateElement("nav", "navbar navbar-expand navbar-light", null);
+            container.add(navbar);
 
             // Loop on menubar groups
             for (Entry<MenubarGroup, Set<MenubarItem>> sortedItemsEntry : sortedItems.entrySet()) {
@@ -408,7 +397,7 @@ public class MenubarService implements IMenubarService {
                             MenubarDropdown dropdownMenu = (MenubarDropdown) parent;
                             List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdownMenu);
                             if (dropdownMenuItems == null) {
-                                dropdownMenuItems = new ArrayList<MenubarItem>();
+                                dropdownMenuItems = new ArrayList<>();
                                 dropdownMenus.put(dropdownMenu, dropdownMenuItems);
                             }
                             dropdownMenuItems.add(item);
@@ -422,12 +411,10 @@ public class MenubarService implements IMenubarService {
                     }
                 }
 
-                // Generate group DOM element
-                Element groupLI = this.generateGroupElement(container, sortedItemsKey, objects, dropdownMenus);
-                toolbar.add(groupLI);
+                // Generate nav DOM element
+                Element nav = this.generateNavElement(container, sortedItemsKey, objects, dropdownMenus);
+                navbar.add(nav);
             }
-        } else {
-            container = null;
         }
 
         return container;
@@ -435,7 +422,7 @@ public class MenubarService implements IMenubarService {
 
 
     /**
-     * Generate menubar group DOM element.
+     * Generate nav DOM element.
      *
      * @param container toolbar container DOM element
      * @param group menubar group
@@ -443,19 +430,14 @@ public class MenubarService implements IMenubarService {
      * @param dropdownMenus menubar dropdown menus content
      * @return DOM element
      */
-    private Element generateGroupElement(Element container, MenubarGroup group, Set<MenubarObject> objects,
-            Map<MenubarDropdown, List<MenubarItem>> dropdownMenus) {
-        // Group LI
-        Element groupLI = DOM4JUtils.generateElement(HTMLConstants.LI, group.getHtmlClasses(), null);
+    private Element generateNavElement(Element container, MenubarGroup group, Set<MenubarObject> objects, Map<MenubarDropdown, List<MenubarItem>> dropdownMenus) {
+        // Nav
+        Element nav = DOM4JUtils.generateElement(HTMLConstants.UL, "navbar-nav " + StringUtils.trimToEmpty(group.getHtmlClasses()), null);
 
-        // State items group UL
-        Element stateItemsGroupUL = DOM4JUtils.generateElement(HTMLConstants.UL, "hidden-xs", null);
-
-        // Generic group UL
-        Element genericGroupUL = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-
-        // "hidden-xs" group UL
-        Element hiddenXSGroupUL = DOM4JUtils.generateElement(HTMLConstants.UL, "hidden-xs", null);
+        // State items
+        List<Element> stateItems = new ArrayList<>();
+        // Generic items
+        List<Element> genericItems = new ArrayList<>();
 
         // Loop on group objects
         for (MenubarObject object : objects) {
@@ -466,11 +448,9 @@ public class MenubarService implements IMenubarService {
                 List<MenubarItem> dropdownMenuItems = dropdownMenus.get(dropdown);
 
                 if (!dropdown.isReducible() || (dropdownMenuItems.size() > 1)) {
-                    // Dropdown menu
-
-                    // Dropdown LI
-                    Element dropdownLI = this.generateDropdownElement(container, dropdown, dropdownMenuItems);
-                    genericGroupUL.add(dropdownLI);
+                    // Dropdown item
+                    Element dropdownItem = this.generateDropdownElement(container, dropdown, dropdownMenuItems);
+                    genericItems.add(dropdownItem);
                 } else {
                     // Direct link
                     item = dropdownMenuItems.get(0);
@@ -486,35 +466,25 @@ public class MenubarService implements IMenubarService {
 
 
             if (item != null && item.isVisible()) {
-                // Parent
-                Element parent;
-                if (item.isState()) {
-                    parent = stateItemsGroupUL;
-                } else if (StringUtils.contains(item.getHtmlClasses(), "hidden-xs")) {
-                    parent = hiddenXSGroupUL;
-                } else {
-                    parent = genericGroupUL;
-                }
-
                 // LI
                 Element li = this.generateItemElement(container, item, false);
-                parent.add(li);
+                if (item.isState()) {
+                    stateItems.add(li);
+                } else {
+                    genericItems.add(li);
+                }
             }
         }
 
 
-        if (CollectionUtils.isNotEmpty(stateItemsGroupUL.elements())) {
-            groupLI.add(stateItemsGroupUL);
+        for (Element item : stateItems) {
+            nav.add(item);
         }
-        if (CollectionUtils.isNotEmpty(genericGroupUL.elements())) {
-            groupLI.add(genericGroupUL);
-        }
-        if (CollectionUtils.isNotEmpty(hiddenXSGroupUL.elements())) {
-            groupLI.add(hiddenXSGroupUL);
+        for (Element item : genericItems) {
+            nav.add(item);
         }
 
-
-        return groupLI;
+        return nav;
     }
 
 
@@ -529,37 +499,32 @@ public class MenubarService implements IMenubarService {
     private Element generateDropdownElement(Element container, MenubarDropdown dropdown, List<MenubarItem> dropdownMenuItems) {
         // HTML classes
         StringBuilder htmlClasses = new StringBuilder();
-        htmlClasses.append("dropdown ");
+        htmlClasses.append("nav-item dropdown ");
         if (dropdown.isBreadcrumb()) {
             htmlClasses.append("menubar-breadcrumb-item ");
         }
 
-        // Dropdown LI
-        Element dropdownLI = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses.toString(), null);
+        // Dropdown container
+        Element dropdownContainer = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses.toString(), null);
 
-        // Dropdown button
-        Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());
-        DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
+        // Dropdown toggle button
+        Element toggleButton = DOM4JUtils.generateLinkElement("javascript:;", null, null, "nav-link dropdown-toggle", null, dropdown.getGlyphicon());
+        DOM4JUtils.addAttribute(toggleButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         if (StringUtils.isNotBlank(dropdown.getTitle())) {
             Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", dropdown.getTitle());
-            dropdownButton.add(srOnly);
+            toggleButton.add(srOnly);
         }
-        dropdownLI.add(dropdownButton);
+        dropdownContainer.add(toggleButton);
 
-        // Dropdown button caret
-        Element caret = DOM4JUtils.generateElement("span", "caret", StringUtils.EMPTY);
-        dropdownButton.add(caret);
-
-        // Dropdown UL
-        Element dropdownUL = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu dropdown-menu-right", null, null, AccessibilityRoles.MENU);
-        dropdownLI.add(dropdownUL);
+        // Dropdown menu
+        Element menu = DOM4JUtils.generateDivElement("dropdown-menu dropdown-menu-md-right");
+        dropdownContainer.add(menu);
 
 
         // Dropdown header
         if (StringUtils.isNotBlank(dropdown.getTitle())) {
-            Element dropdownHeaderLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", dropdown.getTitle(), null,
-                    AccessibilityRoles.PRESENTATION);
-            dropdownUL.add(dropdownHeaderLI);
+            Element header = DOM4JUtils.generateElement(HTMLConstants.H3, "dropdown-header", dropdown.getTitle());
+            menu.add(header);
         }
 
 
@@ -568,12 +533,12 @@ public class MenubarService implements IMenubarService {
         	if(dropdownMenuItem.isVisible()) {
 	            // Dropdown menu divider
 	            if (dropdownMenuItem.isDivider() && !first) {
-                    Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
-	                dropdownUL.add(dividerLI);
+                    Element divider = DOM4JUtils.generateDivElement("dropdown-divider");
+	                menu.add(divider);
 	            }
 	            
-	            Element dropdownItemLI = this.generateItemElement(container, dropdownMenuItem, true);
-		        dropdownUL.add(dropdownItemLI);
+	            Element dropdownItem = this.generateItemElement(container, dropdownMenuItem, true);
+		        menu.add(dropdownItem);
 		
 	            if (first) {
 	                first = false;
@@ -581,151 +546,141 @@ public class MenubarService implements IMenubarService {
         	}
         }
 
-        return dropdownLI;
+        return dropdownContainer;
     }
 
 
-    /**
-     * Generate menubar item DOM element.
-     *
-     * @param container toolbar container DOM element
-     * @param item menubar item
-     * @param dropdownItem dropdown item indicator
-     * @return DOM element
-     */
-    private Element generateItemElement(Element container, MenubarItem item, boolean dropdownItem) {
+    @Override
+    public Element generateItemElement(Element container, MenubarItem menubarItem, boolean dropdownItem) {
         // HTML classes
-        StringBuilder htmlClasses = new StringBuilder();
-        if (item.getUrl() == null) {
-            if (dropdownItem) {
-                htmlClasses.append("dropdown-header ");
-            } else {
-                htmlClasses.append("text ");
-            }
+        List<String> htmlClasses = new ArrayList<>();
+        htmlClasses.addAll(Arrays.asList(StringUtils.split(StringUtils.trimToEmpty(menubarItem.getHtmlClasses()), " ")));
+        if (menubarItem.isAjaxDisabled()) {
+            htmlClasses.add("no-ajax-link");
         }
-        if (item.isState()) {
-            htmlClasses.append("hidden-xs ");
+        if (menubarItem.isActive()) {
+            htmlClasses.add("active");
         }
-        if (item.isAjaxDisabled()) {
-            htmlClasses.append("no-ajax-link ");
+        if (menubarItem.isDisabled()) {
+            htmlClasses.add("disabled");
         }
-        if (item.isActive()) {
-            htmlClasses.append("active ");
+        if (menubarItem.isBreadcrumb()) {
+            htmlClasses.add("menubar-breadcrumb-item");
         }
-        if (item.isDisabled()) {
-            htmlClasses.append("disabled ");
-        }
-        if (item.isBreadcrumb()) {
-            htmlClasses.append("menubar-breadcrumb-item ");
+        if (dropdownItem && menubarItem.isDisabled()) {
+            htmlClasses.add("disabled");
         }
 
-        // Role
-        AccessibilityRoles roleLI;
-        AccessibilityRoles roleElement;
+
+        // URL
+        String url;
+        if (StringUtils.isEmpty(menubarItem.getUrl())) {
+            url = null;
+        } else if (menubarItem.isDisabled()) {
+            url = "#";
+        } else {
+            url = menubarItem.getUrl();
+        }
+
+
+        // Item
+        Element item;
+        if (dropdownItem && StringUtils.isEmpty(url)) {
+            // Dropdown header
+            htmlClasses.add("dropdown-header");
+            item = DOM4JUtils.generateElement("div", StringUtils.join(htmlClasses, " "), null);
+        } else if (dropdownItem) {
+            // Dropdown item
+            htmlClasses.add("dropdown-item");
+            item = DOM4JUtils.generateLinkElement(url, menubarItem.getTarget(), menubarItem.getOnclick(), StringUtils.join(htmlClasses, " "), null);
+        } else if (StringUtils.isEmpty(url)) {
+            // Navbar text
+            item = DOM4JUtils.generateElement("span", "navbar-text", null);
+        } else {
+            // Navbar link
+            item = DOM4JUtils.generateLinkElement(url, menubarItem.getTarget(), menubarItem.getOnclick(), "nav-link", null);
+        }
+
+        // Item icon
+        Element icon;
+        if (menubarItem.getCustomizedIcon() != null) {
+            icon = menubarItem.getCustomizedIcon();
+        } else if (StringUtils.isNotEmpty(menubarItem.getGlyphicon())) {
+            icon = DOM4JUtils.generateElement("i", menubarItem.getGlyphicon(), StringUtils.EMPTY);
+        } else {
+            icon = null;
+        }
+        if (icon != null) {
+            item.add(icon);
+        }
+
+        // Item text
+        Element text;
+        if (dropdownItem || (icon == null)) {
+            text = DOM4JUtils.generateElement("span", null, menubarItem.getTitle());
+        } else {
+            text = null;
+        }
+        if (text != null) {
+            item.add(text);
+        }
+
+        // Item counter
+        if (menubarItem.getCounter() != null) {
+            Element counter = DOM4JUtils.generateElement("span", "badge badge-danger", String.valueOf(menubarItem.getCounter()));
+            item.add(counter);
+        }
+
+        // Item tooltip
+        String tooltip;
+        if (StringUtils.isNotEmpty(menubarItem.getTooltip())) {
+            tooltip = menubarItem.getTooltip();
+        } else if (StringUtils.isNotEmpty(menubarItem.getTitle()) && (text == null)) {
+            tooltip = menubarItem.getTitle();
+        } else {
+            tooltip = null;
+        }
+        if (StringUtils.isNotEmpty(tooltip)) {
+            DOM4JUtils.addTooltip(item, tooltip);
+        }
+
+        // Item external link indicator
+        if (dropdownItem && StringUtils.isNotEmpty(url) && StringUtils.isNotEmpty(menubarItem.getTarget())) {
+            Element externalIndicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, "d-inline-block align-text-bottom", null, "glyphicons glyphicons-basic-square-new-window", null);
+            item.add(externalIndicator);
+        }
+
+        // Item data
+        if (!menubarItem.getData().isEmpty()) {
+            for (Entry<String, String> data : menubarItem.getData().entrySet()) {
+                DOM4JUtils.addAttribute(item, "data-" + data.getKey(), data.getValue());
+            }
+        }
+
+
+        // Result
+        Element result;
         if (dropdownItem) {
-            roleLI = AccessibilityRoles.PRESENTATION;
-            roleElement = AccessibilityRoles.MENU_ITEM;
+            result = item;
         } else {
-            roleLI = null;
-            roleElement = null;
-        }
-
-        // LI
-        Element li = DOM4JUtils.generateElement(HTMLConstants.LI, htmlClasses.toString(), null, null, roleLI);
-
-        if (item.isDisabled()) {
-            DOM4JUtils.addDataAttribute(li, "disabled", StringUtils.EMPTY);
-        }
-
-        // Element
-        Element element;
-        String text = item.getTitle();
-        String tooltip = item.getTooltip();
-        if (item.getUrl() == null) {
-            element = DOM4JUtils.generateElement(HTMLConstants.SPAN, item.getHtmlClasses(), text, item.getGlyphicon(), roleElement);
-        } else {
-            // Text and tooltip content
-            if (!dropdownItem && (item.getGlyphicon() != null) && StringUtils.isBlank(item.getTooltip())) {
-                text = null;
-                if (StringUtils.isBlank(item.getTooltip())) {
-                    tooltip = item.getTitle();
-                }
+            htmlClasses.add("nav-item");
+            if (menubarItem.isDisabled()) {
+                htmlClasses.add("disabled");
             }
 
-            if (item.isDisabled()) {
-                element = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, item.getHtmlClasses(), null, null, roleElement);
-            } else {
-                element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), item.getHtmlClasses(), null, null, roleElement);
-            }
-
-
-            // Icon
-            Element iconContainer = DOM4JUtils.generateElement("span", "icon-container", StringUtils.EMPTY);
-            element.add(iconContainer);
-
-            String glyphicon = item.getGlyphicon();
-            if (dropdownItem) {
-                glyphicon = StringUtils.trimToEmpty(glyphicon);
-            }
-
-            if (item.getCustomizedIcon() != null) {
-                iconContainer.add(item.getCustomizedIcon());
-            } else if (StringUtils.isNotEmpty(glyphicon)) {
-                DOM4JUtils.addGlyphiconText(iconContainer, glyphicon, null);
-            }
-
-            // Text
-            DOM4JUtils.addGlyphiconText(element, null, text);
-
-
-            // External link indicator
-            if (dropdownItem && StringUtils.isNotBlank(item.getTarget())) {
-                Element externalIndicator = DOM4JUtils.generateElement(HTMLConstants.SMALL, null, null, "glyphicons glyphicons-new-window-alt", null);
-                element.add(externalIndicator);
-            }
+            result = DOM4JUtils.generateElement("li", StringUtils.join(htmlClasses, " "), null);
+            result.add(item);
         }
-
-        // Screen-reader only
-        if (StringUtils.isBlank(text) && StringUtils.isNotBlank(tooltip)) {
-            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
-            element.add(srOnly);
-        }
-
-        // Tooltip
-        if (StringUtils.isNotBlank(tooltip)) {
-            DOM4JUtils.addTooltip(element, tooltip);
-        }
-
-        // Counter
-        if (item.getCounter() != null) {
-            Element counterOuter = DOM4JUtils.generateElement(HTMLConstants.SPAN, "counter small", null);
-            element.add(counterOuter);
-
-            Element counterInner = DOM4JUtils.generateElement(HTMLConstants.SPAN, "label label-danger", String.valueOf(item.getCounter()));
-            counterOuter.add(counterInner);
-        }
-
-        // Data
-        if (!item.getData().isEmpty()) {
-            for (Entry<String, String> data : item.getData().entrySet()) {
-                StringBuilder attributeName = new StringBuilder();
-                attributeName.append("data-");
-                attributeName.append(data.getKey());
-
-                DOM4JUtils.addAttribute(element, attributeName.toString(), data.getValue());
-            }
-        }
-        li.add(element);
 
 
         // Associated HTML
-        String associatedHTML = item.getAssociatedHTML();
-        if (StringUtils.isNotBlank(associatedHTML)) {
+        String associatedHTML = menubarItem.getAssociatedHTML();
+        if (StringUtils.isNotBlank(associatedHTML) && (container != null)) {
             CDATA cdata = new DOMCDATA(associatedHTML);
             container.add(cdata);
         }
 
-        return li;
+        return result;
     }
 
 

@@ -9,15 +9,14 @@
 
 <nav>
     <h2 class="sr-only"><op:translate key="BREADCRUMB_TITLE" /></h2>
-    <ol class="breadcrumb hidden-xs">
-        <c:forEach var="child" items="${breadcrumb.children}" varStatus="breadcrumbStatus">
+    <ol class="breadcrumb mb-0">
+        <c:forEach var="child" items="${breadcrumb.children}" varStatus="status">
             <c:choose>
-                <c:when test="${breadcrumbStatus.last and not empty breadcrumb.menu}">
-                    <li class="active">
-                        <div class="dropdown">
-                            <a href="#" data-toggle="dropdown">
+                <c:when test="${status.last and not empty breadcrumb.menu}">
+                    <li class="breadcrumb-item active">
+                        <div class="dropdown d-inline">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
                                 <span>${child.name}</span>
-                                <span class="caret"></span>    
                             </a>
                             
                             <c:out value="${breadcrumb.menu}" escapeXml="false" />
@@ -25,14 +24,14 @@
                     </li>
                 </c:when>
                 
-                <c:when test="${breadcrumbStatus.last}">
-                    <li class="active">
+                <c:when test="${status.last}">
+                    <li class="breadcrumb-item active">
                         <span>${child.name}</span>
                     </li>
                 </c:when>
                 
                 <c:otherwise>
-                    <li>
+                    <li class="breadcrumb-item">
                         <a href="${child.url}">${child.name}</a>
                     </li>
                 </c:otherwise>
