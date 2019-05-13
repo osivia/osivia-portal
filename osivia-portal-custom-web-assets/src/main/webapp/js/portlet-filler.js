@@ -4,7 +4,7 @@ $JQry(function() {
 		
 		if (!$element.closest(".scrollbox.fixed-scrollbox").length) {
 			// Portlet filler parents flexbox class
-			$element.parentsUntil(".flex-grow-1").addClass("flex-grow-1");
+			$element.parentsUntil(".flex-grow-1").addClass("portlet-filler-parent");
 		}
 	});
 	

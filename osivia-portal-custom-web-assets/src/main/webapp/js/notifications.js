@@ -2,7 +2,7 @@ $JQry(function() {
 	
 	$JQry(".notifications-container .alert[data-apart]").each(function(index, element) {
 		var $element = $JQry(element);
-		var delay = 5000 + (500 * index);
+		var delay = 5000 + (200 * index);
 		var timerApart;
 
 		
@@ -29,7 +29,7 @@ $JQry(function() {
 
 			$element.addClass("apart");
 
-			timerShaded = setTimeout(setShaded, 5000);
+			timerShaded = setTimeout(close, 3000);
 
 			$element.mouseenter(function() {
 				// Clear timer
@@ -38,17 +38,18 @@ $JQry(function() {
 
 			$element.mouseleave(function() {
 				// Reset timer
-				timerShaded = setTimeout(setShaded, 5000);
+				timerShaded = setTimeout(close, 3000);
 			});
 		}
 
 		
 		/**
-		 * Set notification shaded.
+		 * Close notification.
 		 */
-		function setShaded() {
-			$element.addClass("shaded");
-			$element.removeClass("apart");
+		function close() {
+			$element.fadeOut(200, function() {
+				$element.alert("close");
+			});
 		}
 	});
 

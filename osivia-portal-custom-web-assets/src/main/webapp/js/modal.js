@@ -22,12 +22,12 @@ $JQry(function() {
 				// Header
 				if (title) {
 					$header.find(".modal-title").text(title);
-					$header.removeClass("hidden");
+					$header.removeClass("d-none");
 				}
 				
 				// Footer
 				if (footer) {
-					$footer.removeClass("hidden");
+					$footer.removeClass("d-none");
 				}
 				
 				// Body
@@ -39,7 +39,9 @@ $JQry(function() {
 				});
 
 				// Size
-                if ((size === "lg") || (size === "large")) {
+				if ((size === "xl") || (size === "extra-large")) {
+					$dialog.addClass("modal-xl");
+				} else if ((size === "lg") || (size === "large")) {
                     $dialog.addClass("modal-lg");
                 } else if ((size === "sm") || (size === "small")) {
                     $dialog.addClass("modal-sm");
@@ -91,18 +93,18 @@ $JQry(function() {
 				var $window = $dialog.find(".dyna-window");
 				
 				// Header
-				$header.addClass("hidden");
+				$header.addClass("d-none");
 				$header.find(".modal-title").empty();
 				
 				// Footer
-				$footer.addClass("hidden");
+				$footer.addClass("d-none");
 				
 				// Body
 				$window.empty();
 				$clone.children().appendTo($window);
 
 				// Size
-                $dialog.removeClass("modal-lg modal-sm");
+                $dialog.removeClass("modal-xl modal-lg modal-sm");
 			});
 			
 			$element.data("loaded", true);

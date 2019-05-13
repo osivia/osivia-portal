@@ -662,48 +662,38 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Page header
-        String pageHeaderClass;
-        if (windowTitle == null) {
-            pageHeaderClass = "clearfix hidden-xs";
-        } else {
-            pageHeaderClass = "page-header clearfix hidden-xs";
-        }
-        Element pageHeader = DOM4JUtils.generateDivElement(pageHeaderClass);
+        Element pageHeader = DOM4JUtils.generateDivElement("page-header d-none d-md-flex mb-3 align-items-center");
 
 
         String backURL = this.portalURLFactory.getBackURL(portalControllerContext, false);
         if (backURL != null) {
-            // Toolbar
-            Element toolbar = DOM4JUtils.generateElement(HTMLConstants.DIV, "btn-toolbar pull-left", null, null, AccessibilityRoles.TOOLBAR);
-            pageHeader.add(toolbar);
-
             // Back
-            Element backButton = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-primary", null, "halflings halflings-arrow-left");
+            Element backButton = DOM4JUtils.generateLinkElement(backURL, null, null, "btn btn-outline-primary btn-sm mr-3", null, "glyphicons glyphicons-basic-step-back");
             DOM4JUtils.addTooltip(backButton, bundle.getString("BACK"));
-            toolbar.add(backButton);
+            pageHeader.add(backButton);
         }
 
 
         // Title
         if (windowTitle != null) {
-            if (StringUtils.isNotEmpty(windowVignetteUrl)) {
-                Element vignette = DOM4JUtils.generateElement(HTMLConstants.IMG, "pull-right", null);
-                DOM4JUtils.addAttribute(vignette, HTMLConstants.SRC, windowVignetteUrl);
-                DOM4JUtils.addAttribute(vignette, HTMLConstants.ALT, StringUtils.EMPTY);
-                pageHeader.add(vignette);
-            }
+//            if (StringUtils.isNotEmpty(windowVignetteUrl)) {
+//                Element vignette = DOM4JUtils.generateElement(HTMLConstants.IMG, "pull-right", null);
+//                DOM4JUtils.addAttribute(vignette, HTMLConstants.SRC, windowVignetteUrl);
+//                DOM4JUtils.addAttribute(vignette, HTMLConstants.ALT, StringUtils.EMPTY);
+//                pageHeader.add(vignette);
+//            }
+//
+//            Element titleContainer = DOM4JUtils.generateDivElement("title-container");
+//            pageHeader.add(titleContainer);
 
-            Element titleContainer = DOM4JUtils.generateDivElement("title-container");
-            pageHeader.add(titleContainer);
+            Element title = DOM4JUtils.generateElement(HTMLConstants.DIV, "h2 m-0", windowTitle);
+            pageHeader.add(title);
 
-            Element title = DOM4JUtils.generateElement(HTMLConstants.DIV, "h2", windowTitle);
-            titleContainer.add(title);
-
-            if (StringUtils.isNotBlank(windowSubTitle)) {
-                windowSubTitle = StringUtils.replace(windowSubTitle, "\n", HTMLConstants.LINE_BREAK);
-                Element subTitle = DOM4JUtils.generateElement(HTMLConstants.DIV, "text-muted", windowSubTitle);
-                titleContainer.add(subTitle);
-            }
+//            if (StringUtils.isNotBlank(windowSubTitle)) {
+//                windowSubTitle = StringUtils.replace(windowSubTitle, "\n", HTMLConstants.LINE_BREAK);
+//                Element subTitle = DOM4JUtils.generateElement(HTMLConstants.DIV, "text-muted", windowSubTitle);
+//                titleContainer.add(subTitle);
+//            }
         }
 
 

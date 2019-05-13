@@ -1,11 +1,5 @@
 package org.osivia.portal.core.menubar;
 
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.CDATA;
@@ -18,19 +12,12 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.context.PortalControllerContext;
-import org.osivia.portal.api.html.AccessibilityRoles;
 import org.osivia.portal.api.html.DOM4JUtils;
 import org.osivia.portal.api.html.HTMLConstants;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
-import org.osivia.portal.api.menubar.IMenubarService;
-import org.osivia.portal.api.menubar.MenubarContainer;
-import org.osivia.portal.api.menubar.MenubarDropdown;
-import org.osivia.portal.api.menubar.MenubarGroup;
-import org.osivia.portal.api.menubar.MenubarItem;
-import org.osivia.portal.api.menubar.MenubarModule;
-import org.osivia.portal.api.menubar.MenubarObject;
+import org.osivia.portal.api.menubar.*;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
@@ -38,6 +25,10 @@ import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Menubar service implementation.
@@ -47,20 +38,30 @@ import org.osivia.portal.core.portalobjects.PortalObjectUtils;
  */
 public class MenubarService implements IMenubarService {
 
-    /** Menubar dropdown menus request attribute name. */
+    /**
+     * Menubar dropdown menus request attribute name.
+     */
     private static final String DROPDOWN_MENUS_REQUEST_ATTRIBUTE = "osivia.menubar.dropdownMenus";
-
-    /** Portal URL factory. */
-    private IPortalUrlFactory urlFactory;
-    /** Internationalization service. */
-    private IInternationalizationService internationalizationService;
-    /** CMS service locator. */
-    private ICMSServiceLocator cmsServiceLocator;
-
-    /** Menubar group comparator. */
+    /**
+     * Menubar group comparator.
+     */
     private final Comparator<MenubarGroup> groupComparator;
-    /** Menubar object comparator. */
+    /**
+     * Menubar object comparator.
+     */
     private final Comparator<MenubarObject> objectComparator;
+    /**
+     * Portal URL factory.
+     */
+    private IPortalUrlFactory urlFactory;
+    /**
+     * Internationalization service.
+     */
+    private IInternationalizationService internationalizationService;
+    /**
+     * CMS service locator.
+     */
+    private ICMSServiceLocator cmsServiceLocator;
 
 
     /**
@@ -169,7 +170,7 @@ public class MenubarService implements IMenubarService {
      * Add customized menubar items.
      *
      * @param portalControllerContext portal controller context
-     * @param menubar menubar
+     * @param menubar                 menubar
      */
     private void addCustomizedMenubarItems(PortalControllerContext portalControllerContext, List<MenubarItem> menubar) {
         // Controller context
@@ -259,9 +260,9 @@ public class MenubarService implements IMenubarService {
 
     /**
      * Get menubar.
-     * 
+     *
      * @param portalControllerContext portal controller context
-     * @param clone cloned menubar indicator
+     * @param clone                   cloned menubar indicator
      * @return menubar
      */
     private List<MenubarItem> getMenubar(PortalControllerContext portalControllerContext, boolean clone) {
@@ -329,8 +330,8 @@ public class MenubarService implements IMenubarService {
      * Add menubar item into items, sorted by groups.
      *
      * @param sortedItems menubar items, sorted by groups
-     * @param group menubar group
-     * @param item menubar item
+     * @param group       menubar group
+     * @param item        menubar item
      */
     private void addSortedItem(Map<MenubarGroup, Set<MenubarItem>> sortedItems, MenubarGroup group, MenubarItem item) {
         Set<MenubarItem> items = sortedItems.get(group);
@@ -370,7 +371,7 @@ public class MenubarService implements IMenubarService {
      * Generate toolbar DOM element.
      *
      * @param portalControllerContext portal controller context
-     * @param sortedItems menubar items, sorted by groups
+     * @param sortedItems             menubar items, sorted by groups
      * @return toolbar DOM element
      */
     private Element generateToolbar(PortalControllerContext portalControllerContext, Map<MenubarGroup, Set<MenubarItem>> sortedItems) {
@@ -424,9 +425,9 @@ public class MenubarService implements IMenubarService {
     /**
      * Generate nav DOM element.
      *
-     * @param container toolbar container DOM element
-     * @param group menubar group
-     * @param objects menubar group objects
+     * @param container     toolbar container DOM element
+     * @param group         menubar group
+     * @param objects       menubar group objects
      * @param dropdownMenus menubar dropdown menus content
      * @return DOM element
      */
@@ -491,8 +492,8 @@ public class MenubarService implements IMenubarService {
     /**
      * Generate menubar dropdown menu DOM element.
      *
-     * @param container toolbar container DOM element
-     * @param dropdown menubar dropdown menu
+     * @param container         toolbar container DOM element
+     * @param dropdown          menubar dropdown menu
      * @param dropdownMenuItems menubar dropdown menu items
      * @return DOM element
      */
@@ -530,20 +531,20 @@ public class MenubarService implements IMenubarService {
 
         boolean first = true;
         for (MenubarItem dropdownMenuItem : dropdownMenuItems) {
-        	if(dropdownMenuItem.isVisible()) {
-	            // Dropdown menu divider
-	            if (dropdownMenuItem.isDivider() && !first) {
+            if (dropdownMenuItem.isVisible()) {
+                // Dropdown menu divider
+                if (dropdownMenuItem.isDivider() && !first) {
                     Element divider = DOM4JUtils.generateDivElement("dropdown-divider");
-	                menu.add(divider);
-	            }
-	            
-	            Element dropdownItem = this.generateItemElement(container, dropdownMenuItem, true);
-		        menu.add(dropdownItem);
-		
-	            if (first) {
-	                first = false;
-	            }
-        	}
+                    menu.add(divider);
+                }
+
+                Element dropdownItem = this.generateItemElement(container, dropdownMenuItem, true);
+                menu.add(dropdownItem);
+
+                if (first) {
+                    first = false;
+                }
+            }
         }
 
         return dropdownContainer;
@@ -604,7 +605,7 @@ public class MenubarService implements IMenubarService {
         // Item icon
         Element icon;
         if (menubarItem.getCustomizedIcon() != null) {
-            icon = menubarItem.getCustomizedIcon();
+            icon = menubarItem.getCustomizedIcon().createCopy();
         } else if (StringUtils.isNotEmpty(menubarItem.getGlyphicon())) {
             icon = DOM4JUtils.generateElement("i", menubarItem.getGlyphicon(), StringUtils.EMPTY);
         } else {

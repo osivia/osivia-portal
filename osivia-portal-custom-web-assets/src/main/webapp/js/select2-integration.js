@@ -5,7 +5,7 @@ $JQry(function() {
         var url = $element.data("url");
         var options = {
             minimumInputLength : 0,
-            theme : "bootstrap",
+            theme : "bootstrap4",
             width : "resolve"
         };
 
@@ -132,7 +132,7 @@ $JQry(function() {
         var minimumInputLength = $element.data("minimum-input-length");
         var options = {
             minimumInputLength : (minimumInputLength ? minimumInputLength : 3),
-            theme : "bootstrap",
+            theme : "bootstrap4",
             width : "resolve"
         };
 

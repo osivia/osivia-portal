@@ -141,7 +141,7 @@ public class NotificationsUtils {
     /**
      * Inject notifications region.
      *
-     * @param controllerContext controller context
+     * @param portalControllerContext portal controller context
      * @param pageRendition page rendition
      */
     public static final void injectNotificationsRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
@@ -169,18 +169,21 @@ public class NotificationsUtils {
         // Container
         Element container = DOM4JUtils.generateDivElement("notifications-container");
 
-        // Ajax waiter spacer
-        Element ajaxWaiterSpacer = DOM4JUtils.generateDivElement("notification-spacer");
-        container.add(ajaxWaiterSpacer);
+        // Ajax waiter container
+        Element ajaxWaiterContainer = DOM4JUtils.generateDivElement("notification-container ajax-waiter");
+        container.add(ajaxWaiterContainer);
 
-        // Ajax waiter
-        Element ajaxWaiter = DOM4JUtils.generateDivElement("ajax-waiter");
-        ajaxWaiterSpacer.add(ajaxWaiter);
+        // Ajax waiter alert
+        Element ajaxWaiterAlert = DOM4JUtils.generateDivElement("alert alert-info text-nowrap");
+        ajaxWaiterContainer.add(ajaxWaiterAlert);
+
+        // Ajax waiter spinner
+        Element ajaxWaiterSpinner = DOM4JUtils.generateDivElement("spinner-border align-middle mr-2");
+        ajaxWaiterAlert.add(ajaxWaiterSpinner);
         
         // Ajax waiter label
-        String labelText = internationalizationService.getString("AJAX_REFRESH", locale);
-        Element ajaxWaiterLabel = DOM4JUtils.generateElement("span", "label label-info", labelText, "halflings halflings-refresh", null);
-        ajaxWaiter.add(ajaxWaiterLabel);
+        Element ajaxWaiterLabel = DOM4JUtils.generateElement("span", null, internationalizationService.getString("AJAX_REFRESH", locale));
+        ajaxWaiterAlert.add(ajaxWaiterLabel);
 
 
         // Dyna window
@@ -200,12 +203,12 @@ public class NotificationsUtils {
             for (Notifications notifications : notificationsList) {
                 NotificationsType type = notifications.getType();
 
-                // Notification spacer
-                Element notificationSpacer = DOM4JUtils.generateDivElement("notification-spacer");
+                // Notification container
+                Element notificationSpacer = DOM4JUtils.generateDivElement("notification-container");
                 dynaWindowContent.add(notificationSpacer);
 
                 // Alert
-                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable fade in " + type.getHtmlClass());
+                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissible fade show " + type.getHtmlClass());
                 if (type.getPriority() < NotificationsType.ERROR.getPriority()) {
                     DOM4JUtils.addDataAttribute(alert, "apart", StringUtils.EMPTY);
                 }
@@ -228,12 +231,12 @@ public class NotificationsUtils {
 
                 // Media left
                 if (type.getIcon() != null) {
-                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "media-left media-middle", null, type.getIcon(), null);
+                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "align-self-center mr-3", null, type.getIcon(), null);
                     media.add(mediaLeft);
                 }
 
                 // Media body
-                Element mediaBody = DOM4JUtils.generateDivElement("media-body");
+                Element mediaBody = DOM4JUtils.generateDivElement("media-body align-self-center");
                 media.add(mediaBody);
 
                 // Messages

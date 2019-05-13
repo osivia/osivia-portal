@@ -22,13 +22,13 @@ package org.osivia.portal.api.notifications;
 public enum NotificationsType {
 
     /** Information notifications type. */
-    INFO("alert-info", "glyphicons glyphicons-info-sign", 1),
+    INFO("alert-info", "glyphicons glyphicons-basic-circle-info", 1),
     /** Success notifications type. */
-    SUCCESS("alert-success", "glyphicons glyphicons-ok-sign", 2),
+    SUCCESS("alert-success", "glyphicons glyphicons-basic-circle-check", 2),
     /** Warning notifications type. */
-    WARNING("alert-warning", "glyphicons glyphicons-alert", 3),
+    WARNING("alert-warning", "glyphicons glyphicons-basic-circle-alert", 3),
     /** Error notifications type. */
-    ERROR("alert-danger", "glyphicons glyphicons-remove-sign", 4);
+    ERROR("alert-danger", "glyphicons glyphicons-basic-circle-remove", 4);
 
 
     /** HTML class. */
