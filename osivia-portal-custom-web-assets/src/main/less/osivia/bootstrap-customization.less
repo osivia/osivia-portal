@@ -147,3 +147,14 @@ audio {
         margin: 4px 15px;    
     }
 }
+
+
+// Firefox 63 bugfix (see https://bugzilla.mozilla.org/show_bug.cgi?format=default&id=1503427)
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  input[type="month"] {
+    line-height: initial !important;
+  }
+}
