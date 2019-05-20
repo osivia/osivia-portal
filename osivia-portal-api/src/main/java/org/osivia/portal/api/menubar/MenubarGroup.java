@@ -23,7 +23,7 @@ package org.osivia.portal.api.menubar;
 public enum MenubarGroup implements MenubarContainer {
 
     /** Back menubar group. */
-    BACK(1, "d-md-none"),
+    BACK(1, "d-md-none mr-auto"),
     /** Add menubar group. */
     ADD(2, "contextual"),
     /** Specific menubar group. */

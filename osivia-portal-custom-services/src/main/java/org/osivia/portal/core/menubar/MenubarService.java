@@ -380,7 +380,7 @@ public class MenubarService implements IMenubarService {
 
         if (MapUtils.isNotEmpty(sortedItems)) {
             // Navbar
-            Element navbar = DOM4JUtils.generateElement("nav", "navbar navbar-expand navbar-light", null);
+            Element navbar = DOM4JUtils.generateElement("nav", "navbar navbar-expand navbar-light px-0", null);
             container.add(navbar);
 
             // Loop on menubar groups

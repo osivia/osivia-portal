@@ -13,17 +13,16 @@
  */
 package org.osivia.portal.core.customizers;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-
 import org.osivia.portal.api.customization.CustomizationContext;
 import org.osivia.portal.api.customization.CustomizationModuleMetadatas;
 import org.osivia.portal.api.customization.ICustomizationModule;
 import org.osivia.portal.api.customization.ICustomizationModulesRepository;
 import org.osivia.portal.api.theming.IRenderedRegions;
+
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletException;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Technical portlet for regions default customization.
@@ -34,40 +33,68 @@ import org.osivia.portal.api.theming.IRenderedRegions;
  */
 public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements ICustomizationModule {
 
-    /** Region : Header metadatas. */
+    /**
+     * Region : Header metadatas.
+     */
     public static final String REGION_HEADER_METADATA = "header-metadata";
 
-    /** Customizer name. */
+    /**
+     * Customizer name.
+     */
     private static final String CUSTOMIZER_NAME = "osivia.portal.regions.customizer";
-    /** Customization modules repository attribute name. */
+    /**
+     * Customization modules repository attribute name.
+     */
     private static final String ATTRIBUTE_CUSTOMIZATION_MODULES_REPOSITORY = "CustomizationModulesRepository";
 
-    /** Breadcrumb path init parameter name. */
+    /**
+     * Breadcrumb path init parameter name.
+     */
     private static final String BREADCRUMB_PATH_INIT_PARAM = "osivia.portal.customizer.regions.breadcrumb.path";
-    /** Footer path init parameter name. */
+    /**
+     * Footer path init parameter name.
+     */
     private static final String FOOTER_PATH_INIT_PARAM = "osivia.portal.customizer.regions.footer.path";
-    /** Search path init parameter name. */
+    /**
+     * Search path init parameter name.
+     */
     private static final String SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.search.path";
-    /** Web search path init parameter name. */
+    /**
+     * Web search path init parameter name.
+     */
     private static final String WEB_SEARCH_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.search.path";
-    /** Tabs path init parameter name. */
+    /**
+     * Tabs path init parameter name.
+     */
     private static final String HEADER_METADATA_PATH_INIT_PARAM = "osivia.portal.customizer.regions.header.metadata.path";
-    /** Tabs path init parameter name. */
+    /**
+     * Tabs path init parameter name.
+     */
     private static final String TABS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.tabs.path";
-    /** Toolbar path init parameter name. */
+    /**
+     * Toolbar path init parameter name.
+     */
     private static final String TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.toolbar.path";
-    /** Web toolbar path init parameter name. */
+    /**
+     * Web toolbar path init parameter name.
+     */
     private static final String WEB_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.web.toolbar.path";
-    /** Drawer toolbar path init parameter name. */
+    /**
+     * Drawer toolbar path init parameter name.
+     */
     private static final String DRAWER_TOOLBAR_PATH_INIT_PARAM = "osivia.portal.customizer.regions.drawer.toolbar.path";
-    /** Page settings path init parameter name. */
+    /**
+     * Page settings path init parameter name.
+     */
     private static final String PAGE_SETTINGS_PATH_INIT_PARAM = "osivia.portal.customizer.regions.page.settings.path";
-
-
-    /** Customization modules repository. */
-    private ICustomizationModulesRepository repository;
-    /** Internationalization customization module metadatas. */
+    /**
+     * Internationalization customization module metadatas.
+     */
     private final CustomizationModuleMetadatas metadatas;
+    /**
+     * Customization modules repository.
+     */
+    private ICustomizationModulesRepository repository;
 
 
     /**
@@ -136,7 +163,7 @@ public class RegionsDefaultCustomizerPortlet extends GenericPortlet implements I
             // Toolbar default region
             renderedRegions.defineDefaultRenderedRegion("toolbar", this.getInitParameter(TOOLBAR_PATH_INIT_PARAM));
             // Drawer toolbar default region
-            renderedRegions.defineDefaultRenderedRegion("drawer-toolbar", this.getInitParameter(DRAWER_TOOLBAR_PATH_INIT_PARAM));
+//            renderedRegions.defineDefaultRenderedRegion("drawer-toolbar", this.getInitParameter(DRAWER_TOOLBAR_PATH_INIT_PARAM));
             // Search default region
             renderedRegions.defineDefaultRenderedRegion("search", this.getInitParameter(SEARCH_PATH_INIT_PARAM));
             // Tabs default region
