@@ -126,23 +126,27 @@ function updateTableToolbar($target) {
 		indexes += index;
 	});
 	
-	
-	// AJAX
-	tableToolbarXhr = jQuery.ajax({
-		url: $toolbarContainer.data("url"),
-		async: true,
-		cache: false,
-		data: {
-			indexes: indexes
-		},
-		dataType: "html",
-		success : function(data, status, xhr) {
-			$toolbar.html(data);
-			
-			// Call jQuery.ready() events
-			$JQry(document).ready();
-		}
-	});
+
+	if (indexes.length) {
+		// AJAX
+		tableToolbarXhr = jQuery.ajax({
+			url: $toolbarContainer.data("url"),
+			async: true,
+			cache: false,
+			data: {
+				indexes: indexes
+			},
+			dataType: "html",
+			success: function (data, status, xhr) {
+				$toolbar.html(data);
+
+				// Call jQuery.ready() events
+				$JQry(document).ready();
+			}
+		});
+	} else {
+
+	}
 	
 	
 	// Update "select all" checkbox

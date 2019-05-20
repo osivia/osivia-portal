@@ -256,26 +256,18 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // Portlet container
+        out.print("<section class=\"portlet-container " + styles + "\">");
+
         if (bootstrapPanelStyle) {
-            out.print("<section class=\"panel panel-default portlet-container " + styles + "\">");
-        } else {
-            out.print("<section class=\"portlet-container " + styles + "\">");
+            out.print("<div class=\"card\"><div class=\"card-body\">");
         }
 
         // Portlet container rendering
         String portletsRendering = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING);
         if (InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
             // Div rendering
-
-            String headerClass;
-            String bodyClass;
-            if (bootstrapPanelStyle) {
-                headerClass = "panel-heading";
-                bodyClass = "panel-body";
-            } else {
-                headerClass = "portlet-header";
-                bodyClass = "portlet-content-center";
-            }
+            String headerClass = "portlet-header";
+            String bodyClass = "portlet-content-center";
             if (WindowState.MAXIMIZED.equals(wrc.getWindowState()) || !"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
                 headerClass += " sr-only";
             }
@@ -333,6 +325,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Portlet container
+        if (bootstrapPanelStyle) {
+            out.print("</div></div>");
+        }
         out.print("</section>");
         // Wizard edging
         if (wizard) {
