@@ -727,21 +727,23 @@
                 </p>
 
                 <div class="fancytree fancytree-links fixed-height">
-                    <p class="input-group input-group-sm">
-                        <span class="input-group-addon">
-                            <i class="halflings halflings-filter"></i>
-                        </span>
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="glyphicons glyphicons-basic-filter"></i>
+                            </span>
+                        </div>
 
                         <input type="text" class="form-control" placeholder="${filterLabel}">
 
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-secondary" title="${clearFilterLabel}"
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-outline-secondary" title="${clearFilterLabel}"
                                     data-toggle="tooltip" data-placement="bottom">
                                 <i class="halflings halflings-erase"></i>
                                 <span class="sr-only">${clearFilterLabel}</span>
                             </button>
-                        </span>
-                    </p>
+                        </div>
+                    </div>
 
                     <c:out value="${requestScope['osivia.settings.elements']}" escapeXml="false"/>
                 </div>

@@ -8,7 +8,7 @@
   width: #{$line-height-base}em;
 
   object: {
-    fit: cover;
+    fit: contain;
     position: center;
   }
 
