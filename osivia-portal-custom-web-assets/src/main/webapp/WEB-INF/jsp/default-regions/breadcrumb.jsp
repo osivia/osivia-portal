@@ -15,7 +15,7 @@
                 <c:when test="${status.last and not empty breadcrumb.menu}">
                     <li class="breadcrumb-item active">
                         <div class="dropdown d-inline">
-                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">
+                            <a href="javascript:;" class="text-secondary dropdown-toggle" data-toggle="dropdown">
                                 <span>${child.name}</span>
                             </a>
                             
@@ -26,13 +26,13 @@
                 
                 <c:when test="${status.last}">
                     <li class="breadcrumb-item active">
-                        <span>${child.name}</span>
+                        <span class="text-secondary">${child.name}</span>
                     </li>
                 </c:when>
                 
                 <c:otherwise>
                     <li class="breadcrumb-item">
-                        <a href="${child.url}">${child.name}</a>
+                        <a href="${child.url}" class="text-secondary">${child.name}</a>
                     </li>
                 </c:otherwise>
             </c:choose>
