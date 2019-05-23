@@ -202,7 +202,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
         }
 		newPages.add(newPage);
 
-        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", newPages);
+        this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
 		// On vide le cache
 		getDatas().clear();
 	}
@@ -234,7 +234,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
                 newPages.add(page);
             }
 		}
-        this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", newPages);
+        this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", newPages);
 		
 		
 		// Remove child windows
@@ -585,13 +585,13 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 		List<DynamicPageBean> pages = null;
 
-//		if (this.getTracker().getHttpSession() != null) {
-//            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
-//        }
+		if (this.getTracker().getHttpSession() != null) {
+            pages = (List<DynamicPageBean>) this.getTracker().getHttpSession().getAttribute("osivia.dynamic_pages");
+        }
 		
-	      if (this.getTracker().getHttpRequest() != null)    {
-	           pages = (List<DynamicPageBean>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic_pages");
-	        }
+//	      if (this.getTracker().getHttpRequest() != null)    {
+//	           pages = (List<DynamicPageBean>) this.getTracker().getHttpRequest().getAttribute("osivia.dynamic_pages");
+//	        }
 
 		
 		
@@ -617,7 +617,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	}
 
 	public void setDynamicPages(List<DynamicPageBean> dynaPages) {
-	    this.getTracker().getHttpRequest().setAttribute("osivia.dynamic_pages", dynaPages);
+	    this.getTracker().getHttpSession().setAttribute("osivia.dynamic_pages", dynaPages);
         
 		// On vide le cache
 		getDatas().clear();
