@@ -46,6 +46,10 @@ $JQry(function() {
                 }
 			});
 
+			$element.on("shown.bs.modal", function(event) {
+				tinymceInitialization();
+			});
+
 			$element.on("hide.bs.modal", function(event) {
 				var $target = $JQry(event.target);
 				var $window = $target.find(".dyna-window");
