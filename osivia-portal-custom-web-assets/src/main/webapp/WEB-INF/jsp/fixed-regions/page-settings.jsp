@@ -32,7 +32,7 @@ var currentPageId = '${currentPageId}';
 </script>
 
 
-<!-- Administrator content -->
+<%-- Administrator content --%>
 <c:if test="${requestScope['osivia.user.administrator']}">
     <script type="text/javascript">
     // Variables filled when opening fancybox
@@ -111,7 +111,7 @@ var currentPageId = '${currentPageId}';
 
     <div class="hidden">
     
-        <!-- Page creation -->
+        <%-- Page creation --%>
         <div id="page-creation" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -124,7 +124,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="action" value="createPage">
                         <input type="hidden" name="template" value="false">
                     
-                        <!-- Name -->
+                        <%-- Name --%>
                         <div class="form-group">
                             <label for="new-page-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
                             <div class="col-sm-8 col-lg-10">
@@ -134,7 +134,7 @@ var currentPageId = '${currentPageId}';
                         
                         <div class="row">
                             <div class="col-lg-6">
-                                <!-- Model -->
+                                <%-- Model --%>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><op:translate key="NEW_PAGE_MODEL" /></label>
                                     <div class="col-sm-8">
@@ -176,7 +176,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                             
                             <div class="col-lg-6">
-                                <!-- Parent -->
+                                <%-- Parent --%>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label required"><op:translate key="NEW_PAGE_PARENT" /></label>
                                     <div class="col-sm-8">
@@ -229,7 +229,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Template creation -->
+        <%-- Template creation --%>
         <div id="template-creation" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -242,7 +242,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="action" value="createPage">
                         <input type="hidden" name="template" value="true">
                     
-                        <!-- Name -->
+                        <%-- Name --%>
                         <div class="form-group">
                             <label for="new-template-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
                             <div class="col-sm-8 col-lg-10">
@@ -252,7 +252,7 @@ var currentPageId = '${currentPageId}';
                         
                         <div class="row">
                             <div class="col-lg-6">
-                                <!-- Model -->
+                                <%-- Model --%>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label"><op:translate key="NEW_TEMPLATE_MODEL" /></label>
                                     <div class="col-sm-8">
@@ -294,7 +294,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                             
                             <div class="col-lg-6">
-                                <!-- Parent -->
+                                <%-- Parent --%>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label required"><op:translate key="NEW_TEMPLATE_PARENT" /></label>
                                     <div class="col-sm-8">
@@ -347,7 +347,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Properties -->
+        <%-- Properties --%>
         <div id="page-properties" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -360,7 +360,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="action" value="changePageProperties" />
                         <input type="hidden" name="pageId" value="${currentPageId}" />
                         
-                        <!-- Name -->
+                        <%-- Name --%>
                         <div class="form-group">                
                             <label for="properties-page-name" class="col-sm-3 control-label required"><op:translate key="PAGE_NAME" /></label>
                             <div class="col-sm-9">
@@ -372,7 +372,7 @@ var currentPageId = '${currentPageId}';
                     <fieldset
                         <c:if test="${requestScope['osivia.toolbarSettings.cmsTemplated']}">disabled="disabled"</c:if>
                     >    
-                        <!-- Draft mode -->
+                        <%-- Draft mode --%>
                         <div class="form-group">
                             <label for="properties-page-draft-mode" class="col-sm-3 control-label"><op:translate key="PAGE_DRAFT_MODE" /></label>
                             <div class="col-sm-9">
@@ -389,19 +389,19 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                         
-                        <!-- Layout -->
+                        <%-- Layout --%>
                         <div class="form-group">
                             <label for="properties-page-layout" class="col-sm-3 control-label"><op:translate key="PAGE_LAYOUT" /></label>
                             <div class="col-sm-9">
                                 <select id="properties-page-layout" name="newLayout" class="form-control">
-                                    <!-- Default layout -->
+                                    <%-- Default layout --%>
                                     <option value=""
                                         <c:if test="${empty requestScope['osivia.toolbarSettings.currentLayout']}">selected="selected"</c:if>
                                     >
                                         <op:translate key="PAGE_DEFAULT_LAYOUT" />
                                     </option>
                                 
-                                    <!-- Layouts list -->
+                                    <%-- Layouts list --%>
                                     <c:forEach var="layout" items="${requestScope['osivia.toolbarSettings.layoutsList']}">
                                         <option value="${layout.layoutInfo.name}" ${layoutSelected}
                                             <c:if test="${requestScope['osivia.toolbarSettings.currentLayout'] eq layout.layoutInfo.name}">selected="selected"</c:if>
@@ -413,19 +413,19 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                         
-                        <!-- Theme -->
+                        <%-- Theme --%>
                         <div class="form-group">
                             <label for="properties-page-theme" class="col-sm-3 control-label"><op:translate key="PAGE_THEME" /></label>
                             <div class="col-sm-9">
                                 <select id="properties-page-theme" name="newTheme" class="form-control">
-                                    <!-- Default theme -->
+                                    <%-- Default theme --%>
                                     <option value=""
                                         <c:if test="${empty requestScope['osivia.toolbarSettings.currentTheme']}">selected="selected"</c:if>
                                     >
                                         <op:translate key="PAGE_DEFAULT_THEME" />
                                     </option>
                                 
-                                    <!-- Themes list -->
+                                    <%-- Themes list --%>
                                     <c:forEach var="theme" items="${requestScope['osivia.toolbarSettings.themesList']}">
                                         <option value="${theme.themeInfo.name}" ${themeSelected}
                                             <c:if test="${requestScope['osivia.toolbarSettings.currentTheme'] eq theme.themeInfo.name}">selected="selected"</c:if>
@@ -437,7 +437,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                         
-                        <!-- Category -->
+                        <%-- Category --%>
                         <div class="form-group">
                             <label for="properties-page-category" class="col-sm-3 control-label"><op:translate key="PAGE_CATEGORY" /></label>
                             <div class="col-sm-9">
@@ -453,7 +453,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                         
-                         <!-- Selectors propagation mode -->
+                         <%-- Selectors propagation mode --%>
                         <div class="form-group">
                             <label for="properties-page-selectors-propagation" class="col-sm-3 control-label"><op:translate key="PAGE_SELECTOR_PROPAGATION" /></label>
                             <div class="col-sm-9">
@@ -490,7 +490,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Move -->
+        <%-- Move --%>
         <div id="page-location" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -555,7 +555,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Rights -->
+        <%-- Rights --%>
         <div id="page-rights" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -592,14 +592,14 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- CMS -->
+        <%-- CMS --%>
         <div id="page-cms" class="flexbox">
             <div class="scrollbox">
                 <form id="formCMSProperties" action="${commandUrl}" method="get" class="form-horizontal" role="form">
                     <input type="hidden" name="action" value="changeCMSProperties" />
                     <input type="hidden" name="pageId" value="${currentPageId}" />
                     
-                    <!-- Path -->
+                    <%-- Path --%>
                     <div class="form-group">                
                         <label for="cms-path" class="control-label col-sm-4"><op:translate key="PAGE_CMS_PATH" /></label>
                         <div class="col-sm-8">
@@ -608,7 +608,7 @@ var currentPageId = '${currentPageId}';
                     </div>
                     
                     <fieldset id="fieldsetCMSProperties">
-                        <!-- Scope -->
+                        <%-- Scope --%>
                         <div class="form-group">                
                             <label for="cms-scope" class="control-label col-sm-4"><op:translate key="PAGE_CMS_SCOPE" /></label>
                             <div class="col-sm-8">
@@ -616,7 +616,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                     
-                        <!-- Version -->
+                        <%-- Version --%>
                         <div class="form-group">                
                             <label for="cms-version" class="control-label col-sm-4"><op:translate key="PAGE_CMS_VERSION" /></label>
                             <div class="col-sm-8">
@@ -624,7 +624,7 @@ var currentPageId = '${currentPageId}';
                             </div>
                         </div>
                         
-                        <!-- Contextualization -->
+                        <%-- Contextualization --%>
                         <div class="form-group">                
                             <label for="cms-contextualization" class="control-label col-sm-4"><op:translate key="PAGE_CMS_CONTEXTUALIZATION" /></label>
                             <div class="col-sm-8">
@@ -644,7 +644,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Delete page -->
+        <%-- Delete page --%>
         <div id="page-suppression" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" role="form">
@@ -665,7 +665,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Elements list -->
+        <%-- Elements list --%>
         <c:set var="filterLabel"><op:translate key="FILTER" /></c:set>
         <c:set var="clearFilterLabel"><op:translate key="CLEAR_FILTER" /></c:set>
         <div id="pages-list" class="flexbox">
@@ -697,7 +697,7 @@ var currentPageId = '${currentPageId}';
         </div>
 
         
-        <!-- Add portlet -->
+        <%-- Add portlet --%>
         <div id="add-portlet" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" role="form">
@@ -716,7 +716,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Delete portlet  -->
+        <%-- Delete portlet  --%>
         <div id="delete-portlet" class="flexbox">
             <div class="scrollbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal" role="form">
@@ -737,7 +737,7 @@ var currentPageId = '${currentPageId}';
         </div>
         
         
-        <!-- Windows settings -->
+        <%-- Windows settings --%>
         <c:forEach var="window" items="${requestScope['osivia.toolbarSettings.windowSettings']}">
             <div id="window-settings-${window.id}" class="flexbox">
                 <form action="${commandUrl}" method="get" class="form-horizontal flexbox" role="form">
@@ -753,7 +753,7 @@ var currentPageId = '${currentPageId}';
                                     <span><op:translate key="WINDOW_PROPERTIES_DISPLAY" /></span>
                                 </legend>
                                 
-                                <!-- Title -->                        
+                                <%-- Title --%>                        
                                 <div class="form-group">
                                     <label for="${window.id}-title" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_TITLE" /></label>
                                     <div class="col-sm-9">
@@ -792,7 +792,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Panel -->
+                                <%-- Panel --%>
                                 <div class="form-group">
                                     <label for="${window.id}-panel" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PANEL" /></label>
                                     <div class="col-sm-9">
@@ -818,7 +818,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Ajax -->
+                                <%-- Ajax --%>
                                 <div class="form-group">
                                     <label for="${window.id}-ajax" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_AJAX" /></label>
                                     <div class="col-sm-9">
@@ -833,7 +833,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Hide empty portlet -->
+                                <%-- Hide empty portlet --%>
                                 <div class="form-group">
                                     <label for="${window.id}-hide-empty" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY" /></label>
                                     <div class="col-sm-9">
@@ -848,7 +848,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Print -->
+                                <%-- Print --%>
                                 <div class="form-group">
                                     <label for="${window.id}-print" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PRINT" /></label>
                                     <div class="col-sm-9">
@@ -863,7 +863,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Styles -->
+                                <%-- Styles --%>
                                 <div class="form-group">
                                     <label class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_STYLES" /></label>
                                     <div class="col-sm-9">
@@ -896,7 +896,7 @@ var currentPageId = '${currentPageId}';
                                     <span><op:translate key="WINDOW_PROPERTIES_ADVANCED_OPTIONS" /></span>
                                 </legend>
                                 
-                                <!-- Scopes -->
+                                <%-- Scopes --%>
                                 <div class="form-group">
                                     <label for="${window.id}-scopes" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
                                     <div class="col-sm-9">
@@ -914,7 +914,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Linked taskbar item -->
+                                <%-- Linked taskbar item --%>
                                 <div class="form-group">
                                     <label for="${window.id}-linked-taskbar-item" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM" /></label>
                                     <div class="col-sm-9">
@@ -933,7 +933,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Customization identifier -->
+                                <%-- Customization identifier --%>
                                 <div class="form-group">
                                     <label for="${window.id}-custom-id" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_CUSTOM_ID" /></label>
                                     <div class="col-sm-9">
@@ -941,7 +941,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Shared cache identifier -->
+                                <%-- Shared cache identifier --%>
                                 <div class="form-group">
                                     <label for="${window.id}-shared-cache-id" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SHARED_CACHE_ID" /></label>
                                     <div class="col-sm-9">
@@ -949,7 +949,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Shared cache identifier -->
+                                <%-- Shared cache identifier --%>
                                 <div class="form-group">
                                     <label for="${window.id}-priority" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_PRIORITY" /></label>
                                     <div class="col-sm-9">
@@ -957,7 +957,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- Selection dependency indicator -->
+                                <%-- Selection dependency indicator --%>
                                 <div class="form-group">
                                     <label for="${window.id}-selection-dependency" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY" /></label>
                                     <div class="col-sm-9">
@@ -972,7 +972,7 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
                                 
-                                <!-- BeanShell -->
+                                <%-- BeanShell --%>
                                 <c:remove var="beanShellContent" />
                                 <c:if test="${window.beanShell}">
                                     <c:set var="beanShellContent" value="in" />
@@ -1039,7 +1039,7 @@ rightCellToggle.add(example);
                                     </div>
                                 </div>
                                 
-                                <!-- Satellite -->
+                                <%-- Satellite --%>
                                 <c:if test="${not empty window.satellites}">
                                     <div class="form-group">
                                         <label for="${window.id}-satellite" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SATELLITE" /></label>
@@ -1073,11 +1073,11 @@ rightCellToggle.add(example);
 </c:if>
 
 
-<!-- Modal -->
+<%-- Modal --%>
 <div id="osivia-modal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <!-- Header -->
+            <%-- Header --%>
             <div class="modal-header hidden">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -1085,7 +1085,7 @@ rightCellToggle.add(example);
                 <p class="h4 modal-title"></p>
             </div>
             
-            <!-- Body -->
+            <%-- Body --%>
             <div class="modal-body">
                 <div class="dyna-region">
                     <div id="modal-region">
@@ -1103,7 +1103,7 @@ rightCellToggle.add(example);
                 </div>
             </div>
             
-            <!-- Footer -->
+            <%-- Footer --%>
             <div class="modal-footer hidden">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <span><op:translate key="CLOSE" /></span>
@@ -1116,7 +1116,7 @@ rightCellToggle.add(example);
 </div>
 
 
-<!-- Reload -->
+<%-- Reload --%>
 <c:set var="urls" value="${requestScope['osivia.session.reload.urls']}" />
 <c:if test="${not empty urls}">
     <div id="session-reload" data-reload="true" data-urls="${urls}"></div>
