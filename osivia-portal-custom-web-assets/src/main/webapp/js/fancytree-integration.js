@@ -1,5 +1,5 @@
 $JQry(document).ready(function() {
-	
+
 	$JQry(".fancytree.fancytree-default").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("lazyloadingurl"),
@@ -10,11 +10,11 @@ $JQry(document).ready(function() {
 				tabbable : false,
 				titlesTabbable : true,
 				toggleEffect : false,
-				
+
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
 						doc : "glyphicons glyphicons-file",
@@ -29,18 +29,18 @@ $JQry(document).ready(function() {
 					}
 				}
 			};
-		
+
 		if (url !== undefined) {
 			// Source URL
 			options["source"] = {
 				url : url,
 				cache : false
 			};
-			
+
 			// Lazy loading
 			options["lazyLoad"] = function(event, data) {
 				var node = data.node;
-	
+
 				data.result = {
 					url : url,
 					data : {
@@ -50,11 +50,11 @@ $JQry(document).ready(function() {
 				};
 			}
 		}
-	
+
 		// Fancytree
-		$element.fancytree(options);	
+		$element.fancytree(options);
 	});
-	
+
 	// Fancytree with links
 	$JQry(".fancytree.fancytree-links").each(function(index, element) {
 		var $element = $JQry(element),
@@ -65,11 +65,11 @@ $JQry(document).ready(function() {
 				tabbable : false,
 				titlesTabbable : true,
 				toggleEffect : false,
-				
+
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
 						doc : "glyphicons glyphicons-file",
@@ -83,7 +83,7 @@ $JQry(document).ready(function() {
 						loading: "halflings halflings-hourglass text-info"
 					}
 				},
-				
+
 				activate : function(event, data) {
 					var node = data.node;
 					if (node.data.href) {
@@ -95,14 +95,14 @@ $JQry(document).ready(function() {
 					}
 				}
 			};
-		
+
 		if (url !== undefined) {
 			// Source URL
 			options["source"] = {
 				url : url,
 				cache : false
 			};
-			
+
 			// Lazy loading
 			options["lazyLoad"] = function(event, data) {
 				var node = data.node;
@@ -118,10 +118,10 @@ $JQry(document).ready(function() {
 		}
 
 		// Fancytree
-		$element.fancytree(options);	
+		$element.fancytree(options);
 	});
-	
-	
+
+
 	// Fancytree with selector with optional lazy loading
 	$JQry(".fancytree.fancytree-selector").each(function(index, element) {
 		var $element = $JQry(element),
@@ -134,11 +134,11 @@ $JQry(document).ready(function() {
 				tabbable : false,
 				titlesTabbable : false,
 				toggleEffect : false,
-				
+
 				filter : {
 					mode : "hide"
 				},
-				
+
 				glyph : {
 					map : {
 						doc : "glyphicons glyphicons-file",
@@ -152,15 +152,15 @@ $JQry(document).ready(function() {
 						loading: "halflings halflings-hourglass text-info"
 					}
 				},
-				
+
 				activate : function(event, data) {
 					var $selector = data.tree.$div.closest(".selector"),
 						$input = $selector.find("input.selector-value"),
 						path = data.node.data.path;
-					
+
 					$input.val(path);
 				},
-				
+
 				click : function(event, data) {
 					if (data.targetType == "expander") {
 						return true;
@@ -170,14 +170,14 @@ $JQry(document).ready(function() {
 				}
 			},
 			activeNode;
-		
+
 		if (url !== undefined) {
 			// Source URL
 			options["source"] = {
 				url : url,
 				cache : false
 			};
-			
+
 			// Lazy loading
 			options["lazyLoad"] = function(event, data) {
 				var node = data.node;
@@ -195,19 +195,19 @@ $JQry(document).ready(function() {
 		// Fancytree
 		$element.fancytree(options);
 
-		
+
 		// Active node
 		activeNode = $element.fancytree("getActiveNode");
 		if (activeNode) {
 			var $selector = activeNode.tree.$div.closest(".selector"),
 				$input = $selector.find("input.selector-value"),
 				path = activeNode.data.path;
-			
+
 			$input.val(path);
 		}
 	});
-	
-	
+
+
 	// Fancytree browser
 	$JQry(".fancytree.fancytree-browser").each(function(index, element) {
 		var $element = $JQry(element),
@@ -225,7 +225,7 @@ $JQry(document).ready(function() {
 				url : url,
 				cache : false
 			},
-			
+
 			glyph : {
 				map : {
 					doc : "glyphicons glyphicons-file",
@@ -239,7 +239,7 @@ $JQry(document).ready(function() {
 					loading: "halflings halflings-hourglass text-info"
 				}
 			},
-			
+
 			activate : function(event, data) {
 				var node = data.node;
 				if (node.data.href) {
@@ -250,7 +250,7 @@ $JQry(document).ready(function() {
 					}
 				}
 			},
-			
+
 			click : function(event, data) {
 				if (data.targetType == "expander") {
 					return true;
@@ -272,26 +272,26 @@ $JQry(document).ready(function() {
 			}
 		});
 	});
-	
-	
+
+
 	$JQry(".fancytree input[type=text]").keyup(filterTree);
 	// Mobile virtual event
 	$JQry(".fancytree input[type=text]").on("input", filterTree);
-	
-	
+
+
 	$JQry(".fancytree button").click(function(event) {
 		var $target = $JQry(event.target),
 			$tree = $target.closest(".fancytree"),
 			tree = $tree.fancytree("getTree"),
 			$filter = $tree.find("input[type=text]"),
 			expand = $filter.data("expand");
-			
+
 		$filter.val("");
-		
+
 		clearFilter(tree, expand);
 	});
-	
-	
+
+
 	// Fancybox checkbox toggle
 	$JQry("input[type=checkbox][data-toggle=fancytree]").change(function(event) {
 		var $checkbox = $JQry(this),
@@ -309,17 +309,17 @@ $JQry(document).ready(function() {
 		} else {
 			$tree.fancytree("enable");
 		}
-		
+
 		$selector.prop("disabled", checked);
 		$filter.prop("disabled", checked);
 	});
-	
+
 });
 
 
 /**
  * Filter tree.
- * 
+ *
  * @param event event
  */
 function filterTree(event) {
@@ -347,13 +347,13 @@ function filterTree(event) {
 
 /**
  * Clear tree filter.
- * 
+ *
  * @param tree tree
  * @param expand expand tree indicator
  */
 function clearFilter(tree, expand) {
 	tree.clearFilter();
-	
+
 	tree.visit(function(node) {
 		if (!node.data.retain) {
 			node.setExpanded(expand == true);
