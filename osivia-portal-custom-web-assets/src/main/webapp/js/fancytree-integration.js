@@ -1,52 +1,6 @@
 $JQry(document).ready(function() {
-	fancytreeInitialization();
 
-	
-	$JQry(".fancytree input[type=text]").keyup(filterTree);
-	// Mobile virtual event
-	$JQry(".fancytree input[type=text]").on("input", filterTree);
-	
-	
-	$JQry(".fancytree button").click(function(event) {
-		var $target = $JQry(event.target),
-			$tree = $target.closest(".fancytree"),
-			tree = $tree.fancytree("getTree"),
-			$filter = $tree.find("input[type=text]"),
-			expand = $filter.data("expand");
-			
-		$filter.val("");
-		
-		clearFilter(tree, expand);
-	});
-	
-	
-	// Fancybox checkbox toggle
-	$JQry("input[type=checkbox][data-toggle=fancytree]").change(function(event) {
-		var $checkbox = $JQry(this),
-		    checked = $checkbox.is(":checked"),
-	        $formGroup = $checkbox.closest(".form-group"),
-	        $selector = $formGroup.find("input.selector-value"),
-	        $tree = $formGroup.find(".fancytree"),
-	        tree = $tree.fancytree("getTree"),
-	        $filter = $tree.find("input[type=text]");
-
-		if (checked) {
-			$tree.fancytree("disable");
-			$selector.val("");
-			tree.activateKey(false);
-		} else {
-			$tree.fancytree("enable");
-		}
-		
-		$selector.prop("disabled", checked);
-		$filter.prop("disabled", checked);
-	});
-	
-});
-
-
-function fancytreeInitialization($filter) {
-	$JQry($filter + ".fancytree.fancytree-default").each(function(index, element) {
+	$JQry(".fancytree.fancytree-default").each(function(index, element) {
 		var $element = $JQry(element),
 			url = $element.data("lazyloadingurl"),
 			options = {
@@ -76,7 +30,7 @@ function fancytreeInitialization($filter) {
 						folderOpen: "glyphicons glyphicons-halflings-folder-open",
 						loading: "glyphicons glyphicons-halflings-hourglass text-info"
 					}
-				},
+				}
 			};
 
 		if (url !== undefined) {
@@ -330,12 +284,54 @@ function fancytreeInitialization($filter) {
 			}
 		});
 	});
-}
+	
+	
+	$JQry(".fancytree input[type=text]").keyup(filterTree);
+	// Mobile virtual event
+	$JQry(".fancytree input[type=text]").on("input", filterTree);
+	
+	
+	$JQry(".fancytree button").click(function(event) {
+		var $target = $JQry(event.target),
+			$tree = $target.closest(".fancytree"),
+			tree = $tree.fancytree("getTree"),
+			$filter = $tree.find("input[type=text]"),
+			expand = $filter.data("expand");
+			
+		$filter.val("");
+		
+		clearFilter(tree, expand);
+	});
+	
+	
+	// Fancybox checkbox toggle
+	$JQry("input[type=checkbox][data-toggle=fancytree]").change(function(event) {
+		var $checkbox = $JQry(this),
+		    checked = $checkbox.is(":checked"),
+	        $formGroup = $checkbox.closest(".form-group"),
+	        $selector = $formGroup.find("input.selector-value"),
+	        $tree = $formGroup.find(".fancytree"),
+	        tree = $tree.fancytree("getTree"),
+	        $filter = $tree.find("input[type=text]");
+
+		if (checked) {
+			$tree.fancytree("disable");
+			$selector.val("");
+			tree.activateKey(false);
+		} else {
+			$tree.fancytree("enable");
+		}
+		
+		$selector.prop("disabled", checked);
+		$filter.prop("disabled", checked);
+	});
+	
+});
 
 
 /**
  * Filter tree.
- * 
+ *
  * @param event event
  */
 function filterTree(event) {
@@ -363,13 +359,13 @@ function filterTree(event) {
 
 /**
  * Clear tree filter.
- * 
+ *
  * @param tree tree
  * @param expand expand tree indicator
  */
 function clearFilter(tree, expand) {
 	tree.clearFilter();
-	
+
 	tree.visit(function(node) {
 		if (!node.data.retain) {
 			node.setExpanded(expand == true);

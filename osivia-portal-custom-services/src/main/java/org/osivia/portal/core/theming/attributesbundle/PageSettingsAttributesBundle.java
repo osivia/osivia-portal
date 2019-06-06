@@ -197,6 +197,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         // Attribute names
         this.names = new TreeSet<String>();
+        this.names.add(InternalConstants.ATTR_USER_ADMIN);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_SELECTORS_PROPAGATION);

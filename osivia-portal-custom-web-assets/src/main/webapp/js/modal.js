@@ -36,6 +36,9 @@ $JQry(function() {
 					if (callbackFunction) {
 						window[callbackFunction](callbackFunctionArgs);
 					}
+
+					// jQuery events
+					$JQry(document).ready();
 				});
 
 				// Size
@@ -46,10 +49,6 @@ $JQry(function() {
                 } else if ((size === "sm") || (size === "small")) {
                     $dialog.addClass("modal-sm");
                 }
-			});
-
-			$element.on("shown.bs.modal", function(event) {
-				fancytreeInitialization();
 			});
 
 			$element.on("hide.bs.modal", function(event) {

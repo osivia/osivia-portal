@@ -1,4 +1,5 @@
-*.css
+# Minified CSS files
+*.min.css
 
 
 # Created by https://www.gitignore.io/api/sass,maven,eclipse,intellij+all
