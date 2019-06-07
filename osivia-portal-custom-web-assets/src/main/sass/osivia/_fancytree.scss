@@ -1,12 +1,19 @@
 @import "variables";
+@import "glyphicons/mixins";
 
 
 $fancytree-icon-size: 1.25rem;
-$fancytree-padding: .25rem;
 
 
 .fancytree {
   user-select: none;
+
+  &.fixed-height {
+    > ul.fancytree-container {
+      height: 300px;
+      overflow: auto;
+    }
+  }
 
   ul {
     padding-left: 0;
@@ -14,7 +21,7 @@ $fancytree-padding: .25rem;
     list-style: none;
 
     ul {
-      padding-left: $fancytree-icon-size + $fancytree-padding;
+      padding-left: $fancytree-icon-size + map_get($spacers, 1);
     }
   }
 }
@@ -29,25 +36,42 @@ $fancytree-padding: .25rem;
   display: flex;
   align-items: center;
 
-  padding: $fancytree-padding;
+  padding: .1rem;
 
+  color: $dark;
   cursor: pointer;
 
   @include text-truncate;
   @include border-radius($thumbnail-border-radius);
 
   &:hover {
+    color: darken($dark, $emphasized-link-hover-darken-percentage);
     background-color: $light;
   }
 
   &.current {
     color: $primary;
     font-weight: $font-weight-bold;
+
+    &:hover {
+      color: darken($primary, $emphasized-link-hover-darken-percentage);
+    }
   }
 
   &.not-allowed {
     > :not(.fancytree-expander) {
       cursor: not-allowed;
+    }
+  }
+
+  &.fancytree-active {
+    .fancytree-selector & {
+      color: $white;
+      background-color: $primary;
+
+      &:hover {
+        background-color: darken($primary, 5%);
+      }
     }
   }
 }
@@ -82,7 +106,7 @@ $fancytree-padding: .25rem;
 
 
 .fancytree-expander, .fancytree-icon, .fancytree-custom-icon {
-  margin-right: $fancytree-padding;
+  margin-right: map_get($spacers, 1);
 
   &, &.glyphicons::before {
     height: $fancytree-icon-size;
@@ -92,21 +116,33 @@ $fancytree-padding: .25rem;
 
 
 .fancytree-expander {
-  color: $text-muted;
+  transform: rotate(-90deg);
 
-  @include transition($btn-transition);
+  @include transition;
 
-  &:hover, &:focus {
-    color: darken($link-color, $emphasized-link-hover-darken-percentage) !important;
+  .fancytree-expanded > & {
+    transform: rotate(0);
   }
 
-  .fancytree-expanded & {
-    color: inherit;
+  &:not(.glyphicons) {
+    display: inline-flex;
+
+    &::before {
+      content: "";
+
+      height: $fancytree-icon-size;
+      width: $fancytree-icon-size;
+    }
   }
 
   .fancytree-node:not(.fancytree-has-children) & {
     visibility: hidden;
   }
+}
+
+
+.fancytree-title {
+  @include text-truncate;
 }
 
 
@@ -116,7 +152,7 @@ $fancytree-padding: .25rem;
   a {
     @extend .fancytree-node;
 
-    padding-left: $fancytree-icon-size * 2 + $fancytree-padding * 3;
+    padding-left: $fancytree-icon-size * 2 + $btn-padding-x * 3;
 
     &, &:hover, &:focus {
       color: inherit;

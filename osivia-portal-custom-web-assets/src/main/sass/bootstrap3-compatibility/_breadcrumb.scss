@@ -1,0 +1,5 @@
+.breadcrumb {
+  > li {
+    @extend .breadcrumb-item;
+  }
+}

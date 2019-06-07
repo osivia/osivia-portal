@@ -1,0 +1,182 @@
+@import "variables";
+
+
+.select2-container--bootstrap4 {
+  .select2-selection {
+    display: block;
+    width: 100%;
+    height: $input-height;
+    padding: $input-padding-y $input-padding-x;
+    font-family: $input-font-family;
+    @include font-size($input-font-size);
+    font-weight: $input-font-weight;
+    line-height: $input-line-height;
+    color: $input-color;
+    background-color: $input-bg;
+    background-clip: padding-box;
+    border: $input-border-width solid $input-border-color;
+
+    // Note: This has no effect on <select>s in some browsers, due to the limited stylability of `<select>`s in CSS.
+    @include border-radius($input-border-radius, 0);
+
+    @include box-shadow($input-box-shadow);
+    @include transition($input-transition);
+
+    // Unstyle the caret on `<select>`s in IE10+.
+    &::-ms-expand {
+      background-color: transparent;
+      border: 0;
+    }
+
+
+    &.select2-selection--single {
+
+    }
+
+    &.select2-selection--multiple {
+      height: auto;
+    }
+  }
+
+
+  &.select2-container--focus {
+    .select2-selection {
+      color: $input-focus-color;
+      background-color: $input-focus-bg;
+      border-color: $input-focus-border-color;
+      outline: 0;
+      // Avoid using mixin so we can pass custom focus shadow properly
+      @if $enable-shadows {
+        box-shadow: $input-box-shadow, $input-focus-box-shadow;
+      } @else {
+        box-shadow: $input-focus-box-shadow;
+      }
+    }
+  }
+
+
+  &.select2-container--open {
+    &.select2-container--above {
+      .select2-selection {
+        border-top-color: transparent;
+      }
+    }
+
+    &.select2-container--below {
+      .select2-selection {
+        border-bottom-color: transparent;
+      }
+    }
+  }
+
+
+  .select2-selection__rendered {
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+
+    list-style: none;
+  }
+
+  .select2-selection__choice {
+    margin-right: map_get($spacers, 1);
+
+    &:nth-last-child(2) {
+      margin-right: map_get($spacers, 2);
+    }
+
+    &:not(:nth-last-child(2)) {
+      &::after {
+        content: ",";
+      }
+    }
+  }
+
+  .select2-selection__choice__remove {
+    display: none;
+  }
+
+  .select2-search--inline {
+    flex-grow: 1;
+    float: none !important;
+    overflow: hidden;
+  }
+
+  .select2-search__field {
+    max-width: 100%;
+    @include text-truncate;
+
+    margin-top: 0 !important;
+
+    color: $primary;
+    font-style: italic;
+
+    // Placeholder
+    &::placeholder {
+      color: $input-placeholder-color;
+      // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526.
+      opacity: 1;
+
+      font-style: normal;
+    }
+  }
+
+
+  .select2-dropdown {
+    border-color: $input-border-color;
+  }
+
+  //.select2-results__options {
+  //  max-height: 15rem;
+  //  overflow-y: auto;
+  //}
+
+  .select2-results__option {
+    padding: $input-padding-y $input-padding-x;
+
+    &.select2-results__option--highlighted {
+      background-color: $gray-300;
+    }
+
+    &[aria-selected=true] {
+      color: $white;
+      background-color: $primary;
+
+      &.select2-results__option--highlighted {
+        background-color: darken($primary, 7.5%);
+      }
+    }
+
+    &[aria-disabled=true] {
+      color: $text-muted;
+    }
+
+    .optgroup {
+      font-weight: $font-weight-bold;
+    }
+
+    .level-2 {
+      padding-left: map_get($spacers, 3);
+    }
+
+    .level-3 {
+      padding-left: map_get($spacers, 3) * 2;
+    }
+  }
+
+
+  .input-group > & {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1% !important;
+
+    &:not(:last-child) {
+      .select2-selection {
+        @include border-right-radius(0);
+      }
+    }
+  }
+}

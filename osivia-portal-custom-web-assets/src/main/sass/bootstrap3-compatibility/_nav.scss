@@ -1,0 +1,15 @@
+.nav, .nav-tabs {
+  > li {
+    @extend .nav-item;
+
+    > a {
+      @extend .nav-link;
+    }
+
+    //&.active {
+    //  > a {
+    //    @extend .nav-link.active;
+    //  }
+    //}
+  }
+}

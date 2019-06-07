@@ -1,0 +1,10 @@
+@import "variables";
+
+
+#popup-body {
+  padding: $card-spacer-y $card-spacer-x;
+
+  .portlet-container {
+    margin-bottom: 0;
+  }
+}

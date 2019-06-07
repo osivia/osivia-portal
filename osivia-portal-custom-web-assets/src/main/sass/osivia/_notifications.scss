@@ -1,0 +1,45 @@
+@import "variables";
+
+
+.notifications-container {
+  position: fixed;
+  top: map_get($spacers, 2);
+  right: map_get($spacers, 2);
+  z-index: $zindex-modal + 1;
+  width: 0;
+
+  .notification-container {
+    float: right;
+    width: $toast-max-width;
+
+    @include transition;
+  }
+
+  .ajax-waiter {
+    width: auto;
+    max-width: $toast-max-width;
+
+    transform: translate(calc(#{$toast-max-width} + #{map_get($spacers, 2)}), 0);
+
+    &.in {
+      transform: translate(0, 0);
+    }
+  }
+
+  .alert {
+    &.apart {
+      opacity: .8;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .glyphicons {
+    &::before {
+      height: 32px;
+      width: 32px;
+    }
+  }
+}

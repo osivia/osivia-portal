@@ -1,0 +1,7 @@
+$values: nowrap, pre, pre-line, pre-wrap;
+
+@each $value in $values {
+  .white-space-#{$value} {
+    white-space: $value !important;
+  }
+}

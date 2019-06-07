@@ -9,7 +9,9 @@
     align-self: center;
     
     vertical-align: bottom;
-    
+
+    @include glyphicons-mask($default-url);
+
     &::before {
         content: "";
         
@@ -22,8 +24,6 @@
         -webkit-mask-repeat: no-repeat;
         mask-size: contain;
         -webkit-mask-size: contain;
-
-        @include glyphicons-mask($default-url);
 
         background-color: currentColor;
     }

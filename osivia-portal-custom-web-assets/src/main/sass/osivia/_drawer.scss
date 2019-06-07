@@ -1,0 +1,38 @@
+@import "variables";
+
+
+$drawer-width: 75%;
+
+
+@media (max-width: map_get($grid-breakpoints, "md") - 1) {
+  #drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -$drawer-width;
+    width: $drawer-width;
+    z-index: $zindex-modal + 1;
+
+    background-color: $white;
+
+    transform: translate(0, 0);
+
+    @include transition;
+
+    &.active {
+      transform: translate(100%, 0);
+    }
+  }
+
+  #drawer-shadowbox {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: $zindex-modal-backdrop + 1;
+
+    background-color: $black;
+    opacity: 0;
+  }
+}

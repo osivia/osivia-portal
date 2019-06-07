@@ -1,0 +1,15 @@
+@import "variables";
+
+
+.form-group {
+  &.required {
+    label {
+      &::after {
+        content: " *";
+
+        color: $danger;
+        white-space: nowrap;
+      }
+    }
+  }
+}

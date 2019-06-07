@@ -1,0 +1,13 @@
+.input-group-addon {
+  @extend .input-group-text;
+
+  &:first-child {
+    @extend .input-group-prepend;
+    @include border-right-radius(0);
+  }
+
+  &:last-child {
+    @extend .input-group-append;
+    @include border-left-radius(0);
+  }
+}

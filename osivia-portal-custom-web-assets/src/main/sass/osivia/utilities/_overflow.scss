@@ -1,0 +1,12 @@
+@import "../variables";
+
+
+$axes: x, y;
+
+@each $value in $overflows {
+  @each $axe in $axes {
+    .overflow-#{$axe}-#{$value} {
+      overflow-#{$axe}: $value !important;
+    }
+  }
+}

@@ -1,0 +1,45 @@
+@import "variables";
+
+
+%inline-edition-form-control {
+  padding: {
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  border: {
+    top-style: none;
+    left-style: none;
+    right-style: none;
+
+    radius: 0;
+  }
+}
+
+%inline-edition-form-control-focus {
+  box-shadow: none;
+}
+
+
+.inline-edition {
+  .form-control {
+    @extend %inline-edition-form-control;
+
+    &:focus {
+      @extend %inline-edition-form-control-focus;
+    }
+  }
+
+  .select2-container--bootstrap4 {
+    .select2-selection {
+      @extend %inline-edition-form-control;
+    }
+
+    &.select2-container--focus {
+      .select2-selection {
+        @extend %inline-edition-form-control-focus;
+      }
+    }
+  }
+}

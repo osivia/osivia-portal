@@ -81,7 +81,7 @@
 .portal-table-row {
   display: table-row;
 
-  border-color: $gray-100;
+  border-color: $gray-200;
 
   &, a {
     color: $gray-800;
@@ -106,8 +106,8 @@
     background-color: $primary;
     border-color: darken($primary, 5%);
 
-    &, a:not(.btn), [class^="text"] {
-      color: $white;
+    &, a:not(.btn), [class^="text"], .text-muted {
+      color: $white !important;
     }
   }
 }
@@ -163,7 +163,7 @@
 .portal-table-toolbar-container {
   display: flex;
 
-  min-height: $input-btn-line-height-sm + $input-btn-padding-x-sm;
+  min-height: $input-btn-line-height-sm + $input-btn-padding-x-sm + map_get($spacers, 2);
 
   margin-bottom: -#{map_get($spacers, 2)};
 

@@ -1,0 +1,24 @@
+@import "../bootstrap/functions";
+@import "../bootstrap/variables";
+
+
+.panel {
+  @extend .card, .mb-3;
+}
+
+.panel-heading {
+  @extend .card-header;
+
+  .panel-title {
+    font-size: $font-size-base;
+    @extend .mb-0;
+  }
+}
+
+.panel-body {
+  @extend .card-body;
+}
+
+.panel-footer {
+  @extend .card-footer;
+}
