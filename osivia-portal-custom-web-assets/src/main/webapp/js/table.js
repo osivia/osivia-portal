@@ -145,7 +145,7 @@ function updateTableToolbar($target) {
 			}
 		});
 	} else {
-
+		$toolbar.html("");
 	}
 	
 	
