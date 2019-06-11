@@ -5,8 +5,8 @@ $JQry(function() {
 
 		if (!$element.data("loaded")) {
 			$element.change(function(event) {
-				var $target = $JQry(event.target),
-					$submit = $JQry("#" + $target.data("change-submit"));
+				var $target = $JQry(event.target);
+				var $submit = $JQry("#" + $target.data("change-submit"));
 				
 				$submit.click();
 			});
