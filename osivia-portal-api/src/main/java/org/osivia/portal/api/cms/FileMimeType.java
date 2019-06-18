@@ -19,6 +19,11 @@ public class FileMimeType {
     private String display;
     /** MIME type icon. */
     private String icon;
+    /** MIME type pdf convertion */
+    private boolean pdfConvertible;
+
+
+    
 
 
     /**
@@ -26,6 +31,25 @@ public class FileMimeType {
      */
     public FileMimeType() {
         super();
+    }
+
+    
+    /**
+     * Getter for pdfConvertible.
+     * @return the pdfConvertible
+     */
+    public boolean isPdfConvertible() {
+        return pdfConvertible;
+    }
+
+
+    
+    /**
+     * Setter for pdfConvertible.
+     * @param pdfConvertible the pdfConvertible to set
+     */
+    public void setPdfConvertible(boolean pdfConvertible) {
+        this.pdfConvertible = pdfConvertible;
     }
 
 
