@@ -168,12 +168,11 @@ public class ResizableService implements IResizableService {
             if (width != null) {
                 containerHtmlClasses += " loaded";
 
-                StringBuilder builder = new StringBuilder();
-                builder.append("width: ");
-                builder.append(width);
-                builder.append("px;");
-
-                DOM4JUtils.addAttribute(container, "style", builder.toString());
+                String style = "width: " + width + "px;";
+                DOM4JUtils.addAttribute(container, "style", style);
+            } else if (minWidth != null) {
+                String style = "min-width: " + minWidth + "px;";
+                DOM4JUtils.addAttribute(container, "style", style);
             }
 
             DOM4JUtils.addAttribute(container, "class", containerHtmlClasses);
