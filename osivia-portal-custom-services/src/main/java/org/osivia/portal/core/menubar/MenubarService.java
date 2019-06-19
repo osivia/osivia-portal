@@ -213,7 +213,7 @@ public class MenubarService implements IMenubarService {
      */
     public Map<MenubarGroup, Set<MenubarItem>> getNavbarSortedItems(PortalControllerContext portalControllerContext) {
         // Items map
-        Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<MenubarGroup, Set<MenubarItem>>(this.groupComparator);
+        Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<>(this.groupComparator);
 
         // Customized menubar
         List<MenubarItem> customizedMenubar = this.getCustomizedMenubar(portalControllerContext);
@@ -275,9 +275,9 @@ public class MenubarService implements IMenubarService {
         // Menubar items
         List<MenubarItem> menubar;
         if (list == null) {
-            menubar = new ArrayList<MenubarItem>();
+            menubar = new ArrayList<>();
         } else {
-            menubar = new ArrayList<MenubarItem>(list.size());
+            menubar = new ArrayList<>(list.size());
             for (Object object : list) {
                 if (object instanceof MenubarItem) {
                     MenubarItem item = (MenubarItem) object;
@@ -311,7 +311,7 @@ public class MenubarService implements IMenubarService {
      */
     public Map<MenubarGroup, Set<MenubarItem>> getPortletSortedItems(List<MenubarItem> items) {
         // Items map
-        Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<MenubarGroup, Set<MenubarItem>>(this.groupComparator);
+        Map<MenubarGroup, Set<MenubarItem>> sortedItems = new TreeMap<>(this.groupComparator);
 
         if (items != null) {
             for (MenubarItem item : items) {
@@ -336,7 +336,7 @@ public class MenubarService implements IMenubarService {
     private void addSortedItem(Map<MenubarGroup, Set<MenubarItem>> sortedItems, MenubarGroup group, MenubarItem item) {
         Set<MenubarItem> items = sortedItems.get(group);
         if (items == null) {
-            items = new TreeSet<MenubarItem>(this.objectComparator);
+            items = new TreeSet<>(this.objectComparator);
             sortedItems.put(group, items);
         }
 
@@ -359,7 +359,7 @@ public class MenubarService implements IMenubarService {
         Set<MenubarDropdown> dropdownMenus = (Set<MenubarDropdown>) controllerContext.getAttribute(Scope.REQUEST_SCOPE, DROPDOWN_MENUS_REQUEST_ATTRIBUTE);
 
         if (dropdownMenus == null) {
-            dropdownMenus = new HashSet<MenubarDropdown>();
+            dropdownMenus = new HashSet<>();
             controllerContext.setAttribute(Scope.REQUEST_SCOPE, DROPDOWN_MENUS_REQUEST_ATTRIBUTE, dropdownMenus);
         }
 
