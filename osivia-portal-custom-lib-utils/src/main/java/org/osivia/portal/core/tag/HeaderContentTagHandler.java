@@ -138,7 +138,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/postmessage/postmessage.min.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/socle.css' title='Bootstrap'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.bundle.min.js'></script>");
 
         // Fancybox

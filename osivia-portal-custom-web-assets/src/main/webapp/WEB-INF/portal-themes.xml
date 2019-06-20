@@ -4,6 +4,9 @@
     <!-- Popup -->
     <theme>
         <name>osivia-popup</name>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="/css/socle.css" />
     </theme>
     
 </themes>
