@@ -52,6 +52,7 @@ import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.portlet.cache.CacheLevel;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.cms.VirtualNavigationUtils;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
 import org.osivia.portal.api.internationalization.Bundle;
@@ -573,6 +574,20 @@ public class CmsCommand extends DynamicCommand {
                 controllerContext.getServerInvocation().getServerContext().getClientRequest().setAttribute("osivia.profiler.cmsPath", this.cmsPath);
             }
 
+            
+
+            String explicitNavigationPath = null;
+            
+            
+            // Virtual staples
+            String virtualStapleId =  VirtualNavigationUtils.getWebId(this.cmsPath);
+            if( virtualStapleId != null) {
+                explicitNavigationPath = this.cmsPath;
+                // Recompose webId path
+                this.cmsPath = IWebIdService.CMS_PATH_PREFIX + "/" + virtualStapleId;
+                
+            }
+            
 
             Page currentPage = null;
             Level level = null;
@@ -745,28 +760,35 @@ public class CmsCommand extends DynamicCommand {
             String realNavigationPath = null;
 
 
-            if (cmsItem != null) {
-                cmsReadItemContext.setDoc(cmsItem.getNativeItem());
-
-                if (!"portal".equals(this.contextualization)) {
-                    // Adapt navigation path
-                    virtualNavigationPath = cmsService.getAdaptedNavigationPath(cmsReadItemContext);
-                    if (virtualNavigationPath != null) {
-                        realNavigationPath = virtualNavigationPath;
-                        boolean realPath = false;
-                        while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
-                            try {
-                                // FIXME
-                                pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
-                                realPath = true;
-                            } catch (CMSException e) {
-                                PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
-                                realNavigationPath = objectPath.getParent().toString(PortalObjectPath.CANONICAL_FORMAT);
+            if( explicitNavigationPath != null) {
+                itemPublicationPath = explicitNavigationPath;
+                virtualNavigationPath = explicitNavigationPath;
+                realNavigationPath = explicitNavigationPath.substring(0, explicitNavigationPath.lastIndexOf('/'));
+            }   else    {
+            
+                if (cmsItem != null) {
+                    cmsReadItemContext.setDoc(cmsItem.getNativeItem());
+    
+                    if (!"portal".equals(this.contextualization)) {
+                        // Adapt navigation path
+                        virtualNavigationPath = cmsService.getAdaptedNavigationPath(cmsReadItemContext);
+                        if (virtualNavigationPath != null) {
+                            realNavigationPath = virtualNavigationPath;
+                            boolean realPath = false;
+                            while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
+                                try {
+                                    // FIXME
+                                    pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
+                                    realPath = true;
+                                } catch (CMSException e) {
+                                    PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
+                                    realNavigationPath = objectPath.getParent().toString(PortalObjectPath.CANONICAL_FORMAT);
+                                }
                             }
+    
+                            // FIXME
+                            itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
                         }
-
-                        // FIXME
-                        itemPublicationPath = virtualNavigationPath + "/_" + StringUtils.substringAfterLast(this.cmsPath, "/");
                     }
                 }
             }
