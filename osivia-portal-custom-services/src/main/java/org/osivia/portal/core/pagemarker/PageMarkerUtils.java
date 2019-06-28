@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -860,7 +861,16 @@ public class PageMarkerUtils {
         controllerContext.setAttribute(Scope.REQUEST_SCOPE, "controlledPageMarker", currentPageMarker);
         
         
-        if( !restoreState) {
+        /* Restauration par défaut (à partir de la session)
+         * 
+         * Ce traitement ne doit être pas être fait quand le restore a déjà été effectué (controllerPageMarker == null)
+         * C'est par exemple le cas d'un processAction en mode Web
+         * (si on est dans le cas d'un back on se retrouve à restaurer à partir du WebCommand.execute -> commandFactory.doMapping) 
+         * la dernieère page sauvegardée qui peut être différente de la page courante
+         * (Alors que la restauration initiale est correcte)
+         */
+        
+        if( !restoreState && (controlledPageMarker == null)) {
             // Restauration des éléments conversationnels sans pageMarker (ex: permalien)
             
             IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
@@ -916,7 +926,7 @@ public class PageMarkerUtils {
 
             //
             ctx.setPageNavigationalState(markerInfo.getPageId().toString(), pns);
-
+            
             // Restauration de preview nécessaire pour calcul editableWindows
             EditionState state = ContributionService.getNavigationalState(controllerContext, pns);
 
