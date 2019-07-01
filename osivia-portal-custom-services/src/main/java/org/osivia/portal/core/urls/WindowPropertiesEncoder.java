@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 OSIVIA (http://www.osivia.com) 
+ * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,15 +14,15 @@
  */
 package org.osivia.portal.core.urls;
 
+import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.lang.StringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.commons.codec.CharEncoding;
-import org.apache.commons.lang.StringUtils;
 
 public class WindowPropertiesEncoder {
 
@@ -54,31 +54,32 @@ public class WindowPropertiesEncoder {
         if (StringUtils.isEmpty(url)) {
             properties = new HashMap<>(0);
         } else {
-            String[] splittedUrl = StringUtils.splitByWholeSeparator(url, "&&");
+            String decodedParam;
+            try {
+                decodedParam = URLDecoder.decode(url, CharEncoding.UTF_8);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
 
-            properties = new HashMap<>(splittedUrl.length);
+            String[] tabParams = StringUtils.splitByWholeSeparator(decodedParam, "&&");
 
-            for (String segment : splittedUrl) {
-                String[] splittedSegment = StringUtils.splitByWholeSeparator(segment, "==");
+            properties = new HashMap<>(tabParams.length);
 
-                if ((splittedSegment.length != 1) && (splittedSegment.length != 2)) {
+            for (int i = 0; i < tabParams.length; i++) {
+                String[] valParams = StringUtils.splitByWholeSeparator(tabParams[i], "==");
+
+                if (valParams.length != 1 && valParams.length != 2) {
                     throw new IllegalArgumentException("Bad parameter format");
                 }
 
-                try {
-                    String key = URLDecoder.decode(splittedSegment[0], CharEncoding.UTF_8);
-
-                    String value;
-                    if (splittedSegment.length == 2) {
-                        value = URLDecoder.decode(splittedSegment[1], CharEncoding.UTF_8);
-                    } else {
-                        value = StringUtils.EMPTY;
-                    }
-
-                    properties.put(key, value);
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                String value;
+                if (valParams.length == 2) {
+                    value = valParams[1];
+                } else {
+                    value = StringUtils.EMPTY;
                 }
+
+                properties.put(valParams[0], value);
             }
         }
 
@@ -90,7 +91,7 @@ public class WindowPropertiesEncoder {
 
         if (origValue.contains("=="))
             throw new RuntimeException("Bad parameter format");
-        
+
         if (origValue.contains("&&"))
             throw new RuntimeException("Bad parameter format");
 
