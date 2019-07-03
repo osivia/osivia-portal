@@ -518,7 +518,7 @@ public class MenubarService implements IMenubarService {
         dropdownContainer.add(toggleButton);
 
         // Dropdown menu
-        Element menu = DOM4JUtils.generateDivElement("dropdown-menu dropdown-menu-md-right");
+        Element menu = DOM4JUtils.generateDivElement("dropdown-menu dropdown-menu-right");
         dropdownContainer.add(menu);
 
 
