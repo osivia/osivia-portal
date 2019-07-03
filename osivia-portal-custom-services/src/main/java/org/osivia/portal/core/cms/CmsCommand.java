@@ -581,7 +581,7 @@ public class CmsCommand extends DynamicCommand {
             
             // Virtual staples
             String virtualStapleId =  VirtualNavigationUtils.getWebId(this.cmsPath);
-            if( virtualStapleId != null) {
+            if (StringUtils.isNotEmpty(virtualStapleId)) {
                 explicitNavigationPath = this.cmsPath;
                 // Recompose webId path
                 this.cmsPath = IWebIdService.CMS_PATH_PREFIX + "/" + virtualStapleId;
