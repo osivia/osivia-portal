@@ -56,10 +56,11 @@ public interface ICMSService {
      *
      * @param ctx the ctx
      * @param shareID the share ID
+     * @param boolean enabledLinkOnly
      * @return the by share id
      * @throws CMSException the CMS exception
      */
-    CMSItem getByShareId(CMSServiceCtx ctx, String shareID) throws CMSException;
+    CMSItem getByShareId(CMSServiceCtx ctx, String shareID, boolean enabledLinkOnly) throws CMSException;
 
     /**
      * @param cmsPath: path?key=value&..., webid?key=value&...
