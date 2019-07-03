@@ -132,6 +132,15 @@ public interface ICMSService {
      */
     List<CMSItem> getWorkspaces(CMSServiceCtx cmsContext, boolean userWorkspaces, boolean administrator) throws CMSException;
 
+
+    /**
+     * Get user workspace.
+     * @param cmsContext CMS context
+     * @return user workspace
+     */
+    CMSItem getUserWorkspace(CMSServiceCtx cmsContext) throws CMSException;
+
+
     /**
      * Get full loaded portal navigation items.
      *
