@@ -764,6 +764,7 @@ public class CmsCommand extends DynamicCommand {
                 itemPublicationPath = explicitNavigationPath;
                 virtualNavigationPath = explicitNavigationPath;
                 realNavigationPath = explicitNavigationPath.substring(0, explicitNavigationPath.lastIndexOf('/'));
+
             }   else    {
             
                 if (cmsItem != null) {
@@ -777,8 +778,7 @@ public class CmsCommand extends DynamicCommand {
                             boolean realPath = false;
                             while (!realPath && StringUtils.isNotEmpty(realNavigationPath)) {
                                 try {
-                                    // FIXME
-                                    pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
+                                    cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
                                     realPath = true;
                                 } catch (CMSException e) {
                                     PortalObjectPath objectPath = PortalObjectPath.parse(realNavigationPath, PortalObjectPath.CANONICAL_FORMAT);
@@ -791,6 +791,10 @@ public class CmsCommand extends DynamicCommand {
                         }
                     }
                 }
+            }
+            
+            if( realNavigationPath != null) {
+                pubInfos = cmsService.getPublicationInfos(cmsReadItemContext, realNavigationPath);
             }
 
 
