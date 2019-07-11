@@ -82,5 +82,16 @@ public interface ITasksService {
      * @throws PortalException
      */
     String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId) throws PortalException;
+    
+    
+    /**
+     * Gets  view task url.
+     *
+     * @param portalControllerContext the portal controller context
+     * @param uuid the uuid
+     * @return the view task url
+     * @throws PortalException the portal exception
+     */
+    String getViewTaskUrl(PortalControllerContext portalControllerContext, UUID uuid) throws PortalException;
 
 }

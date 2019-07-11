@@ -616,6 +616,18 @@ public interface ICMSService {
      * @throws CMSException
      */
     Map<String, String> updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
+    
+    
+    /**
+     * Gets the task.
+     *
+     * @param cmsContext the cms context
+     * @param uuid the uuid
+     * @return the task
+     * @throws CMSException the CMS exception
+     */
+    
+    public CMSItem getTask(CMSServiceCtx cmsContext, UUID uuid) throws CMSException;
 
 
     /**

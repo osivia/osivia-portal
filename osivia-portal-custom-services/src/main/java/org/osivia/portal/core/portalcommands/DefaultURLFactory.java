@@ -58,6 +58,7 @@ import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.tasks.ViewTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 import org.osivia.portal.core.urls.BackCommand;
 
@@ -676,6 +677,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
                     }
                     asu.setParameterValue(UpdateTaskCommand.VARIABLES_PARAMETER, URLEncoder.encode(StringUtils.join(variables, "&"), CharEncoding.UTF_8));
                 }
+            } catch (UnsupportedEncodingException e) {
+                // Do nothing
+            }
+
+            return asu;
+        }
+        
+        // Update task command
+        if (cmd instanceof ViewTaskCommand) {
+            ViewTaskCommand command = (ViewTaskCommand) cmd;
+
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            // Command parameters
+            try {
+                asu.setParameterValue(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME, ViewTaskCommand.ACTION);
+
+                asu.setParameterValue(UpdateTaskCommand.UUID_PARAMETER, URLEncoder.encode(command.getUuid().toString(), CharEncoding.UTF_8));
+
             } catch (UnsupportedEncodingException e) {
                 // Do nothing
             }

@@ -245,7 +245,36 @@ public class TasksService implements ITasksService {
         return url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getViewTaskUrl(PortalControllerContext portalControllerContext, UUID uuid) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
+        // Customized host property
+        String host = System.getProperty(HOST_PROPERTY);
+
+        // Command
+        ControllerCommand command = new ViewTaskCommand(uuid);
+
+
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
+
+        // Command URL
+        String url;
+
+        if (StringUtils.isEmpty(host)) {
+            url = portalUrl.toString();
+        } else {
+            // Relative portal URL
+            portalUrl.setRelative(true);
+
+            url = host + portalUrl.toString();
+        }
+        
+        return url;
+    }
     /**
      * Setter for cmsServiceLocator.
      * 
