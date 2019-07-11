@@ -72,6 +72,7 @@ import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.tasks.ViewTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
 import org.osivia.portal.core.urls.BackCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
@@ -881,6 +882,22 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         }
 
                         return new UpdateTaskCommand(uuid, actionId, variables);
+                    }
+                }
+                
+                
+                // Update task command
+                if (ViewTaskCommand.ACTION.equals(action)) {
+                    // Parameters
+                    String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
+
+
+                    if (ArrayUtils.isNotEmpty(uuidParameter)) {
+                        // UUID
+                        UUID uuid = UUID.fromString(URLDecoder.decode(uuidParameter[0], CharEncoding.UTF_8));
+
+
+                        return new ViewTaskCommand(uuid);
                     }
                 }
 
