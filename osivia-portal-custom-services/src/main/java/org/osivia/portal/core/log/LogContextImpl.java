@@ -64,10 +64,12 @@ public class LogContextImpl implements LogContext {
         String serverName = "";
         if (portalControllerContext.getHttpServletRequest() != null)    {
             Cookie[] cookies = portalControllerContext.getHttpServletRequest().getCookies();
+            if( cookies != null)    {
             for(int i=0; i< cookies.length; i++) {
                 Cookie cookie = cookies[i];
                 if( "ROUTEID".equals(cookie.getName())) {
                     serverName = cookie.getValue() + ":" ;
+                }
                 }
             }
         }
