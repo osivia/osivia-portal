@@ -711,6 +711,16 @@
 		<depends optional-attribute-name="CustomizationService"
 			proxy-type="attribute">osivia:service=CustomizationService</depends>
 	</mbean>
+	
+	<!-- OAuth2 service -->
+	<mbean
+		code="org.osivia.portal.core.oauth2.OAuth2Service"
+		name="osivia:service=OAuth2Service" xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+		<depends optional-attribute-name="CustomizationService"
+			proxy-type="attribute">osivia:service=CustomizationService</depends>
+	</mbean>
 
 	<!-- Notifications service -->
 	<mbean code="org.osivia.portal.core.notifications.NotificationsService"

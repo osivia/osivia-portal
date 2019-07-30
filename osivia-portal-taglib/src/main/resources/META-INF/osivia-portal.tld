@@ -80,6 +80,31 @@
         </attribute>
     </tag>
     
+    <!-- OAuth2 -->    
+     <tag>
+        <description>OAuth2 Client detail</description>
+        <display-name>Client detail extraction from repository</display-name>
+        <name>oauth2ClientDetail</name>
+        <tag-class>org.osivia.portal.taglib.portal.tag.OAuth2ClientDetailTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <description>Client identifier.</description>
+            <name>clientId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        
+        
+        <attribute>
+            <description>Request variable name.</description>
+            <name>var</name>
+            <required>true</required>
+            <rtexprvalue>false</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
     
     <!-- jQuery UI resizable component -->
     <tag>
