@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>org.osivia.portal.core.admin</groupId>
         <artifactId>osivia-portal-administration-parent</artifactId>
         <version>4.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    
+
     <artifactId>osivia-portal-administration-web</artifactId>
     <packaging>war</packaging>
     <name>${name}</name>
@@ -40,7 +41,7 @@
                     </execution>
                 </executions>
             </plugin>
-        
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <inherited>true</inherited>
@@ -51,8 +52,8 @@
             </plugin>
         </plugins>
     </build>
-    
-    
+
+
     <profiles>
         <profile>
             <id>jbossportal</id>
@@ -83,8 +84,8 @@
             </build>
         </profile>
     </profiles>
-    
-    
+
+
     <dependencies>
         <dependency>
             <groupId>org.jboss.portletbridge</groupId>
@@ -121,5 +122,5 @@
             <artifactId>jsf-impl</artifactId>
         </dependency>
     </dependencies>
-    
+
 </project>

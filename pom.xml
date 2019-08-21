@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.osivia.portal.core</groupId>
@@ -10,6 +11,7 @@
 
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- JBoss -->
         <jboss.portal.version>2.7.2</jboss.portal.version>
@@ -57,21 +59,6 @@
         <easymock.version>3.1</easymock.version>
         <powermock.version>1.6.5</powermock.version>
 
-
-        <!-- Sonar -->
-        <sonar.skippedModules>
-            osivia-portal-jbp-core-lib,
-            osivia-portal-jbp-portlet-lib,
-            osivia-portal-jbp-server-lib,
-            osivia-portal-jbp-core-admin-lib,
-            osivia-portal-jbp-theme-lib,
-            osivia-portal-jbossas-jbossweb-lib,
-            osivia-portal-jbossas-jbossweb-lib,
-            osivia-portal-dependencies,
-            osivia-portal-dependencies-test,
-            osivia-portal-distribution
-        </sonar.skippedModules>
-        <!-- <sonar.sources>src/main</sonar.sources>  -->
     </properties>
 
 
@@ -92,11 +79,6 @@
         <module>osivia-portal-dependencies-test</module>
         <module>osivia-portal-distribution</module>
     </modules>
-
-
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
 
 
     <dependencyManagement>
@@ -378,7 +360,7 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>javax.xml</groupId>
+                <groupId>javax.xml.bind</groupId>
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
                 <scope>provided</scope>
@@ -738,7 +720,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <source>1.8</source>
@@ -752,7 +734,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -762,7 +744,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.2.1</version>
+                    <version>2.5.3</version>
                     <configuration>
                         <releaseProfiles>unpack,pack</releaseProfiles>
                     </configuration>
@@ -772,7 +754,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.2.3</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -830,7 +812,8 @@
                         <inputPath>${project.basedir}/src/main/sass/</inputPath>
                         <outputPath>${project.build.directory}/${project.artifactId}-${project.version}/css</outputPath>
                         <outputStyle>compressed</outputStyle>
-                        <sourceMapOutputPath>${project.build.directory}/${project.artifactId}-${project.version}/css</sourceMapOutputPath>
+                        <sourceMapOutputPath>${project.build.directory}/${project.artifactId}-${project.version}/css
+                        </sourceMapOutputPath>
                     </configuration>
                 </plugin>
 
@@ -876,7 +859,7 @@
                             <additionalOption>-Xdoclint:none</additionalOption>
                         </additionalOptions>
                     </configuration>
-				</plugin>
+                </plugin>
 
                 <!-- Sources -->
                 <plugin>
@@ -890,6 +873,31 @@
 
 
         <plugins>
+
+            <!-- Maven enforcer -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.0</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>1.8</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Javadocs -->
             <plugin>
@@ -927,7 +935,6 @@
         <url>https://github.com/osivia/osivia-portal.git</url>
         <connection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</developerConnection>
-        <!--<tag>4.7-maintenance</tag>-->
     </scm>
 
 
@@ -941,20 +948,5 @@
             <url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>ci</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>galactica-ci-snapshots</id>
-                    <url>http://nexus:8081/repository/ci-snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
 
 </project>

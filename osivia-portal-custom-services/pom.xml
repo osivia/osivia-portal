@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -23,27 +24,26 @@
         </dependency>
 
 
-        
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-custom-lib-utils</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.osivia.portal.core</groupId>
             <artifactId>osivia-portal-jbp-theme-lib</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-                
+
 
         <dependency>
-             <groupId>javax.mail</groupId>
-             <artifactId>mail</artifactId>
-             <version>1.4</version>
-             <scope>provided</scope>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -58,55 +58,22 @@
         </dependency>
 
         <dependency>
-             <groupId>quartz</groupId>
-             <artifactId>quartz</artifactId>
+            <groupId>quartz</groupId>
+            <artifactId>quartz</artifactId>
         </dependency>
     </dependencies>
-    
-    
+
+
     <build>
         <plugins>
-        
+
             <!-- SAR -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jboss-packaging-maven-plugin</artifactId>
             </plugin>
-                
+
         </plugins>
     </build>
-
-
-    <profiles>
-        <profile>
-            <activation>
-                <property>
-                    <name>deploy.socle.dir</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-jar</id>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="${basedir}/target/${project.build.finalName}.sar" todir="${deploy.socle.dir}" />
-                                    </tasks>
-                                </configuration>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

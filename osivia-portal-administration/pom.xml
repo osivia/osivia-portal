@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -12,6 +13,7 @@
     <artifactId>osivia-portal-administration-parent</artifactId>
     <packaging>pom</packaging>
     <name>JBoss Portlet Bridge - Seam Portlet</name>
+
 
     <properties>
         <seam.version>2.2.1.CR1</seam.version>
@@ -28,12 +30,9 @@
         <remoteServer>localhost</remoteServer>
         <remotePort>8085</remotePort>
         <remoteUsername>admin</remoteUsername>
-        <remotePassword />
+        <remotePassword/>
     </properties>
 
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
 
     <modules>
         <module>ejb</module>
@@ -216,25 +215,25 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <dependency>
                 <groupId>javassist</groupId>
                 <artifactId>javassist</artifactId>
                 <version>3.10.0.GA</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>3.2</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>2.1</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
@@ -242,7 +241,7 @@
                 <scope>provided</scope>
             </dependency>
         </dependencies>
-        
+
     </dependencyManagement>
 
     <dependencies>
