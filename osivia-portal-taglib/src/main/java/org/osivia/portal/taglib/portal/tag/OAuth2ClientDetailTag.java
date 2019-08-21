@@ -72,7 +72,7 @@ public class OAuth2ClientDetailTag extends SimpleTagSupport {
     /**
      * Setter for id.
      *
-     * @param id the id to set
+     * @param clientId the id to set
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;

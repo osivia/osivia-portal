@@ -882,8 +882,6 @@ public class PortalObjectManagerBean implements Serializable, AddPageAction.List
 
    /**
     * Helper method to recognize object type in EL easily
-    *
-    * @return
     */
    public String getSelectedObjectType()
    {

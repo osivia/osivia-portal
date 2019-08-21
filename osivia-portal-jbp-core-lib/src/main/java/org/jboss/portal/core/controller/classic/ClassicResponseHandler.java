@@ -86,7 +86,6 @@ public class ClassicResponseHandler extends AbstractResponseHandler {
      * @param currentCmd the current command which has been executed
      * @param currentURLCtx the request URL context
      * @param forward the forward
-     * @return
      */
     public boolean requiresRedirect(ControllerCommand currentCmd, URLContext currentURLCtx, CommandForward forward) {
         CommandInfo currentCmdInfo = currentCmd.getInfo();

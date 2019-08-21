@@ -100,8 +100,6 @@ public abstract class PortalObjectCommand extends ControllerCommand
 
    /**
     * Return true if the command is in a dashboard context.
-    *
-    * @return
     */
    public boolean isDashboard()
    {

@@ -326,19 +326,16 @@ public class PortalObjectPath implements Comparable, Serializable
    {
       /**
        * @param value
-       * @return
        */
       public abstract String[] parse(String value) throws IllegalArgumentException;
 
       /**
        * @param names
-       * @return
        */
       public abstract String toString(String[] names, int from, int to) throws IllegalArgumentException;
 
       /**
        * @param id
-       * @return
        */
       public final String toString(PortalObjectPath id) throws IllegalArgumentException
       {
