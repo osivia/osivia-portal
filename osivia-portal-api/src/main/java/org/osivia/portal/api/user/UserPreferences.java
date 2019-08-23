@@ -15,78 +15,95 @@
 package org.osivia.portal.api.user;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 /**
  * Preferences POJO persisted in ECM.
- * @author Loïc Billon
  *
+ * @author Loïc Billon
+ * @author Cédric Krommenhoek
  */
 public class UserPreferences {
 
-	/** Map with folder ids and style preference */
-	Map<String, String> folderDisplays = new HashMap<>();
-	
-	/** ECM UserProfile UUID */
-	private final String docId;
-	
-	/** check if the preferences should be updated at the end of the session */
-	private boolean update = false;
+    /**
+     * ECM UserProfile UUID
+     */
+    private final String docId;
 
-	/**
-	 * 
-	 */
-	public UserPreferences(String docId) {
-		this.docId = docId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getFolderDisplayMode(String webid) {
-		return folderDisplays.get(webid);
-	}
+    /**
+     * Check if the preferences should be updated at the end of the session.
+     */
+    private boolean update;
+    /**
+     * Map with folder ids and style preference.
+     */
+    private Map<String, String> folderDisplays;
+    /**
+     * User saved searches.
+     */
+    private List<UserSavedSearch> savedSearches;
 
-	/**
-	 * 
-	 */
-	public void updateFolderDisplayMode(String webid, String value) {
-		
-		update = true;
-		
-		this.folderDisplays.put(webid, value);
-	}
+    /**
+     * Constructor.
+     *
+     * @param docId ECM UserProfile UUID
+     */
+    public UserPreferences(String docId) {
+        super();
+        this.docId = docId;
+        this.folderDisplays = new HashMap<>();
+    }
 
-	/**
-	 * 
-	 */
-	public boolean isUpdate() {
-		return update;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getDocId() {
-		return docId;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public Map<String, String> getFolderDisplays() {
-		return folderDisplays;
-	}
 
-	/**
-	 * 
-	 */
-	public void setFolderDisplays(Map<String, String> folderDisplays) {
-		this.folderDisplays = folderDisplays;
-	}
-	
-	
+    /**
+     * Get folder display.
+     *
+     * @param webId folder webId
+     * @return folder display
+     */
+    public String getFolderDisplayMode(String webId) {
+        return this.folderDisplays.get(webId);
+    }
+
+
+    /**
+     * Update folder display.
+     *
+     * @param webId   folder webId
+     * @param display folder display
+     */
+    public void updateFolderDisplayMode(String webId, String display) {
+        this.update = true;
+        this.folderDisplays.put(webId, display);
+    }
+
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public boolean isUpdate() {
+        return update;
+    }
+
+    public void setUpdate(boolean update) {
+        this.update = update;
+    }
+
+    public Map<String, String> getFolderDisplays() {
+        return folderDisplays;
+    }
+
+    public void setFolderDisplays(Map<String, String> folderDisplays) {
+        this.folderDisplays = folderDisplays;
+    }
+
+    public List<UserSavedSearch> getSavedSearches() {
+        return savedSearches;
+    }
+
+    public void setSavedSearches(List<UserSavedSearch> savedSearches) {
+        this.savedSearches = savedSearches;
+    }
 }
