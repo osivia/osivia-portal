@@ -51,6 +51,7 @@ import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.ResponseProperties;
 import org.jboss.portal.portlet.invocation.response.RevalidateMarkupResponse;
+import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
 import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.cache.services.ICacheService;
@@ -148,9 +149,7 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                     userContext.setAttribute("sharedcache." + sharedCacheID, null);
                 }
             }
-
-
-        }
+         }
 
         //
         if (invocation instanceof RenderInvocation) {
@@ -229,16 +228,33 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
 
                 if (sharedCacheID != null) {
 
-                    // On controle que l'état permet une lecture depuis le cache
-                    // partagé
+                    // On controle que l'état permet une lecture depuis le cache partagé
 
                     if (((navigationalState == null) || (((ParametersStateString) navigationalState).getSize() == 0))
                             && ((windowState == null) || WindowState.NORMAL.equals(windowState)) && ((mode == null) || Mode.VIEW.equals(mode))) {
                         sharedCacheID = computedCacheID(sharedCacheID, window, publicNavigationalState);
                         cachedEntry = (CacheEntry) userContext.getAttribute("sharedcache." + sharedCacheID);
                         if( cachedEntry != null) {
-                            skipNavigationCheck = true;
-                            sharedCache = true;
+                            
+                            // If space Data is refreshed, all shared cache relative to space are refreshed,
+                            // even they are not in the page
+                            // -> 'ex:quota'        
+
+                            boolean isExpiring = false;
+                            
+                            String lastupdateKey = getLastRefreshSpaceDataKey(window);
+                            if( lastupdateKey != null)  {
+                                Long lastupdateTs = (Long) userContext.getAttribute(lastupdateKey);
+                                if (lastupdateTs != null) {
+                                    if (cachedEntry.creationTimeMillis < lastupdateTs)
+                                        isExpiring = true;
+                                }
+                            }
+                            
+                            if( isExpiring == false) {
+                                skipNavigationCheck = true;
+                                sharedCache = true;
+                            }
                         }
                     }
                 }
@@ -431,6 +447,28 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
                     }
                 }
 
+
+                
+                // Invalid Shared user's cache
+				if (fragment instanceof FragmentResponse) {
+					FragmentResponse orig = (FragmentResponse) fragment;
+					if ("1".equals(orig.getAttributes().get("osivia.invalidateSharedCache")) && (window != null)
+							&& (window.getDeclaredProperty("osivia.cacheID") != null)) {
+
+						
+						String sharedID = window.getDeclaredProperty("osivia.cacheID");
+                        sharedID = computedCacheID(sharedID, window, publicNavigationalState);
+						userContext.setAttribute("sharedcache." + sharedID, null);
+						// No cache, even for current portlet
+						expirationTimeMillis = 0;
+					}
+				}
+ 
+                 
+  
+
+				
+				
                 // Cache if we can
                 if (expirationTimeMillis > 0) {
 
@@ -646,6 +684,14 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
          */
 
         return super.invoke(invocation);
+    }
+
+    public static String getLastRefreshSpaceDataKey(Window window) {
+        String spacePath = window.getPage().getProperty("osivia.cms.basePath");
+        String lastupdatePath = null;
+        if( spacePath != null)
+            lastupdatePath = "lastUpdateContent." + spacePath;
+        return lastupdatePath;
     }
 
 
