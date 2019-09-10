@@ -13,18 +13,6 @@
  */
 package org.osivia.portal.core.urls;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -33,12 +21,7 @@ import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
@@ -56,26 +39,11 @@ import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.*;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
-import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
-import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
-import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
-import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.*;
 import org.osivia.portal.core.ecm.EcmCommandDelegate;
-import org.osivia.portal.core.page.MonEspaceCommand;
-import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.ParameterizedCommand;
-import org.osivia.portal.core.page.PermLinkCommand;
-import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.page.*;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
@@ -89,6 +57,17 @@ import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
 import org.osivia.portal.core.web.IWebIdService;
 
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Portal URL factory implementation.
  *
@@ -97,12 +76,18 @@ import org.osivia.portal.core.web.IWebIdService;
  */
 public class PortalUrlFactory implements IPortalUrlFactory {
 
-    /** Tracker. */
-    private ITracker tracker;
-    /** Profile manager. */
-    private IProfilManager profilManager;
-    /** CMS service locator. */
+    /**
+     * CMS service locator.
+     */
     private static ICMSServiceLocator cmsServiceLocator;
+    /**
+     * Tracker.
+     */
+    private ITracker tracker;
+    /**
+     * Profile manager.
+     */
+    private IProfilManager profilManager;
 
 
     /**
@@ -194,7 +179,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getCMSUrl(PortalControllerContext portalControllerContext, String pagePath, String cmsPath, Map<String, String> pageParams,
-            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
+                            String contextualization, String displayContext, String hideMetaDatas, String scope, String displayLiveVersion, String windowPermReference) {
 
         String portalPersistentName = null;
 
@@ -272,7 +257,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getStartPortletInRegionUrl(PortalControllerContext ctx, String pageId, String portletInstance, String region, String windowName,
-            Map<String, String> props, Map<String, String> params) {
+                                             Map<String, String> props, Map<String, String> params) {
         final ControllerCommand cmd = new StartDynamicWindowCommand();
         final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(ctx), null, null);
 
@@ -394,6 +379,23 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
+    @Override
+    public String getViewPageUrl(PortalControllerContext portalControllerContext, String pageId) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Page object identifier
+        PortalObjectId pageObjectId = PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT);
+        // View page command
+        ViewPageCommand viewPageCommand = new ViewPageCommand(pageObjectId);
+
+        // Portal URL
+        PortalURLImpl portalUrl = new PortalURLImpl(viewPageCommand, controllerContext, null, null);
+
+        return portalUrl.toString() + "?init-state=true";
+    }
+
+
     /**
      * {@inheritDoc}
      */
@@ -510,7 +512,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getStartPageUrl(PortalControllerContext ctx, String parentName, String pageName, String templateName, Map<String, String> props,
-            Map<String, String> params) throws PortalException {
+                                  Map<String, String> params) throws PortalException {
 
         try {
             final ControllerCommand cmd = new StartDynamicPageCommand();
@@ -678,7 +680,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getStartPortletUrl(PortalControllerContext portalControllerContext, String portletInstance, Map<String, String> windowProperties,
-            PortalUrlType type) throws PortalException {
+                                     PortalUrlType type) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
 
@@ -779,7 +781,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getStartPortletInNewPage(PortalControllerContext portalCtx, String pageName, String pageDisplayName, String portletInstance,
-            Map<String, String> windowProperties, Map<String, String> params) throws PortalException {
+                                           Map<String, String> windowProperties, Map<String, String> params) throws PortalException {
         try {
             // Controller context
             ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalCtx);
@@ -978,7 +980,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
                 // Controller command
                 ControllerCommand command = new BackCommand(pageObjectId, backPageMarker, refresh);
-                
+
                 backUrl = controllerContext.renderURL(command, urlContext, urlFormat);
             } else {
                 backUrl = null;
@@ -1007,7 +1009,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
      */
     @Override
     public String getParameterizedURL(PortalControllerContext portalControllerContext, String cmsPath, String template, String renderset, String layoutState,
-            Boolean permalinks) {
+                                      Boolean permalinks) {
         // Controller context
         final ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // URL context
@@ -1137,7 +1139,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         Page defaultPage = portal.getDefaultPage();
         // Portal default page identifier
         PortalObjectId defaultPageId = defaultPage.getId();
-        
+
         // Controller command
         ControllerCommand command;
         if (refresh) {
@@ -1204,8 +1206,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return url;
     }
-    
-    
+
+
     /**
      * {@inheritDoc}
      */
@@ -1214,7 +1216,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         return getAdvancedSearchUrl(portalControllerContext, search, advancedSearch, null);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -1225,9 +1227,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         // Controller command
         AdvancedSearchCommand command = new AdvancedSearchCommand(search, advancedSearch);
-        if(selectors != null) {
-        	command.setSelectors(selectors);
-    	}
+        if (selectors != null) {
+            command.setSelectors(selectors);
+        }
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
 
