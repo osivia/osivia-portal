@@ -16,6 +16,8 @@ package org.osivia.portal.api.batch;
 
 import java.util.Map;
 
+import org.osivia.portal.api.PortalException;
+
 /**
  * Batch (facade of a quartz job).
  * @author Loïc Billon
@@ -30,6 +32,13 @@ public interface Batch {
 	public String getBatchId();
 	
 	/**
+	 * Id a the batch (used to register the job in Quartz scheduler).
+	 * @param batchId the identifier of the batch
+	 * @return
+	 */
+	public void setBatchId(String batchId);
+	
+	/**
 	 * Define the cron used to run the batch periodically
 	 * @return
 	 */
@@ -38,7 +47,7 @@ public interface Batch {
 	/**
 	 * The main execution method.
 	 */
-	public abstract void execute(Map<String, Object> parameters);
+	public abstract void execute(Map<String, Object> parameters) throws PortalException;
 
 	/**
 	 * Set true if this job should not run on all nodes of the cluster
