@@ -88,6 +88,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     public static String POPUP_CLOSED_PATH = "/popup_closed/";
     public static String POPUP_REFRESH_PATH = "/popup_refresh/";
     public static String REFRESH_PATH = "/refresh/";
+    public static String NO_REDIRECT = "/noredirect/";
 
     public IDynamicObjectContainer dynamicCOntainer;
     public PortalObjectContainer portalObjectContainer;
@@ -253,7 +254,13 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
 
         RequestContextUtil.setControllerContext(controllerContext);
 
+        
+        // Just to prevent from redirection
+        if (requestPath.startsWith(NO_REDIRECT)) {
+            path = requestPath.substring(NO_REDIRECT.length() - 1);
 
+        }
+        
         // 2.1 : is popup already closed (by javascript)
         if (requestPath.startsWith(POPUP_CLOSED_PATH)) {
             path = requestPath.substring(POPUP_CLOSED_PATH.length() - 1);
@@ -271,6 +278,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
             path = requestPath.substring(REFRESH_PATH.length() - 1);
             PageProperties.getProperties().setRefreshingPage(true);
         }
+
 
         if (requestPath.startsWith(POPUP_OPEN_PATH)) {
             path = requestPath.substring(POPUP_OPEN_PATH.length() - 1);

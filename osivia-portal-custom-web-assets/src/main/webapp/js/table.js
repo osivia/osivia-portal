@@ -133,7 +133,7 @@ function updateTableToolbar($target) {
 	if (indexes.length) {
 		// AJAX
 		tableToolbarXhr = jQuery.ajax({
-			url: $toolbarContainer.data("url"),
+			url: adaptAjaxRedirection( $toolbarContainer.data("url")),
 			async: true,
 			cache: false,
 			data: {

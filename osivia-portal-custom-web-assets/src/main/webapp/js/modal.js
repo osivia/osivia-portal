@@ -13,6 +13,7 @@ $JQry(function() {
 				var $clone = $target.children(".modal-clone");
 				var $window = $dialog.find(".dyna-window");
                 var url = $target.data("load-url");
+                var url = adaptAjaxRedirection(url);
 				var callbackFunction = $target.data("load-callback-function");
 				var callbackFunctionArgs = $target.data("load-callback-function-args");
 				var title = $target.data("title");
