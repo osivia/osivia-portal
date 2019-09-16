@@ -392,7 +392,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         // Portal URL
         PortalURLImpl portalUrl = new PortalURLImpl(viewPageCommand, controllerContext, null, null);
 
-        return portalUrl.toString() + "?init-state=true";
+        return portalUrl.toString() + "?init-page=true";
     }
 
 

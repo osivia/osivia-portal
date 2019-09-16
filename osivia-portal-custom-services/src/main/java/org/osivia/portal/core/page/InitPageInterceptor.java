@@ -2,6 +2,7 @@ package org.osivia.portal.core.page;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.servlet.RequestDispatcher;
@@ -193,6 +194,24 @@ public class InitPageInterceptor extends ControllerInterceptor {
                 }
             }
 
+            
+            // Init page indicator = total reinitialization
+            // init-state = init window navigation parameter
+            boolean initPage = BooleanUtils.toBoolean(request.getParameter("init-page"));
+            if( initPage)   {
+                PageCustomizerInterceptor.initPageState(page, controllerContext);
+                
+                /* Init windows params */
+                Iterator<PortalObject> i = page.getChildren(PortalObject.WINDOW_MASK).iterator();
+
+                while (i.hasNext()) {
+                   Window window = (Window) i.next();
+                   NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
+                   controllerContext.removeAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                }
+            }
+ 
+            
 
             // Check layout
             this.checkLayout(controllerContext, page);
