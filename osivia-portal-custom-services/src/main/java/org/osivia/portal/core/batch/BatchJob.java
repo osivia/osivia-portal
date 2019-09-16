@@ -16,6 +16,7 @@ package org.osivia.portal.core.batch;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.batch.AbstractBatch;
 import org.osivia.portal.api.locator.Locator;
 import org.quartz.Job;
@@ -25,56 +26,59 @@ import org.quartz.JobExecutionException;
 
 /**
  * Job used to control the execution of the batch
+ * 
  * @author Loïc Billon
  *
  */
 public class BatchJob implements Job {
 
-	private final static Log logger = LogFactory.getLog(BatchJob.class);
-	
+	private final static Log logger = LogFactory.getLog("batch");
+
 	public BatchJob() {
 	}
-	
+
 	@Override
-	public void execute(JobExecutionContext context)
-			throws JobExecutionException {
-		
-				
+	public void execute(JobExecutionContext context) throws JobExecutionException {
+
 		// Get the instance of batch
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 		JobDataMap triggerDataMap = context.getTrigger().getJobDataMap();
-		
+
 		Object object = jobDataMap.get("instance");
-		
-		if(object instanceof AbstractBatch) {
-			AbstractBatch b = (AbstractBatch) object;
-			
-			// Clustering, check if this batch can run in all nodes or only on master 
-			if(b.isRunningOnMasterOnly()) {
-				
-				HABatchDeployer haBean = Locator.findMBean(HABatchDeployer.class, HABatchDeployer.MBEAN_NAME);
-				
-				if(haBean.isMaster()) {
-					
-					logger.debug("We are on the master node, run the batch "+context.getJobDetail().getName());
-					
+
+		if (object instanceof AbstractBatch) {
+
+			try {
+
+				AbstractBatch b = (AbstractBatch) object;
+
+				// Clustering, check if this batch can run in all nodes or only on master
+				if (b.isRunningOnMasterOnly()) {
+
+					HABatchDeployer haBean = Locator.findMBean(HABatchDeployer.class, HABatchDeployer.MBEAN_NAME);
+
+					if (haBean.isMaster()) {
+
+						logger.debug("We are on the master node, run the batch " + context.getJobDetail().getName());
+
+						b.execute(triggerDataMap);
+
+					} else {
+						logger.debug("We are on a slave node, skip the batch " + context.getJobDetail().getName());
+
+					}
+				} else {
 					b.execute(triggerDataMap);
 				}
-				else {
-					logger.debug("We are on a slave node, skip the batch "+context.getJobDetail().getName());
-					
-				}
+
+			} catch (PortalException e) {
+				logger.error(e);
 			}
-			else {
-				b.execute(triggerDataMap);
-			}
-			
-		}
-		else {
+
+		} else {
 			throw new JobExecutionException("Job is not an instance of AbstractBatch.");
 		}
-		
+
 	}
 
-	
 }
