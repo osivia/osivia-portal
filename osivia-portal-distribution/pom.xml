@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.7.14.3</version>
+        <version>4.7-SNAPSHOT</version>
     </parent>
 
     <groupId>org.osivia.portal</groupId>
@@ -163,15 +163,6 @@
 		    <artifactId>spring-security-core</artifactId>
 		    <version>${org.springframework.security.version}</version>
 		</dependency>
-
-        <!-- JBPM -->
-        <dependency>
-            <groupId>org.jbpm.identity</groupId>
-            <artifactId>jbpm-identity</artifactId>
-            <version>3.2.2</version>
-            <classifier>jdk8</classifier>
-        </dependency>
-
     </dependencies>
 
 
