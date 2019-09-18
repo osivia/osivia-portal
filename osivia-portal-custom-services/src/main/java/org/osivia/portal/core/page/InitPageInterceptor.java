@@ -199,7 +199,7 @@ public class InitPageInterceptor extends ControllerInterceptor {
             // init-state = init window navigation parameter
             boolean initPage = BooleanUtils.toBoolean(request.getParameter("init-page"));
             if( initPage)   {
-                PageCustomizerInterceptor.initPageState(page, controllerContext);
+                //PageCustomizerInterceptor.initPageState(page, controllerContext);
                 
                 /* Init windows params */
                 Iterator<PortalObject> i = page.getChildren(PortalObject.WINDOW_MASK).iterator();
@@ -207,7 +207,8 @@ public class InitPageInterceptor extends ControllerInterceptor {
                 while (i.hasNext()) {
                    Window window = (Window) i.next();
                    NavigationalStateKey nsKey = new NavigationalStateKey(WindowNavigationalState.class, window.getId());
-                   controllerContext.removeAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
+                   if( controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey) != null)
+                       controllerContext.removeAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, nsKey);
                 }
             }
  
