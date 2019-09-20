@@ -37,10 +37,11 @@ $JQry(function() {
 		// Checkbox
 		$JQry(".portal-table-checkbox a").click(function(event) {
 			var $target = $JQry(event.target).closest("a");
+            var $selectee;
 			
 			if ($target.closest(".portal-table-header-group").length) {
 				var $table = $target.closest(".portal-table");
-				var $selectee = $table.find(".portal-table-selectable-filter");
+                $selectee = $table.find(".portal-table-selectable-filter");
 				
 				if ($target.hasClass("checked")) {
 					$selectee.removeClass("ui-selected");
@@ -50,7 +51,7 @@ $JQry(function() {
 					$target.addClass("checked");
 				}
 			} else {
-				var $selectee = $target.closest(".portal-table-selectable-filter");
+                $selectee = $target.closest(".portal-table-selectable-filter");
 				
 				if ($selectee.hasClass("ui-selected")) {
 					$selectee.removeClass("ui-selected");
@@ -104,12 +105,14 @@ function updateTableToolbar($target) {
 	var $rows = $container.find(".portal-table-row");
 	var $selected = $container.find(".ui-selected");
 	var indexes = "";
+    var $menubar = $JQry("#menubar");
+    var $menubarItems = $menubar.find("a");
 	
 	// Disable toolbar
 	$toolbar.find("a").addClass("disabled");
 	
 	// Abort previous AJAX request
-	if (tableToolbarXhr && tableToolbarXhr.readyState != 4) {
+    if (tableToolbarXhr && tableToolbarXhr.readyState !== 4) {
 		tableToolbarXhr.abort();
     }
 	
@@ -117,16 +120,17 @@ function updateTableToolbar($target) {
 	// Build selected indexes 
 	$selected.each(function(index, element) {
 		var $element = $JQry(element);
-		var index = $rows.index($element);
+        var rowIndex = $rows.index($element);
 		
 		if (indexes.length) {
 			indexes += ",";
 		}
 		
-		indexes += index;
+        indexes += rowIndex;
 	});
 	
 	
+    if (indexes.length) {
 	// AJAX
 	tableToolbarXhr = jQuery.ajax({
 		url: $toolbarContainer.data("url"),
@@ -144,6 +148,13 @@ function updateTableToolbar($target) {
 		}
 	});
 	
+        $menubarItems.addClass("disabled");
+    } else {
+        $toolbar.html("");
+
+        $menubarItems.removeClass("disabled");
+    }
+
 	
 	// Update "select all" checkbox
 	if ($selectAll.hasClass("checked") && !allSelected) {

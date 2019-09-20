@@ -50,6 +50,7 @@ import org.jboss.portal.portlet.invocation.ResourceInvocation;
 import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.jboss.portal.portlet.invocation.response.UpdateNavigationalStateResponse;
+import org.jboss.portal.portlet.spi.UserContext;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.contribution.IContributionService.EditionState;
@@ -109,6 +110,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         // Controller context
         ControllerContext controllerContext = (ControllerContext) invocation.getAttribute("controller_context");
+        UserContext userContext = invocation.getUserContext();
 
         Window window = null;
 
@@ -174,6 +176,16 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
                 if (webPageEditionPath != null) {
                     attributes.put("osivia.cms.webPageEditionPath", webPageEditionPath);
                 }
+                
+
+                String lastUpdateKey = ConsumerCacheInterceptor.getLastRefreshSpaceDataKey(window);
+                if( lastUpdateKey != null)  {
+                    Long lastupdateTs = (Long) userContext.getAttribute(lastUpdateKey); 
+                    if( lastupdateTs != null)
+                        attributes.put(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA_TS, lastupdateTs);                         
+                }
+       
+              
 
             }
 
@@ -259,7 +271,7 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
             boolean refresh = PageProperties.getProperties().isRefreshingPage();
             if( refresh)
                 attributes.put(Constants.PORTLET_ATTR_PAGE_REFRESH, true);
-
+            
 
 
             // Set attributes
@@ -469,7 +481,14 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
 
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_CONTENTS))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.updateContents", "true");
+ 
+                updateSpaceData(userContext, window);
             }
+            
+            if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_UPDATE_SPACE_DATA))) {
+                updateSpaceData(userContext, window);
+            }
+            
 
             if (Constants.PORTLET_VALUE_ACTIVATE.equals(attributes.get(Constants.PORTLET_ATTR_POPUP_CLOSE))) {
                 controllerContext.setAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.closePopupOnAction", "true");
@@ -492,6 +511,15 @@ public class ParametresPortletInterceptor extends PortletInvokerInterceptor {
         
 
         return response;
+    }
+
+
+    private void updateSpaceData(UserContext userContext, Window window) {
+        if (window != null) {
+            String lastupdateKey = ConsumerCacheInterceptor.getLastRefreshSpaceDataKey(window);
+            if (lastupdateKey != null)
+                userContext.setAttribute(lastupdateKey, System.currentTimeMillis());
+        }
     }
 
 

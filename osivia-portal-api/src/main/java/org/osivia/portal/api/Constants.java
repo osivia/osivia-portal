@@ -176,6 +176,8 @@ public final class Constants {
     public static final String PORTLET_PARAM_EDITION_PATH =  "osivia.cms.editionPath";
     /** refresh indicator. */
     public static final String PORTLET_ATTR_PAGE_REFRESH = "osivia.pageRefresh";    
+    /** To notify data change */
+    public static final String PORTLET_ATTR_UPDATE_SPACE_DATA_TS = "osivia.updateSpaceDataTs";        
 
 
 
@@ -187,6 +189,8 @@ public final class Constants {
     public static final String PORTLET_ATTR_UNSET_MAX_MODE = "osivia.unsetMaxMode";
     /** To refresh all Contents (portlets + CMS). */
     public static final String PORTLET_ATTR_UPDATE_CONTENTS = "osivia.updateContents";
+    /** To notify data change */
+    public static final String PORTLET_ATTR_UPDATE_SPACE_DATA = "osivia.updateSpaceData";    
     /** To close popup. */
     public static final String PORTLET_ATTR_POPUP_CLOSE = "osivia.closePopup";
     /** To set breadcrumb portlet path. */
