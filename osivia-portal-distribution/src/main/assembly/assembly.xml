@@ -70,7 +70,7 @@
             <outputFileNameMapping>portal-server-lib.jar</outputFileNameMapping>
         </dependencySet>
         
-        <dependencySet>
+         <dependencySet>
             <outputDirectory>/jboss-as/server/production/deploy/jboss-portal-ha.sar/lib</outputDirectory>
             <unpack>false</unpack>
             <scope>runtime</scope>
@@ -78,8 +78,8 @@
                 <include>org.jbpm.identity:jbpm-identity:jar:jdk8:3.2.2</include>
             </includes>
             <outputFileNameMapping>jbpm-identity.jar</outputFileNameMapping>
-        </dependencySet>
-
+        </dependencySet>        
+        
         <dependencySet>
             <outputDirectory>/jboss-as/server/production/deploy/jboss-web.deployer</outputDirectory>
             <unpack>false</unpack>
@@ -149,11 +149,11 @@
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-cms.sar/**</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-wsrp.sar/**</exclude>
 
+                <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/jbpm-identity.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-core-lib.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-theme-lib.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-portlet-lib.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/portal-server-lib.jar</exclude>
-                <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/lib/jbpm-identity.jar</exclude>
 
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/login-config.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/conf/data/default-object.xml</exclude>
