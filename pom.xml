@@ -20,10 +20,12 @@
         <!-- Commons -->
         <commons-logging.version>1.1.1</commons-logging.version>
         <commons-lang.version>2.6</commons-lang.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
         <commons-collections.version>3.2.1</commons-collections.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
         <commons-beanutils.version>1.9.2</commons-beanutils.version>
         <commons-httpclient.version>3.1</commons-httpclient.version>
-        <commons-codec.version>1.11</commons-codec.version>
+        <commons-codec.version>1.13</commons-codec.version>
         <commons-io.version>2.2</commons-io.version>
         <commons-csv.version>1.6</commons-csv.version>
 
@@ -298,9 +300,21 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>${commons-collections.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -650,8 +664,16 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
