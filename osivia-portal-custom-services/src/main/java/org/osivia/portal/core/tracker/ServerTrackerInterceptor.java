@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -170,7 +171,18 @@ public class ServerTrackerInterceptor extends ServerInterceptor {
 
 
 
+	    
+	    /* Force display of message key with a cookie */
 
+        Cookie[] cookies = invocation.getServerContext().getClientRequest().getCookies();
+        if (cookies != null) {
+            for (int i = 0; i < cookies.length; i++) {
+                Cookie cookie = cookies[i];
+                if ("messageKey".equals(cookie.getName())) {
+                    PageProperties.getProperties().getPagePropertiesMap().put("messageKey",cookie.getValue());
+                }
+            }
+        }
 
 
 

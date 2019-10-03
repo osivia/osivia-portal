@@ -32,6 +32,7 @@ import org.osivia.portal.api.internationalization.IBundleFactory;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.customization.ICustomizationService;
+import org.osivia.portal.core.page.PageProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.NoSuchMessageException;
 
@@ -154,8 +155,18 @@ public class InternationalizationService implements IInternationalizationService
         if (pattern == null) {
             result = "[Missing resource: " + key + "]";
         } else {
+            
+            // display message key
+            String prefix = "";
+            if( PageProperties.getProperties().getPagePropertiesMap() != null) {
+                String messageKey = PageProperties.getProperties().getPagePropertiesMap().get("messageKey");
+                if(messageKey != null)
+                    prefix = "["+key + "]";
+            }
+                
+            
             Object[] formattedArguments = this.formatArguments(args, locale);
-            result = MessageFormat.format(pattern, formattedArguments);
+            result = prefix + MessageFormat.format(pattern, formattedArguments);
         }
 
         return result;
