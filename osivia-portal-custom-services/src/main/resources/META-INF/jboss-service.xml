@@ -1057,6 +1057,33 @@
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
     
+	<!-- Batch service -->
+	<mbean code="org.osivia.portal.core.batch.BatchService" name="osivia:service=BatchService"
+		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+	</mbean>
+
+	<mbean code="org.osivia.portal.core.batch.HABatchDeployerImpl"
+		name="osivia:service=HABatchDeployer" xmbean-dd=""
+		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+	</mbean>
+
+	<mbean code="org.jboss.ha.singleton.HASingletonController" name="jboss:service=HASingletonController">
+		<!-- Inject a ref to the HAPartition -->
+		<depends optional-attribute-name="ClusterPartition"
+			proxy-type="attribute">
+			jboss:service=${jboss.partition.name:DefaultPartition}
+		</depends>
+		<!-- Inject a ref to the service being controlled -->
+		<depends optional-attribute-name="TargetName">
+			osivia:service=HABatchDeployer
+		</depends>
+		<!-- Methods to invoke when become master / stop being master -->
+		<attribute name="TargetStartMethod">startSingleton</attribute>
+		<attribute name="TargetStopMethod">stopSingleton</attribute>
+	</mbean>    
+    
 
 </server>
    
