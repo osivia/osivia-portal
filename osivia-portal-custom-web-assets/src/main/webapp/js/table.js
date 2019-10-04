@@ -6,7 +6,7 @@ $JQry(function() {
 	var $container = $JQry(".portal-table-container");
 	var previousIndex = -1;
 	
-	if (!isChromeAndroid && !$container.data("loaded")) {
+	if (!isChromeAndroid && !$container.data("loaded")) {	
 		// Selectable
 		$JQry(".portal-table-selectable").selectable({
 			cancel: "a, button, .portal-table-selectable-cancel",
@@ -33,7 +33,9 @@ $JQry(function() {
 			}
 		});
 		
-		
+	}
+	
+	if ( !$container.data("loaded")) {			
 		// Checkbox
 		$JQry(".portal-table-checkbox a").click(function(event) {
 			var $target = $JQry(event.target).closest("a");
