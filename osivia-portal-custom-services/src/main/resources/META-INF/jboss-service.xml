@@ -956,15 +956,19 @@
         <xmbean />
     </mbean>
 
-	<!-- Token service -->
-	<mbean code="org.osivia.portal.core.tokens.TokenService"
-		name="osivia:service=TokenService" xmbean-dd=""
-		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-		<xmbean />
-		<depends optional-attribute-name="TreeCache" proxy-type="attribute">osivia:service=ConnectTreeCache
-		</depends>
-		
-	</mbean>
+    <!-- Token service -->
+    <mbean code="org.osivia.portal.core.tokens.TokenService" name="osivia:service=TokenService" xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends optional-attribute-name="TreeCache" proxy-type="attribute">osivia:service=ConnectTreeCache
+        </depends>
+
+    </mbean>
+
+    <!-- Transaction service -->
+    <mbean code="org.osivia.portal.core.transactions.TransactionServiceImpl" name="osivia:service=TransactionService" xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+     </mbean>
 
 </server>
    
