@@ -36,7 +36,7 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.Link;
-import org.osivia.portal.api.user.UserPreferences;
+
 /**
  * CMS service interface.
  */
@@ -722,23 +722,5 @@ public interface ICMSService {
      * @throws CMSException
      */
     String resolveLinkSharing(CMSServiceCtx cmsContext, String linkId) throws CMSException;
-
-
-	/**
-	 * Get User Preferences
-	 * @param context
-	 * @param httpSession
-	 * @return UserPreferences
-	 * @throws PortalException 
-	 */
-	UserPreferences getUserPreferences(PortalControllerContext context) throws PortalException;
-
-
-	/**
-	 * Update User Preferences in ecm
-	 * @param cmsContext
-	 * @param httpSession
-	 */
-	void updateUserPreferences(CMSServiceCtx cmsContext, HttpSession httpSession);
 
 }

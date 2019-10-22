@@ -14,34 +14,41 @@
  */
 package org.osivia.portal.core.cms;
 
+import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.directory.v2.DirServiceFactory;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.statistics.IStatisticsService;
+import org.osivia.portal.api.preferences.UpdateUserPreferencesService;
+import org.osivia.portal.core.cms.spi.ICMSIntegration;
+
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.osivia.portal.api.PortalException;
-import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.api.statistics.IStatisticsService;
-import org.osivia.portal.api.user.IUserPreferencesService;
-import org.osivia.portal.core.cms.spi.ICMSIntegration;
-
 
 /**
- * This listener listens to the main portal session events to notify the CMS
- * system of the end of the user session
+ * This listener listens to the main portal session events to notify the CMS system of the end of the user session.
  */
 public class SessionListener implements HttpSessionListener {
 
     public static long activeSessions = 0;
 
-    public static String activeSessionSync = new String("activeSessionSync");
+    public static String activeSessionSync = "activeSessionSync";
 
 
-    /** Nuxeo service. */
+    /**
+     * Nuxeo service.
+     */
     private final ICMSIntegration nuxeoService;
-    /** Statistics service. */
+    /**
+     * Statistics service.
+     */
     private final IStatisticsService statisticsService;
-    /** Preferences service. */
-    private final IUserPreferencesService preferencesService;
+    /**
+     * Update user preferences service.
+     */
+    private final UpdateUserPreferencesService updateUserPreferencesService;
+
 
     /**
      * Constructor.
@@ -53,14 +60,11 @@ public class SessionListener implements HttpSessionListener {
         this.nuxeoService = Locator.findMBean(ICMSIntegration.class, "osivia:service=NuxeoService");
         // Statistics service
         this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
-        // User Preferences service
-        this.preferencesService = Locator.findMBean(IUserPreferencesService.class, IUserPreferencesService.MBEAN_NAME);
+        // User preferences service
+        this.updateUserPreferencesService = DirServiceFactory.getService(UpdateUserPreferencesService.class);
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sessionCreated(HttpSessionEvent sessionEvent) {
         synchronized (activeSessionSync) {
@@ -69,9 +73,6 @@ public class SessionListener implements HttpSessionListener {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
         synchronized (activeSessionSync) {
@@ -85,8 +86,7 @@ public class SessionListener implements HttpSessionListener {
 
         try {
             this.statisticsService.aggregateUserStatistics(httpSession);
-            this.preferencesService.updateUserPreferences(httpSession);
-            
+            this.updateUserPreferencesService.update(httpSession);
         } catch (PortalException e) {
             // Do nothing
         }
