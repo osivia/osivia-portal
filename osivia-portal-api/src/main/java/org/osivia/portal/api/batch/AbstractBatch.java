@@ -24,7 +24,7 @@ import org.osivia.portal.api.PortalException;
  *
  */
 public abstract class AbstractBatch implements Batch {
-
+	
 	@Override
 	public String getBatchId() {
 		
@@ -44,9 +44,12 @@ public abstract class AbstractBatch implements Batch {
 		return true;
 	}
 
+
+
 	@Override
 	public abstract String getJobScheduling();
 
+	
 	@Override
 	public abstract void execute(Map<String, Object> parameters) throws PortalException;
 

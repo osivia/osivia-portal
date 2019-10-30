@@ -14,6 +14,8 @@
  */
 package org.osivia.portal.core.batch;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
@@ -34,6 +36,9 @@ public class BatchJob implements Job {
 
 	private final static Log logger = LogFactory.getLog("batch");
 
+	private boolean running = Boolean.FALSE;
+
+	
 	public BatchJob() {
 	}
 
@@ -48,37 +53,66 @@ public class BatchJob implements Job {
 
 		if (object instanceof AbstractBatch) {
 
-			try {
+			AbstractBatch b = (AbstractBatch) object;
+			
+			// Clustering, check if this batch can run in all nodes or only on master
+			if (b.isRunningOnMasterOnly()) {
 
-				AbstractBatch b = (AbstractBatch) object;
+				HABatchDeployer haBean = Locator.findMBean(HABatchDeployer.class, HABatchDeployer.MBEAN_NAME);
 
-				// Clustering, check if this batch can run in all nodes or only on master
-				if (b.isRunningOnMasterOnly()) {
+				if (haBean.isMaster()) {
 
-					HABatchDeployer haBean = Locator.findMBean(HABatchDeployer.class, HABatchDeployer.MBEAN_NAME);
+					logger.debug("We are on the master node, run the batch " + context.getJobDetail().getName());
+					wrapExecution(b, triggerDataMap);
 
-					if (haBean.isMaster()) {
 
-						logger.debug("We are on the master node, run the batch " + context.getJobDetail().getName());
-
-						b.execute(triggerDataMap);
-
-					} else {
-						logger.debug("We are on a slave node, skip the batch " + context.getJobDetail().getName());
-
-					}
 				} else {
-					b.execute(triggerDataMap);
+					logger.debug("We are on a slave node, skip the batch " + context.getJobDetail().getName());
+
 				}
-
-			} catch (PortalException e) {
-				logger.error(e);
+			} else {
+				wrapExecution(b, triggerDataMap);
 			}
-
 		} else {
 			throw new JobExecutionException("Job is not an instance of AbstractBatch.");
 		}
 
+	}
+	
+	/**
+	 * Mutex used to prevent parallel executions of a same batch 
+	 * @param b
+	 * @param triggerDataMap
+	 */
+	private void wrapExecution(AbstractBatch b, JobDataMap triggerDataMap){
+		if(running) {
+			logger.warn("Batch is currently running and will not be triggered twice. " + b.getBatchId());
+		}
+		else {
+			
+			Date startD = new Date();
+			Boolean onError = false;
+
+			try {			
+				
+				running = true;
+				b.execute(triggerDataMap);	
+				logger.warn(b.getBatchId()+" started");
+				
+			}
+			catch(PortalException e) {
+				logger.error(e);
+				onError = true;
+			}
+			finally {
+				running = false;
+				Date endD = new Date();
+				long duration = endD.getTime() - startD.getTime();
+				
+				logger.warn(b.getBatchId()+" ended (duration : "+duration+"ms), " + (onError? "with errors !" : "")  );
+			}
+			
+		}
 	}
 
 }

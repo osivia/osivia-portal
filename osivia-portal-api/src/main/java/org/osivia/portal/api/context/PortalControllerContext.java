@@ -57,10 +57,12 @@ public class PortalControllerContext {
 		this.portletCtx = portletCtx;
 
         // Controller context
-        Object controller = request.getAttribute("osivia.controller");
-        if (controller instanceof ControllerContext) {
-            this.controllerCtx = (ControllerContext) controller;
-        }
+		if(request != null) {
+	        Object controller = request.getAttribute("osivia.controller");
+	        if (controller != null && controller instanceof ControllerContext) {
+	            this.controllerCtx = (ControllerContext) controller;
+	        }
+		}
 	}
 
 
