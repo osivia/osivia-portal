@@ -73,6 +73,8 @@ public class CMSPublicationInfos {
 	private String publishSpaceDisplayName = null;
 
 	private boolean isLiveSpace = false;
+	/** Live version label. */
+	private String liveVersion;
 	
 	/** Indicates if document is draft. */
 	private boolean isDraft = false;
@@ -110,6 +112,14 @@ public class CMSPublicationInfos {
 
 	public void setLiveSpace(boolean isLiveSpace) {
 		this.isLiveSpace = isLiveSpace;
+	}
+
+	public String getLiveVersion() {
+		return liveVersion;
+	}
+
+	public void setLiveVersion(String liveVersion) {
+		this.liveVersion = liveVersion;
 	}
 
 	public String getPublishSpacePath() {
