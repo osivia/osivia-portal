@@ -62,6 +62,7 @@ import org.osivia.portal.api.menubar.MenubarItem;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
+import org.osivia.portal.core.assistantpage.CMSDuplicateDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
@@ -918,6 +919,34 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             }
             addSubMenuElement(cmsEditionMenuUL, cmsUnpublishLink, "disabled");
         }
+        
+        // CMS duplicate document
+        String cmsDuplicateTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_COPY);
+        boolean canDuplicatePage = cmsService.canDuplicatePage(cmsCtx, pagePath);
+        
+        if (!canDuplicatePage) {
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDuplicateTitle,
+                    "halflings halflings-duplicate", AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_UNCOPYABLE"));
+            addSubMenuElement(cmsEditionMenuUL, cmsDuplicateLink, "disabled");
+        }  else if(!modePreview) {
+            // Link
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, null, cmsDuplicateTitle,
+                    "halflings halflings-duplicate", AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, previewRequired);
+            addSubMenuElement(cmsEditionMenuUL, cmsDuplicateLink, "disabled");
+    	}
+        else {
+            // URL
+            CMSDuplicateDocumentCommand cmsDuplicateCommand = new CMSDuplicateDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+            String cmsDuplicateURL = context.renderURL(cmsDuplicateCommand, urlContext, URLFormat.newInstance(true, true));
+
+            // Link
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(cmsDuplicateURL, null, null, null, cmsDuplicateTitle,
+                    "halflings halflings-duplicate", AccessibilityRoles.MENU_ITEM);
+            addSubMenuElement(cmsEditionMenuUL, cmsDuplicateLink, null);
+        } 
+
 
         // Erase modifications
         String cmsEraseTitle = bundle.getString("SUBMENU_CMS_PAGE_ERASE");

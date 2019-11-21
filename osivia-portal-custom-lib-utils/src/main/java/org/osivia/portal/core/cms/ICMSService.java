@@ -501,4 +501,24 @@ public interface ICMSService {
      */
     Map<String, TabGroup> getTabGroups(CMSServiceCtx cmsContext);
 
+    /**
+     * Duplicate a CMS page.
+     *
+     * @param cmsCtx CMS context
+     * @param pagePath the path of the page
+     * @return 
+     * @throws CMSException
+     */
+	String duplicatePage(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+
+	/**
+	 * Compute if a current page can be duplicated (it has no child).
+	 * 
+	 * @param cmsCtx
+	 * @param pagePath
+	 * @return
+	 * @throws CMSException
+	 */
+	boolean canDuplicatePage(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+
 }

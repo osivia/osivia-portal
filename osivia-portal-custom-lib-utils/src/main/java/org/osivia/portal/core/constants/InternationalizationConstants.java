@@ -142,6 +142,8 @@ public final class InternationalizationConstants {
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_UNPUBLISH = "SUBMENU_CMS_PAGE_UNPUBLISH";
     /** Bundle resource key for CMS edition */
+	public static final String KEY_CMS_PAGE_COPY = "SUBMENU_CMS_PAGE_COPY";
+    /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_PAGE_DELETE = "SUBMENU_CMS_PAGE_DELETE";
     /** Bundle resource key for CMS edition */
     public static final String KEY_CMS_TO_ECM = "SUBMENU_CMS_TO_ECM";
@@ -276,6 +278,7 @@ public final class InternationalizationConstants {
     public static final String KEY_LOGIN = "LOGIN";
     /** LOGOUT */
     public static final String KEY_LOGOUT = "LOGOUT";
+
 
 
 

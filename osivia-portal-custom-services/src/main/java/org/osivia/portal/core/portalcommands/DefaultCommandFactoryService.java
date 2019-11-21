@@ -33,6 +33,7 @@ import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.assistantpage.AddPortletCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
+import org.osivia.portal.core.assistantpage.CMSDuplicateDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
@@ -658,6 +659,20 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         return new CMSPublishDocumentCommand(pageId, pagePath, actionCms);
                     }
                 }
+                
+                if ("CMSDuplicateDocument".equals(action)) {
+
+                    String pageId = null;
+                    String pagePath = null;
+
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null)) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+
+                        return new CMSDuplicateDocumentCommand(pageId, pagePath);
+                    }
+                }
+                
 
                 if ("CMSDeleteDocumentCommand".equals(action)) {
 
