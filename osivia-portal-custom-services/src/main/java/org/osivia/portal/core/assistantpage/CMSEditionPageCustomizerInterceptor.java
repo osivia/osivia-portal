@@ -533,10 +533,17 @@ public class CMSEditionPageCustomizerInterceptor extends ControllerInterceptor {
                             // Sera ignoré car on n'est pas en ajax
                             windowProperties.put("osivia.cmsEditCallbackId", windowId);
 
+                            // Duplicate fragment command
+                            ControllerCommand duplicateCMD = new CMSDuplicateFragmentCommand(pageId, cmsItem.getPath(), refURI);
+                            String duplicateFragmentUrl = controllerContext.renderURL(duplicateCMD, urlContext, urlFormat);
+                            windowProperties.put("osivia.cmsDuplicateUrl", duplicateFragmentUrl + "#" + refURI);
+
                             // Delete fragment command
                             ControllerCommand deleteCMD = new CMSDeleteFragmentCommand(pageId, cmsItem.getPath(), refURI);
                             String deleteFragmentUrl = controllerContext.renderURL(deleteCMD, urlContext, urlFormat);
                             windowProperties.put("osivia.cmsDeleteUrl", deleteFragmentUrl);
+
+                            windowProperties.put("osivia.cmsRegionId", regionId);
                         }
                     }
                 }

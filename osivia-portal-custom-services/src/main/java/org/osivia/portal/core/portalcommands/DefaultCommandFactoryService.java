@@ -39,25 +39,7 @@ import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
-import org.osivia.portal.core.assistantpage.AddPortletCommand;
-import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
-import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
-import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
-import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
-import org.osivia.portal.core.assistantpage.ChangeModeCommand;
-import org.osivia.portal.core.assistantpage.ChangePageCMSPropertiesCommand;
-import org.osivia.portal.core.assistantpage.ChangePagePropertiesCommand;
-import org.osivia.portal.core.assistantpage.ChangeWindowSettingsCommand;
-import org.osivia.portal.core.assistantpage.CreatePageCommand;
-import org.osivia.portal.core.assistantpage.DeletePageCommand;
-import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
-import org.osivia.portal.core.assistantpage.MakeDefaultPageCommand;
-import org.osivia.portal.core.assistantpage.MovePageCommand;
-import org.osivia.portal.core.assistantpage.MoveWindowCommand;
-import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
-import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
-import org.osivia.portal.core.assistantpage.SecurePageCommand;
-import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
+import org.osivia.portal.core.assistantpage.*;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -777,6 +759,37 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         contributionMode = URLDecoder.decode(parameterMap.get("contributionMode")[0], "UTF-8");
                         docPath = URLDecoder.decode(parameterMap.get("docPath")[0], "UTF-8");
                         return new ChangeContributionModeCommand(windowID, contributionMode, docPath);
+                    }
+                }
+
+
+
+                if ("CMSDuplicateDocument".equals(action)) {
+
+                    String pageId = null;
+                    String pagePath = null;
+
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null)) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+
+                        return new CMSDuplicateDocumentCommand(pageId, pagePath);
+                    }
+                }
+
+
+
+                if ("CMSDuplicateFragment".equals(action)) {
+
+                    String pageId = null;
+                    String pagePath = null;
+                    String refURI = null;
+
+                    if ((parameterMap.get("pageId") != null) && (parameterMap.get("pagePath") != null) && (parameterMap.get("refURI") != null) ) {
+                        pageId = URLDecoder.decode(parameterMap.get("pageId")[0], "UTF-8");
+                        pagePath = URLDecoder.decode(parameterMap.get("pagePath")[0], "UTF-8");
+                        refURI = URLDecoder.decode(parameterMap.get("refURI")[0], "UTF-8");
+                        return new CMSDuplicateFragmentCommand(pageId, pagePath, refURI) ;
                     }
                 }
 

@@ -188,6 +188,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
                     "glyphicons glyphicons-basic-pencil");
             buttonsGroup.add(edition);
 
+            // Duplicate button
+            String duplicateURL = wrc.getProperty("osivia.cmsDuplicateUrl");
+            String duplicateTitle = bundle.getString("CMS_DUPLICATE_FRAGMENT");
+            Element duplicate = DOM4JUtils.generateLinkElement(duplicateURL, null, null, "btn btn-secondary no-ajax-link", null,
+                    "glyphicons glyphicons-basic-copy-duplicate");
+            DOM4JUtils.addTooltip(duplicate, duplicateTitle);
+            buttonsGroup.add(duplicate);
+
             // Delete button
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");

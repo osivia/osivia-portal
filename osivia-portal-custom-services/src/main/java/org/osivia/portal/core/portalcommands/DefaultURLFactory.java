@@ -33,17 +33,7 @@ import org.jboss.portal.server.AbstractServerURL;
 import org.jboss.portal.server.ServerInvocation;
 import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.api.ecm.EcmCommand;
-import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
-import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
-import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
-import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
-import org.osivia.portal.core.assistantpage.ChangeModeCommand;
-import org.osivia.portal.core.assistantpage.DeletePageCommand;
-import org.osivia.portal.core.assistantpage.DeleteWindowCommand;
-import org.osivia.portal.core.assistantpage.MoveWindowCommand;
-import org.osivia.portal.core.assistantpage.SaveInheritanceConfigurationCommand;
-import org.osivia.portal.core.assistantpage.SaveRegionLayoutCommand;
-import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
+import org.osivia.portal.core.assistantpage.*;
 import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
 import org.osivia.portal.core.contribution.ChangeContributionModeCommand;
 import org.osivia.portal.core.contribution.PublishContributionCommand;
@@ -464,6 +454,47 @@ public class DefaultURLFactory extends URLFactoryDelegate {
             return asu;
         }
 
+        if (cmd instanceof CMSDuplicateDocumentCommand) {
+            CMSDuplicateDocumentCommand command = (CMSDuplicateDocumentCommand) cmd;
+
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+            try {
+                asu.setParameterValue("action", "CMSDuplicateDocument");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
+
+
+        if (cmd instanceof CMSDuplicateFragmentCommand) {
+            CMSDuplicateFragmentCommand command = (CMSDuplicateFragmentCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSDuplicateFragment");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
+                asu.setParameterValue("refURI", URLEncoder.encode(command.getRefURI(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
         if (cmd instanceof CMSDeleteDocumentCommand) {
             CMSDeleteDocumentCommand command = (CMSDeleteDocumentCommand) cmd;

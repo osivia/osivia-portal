@@ -66,12 +66,7 @@ import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.Link;
 import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
-import org.osivia.portal.core.assistantpage.CMSEditionPageCustomizerInterceptor;
-import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
-import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
-import org.osivia.portal.core.assistantpage.ChangeModeCommand;
-import org.osivia.portal.core.assistantpage.ToggleAdvancedCMSToolsCommand;
+import org.osivia.portal.core.assistantpage.*;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSItem;
 import org.osivia.portal.core.cms.CMSObjectPath;
@@ -980,6 +975,37 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             moveLinkItem.add(moveLink);
         }
 
+
+        // CMS duplicate document
+        String cmsDuplicateTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_COPY);
+        boolean canDuplicatePage = cmsService.canDuplicatePage(cmsCtx, pagePath);
+        // Move
+        Element duplicateLinkItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+        cmsEditionMenu.add(duplicateLinkItem);
+        String duplicateTitle = bundle.getString("DUPLICATE");
+        if (!canDuplicatePage) {
+
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle,
+                    "glyphicons glyphicons-basic-copy-duplicate");
+            DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_UNCOPYABLE"));
+            duplicateLinkItem.add(cmsDuplicateLink);
+        }  else if(!modePreview) {
+            // Link
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle,
+                    "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
+            DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, previewRequired);
+            duplicateLinkItem.add(cmsDuplicateLink);
+        }
+        else {
+            // URL
+            CMSDuplicateDocumentCommand cmsDuplicateCommand = new CMSDuplicateDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
+            String cmsDuplicateURL = context.renderURL(cmsDuplicateCommand, urlContext, URLFormat.newInstance(true, true));
+
+            // Link
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(cmsDuplicateURL, null, null, "dropdown-item", cmsDuplicateTitle,
+                    "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
+            duplicateLinkItem.add(cmsDuplicateLink);
+        }
 
         // Reorder
         String reorderTitle = bundle.getString("REORDER");

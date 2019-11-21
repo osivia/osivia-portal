@@ -258,6 +258,17 @@ public interface ICMSService {
     String getEcmUrl(CMSServiceCtx cmsCtx, EcmViews command, String path, Map<String, String> requestParameters) throws CMSException;
 
 
+
+    /**
+     * Duplicate a CMS fragment on a page.
+     *
+     * @param cmsCtx CMS context
+     * @param pagePath the path of the page
+     * @param refURI an unique identifier on the fragment to delete in the current page
+     * @throws CMSException
+     */
+    void duplicateFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI) throws CMSException;
+
     /**
      * Remove a CMS fragment on a page.
      *
@@ -727,5 +738,26 @@ public interface ICMSService {
      * @return window properties
      */
     Map<String, String> getEditorWindowBaseProperties(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Duplicate a CMS page.
+     *
+     * @param cmsCtx CMS context
+     * @param pagePath the path of the page
+     * @return
+     * @throws CMSException
+     */
+    String duplicatePage(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
+
+    /**
+     * Compute if a current page can be duplicated (it has no child).
+     *
+     * @param cmsCtx
+     * @param pagePath
+     * @return
+     * @throws CMSException
+     */
+    boolean canDuplicatePage(CMSServiceCtx cmsCtx, String pagePath) throws CMSException;
 
 }
