@@ -161,7 +161,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             // Delete confirmation fancybox
             Element deleteConfirmation;
             try {
-                deleteConfirmation = this.generateDeleteFancyBox(bundle, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"));
+                deleteConfirmation = this.generateDeleteFancyBox(bundle, wrc.getProperty("osivia.cmsDeleteUrl"), wrc.getProperty("osivia.windowId"), wrc.getProperty("osivia.cmsRegionId"));
             } catch (UnsupportedEncodingException e) {
                 throw new RenderException(e);
             }
@@ -188,8 +188,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-default fancyframe_refresh", editionTitle,
                     "halflings halflings-pencil");
             buttonsGroup.add(edition);
-
+            
+            // Duplicate button
+            String duplicateURL = wrc.getProperty("osivia.cmsDuplicateUrl");
+            String duplicateTitle = bundle.getString("CMS_DUPLICATE_FRAGMENT");
+            Element duplicate = DOM4JUtils.generateLinkElement(duplicateURL, null, null, "btn btn-default no-ajax-link", null,
+                    "halflings halflings-duplicate");
+            DOM4JUtils.addTooltip(duplicate, duplicateTitle);
+            buttonsGroup.add(duplicate);
+            
             // Delete button
+            String regionId = wrc.getProperty("osivia.cmsRegionId");
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");
             Element delete = DOM4JUtils.generateLinkElement(deleteURL, null, null, "btn btn-default no-ajax-link fancybox_inline", null,
@@ -510,14 +519,15 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      * @param bundle internationalization bundle
      * @param urlDelete delete fragment URL
      * @param fragmentId fragment identifier
+     * @param regionId 
      * @return fancybox div
      * @throws UnsupportedEncodingException
      */
-    private Element generateDeleteFancyBox(Bundle bundle, String urlDelete, String fragmentId) throws UnsupportedEncodingException {
+    private Element generateDeleteFancyBox(Bundle bundle, String urlDelete, String fragmentId, String regionId) throws UnsupportedEncodingException {
         String id = "delete_".concat(fragmentId);
 
         String[] splitURL = urlDelete.split("\\?");
-        String action = splitURL[0];
+        String action = splitURL[0] + "#" + regionId;
         String[] args = splitURL[1].split("&");
 
 

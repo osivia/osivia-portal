@@ -225,6 +225,17 @@ public interface ICMSService {
     String getEcmUrl(CMSServiceCtx cmsCtx, EcmViews command, String path, Map<String, String> requestParameters) throws CMSException;
 
 
+    
+    /**
+     * Duplicate a CMS fragment on a page.
+     *
+     * @param cmsCtx CMS context
+     * @param pagePath the path of the page
+     * @param refURI an unique identifier on the fragment to delete in the current page
+     * @throws CMSException
+     */
+    void duplicateFragment(CMSServiceCtx cmsCtx, String pagePath, String refURI) throws CMSException;
+    
     /**
      * Remove a CMS fragment on a page.
      *

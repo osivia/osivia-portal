@@ -28,6 +28,7 @@ import org.jboss.portal.server.ServerURL;
 import org.osivia.portal.core.assistantpage.CMSDeleteDocumentCommand;
 import org.osivia.portal.core.assistantpage.CMSDeleteFragmentCommand;
 import org.osivia.portal.core.assistantpage.CMSDuplicateDocumentCommand;
+import org.osivia.portal.core.assistantpage.CMSDuplicateFragmentCommand;
 import org.osivia.portal.core.assistantpage.CMSPublishDocumentCommand;
 import org.osivia.portal.core.assistantpage.ChangeCMSEditionModeCommand;
 import org.osivia.portal.core.assistantpage.ChangeModeCommand;
@@ -369,6 +370,26 @@ public class DefaultURLFactory extends URLFactoryDelegate {
 
         /* CMS commands */
 
+        if (cmd instanceof CMSDuplicateFragmentCommand) {
+        	CMSDuplicateFragmentCommand command = (CMSDuplicateFragmentCommand) cmd;
+
+            //
+            AbstractServerURL asu = new AbstractServerURL();
+            asu.setPortalRequestPath(this.path);
+
+
+            try {
+                asu.setParameterValue("action", "CMSDuplicateFragment");
+
+                asu.setParameterValue("pageId", URLEncoder.encode(command.getPageId(), "UTF-8"));
+                asu.setParameterValue("pagePath", URLEncoder.encode(command.getPagePath(), "UTF-8"));
+                asu.setParameterValue("refURI", URLEncoder.encode(command.getRefURI(), "UTF-8"));
+
+            } catch (UnsupportedEncodingException e) {
+                // ignore
+            }
+            return asu;
+        }
 
         if (cmd instanceof CMSDeleteFragmentCommand) {
             CMSDeleteFragmentCommand command = (CMSDeleteFragmentCommand) cmd;
