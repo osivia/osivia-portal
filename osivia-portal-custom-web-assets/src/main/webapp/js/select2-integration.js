@@ -126,6 +126,15 @@ $JQry(function () {
                 }
             });
         }
+
+        // Close on unselect
+        $element.on("select2:unselect", function (event) {
+            setTimeout(function() {
+                var search = $element.siblings().find(".select2-search__field");
+                search.val("");
+                $element.select2("close");
+            }, 100);
+        });
     });
 
 
@@ -306,6 +315,16 @@ $JQry(function () {
                 }
             });
         }
+
+        // Close on unselect
+        $element.on("select2:unselect", function (event) {
+            var $target = $JQry(event.target);
+            setTimeout(function() {
+                var search = $element.siblings().find(".select2-search__field");
+                search.val("");
+                $element.select2("close");
+            }, 100);
+        });
     });
 
 });
