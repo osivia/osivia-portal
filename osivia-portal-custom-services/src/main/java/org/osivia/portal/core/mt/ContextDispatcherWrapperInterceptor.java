@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Stack;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -39,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
 import org.jboss.portal.portlet.container.ContainerPortletInvoker;
@@ -52,6 +54,7 @@ import org.jboss.portal.web.ServletContainer;
 import org.jboss.portal.web.ServletContainerFactory;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.portlet.Refreshable;
+import org.osivia.portal.api.portlet.RequestLifeCycle;
 import org.osivia.portal.core.tracker.ITracker;
 import org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
@@ -235,11 +238,12 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 
 				}
 
+                      
 
                 // Refresh indicator
 				Boolean refresh = (Boolean) invocation.getRequestAttributes().get(Constants.PORTLET_ATTR_PAGE_REFRESH);
 				
-				if( BooleanUtils.isTrue(refresh))   {
+				if( BooleanUtils.isTrue(refresh) )   {
                     Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
                     String attributePrefix = "javax.portlet.p." + window.getId() + "?";
                     
@@ -258,6 +262,39 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
                         }
                     }
 				}
+				
+				
+				
+                // reload model on page rendering
+                Boolean renderPage;
+                Stack stack = getTracker().getStack();
+                if (stack.size() >= 2 && stack.get(1) instanceof RenderPageCommand)
+                    renderPage = true;
+                else
+                    renderPage = false;
+
+                
+                if( renderPage )   {
+                    Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
+                    String attributePrefix = "javax.portlet.p." + window.getId() + "?";
+                    
+                    // Remove Spring Framework implicit model
+                    session.removeAttribute(attributePrefix + AnnotationMethodHandlerAdapter.IMPLICIT_MODEL_SESSION_ATTRIBUTE);
+
+                    Enumeration<?> attributeNames = session.getAttributeNames();
+                    while (attributeNames.hasMoreElements()) {
+                        String attributeName = (String) attributeNames.nextElement();
+                        if (StringUtils.startsWith(attributeName, attributePrefix)) {
+                            Object attribute = session.getAttribute(attributeName);
+                            if (attribute.getClass().isAnnotationPresent(RequestLifeCycle.class)) {
+                                // Remove portlet session attribute with @RequestLifeCycle annotation
+                                session.removeAttribute(attributeName);
+                            }
+                        }
+                    }
+                }			
+				
+				
 
 				
 				//
