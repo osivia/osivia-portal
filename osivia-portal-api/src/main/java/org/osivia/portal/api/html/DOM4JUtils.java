@@ -231,7 +231,7 @@ public final class DOM4JUtils {
                 String elementHTMLClass = element.attributeValue(QName.get(HTMLConstants.CLASS));
                 if ((elementHTMLClass != null) && Arrays.asList(StringUtils.split(elementHTMLClass)).contains("btn")) {
                     // Button text with glyphicon is hidden for extra-small screens
-                    htmlClass = "hidden-xs";
+                    htmlClass = "d-none d-sm-inline";
                 }
 
                 Element textSpan = generateElement(HTMLConstants.SPAN, htmlClass, text);
