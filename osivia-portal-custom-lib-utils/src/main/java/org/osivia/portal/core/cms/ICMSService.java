@@ -14,17 +14,8 @@
  */
 package org.osivia.portal.core.cms;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.servlet.http.HttpSession;
-
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
-import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
 import org.osivia.portal.api.menubar.MenubarModule;
@@ -36,6 +27,12 @@ import org.osivia.portal.api.taskbar.TaskbarTask;
 import org.osivia.portal.api.theming.TabGroup;
 import org.osivia.portal.api.theming.TemplateAdapter;
 import org.osivia.portal.api.urls.Link;
+
+import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * CMS service interface.
@@ -681,6 +678,16 @@ public interface ICMSService {
      * @throws CMSException
      */
     List<SpaceStatistics> getSpaceStatistics(CMSServiceCtx cmsContext, Set<String> paths) throws CMSException;
+
+
+    /**
+     * Increments statistics.
+     *
+     * @param cmsContext  CMS context
+     * @param httpSession HTTP session
+     * @param path        document path
+     */
+    void incrementsStatistics(CMSServiceCtx cmsContext, HttpSession httpSession, String path) throws CMSException;
 
 
     /**

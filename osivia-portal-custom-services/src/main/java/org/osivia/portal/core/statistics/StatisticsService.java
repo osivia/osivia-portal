@@ -1,14 +1,5 @@
 package org.osivia.portal.core.statistics;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,11 +11,10 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.statistics.IStatisticsService;
 import org.osivia.portal.api.statistics.SpaceStatistics;
 import org.osivia.portal.api.statistics.SpaceVisits;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSItem;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.cms.*;
+
+import javax.servlet.http.HttpSession;
+import java.util.*;
 
 /**
  * Statistics service implementation.
@@ -34,11 +24,15 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
  */
 public class StatisticsService implements IStatisticsService {
 
-    /** Statistics session attribute. */
+    /**
+     * Statistics session attribute.
+     */
     private static final String STATISTICS_SESSION_ATTRIBUTE = "osivia.statistics";
 
 
-    /** CMS service locator. */
+    /**
+     * CMS service locator.
+     */
     private ICMSServiceLocator cmsServiceLocator;
 
 
@@ -55,17 +49,34 @@ public class StatisticsService implements IStatisticsService {
      */
     @Override
     public void incrementsUserStatistics(PortalControllerContext portalControllerContext, String path) throws PortalException {
-        // Root space path
-        String rootPath = this.getRootPath(portalControllerContext, path);
+        if (StringUtils.isNotEmpty(path)) {
+            // CMS service
+            ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+            // CMS context
+            CMSServiceCtx cmsContext = new CMSServiceCtx();
+            cmsContext.setPortalControllerContext(portalControllerContext);
 
-        if (StringUtils.isNotEmpty(rootPath)) {
             // HTTP session
             HttpSession httpSession = portalControllerContext.getHttpServletRequest().getSession();
 
-            // User session statistics
-            UserSessionStatistics userStatistics = this.getUserSessionStatistics(httpSession);
 
-            userStatistics.increments(rootPath);
+            // Root space path
+            String rootPath = this.getRootPath(portalControllerContext, path);
+
+            if (StringUtils.isNotEmpty(rootPath)) {
+                // User session statistics
+                UserSessionStatistics userStatistics = this.getUserSessionStatistics(httpSession);
+
+                userStatistics.increments(rootPath);
+            }
+
+
+            // Increments statistics
+            try {
+                cmsService.incrementsStatistics(cmsContext, httpSession, path);
+            } catch (CMSException e) {
+                throw new PortalException(e);
+            }
         }
     }
 
@@ -74,7 +85,7 @@ public class StatisticsService implements IStatisticsService {
      * Get root space path.
      *
      * @param portalControllerContext portal controller context
-     * @param currentPath current path
+     * @param currentPath             current path
      * @return path
      * @throws PortalException
      */
@@ -246,7 +257,7 @@ public class StatisticsService implements IStatisticsService {
 
     /**
      * Update space statistics.
-     * 
+     *
      * @param statistics space statistics
      * @throws PortalException
      */
