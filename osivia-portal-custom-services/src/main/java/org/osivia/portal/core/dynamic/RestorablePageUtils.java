@@ -70,16 +70,20 @@ public class RestorablePageUtils {
                 
                 // Page + window restauration
                 
+                Map<String, String> windowProps = new HashMap<>();
                 Map<String, List<String>> initProps = PageParametersEncoder.decodeProperties(props.get("osivia.initialWindowProps"));
-                Map<String,String> windowProps = new HashMap<>();
-                for( String prop: initProps.keySet()) {
-                    windowProps.put(prop, initProps.get(prop).get(0));
+                if (initProps != null) {
+                    for (String prop : initProps.keySet()) {
+                        windowProps.put(prop, initProps.get(prop).get(0));
+                    }
                 }
-                
+
+                Map<String, String> windowParams = new HashMap<>();
                 Map<String, List<String>> initParams = PageParametersEncoder.decodeProperties(props.get("osivia.initialWindowParams"));
-                Map<String,String> windowParams = new HashMap<>();
-                for( String param: initParams.keySet()) {
-                    windowParams.put(param, initParams.get(param).get(0));
+                if (initParams != null) {
+                    for (String param : initParams.keySet()) {
+                        windowParams.put(param, initParams.get(param).get(0));
+                    }
                 }
                 
                 restoreCmd = new StartDynamicWindowInNewPageCommand(portalId.toString(PortalObjectPath.SAFEST_FORMAT), businessName, displayNames.get(Locale.FRENCH).toString(), props.get("osivia.initialWindowInstance"),
