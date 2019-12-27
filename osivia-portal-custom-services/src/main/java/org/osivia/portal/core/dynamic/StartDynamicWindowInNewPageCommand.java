@@ -13,7 +13,9 @@
  */
 package org.osivia.portal.core.dynamic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import org.jboss.portal.core.controller.command.info.CommandInfo;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.theming.TabGroup;
 
 /**
@@ -125,6 +128,12 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             // Template identifier
             String templateId = PortalObjectId.parse(templateName, PortalObjectPath.CANONICAL_FORMAT).toString(PortalObjectPath.SAFEST_FORMAT);
 
+            // Window properties
+            Map<String, String> windowProps = new HashMap<String, String>();
+            windowProps.putAll(this.dynaProps);
+            windowProps.put("osivia.dynamic.disable.close", "1");
+
+            
             // Page properties
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("osivia.genericPage", "1");
@@ -133,6 +142,31 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             if ("normal".equals(this.dynaProps.get("osivia.windowState"))) {
                 properties.put("osivia.windowState", "normal");
             }
+            
+            /* Make this page restorable */
+             
+            properties.put("osivia.initialWindowInstance", instanceId);
+
+            if (windowProps != null) {
+                Map<String, List<String>> initProps = new HashMap<>();
+                for (String hKey : windowProps.keySet()) {
+                    java.util.List<String> lProps = new ArrayList<String>();
+                    lProps.add(windowProps.get(hKey));
+                    initProps.put(hKey, lProps);
+                }
+                properties.put("osivia.initialWindowProps", PageParametersEncoder.encodeProperties(initProps));                
+            }
+
+            if (params != null) {
+               Map<String, List<String>> initParams = new HashMap<>();
+                for (String hKey : params.keySet()) {
+                    java.util.List<String> lProps = new ArrayList<String>();
+                    lProps.add(params.get(hKey));
+                    initParams.put(hKey, lProps);
+                }
+                properties.put("osivia.initialWindowParams", PageParametersEncoder.encodeProperties(initParams));
+            }
+
 
             // Start dynamic page command
             StartDynamicPageCommand pageCommand = new StartDynamicPageCommand(this.parentId, this.pageName, displayNames, templateId, properties,
@@ -143,11 +177,7 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             // New page identifier
             PortalObjectId pageId = response.getPageId();
 
-            // Window properties
-            Map<String, String> windowProps = new HashMap<String, String>();
-            windowProps.putAll(this.dynaProps);
-            windowProps.put("osivia.dynamic.disable.close", "1");
-
+ 
             // Start dynamic window command
             StartDynamicWindowCommand windowCommand = new StartDynamicWindowCommand(pageId.toString(PortalObjectPath.SAFEST_FORMAT), genericTemplateRegion,
                     this.instanceId, "virtual", windowProps, this.params, "0", null);

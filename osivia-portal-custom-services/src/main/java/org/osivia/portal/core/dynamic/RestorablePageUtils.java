@@ -46,7 +46,7 @@ public class RestorablePageUtils {
         Map<String, String> params = decodeMap(decodePath(names[3]));       
         
         
-        Map displayNames = null;
+        Map<Locale, String> displayNames = null;
         Map<String, String> i18Names = decodeMap(decodePath(names[4]));     
         if( i18Names != null){
             displayNames = new HashMap();
@@ -60,8 +60,33 @@ public class RestorablePageUtils {
         if (pageType.startsWith(TEMPLATE_ID)) {
             templateId = names[1].substring(TEMPLATE_ID.length());
 
-            restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.SAFEST_FORMAT), businessName, displayNames, templateId,
-                    props, params);
+            if( props.get("osivia.initialWindowInstance") == null)  {
+                
+                // Simple page restauration
+                
+                restoreCmd = new StartDynamicPageCommand(portalId.toString(PortalObjectPath.SAFEST_FORMAT), businessName, displayNames, templateId,
+                        props, params);
+            } else    {
+                
+                // Page + window restauration
+                
+                Map<String, List<String>> initProps = PageParametersEncoder.decodeProperties(props.get("osivia.initialWindowProps"));
+                Map<String,String> windowProps = new HashMap<>();
+                for( String prop: initProps.keySet()) {
+                    windowProps.put(prop, initProps.get(prop).get(0));
+                }
+                
+                Map<String, List<String>> initParams = PageParametersEncoder.decodeProperties(props.get("osivia.initialWindowParams"));
+                Map<String,String> windowParams = new HashMap<>();
+                for( String param: initParams.keySet()) {
+                    windowParams.put(param, initParams.get(param).get(0));
+                }
+                
+                restoreCmd = new StartDynamicWindowInNewPageCommand(portalId.toString(PortalObjectPath.SAFEST_FORMAT), businessName, displayNames.get(Locale.FRENCH).toString(), props.get("osivia.initialWindowInstance"),
+                        windowProps, windowParams);
+            }
+             
+            
         }
         
         if (pageType.startsWith(CMS_PATH)) {
