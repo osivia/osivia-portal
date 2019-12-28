@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.XMLConstants;
@@ -612,6 +614,16 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
                 url += "?init-state=true";
                 return new RedirectionResponse(url.toString());
             }
+            
+            
+            /* Store all pages */
+            Set<String> pagesInSession = (Set<String>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.pageinSessions");
+            if( pagesInSession == null) {
+                pagesInSession = new TreeSet();
+                controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.pageinSessions", pagesInSession);
+  
+            }
+            pagesInSession.add( ((RenderPageCommand) cmd).getTargetId().toString(PortalObjectPath.CANONICAL_FORMAT));      
 
 
             controlDefaultPageCache(this.portalObjectContainer, cmd, controllerContext);

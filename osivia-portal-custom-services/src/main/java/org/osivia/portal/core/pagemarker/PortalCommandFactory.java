@@ -13,11 +13,15 @@
  */
 package org.osivia.portal.core.pagemarker;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -27,19 +31,23 @@ import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.common.util.ParameterMap;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.instance.command.action.InvokePortletInstanceActionCommand;
 import org.jboss.portal.core.model.portal.DefaultPortalCommandFactory;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.PortalObjectCommand;
+import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPortalCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
+import org.jboss.portal.core.portlet.PortletRequestDecoder;
 import org.jboss.portal.portlet.ParametersStateString;
 import org.jboss.portal.portlet.StateString;
 import org.jboss.portal.server.ServerInvocation;
@@ -247,6 +255,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
     @SuppressWarnings("unchecked")
     @Override
     public ControllerCommand doMapping(ControllerContext controllerContext, ServerInvocation invocation, String host, String contextPath, String requestPath) {
+
         String path = requestPath;
         boolean popupClosed = false;
         boolean popupOpened = false;
@@ -399,6 +408,7 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                     // Restore the page
                     RestorablePageUtils.restore(controllerContext, portalId, pagePath);
                     cmd = super.doMapping(controllerContext, invocation, host, contextPath, newPath);
+                    
 
                     if (cmd instanceof ViewPageCommand) {
                         // Remove parameters
@@ -407,7 +417,55 @@ public class PortalCommandFactory extends DefaultPortalCommandFactory {
                 }
             }
         }
+        
 
+        /* 
+         * Disable action if page has not been displayed at least once 
+         * 
+         * This can happens when session is lost
+         * (session data may have been lost, parameters of POST queries may have been dropped by SSO engine ...)
+         */
+        
+        ParameterMap queryParams = invocation.getServerContext().getQueryParameterMap();
+        ParameterMap bodyParams = invocation.getServerContext().getBodyParameterMap();
+        
+        PortletRequestDecoder decoder = new PortletRequestDecoder();
+        decoder.decode(queryParams, bodyParams);
+        
+        // Dans le cas d'une modale, l'action renvoyée est RenderPageCommand
+        // On ne peut pas tester sur InvokePortletWindowActionCommand
+        
+        if( decoder.getType() == PortletRequestDecoder.ACTION_TYPE)  {
+            
+            String pagePath = null;
+            
+            if( cmd instanceof InvokePortletWindowActionCommand)    {
+                // Get page path
+                PortalObjectId poid = ((InvokePortletWindowActionCommand) cmd).getTargetId();
+                PortalObjectId pageId = new PortalObjectId("", poid.getPath().getParent());      
+                pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+            }
+            
+            if( cmd instanceof ViewPageCommand) {
+                // When the session is lost, modal-window is not present so the current target is /osivia-util/modal
+                PortalObjectId pageId = ((ViewPageCommand) cmd).getTargetId();
+                if( pageId.toString(PortalObjectPath.CANONICAL_FORMAT).startsWith("/osivia-util"))    {
+                    pagePath = pageId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                }
+            }
+
+            if( pagePath != null)   {
+                Set<String> pagesInSession = (Set<String>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.pageinSessions");
+                if( pagesInSession == null || !pagesInSession.contains(pagePath)) {
+                    if( pagePath.startsWith("/osivia-util"))    {
+                        cmd = new ViewPortalCommand( this.getPortalObjectContainer().getContext().getDefaultPortal().getId()); 
+                    }
+                    else
+                        cmd = new ViewPageCommand(new PortalObjectId("", new PortalObjectPath(pagePath, PortalObjectPath.CANONICAL_FORMAT)));
+                }
+            }
+        }
+            
         
         if( popupClosed){
 
