@@ -2,7 +2,9 @@ package org.osivia.portal.core.tasks;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -14,12 +16,16 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.customization.CustomizationContext;
+import org.osivia.portal.api.tasks.ITasksProvider;
 import org.osivia.portal.api.tasks.ITasksService;
+import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.customization.ICustomizationService;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
 
@@ -39,6 +45,9 @@ public class TasksService implements ITasksService {
 
     /** CMS service locator. */
     private ICMSServiceLocator cmsServiceLocator;
+    
+    /** Customization service. */
+    private ICustomizationService customizationService;
 
 
     /**
@@ -70,6 +79,14 @@ public class TasksService implements ITasksService {
 
             try {
                 tasks = cmsService.getTasks(cmsContext, principal.getName());
+   
+                // Customizer invocation
+                Map<String, Object> customizerAttributes = new HashMap<String, Object>();
+                customizerAttributes.put(ITasksProvider.CUSTOMIZER_ATTRIBUTE_TASKS_LIST, tasks);
+                CustomizationContext context = new CustomizationContext(customizerAttributes, portalControllerContext, portalControllerContext.getHttpServletRequest().getLocale());
+                this.customizationService.customize(ITasksProvider.CUSTOMIZER_ID, context);
+                
+                
             } catch (CMSException e) {
                 throw new PortalException(e);
             }
@@ -284,4 +301,12 @@ public class TasksService implements ITasksService {
         this.cmsServiceLocator = cmsServiceLocator;
     }
 
+    /**
+     * Setter for customizationService.
+     *
+     * @param customizationService the customizationService to set
+     */
+    public void setCustomizationService(ICustomizationService customizationService) {
+        this.customizationService = customizationService;
+    }
 }

@@ -894,6 +894,8 @@
 		<xmbean />
 		<depends optional-attribute-name="CmsServiceLocator"
 			proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+        <depends optional-attribute-name="CustomizationService"
+            proxy-type="attribute">osivia:service=CustomizationService</depends>            
 	</mbean>
 
 	<!-- Resizable service -->
