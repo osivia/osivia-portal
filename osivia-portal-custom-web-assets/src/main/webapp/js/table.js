@@ -3,10 +3,10 @@ var tableToolbarXhr;
 
 $JQry(function() {
 	var isChromeAndroid = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent) && /Android/i.test(navigator.userAgent);
-	var $container = $JQry(".portal-table-container");
+	var $table = $JQry(".portal-table");
 	var previousIndex = -1;
 	
-	if (!isChromeAndroid && !$container.data("loaded")) {	
+	if (!isChromeAndroid && !$table.data("loaded")) {
 		// Selectable
 		$JQry(".portal-table-selectable").selectable({
 			cancel: "a, button, .portal-table-selectable-cancel",
@@ -35,7 +35,7 @@ $JQry(function() {
 		
 	}
 	
-	if ( !$container.data("loaded")) {			
+	if ( !$table.data("loaded")) {
 		// Checkbox
 		$JQry(".portal-table-checkbox a").click(function(event) {
 			var $target = $JQry(event.target).closest("a");
@@ -86,7 +86,7 @@ $JQry(function() {
 		
 		
 		// Loaded indicator
-		$container.data("loaded", true);
+		$table.data("loaded", true);
 	}
 });
 
@@ -98,14 +98,14 @@ $JQry(window).resize(function() {
 
 
 function updateTableToolbar($target) {
-	var $container = $target.closest(".portal-table-container");
-	var $selectee = $container.find(".portal-table-selectable-filter");
-	var allSelected = ($selectee.length && ($selectee.length === $container.find(".ui-selected").length));
-	var $selectAll = $container.find(".portal-table-header-group .portal-table-checkbox a");
-	var $toolbarContainer = $container.siblings(".portal-table-toolbar-container");
+	var $table = $target.closest(".portal-table");
+	var $selectee = $table.find(".portal-table-selectable-filter");
+	var allSelected = ($selectee.length && ($selectee.length === $table.find(".ui-selected").length));
+	var $selectAll = $table.find(".portal-table-header-group .portal-table-checkbox a");
+	var $toolbarContainer = $table.siblings(".portal-table-toolbar-container");
 	var $toolbar = $toolbarContainer.find(".portal-table-toolbar");
-	var $rows = $container.find(".portal-table-row");
-	var $selected = $container.find(".ui-selected");
+	var $rows = $table.find(".portal-table-row");
+	var $selected = $table.find(".ui-selected");
 	var indexes = "";
     var $menubar = $JQry("#menubar");
     var $menubarItems = $menubar.find("a");
@@ -177,7 +177,7 @@ function updateTableScrollbarWidth() {
 	$filler.each(function(index, element) {
 		var $element = $JQry(element);
 		var width = Math.round($element.innerWidth() - $element.children().outerWidth(true));
-		var $header = $element.find(".portal-table-header-group");
+		var $header = $element.closest(".portal-table").find(".portal-table-header-group");
 			
 		// Update header
 		$header.css({
