@@ -4,7 +4,7 @@
 
     <groupId>org.osivia.portal.core</groupId>
     <artifactId>parent</artifactId>
-    <version>4.9-SNAPSHOT</version>
+    <version>4.9.1</version>
     <packaging>pom</packaging>
     <name>OSIVIA Portal - Parent</name>
 
@@ -934,7 +934,7 @@
         <url>https://github.com/osivia/osivia-portal.git</url>
         <connection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osivia/osivia-portal.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>4.9.1</tag>
   </scm>
 
 
