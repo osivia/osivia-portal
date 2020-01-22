@@ -544,14 +544,24 @@
 	</mbean>
 
 	<mbean
-		code="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor"
-		name="osivia:service=Interceptor,type=Portlet,name=ConsumerCache"
+		code="org.osivia.portal.core.portlets.interceptors.PortletTransactionInterceptor"
+		name="osivia:service=Interceptor,type=Portlet,name=CustomTransaction"
 		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
-		<depends optional-attribute-name="ServicesCacheService"
-			proxy-type="attribute">osivia:service=CacheServices</depends>
+		<depends optional-attribute-name="TransactionService"
+			proxy-type="attribute">osivia:service=TransactionService</depends>
 
 	</mbean>
+    
+        <mbean
+        code="org.osivia.portal.core.portlets.interceptors.ConsumerCacheInterceptor"
+        name="osivia:service=Interceptor,type=Portlet,name=ConsumerCache"
+        xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <depends optional-attribute-name="ServicesCacheService"
+            proxy-type="attribute">osivia:service=CacheServices</depends>
+
+    </mbean>
 
 
 	<mbean

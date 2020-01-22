@@ -303,12 +303,13 @@
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
       <xmbean/>
       <depends-list optional-attribute-name="InterceptorNames">
-	 <depends-list-element>osivia:service=Interceptor,type=Portlet,name=PortletAttributesController</depends-list-element>
+         <depends-list-element>osivia:service=Interceptor,type=Portlet,name=CustomTransaction</depends-list-element>
+	     <depends-list-element>osivia:service=Interceptor,type=Portlet,name=PortletAttributesController</depends-list-element>
          <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ConsumerCache</depends-list-element>
          <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ParametresPortletInterceptor</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=InstanceSecurity</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=PortalSessionSynchronization</depends-list-element>
-	 <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor</depends-list-element>
+	     <depends-list-element>osivia:service=Interceptor,type=Portlet,name=ProfilerPortletInterceptor</depends-list-element>
          <depends-list-element>portal:service=Interceptor,type=Portlet,name=InstanceInvoker</depends-list-element>
      </depends-list>
    </mbean>

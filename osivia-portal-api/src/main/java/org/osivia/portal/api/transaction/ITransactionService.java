@@ -19,7 +19,15 @@ public interface ITransactionService {
      */
     
     public void register(String resourceId, ITransactionResource resource) throws PortalException;
+  
     
+    /**
+     * register a post commit resource
+     * 
+     * @return
+     */
+    
+    public void registerPostcommit( IPostcommitResource resource) throws PortalException;
     
     /**
      * return an existing resource
@@ -40,23 +48,27 @@ public interface ITransactionService {
     /**
      *start the current transaction
      */
-    public void begin() throws PortalException;
+    public void begin();
     
     
     /**
      * commits the  resources associated with the current transaction
      */
-    public void commit() throws PortalException;
+    public void commit();
 
     /**
      * rollback the resource associated with the current transaction
      */
-    public void rollback() throws PortalException;
-    
+    public void rollback();
+
 
     /**
-     * init the transaction state
+     * Check if transaction has ended.
      */
-    public void initThreadTx();
+    void cleanTransactionContext();
+
+
+
+
     
 }

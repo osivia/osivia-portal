@@ -21,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.osivia.portal.api.directory.v2.IDirDelegate;
 import org.osivia.portal.api.directory.v2.IDirService;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.transaction.ITransactionService;
 
 /**
  * Handler of calls to the directory service. Should check that a delegate has
@@ -35,6 +37,9 @@ public class DirHandler implements InvocationHandler {
 
 	/** The delegate (the deployed directory service) */
 	private IDirDelegate delegate;
+	
+	/** The transaction service. */
+	ITransactionService transactionService;
 
 	/*
 	 * (non-Javadoc)
@@ -57,6 +62,15 @@ public class DirHandler implements InvocationHandler {
 				// Call service with the delegate classloader (avoid ClassNotFoundException)
 				Thread.currentThread().setContextClassLoader(delegate.getClassLoader());
 				
+				// Create LDAP transaction
+                ITransactionService transactionService = getTransactionService();
+                 if (transactionService.isStarted() && (transactionService.getResource("LDAP") == null)) {
+                    transactionService.register("LDAP", delegate.getTransactionResource());
+                }
+				
+				
+				
+				
 				IDirService directoryService = delegate
 						.getDirectoryService(declaringClass);
 	
@@ -77,6 +91,17 @@ public class DirHandler implements InvocationHandler {
 		}
 
 	}
+
+    /**
+     * Gets the transaction service.
+     *
+     * @return the transaction service
+     */
+    private ITransactionService getTransactionService() {
+        if( transactionService == null)
+             transactionService = Locator.findMBean(ITransactionService.class, ITransactionService.MBEAN_NAME);
+        return transactionService;
+    }
 
 	/**
 	 * @return the delegate

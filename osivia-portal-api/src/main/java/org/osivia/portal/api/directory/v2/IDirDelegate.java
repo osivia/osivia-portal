@@ -15,6 +15,8 @@ package org.osivia.portal.api.directory.v2;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.osivia.portal.api.transaction.ITransactionResource;
+
 
 /**
  * The directory connector is provided by a service or a portlet which should realize this interface.
@@ -52,5 +54,12 @@ public interface IDirDelegate {
      * @return
      */
     Object getDirectoryTxManagerDelegate();
+    
+    /**
+     * Gets the transaction resource.
+     *
+     * @return the transaction resource
+     */
+    ITransactionResource getTransactionResource();
 
 }
