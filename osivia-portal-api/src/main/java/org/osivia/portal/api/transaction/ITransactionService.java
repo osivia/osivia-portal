@@ -63,7 +63,7 @@ public interface ITransactionService {
 
 
     /**
-     * Check if transaction has ended.
+     * Clean pending transactions.
      */
     void cleanTransactionContext();
 
