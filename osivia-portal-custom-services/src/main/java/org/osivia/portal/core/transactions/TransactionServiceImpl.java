@@ -98,9 +98,13 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     public void cleanTransactionContext()  {
-        if( getTransactionBean() != null)   {
-            log.info("no explicit commit -> rollback");
-            rollback();
+        try {
+            if (getTransactionBean() != null) {
+                log.info("no explicit commit -> rollback");
+                rollback();
+            }
+        } finally {
+            transactionBeanLocal.set(null);
         }
 
     }

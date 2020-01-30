@@ -13,9 +13,20 @@
  */
 package org.osivia.portal.core.portlets.interceptors;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jboss.portal.core.controller.ControllerCommand;
+import org.jboss.portal.core.controller.ControllerContext;
+import org.jboss.portal.core.model.portal.PortalObjectId;
+import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.portlet.PortletInvokerException;
 import org.jboss.portal.portlet.PortletInvokerInterceptor;
+import org.jboss.portal.portlet.invocation.ActionInvocation;
 import org.jboss.portal.portlet.invocation.PortletInvocation;
+import org.jboss.portal.portlet.invocation.RenderInvocation;
+import org.jboss.portal.portlet.invocation.response.FragmentResponse;
 import org.jboss.portal.portlet.invocation.response.PortletInvocationResponse;
 import org.osivia.portal.api.transaction.ITransactionService;
 
@@ -46,11 +57,44 @@ public class PortletTransactionInterceptor extends PortletInvokerInterceptor {
     @Override
     public PortletInvocationResponse invoke(PortletInvocation invocation) throws IllegalArgumentException, PortletInvokerException {
         PortletInvocationResponse response;
+        boolean implicitTransactions = false;
         
-        try { response = super.invoke(invocation);
+        try { 
+            if( "debug".equals(System.getProperty("osivia.transactionMode")) && (invocation instanceof ActionInvocation))    {
+                ControllerContext ctx = (ControllerContext) invocation.getAttribute("controller_context");
+                
+                String windowId = invocation.getWindowContext().getId();
+                PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.CANONICAL_FORMAT);
+
+                Window window = (Window) ctx.getController().getPortalObjectContainer().getObject(poid);
+                
+                if( ! "false".equals(window.getDeclaredProperty("osivia.transaction.implicitCommits"))) { 
+                    implicitTransactions = true;
+                }
+            }
+            
+            if( implicitTransactions)
+                transactionService.begin();
+            
+            response = super.invoke(invocation);
+            
+            if( implicitTransactions)   {
+                if( transactionService.isStarted())
+                    transactionService.commit();
+            }
+                           
         
-        } finally   {
-            transactionService.cleanTransactionContext();
+        } 
+        catch(Exception e)  {
+            if( implicitTransactions)   {
+                if( transactionService.isStarted())
+                    transactionService.rollback();
+            }
+            throw e;
+        }
+        
+        finally   {
+             transactionService.cleanTransactionContext();
         }
 
         return response;
