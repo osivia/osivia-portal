@@ -14,7 +14,8 @@ $JQry(function() {
 		closeClickOutside : false,
 		iframe : {
 			css : {
-				width : "1200px",
+                width : "90%",
+                height : "90%"
 			}
 		}
 	});
@@ -24,7 +25,8 @@ $JQry(function() {
 		iframe : {
 			scrolling : true,
 			css : {
-				width : "1200px"
+                width : "90%",
+                height : "90%"
 			}
 		},
 		beforeClose : function(instance, slide) {
