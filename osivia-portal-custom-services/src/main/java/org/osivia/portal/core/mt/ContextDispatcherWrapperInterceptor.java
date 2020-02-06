@@ -278,8 +278,7 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
                     Window window = (Window) invocation.getRequestAttributes().get("osivia.window");
                     String attributePrefix = "javax.portlet.p." + window.getId() + "?";
                     
-                    // Remove Spring Framework implicit model
-                    session.removeAttribute(attributePrefix + AnnotationMethodHandlerAdapter.IMPLICIT_MODEL_SESSION_ATTRIBUTE);
+                    boolean found = false;
 
                     Enumeration<?> attributeNames = session.getAttributeNames();
                     while (attributeNames.hasMoreElements()) {
@@ -289,9 +288,16 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
                             if (attribute.getClass().isAnnotationPresent(RequestLifeCycle.class)) {
                                 // Remove portlet session attribute with @RequestLifeCycle annotation
                                 session.removeAttribute(attributeName);
+                                found = true;
                             }
                         }
                     }
+                    
+                    if( found)  {
+                        // Remove Spring Framework implicit model
+                        session.removeAttribute(attributePrefix + AnnotationMethodHandlerAdapter.IMPLICIT_MODEL_SESSION_ATTRIBUTE);
+                    }
+                    
                 }			
 				
 				
