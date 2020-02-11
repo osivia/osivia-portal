@@ -916,6 +916,12 @@
 		</depends>
 	</mbean>
 
+	<!-- Layout service -->
+	<mbean code="org.osivia.portal.core.ui.layout.LayoutServiceImpl" name="osivia:service=LayoutService"
+		   xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+	</mbean>
+
 	<!-- Batch service -->
 	<mbean code="org.osivia.portal.core.batch.BatchService" name="osivia:service=BatchService"
 		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">

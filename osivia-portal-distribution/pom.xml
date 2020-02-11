@@ -189,6 +189,12 @@
             <classifier>jdk8</classifier>
         </dependency>
 
+        <!--Jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
+
     </dependencies>
 
 
@@ -253,7 +259,8 @@
                                         commons,
                                         org.apache.commons,
                                         org.springframework,
-                                        aopalliance
+                                        aopalliance,
+                                        com.fasterxml.jackson
                                     </includeGroupIds>
                                 </configuration>
                             </execution>
