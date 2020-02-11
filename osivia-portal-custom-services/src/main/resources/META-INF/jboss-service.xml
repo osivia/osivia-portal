@@ -757,7 +757,7 @@
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
-    
+
     <!-- User preferences service -->
     <mbean
         code="org.osivia.portal.core.user.UserPreferencesService"
@@ -769,7 +769,7 @@
             optional-attribute-name="CmsServiceLocator"
             proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
     </mbean>
-    
+
 
 	<!-- Delegator of cmsAjax -->
 	<mbean
@@ -905,6 +905,12 @@
 		<xmbean />
 		<depends optional-attribute-name="TaskbarService" proxy-type="attribute">osivia:service=TaskbarService
 		</depends>
+	</mbean>
+
+	<!-- Layout service -->
+	<mbean code="org.osivia.portal.core.ui.layout.LayoutServiceImpl" name="osivia:service=LayoutService"
+		   xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
 	</mbean>
 
 	<!-- Batch service -->
