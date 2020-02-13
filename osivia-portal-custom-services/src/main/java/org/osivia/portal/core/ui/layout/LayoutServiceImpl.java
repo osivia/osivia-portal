@@ -2,6 +2,7 @@ package org.osivia.portal.core.ui.layout;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -12,6 +13,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.ui.layout.LayoutItem;
@@ -20,9 +22,9 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 import javax.naming.Name;
-import javax.naming.ldap.LdapName;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -128,7 +130,7 @@ public class LayoutServiceImpl implements LayoutService {
 
 
     @Override
-    public void setItems(PortalControllerContext portalControllerContext, List<LayoutItem> items) {
+    public void setItems(PortalControllerContext portalControllerContext, List<LayoutItem> items) throws PortalException {
         // Current page
         Page page = this.getCurrentPage(portalControllerContext);
 
@@ -143,8 +145,21 @@ public class LayoutServiceImpl implements LayoutService {
                 LayoutItemsContainer container = new LayoutItemsContainer();
                 List<LayoutItemImpl> containerItems = new ArrayList<>(items.size());
                 for (LayoutItem item : items) {
+                    LayoutItemImpl itemImpl;
                     if (item instanceof LayoutItemImpl) {
-                        containerItems.add((LayoutItemImpl) item);
+                        itemImpl = (LayoutItemImpl) item;
+                    } else {
+                        itemImpl = new LayoutItemImpl();
+                        try {
+                            BeanUtils.copyProperties(itemImpl, item);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            itemImpl = null;
+                            this.log.error(e.getLocalizedMessage());
+                        }
+                    }
+
+                    if (itemImpl != null) {
+                        containerItems.add(itemImpl);
                     }
                 }
                 container.setItems(containerItems);
