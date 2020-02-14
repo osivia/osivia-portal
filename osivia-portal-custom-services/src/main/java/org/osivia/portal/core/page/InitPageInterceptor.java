@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.InvocationException;
 import org.jboss.portal.common.invocation.Scope;
@@ -60,6 +62,11 @@ import org.osivia.portal.core.web.IWebIdService;
  */
 public class InitPageInterceptor extends ControllerInterceptor {
 
+
+    /** Log. */
+    private final Log logger = LogFactory.getLog(InitPageInterceptor.class);
+	
+	
     /** Portal URL factory. */
     private IPortalUrlFactory urlFactory;
     /** WebId service. */
@@ -94,8 +101,16 @@ public class InitPageInterceptor extends ControllerInterceptor {
             PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
             // Page
             Page page = this.getPage(renderPageCommand);
-            // Portal
-            Portal portal = page.getPortal();
+            Portal portal = null;
+            
+            if(page != null) {
+                // Portal
+            	portal = page.getPortal();
+            }
+            else {
+            	logger.warn("Current page not found in renderPageCommand");
+            }
+            
 
             // Portal request path
             String portalRequestPath = serverContext.getPortalRequestPath();
@@ -108,7 +123,7 @@ public class InitPageInterceptor extends ControllerInterceptor {
             if (StringUtils.isEmpty(portalRequestPath) || "/".equals(portalRequestPath)) {
                 // Default page
                 defaultPage = true;
-            } else if (page.equals(portal.getDefaultPage()) && "1".equals(pageMarker)) {
+            } else if (portal != null && page.equals(portal.getDefaultPage()) && "1".equals(pageMarker)) {
                 Boolean initialRedirection = (Boolean) controllerContext.getAttribute(Scope.SESSION_SCOPE, "initialRedirection");
                 if (BooleanUtils.isNotTrue(initialRedirection)) {
                     defaultPage = true;
@@ -183,7 +198,7 @@ public class InitPageInterceptor extends ControllerInterceptor {
             // Another portal template edition warning
             if (BooleanUtils.toBoolean(request.getParameter("init-state")) && BooleanUtils.toBoolean(request.getParameter("edit-template-mode"))) {
                 String originalPortalName = request.getParameter("original-portal");
-                if (!portal.getName().equals(originalPortalName)) {
+                if (portal != null && !portal.getName().equals(originalPortalName)) {
                     // For template page, warn if the current portal does not match the main domain
                     String portalDefaultAdviceLabel = this.internationalizationService.getString(InternationalizationConstants.KEY_ADV_PORTAL_DEFAULT,
                             request.getLocale());
@@ -223,6 +238,9 @@ public class InitPageInterceptor extends ControllerInterceptor {
 
         if (target instanceof Page) {
             page = (Page) target;
+        }
+        else {
+        	logger.warn("target is not a page : "+target.getName() != null ? target.getName() : "null");
         }
 
         return page;
