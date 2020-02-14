@@ -128,7 +128,12 @@ public class StartDynamicWindowInNewPageCommand extends DynamicCommand {
             // Page properties
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("osivia.genericPage", "1");
-            properties.put(TabGroup.TYPE_PROPERTY, StringUtils.trimToEmpty(this.dynaProps.get(TabGroup.TYPE_PROPERTY)));
+            
+            // LBI - paramter may be empty
+            String tabGroup = this.dynaProps.get(TabGroup.TYPE_PROPERTY);
+            if(StringUtils.isNotBlank(tabGroup)) {
+    			properties.put(TabGroup.TYPE_PROPERTY, tabGroup);
+            }
 
             if ("normal".equals(this.dynaProps.get("osivia.windowState"))) {
                 properties.put("osivia.windowState", "normal");
