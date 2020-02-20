@@ -146,7 +146,7 @@ public class UpdateTaskCommand extends ControllerCommand {
 
             if (!updated) {
                 String message = bundle.getString("INFO_TASK_NOT_UPDATED");
-                this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.INFO);
+                this.notificationsService.addSimpleNotification(portalControllerContext, message, NotificationsType.ERROR);
             }
         } catch (CMSException e) {
             response = new ErrorResponse(e, true);
