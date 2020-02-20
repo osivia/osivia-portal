@@ -8,7 +8,19 @@ $JQry(function () {
             theme: "bootstrap4",
             width: "resolve"
         };
-
+        
+        var tags = false;
+        
+        
+        if( $element.attr('data-tags') == "true")	{
+        	tags = true;
+        }
+        
+        if( tags == true)	{
+        	options["selectOnClose"] = true;
+        	options["tokenSeparators"] = [','];
+        }
+ 
         if (url !== undefined) {
             options["ajax"] = {
                 url: url,
@@ -128,13 +140,15 @@ $JQry(function () {
         }
 
         // Close on unselect
-        $element.on("select2:unselect", function (event) {
-            setTimeout(function() {
-                var search = $element.siblings().find(".select2-search__field");
-                search.val("");
-                $element.select2("close");
-            }, 100);
-        });
+        if( tags == false){
+	        $element.on("select2:unselect", function (event) {
+	            setTimeout(function() {
+	                var search = $element.siblings().find(".select2-search__field");
+	                search.val("");
+	                $element.select2("close");
+	            }, 100);
+	        });
+        }
     });
 
 
