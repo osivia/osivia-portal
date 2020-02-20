@@ -106,6 +106,26 @@
         </attribute>
     </tag>
     
+    
+    
+    <tag>
+        <description>Resource adapter</description>
+        <display-name>Adapt html resource name with version</display-name>
+        <name>resourceAdapter</name>
+        <tag-class>org.osivia.portal.taglib.portal.tag.ResourceAdapterTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <description>Resource uri.</description>
+            <name>directive</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        
+
+    </tag>
+    
     <!-- jQuery UI resizable component -->
     <tag>
         <description>jQuery UI resizable component.</description>
