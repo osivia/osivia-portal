@@ -581,11 +581,9 @@
 		name="portal:service=ResponseHandler,type=Ajax" xmbean-dd=""
 		xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
-		<depends optional-attribute-name="PageService" proxy-type="attribute">portal:service=PageService
-		</depends>
-		<depends optional-attribute-name="PortalObjectContainer"
-			proxy-type="attribute">portal:container=PortalObject
-		</depends>
+		<depends optional-attribute-name="PageService" proxy-type="attribute">portal:service=PageService</depends>
+		<depends optional-attribute-name="PortalObjectContainer" proxy-type="attribute">portal:container=PortalObject</depends>
+		<depends optional-attribute-name="LayoutItemsService" proxy-type="attribute">osivia:service=LayoutItemsService</depends>
 	</mbean>
 
 
@@ -917,8 +915,8 @@
 	</mbean>
 
 	<!-- Layout service -->
-	<mbean code="org.osivia.portal.core.ui.layout.LayoutServiceImpl" name="osivia:service=LayoutService"
-		   xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+	<mbean code="org.osivia.portal.core.ui.layout.LayoutItemsServiceImpl" name="osivia:service=LayoutItemsService"
+           xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
 		<xmbean />
 	</mbean>
 

@@ -15,13 +15,7 @@
 package org.osivia.portal.core.mt;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -33,19 +27,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Element;
+import org.jboss.portal.Mode;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.portlet.ControllerPageNavigationalState;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.command.render.RenderWindowCommand;
 import org.jboss.portal.core.model.portal.command.response.MarkupResponse;
 import org.jboss.portal.core.model.portal.content.WindowRendition;
@@ -60,8 +54,17 @@ import org.jboss.portal.theme.PortalLayout;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.page.PageResult;
+import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
 import org.jboss.security.SecurityAssociation;
+import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.html.DOM4JUtils;
+import org.osivia.portal.api.html.HTMLConstants;
+import org.osivia.portal.api.locator.Locator;
+import org.osivia.portal.api.menubar.IMenubarService;
 import org.osivia.portal.api.profiler.IProfilerService;
+import org.osivia.portal.api.ui.layout.LayoutItem;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.error.CustomPageControlPolicy;
 import org.osivia.portal.core.errors.PortalLoggerContext;
@@ -70,7 +73,6 @@ import org.osivia.portal.core.tracker.ITracker;
 
 
 /**
- *
  * Lancement de n threads (un par service) en passant par un pool de threads puis attente de toutes les reponses.
  * Les donnees envoyees et recues sont stockees dans une Mapc.
  *
@@ -78,6 +80,15 @@ import org.osivia.portal.core.tracker.ITracker;
  */
 public class ServicesInvoker {
 
+    protected static final Log logger = LogFactory.getLog(ServicesInvoker.class);
+    protected static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
+    // Timeout par défaut en secondes
+    private static final int DEFAULT_TIMEOUT_THREAD = 1200;
+    private static List<String> excludedPortlets;
+    /**
+     * Layout items service.
+     */
+    private static LayoutItemsService layoutItemsService;
     int nbWindows = 0;
     Page page;
     ControllerContext context;
@@ -89,22 +100,14 @@ public class ServicesInvoker {
     ITracker tracker;
     IProfilerService profiler;
     boolean parallelisationExpired = false;
-
-
-    // Timeout par défaut en secondes
-    private static final int DEFAULT_TIMEOUT_THREAD = 1200;
-
     List<Reponse> renditions = new ArrayList<Reponse>();
-
-    protected static final Log logger = LogFactory.getLog(ServicesInvoker.class);
-
-    private static List<String> excludedPortlets;
-
-    protected static final Log windowlogger = LogFactory.getLog("PORTAL_WINDOW");
+    // Map<PortalObjectId, ServiceThread> currentThreads = new HashMap<PortalObjectId, ServiceThread>();
+    // v 1.0.16
+    Map<PortalObjectId, ServiceThread> currentThreads = new Hashtable<PortalObjectId, ServiceThread>();
 
 
     public ServicesInvoker(Page page, ControllerContext context, Collection<?> windows, PortalLayout layout, PortalTheme theme, PageService pageService,
-            ControllerPageNavigationalState pageNavigationalState, ITracker tracker, IProfilerService profiler) throws Exception {
+                           ControllerPageNavigationalState pageNavigationalState, ITracker tracker, IProfilerService profiler) throws Exception {
         this.page = page;
         this.context = context;
 
@@ -145,8 +148,9 @@ public class ServicesInvoker {
 
     }
 
-
     public ControllerResponse render() throws Exception {
+        // Portal controller context
+        PortalControllerContext portalControllerContext = new PortalControllerContext(this.context);
         // Mode anonyme
         HttpServletRequest request = this.context.getServerInvocation().getServerContext().getClientRequest();
 
@@ -185,6 +189,11 @@ public class ServicesInvoker {
         Map<PortalObjectId, Future<?>> pageFutures = new Hashtable<PortalObjectId, Future<?>>();
 
         int nbThreads = 0;
+
+
+        // Current layout item
+        LayoutItem currentItem = this.getLayoutItemsService().getCurrentItem(portalControllerContext);
+
 
         // Render the windows
         for (Window window2 : this.windows) {
@@ -234,89 +243,115 @@ public class ServicesInvoker {
                 }
 
 
-                RenderWindowCommand renderCmd = new RenderWindowCommand(this.pageNavigationalState, window.getId());
+                // Linked layout item identifier
+                String linkedItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+
+                if (StringUtils.isEmpty(linkedItemId) || ((currentItem != null) && StringUtils.equals(linkedItemId, currentItem.getId()))) {
+                    RenderWindowCommand renderCmd = new RenderWindowCommand(this.pageNavigationalState, window.getId());
 
 
-                //
+                    //
 
-                //
-                if (renderCmd != null) {
-                    // Les portlets en cache sont gérés en synchrone pour éviter
-                    // La création d'un thread inutile
+                    //
+                    if (renderCmd != null) {
+                        // Les portlets en cache sont gérés en synchrone pour éviter
+                        // La création d'un thread inutile
 
-                    NavigationalStateContext ctx = (NavigationalStateContext) this.context.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
-
-
-                    Map<String, String[]> pageNavigationalState = null;
-
-                    PageNavigationalState pns = ctx.getPageNavigationalState(this.page.getId().toString());
-
-                    if (pns != null) {
-                        Map<QName, String[]> qNameMap = pns.getParameters();
-                        if ((qNameMap != null) && !qNameMap.isEmpty()) {
-                            pageNavigationalState = new HashMap<String, String[]>(qNameMap.size());
-
-                            for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
-                                pageNavigationalState.put(entry.getKey().toString(), entry.getValue());
-                            }
-                        }
-                    }
-
-                    WindowNavigationalState windowState = ctx.getWindowNavigationalState(window.getId().toString());
+                        NavigationalStateContext ctx = (NavigationalStateContext) this.context.getAttributeResolver(ControllerCommand.NAVIGATIONAL_STATE_SCOPE);
 
 
-                    if (ThreadCacheManager.isPresumedCached(this.context, pageNavigationalState, window, windowState)
-                            || StringUtils.isNotBlank(window.getDeclaredProperty("osivia.sequence.priority"))) {
-                        // if( ThreadCacheManager.isPresumedCached(context, window) || (true)) {
+                        Map<String, String[]> pageNavigationalState = null;
 
-                        WindowRendition rendition = renderCmd.render(this.context);
+                        PageNavigationalState pns = ctx.getPageNavigationalState(this.page.getId().toString());
 
-                        this.finRequete(window, rendition);
+                        if (pns != null) {
+                            Map<QName, String[]> qNameMap = pns.getParameters();
+                            if ((qNameMap != null) && !qNameMap.isEmpty()) {
+                                pageNavigationalState = new HashMap<String, String[]>(qNameMap.size());
 
-                    } else {
-                        // Les portlets JSF (entre autres ...) ont besoin de plus te temps pour charger le contexte
-                        // TODO : faire ca plus proprement
-                        // - détecter qu'il s'agit du premier appel au portlet
-                        // - ne faire le traitement de timeout qu'au premier appel
-                        // Cela impose de rentrer dans le container ...
-
-
-                        if (excludedPortlets == null) {
-                            String excludedPortletsProp = System.getProperty("portlets.maxExecution.excludedPortlets");
-                            if (excludedPortletsProp != null) {
-                                excludedPortlets = Arrays.asList(excludedPortletsProp.split("\\|"));
-                            } else {
-                                excludedPortlets = new ArrayList<String>();
+                                for (Map.Entry<QName, String[]> entry : qNameMap.entrySet()) {
+                                    pageNavigationalState.put(entry.getKey().toString(), entry.getValue());
+                                }
                             }
                         }
 
-                        if (excludedPortlets.contains(window.getContent().getURI())) {
+                        WindowNavigationalState windowState = ctx.getWindowNavigationalState(window.getId().toString());
 
+
+                        if (ThreadCacheManager.isPresumedCached(this.context, pageNavigationalState, window, windowState)
+                                || StringUtils.isNotBlank(window.getDeclaredProperty("osivia.sequence.priority"))) {
+                            // if( ThreadCacheManager.isPresumedCached(context, window) || (true)) {
 
                             WindowRendition rendition = renderCmd.render(this.context);
 
-
                             this.finRequete(window, rendition);
 
-
                         } else {
+                            // Les portlets JSF (entre autres ...) ont besoin de plus te temps pour charger le contexte
+                            // TODO : faire ca plus proprement
+                            // - détecter qu'il s'agit du premier appel au portlet
+                            // - ne faire le traitement de timeout qu'au premier appel
+                            // Cela impose de rentrer dans le container ...
 
 
-                            ServiceThread thread = new ServiceThread(this, renderCmd, this.context, window, policyCtxId, subject, principal, credential,
-                                    this.tracker, this.tracker.getInternalBean(), PageProperties.getProperties(), this.profiler);
+                            if (excludedPortlets == null) {
+                                String excludedPortletsProp = System.getProperty("portlets.maxExecution.excludedPortlets");
+                                if (excludedPortletsProp != null) {
+                                    excludedPortlets = Arrays.asList(excludedPortletsProp.split("\\|"));
+                                } else {
+                                    excludedPortlets = new ArrayList<String>();
+                                }
+                            }
 
-                            // profiler.logEvent("THREAD_LAUNCH1", window.getId().toString(), 0, false);
-
-                            Future<?> future = ThreadsPool.getInstance().execute(thread);
-
-                            // profiler.logEvent("THREAD_LAUNCH2", window.getId().toString(), 0, false);
-
-                            pageFutures.put(window.getId(), future);
+                            if (excludedPortlets.contains(window.getContent().getURI())) {
 
 
-                            nbThreads++;
+                                WindowRendition rendition = renderCmd.render(this.context);
+
+
+                                this.finRequete(window, rendition);
+
+
+                            } else {
+
+
+                                ServiceThread thread = new ServiceThread(this, renderCmd, this.context, window, policyCtxId, subject, principal, credential,
+                                        this.tracker, this.tracker.getInternalBean(), PageProperties.getProperties(), this.profiler);
+
+                                // profiler.logEvent("THREAD_LAUNCH1", window.getId().toString(), 0, false);
+
+                                Future<?> future = ThreadsPool.getInstance().execute(thread);
+
+                                // profiler.logEvent("THREAD_LAUNCH2", window.getId().toString(), 0, false);
+
+                                pageFutures.put(window.getId(), future);
+
+
+                                nbThreads++;
+                            }
                         }
+
+                        this.nbWindows++;
                     }
+                } else {
+                    // Empty window
+
+                    // Window properties
+                    Map<String, String> windowProperties = new HashMap<>();
+//                    windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+//                    windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+//                    windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+
+                    List<WindowState> supportedWindowStates = new ArrayList<>(0);
+                    List<Mode> supportedModes = new ArrayList<>(0);
+
+                    // Response
+                    MarkupResponse response = new MarkupResponse(null, StringUtils.EMPTY, null);
+                    // Window rendition
+                    WindowRendition rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, response);
+
+                    this.finRequete(window, rendition);
+
 
                     this.nbWindows++;
                 }
@@ -334,11 +369,11 @@ public class ServicesInvoker {
         if (maxDelai != null) {
             timeout = Integer.parseInt(maxDelai);
         }
-        
-        
+
+
         long timeoutms = timeout * 1000;
 
-        while (pageFutures.size() > 0 ) {
+        while (pageFutures.size() > 0) {
 
             Entry<PortalObjectId, Future<?>> nextElement = pageFutures.entrySet().iterator().next();
 
@@ -354,7 +389,6 @@ public class ServicesInvoker {
                     break;
                 }
         }
-
 
 
         this.parallelisationExpired = true;
@@ -395,13 +429,13 @@ public class ServicesInvoker {
                         String qs = request.getQueryString();
                         if (qs != null)
                             url += "?" + qs;
-                        
-                        
+
+
                         PortalLoggerContext loggerContext = new PortalLoggerContext(timeOutWindow.getId());
-                        
+
                         // Stop the thread
                         KillerThread thread = new KillerThread(timeOutWindow.getId().toString(), pageFutures.get(timeOutWindow.getId()),
-                                this.currentThreads.get(timeOutWindow.getId()), request.getRemoteUser(),portletName, url, request.getHeader("User-Agent"), loggerContext);
+                                this.currentThreads.get(timeOutWindow.getId()), request.getRemoteUser(), portletName, url, request.getHeader("User-Agent"), loggerContext);
                         KillersThreadsPool.getInstance().execute(thread);
 
 
@@ -457,7 +491,6 @@ public class ServicesInvoker {
         return new PageRendition(this.layout, this.theme, pageResult, this.pageService);
     }
 
-
     protected boolean hasParallelisationExpired() {
         return this.parallelisationExpired;
     }
@@ -466,24 +499,30 @@ public class ServicesInvoker {
         this.renditions.add(new Reponse(window, rendition));
     }
 
-
     protected synchronized void finRequete(Window window, WindowRendition rendition) {
 
         if (!this.hasParallelisationExpired()) {
             this.renditions.add(new Reponse(window, rendition));
         }
-     
+
     }
-
-
-
-
-    // Map<PortalObjectId, ServiceThread> currentThreads = new HashMap<PortalObjectId, ServiceThread>();
-    // v 1.0.16
-    Map<PortalObjectId, ServiceThread> currentThreads = new Hashtable<PortalObjectId, ServiceThread>();
 
     protected synchronized void registerThread(PortalObjectId id, ServiceThread serviceThread) {
         this.currentThreads.put(id, serviceThread);
+    }
+
+
+    /**
+     * Get layout items service.
+     *
+     * @return layout items service
+     */
+    private LayoutItemsService getLayoutItemsService() {
+        if (layoutItemsService == null) {
+            layoutItemsService = Locator.findMBean(LayoutItemsService.class, LayoutItemsService.MBEAN_NAME);
+        }
+
+        return layoutItemsService;
     }
 
 }

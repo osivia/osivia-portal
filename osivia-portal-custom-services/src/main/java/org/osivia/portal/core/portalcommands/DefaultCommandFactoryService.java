@@ -204,6 +204,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         // Linked taskbar item identifier
                         String taskbarItemId = parameterMap.getValue("taskbarItemId");
 
+                        // Linked layout item identifier
+                        String layoutItemId = parameterMap.getValue("layoutItemId");
+
                         if (parameterMap.get("bshActivation") != null) {
                             bshActivation = URLDecoder.decode(parameterMap.get("bshActivation")[0], CharEncoding.UTF_8);
                         } else {
@@ -243,6 +246,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                                 displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope,
                                 bshActivation, bshScript, cacheID, selectionDep, priority);
                         command.setTaskbarItemId(taskbarItemId);
+                        command.setLayoutItemId(layoutItemId);
                         command.setSatellite(satellite);
                         return command;
                     }

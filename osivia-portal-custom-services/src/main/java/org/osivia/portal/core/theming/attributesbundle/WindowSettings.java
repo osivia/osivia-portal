@@ -13,55 +13,106 @@ import java.util.TreeMap;
  */
 public class WindowSettings {
 
-    /** Window title. */
-    private String title;
-    /** Display window title indicator. */
-    private boolean displayTitle;
-    /** Display window title decorators indicator. */
-    private boolean displayTitleDecorators;
-    /** Maximized to CMS indicator. */
-    private boolean maximizedToCms;
-    /** Display panel indicator. */
-    private boolean displayPanel;
-    /** Panel collapse indicator. */
-    private boolean panelCollapse;
-    /** Ajax indicator. */
-    private boolean ajax;
-    /** Hide empty portlet indicator. */
-    private boolean hideEmpty;
-    /** Print indicator. */
-    private boolean print;
-    /** Selected scope. */
-    private String selectedScope;
-    /** Linked taskbar item identifier. */
-    private String taskbarItemId;
-    /** Customization identifier. */
-    private String customizationId;
-    /** Shared cache identifier. */
-    private String sharedCacheId;
-    /** BeanShell indicator. */
-    private boolean beanShell;
-    /** BeanShell content. */
-    private String beanShellContent;
-    /** Selection dependency indicator. */
-    private boolean selectionDependency;
-    /** The priority. */
-    private String priority;
-    /** Selected satellite. */
-    private String selectedSatellite;
-
-
-    /** Window identifier. */
+    /**
+     * Window identifier.
+     */
     private final String id;
-
-    /** Styles. */
+    /**
+     * Styles.
+     */
     private final Map<String, Boolean> styles;
-    /** Scopes. */
+    /**
+     * Scopes.
+     */
     private final Map<String, String> scopes;
-    /** Taskbar items. */
+    /**
+     * Taskbar items.
+     */
     private final SortedMap<String, String> taskbarItems;
-    /** Nuxeo satellites. */
+    /**
+     * Layout items.
+     */
+    private final Map<String, String> layoutItems;
+    /**
+     * Nuxeo satellites.
+     */
     private final Map<String, String> satellites;
+    /**
+     * Window title.
+     */
+    private String title;
+    /**
+     * Display window title indicator.
+     */
+    private boolean displayTitle;
+    /**
+     * Display window title decorators indicator.
+     */
+    private boolean displayTitleDecorators;
+    /**
+     * Maximized to CMS indicator.
+     */
+    private boolean maximizedToCms;
+    /**
+     * Display panel indicator.
+     */
+    private boolean displayPanel;
+    /**
+     * Panel collapse indicator.
+     */
+    private boolean panelCollapse;
+    /**
+     * Ajax indicator.
+     */
+    private boolean ajax;
+    /**
+     * Hide empty portlet indicator.
+     */
+    private boolean hideEmpty;
+    /**
+     * Print indicator.
+     */
+    private boolean print;
+    /**
+     * Selected scope.
+     */
+    private String selectedScope;
+    /**
+     * Linked taskbar item identifier.
+     */
+    private String taskbarItemId;
+    /**
+     * Linked layout item identifier.
+     */
+    private String layoutItemId;
+    /**
+     * Customization identifier.
+     */
+    private String customizationId;
+    /**
+     * Shared cache identifier.
+     */
+    private String sharedCacheId;
+    /**
+     * BeanShell indicator.
+     */
+    private boolean beanShell;
+    /**
+     * BeanShell content.
+     */
+    private String beanShellContent;
+    /**
+     * Selection dependency indicator.
+     */
+    private boolean selectionDependency;
+    /**
+     * The priority.
+     */
+    private String priority;
+    /**
+     * Selected satellite.
+     */
+    private String selectedSatellite;
 
 
     /**
@@ -75,6 +126,7 @@ public class WindowSettings {
         this.styles = new LinkedHashMap<>();
         this.scopes = new LinkedHashMap<>();
         this.taskbarItems = new TreeMap<>();
+        this.layoutItems = new LinkedHashMap<>();
         this.satellites = new LinkedHashMap<>();
     }
 
@@ -135,7 +187,7 @@ public class WindowSettings {
 
     /**
      * Getter for maximizedToCms.
-     * 
+     *
      * @return the maximizedToCms
      */
     public boolean isMaximizedToCms() {
@@ -144,7 +196,7 @@ public class WindowSettings {
 
     /**
      * Setter for maximizedToCms.
-     * 
+     *
      * @param maximizedToCms the maximizedToCms to set
      */
     public void setMaximizedToCms(boolean maximizedToCms) {
@@ -261,7 +313,7 @@ public class WindowSettings {
 
     /**
      * Getter for taskbarItemId.
-     * 
+     *
      * @return the taskbarItemId
      */
     public String getTaskbarItemId() {
@@ -270,11 +322,19 @@ public class WindowSettings {
 
     /**
      * Setter for taskbarItemId.
-     * 
+     *
      * @param taskbarItemId the taskbarItemId to set
      */
     public void setTaskbarItemId(String taskbarItemId) {
         this.taskbarItemId = taskbarItemId;
+    }
+
+    public String getLayoutItemId() {
+        return layoutItemId;
+    }
+
+    public void setLayoutItemId(String layoutItemId) {
+        this.layoutItemId = layoutItemId;
     }
 
     /**
@@ -387,7 +447,7 @@ public class WindowSettings {
 
     /**
      * Getter for selectedSatellite.
-     * 
+     *
      * @return the selectedSatellite
      */
     public String getSelectedSatellite() {
@@ -396,7 +456,7 @@ public class WindowSettings {
 
     /**
      * Setter for selectedSatellite.
-     * 
+     *
      * @param selectedSatellite the selectedSatellite to set
      */
     public void setSelectedSatellite(String selectedSatellite) {
@@ -432,16 +492,20 @@ public class WindowSettings {
 
     /**
      * Getter for taskbarItems.
-     * 
+     *
      * @return the taskbarItems
      */
     public SortedMap<String, String> getTaskbarItems() {
         return taskbarItems;
     }
 
+    public Map<String, String> getLayoutItems() {
+        return layoutItems;
+    }
+
     /**
      * Getter for satellites.
-     * 
+     *
      * @return the satellites
      */
     public Map<String, String> getSatellites() {

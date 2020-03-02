@@ -17,7 +17,7 @@ import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.ui.layout.LayoutItem;
-import org.osivia.portal.api.ui.layout.LayoutService;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -31,12 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Layout service implementation.
+ * Layout items service implementation.
  *
  * @author Cédric Krommenhoek
- * @see LayoutService
+ * @see LayoutItemsService
  */
-public class LayoutServiceImpl implements LayoutService {
+public class LayoutItemsServiceImpl implements LayoutItemsService {
 
     /**
      * Layout items page property.
@@ -58,7 +58,7 @@ public class LayoutServiceImpl implements LayoutService {
     /**
      * Constructor.
      */
-    public LayoutServiceImpl() {
+    public LayoutItemsServiceImpl() {
         super();
 
         // Log
@@ -135,7 +135,7 @@ public class LayoutServiceImpl implements LayoutService {
 
 
     @Override
-    public void setItems(PortalControllerContext portalControllerContext, List<LayoutItem> items) throws PortalException {
+    public void setItems(PortalControllerContext portalControllerContext, List<LayoutItem> items) {
         // Current page
         Page page = this.getCurrentPage(portalControllerContext);
 

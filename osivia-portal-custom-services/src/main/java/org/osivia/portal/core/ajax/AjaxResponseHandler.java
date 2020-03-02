@@ -16,14 +16,8 @@ package org.osivia.portal.core.ajax;
 
 
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
@@ -77,6 +71,7 @@ import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.theme.LayoutService;
 import org.jboss.portal.theme.PageService;
 import org.jboss.portal.theme.PortalLayout;
+import org.jboss.portal.theme.ThemeConstants;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageLocationResponse;
 import org.jboss.portal.theme.impl.render.dynamic.response.UpdatePageStateResponse;
 import org.jboss.portal.theme.page.PageResult;
@@ -86,7 +81,10 @@ import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ui.layout.LayoutItem;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -110,21 +108,8 @@ public class AjaxResponseHandler implements ResponseHandler {
     /** . */
     private PageService pageService;
 
-    public PortalObjectContainer getPortalObjectContainer() {
-        return this.portalObjectContainer;
-    }
-
-    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
-        this.portalObjectContainer = portalObjectContainer;
-    }
-
-    public PageService getPageService() {
-        return this.pageService;
-    }
-
-    public void setPageService(PageService pageService) {
-        this.pageService = pageService;
-    }
+    /** Layout item service. */
+    private LayoutItemsService layoutItemsService;
 
 
     private boolean compareParameters(PageNavigationalState oldNS, PageNavigationalState newWS) {
@@ -225,6 +210,9 @@ public class AjaxResponseHandler implements ResponseHandler {
             response = new AjaxResponse(dresp);
         } else if (controllerResponse instanceof UpdatePageResponse) {
             UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
+
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
             // Obtain page and portal
             // final Window window = (Window)portalObjectContainer.getObject(upw.getWindowId());
@@ -391,6 +379,12 @@ public class AjaxResponseHandler implements ResponseHandler {
                             fullRefresh = true;
                         }
                     }
+
+                    // Linked layout item
+                    String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                    if (StringUtils.isNotEmpty(linkedLayoutItemId) && !dirtyWindowIds.contains(window.getId())) {
+                        dirtyWindowIds.add(window.getId());
+                    }
                 }
 
                 // Prevent Ajax refresh
@@ -425,7 +419,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 					}
                 }
                 // Obtain layout
-                LayoutService layoutService = this.getPageService().getLayoutService();
+                LayoutService layoutService = this.pageService.getLayoutService();
                 PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
                 
                 
@@ -473,12 +467,43 @@ public class AjaxResponseHandler implements ResponseHandler {
                 ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
                         .createPortletPageNavigationalState(true);
 
+                // Current layout item
+                LayoutItem currentItem;
+                try {
+                    currentItem = this.layoutItemsService.getCurrentItem(portalControllerContext);
+                } catch (PortalException e) {
+                    currentItem = null;
+                    log.error(e.getLocalizedMessage());
+                }
+
                 //
                 for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
                     try {
                         Window refreshedWindow = i.next();
-                        RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
-                        WindowRendition rendition = rwc.render(controllerContext);
+
+                        WindowRendition rendition;
+
+                        // Linked layout item
+                        String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+
+                        if (StringUtils.isEmpty(linkedLayoutItemId) || ((currentItem != null) && StringUtils.equals(linkedLayoutItemId, currentItem.getId()))) {
+                            RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
+                            rendition = rwc.render(controllerContext);
+                        } else {
+                            // Window properties
+                            Map<String, String> windowProperties = new HashMap<>();
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+
+                            List<WindowState> supportedWindowStates = new ArrayList<>(0);
+                            List<Mode> supportedModes = new ArrayList<>(0);
+
+                            // Response
+                            MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
+                            // Window rendition
+                            rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse);
+                        }
 
                         //
                         if (rendition != null) {
@@ -517,8 +542,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Check if current page is a modal
                         PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
                         if (!modalId.equals(page.getId())) {
-                            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
                             // Notifications window context
                             WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
                             res.addWindowContext(notificationsWindowContext);
@@ -675,4 +698,16 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     }
 
+
+    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
+    }
+
+    public void setPageService(PageService pageService) {
+        this.pageService = pageService;
+    }
+
+    public void setLayoutItemsService(LayoutItemsService layoutItemsService) {
+        this.layoutItemsService = layoutItemsService;
+    }
 }

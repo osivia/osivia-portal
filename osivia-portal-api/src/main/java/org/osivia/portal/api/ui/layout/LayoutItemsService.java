@@ -6,16 +6,21 @@ import org.osivia.portal.api.context.PortalControllerContext;
 import java.util.List;
 
 /**
- * Layout service interface.
+ * Layout items service interface.
  *
  * @author Cédric Krommenhoek
  */
-public interface LayoutService {
+public interface LayoutItemsService {
 
     /**
      * MBean name.
      */
-    String MBEAN_NAME = "osivia:service=LayoutService";
+    String MBEAN_NAME = "osivia:service=LayoutItemsService";
+
+    /**
+     * Linked layout item identifier window property.
+     */
+    String LINKED_ITEM_ID_WINDOW_PROPERTY = "osivia.layout-item-id";
 
 
     /**

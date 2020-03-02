@@ -412,7 +412,7 @@
                                     </label>
                                 </div>
 
-                                <div class="help-block"><op:translate key="PAGE_DRAFT_MODE_HELP"/></div>
+                                <div class="form-text text-muted"><op:translate key="PAGE_DRAFT_MODE_HELP"/></div>
                             </div>
                         </div>
 
@@ -507,7 +507,7 @@
                     <div class="row">
                         <div class="col-sm-offset-3 col-sm-9">
                             <c:if test="${currentPageTemplateIndicator}">
-                                <p class="help-block"><op:translate key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED"/></p>
+                                <p class="form-text text-muted"><op:translate key="PAGE_CMS_TEMPLATED_PROPERTIES_DISABLED"/></p>
                             </c:if>
 
                             <button type="submit" class="btn btn-primary">
@@ -572,7 +572,7 @@
                                     </div>
                                 </div>
 
-                                <div class="help-block"><op:translate key="PAGE_ORDER_HELP"/></div>
+                                <div class="form-text text-muted"><op:translate key="PAGE_ORDER_HELP"/></div>
                             </div>
                         </div>
 
@@ -846,7 +846,7 @@
                                                 >
                                                 <span><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS"/></span>
                                             </label>
-                                            <div class="help-block"><op:translate
+                                            <div class="form-text text-muted"><op:translate
                                                     key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS_HELP"/></div>
                                         </div>
                                     </div>
@@ -986,25 +986,32 @@
 
                                 <%-- Linked taskbar item --%>
                                 <div class="form-group">
-                                    <label for="${window.id}-linked-taskbar-item"
-                                           class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM"/></label>
-                                    <div class="col-sm-9">
-                                        <select id="${window.id}-linked-taskbar-item" name="taskbarItemId"
-                                                class="form-control">
-                                            <option value=""
-                                                    <c:if test="${empty window.taskbarItemId}">selected="selected"</c:if>
-                                            ><op:translate key="WINDOW_PROPERTIES_NO_LINKED_TASKBAR_ITEM"/></option>
+                                    <label for="${window.id}-linked-taskbar-item"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM"/></label>
+                                    <select id="${window.id}-linked-taskbar-item" name="taskbarItemId"
+                                            class="form-control">
+                                        <option value=""
+                                                <c:if test="${empty window.taskbarItemId}">selected="selected"</c:if>
+                                        ><op:translate key="WINDOW_PROPERTIES_NO_LINKED_TASKBAR_ITEM"/></option>
 
-                                            <c:forEach var="item" items="${window.taskbarItems}">
-                                                <option value="${item.value}"
-                                                        <c:if test="${item.value eq window.taskbarItemId}">selected="selected"</c:if>
-                                                >${item.key}</option>
-                                            </c:forEach>
-                                        </select>
-                                        <p class="help-block"><op:translate
-                                                key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM_HELP"/></p>
-                                    </div>
+                                        <c:forEach var="item" items="${window.taskbarItems}">
+                                            <option value="${item.value}"
+                                                    <c:if test="${item.value eq window.taskbarItemId}">selected="selected"</c:if>
+                                            >${item.key}</option>
+                                        </c:forEach>
+                                    </select>
+                                    <div class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM_HELP"/></div>
+                                </div>
+
+                                <%--Linked layout item--%>
+                                <div class="form-group">
+                                    <label for="${window.id}-linked-layout-item"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
+                                    <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
+                                        <option value="" ${empty window.layoutItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_LAYOUT_ITEM"/></option>
+                                        <c:forEach var="item" items="${window.layoutItems}">
+                                            <option value="${item.key}" ${window.layoutItemId eq item.key ? 'selected="selected"' : ''}>${item.value}</option>
+                                        </c:forEach>
+                                    </select>
+                                    <div class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM_HELP"/></div>
                                 </div>
 
                                 <%-- Customization identifier --%>
