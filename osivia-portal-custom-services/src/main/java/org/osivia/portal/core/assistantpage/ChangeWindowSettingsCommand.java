@@ -27,6 +27,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.taskbar.ITaskbarService;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 
 /**
  * Change window settings command.
@@ -67,6 +68,8 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 
     /** Linked taskbar item identifier. */
     private String taskbarItemId;
+    /** Linked layout item identifier. */
+    private String layoutItemId;
     /** Selected satellite. */
     private String satellite;
 
@@ -221,6 +224,9 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         // Linked taskbar item identifier
         window.setDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY, StringUtils.trimToNull(this.taskbarItemId));
 
+		// Linked layout item identifier
+        window.setDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY, StringUtils.trimToEmpty(this.layoutItemId));
+
 
 		if ("1".equals(this.bshActivation)) {
             window.setDeclaredProperty("osivia.bshActivation", "1");
@@ -267,6 +273,10 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      */
     public void setTaskbarItemId(String taskbarItemId) {
         this.taskbarItemId = taskbarItemId;
+    }
+
+    public void setLayoutItemId(String layoutItemId) {
+        this.layoutItemId = layoutItemId;
     }
 
     /**

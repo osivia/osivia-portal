@@ -95,6 +95,8 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.ui.layout.LayoutItem;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
 import org.osivia.portal.core.assistantpage.PortalThemeComparator;
@@ -152,6 +154,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     private final InstanceContainer instanceContainer;
     /** Taskbar service. */
     private final ITaskbarService taskbarService;
+    /** Layout items service. */
+    private final LayoutItemsService layoutItemsService;
     /** CMS service locator. */
     private final ICMSServiceLocator cmsServiceLocator;
     /** Bundle factory. */
@@ -188,6 +192,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.instanceContainer = Locator.findMBean(InstanceContainer.class, "portal:container=Instance");
         // Taskbar service
         this.taskbarService = Locator.findMBean(ITaskbarService.class, ITaskbarService.MBEAN_NAME);
+        // Layout items service
+        this.layoutItemsService = Locator.findMBean(LayoutItemsService.class, LayoutItemsService.MBEAN_NAME);
         // CMS service locator
         this.cmsServiceLocator = Locator.findMBean(ICMSServiceLocator.class, ICMSServiceLocator.MBEAN_NAME);
         // Bundle factory
@@ -1007,6 +1013,14 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             taskbarItems = null;
         }
 
+        // Layout items
+        List<LayoutItem> layoutItems;
+        try {
+            layoutItems = this.layoutItemsService.getItems(portalControllerContext);
+        } catch (PortalException e) {
+            layoutItems = null;
+        }
+
         // Satellites
         Map<String, String> satellites = this.getSatellites();
         
@@ -1083,6 +1097,15 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                         String label = bundle.getString(item.getKey(), item.getCustomizedClassLoader());
                         settings.getTaskbarItems().put(label, item.getId());
                     }
+                }
+            }
+
+            // Linked layout item
+            String layoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+            settings.setLayoutItemId(layoutItemId);
+            if (CollectionUtils.isNotEmpty(layoutItems)) {
+                for (LayoutItem item : layoutItems) {
+                    settings.getLayoutItems().put(item.getId(), item.getLabel());
                 }
             }
 

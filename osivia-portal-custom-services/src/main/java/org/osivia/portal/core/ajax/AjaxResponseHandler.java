@@ -391,6 +391,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
+                    // Linked layout item
+                    String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                    if (StringUtils.isNotEmpty(linkedLayoutItemId) && !dirtyWindowIds.contains(window.getId())) {
+                        dirtyWindowIds.add(window.getId());
+                    }
+                }
+
                     // Prevent Ajax refresh (useful for keywords selector)
                     if (BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.ATTR_WINDOW_PREVENT_AJAX_REFRESH))) {
                         dirtyWindowIds.remove(window.getId());
@@ -470,12 +477,43 @@ public class AjaxResponseHandler implements ResponseHandler {
                 ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
                         .createPortletPageNavigationalState(true);
 
+                // Current layout item
+                LayoutItem currentItem;
+                try {
+                    currentItem = this.layoutItemsService.getCurrentItem(portalControllerContext);
+                } catch (PortalException e) {
+                    currentItem = null;
+                    log.error(e.getLocalizedMessage());
+                }
+
                 //
                 for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
                     try {
                         Window refreshedWindow = i.next();
-                        RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
-                        WindowRendition rendition = rwc.render(controllerContext);
+
+                        WindowRendition rendition;
+
+                        // Linked layout item
+                        String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+
+                        if (StringUtils.isEmpty(linkedLayoutItemId) || ((currentItem != null) && StringUtils.equals(linkedLayoutItemId, currentItem.getId()))) {
+                            RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
+                            rendition = rwc.render(controllerContext);
+                        } else {
+                            // Window properties
+                            Map<String, String> windowProperties = new HashMap<>();
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
+//                            windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+
+                            List<WindowState> supportedWindowStates = new ArrayList<>(0);
+                            List<Mode> supportedModes = new ArrayList<>(0);
+
+                            // Response
+                            MarkupResponse markupResponse = new MarkupResponse(null, StringUtils.EMPTY, null);
+                            // Window rendition
+                            rendition = new WindowRendition(windowProperties, WindowState.NORMAL, Mode.VIEW, supportedWindowStates, supportedModes, markupResponse);
+                        }
 
                         //
                         if (rendition != null) {
@@ -489,7 +527,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 if (!refreshedWindow.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME)) {
                                     WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
                                     res.addWindowContext(windowContext);
-                                    this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
+                                    this.refreshWindowContext(cparentontrollerContext, layout, updatePage, res, windowContext);
                                 }
                             } else {
                                 fullRefresh = true;
