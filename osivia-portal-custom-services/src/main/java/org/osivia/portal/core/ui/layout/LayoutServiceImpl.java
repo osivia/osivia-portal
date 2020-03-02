@@ -19,6 +19,7 @@ import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.ui.layout.LayoutItem;
 import org.osivia.portal.api.ui.layout.LayoutService;
 import org.osivia.portal.core.context.ControllerContextAdapter;
+import org.osivia.portal.core.page.PageCustomizerInterceptor;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 
 import javax.naming.Name;
@@ -67,8 +68,12 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     public List<LayoutItem> getItems(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         // Current page
         Page page = this.getCurrentPage(portalControllerContext);
+        // Administrator indicator
+        boolean admin = PageCustomizerInterceptor.isAdministrator(controllerContext);
 
         // Layout items
         List<LayoutItem> items;
@@ -118,7 +123,7 @@ public class LayoutServiceImpl implements LayoutService {
                 // Layout items
                 items = new ArrayList<>(container.getItems().size());
                 for (LayoutItem item : container.getItems()) {
-                    if (CollectionUtils.isEmpty(item.getProfiles()) || (CollectionUtils.isNotEmpty(profiles) && CollectionUtils.containsAny(profiles, item.getProfiles()))) {
+                    if (admin || CollectionUtils.isEmpty(item.getProfiles()) || (CollectionUtils.isNotEmpty(profiles) && CollectionUtils.containsAny(profiles, item.getProfiles()))) {
                         items.add(item);
                     }
                 }

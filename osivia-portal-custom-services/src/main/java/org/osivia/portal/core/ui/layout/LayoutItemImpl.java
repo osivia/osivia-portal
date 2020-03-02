@@ -30,6 +30,7 @@ public class LayoutItemImpl implements LayoutItem {
      * Icon.
      */
     @JsonProperty("icon")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String icon;
 
     /**
