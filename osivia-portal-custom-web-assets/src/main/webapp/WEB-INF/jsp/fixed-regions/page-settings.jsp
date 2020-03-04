@@ -796,379 +796,240 @@
 
         <%-- Windows settings --%>
         <c:forEach var="window" items="${requestScope['osivia.toolbarSettings.windowSettings']}">
-            <div id="window-settings-${window.id}" class="flexbox">
-                <form action="${commandUrl}" method="get" class="form-horizontal flexbox" role="form">
+            <div id="window-settings-${window.id}">
+                <form action="${commandUrl}" method="get" role="form">
                     <input type="hidden" name="action" value="changeWindowSettings">
                     <input type="hidden" name="windowId" value="${window.id}">
 
-                    <div class="flexbox">
-                        <div class="scrollbox">
-                            <fieldset>
-                                <legend>
-                                    <span>&nbsp;</span>
-                                    <i class="glyphicons glyphicons-display"></i>
-                                    <span><op:translate key="WINDOW_PROPERTIES_DISPLAY"/></span>
-                                </legend>
+                    <fieldset class="mb-3">
+                        <legend>
+                            <i class="glyphicons glyphicons-basic-monitor"></i>
+                            <span><op:translate key="WINDOW_PROPERTIES_DISPLAY"/></span>
+                        </legend>
 
-                                <%-- Title --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-title" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_TITLE"/></label>
-                                    <div class="col-sm-9">
-                                        <input id="${window.id}-title" type="text" name="title" value="${window.title}"
-                                               class="form-control">
+                        <%-- Title --%>
+                        <div class="form-group">
+                            <label for="${window.id}-title"><op:translate key="WINDOW_PROPERTIES_TITLE"/></label>
+                            <input id="${window.id}-title" type="text" name="title" value="${window.title}" class="form-control mb-2">
 
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="displayTitle" value="1"
-                                                       <c:if test="${window.displayTitle or window.panelCollapse}">checked="checked"</c:if>
-                                                       <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_TITLE_DISPLAY"/></span>
-                                            </label>
-                                        </div>
+                            <div class="form-check">
+                                <input id="${window.id}-display-title" type="checkbox" name="displayTitle" value="1" class="form-check-input" ${window.displayTitle or window.panelCollapse ? 'checked="checked"' : ''} ${window.panelCollapse ? 'disabled="disabled"' : ''}>
+                                <label for="${window.id}-display-title" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_TITLE_DISPLAY"/></label>
+                            </div>
 
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="displayDecorators" value="1"
-                                                       <c:if test="${window.displayTitleDecorators}">checked="checked"</c:if>
-                                                       <c:if test="${not window.displayTitle}">disabled="disabled"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_TITLE_MORE"/></span>
-                                            </label>
-                                        </div>
+                            <div class="form-check">
+                                <input id="${window.id}-display-decorators" type="checkbox" name="displayDecorators" value="1" class="form-check-input" ${window.displayTitleDecorators ? 'checked="checked"' : ''} ${window.displayTitle ? '' : 'disabled="disabled"'}>
+                                <label for="${window.id}-display-decorators" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_TITLE_MORE"/></label>
+                            </div>
 
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="maximizedToCms"
-                                                       <c:if test="${window.maximizedToCms}">checked="checked"</c:if>
-                                                       <c:if test="${not window.displayTitleDecorators}">disabled="disabled"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS"/></span>
-                                            </label>
-                                            <div class="form-text text-muted"><op:translate
-                                                    key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS_HELP"/></div>
-                                        </div>
+                            <div class="form-check">
+                                <input id="${window.id}-maximized-to-cms" type="checkbox" name="maximizedToCms" class="form-check-input" ${window.maximizedToCms ? 'checked="checked"' : ''} ${window.displayTitleDecorators ? '' : 'disabled="disabled"'}>
+                                <label for="${window.id}-maximized-to-cms" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS"/></label>
+                                <small class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_MAXIMIZED_TO_CMS_HELP"/></small>
+                            </div>
+                        </div>
+
+                        <%-- Panel --%>
+                        <div class="form-group">
+                            <label><op:translate key="WINDOW_PROPERTIES_PANEL"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-panel" type="checkbox" name="bootstrapPanelStyle" class="form-check-input" ${window.displayPanel or window.panelCollapse ? 'checked="checked"' : ''} ${window.panelCollapse ? 'disabled="disabled"' : ''}>
+                                <label for="${window.id}-panel" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_PANEL_DISPLAY"/></label>
+                            </div>
+
+                            <div class="form-check">
+                                <input id="${window.id}-mobile-collapse" type="checkbox" name="mobileCollapse" class="form-check-input" ${window.panelCollapse ? 'checked="checked"' : ''} ${window.displayTitle and window.displayPanel ? '' : 'disabled="disabled"'}>
+                                <label for="${window.id}-mobile-collapse" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_PANEL_COLLAPSE"/></label>
+                            </div>
+                        </div>
+
+                        <%-- Ajax --%>
+                        <div class="form-group">
+                            <label for="${window.id}-ajax"><op:translate key="WINDOW_PROPERTIES_AJAX"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-ajax" type="checkbox" name="ajaxLink" value="1" class="form-check-input" ${window.ajax ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-ajax" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_AJAX_ACTIVATE"/></label>
+                            </div>
+                        </div>
+
+                        <%-- Hide empty portlet --%>
+                        <div class="form-group">
+                            <label for="${window.id}-hide-empty"><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-hide-empty" type="checkbox" name="hideEmptyPortlet" value="1" class="form-check-input" ${window.hideEmpty ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-hide-empty" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY_ACTIVATE"/></label>
+                            </div>
+                        </div>
+
+                        <%-- Print --%>
+                        <div class="form-group">
+                            <label for="${window.id}-print"><op:translate key="WINDOW_PROPERTIES_PRINT"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-print" type="checkbox" name="printPortlet" value="1" class="form-check-input" ${window.print ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-print" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_PRINT_ACTIVATE"/></label>
+                            </div>
+                        </div>
+
+                        <%-- Styles --%>
+                        <div class="form-group">
+                            <label><op:translate key="WINDOW_PROPERTIES_STYLES"/></label>
+                            <div class="row">
+                                <c:forEach var="style" items="${window.styles}" varStatus="status">
+                                    <div class="form-check form-check-inline">
+                                        <input id="${window.id}-style-${status.index}" type="checkbox" name="style" value="${style.key}" class="form-check-input" ${style.value ? 'checked="checked"' : ''}>
+                                        <label for="${window.id}-style-${status.index}" class="form-check-label">${style.key}</label>
                                     </div>
-                                </div>
+                                </c:forEach>
+                            </div>
 
-                                <%-- Panel --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-panel" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_PANEL"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="${window.id}-panel" type="checkbox"
-                                                       name="bootstrapPanelStyle"
-                                                       <c:if test="${window.displayPanel or window.panelCollapse}">checked="checked"</c:if>
-                                                       <c:if test="${window.panelCollapse}">disabled="disabled"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_PANEL_DISPLAY"/></span>
-                                            </label>
-                                        </div>
+                            <c:if test="${empty window.styles}">
+                                <div class="form-control-plaintext text-muted"><op:translate key="WINDOW_PROPERTIES_NO_STYLE"/></div>
+                            </c:if>
+                        </div>
+                    </fieldset>
 
-                                        <div class="checkbox">
-                                            <label>
-                                                <input type="checkbox" name="mobileCollapse"
-                                                       <c:if test="${window.panelCollapse}">checked="checked"</c:if>
-                                                       <c:if test="${not (window.displayTitle and window.displayPanel)}">disabled="disabled"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_PANEL_COLLAPSE"/></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                    <fieldset class="mb-3">
+                        <legend>
+                            <i class="glyphicons glyphicons-basic-dashboard"></i>
+                            <span><op:translate key="WINDOW_PROPERTIES_ADVANCED_OPTIONS"/></span>
+                        </legend>
 
-                                <%-- Ajax --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-ajax" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_AJAX"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="${window.id}-ajax" type="checkbox" name="ajaxLink" value="1"
-                                                       <c:if test="${window.ajax}">checked="checked"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_AJAX_ACTIVATE"/></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                        <%-- Scopes --%>
+                        <div class="form-group">
+                            <label for="${window.id}-scopes"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY"/></label>
+                            <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
+                                <option value="" ${empty window.selectedScope ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES"/></option>
+                                <c:forEach var="scope" items="${window.scopes}">
+                                    <option value="${scope.key}" ${window.selectedScope eq scope.key ? 'selected="selected"' : ''}>${scope.value}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
 
-                                <%-- Hide empty portlet --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-hide-empty" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_HIDE_EMPTY"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="${window.id}-hide-empty" type="checkbox"
-                                                       name="hideEmptyPortlet" value="1"
-                                                       <c:if test="${window.hideEmpty}">checked="checked"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY_ACTIVATE"/></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                        <%-- Linked taskbar item --%>
+                        <div class="form-group">
+                            <label for="${window.id}-linked-taskbar-item"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM"/></label>
+                            <select id="${window.id}-linked-taskbar-item" name="taskbarItemId" class="form-control">
+                                <option value="" ${empty window.taskbarItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_TASKBAR_ITEM"/></option>
+                                <c:forEach var="item" items="${window.taskbarItems}">
+                                    <option value="${item.value}" ${item.value eq window.taskbarItemId ? 'selected="selected"' : ''}>${item.key}</option>
+                                </c:forEach>
+                            </select>
+                            <small class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM_HELP"/></small>
+                        </div>
 
-                                <%-- Print --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-print" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_PRINT"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="${window.id}-print" type="checkbox" name="printPortlet"
-                                                       value="1"
-                                                       <c:if test="${window.print}">checked="checked"</c:if>
-                                                >
-                                                <span><op:translate key="WINDOW_PROPERTIES_PRINT_ACTIVATE"/></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                        <%--Linked layout item--%>
+                        <div class="form-group">
+                            <label for="${window.id}-linked-layout-item"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
+                            <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
+                                <option value="" ${empty window.layoutItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_LAYOUT_ITEM"/></option>
+                                <c:forEach var="item" items="${window.layoutItems}">
+                                    <option value="${item.key}" ${window.layoutItemId eq item.key ? 'selected="selected"' : ''}>${item.value}</option>
+                                </c:forEach>
+                            </select>
+                            <small class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM_HELP"/></small>
+                        </div>
 
-                                <%-- Styles --%>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_STYLES"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="row">
-                                            <c:forEach var="style" items="${window.styles}">
-                                                <div class="col-sm-4 col-md-3">
-                                                    <label class="checkbox-inline text-overflow">
-                                                        <input type="checkbox" name="style" value="${style.key}"
-                                                               <c:if test="${style.value}">checked="checked"</c:if>
-                                                        >
-                                                        <span>${style.key}</span>
-                                                    </label>
-                                                </div>
-                                            </c:forEach>
-                                        </div>
+                        <%-- Customization identifier --%>
+                        <div class="form-group">
+                            <label for="${window.id}-custom-id"><op:translate key="WINDOW_PROPERTIES_CUSTOM_ID"/></label>
+                            <input id="${window.id}-custom-id" type="text" name="idPerso" value="${window.customizationId}" class="form-control">
+                        </div>
 
-                                        <c:if test="${empty window.styles}">
-                                            <p class="form-control-static">
-                                                <span class="text-muted"><op:translate
-                                                        key="WINDOW_PROPERTIES_NO_STYLE"/></span>
-                                            </p>
-                                        </c:if>
-                                    </div>
-                                </div>
-                            </fieldset>
+                        <%-- Shared cache identifier --%>
+                        <div class="form-group">
+                            <label for="${window.id}-shared-cache-id"><op:translate key="WINDOW_PROPERTIES_SHARED_CACHE_ID"/></label>
+                            <input id="${window.id}-shared-cache-id" type="text" name="cacheID" value="${window.sharedCacheId}" class="form-control">
+                        </div>
 
-                            <fieldset>
-                                <legend>
-                                    <span>&nbsp;</span>
-                                    <i class="halflings halflings-dashboard"></i>
-                                    <span><op:translate key="WINDOW_PROPERTIES_ADVANCED_OPTIONS"/></span>
-                                </legend>
+                        <%-- Shared cache identifier --%>
+                        <div class="form-group">
+                            <label for="${window.id}-priority"><op:translate key="WINDOW_PROPERTIES_PRIORITY"/></label>
+                            <input id="${window.id}-priority" type="number" name="priority"  value="${window.priority}" class="form-control">
+                        </div>
 
-                                <%-- Scopes --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-scopes" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_SCOPE_DISPLAY"/></label>
-                                    <div class="col-sm-9">
-                                        <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
-                                            <option value=""
-                                                    <c:if test="${empty window.selectedScope}">selected="selected"</c:if>
-                                            ><op:translate key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES"/></option>
+                        <%-- Selection dependency indicator --%>
+                        <div class="form-group">
+                            <label for="${window.id}-selection-dependency"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-selection-dependency" type="checkbox" name="selectionDep" value="1" class="form-check-input" ${window.selectionDependency ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-selection-dependency" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE"/></label>
+                            </div>
+                        </div>
 
-                                            <c:forEach var="scope" items="${window.scopes}">
-                                                <option value="${scope.key}"
-                                                        <c:if test="${window.selectedScope eq scope.key}">selected="selected"</c:if>
-                                                >${scope.value}</option>
-                                            </c:forEach>
-                                        </select>
-                                    </div>
-                                </div>
+                        <%-- BeanShell --%>
+                        <c:remove var="beanShellContent"/>
+                        <c:if test="${window.beanShell}">
+                            <c:set var="beanShellContent" value="in"/>
+                        </c:if>
 
-                                <%-- Linked taskbar item --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-linked-taskbar-item"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM"/></label>
-                                    <select id="${window.id}-linked-taskbar-item" name="taskbarItemId"
-                                            class="form-control">
-                                        <option value=""
-                                                <c:if test="${empty window.taskbarItemId}">selected="selected"</c:if>
-                                        ><op:translate key="WINDOW_PROPERTIES_NO_LINKED_TASKBAR_ITEM"/></option>
+                        <div class="form-group">
+                            <label for="${window.id}-beanShell"><op:translate key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES"/></label>
+                            <div class="form-check mb-2">
+                                <input id="${window.id}-beanShell" type="checkbox" name="bshActivation" value="1" class="form-check-input" onclick="toggleBeanShell(this)" ${window.beanShell ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-beanShell" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_BEAN_SHELL"/></label>
+                            </div>
 
-                                        <c:forEach var="item" items="${window.taskbarItems}">
-                                            <option value="${item.value}"
-                                                    <c:if test="${item.value eq window.taskbarItemId}">selected="selected"</c:if>
-                                            >${item.key}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <div class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM_HELP"/></div>
-                                </div>
+                            <div id="${window.id}-beanShell-content" class="collapse ${window.beanShell ? 'in' : ''}">
+                                <textarea rows="5" name="bshScript" class="form-control mb-2">${window.beanShellContent}</textarea>
 
-                                <%--Linked layout item--%>
-                                <div class="form-group">
-                                    <label for="${window.id}-linked-layout-item"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
-                                    <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
-                                        <option value="" ${empty window.layoutItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_LAYOUT_ITEM"/></option>
-                                        <c:forEach var="item" items="${window.layoutItems}">
-                                            <option value="${item.key}" ${window.layoutItemId eq item.key ? 'selected="selected"' : ''}>${item.value}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <div class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM_HELP"/></div>
-                                </div>
+                                <div class="card border-info">
+                                    <div class="card-body">
+                                        <p class="card-title text-info mb-0">
+                                            <a href="#${window.id}-beanShell-example" class="no-ajax-link" data-toggle="collapse">
+                                                <i class="glyphicons glyphicons-basic-circle-info"></i>
+                                                <span><op:translate key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE"/></span>
+                                            </a>
+                                        </p>
 
-                                <%-- Customization identifier --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-custom-id" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_CUSTOM_ID"/></label>
-                                    <div class="col-sm-9">
-                                        <input id="${window.id}-custom-id" type="text" name="idPerso"
-                                               value="${window.customizationId}" class="form-control">
-                                    </div>
-                                </div>
+                                        <div id="${window.id}-beanShell-example" class="collapse mt-3">
+                                            <p>Implicits variables :</p>
 
-                                <%-- Shared cache identifier --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-shared-cache-id"
-                                           class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_SHARED_CACHE_ID"/></label>
-                                    <div class="col-sm-9">
-                                        <input id="${window.id}-shared-cache-id" type="text" name="cacheID"
-                                               value="${window.sharedCacheId}" class="form-control">
-                                    </div>
-                                </div>
+                                            <dl>
+                                                <dt>pageParamsEncoder</dt>
+                                                <dd>Parameters encoder, decoded to <code>List&lt;String&gt;</code></dd>
 
-                                <%-- Shared cache identifier --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-priority" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_PRIORITY"/></label>
-                                    <div class="col-sm-9">
-                                        <input id="${window.id}-priority" type="number" name="priority"
-                                               value="${window.priority}" class="form-control">
-                                    </div>
-                                </div>
+                                                <dt>windowsProperties</dt>
+                                                <dd>Window dynamic properties: <code>Map&lt;String, String&gt;</code></dd>
 
-                                <%-- Selection dependency indicator --%>
-                                <div class="form-group">
-                                    <label for="${window.id}-selection-dependency"
-                                           class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <label>
-                                                <input id="${window.id}-selection-dependency" type="checkbox"
-                                                       name="selectionDep" value="1"
-                                                       <c:if test="${window.selectionDependency}">checked="checked"</c:if>
-                                                >
-                                                <span><op:translate
-                                                        key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY_ACTIVATE"/></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                                                <dt>osivia.dynamicCSSClasses</dt>
+                                                <dd>CSS class names separated by a space: <code>css1 css2</code></dd>
+                                            </dl>
 
-                                <%-- BeanShell --%>
-                                <c:remove var="beanShellContent"/>
-                                <c:if test="${window.beanShell}">
-                                    <c:set var="beanShellContent" value="in"/>
-                                </c:if>
-
-                                <div class="form-group">
-                                    <label for="${window.id}-beanShell" class="control-label col-sm-3"><op:translate
-                                            key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES"/></label>
-                                    <div class="col-sm-9">
-                                        <div class="checkbox">
-                                            <p>
-                                                <label>
-                                                    <input id="${window.id}-beanShell" type="checkbox"
-                                                           name="bshActivation" value="1"
-                                                           onclick="toggleBeanShell(this)"
-                                                           <c:if test="${window.beanShell}">checked="checked"</c:if>
-                                                    >
-                                                    <span><op:translate key="WINDOW_PROPERTIES_BEAN_SHELL"/></span>
-                                                </label>
-                                            </p>
-                                        </div>
-
-                                        <div id="${window.id}-beanShell-content" class="collapse
-                                            <c:if test="${window.beanShell}">in</c:if>
-                                        ">
-                                            <p>
-                                                <textarea rows="5" name="bshScript"
-                                                          class="form-control">${window.beanShellContent}</textarea>
-                                            </p>
-
-                                            <div class="panel panel-info">
-                                                <div class="panel-heading">
-                                                    <div class="panel-title">
-                                                        <a href="#${window.id}-beanShell-example" class="no-ajax-link"
-                                                           data-toggle="collapse">
-                                                            <i class="halflings halflings-info-sign"></i>
-                                                            <span><op:translate
-                                                                    key="WINDOW_PROPERTIES_BEAN_SHELL_EXAMPLE"/></span>
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div id="${window.id}-beanShell-example"
-                                                     class="panel-collapse collapse">
-                                                    <div class="panel-body">
-                                                        <p>Implicits variables :</p>
-                                                        <dl>
-                                                            <dt>pageParamsEncoder</dt>
-                                                            <dd>Parameters encoder, decoded to
-                                                                <code>List&lt;String&gt;</code></dd>
-
-                                                            <dt>windowsProperties</dt>
-                                                            <dd>Window dynamic properties: <code>Map&lt;String, String&gt;</code>
-                                                            </dd>
-
-                                                            <dt>osivia.dynamicCSSClasses</dt>
-                                                            <dd>CSS class names separated by a space: <code>css1
-                                                                css2</code></dd>
-                                                        </dl>
-
-                                                        <pre>
+                                            <pre class="mb-0">
 import java.util.List;
 
 List cssSelectorValues =  pageParamsEncoder.decode("selectors", "cssSelector");
 if (cssSelectorValues != null) {
-    windowProperties.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));
+windowProperties.put("osivia.dynamicCSSClasses", cssSelectorValues.get(0));
 }
-rightCellToggle.add(example);
-</pre>
-                                                    </div>
-                                                </div>
-                                            </div>
+rightCellToggle.add(example);</pre>
                                         </div>
                                     </div>
                                 </div>
-
-                                <%-- Satellite --%>
-                                <c:if test="${not empty window.satellites}">
-                                    <div class="form-group">
-                                        <label for="${window.id}-satellite" class="control-label col-sm-3"><op:translate
-                                                key="WINDOW_PROPERTIES_SATELLITE"/></label>
-                                        <div class="col-sm-9">
-                                            <select id="${window.id}-satellite" name="satellite" class="form-control">
-                                                <c:forEach var="satellite" items="${window.satellites}">
-                                                    <option value="${satellite.key}" ${satellite.key eq window.selectedSatellite ? 'selected="selected"' : ''}>${satellite.value}</option>
-                                                </c:forEach>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </c:if>
-                            </fieldset>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-primary navbar-btn">
-                                <i class="halflings halflings-floppy-disk"></i>
-                                <span><op:translate key="SAVE"/></span>
-                            </button>
+                        <%-- Satellite --%>
+                        <c:if test="${not empty window.satellites}">
+                            <div class="form-group">
+                                <label for="${window.id}-satellite"><op:translate key="WINDOW_PROPERTIES_SATELLITE"/></label>
+                                <select id="${window.id}-satellite" name="satellite" class="form-control">
+                                    <c:forEach var="satellite" items="${window.satellites}">
+                                        <option value="${satellite.key}" ${satellite.key eq window.selectedSatellite ? 'selected="selected"' : ''}>${satellite.value}</option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+                        </c:if>
+                    </fieldset>
 
-                            <button type="button" class="btn btn-secondary navbar-btn" onclick="closeFancybox()">
-                                <op:translate key="CANCEL"/></button>
-                        </div>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-secondary" onclick="closeFancybox()">
+                            <span><op:translate key="CANCEL"/></span>
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            <span><op:translate key="SAVE"/></span>
+                        </button>
                     </div>
                 </form>
             </div>
