@@ -549,7 +549,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
                             DynamicWindow window = (DynamicWindow) this.portalObjectContainer.getObject(poid);
 
-                            if (!window.isSessionWindow() && (popupWindowId == null)) {
+                            if ((window != null) && !window.isSessionWindow() && (popupWindowId == null)) {
                                 // Window settings mode
                                 windowProperties.put(InternalConstants.ATTR_WINDOWS_SETTING_MODE, InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE);
 
