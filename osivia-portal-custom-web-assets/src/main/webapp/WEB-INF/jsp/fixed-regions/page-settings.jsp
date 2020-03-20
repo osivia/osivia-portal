@@ -933,17 +933,21 @@ var currentPageId = '${currentPageId}';
                                     </div>
                                 </div>
 
-                                <%--Linked layout item--%>
-                                <div class="form-group">
-                                    <label for="${window.id}-linked-layout-item"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
-                                    <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
-                                        <option value="" ${empty window.layoutItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_LAYOUT_ITEM"/></option>
-                                        <c:forEach var="item" items="${window.layoutItems}">
-                                            <option value="${item.key}" ${window.layoutItemId eq item.key ? 'selected="selected"' : ''}>${item.value}</option>
+                        <%--Linked layout item--%>
+                        <div class="form-group">
+                            <label for="${window.id}-linked-layout-item"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
+                            <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
+                                <option value="" ${empty window.layoutItemId ? 'selected="selected"' : ''}><op:translate key="WINDOW_PROPERTIES_NO_LINKED_LAYOUT_ITEM"/></option>
+                                <c:forEach var="group" items="${window.layoutGroups}">
+                                    <optgroup label="${group.label}">
+                                        <c:forEach var="item" items="${group.items}">
+                                            <option value="${item.id}" ${window.layoutItemId eq item.id ? 'selected="selected"' : ''}>${item.label}</option>
                                         </c:forEach>
-                                    </select>
-                                    <div class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM_HELP"/></div>
-                                </div>
+                                    </optgroup>
+                                </c:forEach>
+                            </select>
+                            <small class="form-text text-muted"><op:translate key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM_HELP"/></small>
+                        </div>
 
                                 <%-- Customization identifier --%>
                                 <div class="form-group">

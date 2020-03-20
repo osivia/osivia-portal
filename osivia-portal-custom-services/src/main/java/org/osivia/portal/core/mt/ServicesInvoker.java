@@ -191,10 +191,6 @@ public class ServicesInvoker {
         int nbThreads = 0;
 
 
-        // Current layout item
-        LayoutItem currentItem = this.getLayoutItemsService().getCurrentItem(portalControllerContext);
-
-
         // Render the windows
         for (Window window2 : this.windows) {
             PortalObject o = window2;
@@ -244,9 +240,9 @@ public class ServicesInvoker {
 
 
                 // Linked layout item identifier
-                String linkedItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
 
-                if (StringUtils.isEmpty(linkedItemId) || ((currentItem != null) && StringUtils.equals(linkedItemId, currentItem.getId()))) {
+                if (StringUtils.isEmpty(linkedLayoutItemId) || this.getLayoutItemsService().isSelected(portalControllerContext, linkedLayoutItemId)) {
                     RenderWindowCommand renderCmd = new RenderWindowCommand(this.pageNavigationalState, window.getId());
 
 
