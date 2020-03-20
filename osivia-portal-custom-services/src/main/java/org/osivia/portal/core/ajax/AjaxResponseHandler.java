@@ -467,15 +467,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                 ControllerPageNavigationalState pageNavigationalState = portletControllerContext.getStateControllerContext()
                         .createPortletPageNavigationalState(true);
 
-                // Current layout item
-                LayoutItem currentItem;
-                try {
-                    currentItem = this.layoutItemsService.getCurrentItem(portalControllerContext);
-                } catch (PortalException e) {
-                    currentItem = null;
-                    log.error(e.getLocalizedMessage());
-                }
-
                 //
                 for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
                     try {
@@ -486,7 +477,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Linked layout item
                         String linkedLayoutItemId = refreshedWindow.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
 
-                        if (StringUtils.isEmpty(linkedLayoutItemId) || ((currentItem != null) && StringUtils.equals(linkedLayoutItemId, currentItem.getId()))) {
+                        if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)) {
                             RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                             rendition = rwc.render(controllerContext);
                         } else {

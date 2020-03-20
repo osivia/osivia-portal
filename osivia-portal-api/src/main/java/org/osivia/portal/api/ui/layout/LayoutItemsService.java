@@ -1,5 +1,6 @@
 package org.osivia.portal.api.ui.layout;
 
+import org.jboss.portal.core.model.portal.Portal;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -20,25 +21,54 @@ public interface LayoutItemsService {
     /**
      * Linked layout item identifier window property.
      */
-    String LINKED_ITEM_ID_WINDOW_PROPERTY = "osivia.layout-item-id";
+    String LINKED_ITEM_ID_WINDOW_PROPERTY = "osivia.layout.item.id";
+
+
+    /**
+     * Get layout groups.
+     *
+     * @param portalControllerContext portal controller context
+     * @return layout groups
+     */
+    List<LayoutGroup> getGroups(PortalControllerContext portalControllerContext) throws PortalException;
+
+
+    /**
+     * Get layout group.
+     *
+     * @param portalControllerContext portal controller context
+     * @param groupId                 layout group identifier
+     * @return layout group
+     */
+    LayoutGroup getGroup(PortalControllerContext portalControllerContext, String groupId) throws PortalException;
+
+
+    /**
+     * Set layout group.
+     *
+     * @param portalControllerContext portal controller context
+     * @param group                   layout group
+     */
+    void setGroup(PortalControllerContext portalControllerContext, LayoutGroup group) throws PortalException;
 
 
     /**
      * Get layout items.
      *
      * @param portalControllerContext portal controller context
+     * @param groupId                 layout group identifier
      * @return layout items
      */
-    List<LayoutItem> getItems(PortalControllerContext portalControllerContext) throws PortalException;
+    List<LayoutItem> getItems(PortalControllerContext portalControllerContext, String groupId) throws PortalException;
 
 
     /**
-     * Set layout items.
+     * Get current layout items.
      *
      * @param portalControllerContext portal controller context
-     * @param items                   layout items
+     * @return layout items
      */
-    void setItems(PortalControllerContext portalControllerContext, List<LayoutItem> items) throws PortalException;
+    List<LayoutItem> getCurrentItems(PortalControllerContext portalControllerContext) throws PortalException;
 
 
     /**
@@ -47,25 +77,26 @@ public interface LayoutItemsService {
      * @param portalControllerContext portal controller context
      * @return layout item
      */
-    LayoutItem getCurrentItem(PortalControllerContext portalControllerContext) throws PortalException;
+    LayoutItem getCurrentItem(PortalControllerContext portalControllerContext, String groupId) throws PortalException;
 
 
     /**
      * Select layout item.
      *
      * @param portalControllerContext portal controller context
-     * @param id                      layout item identifier
+     * @param itemId                  layout item identifier
      */
-    void selectItem(PortalControllerContext portalControllerContext, String id) throws PortalException;
+    void selectItem(PortalControllerContext portalControllerContext, String itemId) throws PortalException;
 
 
     /**
-     * Create layout item.
+     * Check if layout item is selected.
      *
      * @param portalControllerContext portal controller context
-     * @param id                      layout item identifier
-     * @return layout item
+     * @param itemId                  layout item identifier
+     * @return true if layout item is selected
+     * @throws PortalException
      */
-    LayoutItem createItem(PortalControllerContext portalControllerContext, String id);
+    boolean isSelected(PortalControllerContext portalControllerContext, String itemId) throws PortalException;
 
 }

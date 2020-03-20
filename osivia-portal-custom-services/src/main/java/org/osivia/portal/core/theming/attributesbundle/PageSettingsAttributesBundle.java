@@ -95,6 +95,7 @@ import org.osivia.portal.api.taskbar.TaskbarItem;
 import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.theming.IAttributesBundle;
+import org.osivia.portal.api.ui.layout.LayoutGroup;
 import org.osivia.portal.api.ui.layout.LayoutItem;
 import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
@@ -1013,12 +1014,12 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             taskbarItems = null;
         }
 
-        // Layout items
-        List<LayoutItem> layoutItems;
+        // Layout groups
+        List<LayoutGroup> layoutGroups;
         try {
-            layoutItems = this.layoutItemsService.getItems(portalControllerContext);
+            layoutGroups = this.layoutItemsService.getGroups(portalControllerContext);
         } catch (PortalException e) {
-            layoutItems = null;
+            layoutGroups = null;
         }
 
         // Satellites
@@ -1103,10 +1104,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Linked layout item
             String layoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
             settings.setLayoutItemId(layoutItemId);
-            if (CollectionUtils.isNotEmpty(layoutItems)) {
-                for (LayoutItem item : layoutItems) {
-                    settings.getLayoutItems().put(item.getId(), item.getLabel());
-                }
+            if (CollectionUtils.isNotEmpty(layoutGroups)) {
+                settings.getLayoutGroups().addAll(layoutGroups);
             }
 
             // Customization identifier

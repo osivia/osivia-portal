@@ -1,9 +1,8 @@
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import org.osivia.portal.api.ui.layout.LayoutGroup;
+
+import java.util.*;
 
 
 /**
@@ -30,9 +29,9 @@ public class WindowSettings {
      */
     private final SortedMap<String, String> taskbarItems;
     /**
-     * Layout items.
+     * Layout groups.
      */
-    private final Map<String, String> layoutItems;
+    private final List<LayoutGroup> layoutGroups;
     /**
      * Nuxeo satellites.
      */
@@ -126,7 +125,7 @@ public class WindowSettings {
         this.styles = new LinkedHashMap<>();
         this.scopes = new LinkedHashMap<>();
         this.taskbarItems = new TreeMap<>();
-        this.layoutItems = new LinkedHashMap<>();
+        this.layoutGroups = new ArrayList<>();
         this.satellites = new LinkedHashMap<>();
     }
 
@@ -499,8 +498,8 @@ public class WindowSettings {
         return taskbarItems;
     }
 
-    public Map<String, String> getLayoutItems() {
-        return layoutItems;
+    public List<LayoutGroup> getLayoutGroups() {
+        return layoutGroups;
     }
 
     /**
