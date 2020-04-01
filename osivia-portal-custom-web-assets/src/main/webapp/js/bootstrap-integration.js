@@ -28,6 +28,11 @@ $JQry(function () {
     $JQry(".comments .collapse").on("show.bs.collapse", function (event) {
         $JQry(".comments .collapse.in").not(event.target).collapse("hide");
     });
+    
+    // Comments
+    $JQry("#osivia-modal").on("show.bs.modal", function (event) {
+    	hideDrawer();
+    });
 
 });
 
