@@ -3,10 +3,12 @@ var tableToolbarXhr;
 
 $JQry(function() {
 	var isChromeAndroid = /Chrome/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent) && /Android/i.test(navigator.userAgent);
+	var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+	
 	var $table = $JQry(".portal-table");
 	var previousIndex = -1;
 	
-	if (!isChromeAndroid && !$table.data("loaded")) {
+	if (!isChromeAndroid && !isiOS && !$table.data("loaded")) {
 		// Selectable
 		$JQry(".portal-table-selectable").selectable({
 			cancel: "a, button, .portal-table-selectable-cancel",

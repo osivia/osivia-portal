@@ -1,5 +1,5 @@
 $JQry(function() {
-	$JQry("body.vh-100 .portlet-filler").each(function(index, element) {
+	$JQry("body.fullheight .portlet-filler").each(function(index, element) {
 		var $element = $JQry(element);
 		
 		if (!$element.closest(".scrollbox.fixed-scrollbox").length) {
@@ -23,7 +23,7 @@ $JQry(window).resize(function() {
  * Update scrollbar width.
  */
 function updateScrollbarWidth() {
-	var $portletFiller = $JQry("body.vh-100 .portlet-filler");
+	var $portletFiller = $JQry("body.fullheight .portlet-filler");
 	
 	$portletFiller.each(function(index, element) {
 		var $element = $JQry(element);
