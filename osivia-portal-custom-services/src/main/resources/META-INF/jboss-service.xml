@@ -470,6 +470,40 @@
 	</mbean>
 
 
+
+
+
+    <mbean code="org.osivia.portal.core.myworkspace.MyWorkspaceCommandFactoryService"
+        name="osivia:commandFactory=MyWorkspace" xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+    </mbean>
+
+    <mbean
+        code="org.jboss.portal.core.controller.command.mapper.CommandFactoryDelegate"
+        name="portal:commandFactory=Delegate,path=MyWorkspace" xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="Path">/MyWorkspace</attribute>
+        <depends optional-attribute-name="DelegatingFactory"
+            proxy-type="attribute">portal:commandFactory=Delegating
+        </depends>
+        <depends optional-attribute-name="DelegateFactory" proxy-type="attribute">
+            osivia:commandFactory=MyWorkspace</depends>
+    </mbean>
+
+
+    <mbean code="org.osivia.portal.core.myworkspace.MyWorkspaceURLFactory"
+        name="osivia:urlFactory=MyWorkspace" xmbean-dd=""
+        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+        <xmbean />
+        <attribute name="Path">/MyWorkspace</attribute>
+        <depends optional-attribute-name="Factory" proxy-type="attribute">portal:urlFactory=Delegating
+        </depends>
+    </mbean>
+
+
+
 	<!-- Custom control policies : error management -->
 	<mbean code="org.osivia.portal.core.error.CustomPageControlPolicy"
 		name="portal:service=ControlPolicy,type=Page" xmbean-dd=""

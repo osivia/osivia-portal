@@ -524,4 +524,14 @@ public interface IPortalUrlFactory {
      */
     String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch, Map<String, List<String>> selectors) throws PortalException;
 
+
+    /**
+     * Gets my workspace url.
+     *
+     * @param portalControllerContext the portal controller context
+     * @return the my workspace url
+     * @throws PortalException the portal exception
+     */
+    String getMyWorkspaceUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
 }

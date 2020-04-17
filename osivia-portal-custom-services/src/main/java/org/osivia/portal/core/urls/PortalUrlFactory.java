@@ -43,6 +43,7 @@ import org.osivia.portal.core.cms.*;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.dynamic.*;
 import org.osivia.portal.core.ecm.EcmCommandDelegate;
+import org.osivia.portal.core.myworkspace.MyWorkspaceCommand;
 import org.osivia.portal.core.page.*;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
@@ -1177,6 +1178,25 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getMyWorkspaceUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+
+        // Controller command
+        ControllerCommand command = new MyWorkspaceCommand();
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+
+        return portalUrl.toString();
+    }
+
+    
     /**
      * {@inheritDoc}
      */
