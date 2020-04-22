@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.batch.AbstractBatch;
+import org.osivia.portal.api.batch.IBatchService;
 import org.osivia.portal.api.locator.Locator;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -33,6 +34,8 @@ import org.quartz.JobExecutionException;
  *
  */
 public class BatchJob implements Job {
+
+	private final static Log stdLogger = LogFactory.getLog(BatchJob.class);
 
 	private final static Log logger = LogFactory.getLog("batch");
 
@@ -83,6 +86,7 @@ public class BatchJob implements Job {
 	 * Mutex used to prevent parallel executions of a same batch 
 	 * @param b
 	 * @param triggerDataMap
+	 * @throws PortalException 
 	 */
 	private void wrapExecution(AbstractBatch b, JobDataMap triggerDataMap){
 		if(running) {
@@ -101,8 +105,12 @@ public class BatchJob implements Job {
 				
 			}
 			catch(PortalException e) {
-				logger.error(e);
+				
+				logger.error("Error during execution of "+b.getBatchId(), e);
+				stdLogger.error("Error during execution of "+b.getBatchId(), e);
+
 				onError = true;
+				
 			}
 			finally {
 				running = false;
@@ -110,6 +118,14 @@ public class BatchJob implements Job {
 				long duration = endD.getTime() - startD.getTime();
 				
 				logger.warn(b.getBatchId()+" ended (duration : "+duration+"ms), " + (onError? "with errors !" : "")  );
+				
+				// clean batch registry if batch is one shot
+				if(b.getJobScheduling() == null) {
+					IBatchService batchService = Locator.findMBean(IBatchService.class, IBatchService.MBEAN_NAME);
+					batchService.removeBatch(b);
+					
+				}
+				
 			}
 			
 		}

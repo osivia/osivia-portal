@@ -1,15 +1,17 @@
 package org.osivia.portal.core.tasks;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
-import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.cms.EcmDocument;
@@ -22,6 +24,7 @@ import org.osivia.portal.core.cms.ICMSServiceLocator;
 import org.osivia.portal.core.context.ControllerContextAdapter;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PortalURLImpl;
+import org.osivia.portal.core.portalcommands.DefaultURLFactory;
 
 /**
  * Tasks service implementation.
@@ -219,29 +222,68 @@ public class TasksService implements ITasksService {
     public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-
-        // Customized host property
         String host = System.getProperty(HOST_PROPERTY);
 
         // Command
-        ControllerCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
-
-        // Portal URL
-        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
-
-        // Command URL
-        String url;
-
-        if (StringUtils.isEmpty(host)) {
-            url = portalUrl.toString();
-        } else {
-            // Relative portal URL
-            portalUrl.setRelative(true);
-
-            url = host + portalUrl.toString();
-        }
+        UpdateTaskCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
         
-        return url;
+        if(controllerContext != null) {
+	        // Customized host property
+	        
+	
+	        // Portal URL
+	        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+	
+	        // Command URL
+	        String url;
+	
+	        if (StringUtils.isEmpty(host)) {
+	            url = portalUrl.toString();
+	        } else {
+	            // Relative portal URL
+	            portalUrl.setRelative(true);
+	
+	            url = host + portalUrl.toString();
+	        }
+	        
+	        return url;
+        }
+        // Get a command url in a batch context
+        else {
+        	
+          try {
+
+        	StringBuilder urlstr = new StringBuilder();
+        	urlstr.append(host);
+        	urlstr.append("/portal/auth/commands?");
+        	
+        	urlstr.append(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);
+        	urlstr.append("=");
+        	urlstr.append(URLEncoder.encode(UpdateTaskCommand.ACTION, CharEncoding.UTF_8));
+        	
+        	urlstr.append("&");
+        	urlstr.append(UpdateTaskCommand.UUID_PARAMETER);
+        	urlstr.append("=");
+        	urlstr.append(URLEncoder.encode(uuid.toString(), CharEncoding.UTF_8));
+
+        	urlstr.append("&");
+        	urlstr.append(UpdateTaskCommand.ACTION_ID_PARAMETER);
+        	urlstr.append("=");
+        	urlstr.append(URLEncoder.encode(actionId, CharEncoding.UTF_8));
+
+        	if(StringUtils.isNotBlank(redirectionUrl)) {
+	        	urlstr.append("&");
+	        	urlstr.append(UpdateTaskCommand.REDIRECTION_URL_PARAMETER);
+	        	urlstr.append("=");
+	        	urlstr.append(URLEncoder.encode(redirectionUrl, CharEncoding.UTF_8));
+        	}
+        	return urlstr.toString();
+        	
+          } catch (UnsupportedEncodingException e) {
+          	throw new PortalException(e);
+          }
+
+        }
     }
 
 
