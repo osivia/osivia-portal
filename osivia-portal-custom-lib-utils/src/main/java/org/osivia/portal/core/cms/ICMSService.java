@@ -18,6 +18,7 @@ import org.osivia.portal.api.cms.DocumentContext;
 import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
@@ -46,12 +47,12 @@ public interface ICMSService {
     String getParentPath(String documentPath);
 
     CMSItem getContent(CMSServiceCtx ctx, String path) throws CMSException;
-    
-    
+
+
     /**
      * Gets the by share id.
      *
-     * @param ctx the ctx
+     * @param ctx     the ctx
      * @param shareID the share ID
      * @param boolean enabledLinkOnly
      * @return the by share id
@@ -133,6 +134,7 @@ public interface ICMSService {
 
     /**
      * Get user workspace.
+     *
      * @param cmsContext CMS context
      * @return user workspace
      */
@@ -218,16 +220,16 @@ public interface ICMSService {
 
     /**
      * Get CMS regions inherited layout.
-     * 
-     * @param cmsContext CMS context
-     * @param basePath CMS base path
-     * @param path CMS path
+     *
+     * @param cmsContext        CMS context
+     * @param basePath          CMS base path
+     * @param path              CMS path
      * @param configuredLayouts configured layouts
      * @return CMS regions inherited layout
      * @throws CMSException
      */
     Map<String, CMSConfigurationItem> getCmsRegionsInheritedLayout(CMSServiceCtx cmsContext, String basePath, String path,
-            Set<CMSConfigurationItem> configuredLayouts) throws CMSException;
+                                                                   Set<CMSConfigurationItem> configuredLayouts) throws CMSException;
 
 
     /**
@@ -549,7 +551,7 @@ public interface ICMSService {
      * Get document context.
      *
      * @param cmsContext CMS context
-     * @param path CMS path or webId
+     * @param path       CMS path or webId
      * @return document context
      * @throws CMSException
      */
@@ -559,9 +561,9 @@ public interface ICMSService {
     /**
      * Get document context.
      *
-     * @param <D> document context type
-     * @param cmsContext CMS context
-     * @param path CMS path or webId
+     * @param <D>          document context type
+     * @param cmsContext   CMS context
+     * @param path         CMS path or webId
      * @param expectedType expected type
      * @return document context
      * @throws CMSException
@@ -606,24 +608,24 @@ public interface ICMSService {
      * Update task.
      *
      * @param cmsContext CMS context
-     * @param uuid UUID
-     * @param actionId action identifier
-     * @param variables task variables
+     * @param uuid       UUID
+     * @param actionId   action identifier
+     * @param variables  task variables
      * @return updated variables
      * @throws CMSException
      */
     Map<String, String> updateTask(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
-    
-    
+
+
     /**
      * Gets the task.
      *
      * @param cmsContext the cms context
-     * @param uuid the uuid
+     * @param uuid       the uuid
      * @return the task
      * @throws CMSException the CMS exception
      */
-    
+
     public CMSItem getTask(CMSServiceCtx cmsContext, UUID uuid) throws CMSException;
 
 
@@ -659,21 +661,20 @@ public interface ICMSService {
 
     /**
      * return all dashboards defined in a procedureModel as CMSEditableWindow.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param path current path
-     * 
+     * @param path       current path
      * @return CMSEditableWindow for each dashboard
      * @throws CMSException
      */
     List<CMSEditableWindow> getProcedureDashboards(CMSServiceCtx cmsContext, String path) throws CMSException;
-    
-    
+
+
     /**
      * Get space statistics.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param paths space paths
+     * @param paths      space paths
      * @return statistics
      * @throws CMSException
      */
@@ -692,27 +693,27 @@ public interface ICMSService {
 
     /**
      * Update space statistics.
-     * 
-     * @param cmsContext CMS context
-     * @param httpSession HTTP session
+     *
+     * @param cmsContext      CMS context
+     * @param httpSession     HTTP session
      * @param spaceStatistics space statistics
      * @throws CMSException
      */
     void updateStatistics(CMSServiceCtx cmsContext, HttpSession httpSession, List<SpaceStatistics> spaceStatistics) throws CMSException;
 
-    
+
     /**
      * Get satellites.
-     * 
+     *
      * @return satellites
      * @throws CMSException
      */
     Set<Satellite> getSatellites() throws CMSException;
-    
+
 
     /**
      * Get sharing root CMS item, or null if there is no sharing.
-     * 
+     *
      * @param cmsContext CMS context
      * @return CMS item
      * @throws CMSException
@@ -722,12 +723,30 @@ public interface ICMSService {
 
     /**
      * Resolve link sharing.
-     * 
+     *
      * @param cmsContext CMS context
-     * @param linkId link identifier
+     * @param linkId     link identifier
      * @return target document path
      * @throws CMSException
      */
     String resolveLinkSharing(CMSServiceCtx cmsContext, String linkId) throws CMSException;
+
+
+    /**
+     * Get editor modules.
+     *
+     * @param cmsContext CMS context
+     * @return editor modules
+     */
+    List<EditorModule> getEditorModules(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get editor window base properties.
+     *
+     * @param cmsContext CMS context
+     * @return window properties
+     */
+    Map<String, String> getEditorWindowBaseProperties(CMSServiceCtx cmsContext) throws CMSException;
 
 }

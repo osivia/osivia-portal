@@ -1002,10 +1002,17 @@
     </mbean>
 
     <!-- Transaction service -->
-    <mbean code="org.osivia.portal.core.transactions.TransactionServiceImpl" name="osivia:service=TransactionService" xmbean-dd=""
-        xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-        <xmbean />
-     </mbean>
+	<mbean code="org.osivia.portal.core.transactions.TransactionServiceImpl" name="osivia:service=TransactionService" xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean/>
+	</mbean>
+
+	<!-- Tasks service -->
+	<mbean code="org.osivia.portal.core.editor.EditorServiceImpl" name="osivia:service=EditorService" xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+		<xmbean />
+		<depends optional-attribute-name="CmsServiceLocator" proxy-type="attribute">osivia:service=CmsServiceLocator</depends>
+		<depends optional-attribute-name="PortalUrlFactory" proxy-type="attribute">osivia:service=UrlFactory</depends>
+		<depends optional-attribute-name="InternationalizationService" proxy-type="attribute">osivia:service=InternationalizationService</depends>
+	</mbean>
 
 </server>
    
