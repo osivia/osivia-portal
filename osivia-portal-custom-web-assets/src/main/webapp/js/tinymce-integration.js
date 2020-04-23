@@ -18,33 +18,34 @@ function tinymceInitialization() {
             tinymce.init({
                 selector: "textarea.tinymce.tinymce-default",
                 language: "fr_FR",
-                plugins: "autosave lists noneditable paste",
+                plugins: "autosave code lists noneditable paste",
                 external_plugins: {
+                    "osivia-image": "/osivia-services-editor-helpers/js/image/plugin.min.js",
                     "osivia-link": "/osivia-services-editor-helpers/js/link/plugin.min.js"
                 },
 
                 branding: false,
                 menubar: false,
-                toolbar: "undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | osivia-link",
+                toolbar: "undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | osivia-link osivia-image | code",
                 statusbar: false,
 
                 schema: "html5",
                 element_format : "html",
                 formats: {
                     alignleft: {
-                        selector: "p,ul,ol,li,img",
+                        selector: "p,ul,ol,li",
                         classes: "text-left"
                     },
                     aligncenter: {
-                        selector: "p,ul,ol,li,img",
+                        selector: "p,ul,ol,li",
                         classes: "text-center"
                     },
                     alignright: {
-                        selector: "p,ul,ol,li,img",
+                        selector: "p,ul,ol,li",
                         classes: "text-right"
                     },
                     alignjustify: {
-                        selector: "p,ul,ol,li,img",
+                        selector: "p,ul,ol,li",
                         classes: "text-justify"
                     },
                     bold: {
@@ -65,67 +66,11 @@ function tinymceInitialization() {
                 browser_spellcheck: true,
                 contextmenu: false,
                 content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.css", "/osivia-portal-custom-web-assets/css/tinymce.css"],
+                height: "20em",
 
                 convert_urls: false,
                 paste_as_text: true
             });
-
-            // tinymce.init({
-            //     selector: "textarea.tinymce.tinymce-default",
-            //     language: "fr_FR",
-            //     plugins: "autosave link lists noneditable paste",
-            //     external_plugins: {
-            //         "osivia_link": "/osivia-services-editor-helpers/js/link/plugin.min.js"
-            //     },
-            //
-            //     branding: false,
-            //     menubar: false,
-            //     toolbar: "undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist | osivia_link",
-            //     statusbar: false,
-            //
-            //     element_format: "html",
-            //     formats: {
-            //         alignleft: {
-            //             selector: "p, ul, ol, li",
-            //             classes: "text-left"
-            //         },
-            //         aligncenter: {
-            //             selector: "p, ul, ol, li",
-            //             classes: "text-center"
-            //         },
-            //         alignright: {
-            //             selector: "p, ul, ol, li",
-            //             classes: "text-right"
-            //         },
-            //         alignjustify: {
-            //             selector: "p, ul, ol, li",
-            //             classes: "text-justify"
-            //         },
-            //         bold: {
-            //             inline: "strong"
-            //         },
-            //         italic: {
-            //             inline: "em"
-            //         },
-            //         underline: {
-            //             inline: "u"
-            //         },
-            //         strikethrough: {
-            //             inline: "s"
-            //         }
-            //     },
-            //
-            //     content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.css"],
-            //     height: 200,
-            //     width: "auto",
-            //
-            //     // Prevent relative URL conversion
-            //     convert_urls: false,
-            //     // Remove style on paste
-            //     paste_as_text: true,
-            //
-            //     browser_spellcheck: true
-            // });
         }
 
         $textarea.data("tinymce-default-loaded", true);
