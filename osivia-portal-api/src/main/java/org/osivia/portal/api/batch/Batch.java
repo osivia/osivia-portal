@@ -24,19 +24,6 @@ import org.osivia.portal.api.PortalException;
  *
  */
 public interface Batch {
-
-	/**
-	 * Id a the batch (used to register the job in Quartz scheduler).
-	 * @return
-	 */
-	public String getBatchId();
-	
-	/**
-	 * Id a the batch (used to register the job in Quartz scheduler).
-	 * @param batchId the identifier of the batch
-	 * @return
-	 */
-	public void setBatchId(String batchId);
 	
 	/**
 	 * Define the cron used to run the batch periodically

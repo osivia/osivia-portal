@@ -25,19 +25,22 @@ import org.osivia.portal.api.PortalException;
  */
 public abstract class AbstractBatch implements Batch {
 	
-	@Override
-	public String getBatchId() {
-		
-		return this.getClass().getSimpleName();
+	private final String batchId;
+	
+	
+	public AbstractBatch() {
+		batchId = this.getClass().getSimpleName();;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.osivia.portal.api.batch.Batch#setBatchId()
-	 */
-	@Override
-	public void setBatchId(String batchId) {
-		// Do nothing
+	public AbstractBatch(String batchId) {
+		this.batchId = batchId;
 	}
+	
+	public String getBatchId() {
+		
+		return batchId;
+	}
+
 	
 	@Override
 	public boolean isRunningOnMasterOnly() {
