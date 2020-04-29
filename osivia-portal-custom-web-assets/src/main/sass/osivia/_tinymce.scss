@@ -1,0 +1,12 @@
+.tox-tinymce-aux {
+  z-index: $zindex-dropdown !important;
+}
+
+
+.mce-content-body {
+  padding: $input-padding-y $input-padding-x;
+
+  &::before {
+    left: unset !important;
+  }
+}

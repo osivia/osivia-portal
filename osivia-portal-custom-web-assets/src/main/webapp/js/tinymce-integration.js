@@ -18,7 +18,7 @@ function tinymceInitialization() {
             tinymce.init({
                 selector: "textarea.tinymce.tinymce-default",
                 language: "fr_FR",
-                plugins: "autosave code lists noneditable paste",
+                plugins: "autosave code fullscreen lists media noneditable paste",
                 external_plugins: {
                     "osivia-image": "/osivia-services-editor-helpers/js/image/plugin.min.js",
                     "osivia-link": "/osivia-services-editor-helpers/js/link/plugin.min.js"
@@ -26,7 +26,7 @@ function tinymceInitialization() {
 
                 branding: false,
                 menubar: false,
-                toolbar: "undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | osivia-link osivia-image | code",
+                toolbar: "undo redo | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | osivia-link osivia-image media | code fullscreen",
                 statusbar: false,
 
                 schema: "html5",
@@ -65,7 +65,7 @@ function tinymceInitialization() {
 
                 browser_spellcheck: true,
                 contextmenu: false,
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap/bootstrap.css", "/osivia-portal-custom-web-assets/css/tinymce.css"],
+                content_css: ["/osivia-portal-custom-web-assets/css/socle.css"],
                 height: "20em",
 
                 convert_urls: false,
