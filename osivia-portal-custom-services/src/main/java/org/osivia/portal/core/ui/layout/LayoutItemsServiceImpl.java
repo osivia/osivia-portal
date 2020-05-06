@@ -78,7 +78,8 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         if (CollectionUtils.isEmpty(groupsImpl)) {
             groups = null;
         } else {
-            groups = new ArrayList<>(groupsImpl);
+            groups = new ArrayList<>(groupsImpl.size());
+            groups.addAll(groupsImpl);
         }
 
         return groups;

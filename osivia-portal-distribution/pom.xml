@@ -163,6 +163,12 @@
 		    <artifactId>spring-security-core</artifactId>
 		    <version>${org.springframework.security.version}</version>
 		</dependency>
+
+        <!--Jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+        </dependency>
     </dependencies>
 
 
@@ -224,7 +230,8 @@
                                         commons,
                                         org.apache.commons,
                                         org.springframework,
-                                        aopalliance
+                                        aopalliance,
+                                        com.fasterxml.jackson
                                     </includeGroupIds>
                                 </configuration>
                             </execution>

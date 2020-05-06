@@ -16,14 +16,8 @@ package org.osivia.portal.core.ajax;
 
 
 import java.io.StringWriter;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.xml.namespace.QName;
 
@@ -88,6 +82,7 @@ import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
 import org.osivia.portal.api.context.PortalControllerContext;
+import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
@@ -111,21 +106,8 @@ public class AjaxResponseHandler implements ResponseHandler {
     /** . */
     private PageService pageService;
 
-    public PortalObjectContainer getPortalObjectContainer() {
-        return this.portalObjectContainer;
-    }
-
-    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
-        this.portalObjectContainer = portalObjectContainer;
-    }
-
-    public PageService getPageService() {
-        return this.pageService;
-    }
-
-    public void setPageService(PageService pageService) {
-        this.pageService = pageService;
-    }
+    /** Layout item service. */
+    private LayoutItemsService layoutItemsService;
 
 
     private boolean compareParameters(PageNavigationalState oldNS, PageNavigationalState newWS) {
@@ -226,6 +208,9 @@ public class AjaxResponseHandler implements ResponseHandler {
             response = new AjaxResponse(dresp);
         } else if (controllerResponse instanceof UpdatePageResponse) {
             UpdatePageResponse upw = (UpdatePageResponse) controllerResponse;
+
+            // Portal controller context
+            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
 
             // Obtain page and portal
             // final Window window = (Window)portalObjectContainer.getObject(upw.getWindowId());
@@ -396,7 +381,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                     if (StringUtils.isNotEmpty(linkedLayoutItemId) && !dirtyWindowIds.contains(window.getId())) {
                         dirtyWindowIds.add(window.getId());
                     }
-                }
 
                     // Prevent Ajax refresh (useful for keywords selector)
                     if (BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.ATTR_WINDOW_PREVENT_AJAX_REFRESH))) {
@@ -429,7 +413,7 @@ public class AjaxResponseHandler implements ResponseHandler {
 					}
                 }
                 // Obtain layout
-                LayoutService layoutService = this.getPageService().getLayoutService();
+                LayoutService layoutService = this.pageService.getLayoutService();
                 PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
                 
                 
@@ -518,7 +502,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                                 if (!refreshedWindow.getName().equals(InternalConstants.PORTAL_MENUBAR_WINDOW_NAME)) {
                                     WindowContext windowContext = wcf.createWindowContext(refreshedWindow, rendition);
                                     res.addWindowContext(windowContext);
-                                    this.refreshWindowContext(cparentontrollerContext, layout, updatePage, res, windowContext);
+                                    this.refreshWindowContext(controllerContext, layout, updatePage, res, windowContext);
                                 }
                             } else {
                                 fullRefresh = true;
@@ -543,8 +527,6 @@ public class AjaxResponseHandler implements ResponseHandler {
                         // Check if current page is a modal
                         PortalObjectId modalId = PortalObjectId.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
                         if (!modalId.equals(page.getId())) {
-                            PortalControllerContext portalControllerContext = new PortalControllerContext(controllerContext);
-
                             // Notifications window context
                             WindowContext notificationsWindowContext = NotificationsUtils.createNotificationsWindowContext(portalControllerContext);
                             res.addWindowContext(notificationsWindowContext);
@@ -697,6 +679,19 @@ public class AjaxResponseHandler implements ResponseHandler {
 
         }
 
+    }
+
+
+    public void setPortalObjectContainer(PortalObjectContainer portalObjectContainer) {
+        this.portalObjectContainer = portalObjectContainer;
+    }
+
+    public void setPageService(PageService pageService) {
+        this.pageService = pageService;
+    }
+
+    public void setLayoutItemsService(LayoutItemsService layoutItemsService) {
+        this.layoutItemsService = layoutItemsService;
     }
 
 }
