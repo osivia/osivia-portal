@@ -73,6 +73,7 @@ import org.osivia.portal.core.menubar.MenubarUtils;
 import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
+import org.osivia.portal.core.ui.layout.LayoutItemsServiceImpl;
 import org.osivia.portal.core.web.WebCommand;
 
 import javax.xml.namespace.QName;
