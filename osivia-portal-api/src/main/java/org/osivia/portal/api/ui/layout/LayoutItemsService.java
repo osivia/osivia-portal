@@ -1,6 +1,6 @@
 package org.osivia.portal.api.ui.layout;
 
-import org.jboss.portal.core.model.portal.Portal;
+import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 
@@ -98,5 +98,24 @@ public interface LayoutItemsService {
      * @throws PortalException
      */
     boolean isSelected(PortalControllerContext portalControllerContext, String itemId) throws PortalException;
+
+
+    /**
+     * Mark window as rendered, to prevent unnecessary Ajax refresh.
+     *
+     * @param portalControllerContext portal controller context
+     * @param window                  window
+     */
+    void markWindowAsRendered(PortalControllerContext portalControllerContext, Window window) throws PortalException;
+
+
+    /**
+     * Check if window is dirty.
+     *
+     * @param portalControllerContext portal controller context
+     * @param window                  window
+     * @return true if window is dirty
+     */
+    boolean isDirty(PortalControllerContext portalControllerContext, Window window) throws PortalException;
 
 }
