@@ -1,3 +1,8 @@
+/**
+ * Detect portlet change
+ * @returns
+ */
+
 $JQry(function() {
     var $tasks = $JQry(".tasks").first();
     var tasksCount = $tasks.data("tasks-count");
@@ -9,27 +14,39 @@ $JQry(function() {
 });
 
 
+
+
+
 /**
  * Update tasks counter.
  *
  * @param count tasks count
  */
 function updateTasksCounter(count) {
-    var $button = $JQry("button[name='open-tasks']");
-    var $label = $button.find(".counter .label");
+	
+	var $bells = $JQry("a.task-bell");
+	
+	$bells.each(function( index ) {
+    	  if (count > 0) {
+    		    $JQry(this).addClass("text-warning");
+    	    } else {
+    	    	$JQry(this).removeClass("text-warning");
+    	    }    	  
+    });
+	
+	
+    var $glyphs = $JQry("a.task-bell i");
+    $glyphs.each(function( index ) {
 
-    // Function .data() does not update DOM => CSS rules does not apply
-    $button.attr("data-tasks-count", count);
+    	  if (count > 0) {
+    		    $JQry(this).removeClass("glyphicons-basic-bell");
+    		    $JQry(this).addClass("glyphicons-basic-bell-ringing");
+    	    } else {
+    	    	$JQry(this).removeClass("glyphicons-basic-bell-ringing");
+    	    	$JQry(this).addClass("glyphicons-basic-bell");
+    	    }    	  
+    });
 
-    if (count > 0) {
-        $label.removeClass("label-default");
-        $label.addClass("label-danger");
-        $label.text(count);
-    } else {
-        $label.removeClass("label-danger");
-        $label.addClass("label-default");
-        $label.text(0);
-    }
 }
 
 
