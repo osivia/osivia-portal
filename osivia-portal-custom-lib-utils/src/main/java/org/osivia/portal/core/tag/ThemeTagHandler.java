@@ -23,11 +23,13 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
 import org.apache.commons.lang.BooleanUtils;
-
+import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.portal.theme.LayoutConstants;
 import org.jboss.portal.theme.PortalTheme;
 import org.jboss.portal.theme.ThemeElement;
+import org.jboss.portal.theme.ThemeLink;
+import org.jboss.portal.theme.ThemeScript;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.osivia.portal.api.locator.Locator;
@@ -44,11 +46,23 @@ public class ThemeTagHandler extends org.jboss.portal.theme.tag.ThemeTagHandler 
 
     
 
+    private static final String RESOURCE_SCRIPT = "script";
+
+    private static final String RESOURCE_LINK = "link";
+
     /** . */
     private static Logger log = Logger.getLogger(ThemeTagHandler.class);
 
     /** . */
     private String themeName;
+    
+    /** . */
+    private String resourceType;    
+    
+
+
+
+
     /**
      * Default constructor.
      */
@@ -90,16 +104,32 @@ public class ThemeTagHandler extends org.jboss.portal.theme.tag.ThemeTagHandler 
        //
        if (theme != null)
        {
-          for (Iterator i = theme.getElements().iterator(); i.hasNext();)
-          {
-             ThemeElement el = (ThemeElement)i.next();
-             
-             String element = getPageHeaderResourceService().adaptResourceElement(el.getElement());
-             out.println(element.toString());
-             
-             // out.println(el.getElement());
+            for (Iterator i = theme.getElements().iterator(); i.hasNext();) {
+                ThemeElement el = (ThemeElement) i.next();
 
-          }
+                boolean includeElement;
+
+                if (StringUtils.isEmpty(resourceType))
+                    includeElement = true;
+                else {
+                    if (RESOURCE_LINK.equals(resourceType) && (el instanceof ThemeLink))
+                        includeElement = true;
+                    else if (RESOURCE_SCRIPT.equals(resourceType) && (el instanceof ThemeScript))
+                        includeElement = true;
+                    else
+                        includeElement = false;
+                }
+
+
+                if (includeElement) {
+
+                    String element = getPageHeaderResourceService().adaptResourceElement(el.getElement());
+                    out.println(element.toString());
+                }
+
+                // out.println(el.getElement());
+
+            }
        }
     }
     
@@ -126,4 +156,27 @@ public class ThemeTagHandler extends org.jboss.portal.theme.tag.ThemeTagHandler 
     {
        themeName = name;
     }
+    
+    
+
+
+    
+    /**
+     * Getter for resourceType.
+     * @return the resourceType
+     */
+    public String getResourceType() {
+        return resourceType;
+    }
+
+
+    
+    /**
+     * Setter for resourceType.
+     * @param resourceType the resourceType to set
+     */
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
+    }
+
 }

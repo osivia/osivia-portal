@@ -74,6 +74,9 @@
         <attribute>
             <name>themeName</name>
         </attribute>
+        <attribute>
+            <name>resourceType</name>
+        </attribute>        
     </tag>
 
     <tag>
