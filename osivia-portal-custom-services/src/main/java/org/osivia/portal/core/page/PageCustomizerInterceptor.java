@@ -591,6 +591,14 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
         }
 
 
+        // Reset page identifier on Ajax calls for any window command, useful in case of session lost
+        if ((cmd instanceof WindowCommand) && (ControllerContext.AJAX_TYPE == controllerContext.getType())) {
+            WindowCommand windowCommand = (WindowCommand) cmd;
+            Page page = windowCommand.getPage();
+            controllerContext.setAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID, page.getId());
+        }
+
+
         if (cmd instanceof RenderPageCommand) {
             RenderPageCommand rpc = (RenderPageCommand) cmd;
             Portal portal = rpc.getPortal();
