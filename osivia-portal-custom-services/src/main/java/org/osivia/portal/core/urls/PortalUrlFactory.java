@@ -1175,6 +1175,24 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     }
 
 
+    @Override
+    public String getViewPageUrl(PortalControllerContext portalControllerContext, String id) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Portal object identifier
+        PortalObjectId portalObjectId = PortalObjectId.parse(id, PortalObjectPath.CANONICAL_FORMAT);
+
+        // Command
+        ViewPageCommand command = new ViewPageCommand(portalObjectId);
+
+        // Portal URL
+        PortalURLImpl portalUrl = new PortalURLImpl(command, controllerContext, null, null);
+
+        return portalUrl.toString() + "?init-state=true";
+    }
+
+
     /**
      * {@inheritDoc}
      */

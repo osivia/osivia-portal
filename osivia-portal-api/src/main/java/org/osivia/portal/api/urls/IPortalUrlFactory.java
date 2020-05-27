@@ -14,16 +14,15 @@
  */
 package org.osivia.portal.api.urls;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.portlet.PortletException;
-
 import org.jboss.portal.core.model.portal.Page;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ecm.EcmCommonCommands;
 import org.osivia.portal.api.ecm.EcmViews;
+
+import javax.portlet.PortletException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Portal URL factory API interface.
@@ -457,7 +456,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get profiled home page URL.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @return URL
      * @throws PortalException
@@ -466,10 +465,20 @@ public interface IPortalUrlFactory {
 
 
     /**
-     * Get sharing link URL.
-     * 
+     * Get view page URL.
+     *
      * @param portalControllerContext portal controller context
-     * @param id link identifier
+     * @param id                      page identifier
+     * @return URL
+     */
+    String getViewPageUrl(PortalControllerContext portalControllerContext, String id) throws PortalException;
+
+
+    /**
+     * Get sharing link URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @param id                      link identifier
      * @return URL
      * @throws PortletException
      */
