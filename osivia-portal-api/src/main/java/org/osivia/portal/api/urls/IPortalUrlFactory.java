@@ -499,7 +499,7 @@ public interface IPortalUrlFactory {
 
     /**
      * Get advanced search URL with prevalued selectors.
-     * 
+     *
      * @param portalControllerContext portal controller context
      * @param search search query
      * @param advancedSearch advanced search indicator
@@ -508,5 +508,14 @@ public interface IPortalUrlFactory {
      * @throws PortalException
      */
     String getAdvancedSearchUrl(PortalControllerContext portalControllerContext, String search, boolean advancedSearch, Map<String, List<String>> selectors) throws PortalException;
+
+
+    /**
+     * Get user workspace command URL
+     *
+     * @param portalControllerContext portal controller context
+     * @return URL
+     */
+    String getUserWorkspaceCommandUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
 }

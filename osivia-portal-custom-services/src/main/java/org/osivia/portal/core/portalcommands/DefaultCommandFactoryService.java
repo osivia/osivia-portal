@@ -70,6 +70,7 @@ import org.osivia.portal.core.ecm.EcmCommandDelegate;
 import org.osivia.portal.core.page.ParameterizedCommand;
 import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.page.UserWorkspaceCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
 import org.osivia.portal.core.ui.SaveResizableWidthCommand;
@@ -960,6 +961,12 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                         return new BackCommand(pageObjectId, pageMarker, refresh);
                     }
+                }
+
+
+                // User workspace
+                if (UserWorkspaceCommand.ACTION.equals(action)) {
+                    return new UserWorkspaceCommand();
                 }
             }
         } catch (Exception e) {

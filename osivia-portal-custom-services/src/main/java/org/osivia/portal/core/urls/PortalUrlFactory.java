@@ -70,12 +70,7 @@ import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
 import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
 import org.osivia.portal.core.ecm.EcmCommandDelegate;
-import org.osivia.portal.core.page.MonEspaceCommand;
-import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.ParameterizedCommand;
-import org.osivia.portal.core.page.PermLinkCommand;
-import org.osivia.portal.core.page.PortalURLImpl;
-import org.osivia.portal.core.page.RefreshPageCommand;
+import org.osivia.portal.core.page.*;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.pagemarker.PortalCommandFactory;
@@ -1248,6 +1243,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
     	}
         // Portal URL
         PortalURL portalUrl = new PortalURLImpl(command, controllerContext, false, null);
+
+        return portalUrl.toString();
+    }
+
+
+    @Override
+    public String getUserWorkspaceCommandUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Controller command
+        ControllerCommand command = new UserWorkspaceCommand();
+
+        // Portal URL
+        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
 
         return portalUrl.toString();
     }
