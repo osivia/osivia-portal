@@ -12,6 +12,7 @@ import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
+import org.jboss.portal.core.model.portal.Window;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.context.PortalControllerContext;
@@ -255,11 +256,8 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         } else {
             currentItems = new ArrayList<>(groups.size());
 
-            // HTTP session
-            HttpSession session = this.getSession(portalControllerContext);
-
             // Selected layout items
-            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(session, page);
+            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, page);
 
             for (LayoutGroupImpl group : groups) {
                 if (CollectionUtils.isNotEmpty(group.getItems())) {
@@ -273,7 +271,6 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
     }
 
 
-
     @Override
     public LayoutItem getCurrentItem(PortalControllerContext portalControllerContext, String groupId) {
         // Current page
@@ -285,11 +282,8 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         LayoutItem currentItem = null;
 
         if ((page != null) && (group != null)) {
-            // HTTP session
-            HttpSession session = this.getSession(portalControllerContext);
-
             // Selected layout items
-            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(session, page);
+            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, page);
 
             if (CollectionUtils.isNotEmpty(group.getItems())) {
                 currentItem = this.getCurrentItem(selectedLayoutItems, group);
@@ -308,30 +302,14 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         List<LayoutGroupImpl> groups = this.getGroupsImpl(portalControllerContext);
 
         if (StringUtils.isNotEmpty(id) && (page != null) && CollectionUtils.isNotEmpty(groups)) {
-            // Selected layout group
-            LayoutGroupImpl selectedGroup = null;
-            Iterator<LayoutGroupImpl> groupsIterator = groups.iterator();
-            while ((selectedGroup == null) && groupsIterator.hasNext()) {
-                LayoutGroupImpl group = groupsIterator.next();
-                if (CollectionUtils.isNotEmpty(group.getItems())) {
-                    Iterator<LayoutItem> itemsIterator = group.getItems().iterator();
-                    while ((selectedGroup == null) && itemsIterator.hasNext()) {
-                        LayoutItem item = itemsIterator.next();
-                        if (StringUtils.equals(id, item.getId())) {
-                            selectedGroup = group;
-                        }
-                    }
-                }
-            }
+            // Related layout group
+            LayoutGroupImpl group = this.getRelatedGroup(groups, id);
 
-
-            if (selectedGroup != null) {
-                // HTTP session
-                HttpSession session = this.getSession(portalControllerContext);
-
+            if (group != null) {
                 // Selected layout items
-                SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(session, page);
-                selectedLayoutItems.getSelection().put(selectedGroup.getId(), id);
+                SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, page);
+                selectedLayoutItems.getSelection().put(group.getId(), id);
+                selectedLayoutItems.getComputedWindowIds().remove(group.getId());
             }
         }
     }
@@ -357,6 +335,96 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
     }
 
 
+    @Override
+    public void markWindowAsRendered(PortalControllerContext portalControllerContext, Window window) {
+        // Layout item identifier
+        String id = window.getDeclaredProperty(LINKED_ITEM_ID_WINDOW_PROPERTY);
+        // Layout groups
+        List<LayoutGroupImpl> groups = this.getGroupsImpl(portalControllerContext);
+        // Related layout group
+        LayoutGroupImpl group = this.getRelatedGroup(groups, id);
+
+        if (group != null) {
+            // Window identifier
+            String windowId = window.getId().toString();
+            // Selected layout items
+            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, window.getPage());
+
+            // Computed window identifiers
+            List<String> computedWindowIds = selectedLayoutItems.getComputedWindowIds().get(group.getId());
+            if (computedWindowIds == null) {
+                computedWindowIds = new ArrayList<>();
+                selectedLayoutItems.getComputedWindowIds().put(group.getId(), computedWindowIds);
+            }
+
+            if (!computedWindowIds.contains(windowId)) {
+                computedWindowIds.add(windowId);
+            }
+        }
+    }
+
+
+    @Override
+    public boolean isDirty(PortalControllerContext portalControllerContext, Window window) {
+        // Layout item identifier
+        String id = window.getDeclaredProperty(LINKED_ITEM_ID_WINDOW_PROPERTY);
+        // Layout groups
+        List<LayoutGroupImpl> groups = this.getGroupsImpl(portalControllerContext);
+        // Related layout group
+        LayoutGroupImpl group = this.getRelatedGroup(groups, id);
+
+        // Dirty window indicator
+        boolean dirty;
+
+        if ((group == null) || !this.isSelected(portalControllerContext, id)) {
+            dirty = true;
+        } else {
+            // Window identifier
+            String windowId = window.getId().toString();
+            // Selected layout items
+            SelectedLayoutItems selectedLayoutItems = this.getSelectedLayoutItems(portalControllerContext, window.getPage());
+
+            // Computed window identifiers
+            List<String> computedWindowIds = selectedLayoutItems.getComputedWindowIds().get(group.getId());
+
+            dirty = CollectionUtils.isEmpty(computedWindowIds) || !computedWindowIds.contains(windowId);
+        }
+
+        return dirty;
+    }
+
+
+    /**
+     * Get selected layout items.
+     *
+     * @param portalControllerContext portal controller context
+     * @param page                    current page
+     * @return selected layout items
+     */
+    private SelectedLayoutItems getSelectedLayoutItems(PortalControllerContext portalControllerContext, Page page) {
+        // HTTP session
+        HttpSession session = this.getSession(portalControllerContext);
+
+        // Selected layout items
+        SelectedLayoutItems selectedLayoutItems;
+
+        // HTTP session attribute name
+        String name = page.getId().toString(PortalObjectPath.SAFEST_FORMAT) + SELECTED_LAYOUT_ITEMS_ATTRIBUTE_SUFFIX;
+
+        // HTTP session attribute
+        Object attribute = session.getAttribute(name);
+
+        if (attribute instanceof SelectedLayoutItems) {
+            selectedLayoutItems = (SelectedLayoutItems) attribute;
+        } else {
+            selectedLayoutItems = new SelectedLayoutItems();
+            session.setAttribute(name, selectedLayoutItems);
+        }
+
+        return selectedLayoutItems;
+    }
+
+
     /**
      * Get HTTP session.
      *
@@ -376,34 +444,6 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         }
 
         return session;
-    }
-
-
-    /**
-     * Get selected layout items.
-     *
-     * @param session HTTP session
-     * @param page    current page
-     * @return selected layout items
-     */
-    private SelectedLayoutItems getSelectedLayoutItems(HttpSession session, Page page) {
-        // Selected layout items
-        SelectedLayoutItems selectedLayoutItems;
-
-        // HTTP session attribute name
-        String name = page.getId().toString(PortalObjectPath.SAFEST_FORMAT) + SELECTED_LAYOUT_ITEMS_ATTRIBUTE_SUFFIX;
-
-        // HTTP session attribute
-        Object attribute = session.getAttribute(name);
-
-        if (attribute instanceof SelectedLayoutItems) {
-            selectedLayoutItems = (SelectedLayoutItems) attribute;
-        } else {
-            selectedLayoutItems = new SelectedLayoutItems();
-            session.setAttribute(name, selectedLayoutItems);
-        }
-
-        return selectedLayoutItems;
     }
 
 
@@ -520,6 +560,33 @@ public class LayoutItemsServiceImpl implements LayoutItemsService {
         }
 
         return currentItem;
+    }
+
+
+    /**
+     * Get related layout group.
+     *
+     * @param groups layout groups
+     * @param id     layout item identifier
+     * @return layout group
+     */
+    private LayoutGroupImpl getRelatedGroup(List<LayoutGroupImpl> groups, String id) {
+        LayoutGroupImpl relatedGroup = null;
+        Iterator<LayoutGroupImpl> groupsIterator = groups.iterator();
+        while ((relatedGroup == null) && groupsIterator.hasNext()) {
+            LayoutGroupImpl group = groupsIterator.next();
+            if (CollectionUtils.isNotEmpty(group.getItems())) {
+                Iterator<LayoutItem> itemsIterator = group.getItems().iterator();
+                while ((relatedGroup == null) && itemsIterator.hasNext()) {
+                    LayoutItem item = itemsIterator.next();
+                    if (StringUtils.equals(id, item.getId())) {
+                        relatedGroup = group;
+                    }
+                }
+            }
+        }
+
+        return relatedGroup;
     }
 
 }

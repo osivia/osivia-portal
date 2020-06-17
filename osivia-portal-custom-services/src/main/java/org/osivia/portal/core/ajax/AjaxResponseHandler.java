@@ -15,12 +15,6 @@
 package org.osivia.portal.core.ajax;
 
 
-import java.io.StringWriter;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.xml.namespace.QName;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,20 +29,10 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerResponse;
 import org.jboss.portal.core.controller.command.response.RedirectionResponse;
 import org.jboss.portal.core.controller.command.response.SignOutResponse;
-import org.jboss.portal.core.controller.handler.AjaxResponse;
-import org.jboss.portal.core.controller.handler.CommandForward;
-import org.jboss.portal.core.controller.handler.HandlerResponse;
-import org.jboss.portal.core.controller.handler.ResponseHandler;
-import org.jboss.portal.core.controller.handler.ResponseHandlerException;
+import org.jboss.portal.core.controller.handler.*;
 import org.jboss.portal.core.controller.portlet.ControllerPageNavigationalState;
 import org.jboss.portal.core.controller.portlet.ControllerPortletControllerContext;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowActionCommand;
 import org.jboss.portal.core.model.portal.command.action.InvokePortletWindowRenderCommand;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
@@ -81,6 +65,7 @@ import org.jboss.portal.theme.render.RenderException;
 import org.jboss.portal.theme.render.RendererContext;
 import org.jboss.portal.theme.render.ThemeContext;
 import org.jboss.portal.web.ServletContextDispatcher;
+import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.constants.InternalConstants;
@@ -90,23 +75,33 @@ import org.osivia.portal.core.page.PortalURLImpl;
 import org.osivia.portal.core.pagemarker.PageMarkerUtils;
 import org.osivia.portal.core.web.WebCommand;
 
+import javax.xml.namespace.QName;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.Map.Entry;
+
 /**
  * Ajoute une commande de redirection (sert notamment pour les erreurs sur les actions Ajax)
  * Coordination des publics parameters en AJAX (par défaut, les publics parameters obligent à recharger la page)
- *
  */
 public class AjaxResponseHandler implements ResponseHandler {
 
 
     protected static final Log log = LogFactory.getLog(AjaxResponseHandler.class);
 
-    /** . */
+    /**
+     * .
+     */
     private PortalObjectContainer portalObjectContainer;
 
-    /** . */
+    /**
+     * .
+     */
     private PageService pageService;
 
-    /** Layout item service. */
+    /**
+     * Layout item service.
+     */
     private LayoutItemsService layoutItemsService;
 
 
@@ -163,9 +158,9 @@ public class AjaxResponseHandler implements ResponseHandler {
 
     /**
      * Process command response.
-     * 
-     * @param controllerContext controller context
-     * @param controllerCommand controller command
+     *
+     * @param controllerContext  controller context
+     * @param controllerCommand  controller command
      * @param controllerResponse controller response
      * @return handler response
      * @throws ResponseHandlerException
@@ -249,16 +244,16 @@ public class AjaxResponseHandler implements ResponseHandler {
                 PortalObjectId filterWindow = null;
 
                 PortalObjectId actionWindow = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.REQUEST_SCOPE, "osivia.ajax.actionWindowID");
-                
+
                 boolean actionReload = false;
-                if( "true".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("reload.action")))
+                if ("true".equals(controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("reload.action")))
                     actionReload = true;
 
                 if (actionWindow != null || actionReload) {
                     boolean publicParametersChanged = false;
                     boolean windowModeChange = false;
 
-                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext();) {
+                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext(); ) {
                         NavigationalStateChange change = i.next();
 
                         NavigationalStateObjectChange update = (NavigationalStateObjectChange) change;
@@ -291,7 +286,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    if ((actionWindow != null &&(!publicParametersChanged && !windowModeChange))) {
+                    if ((actionWindow != null && (!publicParametersChanged && !windowModeChange))) {
                         filterWindow = actionWindow;
                     }
 
@@ -300,7 +295,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                 if (filterWindow != null) {
                     dirtyWindowIds.add(filterWindow);
                 } else {
-                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext();) {
+                    for (Iterator<? extends NavigationalStateChange> i = ctx.getChanges(); i.hasNext(); ) {
                         NavigationalStateChange change = i.next();
 
                         // A change that modifies potentially the page structure
@@ -376,15 +371,20 @@ public class AjaxResponseHandler implements ResponseHandler {
                         }
                     }
 
-                    // Linked layout item
-                    String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
-                    if (StringUtils.isNotEmpty(linkedLayoutItemId) && !dirtyWindowIds.contains(window.getId())) {
-                        dirtyWindowIds.add(window.getId());
-                    }
-
                     // Prevent Ajax refresh (useful for keywords selector)
                     if (BooleanUtils.toBoolean(window.getDeclaredProperty(InternalConstants.ATTR_WINDOW_PREVENT_AJAX_REFRESH))) {
                         dirtyWindowIds.remove(window.getId());
+                    }
+
+                    // Linked layout item
+                    String linkedLayoutItemId = window.getDeclaredProperty(LayoutItemsService.LINKED_ITEM_ID_WINDOW_PROPERTY);
+                    try {
+                        if (StringUtils.isNotEmpty(linkedLayoutItemId) && !dirtyWindowIds.contains(window.getId()) && this.layoutItemsService.isDirty(portalControllerContext, (Window) window)) {
+                            dirtyWindowIds.add(window.getId());
+                        }
+                    } catch (PortalException e) {
+                        log.error("Unable to determine if window is dirty.", e);
+                        dirtyWindowIds.add(window.getId());
                     }
                 }
             }
@@ -400,23 +400,23 @@ public class AjaxResponseHandler implements ResponseHandler {
                     PortalObjectId childId = child.getId();
                     if (dirtyWindowIds.contains(childId)) {
                         refreshedWindows.add((Window) child);
-                    }   else    {
+                    } else {
                         // TODO
                         // Gestion du back navigateur en Ajax
                         // Les algotrithmes de calcul de changement (ControllerPageNavigationalState/cpns) ne peuvent atre appliqués
                         // sur les retours Ajax car on ne peut pas rejouer les PortletActions en arriere, il faudrait donc réinjecter dans le cpns les 
                         // tous les paramètres modifiés en tenant compte des paramètres publics
                         // Du coup, on rafraichit toutes les windows
-                        if( controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("backPageMarker") != null) {
+                        if (controllerContext.getServerInvocation().getServerContext().getClientRequest().getParameter("backPageMarker") != null) {
                             refreshedWindows.add((Window) child);
                         }
-					}
+                    }
                 }
                 // Obtain layout
                 LayoutService layoutService = this.pageService.getLayoutService();
                 PortalLayout layout = RenderPageCommand.getLayout(layoutService, page);
-                
-                
+
+
                 /*
                  * Create the reload Url
                  * it's obtained from a view page command associated with a new state
@@ -462,7 +462,7 @@ public class AjaxResponseHandler implements ResponseHandler {
                         .createPortletPageNavigationalState(true);
 
                 //
-                for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh;) {
+                for (Iterator<Window> i = refreshedWindows.iterator(); i.hasNext() && !fullRefresh; ) {
                     try {
                         Window refreshedWindow = i.next();
 
@@ -474,12 +474,13 @@ public class AjaxResponseHandler implements ResponseHandler {
                         if (StringUtils.isEmpty(linkedLayoutItemId) || this.layoutItemsService.isSelected(portalControllerContext, linkedLayoutItemId)) {
                             RenderWindowCommand rwc = new RenderWindowCommand(pageNavigationalState, refreshedWindow.getId());
                             rendition = rwc.render(controllerContext);
+
+                            if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
+                                this.layoutItemsService.markWindowAsRendered(portalControllerContext, refreshedWindow);
+                            }
                         } else {
                             // Window properties
                             Map<String, String> windowProperties = new HashMap<>();
-//                            windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-//                            windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-//                            windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
 
                             List<WindowState> supportedWindowStates = new ArrayList<>(0);
                             List<Mode> supportedModes = new ArrayList<>(0);
@@ -552,11 +553,11 @@ public class AjaxResponseHandler implements ResponseHandler {
 
                     // updatePage.addFragment("notification", "message");
                     PageMarkerUtils.savePageState(controllerContext, page);
-                    
+
                     controllerContext.getServerInvocation().getServerContext().getClientResponse().addHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
-                                         
+
                     controllerContext.getServerInvocation().getServerContext().getClientResponse().addHeader("Cache-Control", "no-cache, max-age=0, must-revalidate, no-store");
- 
+
                     return new AjaxResponse(updatePage);
                 }
             }
@@ -588,14 +589,14 @@ public class AjaxResponseHandler implements ResponseHandler {
      * Refresh window context.
      *
      * @param controllerContext controller context
-     * @param layout portal layout
-     * @param updatePage update page response
-     * @param res page result
-     * @param windowContext window context
+     * @param layout            portal layout
+     * @param updatePage        update page response
+     * @param res               page result
+     * @param windowContext     window context
      * @throws RenderException
      */
     private void refreshWindowContext(ControllerContext controllerContext, PortalLayout layout, UpdatePageStateResponse updatePage, PageResult res,
-            WindowContext windowContext) throws RenderException {
+                                      WindowContext windowContext) throws RenderException {
         // Server invocation
         ServerInvocation invocation = controllerContext.getServerInvocation();
         // Server context

@@ -70,6 +70,7 @@ import org.osivia.portal.core.error.CustomPageControlPolicy;
 import org.osivia.portal.core.errors.PortalLoggerContext;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tracker.ITracker;
+import org.osivia.portal.core.ui.layout.LayoutItemsServiceImpl;
 
 
 /**
@@ -85,10 +86,12 @@ public class ServicesInvoker {
     // Timeout par défaut en secondes
     private static final int DEFAULT_TIMEOUT_THREAD = 1200;
     private static List<String> excludedPortlets;
+
     /**
      * Layout items service.
      */
     private static LayoutItemsService layoutItemsService;
+
     int nbWindows = 0;
     Page page;
     ControllerContext context;
@@ -325,6 +328,10 @@ public class ServicesInvoker {
 
                                 nbThreads++;
                             }
+                        }
+
+                        if (StringUtils.isNotEmpty(linkedLayoutItemId)) {
+                            this.getLayoutItemsService().markWindowAsRendered(portalControllerContext, window);
                         }
 
                         this.nbWindows++;
