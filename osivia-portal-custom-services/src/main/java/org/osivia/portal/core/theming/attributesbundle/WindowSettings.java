@@ -64,6 +64,13 @@ public class WindowSettings {
      * Ajax indicator.
      */
     private boolean ajax;
+    
+    /** 
+     * The cache deactivation. 
+     */
+    private boolean cacheDeactivation;
+    
+    
     /**
      * Hide empty portlet indicator.
      */
@@ -256,6 +263,25 @@ public class WindowSettings {
         this.ajax = ajax;
     }
 
+    /**
+     * Getter for cacheDeactivation.
+     * @return the cacheDeactivation
+     */
+    public boolean isCacheDeactivation() {
+        return cacheDeactivation;
+    }
+
+
+    
+    /**
+     * Setter for cacheDeactivation.
+     * @param cacheDeactivation the cacheDeactivation to set
+     */
+    public void setCacheDeactivation(boolean cacheDeactivation) {
+        this.cacheDeactivation = cacheDeactivation;
+    }
+
+    
     /**
      * Getter for hideEmpty.
      *

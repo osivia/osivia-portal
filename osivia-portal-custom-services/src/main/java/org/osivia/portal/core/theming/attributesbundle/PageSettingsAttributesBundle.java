@@ -1054,6 +1054,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Ajax
             boolean ajax = "1".equals(window.getProperty("osivia.ajaxLink"));
             settings.setAjax(ajax);
+            
+            
+            // Cache deactivation
+            boolean cacheDeactivation = "1".equals(window.getProperty("osivia.cacheDeactivation"));
+            settings.setCacheDeactivation(cacheDeactivation);
 
             // Hide empty portlet
             boolean hideEmpty = "1".equals(window.getProperty("osivia.hideEmptyPortlet"));

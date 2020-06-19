@@ -57,6 +57,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 
 	private String idPerso;
 	private String ajaxLink;
+    private String cacheDeactivation;	
 	private String hideEmptyPortlet;
 	private String printPortlet;
 	private String conditionalScope;
@@ -96,7 +97,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      * @param selectionDep
      */
     public ChangeWindowSettingsCommand(String windowId, List<String> style, String mobileCollapse, String displayTitle, String title, String displayDecorators,
-            boolean maximizedToCms, String bootstrapPanelStyle, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet,
+            boolean maximizedToCms, String bootstrapPanelStyle, String idPerso, String ajaxLink, String cacheDeactivation, String hideEmptyPortlet, String printPortlet,
             String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep, String priority) {
         this.windowId = windowId;
         this.style = style;
@@ -110,6 +111,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 
         this.idPerso = idPerso;
         this.ajaxLink = ajaxLink;
+        this.cacheDeactivation = cacheDeactivation;
         this.hideEmptyPortlet = hideEmptyPortlet;
         this.printPortlet = printPortlet;
         this.conditionalScope = conditionalScope;
@@ -192,6 +194,14 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         } else if (window.getDeclaredProperty("osivia.ajaxLink") != null) {
             window.setDeclaredProperty("osivia.ajaxLink", null);
         }
+		
+		
+        if ("1".equals(this.cacheDeactivation)) {
+            window.setDeclaredProperty("osivia.cacheDeactivation", "1");
+        } else if (window.getDeclaredProperty("osivia.cacheDeactivation") != null) {
+            window.setDeclaredProperty("osivia.cacheDeactivation", null);
+        }
+
 
 		if( "1".equals(this.hideEmptyPortlet)) {
             window.setDeclaredProperty("osivia.hideEmptyPortlet", "1");
