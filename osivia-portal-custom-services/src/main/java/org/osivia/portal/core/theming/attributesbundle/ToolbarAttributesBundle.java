@@ -405,10 +405,23 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Portal name
         String portalName = page.getPortal().getName();
 
+        
+        // fonctionnal administration
+        String customAdminPage = page.getProperty("osivia.portal.admin.page");
+        if( customAdminPage != null)    {
+            ViewPageCommand customAdminPageCommand = new ViewPageCommand(new PortalObjectId("", PortalObjectPath.parse(customAdminPage, PortalObjectPath.CANONICAL_FORMAT)));
+            String customAdminPageURL = new PortalURLImpl(customAdminPageCommand, context, null, null).toString();
+            Element functionalhome = DOM4JUtils.generateLinkElement(customAdminPageURL, null, null, "nav-link", "", "glyphicons glyphicons-basic-cogwheel");
+            administration.add(functionalhome);
+        }
+        
         // Configuration menu dropdown element
         Element configurationDropdown = DOM4JUtils.generateElement(HTMLConstants.LI, "nav-item dropdown", null);
         administration.add(configurationDropdown);
 
+
+        
+        
         // Configuration menu dropdown title
         String configurationTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
         Element configurationDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null,
@@ -417,6 +430,9 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Element title = DOM4JUtils.generateElement(HTMLConstants.SPAN, "d-none d-lg-inline", configurationTitle);
         configurationDropdownTitle.add(title);
         configurationDropdown.add(configurationDropdownTitle);
+        
+        
+
 
         // Configuration menu
         Element configurationMenu = DOM4JUtils.generateElement(HTMLConstants.DIV, "dropdown-menu", null);
