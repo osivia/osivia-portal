@@ -282,7 +282,11 @@ public class ConsumerCacheInterceptor extends PortletInvokerInterceptor {
             long sequencingTs = -1;
 
             if ((cachedEntry != null) && (window != null)) {
-                if ("selection".equals(window.getProperty("osivia.cacheEvents"))) {
+                if ("1".equals(window.getProperty("osivia.cacheDeactivation"))) {
+                    cachedEntry = null;
+                }
+                
+                if ((cachedEntry != null) &&"selection".equals(window.getProperty("osivia.cacheEvents"))) {
                     // Le cache est-il bien conforme à la selection
                     Long timestamp = (Long) ctx.getAttribute(Scope.PRINCIPAL_SCOPE, AttributesStorage.SELECTION.getTimestampAttributeName());
                     if (timestamp != null) {

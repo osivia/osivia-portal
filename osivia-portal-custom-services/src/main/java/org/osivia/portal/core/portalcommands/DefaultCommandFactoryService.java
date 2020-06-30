@@ -125,6 +125,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String bootstrapPanelStyle = null;
                     String idPerso = null;
                     String ajaxLink = null;
+                    String cacheDeactivation = null;                    
                     String hideEmptyPortlet = null;
                     String printPortlet = null;
                     String conditionalScope = null;
@@ -183,6 +184,13 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                         } else {
                             ajaxLink = "";
                         }
+                        
+                        if (parameterMap.get("cacheDeactivation") != null) {
+                            cacheDeactivation = URLDecoder.decode(parameterMap.get("cacheDeactivation")[0], CharEncoding.UTF_8);
+                        } else {
+                            cacheDeactivation = "";
+                        }
+
 
                         if (parameterMap.get("hideEmptyPortlet") != null) {
                             hideEmptyPortlet = URLDecoder.decode(parameterMap.get("hideEmptyPortlet")[0], CharEncoding.UTF_8);
@@ -243,7 +251,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                         // Change window settings command
                         ChangeWindowSettingsCommand command = new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title,
-                                displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope,
+                                displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, cacheDeactivation, hideEmptyPortlet, printPortlet, conditionalScope,
                                 bshActivation, bshScript, cacheID, selectionDep, priority);
                         command.setTaskbarItemId(taskbarItemId);
                         command.setLayoutItemId(layoutItemId);

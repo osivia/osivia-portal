@@ -945,11 +945,23 @@
                             <input id="${window.id}-shared-cache-id" type="text" name="cacheID" value="${window.sharedCacheId}" class="form-control">
                         </div>
 
-                        <%-- Shared cache identifier --%>
+                       <%-- Cache deactivation --%>
+                        <div class="form-group">
+                            <label for="${window.id}-cache-deactivation"><op:translate key="WINDOW_PROPERTIES_CACHE"/></label>
+                            <div class="form-check">
+                                <input id="${window.id}-cache-deactivation" type="checkbox" name="cacheDeactivation" value="1" class="form-check-input" ${window.cacheDeactivation ? 'checked="checked"' : ''}>
+                                <label for="${window.id}-cache-deactivation" class="form-check-label"><op:translate key="WINDOW_PROPERTIES_CACHE_DEACTIVATE"/></label>
+                            </div>
+                        </div>
+                        
+
+                        <%-- Priority --%>
                         <div class="form-group">
                             <label for="${window.id}-priority"><op:translate key="WINDOW_PROPERTIES_PRIORITY"/></label>
                             <input id="${window.id}-priority" type="number" name="priority"  value="${window.priority}" class="form-control">
                         </div>
+                        
+ 
 
                         <%-- Selection dependency indicator --%>
                         <div class="form-group">

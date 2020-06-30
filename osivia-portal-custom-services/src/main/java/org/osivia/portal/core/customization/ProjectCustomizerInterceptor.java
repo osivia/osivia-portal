@@ -123,9 +123,16 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
      * @param configuration project customization configuration
      */
     private void profiledHomeRedirection(PortalControllerContext portalControllerContext, IProjectCustomizationConfiguration configuration) {
-        if (!configuration.isAdministrator() && !PageProperties.getProperties().isRefreshingPage()) {
+        HttpServletRequest request = configuration.getHttpServletRequest();
+        
+        boolean preventRedirection = false;
+        
+        if( configuration.isAdministrator() && "true".equals(request.getParameter("init-state")))
+            preventRedirection = true;
+        
+        if (!preventRedirection && !PageProperties.getProperties().isRefreshingPage()) {
             // HTTP servlet request
-            HttpServletRequest request = configuration.getHttpServletRequest();
+
 
             if (request.getUserPrincipal() != null) {
                 // Redirection indicator

@@ -21,9 +21,10 @@ public class FileMimeType {
     private String icon;
     /** MIME type pdf convertion */
     private boolean pdfConvertible;
-
-
+    /** MIME type pdf convertion */
+    private boolean hideExtension;
     
+
 
 
     /**
@@ -143,4 +144,25 @@ public class FileMimeType {
         this.icon = icon;
     }
 
+
+    
+    /**
+     * Getter for hideExtension.
+     * @return the hideExtension
+     */
+    public boolean isHideExtension() {
+        return hideExtension;
+    }
+
+
+    
+    /**
+     * Setter for hideExtension.
+     * @param hideExtension the hideExtension to set
+     */
+    public void setHideExtension(boolean hideExtension) {
+        this.hideExtension = hideExtension;
+    }
+
+    
 }
