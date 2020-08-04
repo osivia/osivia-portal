@@ -107,6 +107,26 @@
     </tag>
     
     
+     <!-- Status code -->    
+     <tag>
+        <description>Set status</description>
+        <display-name>Set response status code</display-name>
+        <name>status</name>
+        <tag-class>org.osivia.portal.taglib.portal.tag.StatusTag</tag-class>
+        <body-content>empty</body-content>
+
+        <attribute>
+            <description>Status code</description>
+            <name>code</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+
+    </tag>
+    
+    
+    
     
     <tag>
         <description>Resource adapter</description>
