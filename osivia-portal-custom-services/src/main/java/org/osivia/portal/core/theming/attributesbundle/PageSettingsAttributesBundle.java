@@ -1226,7 +1226,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 // URL
                 String url;
                 try {
-                    url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                    if( ! "true".equals(System.getProperty("osivia.preventNuxeoAccess")))   {
+                         url = cmsService.getEcmUrl(cmsContext, EcmViews.RELOAD, null, null);
+                    }   else    {
+                        url = null;
+                    }
                 } catch (CMSException e) {
                     url = null;
                 }
