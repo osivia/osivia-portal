@@ -341,9 +341,12 @@ public class ServicesInvoker {
 
                     // Window properties
                     Map<String, String> windowProperties = new HashMap<>();
-//                    windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
-//                    windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
-//                    windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
+
+                    // Ajax
+                    String windowId = window.getId().toString(PortalObjectPath.SAFEST_FORMAT);
+                    PageProperties properties = PageProperties.getProperties();
+                    String ajax = window.getDeclaredProperty("osivia.ajaxLink");
+                    properties.setWindowProperty(windowId, "osivia.ajaxLink", ajax);
 
                     List<WindowState> supportedWindowStates = new ArrayList<>(0);
                     List<Mode> supportedModes = new ArrayList<>(0);
