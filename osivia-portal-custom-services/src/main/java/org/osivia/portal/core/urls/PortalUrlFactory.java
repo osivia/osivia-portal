@@ -1262,4 +1262,21 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         return portalUrl.toString();
     }
 
+
+    @Override
+    public String getLoginUrl(PortalControllerContext portalControllerContext) throws PortalException {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        // Current page identifier
+        PortalObjectId currentPageId = (PortalObjectId) controllerContext.getAttribute(ControllerCommand.NAVIGATIONAL_STATE_SCOPE, Constants.ATTR_PAGE_ID);
+
+        // Controller command
+        ControllerCommand command = new RefreshPageCommand(currentPageId.toString(PortalObjectPath.SAFEST_FORMAT));
+
+        // Portal URL
+        PortalURLImpl portalUrl = new PortalURLImpl(command, controllerContext, true, null);
+
+        return portalUrl.toString();
+    }
+
 }

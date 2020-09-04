@@ -518,4 +518,13 @@ public interface IPortalUrlFactory {
      */
     String getUserWorkspaceCommandUrl(PortalControllerContext portalControllerContext) throws PortalException;
 
+
+    /**
+     * Get login URL.
+     *
+     * @param portalControllerContext portal controller context
+     * @return URL
+     */
+    String getLoginUrl(PortalControllerContext portalControllerContext) throws PortalException;
+
 }
