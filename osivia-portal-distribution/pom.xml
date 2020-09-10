@@ -164,6 +164,14 @@
 		    <version>${org.springframework.security.version}</version>
 		</dependency>
 
+        <!-- JBPM -->
+        <dependency>
+            <groupId>org.jbpm.identity</groupId>
+            <artifactId>jbpm-identity</artifactId>
+            <version>3.2.2</version>
+            <classifier>jdk8</classifier>
+        </dependency>
+
         <!--Jackson-->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
