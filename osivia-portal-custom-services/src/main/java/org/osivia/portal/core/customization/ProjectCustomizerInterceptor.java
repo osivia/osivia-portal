@@ -125,12 +125,25 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
     private void profiledHomeRedirection(PortalControllerContext portalControllerContext, IProjectCustomizationConfiguration configuration) {
         HttpServletRequest request = configuration.getHttpServletRequest();
         
-        boolean preventRedirection = false;
+        boolean allowRedirect = true;
         
-        if( configuration.isAdministrator() && "true".equals(request.getParameter("init-state")))
-            preventRedirection = true;
+
+        if( configuration.isAdministrator())    {
+            allowRedirect = false;
+            
+            Page page = configuration.getPage();
+            Page defautPage = page.getPortal().getDefaultPage();
+            
+            // Default page must be redirected for administrator
+            // (home url with no path and no parameter)
+            if( (page.getId().equals(defautPage.getId())) )    {
+                String uri = request.getRequestURI();
+                if( uri.endsWith("/auth"))
+                    allowRedirect = true;
+            }
+        }
         
-        if (!preventRedirection && !PageProperties.getProperties().isRefreshingPage()) {
+        if (allowRedirect && !PageProperties.getProperties().isRefreshingPage()) {
             // HTTP servlet request
 
 
