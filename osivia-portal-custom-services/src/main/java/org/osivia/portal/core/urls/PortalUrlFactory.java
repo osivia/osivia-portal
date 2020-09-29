@@ -13,32 +13,17 @@
  */
 package org.osivia.portal.core.urls;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.*;
+import org.jboss.portal.core.model.portal.PortalObjectContainer;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
@@ -56,19 +41,11 @@ import org.osivia.portal.api.ecm.IEcmCommandervice;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSPutDocumentInTrashCommand;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.CmsCommand;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.api.windows.PortalWindow;
+import org.osivia.portal.api.windows.WindowFactory;
+import org.osivia.portal.core.cms.*;
 import org.osivia.portal.core.context.ControllerContextAdapter;
-import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.dynamic.StartDynamicPageCommand;
-import org.osivia.portal.core.dynamic.StartDynamicWindowCommand;
-import org.osivia.portal.core.dynamic.StartDynamicWindowInNewPageCommand;
-import org.osivia.portal.core.dynamic.StopDynamicPageCommand;
-import org.osivia.portal.core.dynamic.StopDynamicWindowCommand;
+import org.osivia.portal.core.dynamic.*;
 import org.osivia.portal.core.ecm.EcmCommandDelegate;
 import org.osivia.portal.core.page.*;
 import org.osivia.portal.core.pagemarker.PageMarkerInfo;
@@ -83,6 +60,17 @@ import org.osivia.portal.core.sharing.link.LinkSharingCommand;
 import org.osivia.portal.core.tracker.ITracker;
 import org.osivia.portal.core.utils.URLUtils;
 import org.osivia.portal.core.web.IWebIdService;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Portal URL factory implementation.
@@ -193,21 +181,54 @@ public class PortalUrlFactory implements IPortalUrlFactory {
 
         String portalPersistentName = null;
 
+        // Popup indicator
         boolean popup = false;
-        if (portalControllerContext.getControllerCtx() != null) {
-            final String portalName = (String) ControllerContextAdapter.getControllerContext(portalControllerContext).getAttribute(Scope.REQUEST_SCOPE,
+        // Page marker replacement
+        String pageMarkerReplacement = null;
+
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+        if (controllerContext != null) {
+            final String portalName = (String) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
                     "osivia.currentPortalName");
 
-            final Portal defaultPortal = ControllerContextAdapter.getControllerContext(portalControllerContext).getController().getPortalObjectContainer()
-                    .getContext().getDefaultPortal();
+            PortalObjectContainer portalObjectContainer = controllerContext.getController().getPortalObjectContainer();
+            final Portal defaultPortal = portalObjectContainer.getContext().getDefaultPortal();
 
             if (!defaultPortal.getName().equals(portalName)) {
                 if (!StringUtils.equals(portalName, "osivia-util")) {
                     portalPersistentName = portalName;
                 } else {
-                    popup = true;
-                    portalPersistentName = defaultPortal.getName();
-                    pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                    PortalWindow window;
+                    if (portalControllerContext.getRequest() == null) {
+                        window = null;
+                    } else {
+                        window = WindowFactory.getWindow(portalControllerContext.getRequest());
+                    }
+
+                    String currentPageId;
+                    if (window == null) {
+                        currentPageId = null;
+                    } else {
+                        currentPageId = window.getProperty("osivia.modal.cms.currentPageId");
+                    }
+
+                    if (StringUtils.isEmpty(currentPageId)) {
+                        popup = true;
+                        portalPersistentName = defaultPortal.getName();
+                        pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
+                    } else {
+                        popup = false; // Don't adapt URL in this case
+                        pagePath = currentPageId;
+                        PortalObjectId pageObjectId = PortalObjectId.parse(currentPageId, PortalObjectPath.CANONICAL_FORMAT);
+                        Page page = portalObjectContainer.getObject(pageObjectId, Page.class);
+                        Portal portal = page.getPortal();
+                        portalPersistentName = portal.getName();
+                    }
+
+
+                    if (window != null) {
+                        pageMarkerReplacement = window.getProperty("osivia.modal.cms.pageMarkerReplacement");
+                    }
                 }
             }
         }
@@ -216,12 +237,14 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowPermReference, this.addToBreadcrumb(portalControllerContext.getRequest()), portalPersistentName);
 
 
-        final PortalURL portalURL = new PortalURLImpl(cmd, ControllerContextAdapter.getControllerContext(portalControllerContext), null, null);
+        final PortalURL portalURL = new PortalURLImpl(cmd, controllerContext, null, null);
 
         String url = portalURL.toString();
         if (popup) {
             url = this.adaptPortalUrlToPopup(portalControllerContext, url, IPortalUrlFactory.POPUP_URL_ADAPTER_CLOSE);
-
+        }
+        if (StringUtils.isNotEmpty(pageMarkerReplacement)) {
+            url = url.replaceAll("/pagemarker/[0-9]+/", "/pagemarker/" + pageMarkerReplacement + "/");
         }
 
         return url;
@@ -711,6 +734,18 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                     windowProperties.put("theme.dyna.partial_refresh_enabled", "false");
                 }
             } else if (PortalUrlType.MODAL.equals(type)) {
+                // Current page identifier
+                String currentPageId;
+                PortalObjectId currentPageObjectId = PortalObjectUtils.getPageId(controllerContext);
+                if (currentPageObjectId == null) {
+                    currentPageId = null;
+                } else {
+                    currentPageId = currentPageObjectId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                }
+
+                // Current page marker
+                String currentPageMarker = PageMarkerUtils.getCurrentPageMarker(controllerContext);
+
                 // Modal
                 PortalObjectPath pageObjectPath = PortalObjectPath.parse("/osivia-util/modal", PortalObjectPath.CANONICAL_FORMAT);
                 pageId = URLEncoder.encode(pageObjectPath.toString(PortalObjectPath.SAFEST_FORMAT), CharEncoding.UTF_8);
@@ -721,6 +756,10 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 windowProperties.put(DynaRenderOptions.PARTIAL_REFRESH_ENABLED, String.valueOf(true));
                 windowProperties.put("osivia.ajaxLink", "1");
                 windowProperties.put("osivia.currentPortal", currentPortal);
+                if (StringUtils.isNotEmpty(currentPageId)) {
+                    windowProperties.put("osivia.modal.cms.currentPageId", currentPageId);
+                }
+                windowProperties.put("osivia.modal.cms.pageMarkerReplacement", currentPageMarker);
 
             } else {
                 // Default
@@ -940,6 +979,9 @@ public class PortalUrlFactory implements IPortalUrlFactory {
         }
         // Back page marker
         String backPageMarker = (String) controllerContext.getAttribute(ControllerCommand.PRINCIPAL_SCOPE, backPageMarkerName);
+
+
+
 
 
         // Refresh indicator attribute name
