@@ -1,11 +1,5 @@
 package org.osivia.portal.core.customization;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.invocation.InvocationException;
@@ -24,6 +18,11 @@ import org.osivia.portal.api.customization.IProjectCustomizationConfiguration;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Project customizer interceptor.
@@ -123,48 +122,38 @@ public class ProjectCustomizerInterceptor extends ControllerInterceptor {
      * @param configuration project customization configuration
      */
     private void profiledHomeRedirection(PortalControllerContext portalControllerContext, IProjectCustomizationConfiguration configuration) {
+        // HTTP servlet request
         HttpServletRequest request = configuration.getHttpServletRequest();
-        
-        boolean allowRedirect = true;
-        
 
-        if( configuration.isAdministrator())    {
-            allowRedirect = false;
-            
+        boolean allowRedirect;
+        if (configuration.isAdministrator()) {
             Page page = configuration.getPage();
-            Page defautPage = page.getPortal().getDefaultPage();
-            
+            Page defaultPage = page.getPortal().getDefaultPage();
+
             // Default page must be redirected for administrator
             // (home url with no path and no parameter)
-            if( (page.getId().equals(defautPage.getId())) )    {
-                String uri = request.getRequestURI();
-                if( uri.endsWith("/auth"))
-                    allowRedirect = true;
-            }
+            allowRedirect = (defaultPage != null) && page.getId().equals(defaultPage.getId()) && request.getRequestURI().endsWith("/auth");
+        } else {
+            allowRedirect = true;
         }
         
-        if (allowRedirect && !PageProperties.getProperties().isRefreshingPage()) {
-            // HTTP servlet request
+        if ((allowRedirect && !PageProperties.getProperties().isRefreshingPage()) && (request.getUserPrincipal() != null)) {
+            // Redirection indicator
+            boolean redirect = BooleanUtils.toBoolean(request.getParameter("redirect"));
 
+            if (!redirect) {
+                Page page = configuration.getPage();
 
-            if (request.getUserPrincipal() != null) {
-                // Redirection indicator
-                boolean redirect = BooleanUtils.toBoolean(request.getParameter("redirect"));
+                if (page != null) {
+                    Portal portal = page.getPortal();
 
-                if (!redirect) {
-                    Page page = configuration.getPage();
-
-                    if (page != null) {
-                        Portal portal = page.getPortal();
-
-                        if (page.equals(portal.getDefaultPage())) {
-                            try {
-                                // Redirection URL
-                                String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
-                                configuration.setRedirectionURL(url);
-                            } catch (PortalException e) {
-                                // Do nothing
-                            }
+                    if (page.equals(portal.getDefaultPage())) {
+                        try {
+                            // Redirection URL
+                            String url = this.portalUrlFactory.getProfiledHomePageUrl(portalControllerContext);
+                            configuration.setRedirectionURL(url);
+                        } catch (PortalException e) {
+                            // Do nothing
                         }
                     }
                 }
