@@ -1524,15 +1524,13 @@
    	<attribute name="TransactionManagerLookupClass">
    		org.jboss.cache.JBossTransactionManagerLookup
    	</attribute>
+  	<attribute name="NodeLockingScheme">PESSIMISTIC</attribute>
 
-  	<attribute name="NodeLockingScheme">OPTIMISTIC</attribute>
-   	<attribute name="IsolationLevel">READ_COMMITTED</attribute>
 
-<!-- suppression branche 1.0
+   	<attribute name="IsolationLevel">REPEATABLE_READ</attribute>
+
    	<attribute name="CacheMode">REPL_SYNC</attribute>
--->
-   	<attribute name="CacheMode">REPL_ASYNC</attribute>
- 	<attribute name="ClusterName">
+	<attribute name="ClusterName">
    		connect
    	</attribute>
 
