@@ -62,7 +62,11 @@ $JQry(function () {
             };
 
             options["templateSelection"] = function (params) {
-                return params.text;
+                var $result = $JQry(document.createElement("span"));
+                $result.addClass("text-truncate");
+                $result.text(params.text);
+
+                return $result;
             };
         }
 

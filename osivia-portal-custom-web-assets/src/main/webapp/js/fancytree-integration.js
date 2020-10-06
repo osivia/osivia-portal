@@ -19,18 +19,18 @@ $JQry(document).ready(function() {
 
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-halflings-file",
-						docOpen: "glyphicons glyphicons-halflings-file",
-						checkbox: "glyphicons glyphicons-halflings-square-empty",
-						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
-						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
-						error: "glyphicons glyphicons-halflings-square-alert",
-						expanderClosed: "glyphicons glyphicons-halflings-set-down",
-						expanderLazy: "glyphicons glyphicons-halflings-set-down",
-						expanderOpen: "glyphicons glyphicons-halflings-set-down",
-						folder: "glyphicons glyphicons-halflings-folder",
-						folderOpen: "glyphicons glyphicons-halflings-folder-open",
-						loading: "glyphicons glyphicons-halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-basic-file",
+						docOpen: "glyphicons glyphicons-basic-file",
+						checkbox: "glyphicons glyphicons-basic-square-empty",
+						checkboxSelected: "glyphicons glyphicons-basic-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-basic-square-indeterminate",
+						error: "glyphicons glyphicons-basic-square-alert",
+						expanderClosed: "glyphicons glyphicons-basic-set-down",
+						expanderLazy: "glyphicons glyphicons-basic-set-down",
+						expanderOpen: "glyphicons glyphicons-basic-set-down",
+						folder: "glyphicons glyphicons-basic-folder",
+						folderOpen: "glyphicons glyphicons-basic-folder-open",
+						loading: "glyphicons glyphicons-basic-hourglass text-info"
 					}
 				}
 			};
@@ -82,18 +82,18 @@ $JQry(document).ready(function() {
 
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-halflings-file",
-						docOpen: "glyphicons glyphicons-halflings-file",
-						checkbox: "glyphicons glyphicons-halflings-square-empty",
-						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
-						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
-						error: "glyphicons glyphicons-halflings-square-alert",
-						expanderClosed: "glyphicons glyphicons-halflings-set-down",
-						expanderLazy: "glyphicons glyphicons-halflings-set-down",
-						expanderOpen: "glyphicons glyphicons-halflings-set-down",
-						folder: "glyphicons glyphicons-halflings-folder",
-						folderOpen: "glyphicons glyphicons-halflings-folder-open",
-						loading: "glyphicons glyphicons-halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-basic-file",
+						docOpen: "glyphicons glyphicons-basic-file",
+						checkbox: "glyphicons glyphicons-basic-square-empty",
+						checkboxSelected: "glyphicons glyphicons-basic-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-basic-square-indeterminate",
+						error: "glyphicons glyphicons-basic-square-alert",
+						expanderClosed: "glyphicons glyphicons-basic-set-down",
+						expanderLazy: "glyphicons glyphicons-basic-set-down",
+						expanderOpen: "glyphicons glyphicons-basic-set-down",
+						folder: "glyphicons glyphicons-basic-folder",
+						folderOpen: "glyphicons glyphicons-basic-folder-open",
+						loading: "glyphicons glyphicons-basic-hourglass text-info"
 					}
 				},
 
@@ -159,18 +159,18 @@ $JQry(document).ready(function() {
 
 					glyph : {
 						map : {
-							doc : "glyphicons glyphicons-halflings-file",
-							docOpen: "glyphicons glyphicons-halflings-file",
-							checkbox: "glyphicons glyphicons-halflings-square-empty",
-							checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
-							checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
-							error: "glyphicons glyphicons-halflings-square-alert",
-							expanderClosed: "glyphicons glyphicons-halflings-set-down",
-							expanderLazy: "glyphicons glyphicons-halflings-set-down",
-							expanderOpen: "glyphicons glyphicons-halflings-set-down",
-							folder: "glyphicons glyphicons-halflings-folder",
-							folderOpen: "glyphicons glyphicons-halflings-folder-open",
-							loading: "glyphicons glyphicons-halflings-hourglass text-info"
+							doc : "glyphicons glyphicons-basic-file",
+							docOpen: "glyphicons glyphicons-basic-file",
+							checkbox: "glyphicons glyphicons-basic-square-empty",
+							checkboxSelected: "glyphicons glyphicons-basic-square-selected",
+							checkboxUnknown: "glyphicons glyphicons-basic-square-indeterminate",
+							error: "glyphicons glyphicons-basic-square-alert",
+							expanderClosed: "glyphicons glyphicons-basic-set-down",
+							expanderLazy: "glyphicons glyphicons-basic-set-down",
+							expanderOpen: "glyphicons glyphicons-basic-set-down",
+							folder: "glyphicons glyphicons-basic-folder",
+							folderOpen: "glyphicons glyphicons-basic-folder-open",
+							loading: "glyphicons glyphicons-basic-hourglass text-info"
 						}
 					},
 
@@ -254,18 +254,18 @@ $JQry(document).ready(function() {
 
 				glyph : {
 					map : {
-						doc : "glyphicons glyphicons-halflings-file",
-						docOpen: "glyphicons glyphicons-halflings-file",
-						checkbox: "glyphicons glyphicons-halflings-square-empty",
-						checkboxSelected: "glyphicons glyphicons-halflings-square-selected",
-						checkboxUnknown: "glyphicons glyphicons-halflings-square-indeterminate",
-						error: "glyphicons glyphicons-halflings-square-alert",
-						expanderClosed: "glyphicons glyphicons-halflings-set-down",
-						expanderLazy: "glyphicons glyphicons-halflings-set-down",
-						expanderOpen: "glyphicons glyphicons-halflings-set-down",
-						folder: "glyphicons glyphicons-halflings-folder",
-						folderOpen: "glyphicons glyphicons-halflings-folder-open",
-						loading: "glyphicons glyphicons-halflings-hourglass text-info"
+						doc : "glyphicons glyphicons-basic-file",
+						docOpen: "glyphicons glyphicons-basic-file",
+						checkbox: "glyphicons glyphicons-basic-square-empty",
+						checkboxSelected: "glyphicons glyphicons-basic-square-selected",
+						checkboxUnknown: "glyphicons glyphicons-basic-square-indeterminate",
+						error: "glyphicons glyphicons-basic-square-alert",
+						expanderClosed: "glyphicons glyphicons-basic-set-down",
+						expanderLazy: "glyphicons glyphicons-basic-set-down",
+						expanderOpen: "glyphicons glyphicons-basic-set-down",
+						folder: "glyphicons glyphicons-basic-folder",
+						folderOpen: "glyphicons glyphicons-basic-folder-open",
+						loading: "glyphicons glyphicons-basic-hourglass text-info"
 					}
 				},
 
