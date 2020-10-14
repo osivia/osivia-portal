@@ -30,6 +30,12 @@ public class CustomTask implements EcmDocument {
 
     /** The properties. */
     private Map<String, String> properties;
+    
+    /** The publication DTO. */
+    private Object publicationDTO;
+    
+
+
 
 
 
@@ -38,6 +44,12 @@ public class CustomTask implements EcmDocument {
         this.title = title;
         this.innerDocument = innerDocument;
         this.properties = properties;
+    }
+    
+
+    public CustomTask(String title, EcmDocument innerDocument, Map<String, String> properties, Object publicationDTO) {
+        this(title, innerDocument, properties);
+        this.publicationDTO = publicationDTO;
     }
 
 
@@ -87,4 +99,14 @@ public class CustomTask implements EcmDocument {
     }
 
 
+    
+    /**
+     * Getter for publicationDTO.
+     * @return the publicationDTO
+     */
+    public Object getPublicationDTO() {
+        return publicationDTO;
+    }
+
+    
 }
