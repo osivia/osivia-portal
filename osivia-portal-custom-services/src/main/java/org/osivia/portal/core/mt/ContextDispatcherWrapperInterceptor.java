@@ -24,8 +24,10 @@ package org.osivia.portal.core.mt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.servlet.ServletContext;
@@ -56,6 +58,7 @@ import org.osivia.portal.api.Constants;
 import org.osivia.portal.api.portlet.Refreshable;
 import org.osivia.portal.api.portlet.RequestLifeCycle;
 import org.osivia.portal.core.tracker.ITracker;
+import org.springframework.validation.support.BindingAwareModelMap;
 import org.springframework.web.portlet.mvc.annotation.AnnotationMethodHandlerAdapter;
 
 /**
@@ -284,12 +287,7 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
                     while (attributeNames.hasMoreElements()) {
                         String attributeName = (String) attributeNames.nextElement();
                         if (StringUtils.startsWith(attributeName, attributePrefix)) {
-                            Object attribute = session.getAttribute(attributeName);
-                            if (attribute.getClass().isAnnotationPresent(RequestLifeCycle.class)) {
-                                // Remove portlet session attribute with @RequestLifeCycle annotation
-                                session.removeAttribute(attributeName);
-                                found = true;
-                            }
+                            found = chekRefreshCycle(session, found, attributeName);
                         }
                     }
                     
@@ -327,6 +325,26 @@ public class ContextDispatcherWrapperInterceptor extends PortletInvokerIntercept
 				invocation.setDispatchedResponse(null);
 			}
 		}
+
+        private boolean chekRefreshCycle(HttpSession session, boolean found, String attributeName) {
+            
+            Object attribute = session.getAttribute(attributeName);
+            if (attribute.getClass().isAnnotationPresent(RequestLifeCycle.class)) {
+                // Remove portlet session attribute with @RequestLifeCycle annotation
+                found = true;
+            }   else if (attribute instanceof BindingAwareModelMap) {
+                Collection<Object> values = ((BindingAwareModelMap) attribute).values();
+                for( Object childAttribute: values) {
+                    if (childAttribute.getClass().isAnnotationPresent(RequestLifeCycle.class)) {
+                        found = true;
+                    }
+                }
+            }
+            
+            if( found)
+                session.removeAttribute(attributeName);
+            return found;
+        }
 	};
 
 }
