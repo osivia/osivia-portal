@@ -167,6 +167,10 @@ public class ResizableService implements IResizableService {
             Integer width = this.getWidth(portalControllerContext, BooleanUtils.isTrue(linkedToTasks));
             if (width != null) {
                 containerHtmlClasses += " loaded";
+                
+                if (minWidth != null)   {
+                    width = Math.max(minWidth, width);
+                }
 
                 String style = "width: " + width + "px;";
                 DOM4JUtils.addAttribute(container, "style", style);
