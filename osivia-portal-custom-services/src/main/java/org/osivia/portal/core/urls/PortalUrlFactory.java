@@ -16,14 +16,13 @@ package org.osivia.portal.core.urls;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.api.PortalURL;
 import org.jboss.portal.common.invocation.Scope;
 import org.jboss.portal.core.controller.ControllerCommand;
 import org.jboss.portal.core.controller.ControllerContext;
-import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.model.portal.navstate.WindowNavigationalState;
 import org.jboss.portal.core.navstate.NavigationalStateKey;
@@ -218,8 +217,8 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                         pagePath = defaultPortal.getDefaultPage().getId().toString(PortalObjectPath.CANONICAL_FORMAT);
                     } else {
                         popup = false; // Don't adapt URL in this case
-                        pagePath = currentPageId;
-                        PortalObjectId pageObjectId = PortalObjectId.parse(currentPageId, PortalObjectPath.CANONICAL_FORMAT);
+                        PortalObjectId pageObjectId = PortalObjectId.parse(currentPageId, PortalObjectPath.SAFEST_FORMAT);
+                        pagePath = pageObjectId.toString(PortalObjectPath.CANONICAL_FORMAT);
                         Page page = portalObjectContainer.getObject(pageObjectId, Page.class);
                         Portal portal = page.getPortal();
                         portalPersistentName = portal.getName();
@@ -740,7 +739,7 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                 if (currentPageObjectId == null) {
                     currentPageId = null;
                 } else {
-                    currentPageId = currentPageObjectId.toString(PortalObjectPath.CANONICAL_FORMAT);
+                    currentPageId = currentPageObjectId.toString(PortalObjectPath.SAFEST_FORMAT);
                 }
 
                 // Current page marker

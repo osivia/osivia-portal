@@ -455,6 +455,12 @@
                 <artifactId>displaytag</artifactId>
                 <version>${displaytag.version}</version>
                 <scope>provided</scope>
+                <exclusions>
+                	<exclusion>
+                		<groupId>org.slf4j</groupId>
+                		<artifactId>jcl104-over-slf4j</artifactId>
+                	</exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>displaytag</groupId>
