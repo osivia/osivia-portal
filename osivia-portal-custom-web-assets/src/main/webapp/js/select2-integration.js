@@ -62,6 +62,8 @@ $JQry(function () {
             };
 
             options["templateSelection"] = function (params) {
+            	
+                
                 var $result = $JQry(document.createElement("span"));
                 $result.addClass("text-truncate");
                 $result.text(params.text);
@@ -161,9 +163,9 @@ $JQry(function () {
         var url = $element.data("url");
         var minimumInputLength = $element.data("minimum-input-length");
         var options = {
-            minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
+        	minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
             theme: "bootstrap4",
-            width: "resolve"
+            width: "resolve"            
         };
 
         if (url !== undefined) {
@@ -196,9 +198,12 @@ $JQry(function () {
 
                 $result = $JQry(document.createElement("div"));
 
-                if (params.loading) {
-                    $result.text(params.text);
-                } else {
+				if (params.loading) {
+					$result.text(params.text);
+				} else if (params.message) {
+					$result.addClass("text-muted");
+					$result.text(params.message);
+				} else {
                     $result.addClass("person");
 
                     // Person avatar
@@ -236,7 +241,7 @@ $JQry(function () {
 
                 // Selection
                 $selection = $JQry(document.createElement("div"));
-                $selection.addClass("workspace-member-selection");
+
 
                 // Person title
                 $personTitle = $JQry(document.createElement("div"));
@@ -305,7 +310,9 @@ $JQry(function () {
             $element.val("");
             $element.trigger("change");
         });
+        
 
+ 
 
         // Auto submit on change
         if (($element.data("onchange") == "submit") || (typeof $element.data("change-submit") !== "undefined")) {
