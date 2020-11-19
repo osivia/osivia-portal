@@ -1634,6 +1634,11 @@ public class PageCustomizerInterceptor extends ControllerInterceptor {
             Map pageProps = rendition.getPageResult().getProperties();
             pageProps.put("osivia.popStateUrl", portalUrl.toString() + "?backPageMarker=first");
             
+            boolean PageMaximized = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE,
+                    "osivia.portal.maximized"));
+            if( PageMaximized)
+                pageProps.put("osivia.restoreToNormalModeUrl", portalUrl.toString() + "?unsetMaxMode=true");
+            
             
         }
 
