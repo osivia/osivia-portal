@@ -161,7 +161,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/clipboard/clipboard.min.js'></script>");
 
         // TinyMCE
-        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/tinymce-4.7.4/tinymce.min.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/tinymce-5.6.0/tinymce.min.js'></script>");
 
         // Socle packaged JavaScript
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/socle.min.js'></script>");

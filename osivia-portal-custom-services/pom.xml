@@ -46,6 +46,11 @@
              <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
