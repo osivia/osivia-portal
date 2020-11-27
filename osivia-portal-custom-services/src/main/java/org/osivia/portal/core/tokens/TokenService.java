@@ -38,6 +38,9 @@ public class TokenService implements ITokenService {
     
     private static final String OSIVIA_TOKENS = "osivia/tokens";
     private TreeCacheMBean treeCache;
+    
+    private String sync = new String("SYNC");
+    private int modulo = 1;
 
 
     /**
@@ -73,7 +76,14 @@ public class TokenService implements ITokenService {
         if( logger.isDebugEnabled())
             logger.debug("generateToken");
         
-        String tokenKey = new String(Base64.encodeBase64(("key_" + System.currentTimeMillis()).getBytes()));
+        String tokenKey;
+        
+        synchronized (sync)   {
+            // Avoid doublon in same ms
+            modulo = ( modulo + 1 ) % 100;
+            tokenKey = new String(Base64.encodeBase64(("key_" + System.currentTimeMillis() + "_" + modulo).getBytes()));            
+        }
+
         
         // Hashmap is ready for serialization
         HashMap<String, String> serMap = new HashMap<>(attributes);
