@@ -2,6 +2,7 @@ package org.osivia.portal.api.editor;
 
 import org.springframework.context.ApplicationContext;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -35,6 +36,10 @@ public class EditorModule {
      * Parameters.
      */
     private Set<String> parameters;
+    /**
+     * Resources.
+     */
+    private Map<String, EditorModuleResource> resources;
 
 
     /**
@@ -91,5 +96,13 @@ public class EditorModule {
 
     public void setParameters(Set<String> parameters) {
         this.parameters = parameters;
+    }
+
+    public Map<String, EditorModuleResource> getResources() {
+        return resources;
+    }
+
+    public void setResources(Map<String, EditorModuleResource> resources) {
+        this.resources = resources;
     }
 }

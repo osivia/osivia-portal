@@ -8,8 +8,11 @@ function tinymceInitialization() {
     $JQry("textarea.tinymce.tinymce-default").each(function(index, element) {
         var $textarea = $JQry(element);
         var id = $textarea.attr("id");
+        var editorUrl = $textarea.data("editor-url");
 
-        if (tinymce.get(id)) {
+        if (editorUrl === undefined) {
+            console.error("Editor URL is undefined.")
+        } else if (tinymce.get(id)) {
             if (!$textarea.data("tinymce-default-loaded")) {
                 tinymce.execCommand("mceRemoveEditor", true, id);
                 tinymce.execCommand("mceAddEditor", true, id);
@@ -66,7 +69,7 @@ function tinymceInitialization() {
                 browser_spellcheck: true,
                 contextmenu: false,
                 content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css", "/osivia-portal-custom-web-assets/css/osivia.min.css"],
-                height: "200",
+                height: "400",
 
                 convert_urls: false,
                 paste_as_text: true
@@ -142,4 +145,14 @@ function tinymceInitialization() {
         $textarea.data("tinymce-simple-loaded", true);
     });
 
+
+
+    function urlConverterCallback(url, node, on_save, name) {
+        console.log("[urlConverterCallback] url = " + url);
+        console.log("[urlConverterCallback] node = " + node);
+        console.log("[urlConverterCallback] on_save = " + on_save);
+        console.log("[urlConverterCallback] name = " + name);
+
+        return url;
+    }
 }

@@ -2,10 +2,12 @@ package org.osivia.portal.core.editor;
 
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorModule;
+import org.osivia.portal.api.editor.EditorModuleResource;
 import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
@@ -111,47 +113,60 @@ public class EditorServiceImpl implements EditorService {
         }
 
         if (module != null) {
-            // Editor title
-            String title = this.internationalizationService.getString(module.getKey(), locale, module.getClassLoader(), module.getApplicationContext());
-            // Editor instance
-            String instance = module.getInstance();
-
-            // Editor window properties
-            Map<String, String> properties;
-            try {
-                properties = cmsService.getEditorWindowBaseProperties(cmsContext);
-            } catch (CMSException e) {
-                throw new PortletException(e);
+            // Editor resource identifier
+            String resourceId = request.getParameter("editorResourceId");
+            EditorModuleResource resource;
+            if (StringUtils.isEmpty(resourceId) || MapUtils.isEmpty(module.getResources())) {
+                resource = null;
+            } else {
+                resource = module.getResources().get(resourceId);
             }
-            if (CollectionUtils.isNotEmpty(module.getParameters())) {
-                for (String parameter : module.getParameters()) {
-                    String name = WINDOW_PROPERTY_PREFIX + parameter;
-                    String value = request.getParameter(parameter);
-                    properties.put(name, value);
+
+            if (resource == null) {
+                // Editor title
+                String title = this.internationalizationService.getString(module.getKey(), locale, module.getClassLoader(), module.getApplicationContext());
+                // Editor instance
+                String instance = module.getInstance();
+
+                // Editor window properties
+                Map<String, String> properties;
+                try {
+                    properties = cmsService.getEditorWindowBaseProperties(cmsContext);
+                } catch (CMSException e) {
+                    throw new PortletException(e);
                 }
+                if (CollectionUtils.isNotEmpty(module.getParameters())) {
+                    for (String parameter : module.getParameters()) {
+                        String name = WINDOW_PROPERTY_PREFIX + parameter;
+                        String value = request.getParameter(parameter);
+                        properties.put(name, value);
+                    }
+                }
+
+                // URL
+                String url;
+                try {
+                    url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, instance, properties, PortalUrlType.MODAL);
+                } catch (PortalException e) {
+                    throw new PortletException(e);
+                }
+
+                // JSON
+                JSONObject object = new JSONObject();
+                object.put("title", title);
+                object.put("url", url);
+
+
+                // Content type
+                response.setContentType("application/json");
+
+                // Content
+                PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
+                printWriter.write(object.toString());
+                printWriter.close();
+            } else {
+                resource.serve(portalControllerContext);
             }
-
-            // URL
-            String url;
-            try {
-                url = this.portalUrlFactory.getStartPortletUrl(portalControllerContext, instance, properties, PortalUrlType.MODAL);
-            } catch (PortalException e) {
-                throw new PortletException(e);
-            }
-
-            // JSON
-            JSONObject object = new JSONObject();
-            object.put("title", title);
-            object.put("url", url);
-
-
-            // Content type
-            response.setContentType("application/json");
-
-            // Content
-            PrintWriter printWriter = new PrintWriter(response.getPortletOutputStream());
-            printWriter.write(object.toString());
-            printWriter.close();
         }
     }
 
