@@ -30,6 +30,15 @@ public class ProfilBean implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
+	/**
+	 * Default constructor.
+	 */
+	public ProfilBean() {
+		super();
+	}
+
 	public ProfilBean(String name, String roleName, String defaultPageName, String nuxeoVirtualUser) {
 		super();
 		this.name = name;
@@ -37,6 +46,8 @@ public class ProfilBean implements Serializable {
 		this.defaultPageName = defaultPageName;
 		this.nuxeoVirtualUser = nuxeoVirtualUser;
 	}
+
+
 	public String getRoleName() {
 		return roleName;
 	}
