@@ -150,6 +150,14 @@
             <version>${org.springframework.data.version}</version>
         </dependency>
 
+       <!-- JBPM -->
+        <dependency>
+            <groupId>org.jbpm.identity</groupId>
+            <artifactId>jbpm-identity</artifactId>
+            <version>3.2.2</version>
+            <classifier>jdk8</classifier>
+        </dependency>
+
     </dependencies>
 
 
