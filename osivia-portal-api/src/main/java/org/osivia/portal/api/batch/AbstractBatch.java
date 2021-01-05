@@ -16,28 +16,44 @@ package org.osivia.portal.api.batch;
 
 import java.util.Map;
 
+import org.osivia.portal.api.PortalException;
+
 /**
  * Abstract class used to set common behaviors on a batch
  * @author Loïc Billon
  *
  */
 public abstract class AbstractBatch implements Batch {
-
-	@Override
+	
+	private final String batchId;
+	
+	
+	public AbstractBatch() {
+		batchId = this.getClass().getSimpleName();;
+	}
+	
+	public AbstractBatch(String batchId) {
+		this.batchId = batchId;
+	}
+	
 	public String getBatchId() {
 		
-		return this.getClass().getSimpleName();
+		return batchId;
 	}
+
 	
 	@Override
 	public boolean isRunningOnMasterOnly() {
 		return true;
 	}
 
+
+
 	@Override
 	public abstract String getJobScheduling();
 
+	
 	@Override
-	public abstract void execute(Map<String, Object> parameters);
+	public abstract void execute(Map<String, Object> parameters) throws PortalException;
 
 }

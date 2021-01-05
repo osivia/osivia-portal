@@ -15,8 +15,11 @@
 package org.osivia.portal.core.batch;
 
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osivia.portal.api.PortalException;
@@ -28,6 +31,8 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -38,7 +43,7 @@ import org.quartz.impl.StdSchedulerFactory;
 public class BatchService implements IBatchService {
 
 
-	private final static Log logger = LogFactory.getLog(BatchService.class);
+	private final static Log logger = LogFactory.getLog("batch");
 	
 	private Scheduler sched;;
 	
@@ -66,15 +71,23 @@ public class BatchService implements IBatchService {
 		
 		logger.info("add batch "+b.getBatchId());
 				
-				
+			
 		JobDetail detail = new JobDetail(b.getBatchId(), Scheduler.DEFAULT_GROUP, BatchJob.class);
 
 		JobDataMap jobDataMap = new JobDataMap();
 		jobDataMap.put("instance", b);
 		detail.setJobDataMap(jobDataMap);
 		
-		CronTrigger trigger = new CronTrigger("trigger_" + b.getBatchId(), Scheduler.DEFAULT_GROUP, b.getJobScheduling());
-
+		Trigger trigger;
+		if(b.getJobScheduling() != null) {
+			trigger = new CronTrigger("trigger_" + b.getBatchId(), Scheduler.DEFAULT_GROUP, b.getJobScheduling());
+		}
+		else {
+			
+			Date targetTime = new Date(); //now
+			targetTime = DateUtils.addMinutes(targetTime, 1); //add minute
+			trigger = new SimpleTrigger("trigger_" + b.getBatchId(), Scheduler.DEFAULT_GROUP, targetTime);
+		}
 		
 		try {
 			sched.scheduleJob(detail, trigger);
