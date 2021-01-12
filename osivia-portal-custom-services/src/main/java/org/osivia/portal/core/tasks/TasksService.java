@@ -255,7 +255,7 @@ public class TasksService implements ITasksService {
 
         	StringBuilder urlstr = new StringBuilder();
         	urlstr.append(host);
-        	urlstr.append("/portal/auth/commands?");
+        	urlstr.append("/auth/commands?");
         	
         	urlstr.append(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);
         	urlstr.append("=");
