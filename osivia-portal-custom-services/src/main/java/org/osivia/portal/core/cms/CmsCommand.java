@@ -14,6 +14,7 @@
 package org.osivia.portal.core.cms;
 
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -84,6 +85,10 @@ public class CmsCommand extends DynamicCommand {
 
     private static final CommandInfo info = new ActionCommandInfo(false);
     protected static final Log logger = LogFactory.getLog(CmsCommand.class);
+    
+    
+    protected static final Log access_logger = LogFactory.getLog("org.osivia.portal.access");
+    
 
     public static final String LAYOUT_TYPE_CURRENT_PAGE = "0";
     public static final String LAYOUT_TYPE_SCRIPT = "1";
@@ -92,6 +97,7 @@ public class CmsCommand extends DynamicCommand {
 	 * Id of action (for stats)
 	 */
 	private static final String TRACE_CMS = "CMS";
+	private static final String ACCESS_ANONYMOUS = "anonymous";
 
     private static IInternationalizationService itlzService = InternationalizationUtils.getInternationalizationService();
 
@@ -652,6 +658,14 @@ public class CmsCommand extends DynamicCommand {
 
             // Statistics
             if (StringUtils.isNotEmpty(this.cmsPath)) {
+            	
+            	String username = ACCESS_ANONYMOUS;
+            	Principal userPrincipal = portalControllerContext.getHttpServletRequest().getUserPrincipal();
+            	if(userPrincipal != null) {
+            		username = userPrincipal.getName();
+            	}
+            	access_logger.info(username+" "+cmsPath);
+            	
                 this.statisticsService.incrementsUserStatistics(portalControllerContext, this.cmsPath);
             }
 
