@@ -55,17 +55,24 @@ public class InternationalizationUtils {
      * @return application name
      */
     public static final String getApplicationName(PortalObject portalObject, Locale locale) {
-        // Internationalization service
-        IInternationalizationService service = getInternationalizationService();
-        // Portal
-        Portal portal = PortalObjectUtils.getPortal(portalObject);
-        // Brand name internationalization key
-        String key = portal.getDeclaredProperty("osivia.brand.key");
-        if (key == null) {
-            key = "BRAND";
-        }
-        // Application name
-        return service.getString(key, locale);
+    	
+    	if(System.getProperty("application.name") != null) {
+    		return System.getProperty("application.name");
+    	}
+    	else {
+    		
+	        // Internationalization service
+	        IInternationalizationService service = getInternationalizationService();
+	        // Portal
+	        Portal portal = PortalObjectUtils.getPortal(portalObject);
+	        // Brand name internationalization key
+	        String key = portal.getDeclaredProperty("osivia.brand.key");
+	        if (key == null) {
+	            key = "BRAND";
+	        }
+	        // Application name
+	        return service.getString(key, locale);
+    	}
     }
 
 }
