@@ -1,11 +1,11 @@
 /*
  * (C) Copyright 2014 OSIVIA (http://www.osivia.com)
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl-2.1.html
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -13,25 +13,24 @@
  */
 package org.osivia.portal.core.migration;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 /**
  * Migration manager
- * 
+ *
  * Doit etre lance en mode singleton !!!
- * 
+ *
  * @author jeanseb
- * 
+ *
  */
 
 public class MigrationService implements IMigrationManager {
@@ -40,11 +39,11 @@ public class MigrationService implements IMigrationManager {
      * if( "/osivia-portal-administration".equals( pwa.getContextPath())) {
      * // Migrations modules are deployed by administration layer
      * // (also benefits from the cluster singleton thanks to Deployer )
-     * 
+     *
      * IMigrationManager migrationMgr = Locator.findMBean(IMigrationManager.class, "osivia:service=MigrationService");
      * if( migrationMgr != null)
      * migrationMgr.migrate();
-     * 
+     *
      * }
      */
 
@@ -71,8 +70,7 @@ public class MigrationService implements IMigrationManager {
 
 
     private List<MigrationModule> getModulesList() {
-
-        List<MigrationModule> modules = new ArrayList<MigrationModule>();
+        List<MigrationModule> modules = new ArrayList<>();
 
         modules.add(new MigrationModule2060());
         modules.add(new MigrationModule2061());
@@ -81,7 +79,9 @@ public class MigrationService implements IMigrationManager {
         modules.add(new MigrationModule3300());
         modules.add(new MigrationModule3400());
         modules.add(new MigrationModule4700());
-        Collections.sort(modules, orderComparator);
+        modules.add(new MigrationModule4731());
+
+        modules.sort(orderComparator);
 
         return modules;
     }
@@ -126,8 +126,8 @@ public class MigrationService implements IMigrationManager {
                     logger.info("migration module :" + module.getModuleId() + " starting ");
 
                     if (skipModule) {
-                        
-                        logger.info("skipping this module (to force run, delete this property in portal 'admin' :"+MIGRATION_TS_PROP_NAME + module.getModuleId() +")");                        
+
+                        logger.info("skipping this module (to force run, delete this property in portal 'admin' :"+MIGRATION_TS_PROP_NAME + module.getModuleId() +")");
 
                     } else {
 
@@ -140,7 +140,7 @@ public class MigrationService implements IMigrationManager {
                         module.execute();
 
                         context.setDeclaredProperty(LAST_MODULE_ID_PROP, Integer.toString(module.getModuleId()));
-                        
+
                         adminPortal.setDeclaredProperty(MIGRATION_TS_PROP_NAME+ module.getModuleId(), "" + System.currentTimeMillis());
 
                         logger.info("migration module :" + module.getModuleId() + " finished");

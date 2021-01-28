@@ -23,7 +23,7 @@ public class WindowSettings {
     /**
      * Scopes.
      */
-    private final Map<String, String> scopes;
+    private final List<WindowSettingsSelectOption> scopes;
     /**
      * Taskbar items.
      */
@@ -73,10 +73,6 @@ public class WindowSettings {
      */
     private boolean print;
     /**
-     * Selected scope.
-     */
-    private String selectedScope;
-    /**
      * Linked taskbar item identifier.
      */
     private String taskbarItemId;
@@ -123,7 +119,7 @@ public class WindowSettings {
         super();
         this.id = id;
         this.styles = new LinkedHashMap<>();
-        this.scopes = new LinkedHashMap<>();
+        this.scopes = new ArrayList<>();
         this.taskbarItems = new TreeMap<>();
         this.layoutGroups = new ArrayList<>();
         this.satellites = new LinkedHashMap<>();
@@ -290,24 +286,6 @@ public class WindowSettings {
      */
     public void setPrint(boolean print) {
         this.print = print;
-    }
-
-    /**
-     * Getter for selectedScope.
-     *
-     * @return the selectedScope
-     */
-    public String getSelectedScope() {
-        return this.selectedScope;
-    }
-
-    /**
-     * Setter for selectedScope.
-     *
-     * @param selectedScope the selectedScope to set
-     */
-    public void setSelectedScope(String selectedScope) {
-        this.selectedScope = selectedScope;
     }
 
     /**
@@ -480,13 +458,8 @@ public class WindowSettings {
         return this.styles;
     }
 
-    /**
-     * Getter for scopes.
-     *
-     * @return the scopes
-     */
-    public Map<String, String> getScopes() {
-        return this.scopes;
+    public List<WindowSettingsSelectOption> getScopes() {
+        return scopes;
     }
 
     /**

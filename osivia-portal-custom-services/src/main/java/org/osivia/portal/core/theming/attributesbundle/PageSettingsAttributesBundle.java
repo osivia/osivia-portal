@@ -14,31 +14,10 @@
  */
 package org.osivia.portal.core.theming.attributesbundle;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
@@ -50,14 +29,7 @@ import org.jboss.portal.core.controller.ControllerContext;
 import org.jboss.portal.core.controller.ControllerException;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
-import org.jboss.portal.core.model.portal.Page;
-import org.jboss.portal.core.model.portal.Portal;
-import org.jboss.portal.core.model.portal.PortalObject;
-import org.jboss.portal.core.model.portal.PortalObjectContainer;
-import org.jboss.portal.core.model.portal.PortalObjectId;
-import org.jboss.portal.core.model.portal.PortalObjectPath;
-import org.jboss.portal.core.model.portal.PortalObjectPermission;
-import org.jboss.portal.core.model.portal.Window;
+import org.jboss.portal.core.model.portal.*;
 import org.jboss.portal.core.model.portal.command.render.RenderPageCommand;
 import org.jboss.portal.core.model.portal.command.view.ViewPageCommand;
 import org.jboss.portal.core.theme.PageRendition;
@@ -70,11 +42,7 @@ import org.jboss.portal.security.spi.provider.DomainConfigurator;
 import org.jboss.portal.server.ServerInvocationContext;
 import org.jboss.portal.server.request.URLContext;
 import org.jboss.portal.server.request.URLFormat;
-import org.jboss.portal.theme.LayoutService;
-import org.jboss.portal.theme.PortalLayout;
-import org.jboss.portal.theme.PortalTheme;
-import org.jboss.portal.theme.ThemeConstants;
-import org.jboss.portal.theme.ThemeService;
+import org.jboss.portal.theme.*;
 import org.jboss.portal.theme.impl.render.dynamic.DynaRenderOptions;
 import org.jboss.portal.theme.page.WindowContext;
 import org.jboss.portal.theme.page.WindowResult;
@@ -96,16 +64,11 @@ import org.osivia.portal.api.taskbar.TaskbarItemType;
 import org.osivia.portal.api.taskbar.TaskbarItems;
 import org.osivia.portal.api.theming.IAttributesBundle;
 import org.osivia.portal.api.ui.layout.LayoutGroup;
-import org.osivia.portal.api.ui.layout.LayoutItem;
 import org.osivia.portal.api.ui.layout.LayoutItemsService;
 import org.osivia.portal.core.assistantpage.MoveWindowCommand;
 import org.osivia.portal.core.assistantpage.PortalLayoutComparator;
 import org.osivia.portal.core.assistantpage.PortalThemeComparator;
-import org.osivia.portal.core.cms.CMSException;
-import org.osivia.portal.core.cms.CMSServiceCtx;
-import org.osivia.portal.core.cms.ICMSService;
-import org.osivia.portal.core.cms.ICMSServiceLocator;
-import org.osivia.portal.core.cms.Satellite;
+import org.osivia.portal.core.cms.*;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.constants.InternationalizationConstants;
 import org.osivia.portal.core.formatters.IFormatter;
@@ -118,6 +81,13 @@ import org.osivia.portal.core.portalobjects.PortalObjectOrderComparator;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.profils.IProfilManager;
 import org.osivia.portal.core.profils.ProfilBean;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Page settings attributes bundle.
@@ -203,7 +173,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.bundleFactory = internationalizationService.getBundleFactory(this.getClass().getClassLoader());
 
         // Attribute names
-        this.names = new TreeSet<String>();
+        this.names = new TreeSet<>();
         this.names.add(InternalConstants.ATTR_USER_ADMIN);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_CMS_TEMPLATED);
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_DRAFT_PAGE);
@@ -325,12 +295,12 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
                 attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_PAGE_CUR_CATEGORY, category);
 
-                Map<String, String> categories = new LinkedHashMap<String, String>();
+                Map<String, String> categories = new LinkedHashMap<>();
 
 
                 categories.put("", bundle.getString(InternationalizationConstants.KEY_PAGE_NO_CATEGORY));
 
-                TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<OrderedPageCategory>();
+                TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<>();
 
                 Properties properties = System.getProperties();
                 Enumeration<Object>props = properties.keys();
@@ -1075,19 +1045,18 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             }
 
             // Scopes
-            String selectedScope = window.getProperty("osivia.conditionalScope");
-            Map<String, String> scopes = settings.getScopes();
+            String[] selectedScopes = StringUtils.split(window.getProperty("osivia.conditionalScopes"), "|");
+            List<WindowSettingsSelectOption> scopes = settings.getScopes();
             if (CollectionUtils.isNotEmpty(profiles)) {
                 for (ProfilBean profile : profiles) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(bundle.getString("WINDOW_PROPERTIES_SCOPE_PROFILE"));
-                    builder.append(" ");
-                    builder.append(profile.getName());
+                    WindowSettingsSelectOption scope = new WindowSettingsSelectOption();
+                    scope.setId(profile.getName());
+                    scope.setText(bundle.getString("WINDOW_PROPERTIES_SCOPE_PROFILE") + " " + profile.getName());
+                    scope.setSelected(ArrayUtils.contains(selectedScopes, profile.getName()));
 
-                    scopes.put(profile.getName(), builder.toString());
+                    scopes.add(scope);
                 }
             }
-            settings.setSelectedScope(selectedScope);
 
             // Linked taskbar item
             String taskId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);

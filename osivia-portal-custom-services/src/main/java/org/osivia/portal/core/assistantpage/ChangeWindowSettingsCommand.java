@@ -59,13 +59,14 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 	private String ajaxLink;
 	private String hideEmptyPortlet;
 	private String printPortlet;
-	private String conditionalScope;
 	private String bshActivation;
 	private String bshScript;
 	private String cacheID;
 	private String selectionDep;
 	private String priority;
 
+	/** Conditional scope. */
+	private String[] conditionalScopes;
     /** Linked taskbar item identifier. */
     private String taskbarItemId;
     /** Linked layout item identifier. */
@@ -89,7 +90,6 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      * @param ajaxLink
      * @param hideEmptyPortlet
      * @param printPortlet
-     * @param conditionalScope
      * @param bshActivation
      * @param bshScript
      * @param cacheID
@@ -97,7 +97,7 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
      */
     public ChangeWindowSettingsCommand(String windowId, List<String> style, String mobileCollapse, String displayTitle, String title, String displayDecorators,
             boolean maximizedToCms, String bootstrapPanelStyle, String idPerso, String ajaxLink, String hideEmptyPortlet, String printPortlet,
-            String conditionalScope, String bshActivation, String bshScript, String cacheID, String selectionDep, String priority) {
+            String bshActivation, String bshScript, String cacheID, String selectionDep, String priority) {
         this.windowId = windowId;
         this.style = style;
 
@@ -112,7 +112,6 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
         this.ajaxLink = ajaxLink;
         this.hideEmptyPortlet = hideEmptyPortlet;
         this.printPortlet = printPortlet;
-        this.conditionalScope = conditionalScope;
         this.bshActivation = bshActivation;
         this.bshScript = bshScript;
         this.cacheID = cacheID;
@@ -213,13 +212,8 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		AttributeResolver resolver = this.context.getAttributeResolver(Scope.PRINCIPAL_SCOPE);
 		resolver.setAttribute(scopeKey, null);
 
-		//v1.0.25 : affichage conditionnel portlet
-		if ((this.conditionalScope!= null) && (this.conditionalScope.length() > 1)) {
-            window.setDeclaredProperty("osivia.conditionalScope",this.conditionalScope);
-        } else if (window.getDeclaredProperty("osivia.conditionalScope") != null) {
-            window.setDeclaredProperty("osivia.conditionalScope", null);
-        }
-
+		// Conditional scopes
+        window.setDeclaredProperty("osivia.conditionalScopes", StringUtils.join(this.conditionalScopes, "|"));
 
         // Linked taskbar item identifier
         window.setDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY, StringUtils.trimToNull(this.taskbarItemId));
@@ -265,6 +259,10 @@ public class ChangeWindowSettingsCommand extends AssistantCommand {
 		return new UpdatePageResponse(page.getId());
 	}
 
+
+    public void setConditionalScopes(String[] conditionalScopes) {
+        this.conditionalScopes = conditionalScopes;
+    }
 
     /**
      * Setter for taskbarItemId.

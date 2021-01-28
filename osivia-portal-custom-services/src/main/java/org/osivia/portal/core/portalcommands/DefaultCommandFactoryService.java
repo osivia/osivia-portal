@@ -127,7 +127,6 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                     String ajaxLink = null;
                     String hideEmptyPortlet = null;
                     String printPortlet = null;
-                    String conditionalScope = null;
                     String bshActivation;
                     String bshScript;
                     String cacheID;
@@ -196,10 +195,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             printPortlet = "";
                         }
 
-                        // v1.0.25 : affichage conditionnel portlet
-                        if (parameterMap.get("conditionalScope") != null) {
-                            conditionalScope = URLDecoder.decode(parameterMap.get("conditionalScope")[0], CharEncoding.UTF_8);
-                        }
+                        String[] conditionalScopes = parameterMap.getValues("conditionalScopes");
 
                         // Linked taskbar item identifier
                         String taskbarItemId = parameterMap.getValue("taskbarItemId");
@@ -243,8 +239,9 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
                         // Change window settings command
                         ChangeWindowSettingsCommand command = new ChangeWindowSettingsCommand(windowId, style, mobileCollapse, displayTitle, title,
-                                displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet, conditionalScope,
+                                displayDecorators, maximizedToCms, bootstrapPanelStyle, idPerso, ajaxLink, hideEmptyPortlet, printPortlet,
                                 bshActivation, bshScript, cacheID, selectionDep, priority);
+                        command.setConditionalScopes(conditionalScopes);
                         command.setTaskbarItemId(taskbarItemId);
                         command.setLayoutItemId(layoutItemId);
                         command.setSatellite(satellite);

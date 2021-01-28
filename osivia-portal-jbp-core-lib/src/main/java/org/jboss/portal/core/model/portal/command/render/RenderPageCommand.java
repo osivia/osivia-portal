@@ -34,6 +34,8 @@ import java.util.TreeSet;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -311,18 +313,19 @@ public final class RenderPageCommand extends PageCommand {
 
 
                     // Affichage conditionnel / profil
-                    String conditionalScope = window.getProperty("osivia.conditionalScope");
-                    if (conditionalScope != null) {
+                    String[] conditionalScopes = StringUtils.split(window.getProperty("osivia.conditionalScopes"), "|");
+                    if (ArrayUtils.isNotEmpty(conditionalScopes)) {
                         addWindow = false;
                         Boolean isAdmin = (Boolean) controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, "osivia.isAdmin");
-                        if (isAdmin != null) {
-                            if (isAdmin) {
-                                addWindow = true;
+                        if (BooleanUtils.isTrue(isAdmin)) {
+                            addWindow = true;
+                        } else {
+                            int i = 0;
+                            while (!addWindow && (i < conditionalScopes.length)) {
+                                String conditionalScope = conditionalScopes[i];
+                                addWindow = this.getProfilManager().verifierProfilUtilisateur(conditionalScope);
+                                i++;
                             }
-                        }
-
-                        if (addWindow == false) {
-                            addWindow = this.getProfilManager().verifierProfilUtilisateur(conditionalScope);
                         }
                     }
 

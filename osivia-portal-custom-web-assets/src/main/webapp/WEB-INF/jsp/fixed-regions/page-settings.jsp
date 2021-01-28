@@ -900,17 +900,22 @@ var currentPageId = '${currentPageId}';
                                 <div class="form-group">
                                     <label for="${window.id}-scopes" class="control-label col-sm-3"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
                                     <div class="col-sm-9">
-                                        <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
-                                            <option value=""
-                                                <c:if test="${empty window.selectedScope}">selected="selected"</c:if>
-                                            ><op:translate key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES" /></option>
-
+                                        <div class="row">
                                             <c:forEach var="scope" items="${window.scopes}">
-                                                <option value="${scope.key}"
-                                                    <c:if test="${window.selectedScope eq scope.key}">selected="selected"</c:if>
-                                                >${scope.value}</option>
+                                                <div class="col-sm-6 col-md-4">
+                                                    <label class="checkbox-inline text-overflow" title="${scope.text}">
+                                                        <input type="checkbox" name="conditionalScopes" value="${scope.id}" ${scope.selected ? 'checked' : ''}>
+                                                        <span>${scope.text}</span>
+                                                    </label>
+                                                </div>
                                             </c:forEach>
-                                        </select>
+                                        </div>
+
+                                        <c:if test="${empty window.scopes}">
+                                            <p class="form-control-static">
+                                                <span class="text-muted"><op:translate key="WINDOW_PROPERTIES_NO_SCOPE" /></span>
+                                            </p>
+                                        </c:if>
                                     </div>
                                 </div>
 
