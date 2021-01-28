@@ -27,6 +27,7 @@ import org.osivia.portal.api.cms.EcmDocument;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.ecm.EcmCommand;
 import org.osivia.portal.api.ecm.EcmViews;
+import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.menubar.MenubarModule;
 import org.osivia.portal.api.panels.PanelPlayer;
 import org.osivia.portal.api.player.Player;
@@ -707,5 +708,24 @@ public interface ICMSService {
 	 * @param httpSession
 	 */
 	void updateUserPreferences(CMSServiceCtx cmsContext, HttpSession httpSession);
+
+
+
+    /**
+     * Get editor modules.
+     *
+     * @param cmsContext CMS context
+     * @return editor modules
+     */
+    List<EditorModule> getEditorModules(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Get editor window base properties.
+     *
+     * @param cmsContext CMS context
+     * @return window properties
+     */
+    Map<String, String> getEditorWindowBaseProperties(CMSServiceCtx cmsContext) throws CMSException;
 
 }
