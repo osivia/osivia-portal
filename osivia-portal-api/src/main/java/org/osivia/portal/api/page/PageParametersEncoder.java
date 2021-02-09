@@ -98,7 +98,7 @@ public class PageParametersEncoder {
 			String[] valParams = tabParams[i].split("=");
 			
 			if( valParams.length != 2)
-				throw new IllegalArgumentException("Bad parameter format");
+				throw new IllegalArgumentException("Bad parameter format for paramter  "+decodedParam);
 			
 			String[] values = valParams[1].split(",");
 			List<String> decodedValues = new ArrayList<String>();
