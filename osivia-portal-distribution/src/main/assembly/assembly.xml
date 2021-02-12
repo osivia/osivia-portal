@@ -118,6 +118,7 @@
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/server.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/conf/web.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/META-INF/jboss-service.xml</exclude>
+                <exclude>jboss-as/server/production/deploy/jboss-web.deployer/ROOT.war/**</exclude>
 
                 <exclude>jboss-as/server/production/deploy/properties-service.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/cluster-service.xml</exclude>
@@ -165,6 +166,8 @@
                 
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget.war/WEB-INF/portlet-instances.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-portal-ha.sar/portal-widget-netvibes.war/WEB-INF/portlet-instances.xml</exclude>
+                
+                <exclude>jboss-as/server/production/deploy/management/**</exclude>
             </excludes>
         </fileSet>
         
