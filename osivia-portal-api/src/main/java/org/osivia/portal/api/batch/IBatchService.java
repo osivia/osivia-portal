@@ -15,6 +15,7 @@
 package org.osivia.portal.api.batch;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 import org.osivia.portal.api.PortalException;
@@ -52,5 +53,12 @@ public interface IBatchService {
 	void startBatchImmediatly(String batchId, Map<String, Object> parameters)
 			throws PortalException;
 
+	/**
+	 * Get current instances of a given batch type
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	<B extends AbstractBatch> List<B> getBatchInstances(Class<B> clazz);
     
 }

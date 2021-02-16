@@ -15,8 +15,9 @@
 package org.osivia.portal.core.batch;
 
 import java.text.ParseException;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -45,7 +46,7 @@ public class BatchService implements IBatchService {
 
 	private final static Log logger = LogFactory.getLog("batch");
 	
-	private Scheduler sched;;
+	private Scheduler sched;
 	
 	public BatchService() {
 		
@@ -123,5 +124,36 @@ public class BatchService implements IBatchService {
 		
 	}
 
-	
+	public <B extends AbstractBatch> List<B> getBatchInstances(Class<B> clazz) {
+		
+		List<B> instances = new ArrayList<B>();
+		
+		try {
+						
+			List jobs = sched.getCurrentlyExecutingJobs();
+			
+			String[] jobGroupNames = sched.getJobGroupNames();
+			for(String groupName : jobGroupNames) {
+				String[] jobNames = sched.getJobNames(groupName);
+				for(String jobname : jobNames) {
+					
+					JobDetail jobDetail = sched.getJobDetail(jobname, groupName);
+					
+					Object object = jobDetail.getJobDataMap().get("instance");
+					
+					if(clazz.isInstance(object)) {
+						instances.add((B)object);
+					}
+				}
+			}
+
+		} catch (SchedulerException e) {
+			logger.error("Unable to get batch instances for "+clazz.getName(),e);
+			
+			return null;
+		}
+		
+		return instances;
+		
+	}
 }
