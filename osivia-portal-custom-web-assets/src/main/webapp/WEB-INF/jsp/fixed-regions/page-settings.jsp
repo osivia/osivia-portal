@@ -902,7 +902,7 @@ var currentPageId = '${currentPageId}';
                                     <div class="col-sm-9">
                                         <div class="row">
                                             <c:forEach var="scope" items="${window.scopes}">
-                                                <div class="col-sm-6 col-md-4">
+                                                <div class="col-sm-4 col-md-3">
                                                     <label class="checkbox-inline text-overflow" title="${scope.text}">
                                                         <input type="checkbox" name="conditionalScopes" value="${scope.id}" ${scope.selected ? 'checked' : ''}>
                                                         <span>${scope.text}</span>

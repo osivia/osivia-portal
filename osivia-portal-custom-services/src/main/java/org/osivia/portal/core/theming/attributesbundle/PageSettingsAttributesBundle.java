@@ -97,46 +97,84 @@ import java.util.Map.Entry;
  */
 public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
-    /** Windows settings fancyboxes prefix. */
+    /**
+     * Windows settings fancyboxes prefix.
+     */
     private static final String PREFIX_ID_FANCYBOX_WINDOW_SETTINGS = "window-settings-";
-    /** Layout or theme excluded names. */
+    /**
+     * Layout or theme excluded names.
+     */
     private static final String[] EXCLUDED_NAMES = new String[]{"osivia-modal", "osivia-popup", "generic", "3columns", "1column", "renaissance", "industrial",
             "maple", "renewal"};
 
-    /** Singleton instance. */
+    /**
+     * Singleton instance.
+     */
     private static PageSettingsAttributesBundle instance;
 
 
-    /** Layout service. */
+    /**
+     * Layout service.
+     */
     private final LayoutService layoutService;
-    /** Theme service. */
+    /**
+     * Theme service.
+     */
     private final ThemeService themeService;
-    /** Profile manager. */
+    /**
+     * Profile manager.
+     */
     private final IProfilManager profileManager;
-    /** Authorization domain registry. */
+    /**
+     * Authorization domain registry.
+     */
     private final AuthorizationDomainRegistry authorizationDomainRegistry;
-    /** Formatter. */
+    /**
+     * Formatter.
+     */
     private final IFormatter formatter;
-    /** Portal object container. */
+    /**
+     * Portal object container.
+     */
     private final PortalObjectContainer portalObjectContainer;
-    /** Portal authorization manager factory. */
+    /**
+     * Portal authorization manager factory.
+     */
     private final PortalAuthorizationManagerFactory portalAuthorizationManagerFactory;
-    /** Instance container. */
+    /**
+     * Instance container.
+     */
     private final InstanceContainer instanceContainer;
-    /** Taskbar service. */
+    /**
+     * Taskbar service.
+     */
     private final ITaskbarService taskbarService;
-    /** Layout items service. */
+    /**
+     * Layout items service.
+     */
     private final LayoutItemsService layoutItemsService;
-    /** CMS service locator. */
+    /**
+     * CMS service locator.
+     */
     private final ICMSServiceLocator cmsServiceLocator;
-    /** Bundle factory. */
+    /**
+     * Bundle factory.
+     */
     private final IBundleFactory bundleFactory;
 
-    /** Toolbar attributes names. */
+    /**
+     * Toolbar attributes names.
+     */
     private final Set<String> names;
 
-    /** Layouts and themes collection filter predicate. */
+    /**
+     * Layouts and themes collection filter predicate.
+     */
     private final Predicate predicate;
+    /**
+     * Select option comparator.
+     */
+    private final WindowSettingsSelectOptionComparator selectOptionComparator;
 
 
     /**
@@ -193,9 +231,11 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         this.names.add(InternalConstants.ATTR_TOOLBAR_SETTINGS_WINDOW_SETTINGS);
         this.names.add("osivia.settings.elements");
         this.names.add("osivia.session.reload.urls");
-        
+
         // Layouts and themes collection filter predicate
         this.predicate = new LayoutsAndThemesPredicate();
+        // Select option comparator
+        this.selectOptionComparator = new WindowSettingsSelectOptionComparator();
     }
 
 
@@ -241,7 +281,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * Utility method used to fill toolbar attributes.
      *
      * @param renderPageCommand render page command
-     * @param attributes attributes map
+     * @param attributes        attributes map
      */
     @SuppressWarnings("unchecked")
     private void fillToolbarAttributes(RenderPageCommand renderPageCommand, Map<String, Object> attributes) {
@@ -286,10 +326,10 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // categories (optional)
             String pageCategoryPrefix = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PAGE_CATEGORY_PREFIX);
 
-            if( pageCategoryPrefix != null) {
+            if (pageCategoryPrefix != null) {
 
                 String category = page.getDeclaredProperty("osivia.pageCategory");
-                if( category == null) {
+                if (category == null) {
                     category = "";
                 }
 
@@ -303,22 +343,22 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 TreeSet<OrderedPageCategory> orderedCategories = new TreeSet<>();
 
                 Properties properties = System.getProperties();
-                Enumeration<Object>props = properties.keys();
-                while(props.hasMoreElements()){
+                Enumeration<Object> props = properties.keys();
+                while (props.hasMoreElements()) {
 
                     String key = (String) props.nextElement();
 
-                    if( key.startsWith(pageCategoryPrefix)) {
+                    if (key.startsWith(pageCategoryPrefix)) {
                         String curCategory = key.substring(pageCategoryPrefix.length());
 
                         int curOrder = 100;
 
                         try {
-                         curOrder = Integer.parseInt(curCategory);
-                        } catch( NumberFormatException e)   {
+                            curOrder = Integer.parseInt(curCategory);
+                        } catch (NumberFormatException e) {
                             // non orderable
                         }
-                        String curLabel = (String) properties.get( key);
+                        String curLabel = (String) properties.get(key);
 
                         orderedCategories.add(new OrderedPageCategory(curOrder, curCategory, curLabel));
 
@@ -326,8 +366,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 }
 
 
-                for(OrderedPageCategory pageCategory : orderedCategories)   {
-                    categories.put(pageCategory.getCode(),pageCategory.getLabel());
+                for (OrderedPageCategory pageCategory : orderedCategories) {
+                    categories.put(pageCategory.getCode(), pageCategory.getLabel());
                 }
 
 
@@ -338,7 +378,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Layouts
             List<PortalLayout> layouts = new ArrayList<PortalLayout>(this.layoutService.getLayouts());
             CollectionUtils.filter(layouts, this.predicate);
-            Collections.sort(layouts, new PortalLayoutComparator());
+            layouts.sort(new PortalLayoutComparator());
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_LAYOUTS_LIST, layouts);
 
             // Current layout
@@ -347,7 +387,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Themes
             List<PortalTheme> themes = new ArrayList<PortalTheme>(this.themeService.getThemes());
             CollectionUtils.filter(themes, this.predicate);
-            Collections.sort(themes, new PortalThemeComparator());
+            themes.sort(new PortalThemeComparator());
             attributes.put(InternalConstants.ATTR_TOOLBAR_SETTINGS_THEMES_LIST, themes);
 
             // Current theme
@@ -360,7 +400,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Actions for roles
             DomainConfigurator domainConfigurator = this.authorizationDomainRegistry.getDomain("portalobject").getConfigurator();
             Set<RoleSecurityBinding> constraints = domainConfigurator.getSecurityBindings(page.getId().toString(PortalObjectPath.CANONICAL_FORMAT));
-            Map<String, Set<String>> actionsForRoles = new HashMap<String, Set<String>>();
+            Map<String, Set<String>> actionsForRoles = new HashMap<>();
             if (CollectionUtils.isNotEmpty(constraints)) {
                 for (RoleSecurityBinding roleSecurityBinding : constraints) {
                     actionsForRoles.put(roleSecurityBinding.getRoleName(), roleSecurityBinding.getActions());
@@ -406,26 +446,26 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Utility method used to format inherited check value.
      *
-     * @param po portal object
-     * @param selectName select name
-     * @param propertyName property name
+     * @param po            portal object
+     * @param selectName    select name
+     * @param propertyName  property name
      * @param selectedValue selected value
      * @return formatted select
      */
     private String formatInheritedCheckVakue(PortalObject po, String selectName, String propertyName, String selectedValue) {
-        Map<String, String> supportedValue = new LinkedHashMap<String, String>();
+        Map<String, String> supportedValue = new LinkedHashMap<>();
 
         supportedValue.put("0", "Non");
         supportedValue.put("1", "Oui");
 
-        StringBuffer select = new StringBuffer();
+        StringBuilder select = new StringBuilder();
 
         String disabled = "";
         if (StringUtils.isNotEmpty(po.getDeclaredProperty("osivia.cms.basePath"))) {
             disabled = "disabled='disabled'";
         }
 
-        select.append("<select id=\"cms-contextualization\" name=\"" + selectName + "\" class=\"form-control\" " + disabled + ">");
+        select.append("<select id=\"cms-contextualization\" name=\"").append(selectName).append("\" class=\"form-control\" ").append(disabled).append(">");
 
         if (!supportedValue.isEmpty()) {
             // Héritage
@@ -440,15 +480,15 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             inheritedLabel = "Herité [" + inheritedLabel + "]";
 
             if ((selectedValue == null) || (selectedValue.length() == 0)) {
-                select.append("<option selected=\"selected\" value=\"\">" + inheritedLabel + "</option>");
+                select.append("<option selected=\"selected\" value=\"\">").append(inheritedLabel).append("</option>");
             } else {
-                select.append("<option value=\"\">" + inheritedLabel + "</option>");
+                select.append("<option value=\"\">").append(inheritedLabel).append("</option>");
             }
             for (Entry<String, String> entry : supportedValue.entrySet()) {
                 if ((selectedValue != null) && (selectedValue.length() != 0) && selectedValue.equals(entry.getKey())) {
-                    select.append("<option selected=\"selected\" value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
+                    select.append("<option selected=\"selected\" value=\"").append(entry.getKey()).append("\">").append(entry.getValue()).append("</option>");
                 } else {
-                    select.append("<option value=\"" + entry.getKey() + "\">" + entry.getValue() + "</option>");
+                    select.append("<option value=\"").append(entry.getKey()).append("\">").append(entry.getValue()).append("</option>");
                 }
             }
         }
@@ -463,8 +503,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * Utility method used to fill toolbar attributes.
      *
      * @param renderPageCommand render page command
-     * @param pageRendition page rendition
-     * @param attributes attributes map
+     * @param pageRendition     page rendition
+     * @param attributes        attributes map
      */
     @SuppressWarnings("unchecked")
     private void fillPageAttributes(RenderPageCommand renderPageCommand, PageRendition pageRendition, Map<String, Object> attributes) {
@@ -484,7 +524,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         Object windowSettingMode = controllerContext.getAttribute(ControllerCommand.SESSION_SCOPE, InternalConstants.ATTR_WINDOWS_SETTING_MODE);
         if (!pageType.isTemplated() && InternalConstants.VALUE_WINDOWS_SETTING_WIZARD_MODE.equals(windowSettingMode)) {
-            List<Window> windows = new ArrayList<Window>();
+            List<Window> windows = new ArrayList<>();
 
             String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
             PortalLayout pageLayout = this.layoutService.getLayout(layoutId, true);
@@ -515,7 +555,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                         Map<String, String> windowProperties = wrc.getProperties();
                         String windowId = wrc.getId();
 
-                        if (!windowId.endsWith("PIA_EMPTY") && !WindowState.MAXIMIZED.equals (wrc.getWindowState())) {
+                        if (!windowId.endsWith("PIA_EMPTY") && !WindowState.MAXIMIZED.equals(wrc.getWindowState())) {
                             URLContext urlContext = controllerContext.getServerInvocation().getServerContext().getURLContext();
                             PortalObjectId poid = PortalObjectId.parse(windowId, PortalObjectPath.SAFEST_FORMAT);
                             DynamicWindow window = (DynamicWindow) this.portalObjectContainer.getObject(poid);
@@ -599,7 +639,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * if a region is not present in the context, creates a new one.
      *
      * @param rendition page rendition
-     * @param page current page
+     * @param page      current page
      */
     private void synchronizeRegionContexts(PageRendition rendition, Page page) {
         String layoutId = page.getProperty(ThemeConstants.PORTAL_PROP_LAYOUT);
@@ -610,7 +650,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             RegionRendererContext renderCtx = rendition.getPageResult().getRegion(regionName);
             if (renderCtx == null) {
                 // Empty region - must create blank window
-                Map<String, String> windowProps = new HashMap<String, String>();
+                Map<String, String> windowProps = new HashMap<>();
                 windowProps.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
                 windowProps.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
@@ -628,7 +668,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate models tree.
      *
-     * @param currentPage current page
+     * @param currentPage       current page
      * @param controllerContext controller context
      * @return models tree
      */
@@ -653,7 +693,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate page parents tree.
      *
-     * @param currentPage current page
+     * @param currentPage       current page
      * @param controllerContext controller context
      * @return template parents tree
      */
@@ -703,7 +743,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate template parents tree.
      *
-     * @param currentPage current page
+     * @param currentPage       current page
      * @param controllerContext controller context
      * @return template parents tree
      */
@@ -728,7 +768,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate elements tree.
      *
-     * @param currentPage current page
+     * @param currentPage       current page
      * @param controllerContext controller context
      * @return elements tree
      */
@@ -756,7 +796,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate locations tree.
      *
-     * @param currentPage current page
+     * @param currentPage       current page
      * @param controllerContext controller context
      * @return locations tree
      */
@@ -803,17 +843,17 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Generate fancytree node DOM4J element.
      *
-     * @param currentPage current page, may be null
+     * @param currentPage       current page, may be null
      * @param controllerContext controller context
-     * @param page page
-     * @param comparator portal object comparator, may be null
-     * @param models models indicator
-     * @param templates templates indicator, must be null for templates and non-templates union
-     * @param virtualEndNode add virtual end node indicator
+     * @param page              page
+     * @param comparator        portal object comparator, may be null
+     * @param models            models indicator
+     * @param templates         templates indicator, must be null for templates and non-templates union
+     * @param virtualEndNode    add virtual end node indicator
      * @return node DOM4J element
      */
     private Element generateTreeNode(Page currentPage, ControllerContext controllerContext, Page page, Comparator<PortalObject> comparator, boolean models,
-            Boolean templates, boolean virtualEndNode) {
+                                     Boolean templates, boolean virtualEndNode) {
         // Locale
         Locale locale = controllerContext.getServerInvocation().getServerContext().getClientRequest().getLocale();
         // Bundle
@@ -924,9 +964,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
      * Get portal object page children.
      *
      * @param controllerContext controller context
-     * @param parent parent portal object
-     * @param comparator portal objects comparator, may be null
-     * @param templates templates indicator, must be null for templates and non-templates union
+     * @param parent            parent portal object
+     * @param comparator        portal objects comparator, may be null
+     * @param templates         templates indicator, must be null for templates and non-templates union
      * @return page children
      */
     private Collection<Page> getPageChildren(ControllerContext controllerContext, PortalObject parent, Comparator<PortalObject> comparator, Boolean templates) {
@@ -936,9 +976,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // Pages
         Collection<Page> pages;
         if (comparator != null) {
-            pages = new TreeSet<Page>(comparator);
+            pages = new TreeSet<>(comparator);
         } else {
-            pages = new ArrayList<Page>();
+            pages = new ArrayList<>();
         }
 
         // Parent children
@@ -964,8 +1004,8 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
     /**
      * Get window settings.
      *
-     * @param bundle internationalization bundle
-     * @param portal portal
+     * @param bundle  internationalization bundle
+     * @param portal  portal
      * @param windows windows
      * @return window settings
      */
@@ -994,10 +1034,10 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
         // Satellites
         Map<String, String> satellites = this.getSatellites();
-        
+
 
         // Window settings
-        List<WindowSettings> windowSettings = new ArrayList<WindowSettings>(windows.size());
+        List<WindowSettings> windowSettings = new ArrayList<>(windows.size());
 
         for (Window window : windows) {
             // Identifier
@@ -1051,12 +1091,13 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 for (ProfilBean profile : profiles) {
                     WindowSettingsSelectOption scope = new WindowSettingsSelectOption();
                     scope.setId(profile.getName());
-                    scope.setText(bundle.getString("WINDOW_PROPERTIES_SCOPE_PROFILE") + " " + profile.getName());
+                    scope.setText(profile.getName());
                     scope.setSelected(ArrayUtils.contains(selectedScopes, profile.getName()));
 
                     scopes.add(scope);
                 }
             }
+            scopes.sort(this.selectOptionComparator);
 
             // Linked taskbar item
             String taskId = window.getDeclaredProperty(ITaskbarService.LINKED_TASK_ID_WINDOW_PROPERTY);
@@ -1094,7 +1135,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             // Selection dependency indicator
             boolean selectionDependency = "selection".equals(window.getProperty("osivia.cacheEvents"));
             settings.setSelectionDependency(selectionDependency);
-            
+
             // Customization identifier
             String priority = window.getDeclaredProperty("osivia.sequence.priority");
             settings.setPriority(priority);
@@ -1114,20 +1155,20 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /**
      * Get satellites.
-     * 
+     *
      * @return satellites
      */
     private Map<String, String> getSatellites() {
         // CMS service
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        
+
         Set<Satellite> satellites;
         try {
             satellites = cmsService.getSatellites();
         } catch (CMSException e) {
             satellites = null;
         }
-        
+
         Map<String, String> result;
         if (CollectionUtils.isEmpty(satellites)) {
             result = null;
@@ -1146,9 +1187,9 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /**
      * Fill session reload URL.
-     * 
+     *
      * @param controllerContext controller context
-     * @param attributes attributes
+     * @param attributes        attributes
      */
     private void fillSessionReloadUrl(ControllerContext controllerContext, Map<String, Object> attributes) {
         // CMS service
@@ -1156,12 +1197,12 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
         // CMS context
         CMSServiceCtx cmsContext = new CMSServiceCtx();
         cmsContext.setControllerContext(controllerContext);
-        
+
         // HTTP servlet request
         HttpServletRequest servletRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
         // HTTP session
         HttpSession session = servletRequest.getSession();
-        
+
         // Reload session indicator
         Boolean reload = (Boolean) session.getAttribute(Constants.SESSION_RELOAD_ATTRIBUTE);
         if (BooleanUtils.isTrue(reload)) {
@@ -1217,13 +1258,15 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
 
     /**
      * Layouts and themes collection filter predicate.
-     * 
+     *
      * @author Cédric Krommenhoek
      * @see Predicate
      */
-    private class LayoutsAndThemesPredicate implements Predicate {
+    private static class LayoutsAndThemesPredicate implements Predicate {
 
-        /** Excluded layout and theme names. */
+        /**
+         * Excluded layout and theme names.
+         */
         private final Set<String> excludedNames;
 
 
@@ -1254,8 +1297,41 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
             } else {
                 name = null;
             }
-            
+
             return StringUtils.isNotEmpty(name) && !excludedNames.contains(name);
+        }
+
+    }
+
+
+    /**
+     * Window settings select option comparator.
+     *
+     * @author Cédric Krommenhoek
+     * @see Comparator
+     * @see WindowSettingsSelectOption
+     */
+    private static class WindowSettingsSelectOptionComparator implements Comparator<WindowSettingsSelectOption> {
+
+        /**
+         * Constructor.
+         */
+        public WindowSettingsSelectOptionComparator() {
+            super();
+        }
+
+
+        @Override
+        public int compare(WindowSettingsSelectOption option1, WindowSettingsSelectOption option2) {
+            int result;
+            if ((option1 == null) || StringUtils.isEmpty(option1.getText())) {
+                result = -1;
+            } else if ((option2 == null) || StringUtils.isEmpty(option2.getText())) {
+                result = 1;
+            } else {
+                result = option1.getText().compareToIgnoreCase(option2.getText());
+            }
+            return result;
         }
 
     }
