@@ -1,7 +1,6 @@
 # Minified CSS files
-*.min.css
-
-
+osivia-portal-administration/web/src/main/webapp/css/*.min.css
+osivia-portal-custom-web-assets/src/main/webapp/css/*.min.css
 
 # Created by https://www.gitignore.io/api/maven,eclipse,intellij+all
 # Edit at https://www.gitignore.io/?templates=maven,eclipse,intellij+all
