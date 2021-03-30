@@ -72,7 +72,13 @@ function tinymceInitialization() {
                 height: "400",
 
                 convert_urls: false,
-                paste_as_text: true
+                paste_as_text: true,
+
+                setup: function(editor) {
+                    editor.on("change", function (e) {
+                        editor.save();
+                    });
+                }
             });
         }
 
@@ -94,28 +100,30 @@ function tinymceInitialization() {
             tinymce.init({
                 selector: "textarea.tinymce.tinymce-simple",
                 language: "fr_FR",
+                plugins: "autosave lists noneditable paste",
 
                 branding: false,
                 menubar: false,
                 toolbar: "bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist",
                 statusbar: false,
 
-                element_format: "html",
+                schema: "html5",
+                element_format : "html",
                 formats: {
                     alignleft: {
-                        selector: "p, ul, ol, li",
+                        selector: "p,ul,ol,li",
                         classes: "text-left"
                     },
                     aligncenter: {
-                        selector: "p, ul, ol, li",
+                        selector: "p,ul,ol,li",
                         classes: "text-center"
                     },
                     alignright: {
-                        selector: "p, ul, ol, li",
+                        selector: "p,ul,ol,li",
                         classes: "text-right"
                     },
                     alignjustify: {
-                        selector: "p, ul, ol, li",
+                        selector: "p,ul,ol,li",
                         classes: "text-justify"
                     },
                     bold: {
@@ -125,34 +133,31 @@ function tinymceInitialization() {
                         inline: "em"
                     },
                     underline: {
-                        inline: "u"
+                        inline: "u",
+                        exact: true
+                    },
+                    strikethrough: {
+                        inline: "del"
                     }
                 },
 
-                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css"],
-                height: 200,
-                width: "auto",
+                browser_spellcheck: true,
+                contextmenu: false,
+                content_css: ["/osivia-portal-custom-web-assets/css/bootstrap.min.css", "/osivia-portal-custom-web-assets/css/osivia.min.css"],
+                height: "250",
 
-                // Prevent relative URL conversion
                 convert_urls: false,
-                // Remove style on paste
                 paste_as_text: true,
 
-                browser_spellcheck: true
+                setup: function(editor) {
+                    editor.on("change", function (e) {
+                        editor.save();
+                    });
+                }
             });
         }
 
         $textarea.data("tinymce-simple-loaded", true);
     });
 
-
-
-    function urlConverterCallback(url, node, on_save, name) {
-        console.log("[urlConverterCallback] url = " + url);
-        console.log("[urlConverterCallback] node = " + node);
-        console.log("[urlConverterCallback] on_save = " + on_save);
-        console.log("[urlConverterCallback] name = " + name);
-
-        return url;
-    }
 }
