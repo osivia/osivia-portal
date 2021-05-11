@@ -222,14 +222,13 @@ public class TasksService implements ITasksService {
     public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
-        String host = System.getProperty(HOST_PROPERTY);
 
-        // Command
-        UpdateTaskCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
         
         if(controllerContext != null) {
 	        // Customized host property
-	        
+            String host = System.getProperty(HOST_PROPERTY);
+            // Command
+            UpdateTaskCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
 	
 	        // Portal URL
 	        PortalURL portalUrl = new PortalURLImpl(command, controllerContext, true, null);
@@ -252,9 +251,12 @@ public class TasksService implements ITasksService {
         else {
         	
           try {
+        	  
+    	   // Customized host property
+           String uri = System.getProperty(BATCH_URI_PROPERTY);
 
         	StringBuilder urlstr = new StringBuilder();
-        	urlstr.append(host);
+        	urlstr.append(uri);
         	urlstr.append("/auth/commands?");
         	
         	urlstr.append(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);

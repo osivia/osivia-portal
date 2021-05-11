@@ -19,6 +19,9 @@ public interface ITasksService {
 
     /** Customized host system property. */
     String HOST_PROPERTY = "osivia.tasks.host";
+    
+    /** Customized host system property. */
+    String BATCH_URI_PROPERTY = "osivia.tasks.batch.uri";    
 
 
     /**
