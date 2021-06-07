@@ -426,18 +426,21 @@ return false;
 	
 					String cookieValue = scookie.getValue().toString();
 					
-					if(cookieValue != null) {
-						
-						if(!StringUtils.endsWith(cookieValue, ".jbossX")) {
-							log.debug("cookie invalide !");
-							continue;
-						}
-						cookieValue = cookieValue.replace(".jbossX", "");
-						if(!StringUtils.isAlphanumeric(cookieValue)) {
-							log.debug("cookie invalide !");
-							continue;
-						}
-					}
+                    if(cookieValue != null) {
+                        
+                        String[] split = StringUtils.split(cookieValue,".");
+                        
+                        // cookie should have a duet of value separated by a dot
+                        if (split.length != 2) {
+                            log.error("cookie invalide !" + cookieValue);
+                            continue;
+                        }
+                        // duet of value should be alphanumeric
+                        if(!StringUtils.isAlphanumeric(split[0]) && !StringUtils.isAlphanumeric(split[1])) {
+                            log.error("cookie invalide !" + cookieValue);
+                            continue;                           
+                        }
+                    }
 	
 	
 /* 538 */         convertMB(scookie.getValue());
