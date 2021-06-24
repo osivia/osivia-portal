@@ -383,6 +383,7 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         if (cmsItem != null) {
                             // Cannot add live navigation item
                             BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
+                            breadcrumbItem.setDocumentType(cmsItem.getType());
                             breadcrumb.getChildren().add(0, breadcrumbItem);
                         }
 

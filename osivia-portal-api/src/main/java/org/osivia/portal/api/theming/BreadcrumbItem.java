@@ -16,6 +16,7 @@ package org.osivia.portal.api.theming;
 
 import java.util.List;
 
+import org.osivia.portal.api.cms.DocumentType;
 import org.osivia.portal.api.path.PortletPathItem;
 
 
@@ -38,6 +39,8 @@ public class BreadcrumbItem {
 	private List<PortletPathItem> portletPath;
     /** Task identifier. */
     private String taskId;
+    /** Document type. */
+    private DocumentType documentType;
 
 
     /**
@@ -183,4 +186,11 @@ public class BreadcrumbItem {
         this.taskId = taskId;
     }
 
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
 }
