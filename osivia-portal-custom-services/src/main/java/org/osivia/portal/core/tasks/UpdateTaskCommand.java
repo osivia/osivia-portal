@@ -63,7 +63,7 @@ public class UpdateTaskCommand extends ControllerCommand {
     private final CommandInfo commandInfo;
 
     /** CMS service locator. */
-    private final ICMSServiceLocator cmsServiceLocator;
+    protected final ICMSServiceLocator cmsServiceLocator;
     /** Internationalization bundle factory. */
     private final IBundleFactory bundleFactory;
     /** Notifications service. */
@@ -120,17 +120,13 @@ public class UpdateTaskCommand extends ControllerCommand {
         // Internationalization bundle
         Bundle bundle = this.bundleFactory.getBundle(request.getLocale());
 
-        // CMS service
-        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
-        // CMS context
-        CMSServiceCtx cmsContext = new CMSServiceCtx();
-        cmsContext.setControllerContext(this.context);
+
 
         // Response
         ControllerResponse response;
 
         try {
-            boolean updated = cmsService.updateTask(cmsContext, this.uuid, this.actionId, this.variables);
+            boolean updated = updateTask(uuid, actionId, variables);
 
             // Redirection
             if (StringUtils.isEmpty(this.redirectionUrl) || !updated) {
@@ -155,6 +151,17 @@ public class UpdateTaskCommand extends ControllerCommand {
         return response;
     }
 
+    
+    protected boolean updateTask(UUID uuid, String actionId, Map<String, String> variables) throws CMSException {
+        // CMS service
+        ICMSService cmsService = this.cmsServiceLocator.getCMSService();
+        // CMS context
+        CMSServiceCtx cmsContext = new CMSServiceCtx();
+        cmsContext.setControllerContext(this.context);
+        
+    	return cmsService.updateTask(cmsContext, uuid, actionId, variables);
+    	
+    }
 
     /**
      * Getter for uuid.
@@ -190,6 +197,10 @@ public class UpdateTaskCommand extends ControllerCommand {
      */
     public String getRedirectionUrl() {
         return this.redirectionUrl;
+    }
+    
+    public String getAction() {
+    	return ACTION;
     }
 
 }

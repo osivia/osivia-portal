@@ -67,6 +67,7 @@ import org.osivia.portal.core.page.PermLinkCommand;
 import org.osivia.portal.core.page.RefreshPageCommand;
 import org.osivia.portal.core.search.AdvancedSearchCommand;
 import org.osivia.portal.core.tasks.UpdateTaskCommand;
+import org.osivia.portal.core.tasks.UpdateTaskNoActorCommand;
 import org.osivia.portal.core.urls.WindowPropertiesEncoder;
 
 /**
@@ -841,7 +842,7 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
 
 
                 // Update task command
-                if (UpdateTaskCommand.ACTION.equals(action)) {
+                if (UpdateTaskCommand.ACTION.equals(action) || UpdateTaskNoActorCommand.ACTION_NO_ACTOR.equals(action)) {
                     // Parameters
                     String[] uuidParameter = parameterMap.get(UpdateTaskCommand.UUID_PARAMETER);
                     String[] actionIdParameter = parameterMap.get(UpdateTaskCommand.ACTION_ID_PARAMETER);
@@ -877,7 +878,14 @@ public class DefaultCommandFactoryService extends AbstractCommandFactory {
                             redirectionUrl = URLDecoder.decode(redirectionUrlParameter[0], CharEncoding.UTF_8);
                         }
 
-                        return new UpdateTaskCommand(uuid, actionId, variables, redirectionUrl);
+                        if(UpdateTaskNoActorCommand.ACTION_NO_ACTOR.equals(action)) {
+                        	return new UpdateTaskNoActorCommand(uuid, actionId, variables, redirectionUrl);	
+
+                        }
+                        else {
+                        	return new UpdateTaskCommand(uuid, actionId, variables, redirectionUrl);	
+                        }
+                        
                     }
                 }
             }

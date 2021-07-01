@@ -571,6 +571,19 @@ public interface ICMSService {
 
 
     /**
+     * Update task in superuser (no actor set on the task)
+     * 
+     * @param cmsContext CMS context
+     * @param uuid UUID
+     * @param actionId action identifier
+     * @param variables task variables
+     * @return true if the task has been updated
+     * @throws CMSException
+     */
+	boolean updateTaskNoActor(CMSServiceCtx cmsContext, UUID uuid, String actionId, Map<String, String> variables) throws CMSException;
+
+
+    /**
      * Reload CMS session.
      * 
      * @param cmsContext CMS context

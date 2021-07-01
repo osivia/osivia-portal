@@ -219,13 +219,21 @@ public class TasksService implements ITasksService {
     /**
      * {@inheritDoc}
      */
-    public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException {
+    public String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl,
+    		boolean noActor) throws PortalException {
         // Controller context
         ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
         String host = System.getProperty(HOST_PROPERTY);
 
         // Command
-        UpdateTaskCommand command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
+        UpdateTaskCommand command = null;
+        
+        if(noActor) {
+        	command = new UpdateTaskNoActorCommand(uuid, actionId, null, redirectionUrl);
+        }
+        else {
+        	 command = new UpdateTaskCommand(uuid, actionId, null, redirectionUrl);
+        }
         
         if(controllerContext != null) {
 	        // Customized host property
@@ -259,7 +267,7 @@ public class TasksService implements ITasksService {
         	
         	urlstr.append(DefaultURLFactory.COMMAND_ACTION_PARAMETER_NAME);
         	urlstr.append("=");
-        	urlstr.append(URLEncoder.encode(UpdateTaskCommand.ACTION, CharEncoding.UTF_8));
+        	urlstr.append(URLEncoder.encode(command.getAction(), CharEncoding.UTF_8));
         	
         	urlstr.append("&");
         	urlstr.append(UpdateTaskCommand.UUID_PARAMETER);

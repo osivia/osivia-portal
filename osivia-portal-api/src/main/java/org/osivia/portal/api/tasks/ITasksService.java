@@ -82,6 +82,7 @@ public interface ITasksService {
      * @return URL
      * @throws PortalException
      */
-    String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl) throws PortalException;
+    String getCommandUrl(PortalControllerContext portalControllerContext, UUID uuid, String actionId, String redirectionUrl,
+    		boolean noActor) throws PortalException;
 
 }
