@@ -30,7 +30,12 @@ public class ProfilBean implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public ProfilBean(String name, String roleName, String defaultPageName, String nuxeoVirtualUser) {
+
+	public ProfilBean() {
+        super();
+
+    }
+    public ProfilBean(String name, String roleName, String defaultPageName, String nuxeoVirtualUser) {
 		super();
 		this.name = name;
 		this.roleName = roleName;
