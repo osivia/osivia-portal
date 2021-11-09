@@ -75,6 +75,8 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     private boolean visible = true;
     /** Menubar item parent. */
     private MenubarContainer parent;
+    /** cetegory title displayed on top on the menubar item */
+    private String categoryTitle;
 
     /** Menubar item data attributes. */
     private final Map<String, String> data;
@@ -202,6 +204,7 @@ public class MenubarItem extends MenubarObject implements Cloneable {
         clone.divider = this.divider;
         clone.counter = this.counter;
         clone.visible = this.visible;
+        clone.categoryTitle = this.categoryTitle;
         clone.data.putAll(this.data);
         return clone;
     }
@@ -462,5 +465,17 @@ public class MenubarItem extends MenubarObject implements Cloneable {
     public Map<String, String> getData() {
         return this.data;
     }
+
+
+	public String getCategoryTitle() {
+		return categoryTitle;
+	}
+
+
+	public void setCategoryTitle(String categoryTitle) {
+		this.categoryTitle = categoryTitle;
+	}
+    
+    
 
 }

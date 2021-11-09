@@ -567,10 +567,17 @@ public class MenubarService implements IMenubarService {
         for (MenubarItem dropdownMenuItem : dropdownMenuItems) {
         	if(dropdownMenuItem.isVisible()) {
 	            // Dropdown menu divider
-	            if (dropdownMenuItem.isDivider() && !first) {
+	            if ((dropdownMenuItem.isDivider() && !first) || (StringUtils.isNotBlank(dropdownMenuItem.getCategoryTitle())))  {
                     Element dividerLI = DOM4JUtils.generateElement(HTMLConstants.LI, "divider", StringUtils.EMPTY, null, AccessibilityRoles.PRESENTATION);
 	                dropdownUL.add(dividerLI);
 	            }
+	            
+	            if(StringUtils.isNotBlank(dropdownMenuItem.getCategoryTitle())) {
+	                Element dropdownHeaderLI = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", dropdownMenuItem.getCategoryTitle(), null,
+	                        AccessibilityRoles.PRESENTATION);
+	                dropdownUL.add(dropdownHeaderLI);
+	            }
+	            
 	            
 	            Element dropdownItemLI = this.generateItemElement(container, dropdownMenuItem, true);
 		        dropdownUL.add(dropdownItemLI);
