@@ -30,7 +30,8 @@ $JQry(function () {
                         var $message = $JQry(document.createElement("p"));
                         $message.addClass("help-block");
                         $message.text(message);
-                        $formGroup.append($message);
+
+                        $target.closest(".form-group, [class*=col]").append($message);
                     }
                 } else if ($submit) {
                     $submit.click();
