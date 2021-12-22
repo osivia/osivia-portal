@@ -1,8 +1,12 @@
+
+
+
 $JQry(function () {
 
     $JQry("select.select2.select2-default").each(function (index, element) {
         var $element = $JQry(element);
         var url = $element.data("url");
+        var sort = $element.data("sort");
         var options = {
             minimumInputLength: 0,
             theme: "bootstrap4",
@@ -57,9 +61,20 @@ $JQry(function () {
                     };
                 },
                 processResults: function (data, params) {
-                    return {
-                        results: data
+                	if( sort !== undefined)	{
+                		data.sort(  function(a,b){  
+                   			           if(a[sort] > b[sort])  
+                   			              return 1;  
+                   			           else if(a[sort] < b[sort])  
+                   			              return -1;  
+                   			        return 0;  
+                   			   }  
+                		);
+                    }	
+            		return {
+                       results: data
                     };
+                	
                 },
                 cache: true
             };
