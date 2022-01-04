@@ -31,7 +31,7 @@ $JQry(function () {
                         $message.addClass("help-block");
                         $message.text(message);
 
-                        $target.closest(".form-group, [class*=col]").append($message);
+                        $target.closest(".form-group, .list-group-item, [class*=col]").append($message);
                     }
                 } else if ($submit) {
                     $submit.click();
