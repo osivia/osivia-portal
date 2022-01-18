@@ -7,29 +7,6 @@
 	<property name="jboss.version" value="4.2.3.GA"/>
 
 
-	
-	<macrodef name="maven-deploy-file">
-	   <attribute name="file"/>
-	   <attribute name="groupId"/>
-	   <attribute name="artifactId"/>
-	   <attribute name="version"/>
-	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
-	   
-	   <sequential>
-		   	<echo>mvn @{command-line}</echo>
-		   	
-		   	<!-- Window exec command : -->
-		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn.bat @{command-line}"/>
-			</exec>
-			
-		   	<!-- Linux et Unix exec command : -->
-		   	<exec executable="mvn" os="Linux,Unix">
-				<arg line="@{command-line}"/>
-			</exec>	   	
-	   </sequential>
-	</macrodef>
 
 
 
@@ -39,14 +16,14 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -Dsources=@{file}-sources.jar -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=osivia-thirdparty -Durl=http://www.osivia.org/nexus/content/repositories/thirdparty"/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
 		   	
 		   	<!-- Window exec command : -->
 		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn.bat @{command-line}"/>
+				<arg line="/c mvn @{command-line}"/>
 			</exec>
 			
 		   	<!-- Linux et Unix exec command : -->
@@ -64,7 +41,7 @@
 
 
 <!-- JBOSS PORTAL -->
-
+		<maven-deploy-file file="portal-faces-lib.jar" groupId="org.jboss.portal" artifactId="portal-faces-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-api-lib.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-api-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" packaging="java-source"/>
 		<maven-deploy-file file="portal-core-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-lib" version="${jboss-portal.version}" />
