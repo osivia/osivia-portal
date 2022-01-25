@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.9.3</version>
+        <version>4.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-portal-jbossas-jbossweb-lib</artifactId>
