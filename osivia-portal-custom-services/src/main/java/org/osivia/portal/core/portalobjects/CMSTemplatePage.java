@@ -19,14 +19,14 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 public class CMSTemplatePage extends TemplatePage implements ITemplatePortalObject {
 	
 	public static final String PAGE_NAME = "_CMS_LAYOUT";
 	
-	public static CMSTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template, String theme,  DynamicPortalObjectContainer dynamicContainer){
+	public static CMSTemplatePage createPage(IPortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template, String theme,  DynamicPortalObjectContainer dynamicContainer){
 		CMSTemplatePage page = null;
 		
 
@@ -35,7 +35,7 @@ public class CMSTemplatePage extends TemplatePage implements ITemplatePortalObje
 		
 	}
 	
-	private CMSTemplatePage(PortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template,  String theme, DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	private CMSTemplatePage(IPortalObjectContainer container, PortalObjectId parentId, PortalObjectImpl template,  String theme, DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super( container,  parentId,  PAGE_NAME,  template,  theme, dynamicContainer);
 	
 	}

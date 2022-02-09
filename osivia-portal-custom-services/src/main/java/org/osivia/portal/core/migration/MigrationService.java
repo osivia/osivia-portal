@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectContainer;
+import org.osivia.portal.core.page.files.FilesPortalObjectContainer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -88,10 +89,16 @@ public class MigrationService implements IMigrationManager {
 
     public void migrate() {
 
+    	PortalObjectContainer poc = this.getPortalObjectContainer();
+    	if (poc instanceof FilesPortalObjectContainer)
+    		return;
+    	
         logger.info("migration");
 
         try {
 
+        	
+        	
 
             Context context = this.getPortalObjectContainer().getContext();
             Portal adminPortal = (Portal) getPortalObjectContainer().getContext().getChild("admin");

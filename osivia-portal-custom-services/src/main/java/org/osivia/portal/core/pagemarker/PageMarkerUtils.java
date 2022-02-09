@@ -72,7 +72,7 @@ import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.mt.CacheEntry;
 import org.osivia.portal.core.notifications.NotificationsUtils;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.DynamicPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
@@ -168,7 +168,7 @@ public class PageMarkerUtils {
             }
         }
 
-        IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+        IDynamicObjectContainer po = ((IPortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
         for (DynamicWindowBean dynaWIndow : po.getDynamicWindows()) {
             windowlogger.debug("   dynamic windows  :");
             windowlogger.debug("      " + dynaWIndow.getName());
@@ -292,7 +292,7 @@ public class PageMarkerUtils {
             markerInfo.setPageNavigationalState(pns);
 
             // Sauvegarde des fenêtres dynamiques
-            IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+            IDynamicObjectContainer po = ((IPortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
             markerInfo.setDynamicWindows(po.getDynamicWindows());
 
             // Sauvegarde des pages dynamiques
@@ -450,7 +450,7 @@ public class PageMarkerUtils {
         
         
         // Sauvegarde des éléments conversationnels (pour une restauration sans pagemarker : ex permalien)
-        IDynamicObjectContainer po = ((PortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+        IDynamicObjectContainer po = ((IPortalObjectContainer) controllerCtx.getController().getPortalObjectContainer()).getDynamicObjectContainer();
 
         controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_pages", po.getDynamicPages());
         controllerCtx.getServerInvocation().getServerContext().getClientRequest().getSession().setAttribute("osivia.dynamic_windows", po.getDynamicWindows());
@@ -719,7 +719,7 @@ public class PageMarkerUtils {
 
                         // Restauration des pages dynamiques
                         if (markerInfo.getDynamicPages() != null) {
-                            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
+                            IDynamicObjectContainer poc = ((IPortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
                                     .getDynamicObjectContainer();
                             poc.setDynamicPages(markerInfo.getDynamicPages());
                         }
@@ -873,7 +873,7 @@ public class PageMarkerUtils {
         if( !restoreState && (controlledPageMarker == null)) {
             // Restauration des éléments conversationnels sans pageMarker (ex: permalien)
             
-            IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
+            IDynamicObjectContainer poc = ((IPortalObjectContainer) controllerContext.getController().getPortalObjectContainer())
                     .getDynamicObjectContainer();
             List<DynamicPageBean> dynaPages = (List<DynamicPageBean>) controllerContext.getServerInvocation().getServerContext().getClientRequest().getSession().getAttribute("osivia.dynamic_pages");
             if( dynaPages != null)
@@ -937,7 +937,7 @@ public class PageMarkerUtils {
 
 
         // Restauration des pages dynamiques
-        IDynamicObjectContainer poc = ((PortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
+        IDynamicObjectContainer poc = ((IPortalObjectContainer) controllerContext.getController().getPortalObjectContainer()).getDynamicObjectContainer();
 
 
         Page page = null;

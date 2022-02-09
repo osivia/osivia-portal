@@ -27,7 +27,7 @@ import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 /**
@@ -41,7 +41,7 @@ public class DynamicPersistentWindow extends DynamicWindow {
     /** Original window. */
     private WindowImpl orig;
     /** Portal object container. */
-    private final PortalObjectContainer container;
+    private final IPortalObjectContainer container;
     /** Declared properties. */
     private Map<String, String> declaredProperties;
 
@@ -72,7 +72,7 @@ public class DynamicPersistentWindow extends DynamicWindow {
      * @param localProperties local properties
      * @param dynaBean dynamic window bean
      */
-    public DynamicPersistentWindow(PortalObjectContainer container, DynamicPage page, String path, Object context,
+    public DynamicPersistentWindow(IPortalObjectContainer container, DynamicPage page, String path, Object context,
             DynamicPortalObjectContainer dynamicContainer, String uri, Map<String, String> localProperties, DynamicWindowBean dynaBean) {
         super(page, path, context, dynamicContainer, dynaBean);
 
@@ -97,7 +97,7 @@ public class DynamicPersistentWindow extends DynamicWindow {
      * @param orig original window
      * @param dynamicContainer dynamic portal object container
      */
-    public DynamicPersistentWindow(PortalObjectContainer container, WindowImpl orig, DynamicPortalObjectContainer dynamicContainer) {
+    public DynamicPersistentWindow(IPortalObjectContainer container, WindowImpl orig, DynamicPortalObjectContainer dynamicContainer) {
         super();
 
         this.container = container;

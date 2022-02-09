@@ -36,9 +36,9 @@ import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
  * @author jsteux
  *
  */
-public class PortalObjectContainer extends PersistentPortalObjectContainer {
+public class PortalObjectContainer extends PersistentPortalObjectContainer implements IPortalObjectContainer{
 
-	private final Log logger = LogFactory.getLog(PortalObjectContainer.class);
+	private final Log logger = LogFactory.getLog(IPortalObjectContainer.class);
 
 	private IDynamicObjectContainer dynamicObjectContainer = null;
 	private String dynamicObjectContainerBeanName = null;

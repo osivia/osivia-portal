@@ -30,7 +30,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.Window;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 public class DynamicPersistentPage extends DynamicPage {
@@ -39,7 +39,7 @@ public class DynamicPersistentPage extends DynamicPage {
 	PortalObject parent;
 	Portal portal;
 
-	public DynamicPersistentPage(PortalObjectContainer container, PageImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	public DynamicPersistentPage(IPortalObjectContainer container, PageImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
 
 		this.container = container;

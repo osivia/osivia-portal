@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.portal.core.impl.model.portal.AbstractPortalObjectContainer;
 import org.jboss.portal.core.impl.model.portal.PageImpl;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 
@@ -33,7 +33,7 @@ public abstract class DynamicPage extends PageImpl {
 
 	protected AbstractPortalObjectContainer.ContainerContext containerContext;
 	protected DynamicPortalObjectContainer dynamicContainer;
-	protected PortalObjectContainer container;
+	protected IPortalObjectContainer container;
 
 
 	Map<String, DynamicWindow> dynamicChilds;

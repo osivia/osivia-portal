@@ -7,6 +7,7 @@
 
 ### $Id: run.sh 75849 2008-07-15 18:43:17Z dimitris@jboss.org $ ###
 
+
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
 GREP="grep"

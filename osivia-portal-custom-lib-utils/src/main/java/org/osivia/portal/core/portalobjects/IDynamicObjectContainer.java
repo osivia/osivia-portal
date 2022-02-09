@@ -20,12 +20,12 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 public interface IDynamicObjectContainer {
 
-	public PortalObject getObject(PortalObjectContainer container, PortalObjectId id);
+	public PortalObject getObject(IPortalObjectContainer container, PortalObjectId id);
 
 	public void startPersistentIteration();
 	public void stopPersistentIteration();
@@ -36,7 +36,7 @@ public interface IDynamicObjectContainer {
 	public void setDynamicWindows( List<DynamicWindowBean> windows);
 	public void removeDynamicWindow( String dynamicWindowId );
 
-    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows);
+    public List<DynamicWindowBean> getPageWindows(IPortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows);
 
 	public void addDynamicPage( DynamicPageBean window );
 	public List<DynamicPageBean> getDynamicPages( );

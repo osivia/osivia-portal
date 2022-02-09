@@ -34,7 +34,7 @@ import org.jboss.portal.theme.ThemeConstants;
 import org.osivia.portal.core.dynamic.DynamicWindowBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
 import org.osivia.portal.core.page.PageProperties;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 /**
@@ -75,7 +75,7 @@ public class TemplatePage extends DynamicPage implements ITemplatePortalObject {
      * @param template template portal object
      * @param dynamicContainer dynamic portal object container
      */
-    protected TemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, PortalObjectImpl template, String theme,  
+    protected TemplatePage(IPortalObjectContainer container, PortalObjectId parentId, String name, PortalObjectImpl template, String theme,  
             DynamicPortalObjectContainer dynamicContainer) {
         super();
 

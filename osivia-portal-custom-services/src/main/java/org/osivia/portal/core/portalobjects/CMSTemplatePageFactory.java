@@ -28,7 +28,7 @@ import org.jboss.portal.core.model.portal.navstate.PageNavigationalState;
 import org.jboss.portal.core.model.portal.navstate.PortalObjectNavigationalStateContext;
 import org.jboss.portal.core.navstate.NavigationalStateContext;
 import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 /**
@@ -39,7 +39,7 @@ import org.osivia.portal.core.page.PortalObjectContainer;
  */
 public class CMSTemplatePageFactory {
 
-    private static CMSTemplatePageDescriptor getCMSTemplate(DynamicPortalObjectContainer dynaContainer, PortalObjectContainer container, PortalObjectPath cmsPagePath) {
+    private static CMSTemplatePageDescriptor getCMSTemplate(DynamicPortalObjectContainer dynaContainer, IPortalObjectContainer container, PortalObjectPath cmsPagePath) {
 
 
         PageNavigationalState ns = null;
@@ -108,7 +108,7 @@ public class CMSTemplatePageFactory {
      * @param currentPath
      * @return
      */
-    public static CMSTemplatePage getCMSPage(DynamicPortalObjectContainer dynaContainer, PortalObjectContainer container, PortalObjectPath currentPath) {
+    public static CMSTemplatePage getCMSPage(DynamicPortalObjectContainer dynaContainer, IPortalObjectContainer container, PortalObjectPath currentPath) {
  
         CMSTemplatePageDescriptor cmsPageDescriptor = CMSTemplatePageFactory.getCMSTemplate(dynaContainer, container, currentPath);
 

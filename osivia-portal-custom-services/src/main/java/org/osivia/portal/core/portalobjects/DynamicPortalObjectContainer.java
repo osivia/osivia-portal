@@ -69,7 +69,7 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.page.MonEspaceCommand;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.page.PermLinkCommand;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 import org.osivia.portal.core.security.CmsPermissionHelper;
 import org.osivia.portal.core.security.CmsPermissionHelper.Level;
 import org.osivia.portal.core.tracker.ITracker;
@@ -298,7 +298,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 	}
 
 
-    public List<DynamicWindowBean> getEditableWindows(PortalObjectContainer container, PortalObjectId pageId) {
+    public List<DynamicWindowBean> getEditableWindows(IPortalObjectContainer container, PortalObjectId pageId) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
@@ -559,7 +559,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
         return spaceMenuBarGenericProps;
     }
     
-    public List<DynamicWindowBean> getPageWindows(PortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows) {
+    public List<DynamicWindowBean> getPageWindows(IPortalObjectContainer container, PortalObjectId pageId, boolean includeCMSWindows) {
 
 		List<DynamicWindowBean> windows = new ArrayList<DynamicWindowBean>();
 
@@ -623,7 +623,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 		getDatas().clear();
 	}
 
-	public PortalObject getObject(PortalObjectContainer container, PortalObjectId id) {
+	public PortalObject getObject(IPortalObjectContainer container, PortalObjectId id) {
 
 		if (this.logger.isDebugEnabled()) {
 			Object cmd = this.getTracker().getCurrentState();
@@ -650,7 +650,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 	}
 
-	private PortalObject getParent(PortalObjectContainer container, PortalObjectId childId) {
+	private PortalObject getParent(IPortalObjectContainer container, PortalObjectId childId) {
 
 		PortalObjectPath parentPath = childId.getPath().getParent();
 		PortalObjectId parentId = new PortalObjectId("", parentPath);
@@ -690,7 +690,7 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 
 
 
-	public PortalObject getObjectInternal(PortalObjectContainer container, PortalObjectId id) {
+	public PortalObject getObjectInternal(IPortalObjectContainer container, PortalObjectId id) {
 
 		Object cmd = this.getTracker().getCurrentState();
 

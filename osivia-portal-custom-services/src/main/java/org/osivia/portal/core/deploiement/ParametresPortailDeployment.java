@@ -224,7 +224,7 @@ public class ParametresPortailDeployment {
 	                        		   parent.destroyChild(portalObjectMD.getName());
 	                        		   
 	                        		   // Suppression des fail-safe errors 
-	                        		   ((org.osivia.portal.core.page.PortalObjectContainer) portalObjectContainer).flushNaturalIdCache();
+	                        		   ((org.osivia.portal.core.page.IPortalObjectContainer) portalObjectContainer).flushNaturalIdCache();
 	                        	   //} catch(Exception e)	{ 
 	                        	//	   ((org.osivia.portal.core.page.PortalObjectContainer) portalObjectContainer).flushNaturalIdCache();
 	                        	 //  }

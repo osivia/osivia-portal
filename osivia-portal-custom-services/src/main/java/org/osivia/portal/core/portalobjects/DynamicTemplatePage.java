@@ -24,7 +24,7 @@ import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.osivia.portal.core.constants.InternalConstants;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
 import org.osivia.portal.core.dynamic.ITemplatePortalObject;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 /**
  * Dynamic template page.
@@ -54,7 +54,7 @@ public final class DynamicTemplatePage extends TemplatePage implements ITemplate
      * @param poid portal object identifier
      * @return dynamic template page
      */
-    public static DynamicTemplatePage createPage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
+    public static DynamicTemplatePage createPage(IPortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
             PortalObjectImpl template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean, PortalObjectId poid) {
         DynamicTemplatePage page = null;
         try {
@@ -87,7 +87,7 @@ public final class DynamicTemplatePage extends TemplatePage implements ITemplate
      * @param dynamicContainer dynamic portal object container
      * @param pageBean dynamic page bean
      */
-    private DynamicTemplatePage(PortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
+    private DynamicTemplatePage(IPortalObjectContainer container, PortalObjectId parentId, String name, Map<Locale, String> displayNames,
             PortalObjectImpl template, String theme, DynamicPortalObjectContainer dynamicContainer, DynamicPageBean pageBean) {
         super(container, parentId, name, template, theme, dynamicContainer);
 

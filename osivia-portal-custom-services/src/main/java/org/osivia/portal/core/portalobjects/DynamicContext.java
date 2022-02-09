@@ -36,7 +36,7 @@ import org.jboss.portal.core.model.portal.PortalObject;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.server.ServerInvocation;
 import org.osivia.portal.core.dynamic.DynamicPageBean;
-import org.osivia.portal.core.page.PortalObjectContainer;
+import org.osivia.portal.core.page.IPortalObjectContainer;
 
 
 
@@ -48,14 +48,14 @@ public  class DynamicContext extends ContextImpl {
 	protected AbstractPortalObjectContainer.ContainerContext containerContext;
 	protected DynamicPortalObjectContainer dynamicContainer;
 	
-	PortalObjectContainer container;
+	IPortalObjectContainer container;
 	
 	ContextImpl orig;
 	List<DynamicPortal> children;
 	
 	protected String name;
 	
-	public DynamicContext(PortalObjectContainer container, ContextImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
+	public DynamicContext(IPortalObjectContainer container, ContextImpl orig,  DynamicPortalObjectContainer dynamicContainer) throws IllegalArgumentException {
 		super();
 		
 		this.dynamicContainer = dynamicContainer;
