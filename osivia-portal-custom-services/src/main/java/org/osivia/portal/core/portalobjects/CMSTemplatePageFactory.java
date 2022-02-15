@@ -52,11 +52,13 @@ public class CMSTemplatePageFactory {
 
 
         } else {
+        	/* can't compile : incorrect constructor PortalObjectNavigationalStateContext
             ServerInvocation invocation = dynaContainer.getInvocation();
             PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation.getContext().getAttributeResolver(
                     ControllerCommand.PRINCIPAL_SCOPE));
 
             ns = pnsCtx.getPageNavigationalState(cmsPagePath.toString());
+            */
 
         }
 

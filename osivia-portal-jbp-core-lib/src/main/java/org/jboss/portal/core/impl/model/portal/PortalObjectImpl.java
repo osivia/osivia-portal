@@ -414,6 +414,19 @@ public abstract class PortalObjectImpl implements PortalObject
    {
       ParameterValidation.throwIllegalArgExceptionIfNull(name, "child name");
 
+      
+      Object context = objectNode.getContext();
+      
+      // If no db context, get stored object
+      if( context == null || ! (context.getClass().equals(PersistentPortalObjectContainer.ContainerContext.class)))	{
+    	  ObjectNode childNode = (ObjectNode) objectNode.getChildren().get(name);
+    	  if( childNode != null) {
+    		  return childNode.getObject();
+    	  }
+    	  
+    	  return null;
+      }
+      
       // use container directly instead of going through children to avoid having to retrieve all of them just for one
       // this leads to major perfomance improvement by dramatically reducing the number of DB requests
       PortalObject portalObject = objectNode.getContext().getContainer().getObject(getId().getChildId(name));

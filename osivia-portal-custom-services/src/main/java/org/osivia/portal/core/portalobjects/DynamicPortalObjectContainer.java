@@ -346,11 +346,14 @@ public class DynamicPortalObjectContainer extends ServiceMBeanSupport implements
 			}	else	{
 				invocation = this.getInvocation();
                 ctx = invocation.getServerContext();
-
+                ns = null;
+/*
+ * 				can't compile incorrect constructor PortalObjectNavigationalStateContext
 				PortalObjectNavigationalStateContext pnsCtx = new PortalObjectNavigationalStateContext(invocation
 						.getContext().getAttributeResolver(ControllerCommand.PRINCIPAL_SCOPE));
 
 				ns = pnsCtx.getPageNavigationalState(pagePath.toString());
+*/				
 
 				cmsReadItemContext.setServerInvocation(invocation);
 				request = invocation.getServerContext().getClientRequest();

@@ -15,6 +15,27 @@
 
     <dependencies>
 
+    <dependency>
+		  <groupId>org.osivia.portal.core</groupId>
+		  <artifactId>parent</artifactId>
+		  <version>${project.version}</version>
+		  <type>pom</type>
+		  <exclusions>
+		    <exclusion>
+		      <groupId>org.jboss.portal</groupId>
+		      <artifactId>portal-core-lib</artifactId>
+		    </exclusion>
+		  </exclusions>   
+		</dependency>
+
+        <dependency>
+            <groupId>org.osivia.portal.core</groupId>
+            <artifactId>osivia-portal-jbp-core-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
         <dependency>
             <groupId>org.osivia.portal</groupId>
             <artifactId>osivia-portal-api</artifactId>
