@@ -93,7 +93,7 @@ public class ExportServlet extends HttpServlet {
                 portalObject = this.getPortalObjectContainer().getObject(PortalObjectId.parse(pageId, PortalObjectPath.SAFEST_FORMAT));
             } else {
                 portalObject = this.getPortalObjectContainer().getObject(PortalObjectId.parse(portalId, PortalObjectPath.SAFEST_FORMAT));
-            }
+            } 	
 
             if (portalObject != null) {
                 response.setContentType("text/xml");
@@ -105,7 +105,7 @@ public class ExportServlet extends HttpServlet {
                     headerValue.append("page_");
                 } else {
                     headerValue.append("portal_");
-                }
+                }	
                 headerValue.append(portalObject.getName().toLowerCase());
                 headerValue.append(".xml\"");
                 response.addHeader("Content-disposition", headerValue.toString());

@@ -74,6 +74,30 @@
         <servlet-name>ExportServlet</servlet-name>
         <url-pattern>/export/*</url-pattern>
     </servlet-mapping>
+    
+    
+   <servlet>
+        <servlet-name>ExportConfigServlet</servlet-name>
+        <servlet-class>org.osivia.portal.administration.ejb.ExportConfigServlet</servlet-class>
+
+        <init-param>
+            <param-name>PortalObjectContainer</param-name>
+            <param-value>portal:container=PortalObject</param-value>
+        </init-param>
+        <init-param>
+            <param-name>DynamicObjectContainer</param-name>
+            <param-value>osivia:service=DynamicPortalObjectContainer</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CacheService</param-name>
+            <param-value>osivia:service=Cache</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ExportConfigServlet</servlet-name>
+        <url-pattern>/exportConfig/*</url-pattern>
+    </servlet-mapping>
 
 
     <servlet>

@@ -123,6 +123,17 @@ public class MemoryObjectNode extends ObjectNode implements ContextObject {
 	      log.debug("Creating child of path='" + path + "' with path='" + childPath + "'");
 	      MemoryObjectNode childNode = new MemoryObjectNode(containerContext, childPath, name);
 	      childNode.setObject(childObject);
+	      
+	      // seems that PortalObjectImpl defaut displayName is null
+	      // when the object is not mapped with Hibernate
+	      if( childObject.getDisplayNames() == null)
+	    	  childObject.setDisplayNames(new HashMap<>());
+	      
+	      // seems that PortalObjectImpl defaut securityconstraint is null
+	      // when the object is not mapped with Hibernate	      
+	      if( childNode.getSecurityConstraints() == null)
+	    	  childNode.setSecurityConstraints(new HashMap<>());
+	      
 	      childObject.setObjectNode(childNode);
 	      childNode.setContext(containerContext);
 

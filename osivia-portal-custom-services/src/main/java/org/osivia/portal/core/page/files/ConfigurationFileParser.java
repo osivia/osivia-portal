@@ -42,189 +42,154 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.EntityResolver;
 
-
 public class ConfigurationFileParser {
 
 	private String path;
 
-    protected static final Log log = LogFactory.getLog(ConfigurationFileParser.class);
-    
-    /** . */
-    public static final int OVERWRITE_IF_EXISTS = 0;
-	
-	
+	protected static final Log log = LogFactory.getLog(ConfigurationFileParser.class);
+
+	/** . */
+	public static final int OVERWRITE_IF_EXISTS = 0;
+
 	public ConfigurationFileParser(String path) {
 		super();
 		this.path = path;
 	};
-	
-	public ImportPortalObjectContainer  parse () {
-		
-		
-		ImportPortalObjectContainer portalObjectContainer = new  ImportPortalObjectContainer();
-		
-		
-	     try {
-	            DocumentBuilder builder = XMLTools.getDocumentBuilderFactory().newDocumentBuilder();
-	            EntityResolver entityResolver = Locator.findMBean(EntityResolver.class,"portal:service=EntityResolver");
-	            builder.setEntityResolver(entityResolver);
-	            
-	            ContentProviderRegistry contentProvicerRegistry = Locator.findMBean( ContentProviderRegistry.class, "portal:service=ContentProviderRegistry");
-	   
-	            CoordinationConfigurator coordinationConfigurator = Locator.findMBean( CoordinationConfigurator.class, "portal:service=CoordinationService");
-	            
-	            InputStream in = IOTools.safeBufferedWrapper(new FileInputStream(path));
-	            
-	            Document doc = builder.parse(in);
-	            Element deploymentsElt = doc.getDocumentElement();
-	            List<Element> deploymentElts = XMLTools.getChildren(deploymentsElt, "deployment");
-	            ArrayList<Unit> units = new ArrayList<Unit>(deploymentElts.size());
-	            
-	            for (Element deploymentElt : deploymentElts)
-	            {
-	               Unit unit = new Unit();
 
-	               //
-	               Element parentRefElt = XMLTools.getUniqueChild(deploymentElt, "parent-ref", false);
-	               unit.parentRef = parentRefElt == null ? null : PortalObjectId.parse(XMLTools.asString(parentRefElt), PortalObjectPath.LEGACY_FORMAT);
+	public ImportPortalObjectContainer parse() throws Exception {
 
-	               //
-	               Element ifExistsElt = XMLTools.getUniqueChild(deploymentElt, "if-exists", false);
-	               unit.ifExists = OVERWRITE_IF_EXISTS;
+		ImportPortalObjectContainer portalObjectContainer = new ImportPortalObjectContainer();
 
+		DocumentBuilder builder = XMLTools.getDocumentBuilderFactory().newDocumentBuilder();
+		EntityResolver entityResolver = Locator.findMBean(EntityResolver.class, "portal:service=EntityResolver");
+		builder.setEntityResolver(entityResolver);
 
-	               // The object to create
-	               PortalObjectMetaData metaData = null;
+		ContentProviderRegistry contentProvicerRegistry = Locator.findMBean(ContentProviderRegistry.class,
+				"portal:service=ContentProviderRegistry");
 
-	               //
-	               Element metaDataElt = XMLTools.getUniqueChild(deploymentElt, "portal", false);
-	               
-	               if( metaDataElt == null)
-	               {
-	                  metaDataElt = XMLTools.getUniqueChild(deploymentElt, "page", false);
-	                  if (metaDataElt == null)
-	                  {
-	                     metaDataElt = XMLTools.getUniqueChild(deploymentElt, "window", false);
-	                     if (metaDataElt == null)
-	                     {
-	                        metaDataElt = XMLTools.getUniqueChild(deploymentElt, "context", false);
-	                     }
-	                  }
-	               }
-	               if (metaDataElt != null)
-	               {
-	                  metaData = PortalObjectMetaData.buildMetaData(contentProvicerRegistry, metaDataElt);
-	               }
-	               else
-	               {
-	                  log.debug("Instances element in -object.xml is not supported anymore");
-	               }
+		CoordinationConfigurator coordinationConfigurator = Locator.findMBean(CoordinationConfigurator.class,
+				"portal:service=CoordinationService");
 
-	               //
-	               if (metaData != null)
-	               {
-	                  unit.metaData = metaData;
-	                  units.add(unit);
-	               }
-	            }
-	            
-		         BuildContext portalObjectBuildContext = new BuildContext()
-		         {
-		            public PortalObjectContainer getContainer()
-		            {
-		               return portalObjectContainer;
-		            }
+		InputStream in = IOTools.safeBufferedWrapper(new FileInputStream(path));
 
-		            public ContentHandler getContentHandler(ContentType contentType)
-		            {
-		               ContentProvider contentProvider = contentProvicerRegistry.getContentProvider(contentType);
-		               return contentProvider != null ? contentProvider.getHandler() : null;
-		            }
-		            
-		            public PortalWebApp getPortalWebApp()
-		            {
-		               return null;
-		            }
+		Document doc = builder.parse(in);
+		Element deploymentsElt = doc.getDocumentElement();
+		List<Element> deploymentElts = XMLTools.getChildren(deploymentsElt, "deployment");
+		ArrayList<Unit> units = new ArrayList<Unit>(deploymentElts.size());
 
-		            public CoordinationConfigurator getCoordinationConfigurator()
-		            {
-		               return coordinationConfigurator;
-		            }
-		         };
-	            
-	            
-	            // Create all objects
-	            for (Unit unit : units)
-	            {
-	            	
-	            	if (unit.metaData instanceof PortalObjectMetaData)
-		            {
+		for (Element deploymentElt : deploymentElts) {
+			Unit unit = new Unit();
 
+			//
+			Element parentRefElt = XMLTools.getUniqueChild(deploymentElt, "parent-ref", false);
+			unit.parentRef = parentRefElt == null ? null
+					: PortalObjectId.parse(XMLTools.asString(parentRefElt), PortalObjectPath.LEGACY_FORMAT);
 
-		               PortalObjectMetaData portalObjectMD = (PortalObjectMetaData)unit.metaData;
+			//
+			Element ifExistsElt = XMLTools.getUniqueChild(deploymentElt, "if-exists", false);
+			unit.ifExists = OVERWRITE_IF_EXISTS;
 
-		               if (unit.parentRef != null)
-		               {
-		                  log.debug("Checking existence of parent portal object '" + unit.parentRef + "'");
-		                  Object o = portalObjectContainer.getObject(unit.parentRef);
-		                  if (o instanceof PortalObject)
-		                  {
-		                     PortalObject parent = (PortalObject)o;
+			// The object to create
+			PortalObjectMetaData metaData = null;
 
-		                        log.debug("Building portal object");
-		                        PortalObject po = portalObjectMD.create(portalObjectBuildContext, parent);
-		                        unit.ref = po.getId();
-		                     
-		                  }
-		                  else if (o == null)
-		                  {
-		                     log.warn("Cannot create portal object " + unit.metaData + " because the parent '" + unit.parentRef + "' that the deployment descriptor references does not exist");
-		                  }
-		               }
-		               else
-		               {
-		                  if (portalObjectContainer.getContext(portalObjectMD.getName()) == null)
-		                  {
-		                     log.debug("Building portal object");
-		                     PortalObject po = portalObjectMD.create(portalObjectBuildContext, null);
-		                     unit.ref = po.getId();
-		                  }
-		               }
-		            }
-	            }           
-	            
-	            
-	        } catch(Exception e)    {
-	            log.error(e);
-	        }
-	     
-	     return portalObjectContainer;
+			//
+			Element metaDataElt = XMLTools.getUniqueChild(deploymentElt, "portal", false);
+
+			if (metaDataElt == null) {
+				metaDataElt = XMLTools.getUniqueChild(deploymentElt, "page", false);
+				if (metaDataElt == null) {
+					metaDataElt = XMLTools.getUniqueChild(deploymentElt, "window", false);
+					if (metaDataElt == null) {
+						metaDataElt = XMLTools.getUniqueChild(deploymentElt, "context", false);
+					}
+				}
+			}
+			if (metaDataElt != null) {
+				metaData = PortalObjectMetaData.buildMetaData(contentProvicerRegistry, metaDataElt);
+			} else {
+				log.debug("Instances element in -object.xml is not supported anymore");
+			}
+
+			//
+			if (metaData != null) {
+				unit.metaData = metaData;
+				units.add(unit);
+			}
+		}
+
+		BuildContext portalObjectBuildContext = new BuildContext() {
+			public PortalObjectContainer getContainer() {
+				return portalObjectContainer;
+			}
+
+			public ContentHandler getContentHandler(ContentType contentType) {
+				ContentProvider contentProvider = contentProvicerRegistry.getContentProvider(contentType);
+				return contentProvider != null ? contentProvider.getHandler() : null;
+			}
+
+			public PortalWebApp getPortalWebApp() {
+				return null;
+			}
+
+			public CoordinationConfigurator getCoordinationConfigurator() {
+				return coordinationConfigurator;
+			}
+		};
+
+		// Create all objects
+		for (Unit unit : units) {
+
+			if (unit.metaData instanceof PortalObjectMetaData) {
+
+				PortalObjectMetaData portalObjectMD = (PortalObjectMetaData) unit.metaData;
+
+				if (unit.parentRef != null) {
+					log.debug("Checking existence of parent portal object '" + unit.parentRef + "'");
+					Object o = portalObjectContainer.getObject(unit.parentRef);
+					if (o instanceof PortalObject) {
+						PortalObject parent = (PortalObject) o;
+
+						log.debug("Building portal object");
+						PortalObject po = portalObjectMD.create(portalObjectBuildContext, parent);
+						unit.ref = po.getId();
+
+					} else if (o == null) {
+						log.warn("Cannot create portal object " + unit.metaData + " because the parent '"
+								+ unit.parentRef + "' that the deployment descriptor references does not exist");
+					}
+				} else {
+					if (portalObjectContainer.getContext(portalObjectMD.getName()) == null) {
+						log.debug("Building portal object");
+						PortalObject po = portalObjectMD.create(portalObjectBuildContext, null);
+						unit.ref = po.getId();
+					}
+				}
+			}
+		}
+
+		return portalObjectContainer;
 	}
-	
-	
-    /** A unit of deployment in the deployment descriptor. */
-    protected static class Unit
-    {
-       /** The strategy to use when the root object already exists. */
-       protected int ifExists;
 
-       /** The parent ref. */
-       protected PortalObjectId parentRef;
+	/** A unit of deployment in the deployment descriptor. */
+	protected static class Unit {
+		/** The strategy to use when the root object already exists. */
+		protected int ifExists;
 
-       /** Meta data of the deployed portal object. */
-       protected Object metaData;
+		/** The parent ref. */
+		protected PortalObjectId parentRef;
 
-       /** The handle of the deployed object if not null. */
-       protected PortalObjectId ref;
+		/** Meta data of the deployed portal object. */
+		protected Object metaData;
 
-       public String toString()
-       {
-          StringBuffer buffer = new StringBuffer("Unit[::ifExists=" + ifExists);
-          buffer.append(":parentRef=").append(parentRef);
-          buffer.append(":Metadata=").append(metaData).append(":ref=").append(ref).append("]");
-          return buffer.toString();
-       }
-    }
+		/** The handle of the deployed object if not null. */
+		protected PortalObjectId ref;
 
-	
+		public String toString() {
+			StringBuffer buffer = new StringBuffer("Unit[::ifExists=" + ifExists);
+			buffer.append(":parentRef=").append(parentRef);
+			buffer.append(":Metadata=").append(metaData).append(":ref=").append(ref).append("]");
+			return buffer.toString();
+		}
+	}
+
 }

@@ -20,6 +20,12 @@
                             <a4j:support event="onchange" immediate="true" reRender="portal-tabs" />
                         </h:selectOneListbox>
                     </div>
+                    
+                     <div class="form-group">
+				        <a href="#{context}/exportConfig" target="_blank">
+				            <h:outputText value="#{internationalizationBean.getString('ADMIN_PORTLET_EXPORT_CONFIG_ALL')}" />
+				        </a>
+                    </div>
                 </a4j:form>
             </div>
             

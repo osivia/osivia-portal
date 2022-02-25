@@ -43,6 +43,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.i18n.LocalizedString;
 import org.jboss.portal.common.i18n.LocalizedString.Value;
+import org.jboss.portal.core.impl.model.portal.WindowImpl;
+import org.jboss.portal.core.model.content.ContentType;
+import org.jboss.portal.core.model.portal.Context;
 import org.jboss.portal.core.model.portal.Page;
 import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObject;
@@ -175,9 +178,12 @@ public class XMLGenerator {
             Page page = (Page) portalObject;
             mainPortalObject = this.pageExport(page, document, filter);
             parentRef = page.getId().getPath().getParent().toString(PortalObjectPath.LEGACY_FORMAT);
-        } else {
+        } else if (portalObject instanceof Portal) {
             Portal portal = (Portal) portalObject;
             mainPortalObject = this.portalExport(portal, document, filter);
+        }	else	{
+        	Context context = (Context) portalObject;
+        	mainPortalObject = this.exportContext(context, document);
         }
 
         Element deployments = this.elementCreation(document, "deployments");
@@ -185,10 +191,12 @@ public class XMLGenerator {
         Element deployment = this.elementCreation(document, "deployment");
         deployments.appendChild(deployment);
 
-        if (parentRef == null) {
-            deployment.appendChild(this.elementCreation(document, "parent-ref"));
-        } else {
-            deployment.appendChild(this.elementCreation(document, "parent-ref", parentRef));
+        if( ! (portalObject instanceof Context))	{
+	        if (parentRef == null) {
+	            deployment.appendChild(this.elementCreation(document, "parent-ref"));
+	        } else {
+	            deployment.appendChild(this.elementCreation(document, "parent-ref", parentRef));
+	        }
         }
 
         deployment.appendChild(this.elementCreation(document, "if-exists", "overwrite"));
@@ -228,6 +236,7 @@ public class XMLGenerator {
 
         // Display names
         LocalizedString displayName = page.getDisplayName();
+
         Map<Locale, Value> values = displayName.getValues();
         for (Entry<Locale, Value> entry : values.entrySet()) {
             Locale locale = entry.getKey();
@@ -236,6 +245,7 @@ public class XMLGenerator {
             displayNameElement.setAttribute("xml:lang", locale.getLanguage());
             pageElement.appendChild(displayNameElement);
         }
+
 
         // Properties
         Element propertiesElement = this.elementCreation(document, "properties");
@@ -321,6 +331,42 @@ public class XMLGenerator {
         return portalElement;
     }
 
+    
+    
+    /**
+     * Utility method used to export portal.
+     *
+     * @param portal portal to export
+     * @param document DOM document
+     * @param filter filter
+     * @return DOM element
+     */
+    private Element exportContext(PortalObject context, Document document) {
+    	
+    	
+        Element portalElement = this.elementCreation(document, "context");
+        portalElement.appendChild(this.elementCreation(document, "context-name", context.getName()));
+
+
+        // Properties
+        Element propertiesElement = this.elementCreation(document, "properties");
+        Map<String, String> properties = context.getDeclaredProperties();
+        for (Entry<String, String> entry : properties.entrySet()) {
+            Element propertyElement = this.elementCreation(document, "property");
+            propertyElement.appendChild(this.elementCreation(document, "name", entry.getKey()));
+            propertyElement.appendChild(this.elementCreation(document, "value", entry.getValue()));
+            propertiesElement.appendChild(propertyElement);
+        }
+        portalElement.appendChild(propertiesElement);
+
+        // Sub portals
+        for (PortalObject portalObject : context.getChildren()) {
+             portalElement.appendChild(this.portalExport((Portal) portalObject,document, null));
+        }
+
+        return portalElement;
+    }
+    
 
     /**
      * Utility method used to create DOM element.
@@ -399,7 +445,16 @@ public class XMLGenerator {
     private Element windowCreation(Document document, Window window) {
         Element windowElement = this.elementCreation(document, "window");
         windowElement.appendChild(this.elementCreation(document, "window-name", window.getName()));
-        windowElement.appendChild(this.elementCreation(document, "instance-ref", window.getContent().getURI()));
+        if( window.getContent() != null)
+        	windowElement.appendChild(this.elementCreation(document, "instance-ref", window.getContent().getURI()));
+        else if( window.getContentType().equals(ContentType.CMS))	{
+        	Element contentElement = this.elementCreation(document, "content");
+        	contentElement.appendChild(this.elementCreation(document, "content-type", "cms"));
+        	if( window instanceof WindowImpl)
+        		contentElement.appendChild(this.elementCreation(document, "content-uri", ((WindowImpl)window).getURI()));
+        	windowElement.appendChild(contentElement);
+        }
+        	
 
         // Properties
         Element propertiesElement = this.elementCreation(document, "properties");

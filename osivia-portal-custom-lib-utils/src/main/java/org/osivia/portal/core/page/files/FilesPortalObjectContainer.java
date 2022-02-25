@@ -35,6 +35,7 @@ import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.PortalObjectPath;
 import org.jboss.portal.security.impl.JBossAuthorizationDomainRegistry;
 import org.jboss.portal.security.spi.auth.PortalAuthorizationManagerFactory;
+import org.jboss.portal.security.spi.provider.AuthorizationDomain;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.core.page.IPortalObjectContainer;
 import org.osivia.portal.core.portalobjects.IDynamicObjectContainer;
@@ -58,9 +59,15 @@ public class FilesPortalObjectContainer extends AbstractPortalObjectContainer im
 	private JBossAuthorizationDomainRegistry authorizationDomainRegistry;
 	
 	private IConfigurationImportManager configurationImportManager;
-	
 
 
+	public FilesPortalObjectContainer() {
+		
+		super();
+		
+		// At any time, this property can be read to adapt local rules
+		System.setProperty("osivia.portal.storage", "memory");
+	}
 
 	public IConfigurationImportManager getConfigurationImportManager() {
 		return configurationImportManager;
@@ -153,4 +160,10 @@ public class FilesPortalObjectContainer extends AbstractPortalObjectContainer im
         return (Context) object;
     }
 
+
+	@Override
+	public AuthorizationDomain getAuthorizationDomain() {
+		return getConfigurationImportManager().getAuthorizationDomain();
+	}
+    
 }
