@@ -94,7 +94,7 @@ public class ConfigurationImportManager extends ServiceMBeanSupport implements I
 
 	@Override
 	public PortalObject getObject(PortalObjectId id) throws IllegalArgumentException {
-		logger.info("ConfigurationImportManager getObject " + id);
+		logger.debug("ConfigurationImportManager getObject " + id);
 		PortalObject res = poc.getObject(id);
 		return res;
 	}
