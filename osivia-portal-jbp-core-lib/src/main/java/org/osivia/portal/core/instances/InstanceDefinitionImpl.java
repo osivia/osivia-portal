@@ -64,7 +64,7 @@ class InstanceDefinitionImpl extends AbstractInstanceDefinition implements Conte
    public InstanceDefinitionImpl(InstanceContainerContext containerContext, InstanceMetaData instanceMD)
    {
       this.containerContext = containerContext;
-      this.mutable = true;
+      this.mutable = false;
       this.portletRef = instanceMD.getPortletRef();
       this.instanceId = instanceMD.getId();
       this.displayNames = getDisplayNamesMap(instanceMD.getDisplayName());

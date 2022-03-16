@@ -101,6 +101,7 @@
          portal:service=ServletContainerFactory
       </depends>
    </mbean>
+<!--    
    <mbean code="org.jboss.portal.core.aspects.server.UserInterceptor"
           name="portal:service=Interceptor,type=Server,name=User" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
@@ -108,6 +109,7 @@
       <attribute name="CacheUser">true</attribute>
       <depends>portal:service=Module,type=IdentityServiceController</depends>
    </mbean>
+   -->
    <mbean code="org.jboss.portal.core.aspects.server.LocaleInterceptor"
           name="portal:service=Interceptor,type=Server,name=Locale" xmbean-dd=""
           xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">

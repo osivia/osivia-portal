@@ -73,11 +73,19 @@ public class InstanceContainerContextImpl implements JBossInstanceContainerConte
 
 	@Override
 	public void updateInstance(AbstractInstance instance, PortletContext portletContext, boolean mutable) {
+		
+		instance.setPortletRef(portletContext.getId());
+		instance.setState(portletContext.getState());
+		
 		((InstanceContainerImpl) container).updateDefinition((InstanceDefinitionImpl)instance);
 	}
 
 	@Override
 	public void updateInstance(AbstractInstance instance, PortletContext portletContext) {
+
+		instance.setPortletRef(portletContext.getId());
+		instance.setState(portletContext.getState());
+		
 		((InstanceContainerImpl) container).updateDefinition((InstanceDefinitionImpl)instance);
 	}
 

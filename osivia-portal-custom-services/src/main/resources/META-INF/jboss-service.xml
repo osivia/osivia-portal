@@ -965,5 +965,14 @@
 		<xmbean />
 	</mbean>
 
+	<!--User -->
+    <mbean code="org.osivia.portal.core.identity.UserInterceptor"
+          name="portal:service=Interceptor,type=Server,name=User" xmbean-dd=""
+          xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
+      <xmbean/>
+      <attribute name="CacheUser">true</attribute>
+      <depends>portal:service=Module,type=IdentityServiceController</depends>
+    </mbean>
+
 </server>
    
