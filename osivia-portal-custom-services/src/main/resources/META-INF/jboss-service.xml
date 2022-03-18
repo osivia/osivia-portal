@@ -959,11 +959,7 @@
 	</mbean>
 	
 	
-	<!-- Configuration import service -->
-	<mbean code="org.osivia.portal.core.page.files.ConfigurationImportManager" name="osivia:service=ConfigurationImportManager"
-		xmbean-dd="" xmbean-code="org.jboss.portal.jems.as.system.JBossServiceModelMBean">
-		<xmbean />
-	</mbean>
+
 
 	<!--User -->
     <mbean code="org.osivia.portal.core.identity.UserInterceptor"

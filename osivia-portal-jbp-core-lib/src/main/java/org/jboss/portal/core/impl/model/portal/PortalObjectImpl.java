@@ -418,7 +418,7 @@ public abstract class PortalObjectImpl implements PortalObject
       Object context = objectNode.getContext();
       
       // If no db context, get stored object
-      if( context == null || ! (context.getClass().equals(PersistentPortalObjectContainer.ContainerContext.class)))	{
+      if( context == null || ! (context instanceof PersistentPortalObjectContainer.ContainerContext))	{
     	  ObjectNode childNode = (ObjectNode) objectNode.getChildren().get(name);
     	  if( childNode != null) {
     		  return childNode.getObject();

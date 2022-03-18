@@ -1,6 +1,11 @@
 package org.osivia.portal.core.instances;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.jboss.portal.core.impl.model.instance.AbstractInstance;
@@ -9,28 +14,48 @@ import org.jboss.portal.core.impl.model.instance.AbstractInstanceDefinition;
 
 import org.jboss.portal.core.impl.model.instance.JBossInstanceContainerContext;
 import org.jboss.portal.core.model.instance.DuplicateInstanceException;
+import org.jboss.portal.core.model.instance.Instance;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 import org.jboss.portal.core.model.instance.InstanceDefinition;
 import org.jboss.portal.core.model.instance.InstancePermission;
 import org.jboss.portal.core.model.instance.metadata.InstanceMetaData;
 import org.jboss.portal.portlet.PortletContext;
+import org.jboss.portal.security.spi.auth.PortalAuthorizationManager;
 
 /**
  * This class replaces PersistentInstanceContainerContext.
- * It does nothing else but giving access to InstanceContainer
+ * It stores the instances in memory
  */
 public class InstanceContainerContextImpl implements JBossInstanceContainerContext {
 
-	private InstanceContainer container;
 
+
+	private InstanceContainer container;
+	
+	private Map<String, InstanceDefinitionImpl> instances;
+
+	public InstanceContainerContextImpl() {
+		super();
+		instances = Collections.synchronizedMap(new HashMap<String, InstanceDefinitionImpl>());
+	}
+	
 	@Override
 	public Collection<InstanceDefinition> getInstanceDefinitions() {
-		return null;
+		Collection<InstanceDefinitionImpl> impls = instances.values();
+
+		Collection<InstanceDefinition> list = new ArrayList<InstanceDefinition>();
+		for (Iterator i = impls.iterator(); i.hasNext();) {
+			list.add((InstanceDefinition) i.next());
+		}
+
+
+		//
+		return list;
 	}
 
 	@Override
 	public AbstractInstanceDefinition getInstanceDefinition(String id) {
-		return null;
+		return instances.get(id);
 	}
 
 	@Override
@@ -45,10 +70,12 @@ public class InstanceContainerContextImpl implements JBossInstanceContainerConte
 
 	@Override
 	public void createInstanceDefinition(AbstractInstanceDefinition instanceDef) throws DuplicateInstanceException {
+		instances.put(instanceDef.getId(), (InstanceDefinitionImpl) instanceDef);
 	}
 
 	@Override
 	public void destroyInstanceDefinition(AbstractInstanceDefinition instanceDef) {
+		instances.remove(instanceDef.getId());
 	}
 
 	@Override
@@ -77,7 +104,8 @@ public class InstanceContainerContextImpl implements JBossInstanceContainerConte
 		instance.setPortletRef(portletContext.getId());
 		instance.setState(portletContext.getState());
 		
-		((InstanceContainerImpl) container).updateDefinition((InstanceDefinitionImpl)instance);
+
+		instances.put(instance.getId(), (InstanceDefinitionImpl) instance);
 	}
 
 	@Override
@@ -86,7 +114,7 @@ public class InstanceContainerContextImpl implements JBossInstanceContainerConte
 		instance.setPortletRef(portletContext.getId());
 		instance.setState(portletContext.getState());
 		
-		((InstanceContainerImpl) container).updateDefinition((InstanceDefinitionImpl)instance);
+		instances.put(instance.getId(), (InstanceDefinitionImpl) instance);
 	}
 
 	@Override

@@ -115,7 +115,7 @@ public class FilesPortalObjectContainer extends AbstractPortalObjectContainer im
 	}
 
 	public PortalObject getNonDynamicObject(PortalObjectId id) throws IllegalArgumentException {
-		logger.info("getNonDynamicObject " + id);
+		logger.debug("getNonDynamicObject " + id);
 		
 		return getConfigurationImportManager().getObject(id);
 
@@ -137,7 +137,7 @@ public class FilesPortalObjectContainer extends AbstractPortalObjectContainer im
 
 	@Override
 	protected ContextImpl createRoot(String namespace) throws DuplicatePortalObjectException {
-		return null;
+		return getConfigurationImportManager().createRoot(namespace);
 	}
 
 	@Override

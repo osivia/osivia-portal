@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.jboss.portal.core.impl.model.instance.AbstractInstanceDefinition;
 import org.jboss.portal.core.impl.model.instance.InstanceContainerContext;
 import org.jboss.portal.core.model.instance.DuplicateInstanceException;
 import org.jboss.portal.core.model.instance.Instance;
@@ -44,7 +45,7 @@ import org.jboss.portal.security.spi.provider.SecurityConfigurationException;
 public class InstanceContainerImpl extends AbstractJBossService
 		implements InstanceContainer, AuthorizationDomain, DomainConfigurator, PermissionRepository, PermissionFactory {
 
-	private Map<String, InstanceDefinitionImpl> instances;
+
 	/** The container context. */
 	protected InstanceContainerContextImpl containerContext;
 	protected PortletInterceptorStackFactory stackFactory;
@@ -88,7 +89,6 @@ public class InstanceContainerImpl extends AbstractJBossService
 			authorizationDomainRegistry.addDomain(this);
 		}
 
-		instances = Collections.synchronizedMap(new HashMap());
 
 	}
 
@@ -141,7 +141,11 @@ public class InstanceContainerImpl extends AbstractJBossService
 
 	@Override
 	public InstanceDefinition getDefinition(String id) throws IllegalArgumentException {
-		return instances.get(id);
+	      if (id == null)
+	      {
+	         throw new IllegalArgumentException("id cannot be null");
+	      }
+	      return containerContext.getInstanceDefinition(id);
 	}
 
 	@Override
@@ -151,16 +155,14 @@ public class InstanceContainerImpl extends AbstractJBossService
 	}
 
 	@Override
-	public InstanceDefinition createDefinition(InstanceMetaData instanceMetaData) {
+	public InstanceDefinition createDefinition(InstanceMetaData instanceMetaData) throws DuplicateInstanceException {
 		InstanceDefinitionImpl instance = new InstanceDefinitionImpl(containerContext, instanceMetaData);
-		instances.put(instance.getInstanceId(), instance);
+		containerContext.createInstanceDefinition(instance);
 		return instance;
 	}
 	
 
-	public void updateDefinition(InstanceDefinitionImpl instance) {
-		instances.put(instance.getInstanceId(), instance);
-	}
+
 
 	@Override
 	public InstanceDefinition createDefinition(String id, String portletId, boolean clone)
@@ -171,23 +173,26 @@ public class InstanceContainerImpl extends AbstractJBossService
 	@Override
 	public void destroyDefinition(String id)
 			throws NoSuchInstanceException, PortletInvokerException, IllegalArgumentException {
-		instances.remove(id);
 
+	      if (id == null)
+	      {
+	         throw new IllegalArgumentException("id cannot be null");
+	      }
+	      AbstractInstanceDefinition instance = containerContext.getInstanceDefinition(id);
+	      
+	      containerContext.destroyInstanceDefinition(instance);
 	}
 
 	@Override
 	public Collection<InstanceDefinition> getDefinitions() {
-		Collection<InstanceDefinitionImpl> impls = instances.values();
 
-		Collection<InstanceDefinition> list = new ArrayList<InstanceDefinition>();
-		for (Iterator i = impls.iterator(); i.hasNext();) {
-			list.add((InstanceDefinition) i.next());
-		}
+		Collection<InstanceDefinition> impls = containerContext.getInstanceDefinitions();
 
 		// Filter the list
-
 		PortalAuthorizationManager mgr = portalAuthorizationManagerFactory.getManager();
-
+		Collection<InstanceDefinition> list = new ArrayList<>();
+		list.addAll(impls);
+		
 		//
 		for (Iterator i = list.iterator(); i.hasNext();) {
 			Instance instance = (Instance) i.next();
@@ -196,7 +201,6 @@ public class InstanceContainerImpl extends AbstractJBossService
 				i.remove();
 			}
 		}
-
 
 		//
 		return list;
@@ -243,7 +247,7 @@ public class InstanceContainerImpl extends AbstractJBossService
 
 	public Set getSecurityBindings(String uri) {
 
-		InstanceDefinitionImpl instanceDef = instances.get(uri);
+		InstanceDefinitionImpl instanceDef = (InstanceDefinitionImpl) containerContext.getInstanceDefinition(uri);
 
 		if (instanceDef != null) {
 			return instanceDef.getSecurityBindings();
@@ -255,7 +259,7 @@ public class InstanceContainerImpl extends AbstractJBossService
 
 	public void setSecurityBindings(String uri, Set securityBindings) throws SecurityConfigurationException {
 
-		InstanceDefinitionImpl instanceDef = instances.get(uri);
+		InstanceDefinitionImpl instanceDef = (InstanceDefinitionImpl) containerContext.getInstanceDefinition(uri);
 
 		//
 		if (instanceDef == null) {
@@ -288,7 +292,7 @@ public class InstanceContainerImpl extends AbstractJBossService
 	}
 
 	public void removeSecurityBindings(String uri) throws SecurityConfigurationException {
-		InstanceDefinitionImpl instanceDef = instances.get(uri);
+		InstanceDefinitionImpl instanceDef = (InstanceDefinitionImpl) containerContext.getInstanceDefinition(uri);
 
 		if (instanceDef == null) {
 			throw new SecurityConfigurationException("The object should exist prior its security is removed : fixme");

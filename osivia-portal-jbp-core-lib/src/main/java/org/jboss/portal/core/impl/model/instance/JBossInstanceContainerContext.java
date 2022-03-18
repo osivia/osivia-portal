@@ -25,6 +25,9 @@ package org.jboss.portal.core.impl.model.instance;
 import org.jboss.portal.core.model.instance.InstanceContainer;
 
 /**
+ * File has been copied here no generalize JBossInstanceContainerContext
+ * (no-mysql)
+ * 
  * @author <a href="mailto:julien@jboss.org">Julien Viet</a>
  * @version $Revision: 8786 $
  */
