@@ -293,4 +293,32 @@ $JQry(function() {
         }
     });
 
+
+    $JQry("select.select2.select2-tags").each(function(index, element) {
+        var $element = $JQry(element);
+        var options = {
+            minimumInputLength : 1,
+            tags: true,
+            theme: "bootstrap",
+            width: "resolve"
+        };
+
+
+        // Internationalization
+        options["language"] = {};
+        if ($element.data("input-too-short") !== undefined) {
+            options["language"]["inputTooShort"] = function() {
+                return $element.data("input-too-short");
+            }
+        }
+
+
+        // Force width to 100%
+        $element.css({
+            width : "100%"
+        });
+
+
+        $element.select2(options);
+    });
 });
