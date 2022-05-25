@@ -128,8 +128,9 @@ $JQry(function() {
 
     $JQry("select.select2.select2-person").each(function(index, element) {
         var $element = $JQry(element);
-        var url = $element.data("url");
         var minimumInputLength = $element.data("minimum-input-length");
+        var url = $element.data("url");
+
         var options = {
             minimumInputLength : (minimumInputLength ? minimumInputLength : 3),
             theme : "bootstrap",
@@ -138,89 +139,150 @@ $JQry(function() {
 
         if (url !== undefined) {
             options["ajax"] = {
-                url : url,
-                dataType : "json",
-                delay : 1000,
-                data : function(params) {
+                url: url,
+                dataType: "json",
+                delay: 1000,
+                data: function (params) {
                     return {
-                        filter : params.term,
-                        page : params.page
+                        filter: params.term,
+                        page: params.page
                     };
                 },
-                processResults : function(data, params) {
+                processResults: function (data, params) {
                     params.page = params.page || 1;
 
                     return {
-                        results : data.items,
-                        pagination : {
-                            more : (params.page * data.pageSize) < data.total
+                        results: data.items,
+                        pagination: {
+                            more: (params.page * data.pageSize) < data.total
                         }
                     };
                 },
-                cache : true
+                cache: true
             };
+        }
 
-            // Result template
-            options["templateResult"] = function(params) {
-                var $result, $personAvatar, $avatar, $icon, $personTitle;
 
-                $result = $JQry(document.createElement("div"));
+        // Result template
+        options["templateResult"] = function(params) {
+            var $result, $personAvatar, $avatar, $icon, $personTitle, $personExtra;
 
-                if (params.loading) {
-                    $result.text(params.text);
+            var type, displayName, avatar, extra;
+            if (url === undefined) {
+                $element = $JQry(params.element);
+                type = $element.data("type");
+                displayName = $element.data("display-name");
+                avatar = $element.data("avatar");
+                extra = $element.data("extra");
+            } else {
+                type = params.type;
+                displayName = params.displayName;
+                avatar = params.avatar;
+                extra = params.extra;
+            }
+
+
+            $result = $JQry(document.createElement("div"));
+
+            if (params.loading) {
+                $result.text(params.text);
+            } else {
+                $result.addClass("person");
+
+                // Person avatar
+                $personAvatar = $JQry(document.createElement("div"));
+                $personAvatar.addClass("person-avatar");
+                $personAvatar.appendTo($result);
+
+                if ((type !== undefined) && (type.toLowerCase() === "group")) {
+                    // Group icon
+                    $icon = $JQry(document.createElement("i"));
+                    $icon.addClass("glyphicons glyphicons-group");
+                    $icon.text("");
+                    $icon.appendTo($personAvatar);
+                } else if (avatar) {
+                    // Avatar
+                    $avatar = $JQry(document.createElement("img"));
+                    $avatar.attr("src", avatar);
+                    $avatar.attr("alt", "");
+                    $avatar.appendTo($personAvatar);
                 } else {
-                    $result.addClass("person");
-
-                    // Person avatar
-                    $personAvatar = $JQry(document.createElement("div"));
-                    $personAvatar.addClass("person-avatar");
-                    $personAvatar.appendTo($result);
-
-                    if (params.avatar) {
-                        // Avatar
-                        $avatar = $JQry(document.createElement("img"));
-                        $avatar.attr("src", params.avatar);
-                        $avatar.attr("alt", "");
-                        $avatar.appendTo($personAvatar);
-                    } else {
-                        // Icon
-                        $icon = $JQry(document.createElement("i"));
-                        $icon.addClass("glyphicons glyphicons-user");
-                        $icon.text("");
-                        $icon.appendTo($personAvatar);
-                    }
-
-                    // Person title
-                    $personTitle = $JQry(document.createElement("div"));
-                    $personTitle.addClass("person-title");
-                    $personTitle.text(params.displayName);
-                    $personTitle.appendTo($result);
+                    // User icon
+                    $icon = $JQry(document.createElement("i"));
+                    $icon.addClass("glyphicons glyphicons-user");
+                    $icon.text("");
+                    $icon.appendTo($personAvatar);
                 }
-
-                return $result;
-            };
-
-            // Selection template
-            options["templateSelection"] = function(params) {
-                var $selection, $personTitle;
-
-                // Selection
-                $selection = $JQry(document.createElement("div"));
-                $selection.addClass("workspace-member-selection");
 
                 // Person title
                 $personTitle = $JQry(document.createElement("div"));
                 $personTitle.addClass("person-title");
-                if (params.displayName === undefined) {
-                    $personTitle.text(params.text);
-                } else {
-                    $personTitle.text(params.displayName);
-                }
-                $personTitle.appendTo($selection);
+                $personTitle.text(displayName);
+                $personTitle.appendTo($result);
 
-                return $selection;
-            };
-        }
+                // Person extra
+                if (extra) {
+                    $personExtra = $JQry(document.createElement("div"));
+                    $personExtra.addClass("person-extra");
+                    $personExtra.text(extra);
+                    $personExtra.appendTo($result);
+                }
+            }
+
+            return $result;
+        };
+
+
+        // Selection template
+        options["templateSelection"] = function(params) {
+            var $selection, $personAvatar, $avatar, $icon, $personTitle;
+
+            var type, displayName, avatar;
+            if (url === undefined) {
+                $element = $JQry(params.element);
+                type = $element.data("type");
+                displayName = $element.data("display-name");
+                avatar = $element.data("avatar");
+            } else {
+                type = params.type;
+                displayName = params.displayName;
+                avatar = params.avatar;
+            }
+
+            // Selection
+            $selection = $JQry(document.createElement("div"));
+            $selection.addClass("person");
+
+            // Person avatar
+            $personAvatar = $JQry(document.createElement("div"));
+            $personAvatar.addClass("person-avatar");
+            $personAvatar.appendTo($selection);
+
+            if ((type !== undefined) && (type.toLowerCase() === "group")) {
+                $icon = $JQry(document.createElement("i"));
+                $icon.addClass("glyphicons glyphicons-group")
+                $icon.text("");
+                $icon.appendTo($personAvatar);
+            } else if (avatar) {
+                $avatar = $JQry(document.createElement("img"));
+                $avatar.attr("src", avatar);
+                $avatar.attr("alt", "");
+                $avatar.appendTo($personAvatar);
+            } else {
+                $icon = $JQry(document.createElement("i"));
+                $icon.addClass("glyphicons glyphicons-user")
+                $icon.text("");
+                $icon.appendTo($personAvatar);
+            }
+
+            // Person title
+            $personTitle = $JQry(document.createElement("div"));
+            $personTitle.addClass("person-title");
+            $personTitle.text(displayName);
+            $personTitle.appendTo($selection);
+
+            return $selection;
+        };
 
 
         // Internationalization
