@@ -560,7 +560,7 @@ public class BrowserService implements IBrowserService {
         boolean acceptedChild;
         if (options.getAcceptedTypes() == null) {
             acceptedChild = true;
-        } else if (type == null) {
+        } else if (type == null || type.getPortalFormSubTypes() == null) {
             acceptedChild = false;
         } else {
             acceptedChild = CollectionUtils.containsAny(type.getPortalFormSubTypes(), options.getAcceptedTypes());
