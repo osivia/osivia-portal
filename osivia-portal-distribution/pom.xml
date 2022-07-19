@@ -195,6 +195,13 @@
             <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.javassist/javassist -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.0-GA</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -260,7 +267,8 @@
                                         org.apache.commons,
                                         org.springframework,
                                         aopalliance,
-                                        com.fasterxml.jackson
+                                        com.fasterxml.jackson,
+                                        org.javassist
                                     </includeGroupIds>
                                 </configuration>
                             </execution>

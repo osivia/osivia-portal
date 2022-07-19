@@ -133,6 +133,7 @@
             <excludes>
                 <exclude>jboss-as/bin/run.sh</exclude>
                 <exclude>jboss-as/server/production/lib/commons-*.jar</exclude>
+                <exclude>jboss-as/server/production/lib/javassist.jar</exclude>
                 <exclude>jboss-as/server/production/conf/jboss-service.xml</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/jbossweb.jar</exclude>
                 <exclude>jboss-as/server/production/deploy/jboss-web.deployer/server.xml</exclude>
