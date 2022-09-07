@@ -52,7 +52,7 @@
         <!-- Various libs -->
         <jsf-api.version>1.2</jsf-api.version>
         <xerces.version>2.7.1</xerces.version>
-        <xstream.version>1.4.7</xstream.version>
+        <xstream.version>1.4.18</xstream.version>
 
         <!-- Test -->
         <junit.version>4.11</junit.version>
