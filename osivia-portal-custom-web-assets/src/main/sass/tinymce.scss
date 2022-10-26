@@ -1,0 +1,11 @@
+@import "bootstrap-5.2.2/functions";
+@import "bootstrap-5.2.2/variables";
+
+
+.mce-content-body {
+  padding: $input-padding-y $input-padding-x;
+
+  &::before {
+    left: unset !important;
+  }
+}

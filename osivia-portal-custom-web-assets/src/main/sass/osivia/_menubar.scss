@@ -1,0 +1,7 @@
+.menubar {
+  .dropdown-toggle {
+    &::after {
+      display: none;
+    }
+  }
+}

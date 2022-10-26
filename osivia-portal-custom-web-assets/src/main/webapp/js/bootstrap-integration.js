@@ -5,16 +5,20 @@ $JQry(function () {
 
 
     // Tooltips initialization
-    $JQry("[data-toggle=tooltip]").tooltip({
-        container: "body"
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggerList.forEach(function(tooltipTrigger) {
+        new bootstrap.Tooltip(tooltipTrigger, {
+            container: "body"
+        });
     });
-    // $JQry(document).click(function(event) {
-    // 	$JQry("[data-toggle=tooltip]").tooltip("hide");
-    // });
+
 
     // Popovers initialization
-    $JQry("[data-toggle=popover]").popover({
-        container: "body"
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    popoverTriggerList.forEach(function(popoverTrigger) {
+        new bootstrap.Popover(popoverTrigger, {
+            container: "body"
+        });
     });
 
 
@@ -27,6 +31,11 @@ $JQry(function () {
     // Comments
     $JQry(".comments .collapse").on("show.bs.collapse", function (event) {
         $JQry(".comments .collapse.in").not(event.target).collapse("hide");
+    });
+
+    // Comments
+    $JQry("#osivia-modal").on("show.bs.modal", function (event) {
+    	hideDrawer();
     });
 
 });

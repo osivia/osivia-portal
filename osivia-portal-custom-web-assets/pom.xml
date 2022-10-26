@@ -63,21 +63,18 @@
 
     <build>
         <plugins>
-        
-            <!-- LESS -->
+
+            <!--Sass-->
             <plugin>
-                <groupId>org.lesscss</groupId>
-                <artifactId>lesscss-maven-plugin</artifactId>
+                <groupId>io.github.cleydyr</groupId>
+                <artifactId>dart-sass-maven-plugin</artifactId>
                 <configuration>
-                    <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
-                     <compress>true</compress>
-                    <includes>
-                        <include>*.less</include>
-                    </includes>
-                    <outputFileFormat>{fileName}.min.css</outputFileFormat>
+                    <inputFolder>${project.basedir}/src/main/sass</inputFolder>
+                    <outputFolder>${project.build.directory}/${project.build.finalName}/css</outputFolder>
+                    <style>COMPRESSED</style>
                 </configuration>
             </plugin>
-            
+
             <!-- YUI compressor -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -97,53 +94,17 @@
                         </aggregation>
                     </aggregations>
                     <excludes>
-                        <exclude>**/*.min.css</exclude>
+                        <exclude>**/*.css</exclude>
                         <exclude>**/*.min.js</exclude>
+                        <exclude>**/bootstrap.*</exclude>
                     </excludes>
                     <jswarn>false</jswarn>
                     <suffix>.min</suffix>
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
-   
-
-    <profiles>
-        <profile>
-            <activation>
-                <property>
-                    <name>deploy.socle.dir</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>copy-jar</id>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="${basedir}/target/${project.build.finalName}.war" todir="${deploy.socle.dir}" />
-                                    </tasks>
-                                </configuration>
-                                <phase>package</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
 

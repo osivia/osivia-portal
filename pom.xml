@@ -827,24 +827,17 @@
                     <extensions>true</extensions>
                 </plugin>
 
-                <!-- LESS -->
+                <!--Sass-->
                 <plugin>
-                    <groupId>org.lesscss</groupId>
-                    <artifactId>lesscss-maven-plugin</artifactId>
-                    <version>1.7.0.1.1</version>
-                    <configuration>
-                        <sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
-                        <outputDirectory>${project.basedir}/src/main/webapp/css</outputDirectory>
-                        <compress>true</compress>
-                        <includes>
-                            <include>*.less</include>
-                        </includes>
-                        <outputFileFormat>{fileName}.min.css</outputFileFormat>
-                    </configuration>
+                    <groupId>io.github.cleydyr</groupId>
+                    <artifactId>dart-sass-maven-plugin</artifactId>
+                    <version>0.3.0</version>
                     <executions>
                         <execution>
+                            <id>generate-css-using-sass</id>
+                            <phase>generate-resources</phase>
                             <goals>
-                                <goal>compile</goal>
+                                <goal>compile-sass</goal>
                             </goals>
                         </execution>
                     </executions>

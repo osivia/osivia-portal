@@ -1,0 +1,11 @@
+.portlet-filler {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.portlet-filler-parent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}

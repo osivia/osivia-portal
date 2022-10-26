@@ -1,0 +1,16 @@
+@import "variables";
+
+.avatar {
+  display: inline-block;
+  vertical-align: bottom;
+
+  height: #{$line-height-base}em;
+  width: #{$line-height-base}em;
+
+  object: {
+    fit: cover;
+    position: center;
+  }
+
+  @include border-radius($thumbnail-border-radius);
+}

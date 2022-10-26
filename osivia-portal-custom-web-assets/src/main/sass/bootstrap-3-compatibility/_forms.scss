@@ -1,0 +1,17 @@
+.form-horizontal {
+  .form-group {
+    @extend .row;
+  }
+}
+
+.control-label {
+  @extend .col-form-label;
+}
+
+.form-control-static {
+  @extend .form-control-plaintext;
+}
+
+.help-block {
+  @extend .form-text;
+}

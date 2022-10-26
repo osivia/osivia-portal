@@ -1,0 +1,35 @@
+@import "../variables";
+
+@import "variables";
+@import "mixins";
+
+
+.glyphicons, .halflings {
+    display: inline-flex;
+    align-self: center;
+    
+    vertical-align: bottom;
+
+    @include glyphicons-mask($default-url);
+
+    &::before {
+        content: "";
+        
+        height: $glyphicons-size;
+        width: $glyphicons-size;
+
+        mask-position: center;
+        -webkit-mask-position: center;
+        mask-repeat: no-repeat;
+        -webkit-mask-repeat: no-repeat;
+        mask-size: contain;
+        -webkit-mask-size: contain;
+
+        background-color: currentColor;
+    }
+}
+
+
+@import "glyphicons-basic";
+@import "glyphicons-halflings";
+@import "glyphicons-filetypes";

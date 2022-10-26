@@ -1,0 +1,15 @@
+.hidden {
+  @extend .d-none;
+}
+
+.sr-only {
+  @extend .visually-hidden;
+}
+
+.pull-left {
+  @extend .float-start;
+}
+
+.pull-right {
+  @extend .float-end;
+}

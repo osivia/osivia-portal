@@ -121,9 +121,9 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         // Title container
         Element titleContainer = DOM4JUtils.generateElement(HTMLConstants.H2, null, StringUtils.EMPTY);
         StringBuilder builder = new StringBuilder();
-        builder.append("portlet-titlebar-title");
+        builder.append("portlet-titlebar-title h5");
         if (bootstrapPanelStyle) {
-            builder.append(" panel-title");
+            builder.append(" card-title");
         }
         if (maximizedURL != null) {
             builder.append(" maximizable");

@@ -184,14 +184,14 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             editionOnClick.append(rendererContext.getProperty("osivia.ecmBaseUrl"));
             editionOnClick.append("');");
             String editionTitle = bundle.getString("CMS_EDIT_FRAGMENT");
-            Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-default fancyframe_refresh", editionTitle,
+            Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-secondary fancyframe_refresh", editionTitle,
                     "halflings halflings-pencil");
             buttonsGroup.add(edition);
 
             // Delete button
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");
-            Element delete = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-default", null, "halflings halflings-trash");
+            Element delete = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-secondary", null, "halflings halflings-trash");
             DOM4JUtils.addDataAttribute(delete, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(delete, "src", deleteURL);
             DOM4JUtils.addTooltip(delete, deleteTitle);
@@ -256,26 +256,18 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // Portlet container
-        if (bootstrapPanelStyle) {
-            out.print("<section class=\"panel panel-default portlet-container " + styles + "\">");
-        } else {
             out.print("<section class=\"portlet-container " + styles + "\">");
+
+        if (bootstrapPanelStyle) {
+            out.print("<div class=\"card\"><div class=\"card-body\">");
         }
 
         // Portlet container rendering
         String portletsRendering = System.getProperty(InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING);
         if (InternalConstants.SYSTEM_PROPERTY_PORTLETS_RENDERING_VALUE_DIV.equals(portletsRendering)) {
             // Div rendering
-
-            String headerClass;
-            String bodyClass;
-            if (bootstrapPanelStyle) {
-                headerClass = "panel-heading";
-                bodyClass = "panel-body";
-            } else {
-                headerClass = "portlet-header";
-                bodyClass = "portlet-content-center";
-            }
+            String headerClass = "portlet-header";
+            String bodyClass = "portlet-content-center";
             if (WindowState.MAXIMIZED.equals(wrc.getWindowState()) || !"1".equals(properties.getWindowProperty(wrc.getId(), "osivia.displayTitle"))) {
                 headerClass += " sr-only";
             }
@@ -333,6 +325,9 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Portlet container
+        if (bootstrapPanelStyle) {
+            out.print("</div></div>");
+        }
         out.print("</section>");
         // Wizard edging
         if (wizard) {
@@ -368,7 +363,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             addFragmentOnClick.append("');");
 
             Element addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(),
-                    "btn btn-default fancyframe_refresh", null, "halflings halflings-plus");
+                    "btn btn-secondary fancyframe_refresh", null, "halflings halflings-plus");
             DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
             group.add(addFragmentButton);
 
@@ -525,7 +520,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
      */
     private Element generatePortletCommandLink(String href, String onclick, String glyphicon, String additionalHTMLClass, String title) {
         // HTML "a" node
-        String htmlClass = StringUtils.join(new String[]{"btn btn-default ", additionalHTMLClass});
+        String htmlClass = StringUtils.join(new String[]{"btn btn-secondary ", additionalHTMLClass});
         Element a = DOM4JUtils.generateLinkElement(href, null, onclick, htmlClass, null, glyphicon);
 
         // Tooltip
@@ -581,13 +576,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         }
 
         // OK button
-        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default btn-warning", bundle.getString("YES"),
+        Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-warning", bundle.getString("YES"),
                 "halflings halflings-alert", null);
         DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         form.add(okButton);
 
         // Cancel button
-        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-default", bundle.getString("NO"));
+        Element cancelButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary", bundle.getString("NO"));
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
         DOM4JUtils.addAttribute(cancelButton, HTMLConstants.ONCLICK, "closeFancybox()");
         form.add(cancelButton);

@@ -1,0 +1,60 @@
+@import "variables";
+
+
+@function glyphicons-url($type, $number, $name) {
+  @return $url-prefix + $type + "/glyphicons-" + $type + "-" + $number + "-" + $name + ".svg"
+}
+
+
+@mixin glyphicons-mask($url) {
+  &::before {
+    mask-image: url("#{$url}");
+    -webkit-mask-image: url("#{$url}");
+  }
+}
+
+
+@mixin glyphicons-legacy($type, $legacy, $url) {
+  @if ($type == "basic") {
+    .glyphicons.glyphicons-#{$legacy} {
+      @include glyphicons-mask($url);
+    }
+  }
+  @else {
+    .#{$type}.#{$type}-#{$legacy} {
+      @include glyphicons-mask($url);
+    }
+  }
+}
+
+
+@mixin glyphicons($type, $number, $name, $legacy1: null, $legacy2: null, $legacy3: null) {
+  $url: glyphicons-url($type, $number, $name);
+
+  .glyphicons-#{$type}-#{$name} {
+    @include glyphicons-mask($url);
+  }
+
+  @if ($legacy1 != null) {
+    @include glyphicons-legacy($type, $legacy1, $url);
+  }
+  @if ($legacy2 != null) {
+    @include glyphicons-legacy($type, $legacy2, $url);
+  }
+  @if ($legacy3 != null) {
+    @include glyphicons-legacy($type, $legacy3, $url);
+  }
+}
+
+
+@mixin glyphicons-basic($number, $name, $legacy1: null, $legacy2: null, $legacy3: null) {
+  @include glyphicons("basic", $number, $name, $legacy1, $legacy2, $legacy3);
+}
+
+@mixin glyphicons-halflings($number, $name, $legacy1: null, $legacy2: null, $legacy3: null) {
+  @include glyphicons("halflings", $number, $name, $legacy1, $legacy2, $legacy3);
+}
+
+@mixin glyphicons-filetypes($number, $name, $legacy1: null, $legacy2: null, $legacy3: null) {
+  @include glyphicons("filetypes", $number, $name, $legacy1, $legacy2, $legacy3);
+}

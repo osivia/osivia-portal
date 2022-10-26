@@ -33,7 +33,7 @@
                                 <input type="text" name="search" class="form-control" placeholder="${searchPlaceholder}">
                                 
                                 <span class="input-group-btn">    
-                                    <button type="submit" class="btn btn-default">
+                                    <button type="submit" class="btn btn-secondary">
                                         <i class="halflings halflings-search"></i>
                                     </button>
                                 </span>
@@ -122,7 +122,7 @@
     <c:if test="${not requestScope['osivia.spaceSite']}">
         <div class="col-xs-12 drawer-toolbar-tabs">
             <div class="dropdown">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
                     <span class="pull-right"><span class="caret"></span></span>
                     <span class="text-overflow">${requestScope['osivia.currentPageName']}</span>
                 </button>

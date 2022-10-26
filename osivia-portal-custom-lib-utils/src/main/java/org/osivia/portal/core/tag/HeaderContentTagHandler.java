@@ -138,9 +138,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/postmessage/postmessage.min.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap.min.css' title='Bootstrap'>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/osivia.min.css'>");
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap/js/bootstrap.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap-5.2.2/bootstrap.bundle.min.js'></script>");
 
         // Fancybox
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/fancybox/jquery.fancybox.min.css'>");
@@ -155,7 +153,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Select2
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/select2/css/select2.min.css'>");
-        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/select2/js/select2.min.js'></script>");
+        this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/select2/js/select2.full.min.js'></script>");
         
         // Clipboard 
         this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/clipboard/clipboard.min.js'></script>");
@@ -165,17 +163,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Socle packaged JavaScript
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/js/socle.min.js'></script>");
-
-        // Glyphicons
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/glyphicons.min.css'>");
-
-        // Flaticon
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/flaticon.min.css'>");
-
-        // No JavaScript CSS styles
-        out.write("<noscript>");
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/noscript.min.css'>");
-        out.write("</noscript>");
 
         // AJAX header
         this.writeResource(out, "<script type='text/javascript' src='/portal-ajax/dyna/prototype.js'></script>");

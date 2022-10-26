@@ -1,0 +1,162 @@
+@import "variables";
+@import "glyphicons/mixins";
+
+
+$fancytree-icon-size: 1.25rem;
+
+
+.fancytree {
+  user-select: none;
+
+  &.fixed-height {
+    > ul.fancytree-container {
+      height: 300px;
+      overflow: auto;
+    }
+  }
+
+  ul {
+    padding-left: 0;
+
+    list-style: none;
+
+    ul {
+      padding-left: $fancytree-icon-size + map_get($spacers, 1);
+    }
+  }
+}
+
+
+.fancytree-container {
+  outline: none;
+}
+
+
+.fancytree-node {
+  display: flex;
+  align-items: center;
+
+  padding: .1rem;
+
+  color: $dark;
+  cursor: pointer;
+
+  @include text-truncate;
+  @include border-radius($thumbnail-border-radius);
+
+  &:hover {
+    color: shift-color($dark, $link-shade-percentage);
+    background-color: $light;
+  }
+
+  &.current {
+    color: $primary;
+    font-weight: $font-weight-bold;
+
+    &:hover {
+      color: shift-color($primary, $link-shade-percentage);
+    }
+  }
+
+  &.not-allowed {
+    > :not(.fancytree-expander) {
+      cursor: not-allowed;
+    }
+  }
+
+  &.fancytree-active {
+    .fancytree-selector & {
+      color: $white;
+      background-color: $primary;
+
+      &:hover {
+        background-color: darken($primary, 5%);
+      }
+    }
+  }
+}
+
+
+.fancytree-hide {
+  display: none;
+}
+
+
+.fancytree-match {
+  font-weight: bold;
+}
+
+.fancytree-submatch:not(.fancytree-match) {
+  opacity: 0.65;
+}
+
+
+.fancytree-drop-accept {
+  cursor: move;
+}
+
+.fancytree-drop-reject {
+  cursor: not-allowed;
+}
+
+
+.fancytree-statusnode-error {
+  color: $danger;
+}
+
+
+.fancytree-expander, .fancytree-icon, .fancytree-custom-icon {
+  margin-right: map_get($spacers, 1);
+
+  &, &.glyphicons::before {
+    height: $fancytree-icon-size;
+    width: $fancytree-icon-size;
+  }
+}
+
+
+.fancytree-expander {
+  transform: rotate(-90deg);
+
+  @include transition;
+
+  .fancytree-expanded > & {
+    transform: rotate(0);
+  }
+
+  &:not(.glyphicons) {
+    display: inline-flex;
+
+    &::before {
+      content: "";
+
+      height: $fancytree-icon-size;
+      width: $fancytree-icon-size;
+    }
+  }
+
+  .fancytree-node:not(.fancytree-has-children) & {
+    visibility: hidden;
+  }
+}
+
+
+.fancytree-title {
+  @include text-truncate;
+}
+
+
+// Init styles
+
+.fancytree {
+  a {
+    @extend .fancytree-node;
+
+    padding-left: $fancytree-icon-size * 2 + $btn-padding-x * 3;
+
+    &, &:hover, &:focus {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+}
