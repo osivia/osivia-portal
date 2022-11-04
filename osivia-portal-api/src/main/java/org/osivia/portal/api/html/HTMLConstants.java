@@ -134,9 +134,9 @@ public final class HTMLConstants {
     /** HTML "data-original-title" attributes. */
     public static final String DATA_ORIGINAL_TITLE = "data-original-title";
     /** HTML "data-placement" attributes. */
-    public static final String DATA_PLACEMENT = "data-placement";
+    public static final String DATA_PLACEMENT = "data-bs-placement";
     /** HTML "data-toggle" attributes. */
-    public static final String DATA_TOGGLE = "data-toggle";
+    public static final String DATA_TOGGLE = "data-bs-toggle";
     /** HTML "disabled" attributes. */
     public static final String DISABLED = "disabled";
     /** HTML "for" attributes. */
