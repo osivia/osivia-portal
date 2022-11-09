@@ -1281,7 +1281,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         String[] args = urlSplit[1].split("&");
 
         // Root
-        Element root = DOM4JUtils.generateDivElement("hidden");
+        Element root = DOM4JUtils.generateDivElement("d-none");
 
         // Container
         Element container = DOM4JUtils.generateDivElement("container-fluid");
@@ -1333,7 +1333,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      */
     private Element generateEraseFancyBox(Bundle bundle, String urlErase) throws UnsupportedEncodingException {
         // Root
-        Element root = DOM4JUtils.generateDivElement("hidden");
+        Element root = DOM4JUtils.generateDivElement("d-none");
 
         // Container
         Element container = DOM4JUtils.generateDivElement("container-fluid text-center");

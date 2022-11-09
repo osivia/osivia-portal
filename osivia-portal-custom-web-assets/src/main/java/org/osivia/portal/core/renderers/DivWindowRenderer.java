@@ -548,7 +548,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Root
-        Element root = DOM4JUtils.generateDivElement("hidden");
+        Element root = DOM4JUtils.generateDivElement("d-none");
 
         // Container
         Element container = DOM4JUtils.generateDivElement("container-fluid");
