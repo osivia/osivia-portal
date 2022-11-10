@@ -125,7 +125,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="template" value="false">
 
                         <%-- Name --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="new-page-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
                             <div class="col-sm-8 col-lg-10">
                                 <input id="new-page-name" type="text" name="name" class="form-control" required="required">
@@ -135,7 +135,7 @@ var currentPageId = '${currentPageId}';
                         <div class="row">
                             <div class="col-lg-6">
                                 <%-- Model --%>
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label class="col-sm-4 control-label"><op:translate key="NEW_PAGE_MODEL" /></label>
                                     <div class="col-sm-8">
                                         <div class="selector">
@@ -177,7 +177,7 @@ var currentPageId = '${currentPageId}';
 
                             <div class="col-lg-6">
                                 <%-- Parent --%>
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label class="col-sm-4 control-label required"><op:translate key="NEW_PAGE_PARENT" /></label>
                                     <div class="col-sm-8">
                                         <div class="selector">
@@ -243,7 +243,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="template" value="true">
 
                         <%-- Name --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="new-template-name" class="col-sm-4 col-lg-2 control-label required"><op:translate key="NAME" /></label>
                             <div class="col-sm-8 col-lg-10">
                                 <input id="new-template-name" type="text" name="name" class="form-control" required="required">
@@ -253,7 +253,7 @@ var currentPageId = '${currentPageId}';
                         <div class="row">
                             <div class="col-lg-6">
                                 <%-- Model --%>
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label class="col-sm-4 control-label"><op:translate key="NEW_TEMPLATE_MODEL" /></label>
                                     <div class="col-sm-8">
                                         <div class="selector">
@@ -295,7 +295,7 @@ var currentPageId = '${currentPageId}';
 
                             <div class="col-lg-6">
                                 <%-- Parent --%>
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <label class="col-sm-4 control-label required"><op:translate key="NEW_TEMPLATE_PARENT" /></label>
                                     <div class="col-sm-8">
                                         <div class="selector">
@@ -361,7 +361,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="pageId" value="${currentPageId}" />
 
                         <%-- Name --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-name" class="col-sm-3 control-label required"><op:translate key="PAGE_NAME" /></label>
                             <div class="col-sm-9">
                                 <input id="properties-page-name" type="text" name="displayName" value="${currentPageDisplayName}" class="form-control" required="required">
@@ -373,7 +373,7 @@ var currentPageId = '${currentPageId}';
                         <c:if test="${requestScope['osivia.toolbarSettings.cmsTemplated']}">disabled="disabled"</c:if>
                     >
                         <%-- Draft mode --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-draft-mode" class="col-sm-3 control-label"><op:translate key="PAGE_DRAFT_MODE" /></label>
                             <div class="col-sm-9">
                                 <div class="checkbox">
@@ -390,7 +390,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                         <%-- Layout --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-layout" class="col-sm-3 control-label"><op:translate key="PAGE_LAYOUT" /></label>
                             <div class="col-sm-9">
                                 <select id="properties-page-layout" name="newLayout" class="form-control">
@@ -414,7 +414,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                         <%-- Theme --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-theme" class="col-sm-3 control-label"><op:translate key="PAGE_THEME" /></label>
                             <div class="col-sm-9">
                                 <select id="properties-page-theme" name="newTheme" class="form-control">
@@ -438,7 +438,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                         <%-- Category --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-category" class="col-sm-3 control-label"><op:translate key="PAGE_CATEGORY" /></label>
                             <div class="col-sm-9">
                                 <select id="properties-page-category" name="pageCategory" class="form-control">
@@ -454,7 +454,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                          <%-- Selectors propagation mode --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="properties-page-selectors-propagation" class="col-sm-3 control-label"><op:translate key="PAGE_SELECTOR_PROPAGATION" /></label>
                             <div class="col-sm-9">
                                 <div class="checkbox">
@@ -503,7 +503,7 @@ var currentPageId = '${currentPageId}';
                         <input type="hidden" name="action" value="changePageOrder" />
                         <input type="hidden" name="pageId" value="${currentPageId}" />
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label class="col-sm-3 control-label required"><op:translate key="LOCATION" /></label>
                             <div class="col-sm-9">
                                 <div class="selector">
@@ -562,7 +562,7 @@ var currentPageId = '${currentPageId}';
                     <input type="hidden" name="action" value="securePage" />
                     <input type="hidden" name="pageId" value="${currentPageId}" />
 
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label class="col-sm-3 control-label"><op:translate key="PAGE_ACCESS" /></label>
                         <div class="col-sm-9">
                             <c:forEach var="role" items="${requestScope['osivia.toolbarSettings.roles']}">
@@ -600,7 +600,7 @@ var currentPageId = '${currentPageId}';
                     <input type="hidden" name="pageId" value="${currentPageId}" />
 
                     <%-- Path --%>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="cms-path" class="control-label col-sm-4"><op:translate key="PAGE_CMS_PATH" /></label>
                         <div class="col-sm-8">
                             <input id="cms-path" type="text" name="cmsBasePath" value="${requestScope['osivia.toolbarSettings.cmsBasePath']}" onkeyup="toggleCMS()" class="form-control" placeholder="<op:translate key='PAGE_CMS_PATH' />" />
@@ -609,7 +609,7 @@ var currentPageId = '${currentPageId}';
 
                     <fieldset id="fieldsetCMSProperties">
                         <%-- Scope --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="cms-scope" class="control-label col-sm-4"><op:translate key="PAGE_CMS_SCOPE" /></label>
                             <div class="col-sm-8">
                                 <span>${requestScope['osivia.toolbarSettings.cmsScopeSelect']}</span>
@@ -617,7 +617,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                         <%-- Version --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="cms-version" class="control-label col-sm-4"><op:translate key="PAGE_CMS_VERSION" /></label>
                             <div class="col-sm-8">
                                 <span>${requestScope['osivia.toolbarSettings.cmsDisplayLiveVersion']}</span>
@@ -625,7 +625,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                         <%-- Contextualization --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="cms-contextualization" class="control-label col-sm-4"><op:translate key="PAGE_CMS_CONTEXTUALIZATION" /></label>
                             <div class="col-sm-8">
                                 <span>${requestScope['osivia.toolbarSettings.cmsRecontextualizationSupport']}</span>
@@ -741,7 +741,7 @@ var currentPageId = '${currentPageId}';
 
 
         <%-- Windows settings --%>
-        <c:forEach var="window" items="${requestScope['osivia.toolbarSettings.windowSettings']}">
+        <c:forEach var="window" items="${requestScope['osivia.toolbarSettings.windowSettings']}" varStatus="windowStatus">
             <div id="window-settings-${window.id}">
                 <form action="${commandUrl}" method="get" role="form">
                     <input type="hidden" name="action" value="changeWindowSettings">
@@ -754,7 +754,7 @@ var currentPageId = '${currentPageId}';
                         </legend>
 
                             <%-- Title --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-title"><op:translate key="WINDOW_PROPERTIES_TITLE"/></label>
                             <input id="${window.id}-title" type="text" name="title" value="${window.title}"
                                    class="form-control mb-2">
@@ -785,7 +785,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Panel --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label><op:translate key="WINDOW_PROPERTIES_PANEL"/></label>
                             <div class="form-check">
                                 <input id="${window.id}-panel" type="checkbox" name="bootstrapPanelStyle"
@@ -803,7 +803,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Ajax --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-ajax"><op:translate key="WINDOW_PROPERTIES_AJAX"/></label>
                             <div class="form-check">
                                 <input id="${window.id}-ajax" type="checkbox" name="ajaxLink" value="1"
@@ -814,7 +814,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Hide empty portlet --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-hide-empty"><op:translate key="WINDOW_PROPERTIES_HIDE_EMPTY"/></label>
                             <div class="form-check">
                                 <input id="${window.id}-hide-empty" type="checkbox" name="hideEmptyPortlet" value="1"
@@ -825,7 +825,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Print --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-print"><op:translate key="WINDOW_PROPERTIES_PRINT"/></label>
                             <div class="form-check">
                                 <input id="${window.id}-print" type="checkbox" name="printPortlet" value="1"
@@ -836,7 +836,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Styles --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label><op:translate key="WINDOW_PROPERTIES_STYLES"/></label>
                             <div class="row">
                                 <c:forEach var="style" items="${window.styles}" varStatus="status">
@@ -863,20 +863,27 @@ var currentPageId = '${currentPageId}';
                             <span><op:translate key="WINDOW_PROPERTIES_ADVANCED_OPTIONS"/></span>
                         </legend>
 
-                            <%-- Scopes --%>
-                        <div class="form-group">
-                            <label for="${window.id}-scopes"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY"/></label>
-                            <select id="${window.id}-scopes" name="conditionalScope" class="form-control">
-                                <option value="" ${empty window.selectedScope ? 'selected="selected"' : ''}><op:translate
-                                        key="WINDOW_PROPERTIES_SCOPE_ALL_PROFILES"/></option>
-                                <c:forEach var="scope" items="${window.scopes}">
-                                    <option value="${scope.key}" ${window.selectedScope eq scope.key ? 'selected="selected"' : ''}>${scope.value}</option>
+                        <%-- Scopes --%>
+                        <div class="mb-3">
+                            <label for="${window.id}-scopes" class="form-label"><op:translate key="WINDOW_PROPERTIES_SCOPE_DISPLAY" /></label>
+                            <div>
+                                <c:forEach var="scope" items="${window.scopes}" varStatus="scopeStatus">
+                                    <div class="form-check form-check-inline">
+                                        <input id="window-${windowStatus.index}-scope-${scopeStatus.index}" type="checkbox" name="conditionalScopes" value="${scope.id}" ${scope.selected ? 'checked' : ''} class="form-check-input">
+                                        <label for="window-${windowStatus.index}-scope-${scopeStatus.index}" class="form-check-label">${scope.text}</label>
+                                    </div>
                                 </c:forEach>
-                            </select>
+
+                                <c:if test="${empty window.scopes}">
+                                    <p class="form-control-static">
+                                        <span class="text-muted"><op:translate key="WINDOW_PROPERTIES_NO_SCOPE" /></span>
+                                    </p>
+                                </c:if>
+                            </div>
                         </div>
 
-                            <%-- Linked taskbar item --%>
-                        <div class="form-group">
+                        <%-- Linked taskbar item --%>
+                        <div class="mb-3">
                             <label for="${window.id}-linked-taskbar-item"><op:translate
                                     key="WINDOW_PROPERTIES_LINKED_TASKBAR_ITEM"/></label>
                             <select id="${window.id}-linked-taskbar-item" name="taskbarItemId" class="form-control">
@@ -891,7 +898,7 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%--Linked layout item--%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-linked-layout-item"><op:translate
                                     key="WINDOW_PROPERTIES_LINKED_LAYOUT_ITEM"/></label>
                             <select id="${window.id}-linked-layout-item" name="layoutItemId" class="form-control">
@@ -910,36 +917,23 @@ var currentPageId = '${currentPageId}';
                         </div>
 
                             <%-- Customization identifier --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-custom-id"><op:translate key="WINDOW_PROPERTIES_CUSTOM_ID"/></label>
                             <input id="${window.id}-custom-id" type="text" name="idPerso" value="${window.customizationId}"
                                    class="form-control">
                         </div>
 
                             <%-- Shared cache identifier --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-shared-cache-id"><op:translate
                                     key="WINDOW_PROPERTIES_SHARED_CACHE_ID"/></label>
                             <input id="${window.id}-shared-cache-id" type="text" name="cacheID"
                                    value="${window.sharedCacheId}" class="form-control">
                         </div>
 
-                            <%-- Cache deactivation --%>
-                        <div class="form-group">
-                            <label for="${window.id}-cache-deactivation"><op:translate
-                                    key="WINDOW_PROPERTIES_CACHE"/></label>
-                            <div class="form-check">
-                                <input id="${window.id}-cache-deactivation" type="checkbox" name="cacheDeactivation"
-                                       value="1"
-                                       class="form-check-input" ${window.cacheDeactivation ? 'checked="checked"' : ''}>
-                                <label for="${window.id}-cache-deactivation" class="form-check-label"><op:translate
-                                        key="WINDOW_PROPERTIES_CACHE_DEACTIVATE"/></label>
-                            </div>
-                        </div>
-
 
                             <%-- Priority --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-priority"><op:translate key="WINDOW_PROPERTIES_PRIORITY"/></label>
                             <input id="${window.id}-priority" type="number" name="priority" value="${window.priority}"
                                    class="form-control">
@@ -947,7 +941,7 @@ var currentPageId = '${currentPageId}';
 
 
                             <%-- Selection dependency indicator --%>
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-selection-dependency"><op:translate
                                     key="WINDOW_PROPERTIES_SELECTION_DEPENDENCY"/></label>
                             <div class="form-check">
@@ -964,7 +958,7 @@ var currentPageId = '${currentPageId}';
                             <c:set var="beanShellContent" value="in"/>
                         </c:if>
 
-                        <div class="form-group">
+                        <div class="mb-3">
                             <label for="${window.id}-beanShell"><op:translate
                                     key="WINDOW_PROPERTIES_DYNAMIC_PROPERTIES"/></label>
                             <div class="form-check mb-2">
@@ -1019,7 +1013,7 @@ rightCellToggle.add(example);
 
                         <%-- Satellite --%>
                         <c:if test="${not empty window.satellites}">
-                            <div class="form-group">
+                            <div class="mb-3">
                         <label for="${window.id}-satellite"><op:translate key="WINDOW_PROPERTIES_SATELLITE"/></label>
                                     <select id="${window.id}-satellite" name="satellite" class="form-control">
                                         <c:forEach var="satellite" items="${window.satellites}">

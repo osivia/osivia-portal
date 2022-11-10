@@ -152,7 +152,7 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
                 String tooltip = this.internationalizationService.getString("MAXIMIZED", locale);
 
                 // Screen-reader only
-                Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
+                Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visually-hidden", tooltip);
                 maximizedLink.add(srOnly);
 
                 DOM4JUtils.addTooltip(maximizedLink, tooltip);

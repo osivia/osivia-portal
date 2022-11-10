@@ -541,7 +541,7 @@ public class MenubarService implements IMenubarService {
         Element dropdownButton = DOM4JUtils.generateLinkElement("#", null, null, "dropdown-toggle", null, dropdown.getGlyphicon());
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         if (StringUtils.isNotBlank(dropdown.getTitle())) {
-            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", dropdown.getTitle());
+            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visually-hidden", dropdown.getTitle());
             dropdownButton.add(srOnly);
         }
         dropdownLI.add(dropdownButton);
@@ -694,7 +694,7 @@ public class MenubarService implements IMenubarService {
 
         // Screen-reader only
         if (StringUtils.isBlank(text) && StringUtils.isNotBlank(tooltip)) {
-            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "sr-only", tooltip);
+            Element srOnly = DOM4JUtils.generateElement(HTMLConstants.SPAN, "visually-hidden", tooltip);
             element.add(srOnly);
         }
 
