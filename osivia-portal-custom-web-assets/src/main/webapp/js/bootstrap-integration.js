@@ -22,6 +22,13 @@ $JQry(function () {
     });
 
 
+    // Toast initialization
+    const toastList = document.querySelectorAll(".toast");
+    toastList.forEach(function(toast) {
+        new bootstrap.Toast(toast);
+    });
+
+
     // Forms in dropdown menus
     $JQry(".dropdown-menu .form").click(function (event) {
         event.stopPropagation();

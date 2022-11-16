@@ -14,16 +14,6 @@
  */
 package org.osivia.portal.core.notifications;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentHelper;
@@ -48,6 +38,11 @@ import org.osivia.portal.api.notifications.Notifications;
 import org.osivia.portal.api.notifications.NotificationsType;
 import org.osivia.portal.core.internationalization.InternationalizationUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * Utility class with null-safe methods for notifications.
@@ -62,7 +57,7 @@ public class NotificationsUtils {
     private static final String REGION_NAME = "notifications";
 
     /** Message links pattern. */
-    private static final Pattern MESSAGE_LINKS_PATTERN = Pattern.compile("^(.*)\\[\\[(.*)\\]\\](.*)$");
+    private static final Pattern MESSAGE_LINKS_PATTERN = Pattern.compile("^(.*)\\[\\[(.*)]](.*)$");
     /** Popup type link indicator with associated link class. */
     private static final String[] POPUP_TYPE_LINK_INDICATOR = {"[POPUP]","fancyframe_refresh"};
     /** Message beginning regex group number. */
@@ -86,7 +81,7 @@ public class NotificationsUtils {
      *
      * @return notifications service
      */
-    public static final INotificationsService getNotificationsService() {
+    public static INotificationsService getNotificationsService() {
         return Locator.findMBean(INotificationsService.class, INotificationsService.MBEAN_NAME);
     }
 
@@ -97,7 +92,7 @@ public class NotificationsUtils {
      * @param portalControllerContext portal controller context
      * @return notifications window context
      */
-    public static final WindowContext createNotificationsWindowContext(PortalControllerContext portalControllerContext) {
+    public static WindowContext createNotificationsWindowContext(PortalControllerContext portalControllerContext) {
         if (portalControllerContext == null) {
             return null;
         }
@@ -128,7 +123,7 @@ public class NotificationsUtils {
         String htmlContent = generateNotificationsHTMLContent(notificationsList, locale);
 
         // Window properties
-        Map<String, String> windowProperties = new HashMap<String, String>();
+        Map<String, String> windowProperties = new HashMap<>();
         windowProperties.put(ThemeConstants.PORTAL_PROP_WINDOW_RENDERER, "emptyRenderer");
         windowProperties.put(ThemeConstants.PORTAL_PROP_DECORATION_RENDERER, "emptyRenderer");
         windowProperties.put(ThemeConstants.PORTAL_PROP_PORTLET_RENDERER, "emptyRenderer");
@@ -141,10 +136,10 @@ public class NotificationsUtils {
     /**
      * Inject notifications region.
      *
-     * @param controllerContext controller context
+     * @param portalControllerContext portal controller context
      * @param pageRendition page rendition
      */
-    public static final void injectNotificationsRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
+    public static void injectNotificationsRegion(PortalControllerContext portalControllerContext, PageRendition pageRendition) {
         WindowContext windowContext = createNotificationsWindowContext(portalControllerContext);
         pageRendition.getPageResult().addWindowContext(windowContext);
 
@@ -163,25 +158,28 @@ public class NotificationsUtils {
      */
     private static String generateNotificationsHTMLContent(List<Notifications> notificationsList, Locale locale) {
         // Internationalization service
-        IInternationalizationService internationalizationService = InternationalizationUtils.getInternationalizationService();
-
+        IInternationalizationService i18nService = InternationalizationUtils.getInternationalizationService();
 
         // Container
         Element container = DOM4JUtils.generateDivElement("notifications-container");
 
-        // Ajax waiter spacer
-        Element ajaxWaiterSpacer = DOM4JUtils.generateDivElement("notification-spacer");
-        container.add(ajaxWaiterSpacer);
+        // Ajax waiter toast container
+        Element ajaxWaiterToastContainer = DOM4JUtils.generateDivElement("toast-container position-fixed top-0 start-50 translate-middle-x p-3");
+        container.add(ajaxWaiterToastContainer);
 
-        // Ajax waiter
-        Element ajaxWaiter = DOM4JUtils.generateDivElement("ajax-waiter");
-        ajaxWaiterSpacer.add(ajaxWaiter);
-        
-        // Ajax waiter label
-        String labelText = internationalizationService.getString("AJAX_REFRESH", locale);
-        Element ajaxWaiterLabel = DOM4JUtils.generateElement("span", "label label-info", labelText, "halflings halflings-refresh", null);
-        ajaxWaiter.add(ajaxWaiterLabel);
+        // Ajax waiter toast
+        Element ajaxWaiterToast = DOM4JUtils.generateDivElement("toast fade text-bg-info border-0");
+        DOM4JUtils.addAttribute(ajaxWaiterToast, "id", "ajax-waiter");
+        DOM4JUtils.addAttribute(ajaxWaiterToast, "role", "status");
+        DOM4JUtils.addDataAttribute(ajaxWaiterToast, "bs-autohide", String.valueOf(false));
+        DOM4JUtils.addAriaAttribute(ajaxWaiterToast, "live", "polite");
+        DOM4JUtils.addAriaAttribute(ajaxWaiterToast, "atomic", String.valueOf(true));
+        ajaxWaiterToastContainer.add(ajaxWaiterToast);
 
+        // Ajax waiter toast body
+        Element ajaxWaiterToastBody = DOM4JUtils.generateDivElement("toast-body");
+        DOM4JUtils.addGlyphiconText(ajaxWaiterToastBody, "glyphicons glyphicons-basic-refresh", i18nService.getString("AJAX_REFRESH", locale));
+        ajaxWaiterToast.add(ajaxWaiterToastBody);
 
         // Dyna window
         Element dynaWindow = DOM4JUtils.generateDivElement("dyna-window");
@@ -196,59 +194,62 @@ public class NotificationsUtils {
         Element dynaWindowContent = DOM4JUtils.generateDivElement("dyna-window-content");
         windowId.add(dynaWindowContent);
 
+        // Toast container
+        Element toastContainer = DOM4JUtils.generateDivElement("toast-container position-fixed top-0 end-0 p-3");
+        dynaWindowContent.add(toastContainer);
+
         if (notificationsList != null) {
             for (Notifications notifications : notificationsList) {
                 NotificationsType type = notifications.getType();
 
-                // Notification spacer
-                Element notificationSpacer = DOM4JUtils.generateDivElement("notification-spacer");
-                dynaWindowContent.add(notificationSpacer);
-
-                // Alert
-                Element alert = DOM4JUtils.generateDivElement("alert alert-dismissable fade in " + type.getHtmlClass());
-                if (type.getPriority() < NotificationsType.ERROR.getPriority()) {
-                    DOM4JUtils.addDataAttribute(alert, "apart", StringUtils.EMPTY);
+                // Toast
+                Element toast = DOM4JUtils.generateDivElement("toast fade show border-" + type.getHtmlClass());
+                DOM4JUtils.addAttribute(toast, "role", "alert");
+                if (NotificationsType.ERROR.equals(type)) {
+                    DOM4JUtils.addDataAttribute(toast, "bs-autohide", String.valueOf(false));
                 }
-                notificationSpacer.add(alert);
+                DOM4JUtils.addAriaAttribute(toast, "live", "assertive");
+                DOM4JUtils.addAriaAttribute(toast, "atomic", String.valueOf(true));
+                toastContainer.add(toast);
 
+                // Toast header
+                Element toastHeader = DOM4JUtils.generateDivElement("toast-header text-bg-" + type.getHtmlClass());
+                DOM4JUtils.addGlyphiconText(toastHeader, type.getIcon(), null);
+                toast.add(toastHeader);
+
+                // Toast header title
+                Element toastHeaderTitle = DOM4JUtils.generateElement("strong", "ms-1 me-auto", null);
                 if (notifications.getErrorCode() != null) {
-                    alert.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
+                    toastHeaderTitle.add(DocumentHelper.createComment(notifications.getErrorCode().toString()));
+                } else {
+                    DOM4JUtils.addText(toastHeaderTitle, i18nService.getString("NOTIFICATION_TYPE_" + StringUtils.upperCase(type.name()), locale));
                 }
+                toastHeader.add(toastHeaderTitle);
 
-                // Close button
-                Element button = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "close", "&times;");
-                DOM4JUtils.addAttribute(button, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_BUTTON);
-                DOM4JUtils.addAttribute(button, HTMLConstants.DATA_DISMISS, "alert");
-                DOM4JUtils.addAttribute(button, HTMLConstants.ARIA_HIDDEN, "true");
-                alert.add(button);
-
-                // Media
-                Element media = DOM4JUtils.generateDivElement("media");
-                alert.add(media);
-
-                // Media left
-                if (type.getIcon() != null) {
-                    Element mediaLeft = DOM4JUtils.generateElement(HTMLConstants.DIV, "media-left media-middle", null, type.getIcon(), null);
-                    media.add(mediaLeft);
-                }
-
-                // Media body
-                Element mediaBody = DOM4JUtils.generateDivElement("media-body");
-                media.add(mediaBody);
+                // Close toast button
+                Element closeToastButton = DOM4JUtils.generateElement("button", "btn-close btn-close-white", null);
+                DOM4JUtils.addAttribute(closeToastButton, "type", "button");
+                DOM4JUtils.addDataAttribute(closeToastButton, "bs-dismiss", "toast");
+                DOM4JUtils.addAriaAttribute(closeToastButton, "label", i18nService.getString("CLOSE", locale));
+                toastHeader.add(closeToastButton);
 
                 // Messages
                 List<String> messages = notifications.getMessages();
                 if (CollectionUtils.isNotEmpty(messages)) {
+                    // Toast body
+                    Element toastBody = DOM4JUtils.generateDivElement("toast-body");
+                    toast.add(toastBody);
+
                     if (messages.size() == 1) {
                         // Single message
                         String message = messages.get(0);
                         Element text = DOM4JUtils.generateElement(HTMLConstants.SPAN, null, null);
                         messageHandling(text, message);
-                        mediaBody.add(text);
+                        toastBody.add(text);
                     } else {
                         // Multiple messages
                         Element ul = DOM4JUtils.generateElement(HTMLConstants.UL, null, null);
-                        mediaBody.add(ul);
+                        toastBody.add(ul);
 
                         for (String message : messages) {
                             Element li = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);

@@ -83,10 +83,8 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
      * Utility method used to render header content.
      *
      * @param request current HTTP servlet request
-     * @throws JspException
-     * @throws IOException
      */
-    private void renderHeaderContent(HttpServletRequest request) throws JspException, IOException {
+    private void renderHeaderContent(HttpServletRequest request) throws IOException {
         //
         PageResult page = (PageResult) request.getAttribute(LayoutConstants.ATTR_PAGE);
         JspWriter out = this.getJspContext().getOut();
@@ -112,7 +110,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
 
         // Portlets resources
         Map<?, ?> results = page.getWindowContextMap();
-        Set<String> resources = new LinkedHashSet<String>();
+        Set<String> resources = new LinkedHashSet<>();
         for (Object name : results.values()) {
             WindowContext wc = (WindowContext) name;
             WindowResult result = wc.getResult();
@@ -120,7 +118,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
             List<Element> headElements = result.getHeaderContent();
             if (headElements != null) {
                 for (Element element : headElements) {
-                    if (!"title".equals(element.getNodeName().toLowerCase())) {
+                    if (!"title".equalsIgnoreCase(element.getNodeName())) {
                         String resource = this.pageHeaderResourceService.adaptResourceElement(element.toString());
                         if (resource != null) {
                             resources.add(resource);
@@ -138,6 +136,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/postmessage/postmessage.min.js'></script>");
 
         // Bootstrap
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap-5.2.2/bootstrap.css' title='Socle portail'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap-5.2.2/bootstrap.bundle.min.js'></script>");
 
         // Fancybox
@@ -179,7 +178,6 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
      *
      * @param out JSP writer
      * @param resource resource element
-     * @throws IOException
      */
     private void writeResource(JspWriter out, String resource) throws IOException {
         out.write(this.pageHeaderResourceService.adaptResourceElement(resource));

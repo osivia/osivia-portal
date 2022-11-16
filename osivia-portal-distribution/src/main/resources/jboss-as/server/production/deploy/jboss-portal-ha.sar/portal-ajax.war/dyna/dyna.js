@@ -223,8 +223,10 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 	// Setup headers
 	var headers = [ "ajax", "true" ],
     	$container = $JQry(container),
-	    $ajaxShadowbox,
-	    $ajaxWaiter = $JQry(".ajax-waiter");
+	    $ajaxShadowbox;
+
+    const ajaxWaiterElement = document.getElementById("ajax-waiter");
+    const ajaxWaiter = bootstrap.Toast.getInstance(ajaxWaiterElement);
 	
 	if (eventToStop == null) {
 		$ajaxShadowbox = $container.find(".ajax-shadowbox.window-ajax-shadowbox");
@@ -254,9 +256,9 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
 
 	// Waiter
     $ajaxShadowbox.addClass("in");
-	$ajaxWaiter.delay(200).addClass("in");
-
-	
+    const ajaxWaiterTimeout = setTimeout(function() {
+        ajaxWaiter.show();
+    }, 200);
 	
 	var popState;
     if ((eventToStop != null) && (eventToStop.type === "popstate")) {
@@ -266,8 +268,8 @@ function directAjaxCall(container, options, url, eventToStop, callerId) {
     
 	options.onSuccess = function(t) {
 	    $ajaxShadowbox.removeClass("in");
-		$ajaxWaiter.clearQueue();
-		$ajaxWaiter.removeClass("in");
+		clearTimeout(ajaxWaiterTimeout);
+        ajaxWaiter.hide();
 
 		onAjaxSuccess(t, callerId, null, popState);
 	};
