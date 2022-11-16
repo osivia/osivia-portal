@@ -215,7 +215,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         this.adminPortalId = PortalObjectId.parse("/admin", PortalObjectPath.CANONICAL_FORMAT);
 
-        this.names = new TreeSet<String>();
+        this.names = new TreeSet<>();
         this.names.add(Constants.ATTR_TOOLBAR_PRINCIPAL);
         this.names.add(Constants.ATTR_TOOLBAR_PERSON);
         this.names.add(Constants.ATTR_TOOLBAR_LOGIN_URL);
@@ -391,7 +391,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param context controller context
      * @param page    current page
      * @return HTML data
-     * @throws Exception
      */
     private String formatHTMLAdministration(ControllerContext context, Page page) {
         PageType pageType = PageType.getPageType(page, context);
@@ -462,7 +461,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // Configuration menu dropdown title
         String configurationTitle = bundle.getString(InternationalizationConstants.KEY_CONFIGURATION_MENU_TITLE);
         Element configurationDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null, "glyphicons glyphicons-basic-wrench");
-        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-md-inline", configurationTitle);
+        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-lg-inline", configurationTitle);
         configurationDropdownTitle.add(title);
         DOM4JUtils.addDataAttribute(configurationDropdownTitle, "bs-toggle", "dropdown");
         configurationDropdown.add(configurationDropdownTitle);
@@ -689,7 +688,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             editionTitle = bundle.getString(InternationalizationConstants.KEY_PAGE_EDITION_MENU_TITLE);
         }
         Element editionDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null, "glyphicons glyphicons-basic-pencil");
-        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-md-inline", editionTitle);
+        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-lg-inline", editionTitle);
         editionDropdownTitle.add(title);
         DOM4JUtils.addDataAttribute(editionDropdownTitle, "bs-toggle", "dropdown");
         editionDropdown.add(editionDropdownTitle);
@@ -791,7 +790,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param context        controller context
      * @param page           current page
      * @param administration administration toolbar element
-     * @throws Exception
      */
     private void generateAdministrationWebPageMenu(ControllerContext context, Page page, Element administration) throws Exception {
         // Portal controller context
@@ -854,7 +852,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         // CMS edition title
         String cmsEditionTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE);
         Element cmsEditionDropdownTitle = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "nav-link dropdown-toggle", null, "glyphicons glyphicons-basic-pencil");
-        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-md-inline", cmsEditionTitle);
+        Element title = DOM4JUtils.generateElement("span", "d-sm-none d-lg-inline", cmsEditionTitle);
         cmsEditionDropdownTitle.add(title);
         DOM4JUtils.addDataAttribute(cmsEditionDropdownTitle, "bs-toggle", "dropdown");
         cmsEditionDropdown.add(cmsEditionDropdownTitle);
@@ -1159,7 +1157,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param context        controller context
      * @param page           current page
      * @param administration administration toolbar element
-     * @throws CMSException
      */
     private void generateAdministrationToggleVersion(ControllerContext context, Page page, Element administration) throws CMSException {
         // CMS service
@@ -1273,7 +1270,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param bundle    bundle
      * @param urlDelete the command for delete
      * @return fancybox DOM element
-     * @throws UnsupportedEncodingException
      */
     private Element generateDeleteFancyBox(Bundle bundle, String urlDelete) throws UnsupportedEncodingException {
         String[] urlSplit = urlDelete.split("\\?");
@@ -1329,9 +1325,8 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param bundle   bundle
      * @param urlErase the command for delete
      * @return fancybox DOM element
-     * @throws UnsupportedEncodingException
      */
-    private Element generateEraseFancyBox(Bundle bundle, String urlErase) throws UnsupportedEncodingException {
+    private Element generateEraseFancyBox(Bundle bundle, String urlErase) {
         // Root
         Element root = DOM4JUtils.generateDivElement("d-none");
 
@@ -1369,7 +1364,6 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
      * @param mySpaceURL        my space URL
      * @param signOutURL        sign out URL
      * @return HTML data
-     * @throws Exception
      */
     private String formatHTMLUserbar(ControllerContext controllerContext, Page page, Principal principal, Person person, String mySpaceURL, String myProfileUrl,
                                      String signOutURL) {
