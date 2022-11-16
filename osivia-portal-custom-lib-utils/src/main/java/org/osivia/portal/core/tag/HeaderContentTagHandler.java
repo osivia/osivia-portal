@@ -104,8 +104,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/components/jquery-ui/jquery-ui-1.11.3.min.css'>");
 
         // jQuery Mobile
-        this.writeResource(out,
-                "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-mobile/jquery.mobile.custom.min.js'></script>");
+        this.writeResource(out, "<script type='text/javascript' src='/osivia-portal-custom-web-assets/components/jquery-mobile/jquery.mobile.custom.min.js'></script>");
 
 
         // Portlets resources
@@ -136,7 +135,7 @@ public class HeaderContentTagHandler extends SimpleTagSupport {
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/postmessage/postmessage.min.js'></script>");
 
         // Bootstrap
-        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/bootstrap-5.2.2/bootstrap.css' title='Socle portail'>");
+        this.writeResource(out, "<link rel='stylesheet' href='/osivia-portal-custom-web-assets/css/socle.css' title='Socle portail'>");
         this.writeResource(out, "<script src='/osivia-portal-custom-web-assets/components/bootstrap-5.2.2/bootstrap.bundle.min.js'></script>");
 
         // Fancybox
