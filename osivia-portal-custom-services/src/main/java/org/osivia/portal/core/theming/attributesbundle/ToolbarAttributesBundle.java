@@ -1258,8 +1258,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
 
         if (beingModified) {
             // Current modification indicator
-            final Element modificationIndicator = DOM4JUtils.generateElement("span", "badge bg-secondary", bundle.getString("MODIFICATION_MESSAGE"), "glyphicons glyphicons-basic-star-of-life", AccessibilityRoles.PRESENTATION);
-            ((Element) modificationIndicator.elements().get(1)).addAttribute(HTMLConstants.CLASS, "hidden-sm");
+            Element modificationIndicator = DOM4JUtils.generateElement("span", "badge bg-secondary ms-2", bundle.getString("MODIFICATION_MESSAGE"));
             li.add(modificationIndicator);
         }
     }
