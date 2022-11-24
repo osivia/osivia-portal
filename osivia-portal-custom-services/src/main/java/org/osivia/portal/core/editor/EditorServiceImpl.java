@@ -25,10 +25,12 @@ import org.osivia.portal.core.context.ControllerContextAdapter;
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Editor service implementation.
@@ -244,6 +246,25 @@ public class EditorServiceImpl implements EditorService {
 
                 container.getMap().remove(path);
             }
+        }
+    }
+
+
+    @Override
+    public void clearAllTemporaryAttachedPictures(HttpSession httpSession) throws PortalException {
+        // Current user
+        String user = (String) httpSession.getAttribute("PRINCIPAL_TOKEN");
+        // Attribute name
+        String name = "portal.principal" + user + TEMPORARY_ATTACHED_PICTURES_ATTRIBUTE;
+        // Attribute
+        Object attribute = httpSession.getAttribute(name);
+
+        if (attribute instanceof EditorTemporaryAttachedPictureContainer) {
+            // Temporary attached picture container
+            EditorTemporaryAttachedPictureContainer container = (EditorTemporaryAttachedPictureContainer) attribute;
+
+            Consumer<List<EditorTemporaryAttachedPicture>> consumer = list -> list.stream().map(EditorTemporaryAttachedPicture::getFile).filter(Objects::nonNull).filter(file -> !file.delete()).forEach(File::deleteOnExit);
+            container.getMap().values().stream().filter(CollectionUtils::isNotEmpty).forEach(consumer);
         }
     }
 

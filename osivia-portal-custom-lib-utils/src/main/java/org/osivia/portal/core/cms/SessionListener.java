@@ -19,6 +19,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.osivia.portal.api.PortalException;
+import org.osivia.portal.api.editor.EditorService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.statistics.IStatisticsService;
 import org.osivia.portal.api.user.IUserPreferencesService;
@@ -31,17 +32,29 @@ import org.osivia.portal.core.cms.spi.ICMSIntegration;
  */
 public class SessionListener implements HttpSessionListener {
 
+    public static final String ACTIVE_SESSION_SYNC = "activeSessionSync";
+
+
     public static long activeSessions = 0;
 
-    public static String activeSessionSync = new String("activeSessionSync");
 
-
-    /** Nuxeo service. */
+    /**
+     * Nuxeo service.
+     */
     private final ICMSIntegration nuxeoService;
-    /** Statistics service. */
+    /**
+     * Statistics service.
+     */
     private final IStatisticsService statisticsService;
-    /** Preferences service. */
+    /**
+     * Preferences service.
+     */
     private final IUserPreferencesService preferencesService;
+    /**
+     * Editor service.
+     */
+    private final EditorService editorService;
+
 
     /**
      * Constructor.
@@ -55,6 +68,8 @@ public class SessionListener implements HttpSessionListener {
         this.statisticsService = Locator.findMBean(IStatisticsService.class, IStatisticsService.MBEAN_NAME);
         // User Preferences service
         this.preferencesService = Locator.findMBean(IUserPreferencesService.class, IUserPreferencesService.MBEAN_NAME);
+        // Editor service
+        this.editorService = Locator.findMBean(EditorService.class, EditorService.MBEAN_NAME);
     }
 
 
@@ -63,7 +78,7 @@ public class SessionListener implements HttpSessionListener {
      */
     @Override
     public void sessionCreated(HttpSessionEvent sessionEvent) {
-        synchronized (activeSessionSync) {
+        synchronized (ACTIVE_SESSION_SYNC) {
             activeSessions++;
         }
     }
@@ -74,7 +89,7 @@ public class SessionListener implements HttpSessionListener {
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent sessionEvent) {
-        synchronized (activeSessionSync) {
+        synchronized (ACTIVE_SESSION_SYNC) {
             activeSessions--;
         }
 
@@ -86,7 +101,7 @@ public class SessionListener implements HttpSessionListener {
         try {
             this.statisticsService.aggregateUserStatistics(httpSession);
             this.preferencesService.updateUserPreferences(httpSession);
-            
+            this.editorService.clearAllTemporaryAttachedPictures(httpSession);
         } catch (PortalException e) {
             // Do nothing
         }
