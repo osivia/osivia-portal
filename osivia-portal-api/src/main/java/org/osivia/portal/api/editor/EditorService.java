@@ -42,4 +42,33 @@ public interface EditorService {
      */
     void serveResource(PortalControllerContext portalControllerContext, String editorId) throws PortletException, IOException;
 
+
+    /**
+     * Get temporary attached pictures.
+     *
+     * @param portalControllerContext portal controller context
+     * @param path                    parent document path
+     * @return temporary attached pictures
+     */
+    List<EditorTemporaryAttachedPicture> getTemporaryAttachedPictures(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException;
+
+
+    /**
+     * Add temporary attached picture.
+     *
+     * @param portalControllerContext portal controller context
+     * @param path                    parent document path
+     * @param picture                 temporary attached picture
+     */
+    void addTemporaryAttachedPicture(PortalControllerContext portalControllerContext, String path, EditorTemporaryAttachedPicture picture) throws PortletException, IOException;
+
+
+    /**
+     * Clear temporary attached pictures.
+     *
+     * @param portalControllerContext portal controller context
+     * @param path                    parent document path
+     */
+    void clearTemporaryAttachedPictures(PortalControllerContext portalControllerContext, String path) throws PortletException, IOException;
+
 }

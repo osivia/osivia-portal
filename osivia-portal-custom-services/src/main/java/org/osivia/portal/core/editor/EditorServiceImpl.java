@@ -3,12 +3,16 @@ package org.osivia.portal.core.editor;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.common.invocation.Scope;
+import org.jboss.portal.core.controller.ControllerContext;
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.editor.EditorModule;
 import org.osivia.portal.api.editor.EditorModuleResource;
 import org.osivia.portal.api.editor.EditorService;
+import org.osivia.portal.api.editor.EditorTemporaryAttachedPicture;
 import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.urls.IPortalUrlFactory;
 import org.osivia.portal.api.urls.PortalUrlType;
@@ -16,16 +20,15 @@ import org.osivia.portal.core.cms.CMSException;
 import org.osivia.portal.core.cms.CMSServiceCtx;
 import org.osivia.portal.core.cms.ICMSService;
 import org.osivia.portal.core.cms.ICMSServiceLocator;
+import org.osivia.portal.core.context.ControllerContextAdapter;
 
 import javax.portlet.PortletException;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Editor service implementation.
@@ -34,6 +37,12 @@ import java.util.Map;
  * @see EditorService
  */
 public class EditorServiceImpl implements EditorService {
+
+    /**
+     * Temporary attached pictures attribute.
+     */
+    public static final String TEMPORARY_ATTACHED_PICTURES_ATTRIBUTE = "osivia.editor.temporary-attached-pictures";
+
 
     /**
      * CMS service locator.
@@ -142,6 +151,9 @@ public class EditorServiceImpl implements EditorService {
                         properties.put(name, value);
                     }
                 }
+                if (BooleanUtils.toBoolean(request.getParameter("creation"))) {
+                    properties.put(WINDOW_PROPERTY_PREFIX + "creation", String.valueOf(true));
+                }
 
                 // URL
                 String url;
@@ -166,6 +178,71 @@ public class EditorServiceImpl implements EditorService {
                 printWriter.close();
             } else {
                 resource.serve(portalControllerContext);
+            }
+        }
+    }
+
+
+    @Override
+    public List<EditorTemporaryAttachedPicture> getTemporaryAttachedPictures(PortalControllerContext portalControllerContext, String path) {
+        List<EditorTemporaryAttachedPicture> pictures;
+
+        if (StringUtils.isEmpty(path)) {
+            pictures = null;
+        } else {
+            // Temporary attached picture container
+            EditorTemporaryAttachedPictureContainer container = this.getTemporaryAttachedPictureContainer(portalControllerContext);
+
+            pictures = container.getMap().computeIfAbsent(path, k -> new ArrayList<>());
+        }
+
+        return pictures;
+    }
+
+
+    /**
+     * Get temporary attached picture container.
+     *
+     * @param portalControllerContext portal controller context
+     * @return container
+     */
+    private EditorTemporaryAttachedPictureContainer getTemporaryAttachedPictureContainer(PortalControllerContext portalControllerContext) {
+        // Controller context
+        ControllerContext controllerContext = ControllerContextAdapter.getControllerContext(portalControllerContext);
+
+        // Temporary attached picture container
+        EditorTemporaryAttachedPictureContainer container;
+        Object attribute = controllerContext.getAttribute(Scope.PRINCIPAL_SCOPE, TEMPORARY_ATTACHED_PICTURES_ATTRIBUTE);
+        if (attribute instanceof EditorTemporaryAttachedPictureContainer) {
+            container = (EditorTemporaryAttachedPictureContainer) attribute;
+        } else {
+            container = new EditorTemporaryAttachedPictureContainer();
+            controllerContext.setAttribute(Scope.PRINCIPAL_SCOPE, TEMPORARY_ATTACHED_PICTURES_ATTRIBUTE, container);
+        }
+        return container;
+    }
+
+
+    @Override
+    public void addTemporaryAttachedPicture(PortalControllerContext portalControllerContext, String path, EditorTemporaryAttachedPicture picture) {
+        // Temporary attached pictures
+        List<EditorTemporaryAttachedPicture> pictures = this.getTemporaryAttachedPictures(portalControllerContext, path);
+
+        pictures.add(picture);
+    }
+
+
+    @Override
+    public void clearTemporaryAttachedPictures(PortalControllerContext portalControllerContext, String path) {
+        if (StringUtils.isNotEmpty(path)) {
+            // Temporary attached picture container
+            EditorTemporaryAttachedPictureContainer container = this.getTemporaryAttachedPictureContainer(portalControllerContext);
+
+            List<EditorTemporaryAttachedPicture> pictures = container.getMap().get(path);
+            if (CollectionUtils.isNotEmpty(pictures)) {
+                pictures.stream().map(EditorTemporaryAttachedPicture::getFile).filter(Objects::nonNull).filter(file -> !file.delete()).forEach(File::deleteOnExit);
+
+                container.getMap().remove(path);
             }
         }
     }
