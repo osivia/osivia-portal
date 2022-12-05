@@ -454,11 +454,11 @@ public class MenubarService implements IMenubarService {
     private Element generateGroupElement(Element container, MenubarGroup group, Set<MenubarObject> objects,
                                          Map<MenubarDropdown, List<MenubarItem>> dropdownMenus) {
         // Group toolbar
-        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar " + StringUtils.trimToEmpty(group.getHtmlClasses()));
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar align-items-center gap-2 " + StringUtils.trimToEmpty(group.getHtmlClasses()));
         DOM4JUtils.addAttribute(toolbar, "role", "toolbar");
 
         // State items group
-        Element stateItemsGroup = DOM4JUtils.generateDivElement("d-none d-md-block");
+        Element stateItemsGroup = DOM4JUtils.generateDivElement("d-none d-md-flex gap-1");
 
         // Generic button group
         Element genericGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
@@ -625,10 +625,13 @@ public class MenubarService implements IMenubarService {
             if (item.isActive()) {
                 htmlClasses += " active";
             }
+            if (item.isDisabled()) {
+                htmlClasses += " disabled";
+            }
 
             if (item.isDisabled()) {
                 element = DOM4JUtils.generateLinkElement("#", null, null, htmlClasses, null);
-                DOM4JUtils.addAttribute(element, "disabled", null);
+                DOM4JUtils.addAttribute(element, "disabled", StringUtils.EMPTY);
             } else {
                 element = DOM4JUtils.generateLinkElement(item.getUrl(), item.getTarget(), item.getOnclick(), htmlClasses, null);
             }
