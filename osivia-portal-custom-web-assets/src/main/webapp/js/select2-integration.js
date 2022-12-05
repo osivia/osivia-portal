@@ -1,37 +1,37 @@
-$JQry(function() {
+$JQry(function () {
 
-    $JQry("select.select2.select2-default").each(function(index, element) {
+    $JQry("select.select2.select2-default").each(function (index, element) {
         var $element = $JQry(element);
         var url = $element.data("url");
         var options = {
-            minimumInputLength : 0,
-            theme : "bootstrap",
-            width : "resolve"
+            minimumInputLength: 0,
+            theme: "bootstrap-5",
+            width: "resolve"
         };
 
         if (url !== undefined) {
             options["ajax"] = {
-                url : url,
-                dataType : "json",
-                delay : 250,
-                data : function(params) {
+                url: url,
+                dataType: "json",
+                delay: 250,
+                data: function (params) {
                     return {
-                        filter : params.term,
+                        filter: params.term,
                     };
                 },
-                processResults : function(data, params) {
+                processResults: function (data, params) {
                     return {
-                        results : data
+                        results: data
                     };
                 },
-                cache : true
+                cache: true
             };
 
-            options["escapeMarkup"] = function(markup) {
+            options["escapeMarkup"] = function (markup) {
                 return markup;
             };
 
-            options["templateResult"] = function(params) {
+            options["templateResult"] = function (params) {
                 var $result = $JQry(document.createElement("span"));
 
                 if (params.loading) {
@@ -49,7 +49,7 @@ $JQry(function() {
                 return $result;
             };
 
-            options["templateSelection"] = function(params) {
+            options["templateSelection"] = function (params) {
                 return params.text;
             };
         }
@@ -58,27 +58,27 @@ $JQry(function() {
         // Internationalization
         options["language"] = {};
         if ($element.data("input-too-short") !== undefined) {
-            options["language"]["inputTooShort"] = function() {
+            options["language"]["inputTooShort"] = function () {
                 return $element.data("input-too-short");
             }
         }
         if ($element.data("error-loading") !== undefined) {
-            options["language"]["errorLoading"] = function() {
+            options["language"]["errorLoading"] = function () {
                 return $element.data("error-loading");
             }
         }
         if ($element.data("loading-more") !== undefined) {
-            options["language"]["loadingMore"] = function() {
+            options["language"]["loadingMore"] = function () {
                 return $element.data("loading-more");
             }
         }
         if ($element.data("searching") !== undefined) {
-            options["language"]["searching"] = function() {
+            options["language"]["searching"] = function () {
                 return $element.data("searching");
             }
         }
         if ($element.data("no-results") !== undefined) {
-            options["language"]["noResults"] = function() {
+            options["language"]["noResults"] = function () {
                 return $element.data("no-results");
             }
         }
@@ -86,7 +86,7 @@ $JQry(function() {
 
         // Force width to 100%
         $element.css({
-            width : "100%"
+            width: "100%"
         });
 
 
@@ -94,7 +94,7 @@ $JQry(function() {
 
 
         // Clear button
-        $element.siblings().find("button[name=clear]").click(function(event) {
+        $element.siblings().find("button[name=clear]").click(function (event) {
             $element.val("");
             $element.trigger("change");
         });
@@ -102,20 +102,20 @@ $JQry(function() {
 
         // Auto submit on change
         if ($element.data("onchange") == "submit") {
-            $element.on("select2:unselecting", function(event) {
+            $element.on("select2:unselecting", function (event) {
                 var $target = $JQry(event.target);
 
                 $element.data("unselecting", true);
             });
 
-            $element.change(function(event) {
+            $element.change(function (event) {
                 var $form = $element.closest("form");
                 var $submit = $form.find("button[type=submit][name=save]");
 
                 $submit.click();
             });
 
-            $element.on("select2:opening", function(event) {
+            $element.on("select2:opening", function (event) {
                 var $target = $JQry(event.target);
 
                 if ($target.data("unselecting")) {
@@ -126,15 +126,15 @@ $JQry(function() {
     });
 
 
-    $JQry("select.select2.select2-person").each(function(index, element) {
+    $JQry("select.select2.select2-person").each(function (index, element) {
         var $element = $JQry(element);
         var minimumInputLength = $element.data("minimum-input-length");
         var url = $element.data("url");
 
         var options = {
-            minimumInputLength : (minimumInputLength ? minimumInputLength : 3),
-            theme : "bootstrap",
-            width : "resolve"
+            minimumInputLength: (minimumInputLength ? minimumInputLength : 3),
+            theme: "bootstrap-5",
+            width: "resolve"
         };
 
         if (url !== undefined) {
@@ -164,7 +164,7 @@ $JQry(function() {
 
 
         // Result template
-        options["templateResult"] = function(params) {
+        options["templateResult"] = function (params) {
             var $result, $personAvatar, $avatar, $icon, $personTitle, $personExtra;
 
             var type, displayName, avatar, extra;
@@ -234,7 +234,7 @@ $JQry(function() {
 
 
         // Selection template
-        options["templateSelection"] = function(params) {
+        options["templateSelection"] = function (params) {
             var $selection, $personAvatar, $avatar, $icon, $personTitle;
 
             var type, displayName, avatar;
@@ -288,27 +288,27 @@ $JQry(function() {
         // Internationalization
         options["language"] = {};
         if ($element.data("input-too-short") !== undefined) {
-            options["language"]["inputTooShort"] = function() {
+            options["language"]["inputTooShort"] = function () {
                 return $element.data("input-too-short");
             }
         }
         if ($element.data("error-loading") !== undefined) {
-            options["language"]["errorLoading"] = function() {
+            options["language"]["errorLoading"] = function () {
                 return $element.data("error-loading");
             }
         }
         if ($element.data("loading-more") !== undefined) {
-            options["language"]["loadingMore"] = function() {
+            options["language"]["loadingMore"] = function () {
                 return $element.data("loading-more");
             }
         }
         if ($element.data("searching") !== undefined) {
-            options["language"]["searching"] = function() {
+            options["language"]["searching"] = function () {
                 return $element.data("searching");
             }
         }
         if ($element.data("no-results") !== undefined) {
-            options["language"]["noResults"] = function() {
+            options["language"]["noResults"] = function () {
                 return $element.data("no-results");
             }
         }
@@ -316,7 +316,7 @@ $JQry(function() {
 
         // Force width to 100%
         $element.css({
-            width : "100%"
+            width: "100%"
         });
 
 
@@ -324,7 +324,7 @@ $JQry(function() {
 
 
         // Clear button
-        $element.siblings().find("button[name=clear]").click(function(event) {
+        $element.siblings().find("button[name=clear]").click(function (event) {
             $element.val("");
             $element.trigger("change");
         });
@@ -332,20 +332,20 @@ $JQry(function() {
 
         // Auto submit on change
         if ($element.data("onchange") == "submit") {
-            $element.on("select2:unselecting", function(event) {
+            $element.on("select2:unselecting", function (event) {
                 var $target = $JQry(event.target);
 
                 $element.data("unselecting", true);
             });
 
-            $element.change(function(event) {
+            $element.change(function (event) {
                 var $form = $element.closest("form");
                 var $submit = $form.find("button[type=submit][name=save]");
 
                 $submit.click();
             });
 
-            $element.on("select2:opening", function(event) {
+            $element.on("select2:opening", function (event) {
                 var $target = $JQry(event.target);
 
                 if ($target.data("unselecting")) {
@@ -356,12 +356,12 @@ $JQry(function() {
     });
 
 
-    $JQry("select.select2.select2-tags").each(function(index, element) {
+    $JQry("select.select2.select2-tags").each(function (index, element) {
         var $element = $JQry(element);
         var options = {
-            minimumInputLength : 1,
+            minimumInputLength: 1,
             tags: true,
-            theme: "bootstrap",
+            theme: "bootstrap-5",
             width: "resolve"
         };
 
@@ -369,7 +369,7 @@ $JQry(function() {
         // Internationalization
         options["language"] = {};
         if ($element.data("input-too-short") !== undefined) {
-            options["language"]["inputTooShort"] = function() {
+            options["language"]["inputTooShort"] = function () {
                 return $element.data("input-too-short");
             }
         }
@@ -377,7 +377,7 @@ $JQry(function() {
 
         // Force width to 100%
         $element.css({
-            width : "100%"
+            width: "100%"
         });
 
 
