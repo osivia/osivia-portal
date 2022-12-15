@@ -14,10 +14,7 @@
 package org.osivia.portal.core.web;
 
 import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.CharEncoding;
@@ -159,7 +156,10 @@ public class WebCommand extends DynamicCommand {
                     for (String filter : filters) {
                         String[] selector = StringUtils.split(filter, "=");
                         if (selector.length == 2) {
-                            selectors.put(selector[0], Arrays.asList(new String[]{selector[1]}));
+                            String key = selector[0];
+                            String value = selector[1];
+                            List<String> values = selectors.computeIfAbsent(key, k -> new ArrayList<>());
+                            values.add(value);
                         }
                     }
                 }
