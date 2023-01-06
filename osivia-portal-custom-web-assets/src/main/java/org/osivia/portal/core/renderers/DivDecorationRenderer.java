@@ -31,6 +31,7 @@ import java.util.Locale;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.dom4j.io.HTMLWriter;
@@ -101,6 +102,8 @@ public class DivDecorationRenderer extends AbstractObjectRenderer implements Dec
         if (title == null) {
             title = drc.getTitle();
         }
+        // Escape HTML
+        title = StringEscapeUtils.escapeHtml(title);
 
         // Bootstrap panel style indicator
         boolean bootstrapPanelStyle = BooleanUtils.toBoolean(properties.getWindowProperty(currentWindowId, "osivia.bootstrapPanelStyle"));

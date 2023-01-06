@@ -655,6 +655,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                     windowTitle = decoration.getTitle();
                 }
 
+                // Escape HTML
+                windowTitle = StringEscapeUtils.escapeHtml(windowTitle);
+
                 windowSubTitle = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_SUB_TITLE);
                 windowVignetteUrl = properties.getWindowProperty(id, InternalConstants.PROP_WINDOW_VIGNETTE_URL);
             }
