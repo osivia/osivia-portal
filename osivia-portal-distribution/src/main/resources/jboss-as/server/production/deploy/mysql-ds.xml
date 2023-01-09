@@ -4,7 +4,7 @@
 <datasources>
    <local-tx-datasource>
     <jndi-name>DefaultDS</jndi-name>
-    <connection-url>jdbc:mysql://${db.host}/${db.base-name}?useServerPrepStmts=false&amp;jdbcCompliantTruncation=false&amp;useSSL=false</connection-url>
+    <connection-url>jdbc:mysql://${db.host}/${db.base-name}?useServerPrepStmts=false&amp;jdbcCompliantTruncation=false&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</connection-url>
     <driver-class>com.mysql.jdbc.Driver</driver-class>
     <user-name>${db.manager.name}</user-name>
     <password>${db.manager.pswd}</password>
@@ -19,7 +19,7 @@
 
   <local-tx-datasource>
     <jndi-name>PortalDS</jndi-name>
-    <connection-url>jdbc:mysql://${db.host}/${db.base-name}?useServerPrepStmts=false&amp;jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useSSL=false</connection-url>
+    <connection-url>jdbc:mysql://${db.host}/${db.base-name}?useServerPrepStmts=false&amp;jdbcCompliantTruncation=false&amp;autoReconnect=true&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</connection-url>
     <driver-class>com.mysql.jdbc.Driver</driver-class>
     <user-name>${db.manager.name}</user-name>
     <password>${db.manager.pswd}</password>
