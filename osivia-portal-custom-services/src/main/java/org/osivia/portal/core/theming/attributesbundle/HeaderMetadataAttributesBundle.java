@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.WindowState;
 import org.jboss.portal.common.invocation.Scope;
@@ -297,6 +298,9 @@ public final class HeaderMetadataAttributesBundle implements IAttributesBundle {
                 canonicalUrl = null;
             }
         }
+
+        // Escape HTML
+        title = StringEscapeUtils.escapeHtml(title);
 
         attributes.put(Constants.ATTR_HEADER_TITLE, title);
         attributes.put(Constants.ATTR_HEADER_CANONICAL_URL, canonicalUrl);

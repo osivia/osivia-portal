@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.jboss.portal.Mode;
@@ -381,8 +382,11 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         }
 
                         if (cmsItem != null) {
+                            // Escape HTML
+                            String title = StringEscapeUtils.escapeHtml(cmsItem.getProperties().get("displayName"));
+
                             // Cannot add live navigation item
-                            BreadcrumbItem breadcrumbItem = new BreadcrumbItem(cmsItem.getProperties().get("displayName"), url, null, false);
+                            BreadcrumbItem breadcrumbItem = new BreadcrumbItem(title, url, null, false);
                             breadcrumbItem.setDocumentType(cmsItem.getType());
                             breadcrumb.getChildren().add(0, breadcrumbItem);
                         }
@@ -527,6 +531,9 @@ public final class BreadcrumbAttributesBundle implements IAttributesBundle {
                         page = renderPageCommand.getPage();
                         ViewPageCommand viewCmd = new ViewPageCommand(page.getId());
                         String url = new PortalURLImpl(viewCmd, controllerContext, null, null).toString();
+
+                        // Escape HTML
+                        title = StringEscapeUtils.escapeHtml(title);
 
                         last.setName(title);
                         last.setUrl(url);
