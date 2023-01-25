@@ -185,13 +185,13 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             editionOnClick.append("');");
             String editionTitle = bundle.getString("CMS_EDIT_FRAGMENT");
             Element edition = DOM4JUtils.generateLinkElement(editionURL, null, editionOnClick.toString(), "btn btn-secondary fancyframe_refresh", editionTitle,
-                    "halflings halflings-pencil");
+                    "glyphicons glyphicons-basic-pencil");
             buttonsGroup.add(edition);
 
             // Delete button
             String deleteURL = "#delete_" + windowId;
             String deleteTitle = bundle.getString("CMS_DELETE_FRAGMENT");
-            Element delete = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-secondary", null, "halflings halflings-trash");
+            Element delete = DOM4JUtils.generateLinkElement("javascript:;", null, null, "btn btn-secondary", null, "glyphicons glyphicons-basic-bin");
             DOM4JUtils.addDataAttribute(delete, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(delete, "src", deleteURL);
             DOM4JUtils.addTooltip(delete, deleteTitle);
@@ -363,7 +363,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             addFragmentOnClick.append("');");
 
             Element addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(),
-                    "btn btn-secondary fancyframe_refresh", null, "halflings halflings-plus");
+                    "btn btn-secondary fancyframe_refresh", null, "glyphicons glyphicons-basic-plus");
             DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
             group.add(addFragmentButton);
 
@@ -442,25 +442,25 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Up move command
         String upURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_UP_COMMAND_URL);
         String upTitle = bundle.getString("WINDOW_MOVE_UP");
-        Element upLink = this.generatePortletCommandLink(upURL, null, "halflings halflings-arrow-up", null, upTitle);
+        Element upLink = this.generatePortletCommandLink(upURL, null, "glyphicons glyphicons-basic-arrow-up", null, upTitle);
         moveGroup.add(upLink);
 
         // Down move command
         String downURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DOWN_COMMAND_URL);
         String downTitle = bundle.getString("WINDOW_MOVE_DOWN");
-        Element downLink = this.generatePortletCommandLink(downURL, null, "halflings halflings-arrow-down", null, downTitle);
+        Element downLink = this.generatePortletCommandLink(downURL, null, "glyphicons glyphicons-basic-arrow-down", null, downTitle);
         moveGroup.add(downLink);
 
         // Previous region move command
         String previousRegionURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_PREVIOUS_REGION_COMMAND_URL);
         String previousRegionTitle = bundle.getString("WINDOW_PREVIOUS_REGION");
-        Element previousRegionLink = this.generatePortletCommandLink(previousRegionURL, null, "halflings halflings-arrow-left", null, previousRegionTitle);
+        Element previousRegionLink = this.generatePortletCommandLink(previousRegionURL, null, "glyphicons glyphicons-basic-arrow-left", null, previousRegionTitle);
         moveGroup.add(previousRegionLink);
 
         // Next region move command
         String nextRegionURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_NEXT_REGION_COMMAND_URL);
         String nextRegionTitle = bundle.getString("WINDOW_NEXT_REGION");
-        Element nextRegionLink = this.generatePortletCommandLink(nextRegionURL, null, "halflings halflings-arrow-right", null, nextRegionTitle);
+        Element nextRegionLink = this.generatePortletCommandLink(nextRegionURL, null, "glyphicons glyphicons-basic-arrow-right", null, nextRegionTitle);
         moveGroup.add(nextRegionLink);
 
 
@@ -471,7 +471,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Window settings display command
         String displaySettingsURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DISPLAY_SETTINGS_URL);
         String displaySettingsTitle = bundle.getString("WINDOW_GENERIC_PARAMETERS", windowTitle);
-        Element displaySettingsLink = this.generatePortletCommandLink("javascript:;", onclickAction, "halflings halflings-wrench",
+        Element displaySettingsLink = this.generatePortletCommandLink("javascript:;", onclickAction, "glyphicons glyphicons-basic-wrench",
                 null, displaySettingsTitle);
         DOM4JUtils.addDataAttribute(displaySettingsLink, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(displaySettingsLink, "src", displaySettingsURL);
@@ -483,7 +483,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
             if ((InternalConstants.ACTION_ADMIN.equals(action.getName())) && (action.isEnabled())) {
                 String displayAdminURL = action.getURL() + "&windowstate=maximized";
                 String displayAdminTitle = bundle.getString("WINDOW_ADMIN_PARAMETERS", windowTitle);
-                Element displayAdminLink = this.generatePortletCommandLink(displayAdminURL, onclickAction, "halflings halflings-cog", CLASS_FANCYBOX_FRAME,
+                Element displayAdminLink = this.generatePortletCommandLink(displayAdminURL, onclickAction, "glyphicons glyphicons-basic-cogwheel", CLASS_FANCYBOX_FRAME,
                         displayAdminTitle);
                 settingsGroup.add(displayAdminLink);
                 break;
@@ -498,7 +498,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
         // Delete portlet command
         String deleteURL = windowRendererContext.getProperty(InternalConstants.ATTR_WINDOWS_DELETE_PORTLET_URL);
         String deleteTitle = bundle.getString("DELETE");
-        Element deleteLink = this.generatePortletCommandLink("javascript:;", onclickAction, "halflings halflings-trash", null, deleteTitle);
+        Element deleteLink = this.generatePortletCommandLink("javascript:;", onclickAction, "glyphicons glyphicons-basic-bin", null, deleteTitle);
         DOM4JUtils.addDataAttribute(deleteLink, "fancybox", StringUtils.EMPTY);
         DOM4JUtils.addDataAttribute(deleteLink, "src", deleteURL);
         deleteGroup.add(deleteLink);
@@ -577,7 +577,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // OK button
         Element okButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-warning", bundle.getString("YES"),
-                "halflings halflings-alert", null);
+                "glyphicons glyphicons-basic-triangle-alert", null);
         DOM4JUtils.addAttribute(okButton, HTMLConstants.TYPE, HTMLConstants.INPUT_TYPE_SUBMIT);
         form.add(okButton);
 

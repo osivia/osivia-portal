@@ -164,7 +164,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 markup.print(irrc.getId());
                 markup.print("</span>");
                 if (locked) {
-                    markup.print(" <i class='halflings halflings-lock'></i>");
+                    markup.print(" <i class='glyphicons glyphicons-basic-lock'></i>");
                 }
                 markup.println("</p>");
             }
@@ -375,7 +375,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Add fragment button
         Element addFragmentButton;
         if (inherited) {
-            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-secondary disabled", null, "halflings halflings-plus", null);
+            addFragmentButton = DOM4JUtils.generateElement(HTMLConstants.P, "btn btn-secondary disabled", null, "glyphicons glyphicons-basic-plus", null);
         } else {
             String addFragmentURL = irrc.getProperty("osivia.cmsCreateUrl");
             StringBuilder addFragmentOnClick = new StringBuilder();
@@ -388,7 +388,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             addFragmentOnClick.append("');");
 
             addFragmentButton = DOM4JUtils.generateLinkElement(addFragmentURL, null, addFragmentOnClick.toString(), "btn btn-secondary fancyframe_refresh", null,
-                    "halflings halflings-plus");
+                    "glyphicons glyphicons-basic-plus");
         }
         DOM4JUtils.addTooltip(addFragmentButton, bundle.getString("CMS_ADD_FRAGMENT"));
         group.add(addFragmentButton);
@@ -437,7 +437,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Dropdown menu button
         Element dropdownButton = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary dropdown-toggle", HTMLConstants.TEXT_DEFAULT,
-                "halflings halflings-wrench", null);
+                "glyphicons glyphicons-basic-wrench", null);
         DOM4JUtils.addAttribute(dropdownButton, HTMLConstants.DATA_TOGGLE, "dropdown");
         Element caret = DOM4JUtils.generateElement(HTMLConstants.SPAN, "caret", StringUtils.EMPTY);
         dropdownButton.add(caret);
