@@ -1,0 +1,37 @@
+$white: #fff;
+
+%spaced-area {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.dyna-region, .partial-refresh-window {
+  > [id] {
+    @extend %spaced-area;
+
+    > .card {
+      background-color: rgba($white, 50%);
+
+      > .card-body {
+        @extend %spaced-area;
+      }
+    }
+  }
+}
+
+.dnd-region {
+  @extend %spaced-area;
+
+  &:empty {
+    padding: .5rem 1rem;
+
+    border-style: dashed;
+    border-width: 1px;
+    border-color: #ddd;
+
+    &::before {
+      content: attr(data-empty-title);
+    }
+  }
+}

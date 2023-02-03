@@ -151,7 +151,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Well
         if (showCMSTools) {
-            out.print("<div class=\"well well-sm clearfix\">");
+            out.print("<div class=\"card\"><div class=\"card-body clearfix\">");
         }
 
 
@@ -167,7 +167,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
             // CMS commands toolbar
-            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar gap-1", AccessibilityRoles.TOOLBAR);
 
             // Buttons group
             Element buttonsGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
@@ -338,17 +338,17 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
         // Well
         if (showCMSTools) {
-            out.print("</div>");
+            out.print("</div></div>");
         }
 
         // in cms mode, create a new fragment below the current window
         if (showCMSTools) {
             // Toolbar
             String toolbarId = StringEscapeUtils.escapeHtml(rendererContext.getProperty("osivia.cmsEditCallbackId") + "-toolbar");
-            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+            Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar gap-1", AccessibilityRoles.TOOLBAR);
 
             // Button group
-            Element group = DOM4JUtils.generateDivElement("btn-group");
+            Element group = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
             toolbar.add(group);
 
             // Add fragment
@@ -433,7 +433,7 @@ public class DivWindowRenderer extends AbstractObjectRenderer implements WindowR
 
 
         // Commands toolbar
-        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar gap-1", AccessibilityRoles.TOOLBAR);
 
         // Move commands group
         Element moveGroup = DOM4JUtils.generateDivElement("btn-group btn-group-sm");

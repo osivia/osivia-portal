@@ -157,14 +157,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
             boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
 
-            markup.println("<div class='panel panel-default'><div class='panel-body'>");
+            markup.println("<div class=\"card\"><div class=\"card-body\">");
 
             if (showAdvancedCMSTools) {
-                markup.print("<p class='text-muted'><span>");
+                markup.print("<p class=\"text-muted\"><span>");
                 markup.print(irrc.getId());
                 markup.print("</span>");
                 if (locked) {
-                    markup.print(" <i class='glyphicons glyphicons-basic-lock'></i>");
+                    markup.print(" <i class=\"glyphicons glyphicons-basic-lock\"></i>");
                 }
                 markup.println("</p>");
             }
@@ -176,16 +176,16 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Region layout row
         if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE))) {
-            markup.println("<div class='row'>");
+            markup.println("<div class=\"row\">");
         }
 
         // Drag'n'drop
         if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-            markup.print("<div id='region_");
+            markup.print("<div id=\"region_");
             markup.print(rrc.getId());
-            markup.print("' class='dnd-region clearfix' data-empty-title='");
+            markup.print("\" class=\"dnd-region clearfix\" data-empty-title=\"");
             markup.print(bundle.getString("CMS_EMPTY_REGION"));
-            markup.println("'>");
+            markup.println("\">");
         }
 
 
@@ -232,10 +232,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 PrintWriter markup = rendererContext.getWriter();
 
                 if (!this.headerRegions.contains(rrc.getCSSId())) {
-
-	                markup.print("<div class='");
+	                markup.print("<div class=\"");
 	                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
-	                markup.println("'>");
+	                markup.println("\">");
                 }
 
                 rendererContext.render(wrc);
@@ -327,14 +326,14 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
                 // Glyph
                 Element glyph = new DOMElement(QName.get(HTMLConstants.I));
-                glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons glyphicons-plus");
+                glyph.addAttribute(QName.get(HTMLConstants.CLASS), "glyphicons glyphicons-basic-plus");
                 glyph.setText(StringUtils.EMPTY);
                 button.add(glyph);
                 button.addText(" ");
             }
 
-            DOM4JUtils.addAttribute(button, HTMLConstants.HREF, "javascript:;");
-            DOM4JUtils.addAttribute(button, HTMLConstants.CLASS, "btn btn-secondary");
+            DOM4JUtils.addAttribute(button, HTMLConstants.HREF, "javascript:");
+            DOM4JUtils.addAttribute(button, HTMLConstants.CLASS, "btn btn-secondary btn-sm");
             DOM4JUtils.addDataAttribute(button, "fancybox", StringUtils.EMPTY);
             DOM4JUtils.addDataAttribute(button, "src", href);
             button.addText(text + irrc.getId());
@@ -362,13 +361,13 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         // Toolbar
         String toolbarId = StringEscapeUtils.escapeHtml(irrc.getId() + "-toolbar");
-        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar", AccessibilityRoles.TOOLBAR);
+        Element toolbar = DOM4JUtils.generateDivElement("btn-toolbar gap-1", AccessibilityRoles.TOOLBAR);
         DOM4JUtils.addAttribute(toolbar, "id", toolbarId);
         parent.add(toolbar);
 
 
         // Button group
-        Element group = DOM4JUtils.generateDivElement("btn-group");
+        Element group = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(group);
 
 
@@ -432,7 +431,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Dropdown menu container
-        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
+        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(dropdownContainer);
 
         // Dropdown menu button
@@ -510,7 +509,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
         // Dropdown menu container
-        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group");
+        Element dropdownContainer = DOM4JUtils.generateDivElement("btn-group btn-group-sm");
         toolbar.add(dropdownContainer);
 
         // Dropdown menu button
