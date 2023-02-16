@@ -1047,9 +1047,7 @@ rightCellToggle.add(example);
             <%-- Header --%>
             <div class="modal-header d-none">
                 <h5 class="modal-title"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <%-- Body --%>
@@ -1061,7 +1059,7 @@ rightCellToggle.add(example);
                                 <div class="dyna-window-content">
                                     <div class="p-4 text-center">
                                         <div class="spinner-border" role="status">
-                                            <span class="sr-only">Loading...</span>
+                                            <span class="visually-hidden"><op:translate key="AJAX_REFRESH" /></span>
                                         </div>
                                     </div>
                                 </div>
@@ -1073,7 +1071,7 @@ rightCellToggle.add(example);
 
             <%-- Footer --%>
             <div class="modal-footer d-none">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     <span><op:translate key="CLOSE" /></span>
                 </button>
             </div>

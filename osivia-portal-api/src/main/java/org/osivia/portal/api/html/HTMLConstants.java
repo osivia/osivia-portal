@@ -63,6 +63,8 @@ public final class HTMLConstants {
     public static final String H4 = "h4";
     /** HTML "h5" nodes. */
     public static final String H5 = "h5";
+    /** HTML "h6" nodes. */
+    public static final String H6 = "h6";
     /** HTML "hr" nodes. */
     public static final String HR = "hr";
     /** HTML "i" nodes. */

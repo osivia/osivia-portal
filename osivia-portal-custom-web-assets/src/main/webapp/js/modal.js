@@ -22,12 +22,12 @@ $JQry(function () {
                 // Header
                 if (title) {
                     $header.find(".modal-title").text(title);
-                    $header.removeClass("hidden");
+                    $header.removeClass("d-none");
                 }
 
                 // Footer
                 if (footer) {
-                    $footer.removeClass("hidden");
+                    $footer.removeClass("d-none");
                 }
 
                 // Body
@@ -94,11 +94,11 @@ $JQry(function () {
                 var $window = $dialog.find(".dyna-window");
 
                 // Header
-                $header.addClass("hidden");
+                $header.addClass("d-none");
                 $header.find(".modal-title").empty();
 
                 // Footer
-                $footer.addClass("hidden");
+                $footer.addClass("d-none");
 
                 // Body
                 $window.empty();

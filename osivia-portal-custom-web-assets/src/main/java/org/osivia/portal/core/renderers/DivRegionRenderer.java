@@ -443,16 +443,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         dropdownContainer.add(dropdownButton);
 
         // Dropdown menu
-        Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null, null, AccessibilityRoles.MENU);
+        Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null);
         dropdownContainer.add(dropdownMenu);
 
         // Dropdown header
-        Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_INHERITANCE_HEADER"), null,
-                AccessibilityRoles.PRESENTATION);
-        dropdownMenu.add(dropdownHeader);
+        Element dropdownHeaderLi = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+        dropdownMenu.add(dropdownHeaderLi);
+        Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.H6, "dropdown-header", bundle.getString("CMS_REGION_INHERITANCE_HEADER"));
+        dropdownHeaderLi.add(dropdownHeader);
 
         // Dropdown item
-        Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+        Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
         dropdownMenu.add(dropdownItem);
 
         // Form
@@ -484,9 +485,12 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Submit button
-        Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-primary", bundle.getString("SAVE"));
+        Element buttonContainer = DOM4JUtils.generateDivElement(null);
+        form.add(buttonContainer);
+
+        Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-primary", bundle.getString("SAVE"));
         DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
-        form.add(submit);
+        buttonContainer.add(submit);
     }
 
 
@@ -529,16 +533,17 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
         if (!inherited) {
             // Dropdown menu
-            Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null, null, AccessibilityRoles.MENU);
+            Element dropdownMenu = DOM4JUtils.generateElement(HTMLConstants.UL, "dropdown-menu", null);
             dropdownContainer.add(dropdownMenu);
 
             // Dropdown header
-            Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.LI, "dropdown-header", bundle.getString("CMS_REGION_LAYOUT_HEADER"), null,
-                    AccessibilityRoles.PRESENTATION);
-            dropdownMenu.add(dropdownHeader);
+            Element dropdownHeaderLi = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
+            dropdownMenu.add(dropdownHeaderLi);
+            Element dropdownHeader = DOM4JUtils.generateElement(HTMLConstants.H6, "dropdown-header", bundle.getString("CMS_REGION_LAYOUT_HEADER"));
+            dropdownHeaderLi.add(dropdownHeader);
 
             // Dropdown item
-            Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null, null, AccessibilityRoles.PRESENTATION);
+            Element dropdownItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
             dropdownMenu.add(dropdownItem);
 
             // Form
@@ -574,9 +579,12 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
 
             // Submit button
-            Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-secondary btn-primary", bundle.getString("SAVE"));
+            Element boutonContainer = DOM4JUtils.generateDivElement(null);
+            form.add(boutonContainer);
+
+            Element submit = DOM4JUtils.generateElement(HTMLConstants.BUTTON, "btn btn-primary", bundle.getString("SAVE"));
             DOM4JUtils.addAttribute(submit, HTMLConstants.TYPE, "submit");
-            form.add(submit);
+            boutonContainer.add(submit);
         }
     }
 
@@ -593,29 +601,27 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      */
     private void generateRadio(Element form, String label, String name, String value, boolean checked, String helpMessage) {
         // Radio container
-        Element radioContainer = DOM4JUtils.generateDivElement("radio");
+        Element radioContainer = DOM4JUtils.generateDivElement("form-check");
         form.add(radioContainer);
 
-        // Radio label
-        Element radioLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, null, null);
-        radioContainer.add(radioLabel);
-
         // Radio input
-        Element radioInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, null, null);
+        Element radioInput = DOM4JUtils.generateElement(HTMLConstants.INPUT, "form-check-input", null);
         DOM4JUtils.addAttribute(radioInput, HTMLConstants.TYPE, "radio");
         DOM4JUtils.addAttribute(radioInput, HTMLConstants.NAME, name);
         DOM4JUtils.addAttribute(radioInput, HTMLConstants.VALUE, value);
         if (checked) {
             DOM4JUtils.addAttribute(radioInput, HTMLConstants.CHECKED, HTMLConstants.CHECKED);
         }
-        radioLabel.add(radioInput);
+        radioContainer.add(radioInput);
 
-        radioLabel.setText(label);
+        // Radio label
+        Element radioLabel = DOM4JUtils.generateElement(HTMLConstants.LABEL, "form-check-label", label);
+        radioContainer.add(radioLabel);
 
         if (StringUtils.isNotEmpty(helpMessage)) {
             // Help message
-            Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.SPAN, "help-block", helpMessage);
-            radioLabel.add(radioHelp);
+            Element radioHelp = DOM4JUtils.generateElement(HTMLConstants.DIV, "form-text", helpMessage);
+            radioContainer.add(radioHelp);
         }
     }
 
