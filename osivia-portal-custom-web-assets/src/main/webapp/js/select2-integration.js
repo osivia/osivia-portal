@@ -9,7 +9,19 @@ $JQry(function () {
             width: "resolve"
         };
 
-        if (url !== undefined) {
+        if (url === undefined) {
+            options["templateResult"] = function(state) {
+                const $result = $JQry(document.createElement("span"));
+                $result.text(state.text);
+
+                if (state.element) {
+                    const $element = $JQry(state.element);
+                    $result.addClass($element.attr("class"));
+                }
+
+                return $result;
+            };
+        } else {
             options["ajax"] = {
                 url: url,
                 dataType: "json",
