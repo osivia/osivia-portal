@@ -372,7 +372,7 @@ public class LoginInterceptor extends ServerInterceptor implements IUserDatasMod
         // @since v4.4, new person object
         PersonService service = DirServiceFactory.getService(PersonService.class);
         if (service != null) {
-            Person p = service.getPerson(userPrincipal);
+            Person p = service.refreshPerson(userPrincipal);
             if (p != null) {
                 contextDatas.put(Constants.ATTR_LOGGED_PERSON_2, p);
                 invocation.setAttribute(Scope.SESSION_SCOPE, Constants.ATTR_LOGGED_PERSON_2, p);
