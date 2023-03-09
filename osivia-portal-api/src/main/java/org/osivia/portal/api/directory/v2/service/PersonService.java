@@ -13,15 +13,14 @@
  */
 package org.osivia.portal.api.directory.v2.service;
 
-import java.util.List;
-
-import javax.naming.Name;
-
 import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.directory.v2.IDirService;
 import org.osivia.portal.api.directory.v2.model.Person;
 import org.osivia.portal.api.urls.Link;
+
+import javax.naming.Name;
+import java.util.List;
 
 /**
  * Service to request, create, update persons, aggregated between nuxeo and ldap
@@ -59,6 +58,15 @@ public interface PersonService extends IDirService {
 
 
     /**
+     * Get refreshed person by identifier.
+     *
+     * @param uid user identifier
+     * @return person
+     */
+    Person refreshPerson(String uid);
+
+
+    /**
      * Get a person by criteria represented by a person vith filled fields
      *
      * @param p a person
@@ -71,7 +79,7 @@ public interface PersonService extends IDirService {
      * Get a link to the card person portlet
      *
      * @param portalControllerContext
-     * @param p the person
+     * @param p                       the person
      * @return a link to the card person portlet
      * @throws PortalException
      */
