@@ -899,14 +899,14 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 }
             } else {
                 // Template
-                DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-construction-cone");
+                DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-halflings-construction-cone");
             }
         } else if (pageType.isSpace()) {
             // Space
-            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-global");
+            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-halflings-globe");
         } else {
             // Page
-            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-more-items");
+            DOM4JUtils.addDataAttribute(li, "iconclass", "glyphicons glyphicons-halflings-layers");
         }
         if (page.equals(currentPage)) {
             extraClasses.append("current ");
@@ -949,7 +949,7 @@ public final class PageSettingsAttributesBundle implements IAttributesBundle {
                 // Virtual end node
                 Element virtual = DOM4JUtils.generateElement(HTMLConstants.LI, null, bundle.getString("VIRTUAL_END_NODE"));
                 DOM4JUtils.addDataAttribute(virtual, "path", pageId + InternalConstants.SUFFIX_VIRTUAL_END_NODES_ID);
-                DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-asterisk");
+                DOM4JUtils.addDataAttribute(virtual, "iconclass", "glyphicons glyphicons-halflings-pencil");
                 ul.add(virtual);
             }
         }

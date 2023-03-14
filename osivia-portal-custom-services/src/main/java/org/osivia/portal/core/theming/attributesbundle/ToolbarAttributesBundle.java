@@ -1124,10 +1124,11 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         Map<String, String> sitemapProperties = new HashMap<>();
         sitemapProperties.put("osivia.cms.path", path);
         sitemapProperties.put("osivia.cms.basePath", basePath);
-        String sitemapUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties,
-                PortalUrlType.POPUP);
-        Element sitemapLink = DOM4JUtils.generateLinkElement(sitemapUrl, null, null, "dropdown-item " + HTML_CLASS_FANCYFRAME_REFRESH,
-                bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "glyphicons glyphicons-basic-map-marker");
+        String sitemapUrl = this.urlFactory.getStartPortletUrl(portalControllerContext, "osivia-portal-sitemap-instance", sitemapProperties, PortalUrlType.MODAL);
+        Element sitemapLink = DOM4JUtils.generateLinkElement("javascript:", null, null, "dropdown-item", bundle.getString(InternationalizationConstants.KEY_CMS_SITEMAP), "glyphicons glyphicons-basic-map-marker");
+        DOM4JUtils.addDataAttribute(sitemapLink, "bs-toggle", "modal");
+        DOM4JUtils.addDataAttribute(sitemapLink, "bs-target", "#osivia-modal");
+        DOM4JUtils.addDataAttribute(sitemapLink, "load-url", sitemapUrl);
         sitemapItem.add(sitemapLink);
 
 

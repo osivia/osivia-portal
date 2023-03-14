@@ -8,6 +8,9 @@
 
 <portlet:defineObjects />
 
+<%--@elvariable id="cmsBasePath" type="java.lang.String"--%>
+<%--@elvariable id="cmsNavigationPath" type="java.lang.String"--%>
+<%--@elvariable id="live" type="java.lang.Boolean"--%>
 <portlet:resourceURL id="lazyLoading" var="lazyLoadingUrl">
     <portlet:param name="cmsBasePath" value="${cmsBasePath}" />
     <portlet:param name="cmsNavigationPath" value="${cmsNavigationPath}" />
@@ -21,38 +24,34 @@
 
 
 <div>
-    <p class="lead">
-        <i class="glyphicons glyphicons-map-marker"></i>
+    <h3 class="h5 mb-3">
+        <i class="glyphicons glyphicons-basic-map-marker"></i>
         <span><op:translate key="SITEMAP_PORTLET_TITLE" /></span>
-    </p>
+    </h3>
 
-    <dl class="dl-horizontal">
-        <dt><op:translate key="LEGEND" /></dt>
-        <dd>
-            <span><op:translate key="DOCUMENT_UP_TO_DATE" /></span>
-            <br>
-            <span class="text-warning"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></span>
-            <br>
-            <span><strong><op:translate key="DOCUMENT_CURRENT" /></strong></span>
-        </dd>
-    </dl>
+    <div class="card mb-3 text-bg-light border-0">
+        <div class="card-body">
+            <h3 class="card-title"><op:translate key="LEGEND" /></h3>
+            <p class="card-text mb-0"><op:translate key="DOCUMENT_UP_TO_DATE" /></p>
+            <p class="card-text mb-0 text-info"><op:translate key="DOCUMENT_ONGOING_CHANGES" /></p>
+            <p class="card-text mb-0 fw-bold"><op:translate key="DOCUMENT_CURRENT" /></p>
+        </div>
+    </div>
 
     <c:choose>
         <c:when test="${live}">
-            <div class="panel panel-info">
-                <div class="panel-heading">Versions de travail</div>
-            
-                <div class="panel-body">
+            <div class="card border-info">
+                <div class="card-header text-bg-info">Versions de travail</div>
+                <div class="card-body">
                     <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingUrl}"></div>
                 </div>
             </div>
         </c:when>
         
         <c:otherwise>
-            <div class="panel panel-success">
-                <div class="panel-heading">Versions en ligne</div>
-            
-                <div class="panel-body">
+            <div class="card border-success">
+                <div class="card-header text-bg-success">Versions en ligne</div>
+                <div class="card-body">
                     <div class="fancytree fancytree-browser fixed-height" data-lazyloadingurl="${lazyLoadingUrl}"></div>
                 </div>
             </div>
