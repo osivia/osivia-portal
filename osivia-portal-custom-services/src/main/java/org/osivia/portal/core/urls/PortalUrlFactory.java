@@ -220,10 +220,11 @@ public class PortalUrlFactory implements IPortalUrlFactory {
                         PortalObjectId pageObjectId = PortalObjectId.parse(currentPageId, PortalObjectPath.SAFEST_FORMAT);
                         pagePath = pageObjectId.toString(PortalObjectPath.CANONICAL_FORMAT);
                         Page page = portalObjectContainer.getObject(pageObjectId, Page.class);
-                        Portal portal = page.getPortal();
-                        portalPersistentName = portal.getName();
+                        if(page != null) {
+                            Portal portal = page.getPortal();
+                            portalPersistentName = portal.getName();
+                        }
                     }
-
 
                     if (window != null) {
                         pageMarkerReplacement = window.getProperty("osivia.modal.cms.pageMarkerReplacement");
