@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.portal.common.io.IOTools;
 import org.jboss.portal.common.util.MultiValuedPropertyMap;
 import org.jboss.portal.server.ServerInvocationContext;
@@ -32,7 +33,19 @@ public abstract class HTTPResponse extends HandlerResponse
          public void sendResponse(ServerInvocationContext ctx) throws IOException
          {
             HttpServletResponse resp = ctx.getClientResponse();
-            resp.sendRedirect(redirect);
+            String absoluteRedirection;
+            if (StringUtils.startsWith(redirect, "/")) {
+                String host = ctx.getClientRequest().getHeader("osivia-virtual-host");
+                if (StringUtils.isEmpty(host)) {
+                    // TODO log d'erreur
+                    absoluteRedirection = redirect;
+                } else {
+                    absoluteRedirection = host + redirect;
+                }
+            } else {
+                absoluteRedirection = redirect;
+            }
+            resp.sendRedirect(absoluteRedirection);
          }
       };
    }
