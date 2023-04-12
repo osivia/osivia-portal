@@ -141,8 +141,7 @@ public class MenubarService implements IMenubarService {
         // Back
         String backURL = this.urlFactory.getBackURL(portalControllerContext, true);
         if (backURL != null) {
-            MenubarItem item = new MenubarItem("BACK", bundle.getString("BACK"), "halflings halflings-arrow-left", MenubarGroup.BACK, 0, backURL, null, null,
-                    null);
+            MenubarItem item = new MenubarItem("BACK", bundle.getString("BACK"), "glyphicons glyphicons-basic-arrow-left", MenubarGroup.BACK, 0, backURL, null, null, null);
             menubar.add(item);
         }
 
@@ -150,8 +149,7 @@ public class MenubarService implements IMenubarService {
         if (httpServletRequest.getUserPrincipal() != null) {
             String refreshURL = this.urlFactory.getRefreshPageUrl(portalControllerContext);
             if (refreshURL != null) {
-                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-repeat", MenubarGroup.GENERIC, 100,
-                        refreshURL, null, null, null);
+                MenubarItem item = new MenubarItem("REFRESH", bundle.getString("REFRESH"), "glyphicons glyphicons-basic-reload", MenubarGroup.GENERIC, 100, refreshURL, null, null, null);
                 menubar.add(item);
             }
         }

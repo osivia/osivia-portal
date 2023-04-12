@@ -967,7 +967,10 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
             // URL
             String url = cmsService.getMoveUrl(cmsCtx);
 
-            Element moveLink = DOM4JUtils.generateLinkElement(url, null, null, "dropdown-item fancyframe_refresh", moveTitle, "glyphicons glyphicons-basic-block-move");
+            Element moveLink = DOM4JUtils.generateLinkElement("javascript:", null, null, "dropdown-item", moveTitle, "glyphicons glyphicons-basic-block-move");
+            DOM4JUtils.addDataAttribute(moveLink, "bs-toggle", "modal");
+            DOM4JUtils.addDataAttribute(moveLink, "bs-target", "#osivia-modal");
+            DOM4JUtils.addDataAttribute(moveLink, "load-url", url);
             moveLinkItem.add(moveLink);
         } else {
             Element moveLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", moveTitle, "glyphicons glyphicons-basic-block-move");
@@ -976,34 +979,27 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         }
 
 
-        // CMS duplicate document
+        // Duplicate document
         String cmsDuplicateTitle = bundle.getString(InternationalizationConstants.KEY_CMS_PAGE_COPY);
         boolean canDuplicatePage = cmsService.canDuplicatePage(cmsCtx, pagePath);
-        // Move
         Element duplicateLinkItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
         cmsEditionMenu.add(duplicateLinkItem);
-        String duplicateTitle = bundle.getString("DUPLICATE");
         if (!canDuplicatePage) {
-
-            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle,
-                    "glyphicons glyphicons-basic-copy-duplicate");
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle, "glyphicons glyphicons-basic-copy-duplicate");
             DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, bundle.getString("PTITLE_PREVENT_UNCOPYABLE"));
             duplicateLinkItem.add(cmsDuplicateLink);
-        }  else if(!modePreview) {
+        } else if (!modePreview) {
             // Link
-            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle,
-                    "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", cmsDuplicateTitle, "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
             DOM4JUtils.addAttribute(cmsDuplicateLink, HTMLConstants.TITLE, previewRequired);
             duplicateLinkItem.add(cmsDuplicateLink);
-        }
-        else {
+        } else {
             // URL
             CMSDuplicateDocumentCommand cmsDuplicateCommand = new CMSDuplicateDocumentCommand(page.getId().toString(PortalObjectPath.SAFEST_FORMAT), path);
             String cmsDuplicateURL = context.renderURL(cmsDuplicateCommand, urlContext, URLFormat.newInstance(true, true));
 
             // Link
-            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(cmsDuplicateURL, null, null, "dropdown-item", cmsDuplicateTitle,
-                    "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
+            Element cmsDuplicateLink = DOM4JUtils.generateLinkElement(cmsDuplicateURL, null, null, "dropdown-item", cmsDuplicateTitle, "glyphicons glyphicons-basic-copy-duplicate", AccessibilityRoles.MENU_ITEM);
             duplicateLinkItem.add(cmsDuplicateLink);
         }
 
@@ -1013,14 +1009,17 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (reorderUrl != null) {
             Element reorderLinkItem = DOM4JUtils.generateElement(HTMLConstants.LI, null, null);
             cmsEditionMenu.add(reorderLinkItem);
+            Element reorderLink;
             if (modePreview) {
-                Element reorderLink = DOM4JUtils.generateLinkElement(reorderUrl, null, null, "dropdown-item fancyframe_refresh", reorderTitle, "glyphicons glyphicons-basic-sort");
-                reorderLinkItem.add(reorderLink);
+                reorderLink = DOM4JUtils.generateLinkElement("javascript:", null, null, "dropdown-item", reorderTitle, "glyphicons glyphicons-basic-sort");
+                DOM4JUtils.addDataAttribute(reorderLink, "bs-toggle", "modal");
+                DOM4JUtils.addDataAttribute(reorderLink, "bs-target", "#osivia-modal");
+                DOM4JUtils.addDataAttribute(reorderLink, "load-url", reorderUrl);
             } else {
-                Element reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", reorderTitle, "glyphicons glyphicons-basic-sort");
+                reorderLink = DOM4JUtils.generateLinkElement(HTMLConstants.A_HREF_DEFAULT, null, null, "dropdown-item disabled", reorderTitle, "glyphicons glyphicons-basic-sort");
                 DOM4JUtils.addAttribute(reorderLink, HTMLConstants.TITLE, previewRequired);
-                reorderLinkItem.add(reorderLink);
             }
+            reorderLinkItem.add(reorderLink);
         }
 
         // CMS publish document
