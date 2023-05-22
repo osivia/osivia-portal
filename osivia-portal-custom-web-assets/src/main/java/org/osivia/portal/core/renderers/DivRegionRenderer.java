@@ -26,12 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -175,8 +170,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Region layout row
-        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE))) {
-            markup.println("<div class=\"row\">");
+        String regionLayoutHtmlClass = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
+        if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
+            markup.println("<div class=\"" + regionLayoutHtmlClass + "\">");
         }
 
         // Drag'n'drop
@@ -227,19 +223,18 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             boolean hidden = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR));
 
             if (!(hidden || (!showCMSTools && empty))) {
-                String regionLayoutWindowClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
+                String regionLayoutHtmlClass = rendererContext.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
+                boolean row = StringUtils.isNotEmpty(regionLayoutHtmlClass) && Arrays.asList(StringUtils.split(regionLayoutHtmlClass)).contains("row");
 
                 PrintWriter markup = rendererContext.getWriter();
 
-                if (!this.headerRegions.contains(rrc.getCSSId())) {
-	                markup.print("<div class=\"");
-	                markup.print(StringUtils.trimToEmpty(regionLayoutWindowClass));
-	                markup.println("\">");
+                if (!this.headerRegions.contains(rrc.getCSSId()) && row) {
+	                markup.print("<div class=\"col\">");
                 }
 
                 rendererContext.render(wrc);
 
-                if (!this.headerRegions.contains(rrc.getCSSId())) {
+                if (!this.headerRegions.contains(rrc.getCSSId()) && row) {
                 	markup.println("</div>");
                 }
             }
@@ -267,7 +262,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
         // Region layout row
-        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CODE))) {
+        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS))) {
             markup.println("</div>");
         }
 
