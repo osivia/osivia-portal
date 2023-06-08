@@ -36,6 +36,7 @@ import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.el.lang.ELArithmetic;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
@@ -169,20 +170,45 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             }
         }
 
+
+        // Region container
+        String regionContainerId;
+        String regionContainerHtmlClass = StringUtils.EMPTY;
+        boolean dragDrop;
         // Region layout row
         String regionLayoutHtmlClass = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
         if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
-            markup.println("<div class=\"" + regionLayoutHtmlClass + "\">");
+            regionContainerHtmlClass += regionLayoutHtmlClass;
         }
-
         // Drag'n'drop
         if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-            markup.print("<div id=\"region_");
-            markup.print(rrc.getId());
-            markup.print("\" class=\"dnd-region clearfix\" data-empty-title=\"");
-            markup.print(bundle.getString("CMS_EMPTY_REGION"));
-            markup.println("\">");
+            regionContainerId = "region_" + rrc.getId();
+            if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
+                regionContainerHtmlClass += " ";
+            }
+            regionContainerHtmlClass += "dnd-region clearfix";
+            dragDrop = true;
+        } else {
+            regionContainerId = null;
+            dragDrop = false;
         }
+        markup.print("<div");
+        if (StringUtils.isNotEmpty(regionContainerId)) {
+            markup.print(" id=\"");
+            markup.print(regionContainerId);
+            markup.print("\"");
+        }
+        if (StringUtils.isNotEmpty(regionContainerHtmlClass)) {
+            markup.print(" class=\"");
+            markup.print(regionContainerHtmlClass);
+            markup.print("\"");
+        }
+        if (dragDrop) {
+            markup.print(" data-empty-title=\"");
+            markup.print(bundle.getString("CMS_EMPTY_REGION"));
+            markup.print("\"");
+        }
+        markup.println(">");
 
 
         // Add portlet link
@@ -228,15 +254,15 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
                 PrintWriter markup = rendererContext.getWriter();
 
+                markup.print("<div");
                 if (!this.headerRegions.contains(rrc.getCSSId()) && row) {
-	                markup.print("<div class=\"col\">");
+	                markup.print(" class=\"col\"");
                 }
+                markup.println(">");
 
                 rendererContext.render(wrc);
 
-                if (!this.headerRegions.contains(rrc.getCSSId()) && row) {
-                	markup.println("</div>");
-                }
+                markup.println("</div>");
             }
         }
     }
@@ -256,15 +282,9 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         }
 
 
-        // Drag'n'drop
-        if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-            markup.print("</div>");
-        }
+        // Region container
+        markup.print("</div>");
 
-        // Region layout row
-        if (StringUtils.isNotEmpty(irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS))) {
-            markup.println("</div>");
-        }
 
         // Panel
         if (this.showCMSTools(irrc)) {

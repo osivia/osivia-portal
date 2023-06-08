@@ -21,7 +21,7 @@ $white: #fff;
 }
 
 .dnd-region {
-  @extend %spaced-area;
+  //@extend %spaced-area;
 
   &:empty {
     padding: .5rem 1rem;
