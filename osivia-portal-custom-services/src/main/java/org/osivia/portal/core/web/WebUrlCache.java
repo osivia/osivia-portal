@@ -1,9 +1,10 @@
 package org.osivia.portal.core.web;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.osivia.portal.core.cms.DocumentsMetadata;
+
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Web URL cache.
@@ -12,8 +13,10 @@ import org.osivia.portal.core.cms.DocumentsMetadata;
  */
 public class WebUrlCache {
 
-    /** Cache. */
-    private final Map<Key, Value> cache;
+    /**
+     * Cache.
+     */
+    private final ConcurrentMap<Key, Value> cache;
 
 
     /**
@@ -21,7 +24,7 @@ public class WebUrlCache {
      */
     public WebUrlCache() {
         super();
-        this.cache = new ConcurrentHashMap<Key, Value>();
+        this.cache = new ConcurrentHashMap<>();
     }
 
 
@@ -29,7 +32,7 @@ public class WebUrlCache {
      * Get cache value.
      *
      * @param basePath CMS base path
-     * @param live live version indicator
+     * @param live     live version indicator
      * @return cache value
      */
     public Value getValue(String basePath, boolean live) {
@@ -42,7 +45,7 @@ public class WebUrlCache {
      * Get documents metadata.
      *
      * @param basePath CMS base path
-     * @param live live version indicator
+     * @param live     live version indicator
      * @return documents metadata
      */
     public DocumentsMetadata getMetadata(String basePath, boolean live) {
@@ -63,7 +66,7 @@ public class WebUrlCache {
      * Set documents metadata.
      *
      * @param basePath CMS base path
-     * @param live live version indicator
+     * @param live     live version indicator
      * @param metadata documents metadata
      */
     public void setMetadata(String basePath, boolean live, DocumentsMetadata metadata) {
@@ -78,11 +81,15 @@ public class WebUrlCache {
      *
      * @author Cédric Krommenhoek
      */
-    private class Key {
+    private static class Key {
 
-        /** Base path. */
+        /**
+         * Base path.
+         */
         private final String basePath;
-        /** Live version indicator. */
+        /**
+         * Live version indicator.
+         */
         private final boolean live;
 
 
@@ -90,7 +97,7 @@ public class WebUrlCache {
          * Constructor.
          *
          * @param basePath CMS base path
-         * @param live live version indicator
+         * @param live     live version indicator
          */
         public Key(String basePath, boolean live) {
             super();
@@ -99,57 +106,22 @@ public class WebUrlCache {
         }
 
 
-        /**
-         * {@inheritDoc}
-         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Key key = (Key) o;
+
+            if (live != key.live) return false;
+            return Objects.equals(basePath, key.basePath);
+        }
+
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = (prime * result) + this.getOuterType().hashCode();
-            result = (prime * result) + ((this.basePath == null) ? 0 : this.basePath.hashCode());
-            result = (prime * result) + (this.live ? 1231 : 1237);
+            int result = basePath != null ? basePath.hashCode() : 0;
+            result = 31 * result + (live ? 1 : 0);
             return result;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (this.getClass() != obj.getClass()) {
-                return false;
-            }
-            Key other = (Key) obj;
-            if (!this.getOuterType().equals(other.getOuterType())) {
-                return false;
-            }
-            if (this.basePath == null) {
-                if (other.basePath != null) {
-                    return false;
-                }
-            } else if (!this.basePath.equals(other.basePath)) {
-                return false;
-            }
-            if (this.live != other.live) {
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * Get outer type.
-         *
-         * @return outer type
-         */
-        private WebUrlCache getOuterType() {
-            return WebUrlCache.this;
         }
 
     }
@@ -160,18 +132,22 @@ public class WebUrlCache {
      *
      * @author Cédric Krommenhoek
      */
-    public class Value {
+    public static class Value {
 
-        /** Documents metadata. */
+        /**
+         * Documents metadata.
+         */
         private final DocumentsMetadata metadata;
-        /** Timestamp. */
+        /**
+         * Timestamp.
+         */
         private long timestamp;
 
 
         /**
          * Constructor.
          *
-         * @param metadata documents metadata
+         * @param metadata  documents metadata
          * @param timestamp timestamp
          */
         public Value(DocumentsMetadata metadata, long timestamp) {
@@ -201,7 +177,7 @@ public class WebUrlCache {
 
         /**
          * Setter for timestamp.
-         * 
+         *
          * @param timestamp the timestamp to set
          */
         public void setTimestamp(long timestamp) {

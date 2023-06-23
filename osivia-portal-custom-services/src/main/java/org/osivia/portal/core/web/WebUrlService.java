@@ -87,11 +87,7 @@ public class WebUrlService implements IWebUrlService {
 
         if (webPath == null) {
             // Default web path
-            StringBuilder builder = new StringBuilder();
-            builder.append("/");
-            builder.append(WEB_ID_PREFIX);
-            builder.append(webId);
-            webPath = builder.toString();
+            webPath = "/" + WEB_ID_PREFIX + webId;
         }
 
         return webPath;
@@ -135,7 +131,6 @@ public class WebUrlService implements IWebUrlService {
      * @param cmsContext CMS context
      * @param basePath CMS base path
      * @return documents metadata
-     * @throws CMSException
      */
     private DocumentsMetadata getMetadata(CMSServiceCtx cmsContext, String basePath) throws CMSException {
         if (basePath == null) {
@@ -163,9 +158,15 @@ public class WebUrlService implements IWebUrlService {
             Value value = this.cache.getValue(basePath, live);
             if (this.requireFullRefresh(value)) {
                 // Full refresh
+                if (this.log.isDebugEnabled()) {
+                    this.log.debug(String.format("[Full refresh] - Request for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+                }
                 metadata = this.fullRefresh(cmsContext, basePath, live);
             } else if (this.requireUpdate(value)) {
                 // Update
+                if (this.log.isDebugEnabled()) {
+                    this.log.debug(String.format("[Update] - Request for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+                }
                 metadata = this.update(cmsContext, basePath, live);
             } else {
                 metadata = value.getMetadata();
@@ -204,30 +205,34 @@ public class WebUrlService implements IWebUrlService {
      * @param basePath CMS base path
      * @param live live version indicator
      * @return documents metadata
-     * @throws CMSException
      */
     private synchronized DocumentsMetadata fullRefresh(CMSServiceCtx cmsContext, String basePath, boolean live) throws CMSException {
+        if (this.log.isDebugEnabled()) {
+            this.log.debug(String.format("[Full refresh] - - Unlocked for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+        }
+
         Value value = this.cache.getValue(basePath, live);
 
         DocumentsMetadata metadata;
         if (this.requireFullRefresh(value)) {
+            if (this.log.isDebugEnabled()) {
+                this.log.debug(String.format("[Full refresh] - - - Required for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+            }
+
             // CMS service
             ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
-            // Log
-            if (this.log.isDebugEnabled()) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Full refresh [basePath='");
-                builder.append(basePath);
-                builder.append("' ; live=");
-                builder.append(live);
-                builder.append("]");
-                this.log.debug(builder.toString());
-            }
-
             metadata = cmsService.getDocumentsMetadata(cmsContext, basePath, null);
             this.cache.setMetadata(basePath, live, metadata);
+
+            if (this.log.isDebugEnabled()) {
+                this.log.debug(String.format("[Full refresh] - - - - Done for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+            }
         } else {
+            if (this.log.isDebugEnabled()) {
+                this.log.debug(String.format("[Full refresh] - - - Not required for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+            }
+
             metadata = value.getMetadata();
         }
 
@@ -262,9 +267,12 @@ public class WebUrlService implements IWebUrlService {
      * @param basePath CMS base path
      * @param live live version indicator
      * @return documents metadata
-     * @throws CMSException
      */
     private synchronized DocumentsMetadata update(CMSServiceCtx cmsContext, String basePath, boolean live) throws CMSException {
+        if (this.log.isDebugEnabled()) {
+            this.log.debug(String.format("[Update] - - Unlocked for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+        }
+
         Value value = this.cache.getValue(basePath, live);
 
         DocumentsMetadata metadata = value.getMetadata();
@@ -275,26 +283,31 @@ public class WebUrlService implements IWebUrlService {
             // Check if already updated
             boolean alreadyUpdated = BooleanUtils.isTrue((Boolean) controllerContext.getAttribute(Scope.REQUEST_SCOPE, ALREADY_UPDATED_REQUEST_ATTRIBUTE));
             if (!alreadyUpdated) {
+                if (this.log.isDebugEnabled()) {
+                    this.log.debug(String.format("[Update] - - - Required for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+                }
+
                 controllerContext.setAttribute(Scope.REQUEST_SCOPE, ALREADY_UPDATED_REQUEST_ATTRIBUTE, true);
 
                 // CMS service
                 ICMSService cmsService = this.cmsServiceLocator.getCMSService();
 
-                // Log
-                if (this.log.isDebugEnabled()) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append("Update [basePath='");
-                    builder.append(basePath);
-                    builder.append("' ; live=");
-                    builder.append(live);
-                    builder.append("]");
-                    this.log.debug(builder.toString());
-                }
-
                 long timestamp = metadata.getTimestamp();
                 DocumentsMetadata updates = cmsService.getDocumentsMetadata(cmsContext, basePath, timestamp);
                 metadata.update(updates);
                 value.setTimestamp(System.currentTimeMillis());
+
+                if (this.log.isDebugEnabled()) {
+                    this.log.debug(String.format("[Update] - - - - Done for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+                }
+            } else {
+                if (this.log.isDebugEnabled()) {
+                    this.log.debug(String.format("[Update] - - - Already done in request for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
+                }
+            }
+        } else {
+            if (this.log.isDebugEnabled()) {
+                this.log.debug(String.format("[Update] - - - Not required for '%s%s'", basePath, BooleanUtils.toString(live, ":live", "")));
             }
         }
 
