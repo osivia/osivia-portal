@@ -24,15 +24,17 @@
 
 package org.jboss.portal.theme.impl.render.dynamic;
 
-import java.io.PrintWriter;
-
-import org.jboss.portal.theme.render.AbstractObjectRenderer;
-import org.jboss.portal.theme.render.ObjectRendererContext;
-import org.jboss.portal.theme.render.PropertyFetch;
-import org.jboss.portal.theme.render.RenderException;
-import org.jboss.portal.theme.render.RendererContext;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jboss.portal.theme.page.WindowContext;
+import org.jboss.portal.theme.page.WindowResult;
+import org.jboss.portal.theme.render.*;
 import org.jboss.portal.theme.render.renderer.RegionRenderer;
 import org.jboss.portal.theme.render.renderer.RegionRendererContext;
+
+import java.io.PrintWriter;
+import java.util.Collection;
 
 /**
  * Implementation of a drag and drop Region renderer.
@@ -43,11 +45,15 @@ import org.jboss.portal.theme.render.renderer.RegionRendererContext;
  */
 public class DynaRegionRenderer extends AbstractObjectRenderer implements RegionRenderer {
 
-    /** . */
+    /**
+     * .
+     */
     private static final PropertyFetch RENDER_OPTIONS_FETCH = new PropertyFetch(PropertyFetch.ANCESTORS_SCOPE);
 
-    /** . */
-    private RegionRenderer delegate;
+    /**
+     * .
+     */
+    private final RegionRenderer delegate;
 
     public DynaRegionRenderer(RegionRenderer regionRenderer) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         super();
@@ -95,7 +101,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
         String viewState = rendererContext.getProperty(DynaConstants.VIEW_STATE);
         String popStateURL = rendererContext.getProperty("osivia.popStateUrl");
 
-        
+
         // Handle special ajax region here
         if ("AJAXScripts".equals(rrc.getId())) {
             markup.print("<script type='text/javascript'>\n");
@@ -118,7 +124,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
             markup.print("popStateUrl=\"");
             markup.print(popStateURL);
             markup.print("\";\n");
-            
+
             //
             markup.print("</script>\n");
         } else if ("AJAXFooter".equals(rrc.getId())) {
@@ -126,19 +132,19 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
         }
 
         //
-        if (DynaRenderStatus.isActive(rendererContext)) {
+        if (DynaRenderStatus.isActive(rendererContext) && this.isDisplayed(rrc)) {
             //
             DynaRenderOptions options = (DynaRenderOptions) rendererContext.getAttribute(DynaConstants.RENDER_OPTIONS);
 
             //
             if (!DynaRenderOptions.NO_AJAX.equals(options)) {
-            //
+                //
                 markup.print("<div class=\"dyna-region\">");
 
-            //
+                //
                 this.delegate.renderHeader(rendererContext, rrc);
 
-            //
+                //
                 if (options.isDnDEnabled()) {
                     markup.print("<div class=\"dnd-region\" id=\"");
                     markup.print(rrc.getId());
@@ -150,15 +156,17 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
         }
     }
 
-    /** @see org.jboss.portal.theme.render.renderer.RegionRenderer#renderBody */
+    /**
+     * @see org.jboss.portal.theme.render.renderer.RegionRenderer#renderBody
+     */
     public void renderBody(RendererContext rendererContext, final RegionRendererContext rrc) throws RenderException {
-        if (DynaRenderStatus.isActive(rendererContext)) {
+        if (DynaRenderStatus.isActive(rendererContext) && this.isDisplayed(rrc)) {
             this.delegate.renderBody(rendererContext, rrc);
         }
     }
 
     public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
-        if (DynaRenderStatus.isActive(rendererContext)) {
+        if (DynaRenderStatus.isActive(rendererContext) && this.isDisplayed(rrc)) {
             DynaRenderOptions options = (DynaRenderOptions) rendererContext.getAttribute(DynaConstants.RENDER_OPTIONS);
 
             //
@@ -169,7 +177,7 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
                 // Close dnd-region
                 if (options.isDnDEnabled()) {
                     markup.print("</div>");
-            }
+                }
 
                 // Close dyna-region
                 markup.print("</div>");
@@ -179,4 +187,49 @@ public class DynaRegionRenderer extends AbstractObjectRenderer implements Region
             this.delegate.renderFooter(rendererContext, rrc);
         }
     }
+
+
+    /**
+     * Check if related region is displayed.
+     *
+     * @param regionRendererContext region renderer context
+     * @return true if related region is displayed
+     */
+    private boolean isDisplayed(RegionRendererContext regionRendererContext) {
+        boolean displayed;
+
+        // Wizard mode indicator
+        boolean wizard = StringUtils.equals("pageTemplate", regionRendererContext.getProperty("osivia.wizzardMode"));
+        // Show CMS tools indicator
+        boolean showCmsTools = BooleanUtils.toBoolean(regionRendererContext.getProperty("osivia.cms.showTools"));
+
+        if (wizard || showCmsTools) {
+            displayed = true;
+        } else {
+            // Empty region indicator
+            boolean empty;
+
+            Collection<?> windows = regionRendererContext.getWindows();
+            if (CollectionUtils.isEmpty(windows)) {
+                empty = true;
+            } else if (CollectionUtils.size(windows) == 1) {
+                Object object = CollectionUtils.get(windows, 0);
+
+                if (object instanceof WindowContext) {
+                    WindowContext windowContext = (WindowContext) object;
+                    WindowResult windowResult = windowContext.getResult();
+                    empty = (windowResult != null) && "PIA_EMPTY".equals(windowResult.getTitle()) && StringUtils.isEmpty(windowResult.getContent());
+                } else {
+                    empty = false;
+                }
+            } else {
+                empty = false;
+            }
+
+            displayed = !empty;
+        }
+
+        return displayed;
+    }
+
 }
