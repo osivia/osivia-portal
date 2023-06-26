@@ -22,21 +22,8 @@
  ******************************************************************************/
 package org.osivia.portal.core.renderers;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.LocaleUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.el.lang.ELArithmetic;
+import org.apache.commons.lang.*;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMElement;
@@ -65,6 +52,13 @@ import org.osivia.portal.core.customizers.RegionsDefaultCustomizerPortlet;
 import org.osivia.portal.core.page.PageProperties;
 import org.osivia.portal.core.theming.IRegionRendererContext;
 import org.osivia.portal.core.theming.RegionDecorator;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * Implementation of a Region renderer, based on div tags.
@@ -98,7 +92,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         // Portal URL factory
         this.portalURLFactory = Locator.findMBean(IPortalUrlFactory.class, IPortalUrlFactory.MBEAN_NAME);
 
-        this.headerRegions = new ArrayList<String>();
+        this.headerRegions = new ArrayList<>();
         this.headerRegions.add(RegionsDefaultCustomizerPortlet.REGION_HEADER_METADATA);
     }
 
@@ -145,93 +139,93 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
                 markup.print(" class='region wizard-edging clearfix'");
             }
             markup.print(">");
-        }
 
 
-        // Panel
-        if (this.showCMSTools(irrc)) {
-            boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
-            boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
+            // Card
+            if (this.showCMSTools(irrc)) {
+                boolean showAdvancedCMSTools = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.SHOW_ADVANCED_CMS_TOOLS_INDICATOR));
+                boolean locked = BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_LOCKED_INDICATOR_PROPERTY));
 
-            markup.println("<div class=\"card\"><div class=\"card-body\">");
+                markup.println("<div class=\"card\"><div class=\"card-body\">");
 
-            if (showAdvancedCMSTools) {
-                markup.print("<p class=\"text-muted\"><span>");
-                markup.print(irrc.getId());
-                markup.print("</span>");
-                if (locked) {
-                    markup.print(" <i class=\"glyphicons glyphicons-basic-lock\"></i>");
+                if (showAdvancedCMSTools) {
+                    markup.print("<p class=\"text-muted\"><span>");
+                    markup.print(irrc.getId());
+                    markup.print("</span>");
+                    if (locked) {
+                        markup.print(" <i class=\"glyphicons glyphicons-basic-lock\"></i>");
+                    }
+                    markup.println("</p>");
                 }
-                markup.println("</p>");
+
+                if (!locked) {
+                    this.printFragmentCommands(irrc, bundle, markup);
+                }
             }
 
-            if (!locked) {
-                this.printFragmentCommands(irrc, bundle, markup);
-            }
-        }
 
-
-        // Region container
-        String regionContainerId;
-        String regionContainerHtmlClass = StringUtils.EMPTY;
-        boolean dragDrop;
-        // Region layout row
-        String regionLayoutHtmlClass = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
-        if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
-            regionContainerHtmlClass += regionLayoutHtmlClass;
-        }
-        // Drag'n'drop
-        if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
-            regionContainerId = "region_" + rrc.getId();
+            // Region container
+            String regionContainerId;
+            String regionContainerHtmlClass = StringUtils.EMPTY;
+            boolean dragDrop;
+            // Region layout row
+            String regionLayoutHtmlClass = irrc.getProperty(InternalConstants.CMS_REGION_LAYOUT_CLASS);
             if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
-                regionContainerHtmlClass += " ";
+                regionContainerHtmlClass += regionLayoutHtmlClass;
             }
-            regionContainerHtmlClass += "dnd-region clearfix";
-            dragDrop = true;
-        } else {
-            regionContainerId = null;
-            dragDrop = false;
-        }
-        markup.print("<div");
-        if (StringUtils.isNotEmpty(regionContainerId)) {
-            markup.print(" id=\"");
-            markup.print(regionContainerId);
-            markup.print("\"");
-        }
-        if (StringUtils.isNotEmpty(regionContainerHtmlClass)) {
-            markup.print(" class=\"");
-            markup.print(regionContainerHtmlClass);
-            markup.print("\"");
-        }
-        if (dragDrop) {
-            markup.print(" data-empty-title=\"");
-            markup.print(bundle.getString("CMS_EMPTY_REGION"));
-            markup.print("\"");
-        }
-        markup.println(">");
+            // Drag'n'drop
+            if (this.showCMSTools(irrc) && !BooleanUtils.toBoolean(irrc.getProperty(InternalConstants.INHERITANCE_INDICATOR_PROPERTY))) {
+                regionContainerId = "region_" + rrc.getId();
+                if (StringUtils.isNotEmpty(regionLayoutHtmlClass)) {
+                    regionContainerHtmlClass += " ";
+                }
+                regionContainerHtmlClass += "dnd-region clearfix";
+                dragDrop = true;
+            } else {
+                regionContainerId = null;
+                dragDrop = false;
+            }
+            markup.print("<div");
+            if (StringUtils.isNotEmpty(regionContainerId)) {
+                markup.print(" id=\"");
+                markup.print(regionContainerId);
+                markup.print("\"");
+            }
+            if (StringUtils.isNotEmpty(regionContainerHtmlClass)) {
+                markup.print(" class=\"");
+                markup.print(regionContainerHtmlClass);
+                markup.print("\"");
+            }
+            if (dragDrop) {
+                markup.print(" data-empty-title=\"");
+                markup.print(bundle.getString("CMS_EMPTY_REGION"));
+                markup.print("\"");
+            }
+            markup.println(">");
 
 
-        // Add portlet link
-        this.addPortletLink(irrc, bundle, markup);
+            // Add portlet link
+            this.addPortletLink(irrc, bundle, markup);
 
 
-        // Theme name
-        String themeName = null;
-        if (rendererContext.getThemeContext().getTheme() != null) {
-            themeName = rendererContext.getThemeContext().getTheme().getThemeInfo().getName();
-        }
+            // Theme name
+            String themeName = null;
+            if (rendererContext.getThemeContext().getTheme() != null) {
+                themeName = rendererContext.getThemeContext().getTheme().getThemeInfo().getName();
+            }
 
 
-        // Maximized header
-        if ("maximized".equals(irrc.getId()) && !"osivia-popup".equals(themeName)) {
-            this.renderMaximizedHeader(rendererContext, rrc, bundle);
-        }
+            // Maximized header
+            if ("maximized".equals(irrc.getId()) && !"osivia-popup".equals(themeName)) {
+                this.renderMaximizedHeader(rendererContext, rrc, bundle);
+            }
 
 
-        // Add header decorator
-        RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
-        if ((decorator != null) && (decorator.getHeaderContent() != null)) {
-            markup.println(decorator.getHeaderContent());
+            // Add header decorator
+            RegionDecorator decorator = (RegionDecorator) rendererContext.getAttribute(InternalConstants.ATTR_REGIONS_DECORATORS);
+            if ((decorator != null) && (decorator.getHeaderContent() != null)) {
+                markup.println(decorator.getHeaderContent());
+            }
         }
     }
 
@@ -243,8 +237,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
         IRegionRendererContext irrc = (IRegionRendererContext) rrc;
         boolean showCMSTools = this.showCMSTools(irrc);
 
-        for (Iterator<?> i = rrc.getWindows().iterator(); i.hasNext();) {
-            WindowRendererContext wrc = (WindowRendererContext) i.next();
+        for (Object object : rrc.getWindows()) {
+            WindowRendererContext wrc = (WindowRendererContext) object;
             boolean empty = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_EMPTY_INDICATOR));
             boolean hidden = BooleanUtils.toBoolean(wrc.getProperty(InternalConstants.ATTR_WINDOWS_HIDDEN_INDICATOR));
 
@@ -254,15 +248,19 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
 
                 PrintWriter markup = rendererContext.getWriter();
 
-                markup.print("<div");
-                if (!this.headerRegions.contains(rrc.getCSSId()) && row) {
-	                markup.print(" class=\"col\"");
+                if (!this.headerRegions.contains(rrc.getCSSId())) {
+                    markup.print("<div");
+                    if (row) {
+                        markup.print(" class=\"col\"");
+                    }
+                    markup.println(">");
                 }
-                markup.println(">");
 
                 rendererContext.render(wrc);
 
-                markup.println("</div>");
+                if (!this.headerRegions.contains(rrc.getCSSId())) {
+                    markup.println("</div>");
+                }
             }
         }
     }
@@ -271,7 +269,7 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
     /**
      * {@inheritDoc}
      */
-    public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) throws RenderException {
+    public void renderFooter(RendererContext rendererContext, RegionRendererContext rrc) {
         IRegionRendererContext irrc = (IRegionRendererContext) rrc;
         PrintWriter markup = rendererContext.getWriter();
 
@@ -281,19 +279,16 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
             markup.println(decorator.getFooterContent());
         }
 
-
-        // Region container
-        markup.print("</div>");
-
-
-        // Panel
-        if (this.showCMSTools(irrc)) {
-            markup.print("</div></div>");
-        }
-
-
         // End of Main DIV region (not shown in <head> tag)
         if (!this.headerRegions.contains(rrc.getCSSId())) {
+            // Region container
+            markup.print("</div>");
+
+            // Card
+            if (this.showCMSTools(irrc)) {
+                markup.print("</div></div>");
+            }
+
             markup.print("</div>");
         }
     }
@@ -320,9 +315,8 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param irrc region renderer context
      * @param bundle internationalization bundle
      * @param markup markup
-     * @throws RenderException
      */
-    private void addPortletLink(IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) throws RenderException {
+    private void addPortletLink(IRegionRendererContext irrc, Bundle bundle, PrintWriter markup) {
         // Lien d'ajout de portlet
         if (InternalConstants.VALUE_WINDOWS_WIZARD_TEMPLATE_MODE.equals(irrc.getProperty(InternalConstants.ATTR_WINDOWS_WIZARD_MODE))) {
             // Button
@@ -647,7 +641,6 @@ public class DivRegionRenderer extends AbstractObjectRenderer implements RegionR
      * @param rendererContext renderer context
      * @param regionRendererContext region renderer context
      * @param bundle internationalization bundle
-     * @throws RenderException
      */
     private void renderMaximizedHeader(RendererContext rendererContext, RegionRendererContext regionRendererContext, Bundle bundle) throws RenderException {
         // HTTP servlet request
