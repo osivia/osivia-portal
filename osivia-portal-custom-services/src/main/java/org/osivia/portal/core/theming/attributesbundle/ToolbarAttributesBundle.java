@@ -243,14 +243,7 @@ public final class ToolbarAttributesBundle implements IAttributesBundle {
         if (principal != null) {
             personService = this.directoryProvider.getDirService(PersonService.class);
             person = personService.getPerson(principal.getName());
-
-            String ownAvatarDisabled = page.getPortal().getProperty("own.avatar.disabled");
-            if (StringUtils.isNotBlank(ownAvatarDisabled) && ownAvatarDisabled.equals("true") && person != null) {
-                person.setAvatar(null);
-            }
-
             attributes.put(Constants.ATTR_TOOLBAR_PERSON, person);
-
         }
 
         // My space
