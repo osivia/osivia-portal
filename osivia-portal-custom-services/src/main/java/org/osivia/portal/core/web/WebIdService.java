@@ -37,8 +37,6 @@ public class WebIdService implements IWebIdService {
 
     /** Slash separator. */
     private static final String SLASH = "/";
-    /** Dot separator. */
-    private static final String DOT = ".";
     /** Query separator. */
     private static final String QUERY_SEPARATOR = "?";
 
@@ -77,7 +75,6 @@ public class WebIdService implements IWebIdService {
      */
     public String cmsPathToFetchPath(String cmsPath) {
         String webId = StringUtils.substringAfterLast(cmsPath, SLASH);
-        webId = StringUtils.substringBefore(webId, DOT);
         return this.webIdToFetchPath(webId);
     }
 
@@ -136,7 +133,6 @@ public class WebIdService implements IWebIdService {
     public String itemToPageUrl(CMSServiceCtx cmsContext, CMSItem cmsItem) {
         String webid = cmsItem.getWebId();
         String explicitUrl = cmsItem.getProperties().get(EXPLICIT_URL);
-        String extension = cmsItem.getProperties().get(EXTENSION_URL);
 
         // compute a path with webIDs of the parents
         ICMSService cmsService = this.cmsServiceLocator.getCMSService();
@@ -200,18 +196,6 @@ public class WebIdService implements IWebIdService {
             }
 
             webPath.append(webid);
-
-            if ((cmsItem.getType() != null)) {
-                String type = cmsItem.getType().getName();
-                if ("File".equals(type) || "Picture".equals(type)) {
-                    if (extension != null) {
-                        webPath.append(DOT);
-                        webPath.append(extension);
-                    }
-                }
-            } else {
-                webPath.append(".html");
-            }
 
             if (StringUtils.isNotEmpty(parameters)) {
                 webPath.append(parameters);

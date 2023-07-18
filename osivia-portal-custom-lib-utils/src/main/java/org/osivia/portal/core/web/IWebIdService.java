@@ -27,8 +27,6 @@ public interface IWebIdService {
     /** Remote proxy webId marker. */
     String RPXY_WID_MARKER = "_c_";
 
-    /** Extension of a document like .html, .jpg, .pdf. */
-    String EXTENSION_URL = "extensionUrl";
     /** Explicit segment of the URL (not involved on the resolution of the document). */
     String EXPLICIT_URL = "explicitUrl";
     /** Key parameter of parent webid of a document. */
