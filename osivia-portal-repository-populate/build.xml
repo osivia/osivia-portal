@@ -8,6 +8,8 @@
 	<property name="jta.version" value="1.0.1B"/>
 	<property name="json.version" value="2.4"/>
 	<property name="jacc.version" value="1.0"/>
+	<property name="jbpm.version" value="3.2.2"/>	
+	
 
 
 	<macrodef name="maven-deploy-file">
@@ -15,8 +17,10 @@
 	   <attribute name="groupId"/>
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
-	   <attribute name="packaging" default="jar"/>	   
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=true -DrepositoryId=test-thirdparty-2 -Durl=http://www.osivia.org/nexus/content/repositories/test-thirdparty-2"/>
+	   <attribute name="packaging" default="jar"/>	  
+	   <attribute name="generatePom" default="true"/>
+		
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
@@ -33,6 +37,32 @@
 	   </sequential>
 	</macrodef>
 
+	
+	<macrodef name="maven-deploy-file-jdk8-classifier">
+	   <attribute name="file"/>
+	   <attribute name="groupId"/>
+	   <attribute name="artifactId"/>
+	   <attribute name="version"/>
+ 
+	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
+	   
+	   <sequential>
+		   	<echo>mvn @{command-line}</echo>
+		   	
+		   	<!-- Window exec command : -->
+		   	<exec executable="cmd.exe" osfamily="Windows" >
+				<arg line="/c mvn @{command-line}"/>
+			</exec>
+			
+		   	<!-- Linux et Unix exec command : -->
+		   	<exec executable="mvn" os="Linux,Unix">
+				<arg line="@{command-line}"/>
+			</exec>	   	
+	   </sequential>
+	</macrodef>
+	
+	
+	
 	
 	<!-- ================================= 
           target: build              
@@ -75,7 +105,13 @@
 		<maven-deploy-file file="portal-core-cms-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-cms-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-admin-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  packaging="java-source" />
-
+	
+		<!-- too big -->
+		<mkdir dir="target"/>
+		<get src="http://www.osivia.com/jboss-portal-2.7.2.zip" dest="target/jboss-portal-2.7.2.zip"/>
+		<maven-deploy-file file="target/jboss-portal-2.7.2.zip" groupId="org.jboss.portal" artifactId="jboss-portal" packaging="zip" version="${jboss-portal.version}" generatePom="false" />
+		<delete dir="target"/>
+		
 <!-- JBOSS AS -->
 
 	    <maven-deploy-file file="jbossweb.jar" groupId="jboss" artifactId="jbossweb" version="${jboss.version}"  />
@@ -93,9 +129,16 @@
 		<maven-deploy-file file="jgroups.jar" groupId="jboss" artifactId="jgroups" version="${jboss.version}" />
 		<maven-deploy-file file="jboss.jar" groupId="jboss" artifactId="jboss" version="${jboss.version}" />
 
+<!-- MISC -->
+		
+		
 		<maven-deploy-file file="jta-1.0.1B.jar" groupId="javax.transaction" artifactId="jta" version="${jta.version}" />
 		<maven-deploy-file file="json-lib-2.4.jar" groupId="net.sf.json-lib" artifactId="json-lib" version="${json.version}" />		
 		<maven-deploy-file file="jacc-1.0.jar" groupId="javax.security" artifactId="jacc" version="${jacc.version}" />	
+		<maven-deploy-file-jdk8-classifier file="jbpm-identity-3.2.2-jdk8.jar" groupId="org.jbpm.identity" artifactId="jbpm-identity" version="${jbpm.version}" />	
+			
+
+		
 
 	</target>
 </project>

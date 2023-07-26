@@ -79,6 +79,7 @@
 
 
     <modules>
+		<module>osivia-portal-repository-populate</module>
         <module>osivia-portal-api</module>
         <module>osivia-portal-taglib</module>
         <module>osivia-portal-custom-lib-utils</module>

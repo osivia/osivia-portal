@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+	<groupId>org.osivia.portal.third-party</groupId>
+    <artifactId>osivia-portal-repository-populate</artifactId>
+    <packaging>pom</packaging>
+    <version>4.7-SNAPSHOT</version>
+    <name>OSIVIA Portal - Repository populate</name>
+
+<!--
+
+build a new third-party in addition to maven central and jboss-public repositories
+
+mvn clean -Pdeploy-thirdparty "-Dthirdparty-repo-id=test-thirdparty-3" "-Dthirdparty-repo-url=http://www.osivia.org/nexus/content/repositories/test-thirdparty-3"
+-->
+
+	<profiles>
+
+        <profile>
+            <id>deploy-thirdparty</id>
+		    <build>
+		        <plugins>
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-antrun-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <id>populate</id>
+		                        <goals>
+		                            <goal>run</goal>
+		                        </goals>
+		                        <configuration>
+		                            <tasks>
+										<ant antfile="${basedir}/build.xml"
+		                     				target="deploy-libs"/>
+		              				</tasks>								
+		                        </configuration>
+		                        <phase>pre-clean</phase>
+		                    </execution>
+		                </executions>
+		            </plugin>
+		        </plugins>
+		    </build>
+        </profile>    
+
+        <profile>
+            <id>deploy-osivia-modules</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-jar</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy file="${basedir}/target/${project.build.finalName}.jar" tofile="${deploy.jbp.dir}/lib/portal-theme-lib.jar" overwrite="true" />
+                                    </tasks>
+                                </configuration>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
