@@ -938,7 +938,7 @@
         <tag>4.7-maintenance</tag>
     </scm>
 
-<!--
+
     <distributionManagement>
         <repository>
             <id>osivia-releases</id>
@@ -949,7 +949,7 @@
             <url>http://www.osivia.org/nexus/content/repositories/osivia-snapshots</url>
         </snapshotRepository>
     </distributionManagement>
--->
+
     <profiles>
         <profile>
             <id>ci</id>
