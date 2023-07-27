@@ -20,7 +20,7 @@
 	   <attribute name="packaging" default="jar"/>	  
 	   <attribute name="generatePom" default="true"/>
 		
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
+	   <attribute name="command-line" default="deploy:deploy-file -s ${thirdparty-settings} -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
