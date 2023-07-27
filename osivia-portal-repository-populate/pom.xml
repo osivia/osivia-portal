@@ -13,7 +13,10 @@
 
 build a new third-party in addition to maven central and jboss-public repositories
 
-mvn clean -Pdeploy-thirdparty "-Dthirdparty-repo-id=test-thirdparty-3" "-Dthirdparty-repo-url=http://www.osivia.org/nexus/content/repositories/test-thirdparty-3"
+mvn clean -Pdeploy-thirdparty  "-Dthirdparty-repo-id=test-thirdparty-3" "-Dthirdparty-repo-url=http://www.osivia.org/nexus/content/repositories/test-thirdparty-3"
+
+optional argument -Dthirdparty-settings=""
+
 -->
 
 	<profiles>

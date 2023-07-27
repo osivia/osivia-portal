@@ -12,6 +12,29 @@
 	
 
 
+	<macrodef name="maven-execute">
+		<attribute name="command-line"/>
+		<sequential>
+		   	<condition property="command" value="deploy:deploy-file @{command-line}" else="deploy:deploy-file -s ${thirdparty-settings} @{command-line}">
+		   		<not>  
+		   		   <isset property="thirdparty-settings"/>
+		   		</not>		   		
+		   	</condition>
+	   	
+		   	<echo>mvn ${command}</echo>
+		   	
+		   	<!-- Window exec command : -->
+		   	<exec executable="cmd.exe" osfamily="Windows" >
+				<arg line="/c mvn ${command}"/>
+			</exec>
+			
+		   	<!-- Linux et Unix exec command : -->
+		   	<exec executable="mvn" os="Linux,Unix">
+				<arg line="${command}"/>
+			</exec>	   	
+		 </sequential>		
+	</macrodef>
+	
 	<macrodef name="maven-deploy-file">
 	   <attribute name="file"/>
 	   <attribute name="groupId"/>
@@ -19,22 +42,12 @@
 	   <attribute name="version"/>
 	   <attribute name="packaging" default="jar"/>	  
 	   <attribute name="generatePom" default="true"/>
-		
-	   <attribute name="command-line" default="deploy:deploy-file -s ${thirdparty-settings} -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
+	   <attribute name="command-line" default="-Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
-		   	<echo>mvn @{command-line}</echo>
-		   	
-		   	<!-- Window exec command : -->
-		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn @{command-line}"/>
-			</exec>
-			
-		   	<!-- Linux et Unix exec command : -->
-		   	<exec executable="mvn" os="Linux,Unix">
-				<arg line="@{command-line}"/>
-			</exec>	   	
-	   </sequential>
+	   		<maven-execute command-line="@{command-line}"/>
+	   	</sequential>
+
 	</macrodef>
 
 	
@@ -47,17 +60,7 @@
 	   <attribute name="command-line" default="deploy:deploy-file -s ${thirdparty-settings} -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
 	   
 	   <sequential>
-		   	<echo>mvn @{command-line}</echo>
-		   	
-		   	<!-- Window exec command : -->
-		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn @{command-line}"/>
-			</exec>
-			
-		   	<!-- Linux et Unix exec command : -->
-		   	<exec executable="mvn" os="Linux,Unix">
-				<arg line="@{command-line}"/>
-			</exec>	   	
+	   		<maven-execute command-line="@{command-line}"/>
 	   </sequential>
 	</macrodef>
 	
