@@ -44,7 +44,7 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
  
-	   <attribute name="command-line" default="deploy:deploy-file -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
+	   <attribute name="command-line" default="deploy:deploy-file -s ${thirdparty-settings} -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
 	   
 	   <sequential>
 		   	<echo>mvn @{command-line}</echo>
