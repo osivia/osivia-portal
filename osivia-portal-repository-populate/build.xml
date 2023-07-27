@@ -12,7 +12,7 @@
 	
 
 
-	<macrodef name="maven-execute">
+	<macrodef name="maven-execute-deploy">
 		<attribute name="command-line"/>
 		<sequential>
 		   	<condition property="command" value="deploy:deploy-file @{command-line}" else="deploy:deploy-file -s ${thirdparty-settings} @{command-line}">
@@ -45,7 +45,7 @@
 	   <attribute name="command-line" default="-Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
-	   		<maven-execute command-line="@{command-line}"/>
+	   		<maven-execute-deploy command-line="@{command-line}"/>
 	   	</sequential>
 
 	</macrodef>
@@ -57,10 +57,10 @@
 	   <attribute name="artifactId"/>
 	   <attribute name="version"/>
  
-	   <attribute name="command-line" default="deploy:deploy-file -s ${thirdparty-settings} -Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
+	   <attribute name="command-line" default="-Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -DgeneratePom=true -Dpackaging=pom -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} -Dfiles=@{file} -Dtypes=jar -Dclassifiers=jdk8 "/>
 	   
 	   <sequential>
-	   		<maven-execute command-line="@{command-line}"/>
+	   		<maven-execute-deploy command-line="@{command-line}"/>
 	   </sequential>
 	</macrodef>
 	
