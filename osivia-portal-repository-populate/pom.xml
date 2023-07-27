@@ -13,13 +13,56 @@
 
 build a new third-party in addition to maven central and jboss-public repositories
 
-mvn clean -Pdeploy-thirdparty  "-Dthirdparty-repo-id=test-thirdparty-3" "-Dthirdparty-repo-url=http://www.osivia.org/nexus/content/repositories/test-thirdparty-3"
+1-Deploy libs
+mvn clean -Pdeploy-thirdparty  -Dthirdparty-repo-id=[repo-id] -Dthirdparty-repo-url=[repo-url] [-Dthirdparty-settings=[user-settings-file]]
 
-optional argument -Dthirdparty-settings=""
+2-Deploy jbp 
+mvn clean -Djboss-portal.url=[jpb-url]  -Dthirdparty-repo-id=[repo-id] -Dthirdparty-repo-url=[repo-url] [-Dthirdparty-settings=[user-settings-file]]
+
+
+Samples  
+- libs + jbp 
+  mvn clean "-Pdeploy-thirdparty"  "-Dthirdparty-repo-id=test-thirdparty-3" "-Dthirdparty-repo-url=http://www.osivia.org/nexus/content/repositories/test-thirdparty-3" "-Djboss-portal.url=http://www.osivia.com/jboss-portal-2.7.2.zip"
+- forge
+  mvn clean -B -Pdeploy-thirdparty -Dthirdparty-settings=${MAVEN_SETTINGS} -Dthirdparty-repo-id=maven-thirdparty-aca-rennes -Dthirdparty-repo-url=https://repository-maven.forge.education.gouv.fr/repository/maven-thirdparty-aca-rennes/
 
 -->
 
 	<profiles>
+
+
+		<profile>
+            <id>deploy-jboss-portal</id>
+			<activation>
+			    <property>
+			       <name>jboss-portal.url</name>
+			    </property>
+			</activation>            
+		    <build>
+		        <plugins>
+		            <plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-antrun-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <id>populate-jbp</id>
+		                        <goals>
+		                            <goal>run</goal>
+		                        </goals>
+		                        <configuration>
+		                            <tasks>
+										<ant antfile="${basedir}/build.xml"
+		                     				target="deploy-jboss-portal"/>
+		              				</tasks>								
+		                        </configuration>
+		                        <phase>pre-clean</phase>
+		                    </execution>
+		                </executions>
+		            </plugin>
+		        </plugins>
+		    </build>
+        </profile> 
+
 
         <profile>
             <id>deploy-thirdparty</id>
@@ -30,7 +73,7 @@ optional argument -Dthirdparty-settings=""
 		                <artifactId>maven-antrun-plugin</artifactId>
 		                <executions>
 		                    <execution>
-		                        <id>populate</id>
+		                        <id>populate-libs</id>
 		                        <goals>
 		                            <goal>run</goal>
 		                        </goals>
@@ -46,7 +89,11 @@ optional argument -Dthirdparty-settings=""
 		            </plugin>
 		        </plugins>
 		    </build>
-        </profile>    
+        </profile>  
+        
+        
+        
+          
 
         <profile>
             <id>deploy-osivia-modules</id>
