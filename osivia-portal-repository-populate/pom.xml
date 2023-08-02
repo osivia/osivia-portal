@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.7-SNAPSHOT</version>
+        <version>4.7.50-jenkins-1</version>
     </parent>
     
 	<groupId>org.osivia.portal.third-party</groupId>
     <artifactId>osivia-portal-repository-populate</artifactId>
     <packaging>pom</packaging>
-    <version>4.7-SNAPSHOT</version>
+    <version>4.7.50-jenkins-1</version>
     <name>OSIVIA Portal - Repository populate</name>
 
 <!--
