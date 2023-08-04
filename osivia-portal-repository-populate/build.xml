@@ -9,30 +9,34 @@
 	<property name="json.version" value="2.4"/>
 	<property name="jacc.version" value="1.0"/>
 	<property name="jbpm.version" value="3.2.2"/>	
+	<property name="cas.version" value="2.2.0-M3"/>	
+	<property name="xmldsig.version" value="1.0"/>			
+	
 	
 
-
 	<macrodef name="maven-execute-deploy">
-		<attribute name="command-line"/>
-		<sequential>
-		   	<condition property="command" value="deploy:deploy-file @{command-line}" else="deploy:deploy-file -s ${thirdparty-settings} @{command-line}">
-		   		<not>  
-		   		   <isset property="thirdparty-settings"/>
-		   		</not>		   		
-		   	</condition>
-	   	
-		   	<echo>mvn ${command}</echo>
-		   	
-		   	<!-- Window exec command : -->
-		   	<exec executable="cmd.exe" osfamily="Windows" >
-				<arg line="/c mvn ${command}"/>
-			</exec>
+		        <attribute name="command-line"/>
 			
-		   	<!-- Linux et Unix exec command : -->
-		   	<exec executable="mvn" os="Linux,Unix">
-				<arg line="${command}"/>
-			</exec>	   	
-		 </sequential>		
+		        <sequential>
+		        	<local name="command"/>
+		            <condition property="command" value="deploy:deploy-file @{command-line}" else="deploy:deploy-file -s ${thirdparty-settings} @{command-line}">
+		                <not>  
+		                   <isset property="thirdparty-settings"/>
+		                </not>              
+		            </condition>
+		        
+		            <echo>mvn ${command}</echo>
+		            
+		            <!-- Window exec command : -->
+		            <exec executable="cmd.exe" osfamily="Windows" >
+		                <arg line="/c mvn ${command}"/>
+		            </exec>
+		            
+		            <!-- Linux et Unix exec command : -->
+		            <exec executable="mvn" os="Linux,Unix">
+		                <arg line="${command}"/>
+		            </exec>     
+		         </sequential>      
 	</macrodef>
 	
 	<macrodef name="maven-deploy-file">
@@ -45,6 +49,7 @@
 	   <attribute name="command-line" default="-Dfile=@{file} -DgroupId=@{groupId} -DartifactId=@{artifactId} -Dversion=@{version} -Dpackaging=@{packaging} -DgeneratePom=@{generatePom} -DrepositoryId=${thirdparty-repo-id} -Durl=${thirdparty-repo-url} "/>
 	   
 	   <sequential>
+
 	   		<maven-execute-deploy command-line="@{command-line}"/>
 	   	</sequential>
 
@@ -76,7 +81,7 @@
 
 <!-- JBOSS PORTAL -->
 
-		
+	
 		<maven-deploy-file file="portal-faces-lib.jar" groupId="org.jboss.portal" artifactId="portal-faces-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-api-lib.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" />
 		<maven-deploy-file file="portal-api-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-api-lib" version="${jboss-portal.version}" packaging="java-source"/>
@@ -110,6 +115,7 @@
 		<maven-deploy-file file="portal-core-cms-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-cms-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-admin-lib.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  />
 		<maven-deploy-file file="portal-core-admin-lib-sources.jar" groupId="org.jboss.portal" artifactId="portal-core-admin-lib" version="${jboss-portal.version}"  packaging="java-source" />
+		<maven-deploy-file file="identity-sso-1.1.3.jar" groupId="org.jboss.portal.identity" artifactId="identity-sso" version="${jboss-portal.identity.version}" />	
 
 <!-- JBOSS AS -->
 
@@ -130,12 +136,12 @@
 
 <!-- MISC -->
 		
-		
 		<maven-deploy-file file="jta-1.0.1B.jar" groupId="javax.transaction" artifactId="jta" version="${jta.version}" />
 		<maven-deploy-file file="json-lib-2.4.jar" groupId="net.sf.json-lib" artifactId="json-lib" version="${json.version}" />		
 		<maven-deploy-file file="jacc-1.0.jar" groupId="javax.security" artifactId="jacc" version="${jacc.version}" />	
 		<maven-deploy-file-jdk8-classifier file="jbpm-identity-3.2.2-jdk8.jar" groupId="org.jbpm.identity" artifactId="jbpm-identity" version="${jbpm.version}" />	
-
+		<maven-deploy-file file="casclient-2.2.0-M3.jar" groupId="cas" artifactId="casclient" version="${cas.version}" />
+		<maven-deploy-file file="xmldsig-1.0.jar" groupId="javax.xml" artifactId="xmldsig" version="${xmldsig.version}" />
 	</target>
 
 
