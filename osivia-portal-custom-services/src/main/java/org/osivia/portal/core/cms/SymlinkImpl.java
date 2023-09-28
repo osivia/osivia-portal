@@ -3,6 +3,8 @@ package org.osivia.portal.core.cms;
 import org.apache.commons.lang.StringUtils;
 import org.osivia.portal.api.cms.Symlink;
 
+import java.util.Objects;
+
 /**
  * Symlink implementation.
  * 
@@ -28,6 +30,32 @@ public class SymlinkImpl implements Symlink {
      */
     public SymlinkImpl() {
         super();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SymlinkImpl symlink = (SymlinkImpl) o;
+
+        if (!Objects.equals(parentPath, symlink.parentPath)) return false;
+        if (!Objects.equals(parent, symlink.parent)) return false;
+        if (!Objects.equals(segment, symlink.segment)) return false;
+        if (!Objects.equals(targetPath, symlink.targetPath)) return false;
+        return Objects.equals(targetWebId, symlink.targetWebId);
+    }
+
+
+    @Override
+    public int hashCode() {
+        int result = parentPath != null ? parentPath.hashCode() : 0;
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
+        result = 31 * result + (segment != null ? segment.hashCode() : 0);
+        result = 31 * result + (targetPath != null ? targetPath.hashCode() : 0);
+        result = 31 * result + (targetWebId != null ? targetWebId.hashCode() : 0);
+        return result;
     }
 
 
@@ -80,11 +108,7 @@ public class SymlinkImpl implements Symlink {
      */
     @Override
     public String getVirtualPath() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getParentPath());
-        builder.append("/symlink_");
-        builder.append(this.segment);
-        return builder.toString();
+        return this.getParentPath() + "/symlink_" + this.segment;
     }
 
 
@@ -98,11 +122,7 @@ public class SymlinkImpl implements Symlink {
         if (this.parent == null) {
             navigationPath = this.parentPath;
         } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append(this.parent.getNavigationPath());
-            builder.append("/_");
-            builder.append(StringUtils.substringAfterLast(this.parent.getTargetPath(), "/"));
-            navigationPath = builder.toString();
+            navigationPath = this.parent.getNavigationPath() + "/_" + StringUtils.substringAfterLast(this.parent.getTargetPath(), "/");
         }
 
         return navigationPath;
