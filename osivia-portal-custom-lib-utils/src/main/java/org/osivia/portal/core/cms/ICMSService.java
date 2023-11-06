@@ -14,10 +14,7 @@
  */
 package org.osivia.portal.core.cms;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -727,5 +724,11 @@ public interface ICMSService {
      * @return window properties
      */
     Map<String, String> getEditorWindowBaseProperties(CMSServiceCtx cmsContext) throws CMSException;
+
+
+    /**
+     * Clean files created by the nuxeo command cache.
+     */
+    void cleanTempFiles();
 
 }
