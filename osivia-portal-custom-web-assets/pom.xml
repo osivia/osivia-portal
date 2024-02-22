@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.osivia.portal.core</groupId>
         <artifactId>parent</artifactId>
-        <version>4.11.10</version>
+        <version>4.11-SNAPSHOT</version>
     </parent>
 
     <artifactId>osivia-portal-custom-web-assets</artifactId>
