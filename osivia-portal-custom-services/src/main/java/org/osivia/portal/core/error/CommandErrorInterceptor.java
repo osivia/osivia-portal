@@ -3,12 +3,6 @@
  */
 package org.osivia.portal.core.error;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.jboss.logging.Logger;
 import org.jboss.portal.common.invocation.Scope;
@@ -23,7 +17,6 @@ import org.jboss.portal.core.model.portal.Portal;
 import org.jboss.portal.core.model.portal.PortalObjectId;
 import org.jboss.portal.core.model.portal.command.response.UpdatePageResponse;
 import org.jboss.portal.server.ServerInvocation;
-import org.osivia.portal.api.PortalException;
 import org.osivia.portal.api.context.PortalControllerContext;
 import org.osivia.portal.api.internationalization.Bundle;
 import org.osivia.portal.api.internationalization.IBundleFactory;
@@ -39,6 +32,11 @@ import org.osivia.portal.core.notifications.NotificationsUtils;
 import org.osivia.portal.core.portalobjects.PortalObjectUtils;
 import org.osivia.portal.core.web.IWebUrlService;
 import org.osivia.portal.core.web.WebCommand;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Command error interceptor.
@@ -72,9 +70,7 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
      *
      * @param command command
      * @param response response
-     * @param errorCode error id incremented
      * @return response
-     * @throws Exception
      */
     public ControllerResponse displayError(ControllerCommand command, ControllerResponse response) throws Exception {
         // Controller context
@@ -87,6 +83,8 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
         if (PortalObjectUtils.isSpaceSite(portal)) {
             // Client request
             HttpServletRequest clientRequest = controllerContext.getServerInvocation().getServerContext().getClientRequest();
+            // Client response
+            HttpServletResponse clientResponse = controllerContext.getServerInvocation().getServerContext().getClientResponse();
             // Bundle
             IBundleFactory bundleFactory = this.internationalizationService.getBundleFactory(this.getClass().getClassLoader());
             Bundle bundle = bundleFactory.getBundle(clientRequest.getLocale());
@@ -100,8 +98,17 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_LAYOUT_STATE_ATTRIBUTE);
             controllerContext.removeAttribute(Scope.REQUEST_SCOPE, InternalConstants.PARAMETERIZED_PERMALINKS_ATTRIBUTE);
 
+            // Error webId
+            String errorWebId;
+            if (response instanceof UnavailableResourceResponse) {
+                errorWebId = "error-404";
+                clientResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            } else {
+                errorWebId = "error";
+            }
+
             // Command
-            WebCommand webCommand = new WebCommand(IWebUrlService.WEB_ID_PREFIX + "error");
+            WebCommand webCommand = new WebCommand(IWebUrlService.WEB_ID_PREFIX + errorWebId);
             errorResponse = controllerContext.execute(webCommand);
 
             // Error label
@@ -149,20 +156,19 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
                     response = this.displayError(command, response);
 
 
-                    /* log errors */
-
-                    boolean cmsException = false;
-
-                    if (response instanceof UnavailableResourceResponse)
+                    // log errors
+                    boolean cmsException;
+                    if (response instanceof UnavailableResourceResponse) {
                         cmsException = true;
-
-                    if (response instanceof ErrorResponse) {
-                        if (((ErrorResponse) response).getCause() instanceof CMSException)
-                            cmsException = true;
+                    } else if (response instanceof ErrorResponse) {
+                        ErrorResponse errorResponse = (ErrorResponse) response;
+                        cmsException = errorResponse.getCause() instanceof CMSException;
+                    } else {
+                        cmsException = false;
                     }
 
 
-                    Map<String, Object> properties = new HashMap<String, Object>();
+                    Map<String, Object> properties = new HashMap<>();
 
 
                     int httpErrorCode = ErrorDescriptor.NO_HTTP_ERR_CODE;
@@ -180,8 +186,6 @@ public class CommandErrorInterceptor extends ControllerInterceptor {
 
                     ErrorDescriptor errorDescriptor = new ErrorDescriptor(httpErrorCode, null, null, userId, properties);
                     GlobalErrorHandler.getInstance().logError(errorDescriptor);
-                } else {
-                    throw new PortalException("Missing error page");
                 }
             }
         } catch (UserNotificationsException e) {
