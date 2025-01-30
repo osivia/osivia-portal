@@ -14,15 +14,13 @@
 package org.osivia.portal.core.cms;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
+import java.net.URLDecoder;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +58,7 @@ import org.osivia.portal.api.internationalization.IInternationalizationService;
 import org.osivia.portal.api.locator.Locator;
 import org.osivia.portal.api.notifications.INotificationsService;
 import org.osivia.portal.api.notifications.NotificationsType;
+import org.osivia.portal.api.page.PageParametersEncoder;
 import org.osivia.portal.api.player.Player;
 import org.osivia.portal.api.statistics.IStatisticsService;
 import org.osivia.portal.api.theming.TabGroup;
@@ -1069,7 +1068,47 @@ public class CmsCommand extends DynamicCommand {
             }
 
             boolean isVirtualNavigation = (virtualNavigationPath != null);
-            
+
+            // Query parameters
+            ParameterMap parameterMap = controllerContext.getServerInvocation().getServerContext().getQueryParameterMap();
+
+            // Search query and filters parameters
+            if (parameterMap.containsKey("q") || parameterMap.containsKey("f")) {
+                if (this.pageParams == null) {
+                    this.pageParams = new HashMap<>();
+                }
+
+                // Selectors
+                Map<String, List<String>> selectors = PageParametersEncoder.decodeProperties(this.pageParams.get("selectors"));
+
+                // Search query
+                String[] searchQueryParameter = parameterMap.get("q");
+                if (ArrayUtils.isNotEmpty(searchQueryParameter)) {
+                    String searchQuery = URLDecoder.decode(searchQueryParameter[0], CharEncoding.UTF_8);
+                    this.pageParams.put("osivia.keywords", searchQuery);
+
+                    // Value
+                    selectors.put("q", Arrays.asList(StringUtils.split(searchQuery)));
+                }
+
+                // Search filters
+                String[] searchFiltersParameter = parameterMap.get("f");
+                if (ArrayUtils.isNotEmpty(searchFiltersParameter)) {
+                    String searchFilters = URLDecoder.decode(searchFiltersParameter[0], CharEncoding.UTF_8);
+
+                    // Values
+                    String[] filters = StringUtils.split(searchFilters, "&");
+                    for (String filter : filters) {
+                        String[] selector = StringUtils.split(filter, "=");
+                        if (selector.length == 2) {
+                            selectors.put(selector[0], Arrays.asList(new String[]{selector[1]}));
+                        }
+                    }
+                }
+
+                this.pageParams.put("selectors", PageParametersEncoder.encodeProperties(selectors));
+            }
+
             // Page state
             CmsPageState pageState = new CmsPageState(controllerContext, baseCMSPublicationPage, level, this.contextualization, cmsItem, itemPublicationPath,
                     basePublishPath, currentPage, this.pageParams, this.contentPath, pubInfos, contextualizedInCurrentPage, this.cmsPath, this.displayContext,
