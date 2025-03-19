@@ -1088,7 +1088,7 @@ public class CmsCommand extends DynamicCommand {
                     this.pageParams.put("osivia.keywords", searchQuery);
 
                     // Value
-                    selectors.put("q", Arrays.asList(StringUtils.split(searchQuery)));
+                    selectors.put("q", Collections.singletonList(searchQuery));
                 }
 
                 // Search filters
