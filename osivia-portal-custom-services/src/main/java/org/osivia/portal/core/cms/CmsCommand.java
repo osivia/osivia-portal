@@ -1083,7 +1083,7 @@ public class CmsCommand extends DynamicCommand {
 
                 // Search query
                 String[] searchQueryParameter = parameterMap.get("q");
-                if (ArrayUtils.isNotEmpty(searchQueryParameter)) {
+                if (ArrayUtils.isNotEmpty(searchQueryParameter) && StringUtils.isNotEmpty(searchQueryParameter[0])) {
                     String searchQuery = URLDecoder.decode(searchQueryParameter[0], CharEncoding.UTF_8);
                     this.pageParams.put("osivia.keywords", searchQuery);
 
