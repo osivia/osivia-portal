@@ -38,6 +38,8 @@ public class CMSItem {
     private Boolean published;
     /** Indicates if working version is different from published version. */
     private Boolean beingModified;
+    /** Indicate if a document is deleted; */
+    private Boolean deleted = Boolean.FALSE;
     /** CMS item type. */
     private DocumentType type;
     /** CMS item path. */
@@ -111,6 +113,22 @@ public class CMSItem {
      */
     public void setBeingModified(Boolean beingModified) {
         this.beingModified = beingModified;
+    }
+
+    /**
+     * Getter for deleted
+     * @return
+     */
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    /**
+     * Setter for deleted
+     * @param deleted
+     */
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     /**

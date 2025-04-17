@@ -707,6 +707,12 @@ public class CmsCommand extends DynamicCommand {
                     }
 
                     cmsItem = cmsService.getContent(cmsReadItemContext, this.cmsPath);
+
+                    // Si l'item est supprimé, erreur 404
+                    if(cmsItem != null && cmsItem.getDeleted()) {
+                        return new UnavailableResourceResponse(this.cmsPath, false);
+                    }
+
                 } catch (CMSException e) {
                     if (e.getErrorCode() == CMSException.ERROR_FORBIDDEN) {
                         return new SecurityErrorResponse(e, SecurityErrorResponse.NOT_AUTHORIZED, false);
