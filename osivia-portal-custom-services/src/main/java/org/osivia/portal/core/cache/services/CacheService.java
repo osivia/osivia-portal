@@ -3,19 +3,6 @@
  */
 package org.osivia.portal.core.cache.services;
 
-import java.io.Serializable;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.naming.InitialContext;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.system.ServiceMBeanSupport;
@@ -27,6 +14,15 @@ import org.osivia.portal.api.cache.services.IGlobalParameters;
 import org.osivia.portal.core.cache.global.ICacheService;
 import org.osivia.portal.core.page.PageProperties;
 
+import javax.naming.InitialContext;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -42,7 +38,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, CacheDatas> mCaches = new Hashtable<String, CacheDatas>();
+	private final Map<String, CacheDatas> mCaches = new ConcurrentHashMap<>();
 
 	protected static final Log logger = LogFactory.getLog(CacheService.class);
 	
@@ -70,15 +66,8 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 	}
 
 	/**
-	 * 
 	 * Détermine le cache
-	 * 
-	 * @param infosFlux
-	 * @param afficheur
-	 * @param request
-	 * @return
 	 */
-
 	@SuppressWarnings("unchecked")
 	private Map<String, CacheDatas> getMapCache(CacheInfo infosCache) throws PortalException {
 
@@ -91,7 +80,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 			PortletContext ctx = ((PortletContext) infosCache.getContext());
 			caches = (Map<String, CacheDatas>) ctx.getAttribute("caches");
 			if (caches == null) {
-				caches = new Hashtable<String, CacheDatas>();
+				caches = new ConcurrentHashMap<>();
 				ctx.setAttribute("caches", caches);
 			}
 		}
@@ -111,7 +100,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				caches = (Map<String, CacheDatas>) session.getAttribute("caches."+userName);
 				//caches = (Map<String, CacheFlux>) session.getAttribute("caches");				
 				if (caches == null) {
-					caches = new Hashtable<String, CacheDatas>();
+					caches = new ConcurrentHashMap<>();
 					session.setAttribute("caches."+userName, caches);
 				}
 			}
@@ -126,7 +115,7 @@ public class CacheService extends ServiceMBeanSupport implements CacheServiceMBe
 				caches = (Map<String, CacheDatas>) session.getAttribute("caches."+userName);				
 				//caches = (Map<String, CacheFlux>) session.getAttribute("caches");
 				if (caches == null) {
-					caches = new Hashtable<String, CacheDatas>();
+					caches = new ConcurrentHashMap<>();
 					session.setAttribute("caches."+userName, caches);
 				}
 			}
